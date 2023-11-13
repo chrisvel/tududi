@@ -26,11 +26,11 @@ To install `tu|du|di`, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/chrisvel/tu-du-di.git
+   git clone https://github.com/chrisvel/tududi.git
    ```
 2. Navigate to the project directory:
    ```bash
-   cd tu-du-di
+   cd tududi
    ```
 3. Install the required gems:
    ```bash
@@ -82,7 +82,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 
-If you have any questions or comments about `tu|du|di`, please feel free to [open an issue](https://github.com/chrisvel/tu-du-di/issues) or contact the developer directly.
+If you have any questions or comments about `tu|du|di`, please feel free to [open an issue](https://github.com/chrisvel/tududi/issues) or contact the developer directly.
 
 ---
 
