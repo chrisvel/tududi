@@ -8,7 +8,7 @@
 - **Project Tracking**: Organize tasks into projects. Each project can contain multiple tasks.
 - **Area Categorization**: Group projects into areas for better organization and focus.
 - **Due Date Tracking**: Set due dates for tasks and view them based on due date categories.
-- **Responsive Design (in progress) **: Accessible from various devices, ensuring a consistent experience across desktops, tablets, and mobile phones.
+- **Responsive Design (in progress)**: Accessible from various devices, ensuring a consistent experience across desktops, tablets, and mobile phones.
 
 ## Getting Started
 
