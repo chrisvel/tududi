@@ -8,7 +8,7 @@ module AuthenticationHelper
   end
 
   def require_login
-    return if ['/login', '/logout', '/signup'].include? request.path
+    return if ['/login', '/logout'].include? request.path
 
     redirect '/login' unless logged_in?
   end
