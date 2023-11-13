@@ -72,7 +72,7 @@ class Sinatra::Application
     end
 
     if task.update(task_attributes)
-      redirect '/'
+      redirect request.referrer || '/'
     else
       halt 400, 'There was a problem updating the task.'
     end
@@ -100,7 +100,7 @@ class Sinatra::Application
     halt 404, 'Task not found.' unless task
 
     if task.destroy
-      redirect '/'
+      redirect request.referrer || '/'
     else
       halt 400, 'There was a problem deleting the task.'
     end

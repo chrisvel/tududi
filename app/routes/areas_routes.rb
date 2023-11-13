@@ -17,7 +17,7 @@ class Sinatra::Application
       area.name = params[:name]
 
       if area.save
-        redirect '/'
+        redirect request.referrer || '/'
       else
         @errors = 'There was a problem updating the area.'
         erb :some_template
@@ -33,7 +33,7 @@ class Sinatra::Application
 
     if area
       area.destroy
-      redirect '/'
+      redirect request.referrer || '/'
     else
       status 404
       @errors = 'Area not found or not owned by the current user.'

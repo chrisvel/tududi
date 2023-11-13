@@ -5,18 +5,18 @@
     </span>
     <%= task.name %>
   </div>
-  <div class="ms-3 d-flex align-items-center">
+  <div class="">
     <% if task.due_date %>
       <% if task.due_date.to_date == Date.today %>
-        <span class="badge bg-success rounded-pill ms-2">
-          <i class="bi bi-calendar me-2"></i> TODAY
+        <span class="badge bg-primary rounded ms-2">
+          <i class="bi bi-clock me-2"></i> TODAY
         </span>
       <% elsif task.due_date && task.due_date.to_date < Date.today %>
-        <span class="badge bg-danger rounded-pill ms-2">
-          <i class="bi bi-calendar me-2"></i> <%= task.due_date.strftime("%Y-%m-%d") %>
+        <span class="badge bg-danger rounded ms-2">
+          <i class="bi bi-clock me-2"></i> <%= task.due_date.strftime("%Y-%m-%d") %>
         </span>
       <% else %>
-        <span class="badge bg-info rounded-pill ms-2">
+        <span class="badge bg-warning text-dark rounded ms-2">
           <i class="bi bi-clock me-2"></i> <%= task.due_date.strftime("%Y-%m-%d") %>
         </span>
       <% end %>
