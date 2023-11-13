@@ -51,6 +51,8 @@ GEM
     rack (2.2.8)
     rack-protection (3.1.0)
       rack (~> 2.2, >= 2.2.4)
+    rack-test (2.1.0)
+      rack (>= 1.3)
     rainbow (3.1.1)
     rake (13.1.0)
     rb-fsevent (0.11.2)
@@ -97,7 +99,9 @@ DEPENDENCIES
   bcrypt
   byebug
   faker
+  minitest
   puma
+  rack-test
   rake
   rerun
   rubocop

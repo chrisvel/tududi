@@ -18,3 +18,7 @@ gem 'byebug'
 # Development
 gem 'faker'
 gem 'rubocop'
+
+# Testing
+gem 'rack-test', group: :test
+gem 'minitest', group: :test
