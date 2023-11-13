@@ -55,6 +55,17 @@ To install `tu|du|di`, follow these steps:
    openssl req -new -x509 -key server.key -out server.crt -days 365
    ```
 
+### Create your user
+1. Open console
+   ```bash
+   rake console
+   ```
+
+2. Add the user
+   ```ruby
+   User.create(email: "myemail@somewhere.com", password: "awes0meHax0Rp4ssword")
+   ```
+
 ### Usage
 
 To start the application, run the following command in your terminal:
@@ -63,7 +74,7 @@ To start the application, run the following command in your terminal:
 puma -C app/config/puma.rb
 ```
 
-Open your browser and navigate to `http://localhost:9292` to access the application.
+Open your browser and navigate to `http://localhost:9292` to access the application and login with the email and the password you created.
 
 ## Contributing
 
