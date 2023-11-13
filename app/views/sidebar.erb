@@ -1,0 +1,103 @@
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-light vh-100 fixed-sidebar" style="width: 300px;">  <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+    <span class="fs-4">tu|du|di</span>
+  </a>
+  <hr>
+  <ul class="nav nav-pills flex-column">
+    <li class="nav-item">
+      <a href="/inbox" class="<%= nav_link('/inbox') %>" aria-current="page">
+        <i class="bi bi-inbox-fill me-1"></i> Inbox
+      </a>
+    </li>
+    <li>
+      <a href="/tasks?due_date=today" class="<%= nav_link('/tasks', 'due_date' => 'today') %>">
+        <i class="bi bi-calendar-day-fill me-1"></i> Today
+      </a>
+    </li>
+    <li>
+      <a href="/tasks?due_date=upcoming" class="<%= nav_link('/tasks', 'due_date' => 'upcoming') %>">
+        <i class="bi bi-calendar3 me-1"></i> Upcoming
+      </a>
+    </li>
+    <li>
+      <a href="/projects" class="<%= nav_link('/projects') %>">
+        <i class="bi bi-hexagon-fill me-1"></i> Areas & Projects
+      </a>
+    </li>
+    <li>
+      <a href="/tasks?due_date=anytime" class="<%= nav_link('/tasks', 'due_date' => 'anytime') %>">
+        <i class="bi bi-sun-fill me-1"></i> Anytime
+      </a>
+    </li>
+    <li>
+      <a href="/tasks?due_date=never" class="<%= nav_link('/tasks', 'due_date' => 'never') %>">
+        <i class="bi bi-moon-stars-fill me-1"></i> Someday
+      </a>
+    </li>
+    <li class="border-top my-3"></li>
+  </ul>
+  <div class="px-3 mb-auto">
+    <% current_user.areas.includes(:projects).order('name ASC').each do |area| %>
+      <div class="area-item d-flex justify-content-between align-items-center">
+        <a href="#area_<%= area.id %>_projects" class="nav-link link-dark flex-grow-1" data-bs-toggle="collapse" aria-expanded="true">
+          <i class="bi bi-folder me-1 fs-6"></i>
+          <i class="bi bi-folder2-open me-1 fs-6 d-none"></i>
+          <%= area.name %>
+        </a>
+        <div class="dropdown area-options">
+          <button class="btn btn-link text-secondary" type="button" id="dropdownMenuButton<%= area.id %>" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton<%= area.id %>">
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editAreaModal<%= area.id %>">Edit</a></li>
+            <li>
+              <form action="/area/<%= area.id %>" method="post" onsubmit="return confirm('Are you sure you want to delete this area?');">
+                <input type="hidden" name="_method" value="delete">
+                <button type="submit" class="dropdown-item">Delete</button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <% if area.projects.any? %>
+        <div class="collapse show" id="area_<%= area.id %>_projects">
+          <ul class="nav nav-pills flex-column">
+            <% area.projects.each do |project| %>
+              <li class="nav-item">
+                <a href="/project/<%= project.id %>" class="<%= nav_link("/project/#{project.id}") %>">
+                  <i class="bi bi-hexagon me-1"></i> <%= project.name.length > 22 ? project.name[0...22] + '...' : project.name %>
+                </a>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+  <div class="">
+    <div class="dropdown">
+      <button class="btn btn-dark dropdown-toggle w-100" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+        New Section
+      </button>
+      <ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton1">
+        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#newProjectModal">Project</a></li>
+        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#newAreaModal">Area</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr>
+  <div class="dropdown">
+    <a href="#" class="d-flex justify-content-center align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+      <strong><%= current_user.email %></strong>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-dark small text-center" aria-labelledby="dropdownUser1">
+      <li><a class="dropdown-item" href="#">Profile</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+    </ul>
+  </div>
+</div>
+<%= partial :'projects/_new_project_modal' %>
+<%= partial :'areas/_new_area_modal' %>
+<% current_user.areas.each do |area| %>
+  <%= partial :'areas/_edit_area_modal', locals: { area: area } %>
+<% end %>

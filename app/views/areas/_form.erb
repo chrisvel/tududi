@@ -1,0 +1,12 @@
+<form id="<%= form_id %>" action="<%= action_url %>" method="post">
+  <% unless area.new_record? %>
+    <input type="hidden" name="_method" value="<%= method %>">
+  <% end %>
+
+  <div class="mb-3">
+    <label for="areaName" class="form-label">Area Name:</label>
+    <input type="text" class="form-control" id="areaName" name="name" value="<%= area.name %>" required>
+  </div>
+
+  <button type="submit" class="btn btn-primary"><%= button_text %></button>
+</form>

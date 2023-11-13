@@ -1,0 +1,25 @@
+<div class="border-0 bg-white shadow-sm px-3 py-2 mb-1 d-flex align-items-center task-item <%= 'opacity-50' if task.completed %>" data-task-id="<%= task.id %>">
+  <div class="flex-grow-1 d-flex align-items-center">
+    <span onclick="toggleTaskCompletion(event, <%= task.id %>)" class="toggle-completion">
+      <i class="fs-6 bi <%= task.completed ? 'bi-check-circle-fill' : 'bi-circle' %> <%= priority_class task %> me-2"></i>
+    </span>
+    <%= task.name %>
+  </div>
+  <div class="ms-3 d-flex align-items-center">
+    <% if task.due_date %>
+      <% if task.due_date.to_date == Date.today %>
+        <span class="badge bg-success rounded-pill ms-2">
+          <i class="bi bi-calendar me-2"></i> TODAY
+        </span>
+      <% elsif task.due_date && task.due_date.to_date < Date.today %>
+        <span class="badge bg-danger rounded-pill ms-2">
+          <i class="bi bi-calendar me-2"></i> <%= task.due_date.strftime("%Y-%m-%d") %>
+        </span>
+      <% else %>
+        <span class="badge bg-info rounded-pill ms-2">
+          <i class="bi bi-clock me-2"></i> <%= task.due_date.strftime("%Y-%m-%d") %>
+        </span>
+      <% end %>
+    <% end %>
+  </div>
+</div>

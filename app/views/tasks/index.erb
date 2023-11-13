@@ -1,0 +1,40 @@
+<%= partial :'tasks/_header' %>
+
+<div class="bg-light py-2 px-3 mx-3 d-flex align-items-center border" data-bs-toggle="collapse" data-bs-target="#newTaskForm" aria-expanded="false" aria-controls="newTaskForm" style="cursor: pointer;">
+  <i class="fs-4 bi bi-plus-circle-fill text-primary me-2"></i> <span class="fs-6">New task</span>
+</div>
+<div class="collapse" id="newTaskForm">
+  <div class="card border-0 bg-white shadow-sm mt-2 p-4 mx-3">
+    <%= partial :'tasks/_form', locals: { task: Task.new } %>
+  </div>
+</div>
+<div class="mx-3 my-2">
+  <% if @tasks.any? %>
+    <% @tasks.each do |task| %>
+      <div id="edit_task_form_<%= task.id %>" class="d-none">
+        <%= partial :'tasks/_form', locals: { task: task } %>
+      </div>
+      <%= partial :'tasks/_task', locals: { task: task } %>
+    <% end %>
+  <% end %>
+</div>
+<div class="mx-3 my-2">
+  <% if @projects_with_tasks.any? %>
+    <% @projects_with_tasks.each do |project| %>
+      <% if project.tasks.any? %>
+        <h5 class="mt-4 ms-4 mb-2">
+          <div class="px-2 py-1 mb-1 border border-dark d-inline-block"><%= project.name.upcase %></div>
+        </h5>
+        <% project.tasks.each do |task| %>
+          <div id="edit_task_form_<%= task.id %>" class="d-none">
+            <%= partial :'tasks/_form', locals: { task: task } %>
+          </div>
+          <div class="ms-4">
+            <%= partial :'tasks/_task', locals: { task: task } %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+<%= partial :'tasks/_edit_task_modal' %>

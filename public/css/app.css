@@ -1,0 +1,76 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+}
+
+h1 {
+  font-size: 1.875rem;
+}
+
+h2 {
+  font-size: 1.625rem;
+}
+
+h3 {
+  font-size: 1.375rem;
+}
+
+h4 {
+  font-size: 1.125rem;
+}
+
+h5 {
+  font-size: 0.925rem;
+}
+
+h6 {
+  font-size: 0.825rem;
+}
+
+.dropdown-menu,
+.btn,
+.form-control,
+.form-select {
+  font-size: 0.85rem;
+  padding: .375rem .75rem;
+}
+
+.btn-lg {
+  font-size: 0.95rem;
+  padding: .5rem 1rem;
+}
+
+.btn-sm {
+  font-size: 0.75rem;
+  padding: .25rem .5rem;
+}
+
+.task-item:hover {
+  cursor: pointer;
+}
+
+/* sidebar */
+.area-item .area-options {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.area-item:hover .area-options {
+  visibility: visible;
+  opacity: 1;
+}
+
+.fixed-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* main */
+
+.main-content {
+  margin-left: 300px;
+}

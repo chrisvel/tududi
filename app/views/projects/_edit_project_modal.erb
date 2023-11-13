@@ -1,0 +1,13 @@
+<div class="modal modal-lg fade" id="editProjectModal" tabindex="-1" aria-labelledby="editProjectModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editProjectModalLabel">Edit Project</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= partial :'projects/_form', locals: { project: @project, form_action: "/project/#{@project.id}", form_id: 'editProjectForm' } %>
+      </div>
+    </div>
+  </div>
+</div>

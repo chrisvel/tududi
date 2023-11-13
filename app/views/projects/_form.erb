@@ -1,0 +1,28 @@
+<% form_action ||= "/projects/#{project.id}" %>
+<% form_id ||= 'projectForm' %>
+<% form_method = project.new_record? ? 'post' : 'patch' %>
+<form id="<%= form_id %>" action="<%= form_action %>" method="post">
+  <% unless project.new_record? %>
+    <input type="hidden" name="_method" value="<%= form_method %>">
+  <% end %>
+  <div class="mb-3">
+    <label for="projectName" class="form-label">Project Name:</label>
+    <input type="text" class="form-control" id="projectName" name="name" value="<%= project.name %>" required>
+  </div>
+  <div class="mb-3">
+    <label for="projectDescription" class="form-label">Description:</label>
+    <textarea class="form-control" id="projectDescription" name="description" rows="3"><%= project.description %></textarea>
+  </div>
+  <div class="mb-3">
+    <label for="projectArea" class="form-label">Area (optional):</label>
+    <select class="form-select" id="projectArea" name="area_id">
+      <option value="">No Area</option>
+      <% current_user.areas.each do |area| %>
+        <option value="<%= area.id %>" <%= 'selected' if project.area_id == area.id %>><%= area.name %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="">
+      <button type="submit" class="btn btn-primary"><%= project.new_record? ? 'Create Project' : 'Update Project' %></button>
+    </div>
+  </form>
