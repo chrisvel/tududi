@@ -80,8 +80,6 @@ helpers do
 end
 
 get '/' do
-  redirect '/inbox' if logged_in?
-
   erb :inbox
 end
 

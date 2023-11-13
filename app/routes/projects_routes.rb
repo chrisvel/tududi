@@ -13,7 +13,10 @@ class Sinatra::Application
   end
 
   post '/project/create' do
-    project = current_user.projects.new(name: params[:name], area_id: params[:area_id].presence)
+    project = current_user.projects.new(
+      name: params[:name], 
+      description: params[:description],
+      area_id: params[:area_id].presence)
 
     if project.save
       redirect '/'
