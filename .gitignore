@@ -2,3 +2,4 @@
 *.sqlite3-shm
 *.sqlite3-wal
 certs/
+.DS_Store
