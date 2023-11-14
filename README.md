@@ -83,6 +83,36 @@ To start the application, run the following command in your terminal:
 puma -C app/config/puma.rb
 ```
 
+### Docker 
+
+In order to start the docker container you need 3 enviromental variables:
+
+```bash
+TUDUDI_USER_EMAIL
+TUDUDI_USER_PASSWORD
+TUDUDI_SESSION_SECRET
+```
+
+**PLEASE NOTE:** I am generating a new SSL certificate inside the Dockerfile. There will be an option to create and link an externally generated one in the future - at this stage I am doing this for simplicity.
+
+1. Create a random session secret and copy the hash to use it as a `TUDUDI_SESSION_SECRET`:
+    ```bash
+    openssl rand -hex 64
+    ```
+
+2. Run the docker command with your produced hash at the previous step:
+    ```bash
+    docker run -e TUDUDI_USER_EMAIL=myemail@example.com 
+    -e TUDUDI_USER_PASSWORD=mysecurepassword  
+    -e TUDUDI_SESSION_SECRET=3337c138d17ac7acefa412e5db0d7ef6540905b198cc28c5bf0d11e48807a71bdfe48d82ed0a0a6eb667c937cbdd1db3e1e6073b3148bff37f73cc6398a39671 
+    -v ~/tududi_db:/db 
+    -p 9292:9292 
+    -d tududi
+    ```
+
+3. Navigate to https://localhost:9292 and fill in your email and password.
+4. Enjoy
+
 ### Testing 
 
 To run tests:

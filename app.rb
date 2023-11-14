@@ -25,9 +25,16 @@ set :public_folder, 'public'
 configure do
   enable :sessions
   set :sessions, httponly: true, secure: production?, expire_after: 2_592_000
-  set :session_secret, ENV.fetch('SESSION_SECRET') { SecureRandom.hex(64) }
-  set :session_secret,
-      '740cca863278d6cbacb64dbdd41cfdb1598e8208ce9b9d29b0a1e7c1e1367ca1241d8048849ee88784731d43879c94f5b9f0a639135828d590a447acb2d98e1c'
+  set :session_secret, ENV.fetch('TUDUDI_SESSION_SECRET') { SecureRandom.hex(64) }
+
+  # Auto-create user if not exists
+  if ENV['TUDUDI_USER_EMAIL'] && ENV['TUDUDI_USER_PASSWORD']
+    user = User.find_or_initialize_by(email: ENV['TUDUDI_USER_EMAIL'])
+    if user.new_record?
+      user.password = ENV['TUDUDI_USER_PASSWORD']
+      user.save
+    end
+  end
 end
 
 use Rack::Protection
