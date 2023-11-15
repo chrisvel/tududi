@@ -6,6 +6,7 @@ require './app/models/user'
 require './app/models/area'
 require './app/models/project'
 require './app/models/task'
+require './app/models/tag'
 
 require './app/helpers/authentication_helper'
 
@@ -91,5 +92,7 @@ get '/' do
 end
 
 get '/inbox' do
+  @tasks = current_user.tasks.incomplete.where(project_id: nil).order(:name)
+
   erb :inbox
 end

@@ -4,6 +4,6 @@
   <h2 class="mb-5"><i class="bi bi-calendar3 ms-3 me-2"></i> Upcoming</h2>
 <% elsif params[:due_date] == 'never' %>
   <h2 class="mb-5"><i class="bi bi-moon-stars-fill ms-3 me-2"></i> Someday</h2>
-<% elsif params[:due_date] == 'anytime' %>
-  <h2 class="mb-5"><i class="bi bi-sun-fill ms-3 me-2"></i> Anytime</h2>
+<% elsif params[:status] == 'completed' %>
+  <h2 class="mb-5"><i class="bi bi-check-circle ms-3 me-2"></i> Completed</h2>
 <% end %>

@@ -1,26 +1,45 @@
 class Sinatra::Application
+  def update_task_tags(task, tags_json)
+    return if tags_json.blank?
+
+    begin
+      tag_names = JSON.parse(tags_json).map { |tag| tag['value'] }.uniq
+      tags = tag_names.map do |name|
+        current_user.tags.find_or_create_by(name: name)
+      end
+      task.tags = tags
+    rescue JSON::ParserError
+      puts "Failed to parse JSON for tags: #{tags_json}"
+    end
+  end
+
   get '/tasks' do
     case params[:due_date]
     when 'today'
       today = Date.today
-      @tasks = current_user.tasks.where(due_date: today.beginning_of_day..today.end_of_day, project: nil)
-      @projects_with_tasks = current_user.projects
-                                         .joins(:tasks)
-                                         .where(tasks: { due_date: today.beginning_of_day..today.end_of_day })
+      @tasks = current_user.tasks.incomplete.where('due_date <= ?', today.end_of_day).where(project: nil)
+
+      @projects_with_tasks = current_user.projects.with_incomplete_tasks
+                                         .where('tasks.due_date <= ?', today.end_of_day)
                                          .distinct.order('projects.name ASC')
 
     when 'upcoming'
       one_week_from_today = Date.today + 7.days
-      @tasks = current_user.tasks.where(due_date: Date.today..one_week_from_today, project: nil)
-      @projects_with_tasks = current_user.projects.includes(:tasks).where(tasks: { due_date: Date.today..one_week_from_today }).order('projects.name ASC')
+      @tasks = current_user.tasks.incomplete.where(due_date: Date.today..one_week_from_today, project: nil)
+      @projects_with_tasks = current_user.projects.with_incomplete_tasks.includes(:tasks).where(tasks: { due_date: Date.today..one_week_from_today }).order('projects.name ASC')
 
     when 'never'
-      @tasks = current_user.tasks.where(due_date: nil, project: nil)
-      @projects_with_tasks = current_user.projects.includes(:tasks).where(tasks: { due_date: nil }).order('projects.name ASC')
+      @tasks = current_user.tasks.incomplete.where(due_date: nil, project: nil)
+      @projects_with_tasks = current_user.projects.with_incomplete_tasks.includes(:tasks).where(tasks: { due_date: nil }).order('projects.name ASC')
 
     else
-      @tasks = current_user.tasks.where(project: nil)
-      @projects_with_tasks = current_user.projects.includes(:tasks).order('projects.name ASC')
+      if params[:status] == 'completed'
+        @tasks = current_user.tasks.complete.where(project: nil)
+        @projects_with_tasks = current_user.projects.with_complete_tasks.includes(:tasks).order('projects.name ASC')
+      else
+        @tasks = current_user.tasks.incomplete.where(project: nil)
+        @projects_with_tasks = current_user.projects.with_incomplete_tasks.includes(:tasks).order('projects.name ASC')
+      end
     end
 
     @tasks ||= []
@@ -46,6 +65,7 @@ class Sinatra::Application
     end
 
     if task.save
+      update_task_tags(task, params[:tags])
       redirect request.referrer || '/'
     else
       halt 400, 'There was a problem creating the task.'
@@ -72,6 +92,7 @@ class Sinatra::Application
     end
 
     if task.update(task_attributes)
+      update_task_tags(task, params[:tags])
       redirect request.referrer || '/'
     else
       halt 400, 'There was a problem updating the task.'
@@ -80,7 +101,7 @@ class Sinatra::Application
 
   patch '/task/:id/toggle_completion' do
     content_type :json
-    task = current_user.tasks.find(params[:id])
+    task = current_user.tasks.find_by(id: params[:id])
     if task
       task.completed = !task.completed
       if task.save

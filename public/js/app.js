@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   attachEventListeners();
+  new Tagify(document.getElementById('task_tags'));
 });
 
 function attachEventListeners() {
@@ -17,10 +18,13 @@ function attachCollapseListeners() {
 }
 
 function toggleFolderIcon(collapseElement, isOpening) {
-  const closedFolderIcon = collapseElement.previousElementSibling.querySelector('.bi-folder');
-  const openFolderIcon = collapseElement.previousElementSibling.querySelector('.bi-folder2-open');
-  closedFolderIcon.classList.toggle('d-none', isOpening);
-  openFolderIcon.classList.toggle('d-none', !isOpening);
+  const closedFolderIcon = collapseElement.previousElementSibling?.querySelector('.bi-folder');
+  const openFolderIcon = collapseElement.previousElementSibling?.querySelector('.bi-folder2-open');
+
+  if (closedFolderIcon && openFolderIcon) {
+    closedFolderIcon.classList.toggle('d-none', isOpening);
+    openFolderIcon.classList.toggle('d-none', !isOpening);
+  }
 }
 
 function attachTaskClickListeners() {
@@ -40,9 +44,14 @@ function openEditTaskModal(taskId) {
     return;
   }
   const formHtml = formContainer.innerHTML;
-  document.getElementById('editTaskFormContainer').innerHTML = formHtml;
+  const editTaskFormContainer = document.getElementById('editTaskFormContainer');
+  editTaskFormContainer.innerHTML = formHtml;
+
+  new Tagify(editTaskFormContainer.querySelector('#task_tags'));
+
   new bootstrap.Modal(document.getElementById('editTaskModal')).show();
 }
+
 
 function attachProjectModalListeners() {
   document.querySelectorAll('[data-bs-toggle="modal"][data-project-id]').forEach(button => {
@@ -152,13 +161,16 @@ function updateTaskCompletionStatus(taskId, data) {
     taskIcon.classList.remove('bi-circle', 'text-warning', 'text-danger');
     taskIcon.classList.add('bi-check-circle-fill', 'text-success');
     taskDiv.classList.add('opacity-50');
+
   } else {
     taskIcon.classList.remove('bi-check-circle-fill', 'text-success');
     taskIcon.classList.add('bi-circle');
     taskDiv.classList.remove('opacity-50');
     applyPriorityColor(taskIcon, data.priority);
   }
+  setTimeout(() => taskDiv.remove(), 200);
 }
+
 
 function applyPriorityColor(taskIcon, priority) {
   taskIcon.classList.remove('text-warning', 'text-danger', 'text-secondary');

@@ -8,7 +8,7 @@
     <%= partial :'tasks/_form', locals: { task: Task.new } %>
   </div>
 </div>
-<div class="mx-3 my-2">
+<div class="mx-3 mt-4 mb-4">
   <% if @tasks.any? %>
     <% @tasks.each do |task| %>
       <div id="edit_task_form_<%= task.id %>" class="d-none">
