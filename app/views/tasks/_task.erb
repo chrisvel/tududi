@@ -7,6 +7,13 @@
       <%= task.name %>
     </div>
     <div class="col-md-3">
+      <% task.tags.each do |tag| %>
+        <span class="badge bg-primary-subtle text-primary rounded">
+          <%= tag.name %>
+        </span>
+      <% end %>
+    </div>
+    <div class="col-md-3">
       <% if task.due_date %>
         <% if task.due_date.to_date == Date.today %>
           <span class="badge bg-primary rounded">

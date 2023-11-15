@@ -11,7 +11,7 @@
   <% if @projects_with_tasks.any? %>
     <% @projects_with_tasks.each do |project| %>
       <% if project.tasks.any? %>
-        <h5 class="mt-4 ms-4 mb-2">
+        <h5 class="mt-4 mb-2">
           <div class="px-2 py-1 mb-1 border border-dark d-inline-block"><%= project.name.upcase %></div>
         </h5>
         <% project.tasks.each do |task| %>
