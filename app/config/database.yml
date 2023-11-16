@@ -14,4 +14,4 @@ test:
 
 production:
   <<: *default
-  database: db/production.sqlite3
+  database: tududi_db/production.sqlite3

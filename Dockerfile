@@ -10,6 +10,8 @@ RUN bundle config set without 'development test' && bundle install
 
 COPY . .
 
+RUN rm -f db/development*
+
 EXPOSE 9292
 
 ENV RACK_ENV=production
@@ -17,6 +19,4 @@ ENV RACK_ENV=production
 RUN mkdir -p certs && \
     openssl req -x509 -newkey rsa:4096 -keyout certs/server.key -out certs/server.crt -days 365 -nodes -subj '/CN=localhost'
 
-RUN rake db:migrate
-
-CMD ["puma", "-C", "app/config/puma.rb"]
+CMD rake db:migrate; puma -C app/config/puma.rb
