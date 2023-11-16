@@ -29,7 +29,7 @@ configure do
   set :session_secret, ENV.fetch('TUDUDI_SESSION_SECRET') { SecureRandom.hex(64) }
 
   # Auto-create user if not exists
-  if ENV['TUDUDI_USER_EMAIL'] && ENV['TUDUDI_USER_PASSWORD']
+  if ENV['TUDUDI_USER_EMAIL'] && ENV['TUDUDI_USER_PASSWORD'] && ActiveRecord::Base.connection.table_exists?('users')
     user = User.find_or_initialize_by(email: ENV['TUDUDI_USER_EMAIL'])
     if user.new_record?
       user.password = ENV['TUDUDI_USER_PASSWORD']
