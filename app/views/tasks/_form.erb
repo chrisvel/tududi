@@ -7,8 +7,9 @@
   <fieldset>
     <div class="row mb-3">
       <div class="col-md-12">
-        <label for="task_name" class="form-label">Task:</label>
-        <input type="text" id="task_name" name="name" value="<%= task.name %>" class="form-control" required>
+        <div class="input-group input-group-lg">
+          <input type="text" id="task_name" name="name" value="<%= task.name %>" class="form-control" placeholder="+ Add Task" required>
+        </div>
       </div>
     </div>
     <div class="row mb-3">
@@ -19,12 +20,12 @@
           <% current_user.projects.each do |project| %>
             <option value="<%= project.id %>" <%= 'selected' if task.project_id == project.id %>><%= project.name %></option>
             <% end %>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label for="task_priority" class="form-label">Priority:</label>
-          <select id="task_priority" name="priority" class="form-select">
-            <option value="Low" <%= 'selected' if task.priority == 'Low' %>>Low</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="task_priority" class="form-label">Priority:</label>
+        <select id="task_priority" name="priority" class="form-select">
+          <option value="Low" <%= 'selected' if task.priority == 'Low' %>>Low</option>
           <option value="Medium" <%= 'selected' if task.priority == 'Medium' %>>Medium</option>
           <option value="High" <%= 'selected' if task.priority == 'High' %>>High</option>
         </select>
@@ -32,36 +33,35 @@
       <div class="col-md-4">
         <label for="task_due_date" class="form-label">Due Date:</label>
         <input type="date" id="task_due_date" name="due_date" value="<%= task.due_date.strftime('%Y-%m-%d') if task.due_date %>" class="form-control">
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-md-12">
-              <label for="task_tags" class="form-label">Tags:</label>
-              <input name="tags" id="task_tags" class="form-control" value="<%= task.tags&.map(&:name)&.join(',') %>">
-            </div>
-          </div>
-          <div class="mt-4">
-            <button type="submit" class="btn btn-primary">
-              <%= task.new_record? ? 'Create Task' : 'Update Task' %>
-            </button>
-            <% unless task.new_record? %>
-              <button type="button" class="btn btn-outline-danger" onclick="deleteTask('<%= task.id %>')">
-                <i class="bi bi-trash"></i>
-              </button>
-            <% end %>
-          </div>
-        </fieldset>
-      </form>
-      <% if !task.new_record? %>
-        <form id="delete_task_<%= task.id %>" action="/task/<%= task.id %>" method="post" class="d-none">
-          <input type="hidden" name="_method" value="delete">
-        </form>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <input name="tags" id="task_tags" class="form-control" value="<%= task.tags&.map(&:name)&.join(',') %>" placeholder="Add Tags">
+      </div>
+    </div>
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary">
+        <%= task.new_record? ? 'Create Task' : 'Update Task' %>
+      </button>
+      <% unless task.new_record? %>
+        <button type="button" class="btn btn-outline-danger" onclick="deleteTask('<%= task.id %>')">
+          <i class="bi bi-trash"></i>
+        </button>
       <% end %>
-      <script>        
-        function deleteTask(taskId) {
-          if (confirm('Are you sure you want to delete this task?')) {
-            var form = document.getElementById('delete_task_' + taskId);
-            form.submit();
-          }
-        }
-      </script>
+    </div>
+  </fieldset>
+</form>
+<% if !task.new_record? %>
+  <form id="delete_task_<%= task.id %>" action="/task/<%= task.id %>" method="post" class="d-none">
+    <input type="hidden" name="_method" value="delete">
+  </form>
+<% end %>
+<script>
+  function deleteTask(taskId) {
+    if (confirm('Are you sure you want to delete this task?')) {
+      var form = document.getElementById('delete_task_' + taskId);
+      form.submit();
+    }
+  }
+</script>

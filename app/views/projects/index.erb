@@ -3,25 +3,33 @@
   <i class="fs-4 bi bi-plus-circle-fill text-primary me-2"></i> <span class="fs-6">New task</span>
 </div>
 <div class="collapse" id="newTaskForm">
-  <div class="card bg-white shadow-sm border-0 p-4">
+  <div class="card bg-white shadow-sm border-0 mt-2 p-4 mx-3">
     <%= partial :'tasks/_form', locals: { task: Task.new } %>
   </div>
 </div>
 <div class="mx-3 my-2">
   <% if @projects_with_tasks.any? %>
     <% @projects_with_tasks.each do |project| %>
+      <h5 class="mt-4 mb-2">
+        <a class="px-2 py-1 btn btn-outline-dark rounded-0 d-inline-block" href="/project/<%= project.id %>">
+          <%= project.name.upcase %>
+        </a>
+      </h5>
       <% if project.tasks.any? %>
-        <h5 class="mt-4 mb-2">
-          <div class="px-2 py-1 mb-1 border border-dark d-inline-block"><%= project.name.upcase %></div>
-        </h5>
-        <% project.tasks.each do |task| %>
-          <div id="edit_task_form_<%= task.id %>" class="d-none">
-            <%= partial :'tasks/_form', locals: { task: task } %>
-          </div>
-          <div class="">
-            <%= partial :'tasks/_task', locals: { task: task } %>
-          </div>
-        <% end %>
+        <div class="mb-4">
+          <% project.tasks.each do |task| %>
+            <div id="edit_task_form_<%= task.id %>" class="d-none">
+              <%= partial :'tasks/_form', locals: { task: task } %>
+            </div>
+            <div class="">
+              <%= partial :'tasks/_task', locals: { task: task } %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
+          No tasks have been created yet for this project
+        </div>
       <% end %>
     <% end %>
   <% end %>

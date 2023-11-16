@@ -112,7 +112,7 @@ TUDUDI_SESSION_SECRET
     -e TUDUDI_USER_EMAIL=myemail@example.com \
     -e TUDUDI_USER_PASSWORD=mysecurepassword \
     -e TUDUDI_SESSION_SECRET=3337c138d17ac7acefa412e5db0d7ef6540905b198cc28c5bf0d11e48807a71bdfe48d82ed0a0a6eb667c937cbdd1db3e1e6073b3148bff37f73cc6398a39671 \
-    -v ~/tududi_db:/db \
+    -v ~/tududi_db:/usr/src/app/db \
     -p 9292:9292 \
     -d chrisvel/tududi:0.5
     ```

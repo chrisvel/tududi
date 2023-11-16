@@ -78,3 +78,10 @@ h6 {
 .login-content {
   margin-left: 200px;
 }
+
+/* task form */
+
+#task_name::placeholder {
+  color: #ccc;
+  opacity: 1; /* Firefox */
+}

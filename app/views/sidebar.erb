@@ -3,14 +3,14 @@
   </a>
   <hr>
   <ul class="nav nav-pills flex-column">
-    <li class="nav-item">
-      <a href="/inbox" class="<%= nav_link('/inbox') %>" aria-current="page">
-        <i class="bi bi-inbox-fill me-1"></i> Inbox
-      </a>
-    </li>
     <li>
       <a href="/tasks?due_date=today" class="<%= nav_link('/tasks', 'due_date' => 'today') %>">
         <i class="bi bi-calendar-day-fill me-1"></i> Today
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/inbox" class="<%= nav_link('/inbox') %>" aria-current="page">
+        <i class="bi bi-inbox-fill me-1"></i> Inbox
       </a>
     </li>
     <li>
