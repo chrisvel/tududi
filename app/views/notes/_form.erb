@@ -7,7 +7,14 @@
   <fieldset>
     <div class="row mb-3">
       <div class="col-md-12">
-        <textarea id="note_content_<%= note.id %>" name="content" class="form-control" rows="5" placeholder="Note content..."><%= note.content %></textarea>
+        <div class="input-group input-group-lg">
+          <input type="text" id="note_name_<%= note.id %>" name="title" value="<%= note.title %>" class="form-control" placeholder="+ Add Title" required>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <textarea rows="10" id="note_content_<%= note.id %>" name="content" class="form-control no-focus-outline" rows="5" placeholder="Note content..."><%= note.content %></textarea>
       </div>
     </div>
     <div class="row mb-3">
@@ -36,6 +43,7 @@
 <script>
   function deleteNote(noteId) {
     if (confirm('Are you sure you want to delete this note?')) {
+      event.preventDefault();
       var form = document.getElementById('delete_note_' + noteId);
       form.submit();
     }

@@ -13,15 +13,16 @@
       <tr>
         <th scope="col">Content</th>
         <th scope="col">Tags</th>
-        <th scope="col">Actions</th>
       </tr>
     </thead>
     <tbody>
       <% current_user.notes.each do |note| %>
         <tr>
-          <td>
+          <td class="w-50">
             <div class="note-item" data-note-id="<%= note.id %>">
-              <%= note.content %>
+              <a href="#" class="link-secondary  fs-5 text-decoration-none">
+                <%= note.title %>
+              </a>
             </div>
             <div id="edit_note_form_<%= note.id %>" class="d-none">
               <%= partial :'notes/_form', locals: { note: note } %>
@@ -29,10 +30,8 @@
           </td>
           <td>
             <% note.tags.each do |tag| %>
-              <span class="badge bg-secondary"><%= tag.name %></span>
+              <span class="badge bg-primary-subtle text-primary"><%= tag.name %></span>
             <% end %>
-          </td>
-          <td>
           </td>
         </tr>
       <% end %>

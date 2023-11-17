@@ -85,3 +85,10 @@ h6 {
   color: #ccc;
   opacity: 1; /* Firefox */
 }
+
+/* note form */
+
+.no-focus-outline textarea:focus,
+.no-focus-outline textarea:-moz-focusring {
+  outline: none !important;
+}

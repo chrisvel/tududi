@@ -20,6 +20,7 @@ class Sinatra::Application
 
   post '/note/create' do
     note_attributes = {
+      title: params[:title],
       content: params[:content],
       user_id: current_user.id
     }
@@ -39,6 +40,7 @@ class Sinatra::Application
     halt 404, 'Note not found.' unless note
 
     note_attributes = {
+      title: params[:title],
       content: params[:content]
     }
 
@@ -54,8 +56,8 @@ class Sinatra::Application
     note = current_user.notes.find_by(id: params[:id])
     halt 404, 'Note not found.' unless note
 
-    if note.destroy
-      redirect request.referrer || '/'
+    if note.destroy!
+      redirect '/notes'
     else
       halt 400, 'There was a problem deleting the note.'
     end
