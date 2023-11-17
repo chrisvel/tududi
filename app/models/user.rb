@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
   has_many :projects
   has_many :tasks
   has_many :tags, dependent: :destroy
+  has_many :notes, dependent: :destroy
 
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }, uniqueness: true
 end

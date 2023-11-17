@@ -10,13 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_15_092055) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_16_120633) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_areas_on_user_id"
+  end
+
+  create_table "notes", force: :cascade do |t|
+    t.text "content"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_notes_on_user_id"
+  end
+
+  create_table "notes_tags", id: false, force: :cascade do |t|
+    t.integer "note_id", null: false
+    t.integer "tag_id", null: false
+    t.index ["note_id"], name: "index_notes_tags_on_note_id"
+    t.index ["tag_id"], name: "index_notes_tags_on_tag_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -69,6 +84,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_15_092055) do
   end
 
   add_foreign_key "areas", "users"
+  add_foreign_key "notes", "users", on_delete: :cascade
   add_foreign_key "projects", "areas", on_delete: :cascade
   add_foreign_key "projects", "users"
   add_foreign_key "tags", "users", on_delete: :cascade

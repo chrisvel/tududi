@@ -5,4 +5,6 @@ class Project < ActiveRecord::Base
 
   scope :with_incomplete_tasks, -> { joins(:tasks).where(tasks: { completed: false }).distinct }
   scope :with_complete_tasks, -> { joins(:tasks).where(tasks: { completed: true }).distinct }
+
+  validates :name, presence: true
 end

@@ -1,6 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
   attachEventListeners();
-  new Tagify(document.getElementById('task_tags'));
+  if (document.getElementById('task_tags_')) {
+    new Tagify(document.getElementById('task_tags_'));
+  }
+  if (document.getElementById('note_tags_')) {
+    new Tagify(document.getElementById('note_tags_'));
+  }
 });
 
 function attachEventListeners() {
@@ -8,6 +13,7 @@ function attachEventListeners() {
   attachTaskClickListeners();
   attachProjectModalListeners();
   attachAreaModalListeners();
+  attachNoteClickListeners();
 }
 
 function attachCollapseListeners() {
@@ -47,16 +53,38 @@ function openEditTaskModal(taskId) {
   const editTaskFormContainer = document.getElementById('editTaskFormContainer');
   editTaskFormContainer.innerHTML = formHtml;
 
-  new Tagify(editTaskFormContainer.querySelector('#task_tags'));
+  new Tagify(editTaskFormContainer.querySelector('#task_tags_' + taskId));
 
   new bootstrap.Modal(document.getElementById('editTaskModal')).show();
 }
-
 
 function attachProjectModalListeners() {
   document.querySelectorAll('[data-bs-toggle="modal"][data-project-id]').forEach(button => {
     button.addEventListener('click', () => openProjectModalForEdit(button.getAttribute('data-project-id')));
   });
+}
+
+function attachNoteClickListeners() {
+  document.querySelectorAll('.note-item').forEach(noteElement => {
+    noteElement.addEventListener('click', event => {
+      openEditNoteModal(noteElement.dataset.noteId);
+    });
+  });
+}
+
+function openEditNoteModal(noteId) {
+  const formContainer = document.getElementById('edit_note_form_' + noteId);
+  if (!formContainer) {
+    console.error('Edit form not found for note: ' + noteId);
+    return;
+  }
+  const formHtml = formContainer.innerHTML;
+  const editNoteFormContainer = document.getElementById('editNoteFormContainer');
+  editNoteFormContainer.innerHTML = formHtml;
+
+  new Tagify(editNoteFormContainer.querySelector('#note_tags_' + noteId));
+
+  new bootstrap.Modal(document.getElementById('editNoteModal')).show();
 }
 
 function openProjectModalForEdit(projectId) {
@@ -141,15 +169,15 @@ function toggleTaskCompletion(event, taskId) {
   event.stopPropagation();
   fetch('/task/' + taskId + '/toggle_completion', {
     method: 'PATCH',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({_method: 'patch'})
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ _method: 'patch' })
   })
-  .then(response => {
-    if (!response.ok) throw new Error('Network response was not ok');
-    return response.json();
-  })
-  .then(data => updateTaskCompletionStatus(taskId, data))
-  .catch(error => console.error('There has been a problem with your fetch operation:', error));
+    .then(response => {
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    })
+    .then(data => updateTaskCompletionStatus(taskId, data))
+    .catch(error => console.error('There has been a problem with your fetch operation:', error));
 }
 
 function updateTaskCompletionStatus(taskId, data) {
@@ -171,7 +199,6 @@ function updateTaskCompletionStatus(taskId, data) {
   setTimeout(() => taskDiv.remove(), 200);
 }
 
-
 function applyPriorityColor(taskIcon, priority) {
   taskIcon.classList.remove('text-warning', 'text-danger', 'text-secondary');
   switch (priority) {
@@ -185,6 +212,3 @@ function applyPriorityColor(taskIcon, priority) {
       taskIcon.classList.add('text-secondary');
   }
 }
-
-
-

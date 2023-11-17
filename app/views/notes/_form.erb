@@ -1,0 +1,43 @@
+<% action_url = note.new_record? ? '/note/create' : "/note/#{note.id}" %>
+<% method = note.new_record? ? 'post' : 'patch' %>
+<form action="<%= action_url %>" method="post" class="">
+  <% unless note.new_record? %>
+    <input type="hidden" name="_method" value="<%= method %>">
+  <% end %>
+  <fieldset>
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <textarea id="note_content_<%= note.id %>" name="content" class="form-control" rows="5" placeholder="Note content..."><%= note.content %></textarea>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <input name="tags" id="note_tags_<%= note.id %>" class="form-control" value="<%= note.tags&.map(&:name)&.join(',') %>" placeholder="Add Tags">
+      </div>
+    </div>
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary">
+        <%= note.new_record? ? 'Create Note' : 'Update Note' %>
+      </button>
+      <% unless note.new_record? %>
+        <button type="submit" class="btn btn-outline-danger" onclick="deleteNote('<%= note.id %>')">
+          <i class="bi bi-trash"></i>
+        </button>
+      <% end %>
+    </div>
+  </fieldset>
+</form>
+
+<% if !note.new_record? %>
+  <form id="delete_note_<%= note.id %>" action="/note/<%= note.id %>" method="post" class="d-none">
+    <input type="hidden" name="_method" value="delete">
+  </form>
+<% end %>
+<script>
+  function deleteNote(noteId) {
+    if (confirm('Are you sure you want to delete this note?')) {
+      var form = document.getElementById('delete_note_' + noteId);
+      form.submit();
+    }
+  }
+</script>
