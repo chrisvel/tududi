@@ -17,14 +17,14 @@
       </tr>
     </thead>
     <tbody>
-      <% @notes.each do |note| %>
-        <div id="edit_note_form_<%= note.id %>" class="d-none">
-          <%= partial :'notes/_form', locals: { note: note } %>
-        </div>
+      <% current_user.notes.each do |note| %>
         <tr>
           <td>
             <div class="note-item" data-note-id="<%= note.id %>">
               <%= note.content %>
+            </div>
+            <div id="edit_note_form_<%= note.id %>" class="d-none">
+              <%= partial :'notes/_form', locals: { note: note } %>
             </div>
           </td>
           <td>
