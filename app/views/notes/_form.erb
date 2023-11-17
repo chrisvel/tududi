@@ -14,6 +14,17 @@
     </div>
     <div class="row mb-3">
       <div class="col-md-12">
+        <label for="note_project" class="form-label">Project (optional):</label>
+        <select id="note_project_<%= note.id %>" name="project_id" class="form-select">
+          <option value="">No Project</option>
+          <% current_user.projects.each do |project| %>
+            <option value="<%= project.id %>" <%= 'selected' if note.project_id == project.id %>><%= project.name %></option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-12">
         <textarea rows="10" id="note_content_<%= note.id %>" name="content" class="form-control no-focus-outline" rows="5" placeholder="Note content..."><%= note.content %></textarea>
       </div>
     </div>
@@ -34,7 +45,6 @@
     </div>
   </fieldset>
 </form>
-
 <% if !note.new_record? %>
   <form id="delete_note_<%= note.id %>" action="/note/<%= note.id %>" method="post" class="d-none">
     <input type="hidden" name="_method" value="delete">

@@ -1,37 +1,40 @@
 <h2 class="mb-5"><i class="bi bi-hexagon ms-3 me-2"></i><%= @project.name.upcase %>
-<div class="dropdown d-inline-block">
-  <button class="btn btn-link text-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-    <i class="bi bi-three-dots-vertical fs-6"></i>
-  </button>
-  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <li>
-      <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProjectModal" data-project-id="<%= @project.id %>">
-        Edit
-      </a>
-    </li>
-    <li>
-      <% if @project %>
-        <form id="delete_project_<%= @project.id %>" action="/project/<%= @project.id %>" method="post" class="d-none">
-          <input type="hidden" name="_method" value="delete">
-        </form>
-      <% end %>
-      <a class="dropdown-item" href="#" onclick="deleteProject('<%= @project.id %>')">Delete</a>
-    </li>
-  </ul>
-</div></h2>
+  <div class="dropdown d-inline-block">
+    <button class="btn btn-link text-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-three-dots-vertical fs-6"></i>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <li>
+        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProjectModal" data-project-id="<%= @project.id %>">
+          Edit
+        </a>
+      </li>
+      <li>
+        <% if @project %>
+          <form id="delete_project_<%= @project.id %>" action="/project/<%= @project.id %>" method="post" class="d-none">
+            <input type="hidden" name="_method" value="delete">
+          </form>
+        <% end %>
+        <a class="dropdown-item" href="#" onclick="deleteProject('<%= @project.id %>')">Delete</a>
+      </li>
+    </ul>
+  </div>
+</h2>
 <% unless @project.description.blank? %>
   <div class="bg-secondary-subtle px-4 py-3 mb-4 mx-3 rounded">
     <%= @project.description %>
   </div>
 <% end %>
-<div class="bg-light py-2 mb-4 px-3 mx-3 d-flex align-items-center border" data-bs-toggle="collapse" data-bs-target="#newTaskForm" aria-expanded="false" aria-controls="newTaskForm" style="cursor: pointer;">
+<div class="bg-light py-2 px-3 mx-3 d-flex align-items-center border" data-bs-toggle="collapse" data-bs-target="#newTaskForm" aria-expanded="false" aria-controls="newTaskForm" style="cursor: pointer;">
   <i class="fs-4 bi bi-plus-circle-fill text-primary me-2"></i> <span class="fs-6">New task</span>
 </div>
 <div class="collapse" id="newTaskForm">
-  <div class="card border-0 bg-white shadow-sm mt-2 p-4 mx-3">
+  <div class="card border-0 bg-white shadow-sm p-4 mt-3 mx-3">
     <%= partial :'tasks/_form', locals: { task: Task.new(project: @project) } %>
   </div>
 </div>
+
+<h5 class="mt-4 ms-4">Tasks</h5>
 <div class="mx-3 my-2">
   <% if @project.tasks.any? %>
     <% @project.tasks.each do |task| %>
@@ -42,7 +45,23 @@
         <%= partial :'tasks/_task', locals: { task: task } %>
       </div>
     <% end %>
+  <% else %>
+    <div class="px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
+      No tasks have been created yet for this project
+    </div>
   <% end %>
 </div>
+<h5 class="mt-4 ms-4">Notes</h5>
+<div class="mx-3 my-2">
+  <% if @project.notes.any? %>
+    <%= partial :'notes/_notes_table', locals: {notes: @project.notes} %>
+  <% else %>
+    <div class="px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
+      No notes have been created yet for this project
+    </div>
+  <% end %>
+</div>
+
 <%= partial :'projects/_edit_project_modal', locals: { project: @project } %>
 <%= partial :'tasks/_edit_task_modal' %>
+<%= partial :'notes/_edit_note_modal' %>

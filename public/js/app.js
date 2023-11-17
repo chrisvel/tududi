@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function attachEventListeners() {
   attachCollapseListeners();
+  manageAreaState();
   attachTaskClickListeners();
   attachProjectModalListeners();
   attachAreaModalListeners();
@@ -22,6 +23,44 @@ function attachCollapseListeners() {
     collapseElement.addEventListener('hide.bs.collapse', () => toggleFolderIcon(collapseElement, false));
   });
 }
+
+function manageAreaState() {
+  // Check and set the state of areas on page load
+  document.querySelectorAll('.area-item a.nav-link').forEach(link => {
+    const areaId = link.getAttribute('href').replace('#', '');
+    const areaElement = document.getElementById(areaId);
+    if (areaElement) {
+      const isExpanded = localStorage.getItem('#' + areaId) === 'true';
+      if (isExpanded) {
+        link.setAttribute('aria-expanded', 'true');
+        areaElement.classList.add('show');
+      } else {
+        link.setAttribute('aria-expanded', 'false');
+        areaElement.classList.remove('show');
+      }
+    }
+  });
+
+  // Save the state of areas when clicked
+  document.querySelectorAll('.area-item a.nav-link').forEach(link => {
+    link.addEventListener('click', function (event) {
+      event.preventDefault(); // Prevent default action to manually control collapse
+      const areaId = this.getAttribute('href').replace('#', '');
+      const isExpanded = this.getAttribute('aria-expanded') === 'false'; // Toggle the state based on current state
+      localStorage.setItem('#' + areaId, isExpanded);
+      if (isExpanded) {
+        this.setAttribute('aria-expanded', 'true');
+        document.getElementById(areaId).classList.add('show');
+      } else {
+        this.setAttribute('aria-expanded', 'false');
+        document.getElementById(areaId).classList.remove('show');
+      }
+    });
+  });
+}
+
+// Ensure this function is called when the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", manageAreaState);
 
 function toggleFolderIcon(collapseElement, isOpening) {
   const closedFolderIcon = collapseElement.previousElementSibling?.querySelector('.bi-folder');

@@ -43,7 +43,7 @@
   <div class="px-3 mb-auto">
     <% current_user.areas.includes(:projects).order('name ASC').each do |area| %>
       <div class="area-item d-flex justify-content-between align-items-center">
-        <a href="#area_<%= area.id %>_projects" class="nav-link link-dark flex-grow-1" data-bs-toggle="collapse" aria-expanded="true">
+        <a href="#area_<%= area.id %>_projects" class="nav-link link-dark flex-grow-1" data-bs-toggle="collapse" aria-expanded="false">
           <i class="bi bi-folder me-1 fs-6"></i>
           <i class="bi bi-folder2-open me-1 fs-6 d-none"></i>
           <%= area.name %>
@@ -64,7 +64,7 @@
         </div>
       </div>
       <% if area.projects.any? %>
-        <div class="collapse show" id="area_<%= area.id %>_projects">
+        <div class="collapse" id="area_<%= area.id %>_projects">
           <ul class="nav nav-pills flex-column">
             <% area.projects.each do |project| %>
               <li class="nav-item">

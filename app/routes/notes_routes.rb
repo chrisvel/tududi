@@ -25,7 +25,13 @@ class Sinatra::Application
       user_id: current_user.id
     }
 
-    note = current_user.notes.build(note_attributes)
+    if params[:project_id].empty?
+      note = current_user.notes.build(note_attributes)
+    else
+      project = current_user.projects.find_by(id: params[:project_id])
+      halt 400, 'Invalid project.' unless project
+      note = project.notes.build(note_attributes)
+    end
 
     if note.save
       update_note_tags(note, params[:tags])
@@ -43,6 +49,14 @@ class Sinatra::Application
       title: params[:title],
       content: params[:content]
     }
+
+    if params[:project_id] && !params[:project_id].empty?
+      project = current_user.projects.find_by(id: params[:project_id])
+      halt 400, 'Invalid project.' unless project
+      note.project = project
+    else
+      note.project = nil
+    end
 
     if note.update(note_attributes)
       update_note_tags(note, params[:tags])
