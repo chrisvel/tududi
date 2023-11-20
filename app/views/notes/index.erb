@@ -1,0 +1,18 @@
+<h2 class="mb-5"><i class="bi bi-journal-text ms-3 me-2"></i> Notes</h2>
+<div class="bg-light py-2 px-3 mx-3 d-flex align-items-center border" data-bs-toggle="collapse" data-bs-target="#newNoteForm" aria-expanded="false" aria-controls="newNoteForm" style="cursor: pointer;">
+  <i class="fs-4 bi bi-plus-circle-fill text-primary me-2"></i> <span class="fs-6">New note</span>
+</div>
+<div class="collapse" id="newNoteForm">
+  <div class="card border-secondary-subtle bg-light shadow-sm mt-2 p-4 mx-3">
+    <%= partial :'notes/_form', locals: { note: Note.new } %>
+  </div>
+</div>
+<div class="mx-3 my-4">
+  <% @notes.each do |note| %>
+    <div id="edit_note_form_<%= note.id %>" class="d-none">
+      <%= partial :'notes/_form', locals: { note: note } %>
+    </div>
+    <%= partial :'notes/_note', locals: {note: note} %>
+  <% end %>
+</div>
+<%= partial :'notes/_edit_note_modal' %>

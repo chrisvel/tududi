@@ -8,23 +8,23 @@
     <div class="row mb-3">
       <div class="col-md-12">
         <div class="input-group input-group-lg">
-          <input type="text" id="task_name" name="name" value="<%= task.name %>" class="form-control" placeholder="+ Add Task" required>
+          <input type="text" id="task_name_<%= task.id %>" name="name" value="<%= task.name %>" class="form-control" placeholder="+ Add Task" required>
         </div>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-md-4">
         <label for="task_project" class="form-label">Project (optional):</label>
-        <select id="task_project" name="project_id" class="form-select">
+        <select id="task_project_<%= task.id %>" name="project_id" class="form-select">
           <option value="">No Project</option>
           <% current_user.projects.each do |project| %>
             <option value="<%= project.id %>" <%= 'selected' if task.project_id == project.id %>><%= project.name %></option>
             <% end %>
-        </select>
+          </select>
       </div>
       <div class="col-md-4">
         <label for="task_priority" class="form-label">Priority:</label>
-        <select id="task_priority" name="priority" class="form-select">
+        <select id="task_priority_<%= task.id %>" name="priority" class="form-select">
           <option value="Low" <%= 'selected' if task.priority == 'Low' %>>Low</option>
           <option value="Medium" <%= 'selected' if task.priority == 'Medium' %>>Medium</option>
           <option value="High" <%= 'selected' if task.priority == 'High' %>>High</option>
@@ -32,12 +32,12 @@
       </div>
       <div class="col-md-4">
         <label for="task_due_date" class="form-label">Due Date:</label>
-        <input type="date" id="task_due_date" name="due_date" value="<%= task.due_date.strftime('%Y-%m-%d') if task.due_date %>" class="form-control">
+        <input type="date" id="task_due_date_<%= task.id %>" name="due_date" value="<%= task.due_date.strftime('%Y-%m-%d') if task.due_date %>" class="form-control">
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-md-12">
-        <input name="tags" id="task_tags" class="form-control" value="<%= task.tags&.map(&:name)&.join(',') %>" placeholder="Add Tags">
+        <input name="tags" id="task_tags_<%= task.id %>" class="form-control" value="<%= task.tags&.map(&:name)&.join(',') %>" placeholder="Add Tags">
       </div>
     </div>
     <div class="mt-4">

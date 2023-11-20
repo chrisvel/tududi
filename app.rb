@@ -7,6 +7,7 @@ require './app/models/area'
 require './app/models/project'
 require './app/models/task'
 require './app/models/tag'
+require './app/models/note'
 
 require './app/helpers/authentication_helper'
 
@@ -14,6 +15,7 @@ require './app/routes/authentication_routes'
 require './app/routes/tasks_routes'
 require './app/routes/projects_routes'
 require './app/routes/areas_routes'
+require './app/routes/notes_routes'
 
 helpers AuthenticationHelper
 

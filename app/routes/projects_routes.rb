@@ -1,6 +1,6 @@
 class Sinatra::Application
   get '/projects' do
-    @projects_with_tasks = current_user.projects.includes(:tasks, :area).order(:name)
+    @projects_with_tasks = current_user.projects.includes(:tasks, :area).order('name ASC')
 
     erb :'projects/index'
   end

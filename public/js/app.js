@@ -1,13 +1,20 @@
 document.addEventListener("DOMContentLoaded", function () {
   attachEventListeners();
-  new Tagify(document.getElementById('task_tags'));
+  if (document.getElementById('task_tags_')) {
+    new Tagify(document.getElementById('task_tags_'));
+  }
+  if (document.getElementById('note_tags_')) {
+    new Tagify(document.getElementById('note_tags_'));
+  }
 });
 
 function attachEventListeners() {
   attachCollapseListeners();
+  manageAreaState();
   attachTaskClickListeners();
   attachProjectModalListeners();
   attachAreaModalListeners();
+  attachNoteClickListeners();
 }
 
 function attachCollapseListeners() {
@@ -16,6 +23,44 @@ function attachCollapseListeners() {
     collapseElement.addEventListener('hide.bs.collapse', () => toggleFolderIcon(collapseElement, false));
   });
 }
+
+function manageAreaState() {
+  // Check and set the state of areas on page load
+  document.querySelectorAll('.area-item a.nav-link').forEach(link => {
+    const areaId = link.getAttribute('href').replace('#', '');
+    const areaElement = document.getElementById(areaId);
+    if (areaElement) {
+      const isExpanded = localStorage.getItem('#' + areaId) === 'true';
+      if (isExpanded) {
+        link.setAttribute('aria-expanded', 'true');
+        areaElement.classList.add('show');
+      } else {
+        link.setAttribute('aria-expanded', 'false');
+        areaElement.classList.remove('show');
+      }
+    }
+  });
+
+  // Save the state of areas when clicked
+  document.querySelectorAll('.area-item a.nav-link').forEach(link => {
+    link.addEventListener('click', function (event) {
+      event.preventDefault(); // Prevent default action to manually control collapse
+      const areaId = this.getAttribute('href').replace('#', '');
+      const isExpanded = this.getAttribute('aria-expanded') === 'false'; // Toggle the state based on current state
+      localStorage.setItem('#' + areaId, isExpanded);
+      if (isExpanded) {
+        this.setAttribute('aria-expanded', 'true');
+        document.getElementById(areaId).classList.add('show');
+      } else {
+        this.setAttribute('aria-expanded', 'false');
+        document.getElementById(areaId).classList.remove('show');
+      }
+    });
+  });
+}
+
+// Ensure this function is called when the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", manageAreaState);
 
 function toggleFolderIcon(collapseElement, isOpening) {
   const closedFolderIcon = collapseElement.previousElementSibling?.querySelector('.bi-folder');
@@ -47,16 +92,38 @@ function openEditTaskModal(taskId) {
   const editTaskFormContainer = document.getElementById('editTaskFormContainer');
   editTaskFormContainer.innerHTML = formHtml;
 
-  new Tagify(editTaskFormContainer.querySelector('#task_tags'));
+  new Tagify(editTaskFormContainer.querySelector('#task_tags_' + taskId));
 
   new bootstrap.Modal(document.getElementById('editTaskModal')).show();
 }
-
 
 function attachProjectModalListeners() {
   document.querySelectorAll('[data-bs-toggle="modal"][data-project-id]').forEach(button => {
     button.addEventListener('click', () => openProjectModalForEdit(button.getAttribute('data-project-id')));
   });
+}
+
+function attachNoteClickListeners() {
+  document.querySelectorAll('.note-item').forEach(noteElement => {
+    noteElement.addEventListener('click', event => {
+      openEditNoteModal(noteElement.dataset.noteId);
+    });
+  });
+}
+
+function openEditNoteModal(noteId) {
+  const formContainer = document.getElementById('edit_note_form_' + noteId);
+  if (!formContainer) {
+    console.error('Edit form not found for note: ' + noteId);
+    return;
+  }
+  const formHtml = formContainer.innerHTML;
+  const editNoteFormContainer = document.getElementById('editNoteFormContainer');
+  editNoteFormContainer.innerHTML = formHtml;
+
+  new Tagify(editNoteFormContainer.querySelector('#note_tags_' + noteId));
+
+  new bootstrap.Modal(document.getElementById('editNoteModal')).show();
 }
 
 function openProjectModalForEdit(projectId) {
@@ -141,15 +208,15 @@ function toggleTaskCompletion(event, taskId) {
   event.stopPropagation();
   fetch('/task/' + taskId + '/toggle_completion', {
     method: 'PATCH',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({_method: 'patch'})
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ _method: 'patch' })
   })
-  .then(response => {
-    if (!response.ok) throw new Error('Network response was not ok');
-    return response.json();
-  })
-  .then(data => updateTaskCompletionStatus(taskId, data))
-  .catch(error => console.error('There has been a problem with your fetch operation:', error));
+    .then(response => {
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    })
+    .then(data => updateTaskCompletionStatus(taskId, data))
+    .catch(error => console.error('There has been a problem with your fetch operation:', error));
 }
 
 function updateTaskCompletionStatus(taskId, data) {
@@ -171,7 +238,6 @@ function updateTaskCompletionStatus(taskId, data) {
   setTimeout(() => taskDiv.remove(), 200);
 }
 
-
 function applyPriorityColor(taskIcon, priority) {
   taskIcon.classList.remove('text-warning', 'text-danger', 'text-secondary');
   switch (priority) {
@@ -185,6 +251,3 @@ function applyPriorityColor(taskIcon, priority) {
       taskIcon.classList.add('text-secondary');
   }
 }
-
-
-

@@ -1,37 +1,30 @@
 <h2 class="mb-5"><i class="bi bi-hexagon ms-3 me-2"></i>Areas & Projects</h2>
-<div class="bg-light py-2 px-3 mx-3 d-flex align-items-center border" data-bs-toggle="collapse" data-bs-target="#newTaskForm" aria-expanded="false" aria-controls="newTaskForm" style="cursor: pointer;">
-  <i class="fs-4 bi bi-plus-circle-fill text-primary me-2"></i> <span class="fs-6">New task</span>
-</div>
-<div class="collapse" id="newTaskForm">
-  <div class="card bg-white shadow-sm border-0 mt-2 p-4 mx-3">
-    <%= partial :'tasks/_form', locals: { task: Task.new } %>
-  </div>
-</div>
-<div class="mx-3 my-2">
+
+<h4 class="mt-5 ms-4 fw-bold">Projects</h4>
+<div class="row p-3">
   <% if @projects_with_tasks.any? %>
     <% @projects_with_tasks.each do |project| %>
-      <h5 class="mt-4 mb-2">
-        <a class="px-2 py-1 btn btn-outline-dark rounded-0 d-inline-block" href="/project/<%= project.id %>">
-          <%= project.name.upcase %>
+      <div class="col-md-3 mb-3">
+        <a class="text-decoration-none project-card" href="/project/<%= project.id %>">
+          <div class="card shadow-sm p-0" style="min-height: 177px;">
+            <div class="card-body p-0">
+              <div class="bg-light rounded" style="height: 100px;"></div>
+              <h5 class="card-title px-3 pt-3 pb-0 mb-1"><%= project.name.upcase %></h5>
+              <p class="card-text px-3 small text-black-50 opacity-75"><%= project.area.name %></p>
+            </div>
+          </div>
         </a>
-      </h5>
-      <% if project.tasks.any? %>
-        <div class="mb-4">
-          <% project.tasks.each do |task| %>
-            <div id="edit_task_form_<%= task.id %>" class="d-none">
-              <%= partial :'tasks/_form', locals: { task: task } %>
-            </div>
-            <div class="">
-              <%= partial :'tasks/_task', locals: { task: task } %>
-            </div>
-          <% end %>
-        </div>
-      <% else %>
-        <div class="px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
-          No tasks have been created yet for this project
-        </div>
-      <% end %>
+      </div>
     <% end %>
   <% end %>
+  <div class="col-md-3 mb-3">
+    <a class="text-decoration-none project-card"href="#" data-bs-toggle="modal" data-bs-target="#newProjectModal">
+      <div class="card shadow-sm border-light p-0" style="min-height: 177px;">
+        <div class="card-body bg-light rounded px-0 p-0 text-center">
+          <i class="bi bi-plus" style="font-size: 72px; line-height: 175px; color: #eee"></i>
+        </div>
+      </div>
+    </a>
+  </div>
 </div>
 <%= partial :'tasks/_edit_task_modal' %>
