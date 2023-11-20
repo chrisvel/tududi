@@ -34,7 +34,7 @@
   </div>
 </div>
 
-<h5 class="mt-4 ms-4">Tasks</h5>
+<h4 class="mt-5 ms-4 fw-bold">Tasks</h4>
 <div class="mx-3 my-2">
   <% if @project.tasks.any? %>
     <% @project.tasks.each do |task| %>
@@ -51,10 +51,16 @@
     </div>
   <% end %>
 </div>
-<h5 class="mt-4 ms-4">Notes</h5>
+
+<h4 class="mt-5 ms-4 fw-bold">Notes</h4>
 <div class="mx-3 my-2">
   <% if @project.notes.any? %>
-    <%= partial :'notes/_notes_table', locals: {notes: @project.notes} %>
+    <% @project.notes.each do |note| %>
+      <div id="edit_note_form_<%= note.id %>" class="d-none">
+        <%= partial :'notes/_form', locals: { note: note } %>
+      </div>
+      <%= partial :'notes/_note', locals: {note: note} %>
+    <% end %>
   <% else %>
     <div class="px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
       No notes have been created yet for this project

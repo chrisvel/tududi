@@ -1,4 +1,4 @@
-<div class="d-flex flex-column flex-shrink-0 p-3 bg-light vh-100 fixed-sidebar" style="width: 300px;">  <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+<div class="d-flex flex-column flex-shrink-0 p-3 vh-100 sidebar fixed-sidebar" style="width: 300px;">  <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
     <span class="fs-4">tu|du|di</span>
   </a>
   <hr>
@@ -49,7 +49,7 @@
           <%= area.name %>
         </a>
         <div class="dropdown area-options">
-          <button class="btn btn-link text-secondary" type="button" id="dropdownMenuButton<%= area.id %>" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-link pb-1 text-secondary" type="button" id="dropdownMenuButton<%= area.id %>" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-three-dots-vertical"></i>
           </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton<%= area.id %>">
@@ -78,9 +78,9 @@
       <% end %>
     <% end %>
   </div>
-  <div class="">
+  <div class="mt-2">
     <div class="dropdown">
-      <button class="btn btn-dark dropdown-toggle w-100" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+      <button class="btn btn-outline-dark dropdown-toggle w-100" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
         New Section
       </button>
       <ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton1">
@@ -95,7 +95,7 @@
       <strong><%= current_user.email %></strong>
     </a>
     <ul class="dropdown-menu dropdown-menu-dark small text-center" aria-labelledby="dropdownUser1">
-      <li><a class="dropdown-item" href="#">Profile</a></li>
+      <li><a class="dropdown-item disabled" href="#">Profile</a></li>
       <li><hr class="dropdown-divider"></li>
       <li><a class="dropdown-item" href="/logout">Sign out</a></li>
     </ul>

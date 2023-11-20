@@ -1,0 +1,28 @@
+<div class="border-0 bg-white shadow-sm mb-1 px-2 py-2 d-flex align-items-center  note-item" data-note-id="<%= note.id %>">
+  <i class="fs-6 bi-journal-text me-2"></i>
+  <div class="row flex-grow-1 align-items-center">
+    <div class="col-md-4">
+      <div class="note-item">
+        <a href="#" class="link-dark  fs-5 text-decoration-none">
+          <%= note.title %>
+        </a> 
+        <% if note.tags %>
+          <div class="ms-3 opacity-75 d-inline-block">
+            <% note.tags.each do |tag| %>
+              <span class="badge bg-primary-subtle text-primary rounded">
+                <%= tag.name %>
+              </span>
+            <% end %>
+          </div>
+      <% end %>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <% if note.project %>
+        <a href="/project/<%= note.project.id %>" class="badge border text-decoration-none link-dark bg-light">
+          <%= note.project.name %>
+        </a>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -14,7 +14,7 @@ class Sinatra::Application
   end
 
   get '/notes' do
-    @notes = current_user.notes.includes(:tags)
+    @notes = current_user.notes.includes(:tags).order('title ASC')
     erb :'notes/index'
   end
 

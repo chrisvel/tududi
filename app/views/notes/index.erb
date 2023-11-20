@@ -3,11 +3,16 @@
   <i class="fs-4 bi bi-plus-circle-fill text-primary me-2"></i> <span class="fs-6">New note</span>
 </div>
 <div class="collapse" id="newNoteForm">
-  <div class="card border-0 bg-white shadow-sm mt-2 p-4 mx-3">
+  <div class="card border-secondary-subtle bg-light shadow-sm mt-2 p-4 mx-3">
     <%= partial :'notes/_form', locals: { note: Note.new } %>
   </div>
 </div>
 <div class="mx-3 my-4">
-  <%= partial :'notes/_notes_table', locals: {notes: @notes} %>
+  <% @notes.each do |note| %>
+    <div id="edit_note_form_<%= note.id %>" class="d-none">
+      <%= partial :'notes/_form', locals: { note: note } %>
+    </div>
+    <%= partial :'notes/_note', locals: {note: note} %>
+  <% end %>
 </div>
 <%= partial :'notes/_edit_note_modal' %>

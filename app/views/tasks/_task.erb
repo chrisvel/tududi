@@ -1,16 +1,26 @@
-<div class="border-0 bg-white shadow-sm px-3 py-2 mb-1 d-flex align-items-center task-item <%= 'opacity-50' if task.completed %>" data-task-id="<%= task.id %>">
+<div class="border-0 bg-white shadow-sm mb-1 px-2 py-2 d-flex align-items-center task-item <%= 'opacity-50' if task.completed %>" data-task-id="<%= task.id %>">
   <span onclick="toggleTaskCompletion(event, <%= task.id %>)" class="toggle-completion">
     <i class="fs-6 bi <%= task.completed ? 'bi-check-circle-fill' : 'bi-circle' %> <%= priority_class(task) %> me-2"></i>
   </span>
-  <div class="row flex-grow-1 align-items-center">
+  <div class="row flex-grow-1 align-items-top">
     <div class="col-md-5">
       <%= task.name %>
+      <% if task.tags %>
+        <div class="ms-3 opacity-75 d-inline-block">
+          <% task.tags.each do |tag| %>
+            <span class="badge bg-primary-subtle text-primary">
+              <i class="bi bi-tag-fill me-1 opacity-50"></i><%= tag.name %>
+            </span>
+          <% end %>
+        </div>
+      <% end %>
     </div>
+  
     <div class="col-md-3">
-      <% task.tags.each do |tag| %>
-        <span class="badge bg-primary-subtle text-primary rounded">
-          <%= tag.name %>
-        </span>
+      <% if task.project %>
+        <a href="/project/<%= task.project.id %>" class="badge border text-decoration-none link-dark bg-light">
+          <%= task.project.name %>
+        </a>
       <% end %>
     </div>
     <div class="col-md-3">
