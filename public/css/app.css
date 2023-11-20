@@ -50,6 +50,20 @@ h6 {
   cursor: pointer;
 }
 
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #eee;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: gray;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: gray;
+}
+
+
 /* sidebar */
 .area-item .area-options {
   visibility: hidden;
@@ -104,4 +118,9 @@ h6 {
 .no-focus-outline textarea:focus,
 .no-focus-outline textarea:-moz-focusring {
   outline: none !important;
+}
+
+/* project card */
+a.project-card .card:hover {
+  border: 1px solid #777 !important;
 }
