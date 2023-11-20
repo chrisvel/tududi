@@ -1,5 +1,4 @@
 <%= partial :'tasks/_header' %>
-
 <div class="bg-light py-2 px-3 mx-3 d-flex align-items-center border" data-bs-toggle="collapse" data-bs-target="#newTaskForm" aria-expanded="false" aria-controls="newTaskForm" style="cursor: pointer;">
   <i class="fs-4 bi bi-plus-circle-fill text-primary me-2"></i> <span class="fs-6">New task</span>
 </div>
@@ -21,8 +20,8 @@
 <div class="mx-3 mb-2">
   <% if @projects_with_tasks.any? %>
     <% @projects_with_tasks.each do |project| %>
-      <% if project.tasks.any? %>
-        <% project.tasks.each do |task| %>
+      <% project.tasks.each do |task| %>
+        <% if task.due_date && task.due_date <= Date.today.end_of_day %>
           <div id="edit_task_form_<%= task.id %>" class="d-none">
             <%= partial :'tasks/_form', locals: { task: task } %>
           </div>

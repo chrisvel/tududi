@@ -90,7 +90,7 @@ helpers do
 end
 
 get '/' do
-  erb :inbox
+  redirect '/tasks?due_date=today'
 end
 
 get '/inbox' do

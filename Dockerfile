@@ -1,6 +1,6 @@
 FROM ruby:3.2.2-slim
 
-RUN apt-get update -qq && apt-get install -y build-essential libsqlite3-dev openssl
+RUN apt-get update -qq && apt-get install -y build-essential libsqlite3-dev openssl libffi-dev
 
 WORKDIR /usr/src/app
 

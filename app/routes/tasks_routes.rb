@@ -21,7 +21,8 @@ class Sinatra::Application
 
       @projects_with_tasks = current_user.projects.with_incomplete_tasks
                                          .where('tasks.due_date <= ?', today.end_of_day)
-                                         .distinct.order('projects.name ASC')
+                                         .distinct
+                                         .order('projects.name ASC')
 
     when 'upcoming'
       one_week_from_today = Date.today + 7.days
