@@ -65,7 +65,7 @@ helpers do
     end
   end
 
-  def nav_link(path, query_params = {}, project_id = nil)
+  def nav_link_active?(path, query_params = {}, project_id = nil)
     current_uri = request.path_info
     current_query = request.query_string
 
@@ -73,13 +73,17 @@ helpers do
 
     is_project_page = current_uri.include?('/project/') && path.include?('/project/')
 
-    is_active = if is_project_page
-                  current_uri == path && (!project_id || current_uri.end_with?("/#{project_id}"))
-                elsif !query_params.empty?
-                  current_uri == path && query_params.all? { |k, v| current_params[k] == v }
-                else
-                  current_uri == path && current_params.empty?
-                end
+    if is_project_page
+      current_uri == path && (!project_id || current_uri.end_with?("/#{project_id}"))
+    elsif !query_params.empty?
+      current_uri == path && query_params.all? { |k, v| current_params[k] == v }
+    else
+      current_uri == path && current_params.empty?
+    end
+  end
+
+  def nav_link(path, query_params = {}, project_id = nil)
+    is_active = nav_link_active?(path, query_params, project_id)
 
     classes = 'nav-link py-1 px-3'
     classes += ' active bg-dark' if is_active
@@ -90,7 +94,7 @@ helpers do
 end
 
 get '/' do
-  erb :inbox
+  redirect '/tasks?due_date=today'
 end
 
 get '/inbox' do

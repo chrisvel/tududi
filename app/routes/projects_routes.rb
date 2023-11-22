@@ -20,7 +20,7 @@ class Sinatra::Application
     )
 
     if project.save
-      redirect '/'
+      redirect request.referrer || '/'
     else
       @errors = 'There was a problem creating the project.'
       redirect '/'

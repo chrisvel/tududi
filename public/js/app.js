@@ -161,21 +161,11 @@ function attachAreaModalListeners() {
   });
 }
 
-function openNewProjectModal() {
-  const modal = new bootstrap.Modal(document.getElementById('newProjectModal'));
-  modal.show();
-}
-
 function deleteProject(projectId) {
   if (confirm('Are you sure you want to delete this project?')) {
     const form = document.getElementById('delete_project_' + projectId);
     form.submit();
   }
-}
-
-function openNewAreaModal() {
-  const modal = new bootstrap.Modal(document.getElementById('newAreaModal'));
-  modal.show();
 }
 
 function deleteArea(areaId) {
