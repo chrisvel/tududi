@@ -25,19 +25,13 @@
     <%= @project.description %>
   </div>
 <% end %>
-<div class="bg-light py-2 px-3 mx-3 d-flex align-items-center border" data-bs-toggle="collapse" data-bs-target="#newTaskForm" aria-expanded="false" aria-controls="newTaskForm" style="cursor: pointer;">
-  <i class="fs-4 bi bi-plus-circle-fill text-primary me-2"></i> <span class="fs-6">New task</span>
-</div>
-<div class="collapse" id="newTaskForm">
-  <div class="card border-0 bg-white shadow-sm p-4 mt-3 mx-3">
-    <%= partial :'tasks/_form', locals: { task: Task.new(project: @project) } %>
-  </div>
-</div>
 
-<h4 class="mt-5 ms-4 fw-bold">Tasks</h4>
+<%= partial :'tasks/_minimal_form', locals: { task: Task.new(project: @project) } %>
+
+<h4 class="mt-2 ms-4 fw-bold">Tasks</h4>
 <div class="mx-3 my-2">
-  <% if @project.tasks.any? %>
-    <% @project.tasks.each do |task| %>
+  <% if @project.tasks.incomplete.any? %>
+    <% @project.tasks.incomplete.each do |task| %>
       <div id="edit_task_form_<%= task.id %>" class="d-none">
         <%= partial :'tasks/_form', locals: { task: task } %>
       </div>
@@ -46,7 +40,7 @@
       </div>
     <% end %>
   <% else %>
-    <div class="px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
+    <div class="rounded px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
       No tasks have been created yet for this project
     </div>
   <% end %>
@@ -62,7 +56,7 @@
       <%= partial :'notes/_note', locals: {note: note} %>
     <% end %>
   <% else %>
-    <div class="px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
+    <div class="rounded px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
       No notes have been created yet for this project
     </div>
   <% end %>

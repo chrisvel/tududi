@@ -4,7 +4,7 @@
 <div class="row p-3">
   <% if @projects_with_tasks.any? %>
     <% @projects_with_tasks.each do |project| %>
-      <div class="col-md-3 mb-3">
+      <div class="col-md-4 mb-3">
         <a class="text-decoration-none project-card" href="/project/<%= project.id %>">
           <div class="card shadow-sm p-0" style="min-height: 177px;">
             <div class="card-body p-0">
@@ -17,7 +17,7 @@
       </div>
     <% end %>
   <% end %>
-  <div class="col-md-3 mb-3">
+  <div class="col-md-4 mb-3">
     <a class="text-decoration-none project-card"href="#" data-bs-toggle="modal" data-bs-target="#newProjectModal">
       <div class="card shadow-sm border-light p-0" style="min-height: 177px;">
         <div class="card-body bg-light rounded px-0 p-0 text-center">

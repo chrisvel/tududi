@@ -56,7 +56,7 @@ class Sinatra::Application
       user_id: current_user.id
     }
 
-    if params[:project_id].empty?
+    if params[:project_id].blank?
       task = current_user.tasks.build(task_attributes)
     else
       project = current_user.projects.find_by(id: params[:project_id])

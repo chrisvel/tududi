@@ -1,4 +1,4 @@
-<div class="border-0 bg-white shadow-sm mb-1 px-2 py-2 d-flex align-items-center  note-item" data-note-id="<%= note.id %>">
+<div class="border-0 rounded bg-white shadow-sm mb-1 px-2 py-2 d-flex align-items-center  note-item" data-note-id="<%= note.id %>">
   <i class="fs-6 bi-journal-text me-2"></i>
   <div class="row flex-grow-1 align-items-center">
     <div class="col-md-4">
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="col-md-3">
-      <% if note.project %>
+      <% if note.project && params[:id].blank? %>
         <a href="/project/<%= note.project.id %>" class="badge border text-decoration-none link-dark bg-light">
           <%= note.project.name %>
         </a>

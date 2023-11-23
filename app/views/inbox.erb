@@ -1,13 +1,10 @@
 <h2 class="mb-5"><i class="bi bi-inbox-fill ms-3 me-2"></i> Inbox</h2>
-<div class="bg-light py-2 px-3 mx-3 d-flex align-items-center border" data-bs-toggle="collapse" data-bs-target="#newTaskForm" aria-expanded="false" aria-controls="newTaskForm" style="cursor: pointer;">
-  <i class="fs-4 bi bi-plus-circle-fill text-primary me-2"></i> <span class="fs-6">New task</span>
-</div>
-<div class="collapse" id="newTaskForm">
-  <div class="card border-0 bg-white shadow-sm mt-2 p-4 mx-3">
-    <%= partial :'tasks/_form', locals: { task: Task.new } %>
-  </div>
-</div>
-<div class="mx-3 mt-4 mb-2">
+
+<% unless params[:status] == 'completed' %>
+  <%= partial :'tasks/_minimal_form', locals: { task: Task.new } %>
+<% end %>
+
+<div class="mx-3 mb-2">
   <% if @tasks %>
     <% @tasks.each do |task| %>
       <div id="edit_task_form_<%= task.id %>" class="d-none">

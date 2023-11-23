@@ -1,9 +1,9 @@
-<div class="border-0 bg-white shadow-sm mb-1 px-2 py-2 d-flex align-items-center task-item <%= 'opacity-50' if task.completed %>" data-task-id="<%= task.id %>">
-  <span onclick="toggleTaskCompletion(event, <%= task.id %>)" class="toggle-completion">
-    <i class="fs-6 bi <%= task.completed ? 'bi-check-circle-fill' : 'bi-circle' %> <%= priority_class(task) %> me-2"></i>
-  </span>
+<div class="border-0 rounded bg-white shadow-sm mb-1 px-2 py-2 d-flex align-items-center task-item <%= 'opacity-50' if task.completed %>" data-task-id="<%= task.id %>">
   <div class="row flex-grow-1 align-items-top">
-    <div class="col-md-5">
+    <div class="col-md-7">
+      <span onclick="toggleTaskCompletion(event, <%= task.id %>)" class="toggle-completion">
+        <i class="fs-6 bi <%= task.completed ? 'bi-check-circle-fill' : 'bi-circle' %> <%= priority_class(task) %> me-2"></i>
+      </span>
       <%= task.name %>
       <% if task.tags %>
         <div class="ms-3 opacity-75 d-inline-block">
@@ -15,15 +15,14 @@
         </div>
       <% end %>
     </div>
-  
-    <div class="col-md-3">
-      <% if task.project %>
+    <div class="col-md-3 text-end">
+      <% if task.project && params[:id].blank? %>
         <a href="/project/<%= task.project.id %>" class="badge border text-decoration-none link-dark bg-light">
           <%= task.project.name %>
         </a>
       <% end %>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2 text-end">
       <% if task.due_date %>
         <% if task.due_date.to_date == Date.today %>
           <span class="badge bg-primary rounded">
@@ -33,7 +32,7 @@
           <span class="badge bg-danger rounded">
             <i class="bi bi-clock me-2"></i> <%= task.due_date.strftime("%Y-%m-%d") %>
           </span>
-         <% elsif task.due_date.to_date == Date.today + 1 %>
+        <% elsif task.due_date.to_date == Date.today + 1 %>
           <span class="badge bg-info rounded">
             <i class="bi bi-clock me-2"></i> TOMORROW
           </span>
