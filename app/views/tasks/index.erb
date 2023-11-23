@@ -1,9 +1,22 @@
 <%= partial :'tasks/_header' %>
 
+<div class="d-flex justify-content-between align-items-center mb-2 px-3">
+  <h4 class="mt-2 fw-bold">Tasks</h4>
+  <div class="dropdown">
+    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="orderByDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-sort-alpha-down me-2"></i> <%= order_name(params[:order_by]) %>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="orderByDropdown">
+      <% ['due_date:desc', 'name:asc', 'priority:asc', 'created_at:desc'].each do |order| %>
+        <li><a class="dropdown-item small" href="<%= "/tasks?#{request.query_string}&order_by=#{order}" %>"><%= order.split(':').first.capitalize.gsub('_', ' ') %></a></li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+
 <% unless params[:status] == 'completed' %>
   <%= partial :'tasks/_minimal_form', locals: { task: Task.new } %>
 <% end %>
-
 <div class="mx-3">
   <% if @tasks.any? %>
     <% @tasks.each do |task| %>
@@ -11,22 +24,6 @@
         <%= partial :'tasks/_form', locals: { task: task } %>
       </div>
       <%= partial :'tasks/_task', locals: { task: task } %>
-    <% end %>
-  <% end %>
-</div>
-<div class="mx-3 mb-2">
-  <% if @projects_with_tasks.any? %>
-    <% @projects_with_tasks.each do |project| %>
-      <% if project.tasks.incomplete.any? %>
-        <% project.tasks.incomplete.each do |task| %>
-          <div id="edit_task_form_<%= task.id %>" class="d-none">
-            <%= partial :'tasks/_form', locals: { task: task } %>
-          </div>
-          <div class="">
-            <%= partial :'tasks/_task', locals: { task: task } %>
-          </div>
-        <% end %>
-      <% end %>
     <% end %>
   <% end %>
 </div>

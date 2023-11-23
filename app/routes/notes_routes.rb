@@ -14,7 +14,10 @@ class Sinatra::Application
   end
 
   get '/notes' do
-    @notes = current_user.notes.includes(:tags).order('title ASC')
+    order_by = params[:order_by] || 'title:asc'
+    order_column, order_direction = order_by.split(':')
+    @notes = current_user.notes.includes(:tags).order("#{order_column} #{order_direction}")
+
     erb :'notes/index'
   end
 

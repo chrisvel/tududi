@@ -1,11 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   attachEventListeners();
-  if (document.getElementById('task_tags_')) {
-    new Tagify(document.getElementById('task_tags_'));
-  }
-  if (document.getElementById('note_tags_')) {
-    new Tagify(document.getElementById('note_tags_'));
-  }
+  initializeTagifyOnNotes();
 });
 
 function attachEventListeners() {
@@ -17,6 +12,12 @@ function attachEventListeners() {
   attachNoteClickListeners();
 }
 
+function initializeTagifyOnNotes() {
+  document.querySelectorAll('[id^="note_tags_new_"]').forEach(function(element) {
+    new Tagify(element);
+  });
+}
+
 function attachCollapseListeners() {
   document.querySelectorAll('.collapse').forEach(collapseElement => {
     collapseElement.addEventListener('show.bs.collapse', () => toggleFolderIcon(collapseElement, true));
@@ -25,7 +26,6 @@ function attachCollapseListeners() {
 }
 
 function manageAreaState() {
-  // Check and set the state of areas on page load
   document.querySelectorAll('.area-item a.nav-link').forEach(link => {
     const areaId = link.getAttribute('href').replace('#', '');
     const areaElement = document.getElementById(areaId);
@@ -106,7 +106,12 @@ function attachProjectModalListeners() {
 function attachNoteClickListeners() {
   document.querySelectorAll('.note-item').forEach(noteElement => {
     noteElement.addEventListener('click', event => {
-      openEditNoteModal(noteElement.dataset.noteId);
+      const noteId = noteElement.getAttribute('data-note-id');
+      if (noteId) {
+        openEditNoteModal(noteId);
+      } else {
+        console.error('Note ID not found for element:', noteElement);
+      }
     });
   });
 }

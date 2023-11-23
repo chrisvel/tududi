@@ -1,8 +1,8 @@
-<div class="border-0 rounded bg-white shadow-sm mb-1 px-2 py-2 d-flex align-items-center  note-item" data-note-id="<%= note.id %>">
+<div class="border-0 rounded bg-white shadow-sm mb-1 px-2 py-2 d-flex align-items-center note-item" data-note-id="<%= note.id || 'new' %>">
   <i class="fs-6 bi-journal-text me-2"></i>
   <div class="row flex-grow-1 align-items-center">
     <div class="col-md-4">
-      <div class="note-item">
+      <div class="">
         <a href="#" class="link-dark  fs-5 text-decoration-none">
           <%= note.title %>
         </a> 

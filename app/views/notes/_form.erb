@@ -9,14 +9,14 @@
     <div class="row mb-3">
       <div class="col-md-12">
         <div class="input-group input-group-lg">
-          <input type="text" id="note_name_<%= note.id %>" name="title" value="<%= note.title %>" class="form-control" placeholder="+ Add Title" required>
+          <input type="text" id="note_name_<%= note.id || 'new_' + context %>" name="title" value="<%= note.title %>" class="form-control" placeholder="+ Add Title" required>
         </div>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-md-12">
         <label for="note_project" class="form-label">Project (optional):</label>
-        <select id="note_project_<%= note.id %>" name="project_id" class="form-select">
+        <select id="note_project_<%= note.id || 'new_' + context %>" name="project_id" class="form-select">
           <option value="">No Project</option>
           <% current_user.projects.each do |project| %>
             <option value="<%= project.id %>" <%= 'selected' if note.project_id == project.id %>><%= project.name %></option>
@@ -26,12 +26,12 @@
     </div>
     <div class="row mb-3">
       <div class="col-md-12">
-        <textarea rows="10" id="note_content_<%= note.id %>" name="content" class="form-control no-focus-outline" rows="5" placeholder="Note content..." required><%= note.content %></textarea>
+        <textarea rows="10" id="note_content_<%= note.id || 'new_' + context %>" name="content" class="form-control no-focus-outline" rows="5" placeholder="Note content..." required><%= note.content %></textarea>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-md-12">
-        <input name="tags" id="note_tags_<%= note.id %>" class="form-control" value="<%= note.tags&.map(&:name)&.join(',') %>" placeholder="Add Tags">
+        <input name="tags" id="note_tags_<%= note.id || 'new_' + context %>" class="form-control" value="<%= note.tags&.map(&:name)&.join(',') %>" placeholder="Add Tags">
       </div>
     </div>
     <div class="mt-4">
@@ -47,7 +47,7 @@
   </fieldset>
 </form>
 <% if !note.new_record? %>
-  <form id="delete_note_<%= note.id %>" action="/note/<%= note.id %>" method="post" class="d-none">
+  <form id="delete_note_<%= note.id  %>" action="/note/<%= note.id %>" method="post" class="d-none">
     <input type="hidden" name="_method" value="delete">
   </form>
 <% end %>

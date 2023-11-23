@@ -91,6 +91,23 @@ helpers do
 
     classes
   end
+
+  def order_name(order_by)
+    return 'Select' unless order_by
+
+    field, direction = order_by.split(':')
+    name = case field
+           when 'due_date' then 'Due Date'
+           when 'name' then 'Title'
+           when 'priority' then 'Priority'
+           when 'created_at' then 'Created At'
+           else 'Select'
+           end
+
+    direction_icon = direction == 'asc' ? '<i class="bi bi-arrow-up"></i>' : '<i class="bi bi-arrow-down"></i>'
+
+    "#{name} #{direction_icon}"
+  end
 end
 
 get '/' do
