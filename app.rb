@@ -98,7 +98,7 @@ helpers do
     field, direction = order_by.split(':')
     name = case field
            when 'due_date' then 'Due Date'
-           when 'name' then 'Title'
+           when 'name' then 'Name'
            when 'priority' then 'Priority'
            when 'created_at' then 'Created At'
            else 'Select'
