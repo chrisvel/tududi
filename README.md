@@ -2,12 +2,15 @@
 
 `tu|du|di` is a task and project management web application built with Sinatra. It allows users to efficiently manage their tasks and projects, categorize them into different areas, and track due dates. `tu|du|di` is designed to be intuitive and easy to use, providing a seamless experience for personal productivity.
 
+![image](screenshots/tasks.png)
 ![image](screenshots/projects.png)
 
 ## Features
 
-- **Task Management**: Create, update, and delete tasks. Mark tasks as completed and view them by different filters (Today, Upcoming, Someday).
-- **Project Tracking**: Organize tasks into projects. Each project can contain multiple tasks.
+- **Task Management**: Create, update, and delete tasks. Mark tasks as completed and view them by different filters (Today, Upcoming, Someday). Order them by Name, Due date, Date created or Priority.
+- **Quick Notes**: Create, update, delete or assign text notes to projects.
+- **Tags**: Create tags for tasks and notes. 
+- **Project Tracking**: Organize tasks into projects. Each project can contain multiple tasks and/or multiple notes.
 - **Area Categorization**: Group projects into areas for better organization and focus.
 - **Due Date Tracking**: Set due dates for tasks and view them based on due date categories.
 - **Responsive Design (in progress)**: Accessible from various devices, ensuring a consistent experience across desktops, tablets, and mobile phones.
@@ -88,7 +91,7 @@ puma -C app/config/puma.rb
 Pull the latest image:
 
 ```bash
-docker pull chrisvel/tududi:0.9
+docker pull chrisvel/tududi:0.13
 ```
 
 In order to start the docker container you need 3 enviromental variables:
@@ -114,7 +117,7 @@ TUDUDI_SESSION_SECRET
     -e TUDUDI_SESSION_SECRET=3337c138d17ac7acefa412e5db0d7ef6540905b198cc28c5bf0d11e48807a71bdfe48d82ed0a0a6eb667c937cbdd1db3e1e6073b3148bff37f73cc6398a39671 \
     -v ~/tududi_db:/usr/src/app/tududi_db \
     -p 9292:9292 \
-    -d chrisvel/tududi:0.9
+    -d chrisvel/tududi:0.13
     ```
 
 3. Navigate to https://localhost:9292 and fill in your email and password.
