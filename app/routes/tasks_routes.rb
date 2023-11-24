@@ -15,39 +15,34 @@ module Sinatra
     end
 
     get '/tasks' do
-      # Collect all tasks, including those within projects
-      @tasks = current_user.tasks.includes(:project)
+      @tasks = current_user.tasks.includes(:project, :tags)
 
-      # Apply filters based on due_date and status
       case params[:due_date]
       when 'today'
         today = Date.today
         @tasks = @tasks.incomplete.where('due_date <= ?', today.end_of_day)
-
       when 'upcoming'
         one_week_from_today = Date.today + 7.days
         @tasks = @tasks.incomplete.where(due_date: Date.today..one_week_from_today)
-
       when 'never'
         @tasks = @tasks.incomplete.where(due_date: nil)
-
       else
-        @tasks = if params[:status] == 'completed'
-                   @tasks.complete
-                 else
-                   @tasks.incomplete
-                 end
+        @tasks = params[:status] == 'completed' ? @tasks.complete : @tasks.incomplete
       end
 
-      # Apply ordering
       if params[:order_by]
         order_column, order_direction = params[:order_by].split(':')
-        order_direction ||= 'asc' # Default to ascending if not specified
-
-        @tasks = @tasks.order("#{order_column} #{order_direction}")
+        order_direction ||= 'asc'
+        @tasks = @tasks.order("tasks.#{order_column} #{order_direction}")
       end
 
-      @tasks = @tasks.to_a.uniq # Convert to array and remove duplicates
+      # Filter by tag if tag parameter is present
+      if params[:tag]
+        tag = params[:tag]
+        @tasks = @tasks.joins(:tags).where(tags: { name: tag })
+      end
+
+      @tasks = @tasks.to_a.uniq
 
       erb :'tasks/index'
     end

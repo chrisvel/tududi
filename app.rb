@@ -108,6 +108,21 @@ helpers do
 
     "#{name} #{direction_icon}"
   end
+
+  def update_query_params(key, value)
+    uri = URI(request.url)
+    params = Rack::Utils.parse_nested_query(uri.query)
+    params[key] = value # Update or add the key-value pair
+    Rack::Utils.build_query(params)
+  end
+
+  def url_without_tag
+    uri = URI(request.url)
+    params = Rack::Utils.parse_nested_query(uri.query)
+    params.delete('tag') # Remove the 'tag' parameter
+    uri.query = Rack::Utils.build_query(params)
+    uri.to_s
+  end
 end
 
 get '/' do
