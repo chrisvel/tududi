@@ -15,34 +15,36 @@ module Sinatra
     end
 
     get '/tasks' do
-      @tasks = current_user.tasks.includes(:project, :tags)
+      # Base query with necessary joins
+      base_query = current_user.tasks.includes(:project, :tags)
 
-      case params[:due_date]
-      when 'today'
-        today = Date.today
-        @tasks = @tasks.incomplete.where('due_date <= ?', today.end_of_day)
-      when 'upcoming'
-        one_week_from_today = Date.today + 7.days
-        @tasks = @tasks.incomplete.where(due_date: Date.today..one_week_from_today)
-      when 'never'
-        @tasks = @tasks.incomplete.where(due_date: nil)
-      else
-        @tasks = params[:status] == 'completed' ? @tasks.complete : @tasks.incomplete
-      end
+      # Apply filters based on due_date and status
+      @tasks = case params[:due_date]
+               when 'today'
+                 base_query.incomplete.where('due_date <= ?', Date.today.end_of_day)
+               when 'upcoming'
+                 base_query.incomplete.where(due_date: Date.today..(Date.today + 7.days))
+               when 'never'
+                 base_query.incomplete.where(due_date: nil)
+               else
+                 params[:status] == 'done' ? base_query.complete : base_query.incomplete
+               end
 
+      # Apply ordering
       if params[:order_by]
         order_column, order_direction = params[:order_by].split(':')
         order_direction ||= 'asc'
         @tasks = @tasks.order("tasks.#{order_column} #{order_direction}")
       end
 
-      # Filter by tag if tag parameter is present
+      # Filter by tag if provided
       if params[:tag]
-        tag = params[:tag]
-        @tasks = @tasks.joins(:tags).where(tags: { name: tag })
+        tagged_task_ids = Tag.joins(:tasks).where(name: params[:tag],
+                                                  tasks: { user_id: current_user.id }).select('tasks.id')
+        @tasks = @tasks.where(id: tagged_task_ids)
       end
 
-      @tasks = @tasks.to_a.uniq
+      @tasks = @tasks.distinct
 
       erb :'tasks/index'
     end
@@ -52,6 +54,8 @@ module Sinatra
         name: params[:name],
         priority: params[:priority],
         due_date: params[:due_date],
+        status: params[:status] || Task.statuses[:not_started],
+        note: params[:note],
         user_id: current_user.id
       }
 
@@ -79,6 +83,8 @@ module Sinatra
       task_attributes = {
         name: params[:name],
         priority: params[:priority],
+        status: params[:status] || Task.statuses[:not_started],
+        note: params[:note],
         due_date: params[:due_date]
       }
 
@@ -101,8 +107,15 @@ module Sinatra
     patch '/task/:id/toggle_completion' do
       content_type :json
       task = current_user.tasks.find_by(id: params[:id])
+
       if task
-        task.completed = !task.completed
+        new_status = if task.done?
+                       task.note.present? ? :in_progress : :not_started
+                     else
+                       :done
+                     end
+        task.status = new_status
+
         if task.save
           task.to_json
         else

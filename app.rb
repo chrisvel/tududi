@@ -10,6 +10,7 @@ require './app/models/tag'
 require './app/models/note'
 
 require './app/helpers/authentication_helper'
+require './app/helpers/task_helper'
 
 require './app/routes/authentication_routes'
 require './app/routes/tasks_routes'
@@ -46,6 +47,8 @@ before do
   require_login
 end
 
+helpers TaskHelper
+
 helpers do
   def current_path
     request.path_info
@@ -53,16 +56,6 @@ helpers do
 
   def partial(page, options = {})
     erb page, options.merge!(layout: false)
-  end
-
-  def priority_class(task)
-    return 'text-success' if task.completed
-
-    case task.priority
-    when 'Medium' then 'text-warning'
-    when 'High' then 'text-danger'
-    else 'text-secondary'
-    end
   end
 
   def nav_link_active?(path, query_params = {}, project_id = nil)
@@ -90,23 +83,6 @@ helpers do
     classes += ' link-dark' unless is_active
 
     classes
-  end
-
-  def order_name(order_by)
-    return 'Select' unless order_by
-
-    field, direction = order_by.split(':')
-    name = case field
-           when 'due_date' then 'Due Date'
-           when 'name' then 'Name'
-           when 'priority' then 'Priority'
-           when 'created_at' then 'Created At'
-           else 'Select'
-           end
-
-    direction_icon = direction == 'asc' ? '<i class="bi bi-arrow-up"></i>' : '<i class="bi bi-arrow-down"></i>'
-
-    "#{name} #{direction_icon}"
   end
 
   def update_query_params(key, value)

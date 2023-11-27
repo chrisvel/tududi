@@ -16,7 +16,16 @@ class Sinatra::Application
   get '/notes' do
     order_by = params[:order_by] || 'title:asc'
     order_column, order_direction = order_by.split(':')
-    @notes = current_user.notes.includes(:tags).order("#{order_column} #{order_direction}")
+
+    @notes = current_user.notes.includes(:tags)
+    @notes = @notes.joins(:tags).where(tags: { name: params[:tag] }) if params[:tag]
+    @notes = @notes.order("notes.#{order_column} #{order_direction}")
+
+    query_params = Rack::Utils.parse_nested_query(request.query_string)
+    query_params.delete('tag')
+    @base_query = query_params.to_query
+    @base_url = '/notes?'
+    @base_url += "#{@base_query}&" unless @base_query.empty?
 
     erb :'notes/index'
   end

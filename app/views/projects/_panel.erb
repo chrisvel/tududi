@@ -1,0 +1,32 @@
+<% task_counts = @project.task_status_counts %>
+<% days_passed = (Date.today - @project.created_at.to_date).to_i %>
+<div class="bg-secondary-subtle mb-4 mx-3 p-3 rounded">
+  <div class="row">
+    <% task_stats = [['list-check', 'Total', task_counts[:total]],
+                     ['arrow-repeat', 'In Progress', task_counts[:in_progress]],
+                     ['check-circle', 'Done', task_counts[:done]],
+                     ['hourglass-split', 'Not Started', task_counts[:not_started]]] %>
+    <% task_stats.each do |icon, title, count| %>
+      <div class="col-md-3 mb-2">
+        <div class="card bg-light text-center py-3 border-0">
+          <div class="card-body d-flex align-items-center justify-content-center py-1">
+            <i class="bi bi-<%= icon %> fs-4 me-2"></i>
+            <span class="card-title mb-1"><%= title %></span>
+          </div>
+          <div class="card-footer py-1 border-0 bg-transparent">
+            <p class="card-text fs-4"><%= count %></p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="mt-2 d-flex align-items-center">
+    <i class="bi bi-calendar fs-4 me-2"></i>
+    <span>Project Started: <%= @project.created_at.strftime('%d %b %Y') %>, <%= days_passed %> days ago</span>
+  </div>
+  <div class="progress mt-3" style="height: 20px;">
+    <div class="progress-bar" role="progressbar" style="width: <%= @project.progress_percentage %>%;" aria-valuenow="<%= @project.progress_percentage %>" aria-valuemin="0" aria-valuemax="100">
+      <%= @project.progress_percentage %>% Complete
+    </div>
+  </div>
+</div>

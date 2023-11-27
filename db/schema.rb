@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_17_174412) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_27_094906) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.integer "user_id", null: false
@@ -65,7 +65,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_17_174412) do
 
   create_table "tasks", force: :cascade do |t|
     t.string "name"
-    t.string "priority"
     t.datetime "due_date"
     t.integer "user_id", null: false
     t.integer "project_id"
@@ -73,7 +72,9 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_17_174412) do
     t.datetime "updated_at", null: false
     t.boolean "today", default: false
     t.text "description"
-    t.boolean "completed", default: false
+    t.integer "priority"
+    t.text "note"
+    t.integer "status", default: 0
     t.index ["project_id"], name: "index_tasks_on_project_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end

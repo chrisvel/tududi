@@ -1,6 +1,6 @@
 require 'faker'
 
-user = User.create(email: "myemail@somewhere.com", password: "awes0meHax0Rp4ssword")
+user = User.create(email: 'myemail@somewhere.com', password: 'awes0meHax0Rp4ssword')
 user_id = user.id
 
 4.times do
@@ -28,10 +28,10 @@ projects.each do |project|
   8.times do
     Task.create(
       name: Faker::Lorem.sentence(word_count: 3),
-      priority: ['Low', 'Medium', 'High'].sample,
+      priority: %w[Low Medium High].sample,
       due_date: [Date.today, Date.today + rand(1..30), nil].sample,
       description: Faker::Lorem.sentence(word_count: 15),
-      completed: [true, false].sample,
+      status: [0, 1, 2].sample,
       user_id: user_id,
       project_id: project.id
     )

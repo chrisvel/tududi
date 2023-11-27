@@ -12,22 +12,39 @@
         </div>
       </div>
     </div>
+     <div class="row mb-3">
+      <div class="col-md-12">
+        <label for="task_tags_<%= task.id %>" class="form-label">Tags:</label>
+        <input name="tags" id="task_tags_<%= task.id %>" class="form-control" value="<%= task.tags&.map(&:name)&.join(',') %>" placeholder="Add Tags">
+      </div>
+    </div>
     <div class="row mb-3">
-      <div class="col-md-4">
+      <div class="col-md-12">
         <label for="task_project" class="form-label">Project (optional):</label>
         <select id="task_project_<%= task.id %>" name="project_id" class="form-select">
           <option value="">No Project</option>
           <% current_user.projects.each do |project| %>
             <option value="<%= project.id %>" <%= 'selected' if task.project_id == project.id %>><%= project.name %></option>
-            <% end %>
-          </select>
+          <% end %>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="task_status" class="form-label">Status:</label>
+        <select id="task_status_<%= task.id %>" name="status" class="form-select">
+          <option value="not_started" <%= 'selected' if task.not_started? %>>Not Started</option>
+          <option value="in_progress" <%= 'selected' if task.in_progress? %>>In Progress</option>
+          <option value="done" <%= 'selected' if task.done? %>>Done</option>
+          <option value="archived" <%= 'selected' if task.archived? %>>Archived</option>
+        </select>
       </div>
       <div class="col-md-4">
         <label for="task_priority" class="form-label">Priority:</label>
         <select id="task_priority_<%= task.id %>" name="priority" class="form-select">
-          <option value="Low" <%= 'selected' if task.priority == 'Low' %>>Low</option>
-          <option value="Medium" <%= 'selected' if task.priority == 'Medium' %>>Medium</option>
-          <option value="High" <%= 'selected' if task.priority == 'High' %>>High</option>
+          <option value="low" <%= 'selected' if task.low? %>>Low</option>
+          <option value="medium" <%= 'selected' if task.medium? %>>Medium</option>
+          <option value="high" <%= 'selected' if task.high? %>>High</option>
         </select>
       </div>
       <div class="col-md-4">
@@ -37,18 +54,21 @@
     </div>
     <div class="row mb-3">
       <div class="col-md-12">
-        <input name="tags" id="task_tags_<%= task.id %>" class="form-control" value="<%= task.tags&.map(&:name)&.join(',') %>" placeholder="Add Tags">
+        <label for="task_note" class="form-label">Note:</label>
+        <textarea rows="4" id="task_note_<%= task.id %>" name="note" class="form-control" placeholder=""><%= task.note %></textarea>
       </div>
     </div>
-    <div class="mt-4">
-      <button type="submit" class="btn btn-primary">
-        <%= task.new_record? ? 'Create Task' : 'Update Task' %>
-      </button>
-      <% unless task.new_record? %>
-        <button type="button" class="btn btn-outline-danger" onclick="deleteTask('<%= task.id %>')">
-          <i class="bi bi-trash"></i>
+    <div class="row">
+      <div class="mt-4">
+        <button type="submit" class="btn btn-primary">
+          <%= task.new_record? ? 'Create Task' : 'Update Task' %>
         </button>
-      <% end %>
+        <% unless task.new_record? %>
+          <button type="button" class="btn btn-outline-danger" onclick="deleteTask('<%= task.id %>')">
+            <i class="bi bi-trash"></i>
+          </button>
+        <% end %>
+      </div>
     </div>
   </fieldset>
 </form>

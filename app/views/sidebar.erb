@@ -24,7 +24,7 @@
       </a>
     </li>
     <li>
-      <a href="/tasks?status=completed" class="<%= nav_link('/tasks', 'status' => 'completed') %>">
+      <a href="/tasks?status=done" class="<%= nav_link('/tasks', 'status' => 'done') %>">
         <i class="bi bi-check-circle me-1"></i> Completed
       </a>
     </li>
@@ -78,6 +78,4 @@
 <%= partial :'projects/_new_project_modal' %>
 <%= partial :'areas/_new_area_modal' %>
 <%= partial :'notes/_new_note_modal', locals: {note: Note.new, context: 'sidebar'} %>
-<% current_user.areas.each do |area| %>
-  <%= partial :'areas/_edit_area_modal', locals: { area: area } %>
-<% end %>
+

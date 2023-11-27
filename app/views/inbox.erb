@@ -1,6 +1,6 @@
 <h2 class="mb-5"><i class="bi bi-inbox-fill ms-3 me-2"></i> Inbox</h2>
 
-<% unless params[:status] == 'completed' %>
+<% unless params[:status] == 'done' %>
   <%= partial :'tasks/_minimal_form', locals: { task: Task.new } %>
 <% end %>
 

@@ -5,7 +5,7 @@
     <% if params[:tag] %>
       <span class="badge bg-primary-subtle text-primary me-2" style="font-size: 13px">
         <i class="bi bi-tag-fill me-1 opacity-50"></i><%= params[:tag] %>
-        <a href="<%= url_without_tag %>" class="text-decoration-none text-dark ms-1" style="font-size: 13px">
+        <a href="<%= url_without_tag %>" class="text-decoration-none text-dark ms-1">
           <i class="bi bi-x text-primary"></i>
         </a>
       </span>
@@ -15,10 +15,10 @@
         <i class="bi bi-sort-alpha-down me-2"></i> <%= order_name(params[:order_by]) %>
       </button>
       <ul class="dropdown-menu" aria-labelledby="orderByDropdown">
-        <% ['due_date:desc', 'name:asc', 'priority:asc', 'created_at:desc'].each do |order| %>
+        <% ['due_date:desc', 'name:asc', 'priority:desc', 'created_at:desc'].each do |order| %>
           <li>
             <a class="dropdown-item" href="<%= "/tasks?#{update_query_params('order_by', order)}" %>">
-              <%= order.split(':').first.capitalize %>
+              <%= order.split(':').first.capitalize.gsub('_', ' ') %>
             </a>
           </li>
         <% end %>
@@ -26,7 +26,7 @@
     </div>
   </div>
 </div>
-<% unless params[:status] == 'completed' %>
+<% unless params[:status] == 'done' %>
   <%= partial :'tasks/_minimal_form', locals: { task: Task.new } %>
 <% end %>
 <div class="mx-3">

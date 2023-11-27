@@ -3,18 +3,19 @@
   <div class="row flex-grow-1 align-items-center">
     <div class="col-md-4">
       <div class="">
-        <a href="#" class="link-dark  fs-5 text-decoration-none">
+        <a href="#" class="link-dark text-decoration-none">
           <%= note.title %>
         </a> 
-        <% if note.tags %>
+        <% if note.tags.any? %>
           <div class="ms-3 opacity-75 d-inline-block">
             <% note.tags.each do |tag| %>
-              <span class="badge bg-primary-subtle text-primary rounded">
+              <% tag_url = "#{@base_url}tag=#{tag.name}" %>
+              <a href="<%= tag_url %>" class="badge bg-primary-subtle link-primary text-decoration-none rounded">
                 <%= tag.name %>
-              </span>
+              </a>
             <% end %>
           </div>
-      <% end %>
+        <% end %>
       </div>
     </div>
     <div class="col-md-3">

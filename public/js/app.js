@@ -219,7 +219,7 @@ function updateTaskCompletionStatus(taskId, data) {
   const taskIcon = iconSpan.querySelector('.bi');
   const taskDiv = iconSpan.closest('.task-item');
 
-  if (data.completed) {
+  if (data.done) {
     taskIcon.classList.remove('bi-circle', 'text-warning', 'text-danger');
     taskIcon.classList.add('bi-check-circle-fill', 'text-success');
     taskDiv.classList.add('opacity-50');
