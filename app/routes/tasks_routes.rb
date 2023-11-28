@@ -21,9 +21,18 @@ module Sinatra
       # Apply filters based on due_date and status
       @tasks = case params[:due_date]
                when 'today'
-                 base_query.incomplete.where('due_date <= ?', Date.today.end_of_day)
+                 base_query
+               .where('status = ? OR (status = ? AND due_date <= ?)',
+                      Task.statuses[:in_progress],
+                      Task.statuses[:not_started],
+                      Date.today.end_of_day)
                when 'upcoming'
-                 base_query.incomplete.where(due_date: Date.today..(Date.today + 7.days))
+                 base_query
+               .where('(status = ? OR status = ?) AND due_date BETWEEN ? AND ?',
+                      Task.statuses[:in_progress],
+                      Task.statuses[:not_started],
+                      Date.today,
+                      Date.today + 7.days)
                when 'never'
                  base_query.incomplete.where(due_date: nil)
                else
