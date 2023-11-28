@@ -3,10 +3,12 @@ class AddNoteAndStatusToTasks < ActiveRecord::Migration[7.1]
     add_column :tasks, :note, :text
     add_column :tasks, :status, :integer, default: 0
 
-    Task.reset_column_information
-    Task.find_each do |task|
-      task.update_column(:status, task.completed ? 2 : 0)
-    end
+    execute <<-SQL.squish
+      UPDATE tasks SET status = CASE
+        WHEN completed = 't' THEN 2
+        ELSE 0
+      END
+    SQL
 
     remove_column :tasks, :completed
   end
@@ -14,8 +16,10 @@ class AddNoteAndStatusToTasks < ActiveRecord::Migration[7.1]
   def down
     add_column :tasks, :completed, :boolean, default: false
 
-    Task.reset_column_information
-    Task.where(status: 2).update_all(completed: true)
+    execute <<-SQL.squish
+      UPDATE tasks SET completed = 't'
+      WHERE status = 2
+    SQL
 
     remove_column :tasks, :status
     remove_column :tasks, :note
