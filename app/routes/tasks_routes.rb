@@ -43,7 +43,12 @@ module Sinatra
       if params[:order_by]
         order_column, order_direction = params[:order_by].split(':')
         order_direction ||= 'asc'
-        @tasks = @tasks.order("tasks.#{order_column} #{order_direction}")
+
+        @tasks = if order_column == 'due_date'
+                   @tasks.order(Arel.sql("CASE WHEN tasks.due_date IS NULL THEN 1 ELSE 0 END, tasks.due_date #{order_direction}"))
+                 else
+                   @tasks.order("tasks.#{order_column} #{order_direction}")
+                 end
       end
 
       # Filter by tag if provided

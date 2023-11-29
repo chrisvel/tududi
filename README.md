@@ -105,7 +105,7 @@ TUDUDI_INTERNAL_SSL_ENABLED
 
 **PLEASE NOTE:** I am generating a new SSL certificate inside the Dockerfile. There will be an option to create and link an externally generated one in the future - at this stage I am doing this for simplicity.
 
-1. (optional) Create a random session secret and copy the hash to use it as a `TUDUDI_SESSION_SECRET`:
+1. (optional - only If you want to use the pre-generated SSL Certificate) Create a random session secret and copy the hash to use it as a `TUDUDI_SESSION_SECRET`:
     ```bash
     openssl rand -hex 64
     ```

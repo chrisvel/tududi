@@ -61,9 +61,7 @@ helpers do
   def nav_link_active?(path, query_params = {}, project_id = nil)
     current_uri = request.path_info
     current_query = request.query_string
-
     current_params = Rack::Utils.parse_nested_query(current_query)
-
     is_project_page = current_uri.include?('/project/') && path.include?('/project/')
 
     if is_project_page

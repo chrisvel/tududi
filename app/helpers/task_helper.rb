@@ -63,6 +63,7 @@ module TaskHelper
            when 'due_date' then 'Due Date'
            when 'name' then 'Name'
            when 'priority' then 'Priority'
+           when 'status' then 'Status'
            when 'created_at' then 'Created At'
            else 'Select'
            end

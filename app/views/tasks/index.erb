@@ -15,7 +15,7 @@
         <i class="bi bi-sort-alpha-down me-2"></i> <%= order_name(params[:order_by]) %>
       </button>
       <ul class="dropdown-menu" aria-labelledby="orderByDropdown">
-        <% ['due_date:desc', 'name:asc', 'priority:desc', 'created_at:desc'].each do |order| %>
+        <% ['due_date:asc', 'name:asc', 'priority:desc', 'status:desc', 'created_at:desc'].each do |order| %>
           <li>
             <a class="dropdown-item" href="<%= "/tasks?#{update_query_params('order_by', order)}" %>">
               <%= order.split(':').first.capitalize.gsub('_', ' ') %>
