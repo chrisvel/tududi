@@ -19,7 +19,7 @@ module Sinatra
       base_query = current_user.tasks.includes(:project, :tags)
 
       # Apply filters based on due_date and status
-      @tasks = case params[:due_date]
+      @tasks = case params[:type]
                when 'today'
                  base_query
                .where('status = ? OR (status = ? AND due_date <= ?)',

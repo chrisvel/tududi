@@ -1,4 +1,4 @@
-<% form_action ||= "/note/#{note.id}" %>
+<% form_action = note.new_record? ? '/note/create' : "/note/#{note.id}" %>
 <% form_id ||= 'noteForm' %>
 <% form_method = note.new_record? ? 'post' : 'patch' %>
 <form id="<%= form_id %>" action="<%= form_action %>" method="post">

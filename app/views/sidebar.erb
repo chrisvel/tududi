@@ -4,22 +4,27 @@
   <hr>
   <ul class="nav nav-pills flex-column">
     <li>
-      <a href="/tasks?due_date=today" class="<%= nav_link('/tasks', 'due_date' => 'today') %>">
+      <a href="/tasks?type=today" class="<%= nav_link('/tasks', 'type' => 'today') %>">
         <i class="bi bi-calendar-day-fill me-1"></i> Today
       </a>
     </li>
     <li class="nav-item">
-      <a href="/inbox" class="<%= nav_link('/inbox') %>" aria-current="page">
+      <a href="/inbox" class="<%= nav_link('/inbox') %>">
         <i class="bi bi-inbox-fill me-1"></i> Inbox
       </a>
     </li>
+    <li class="nav-item">
+      <a href="/tasks?type=next" class="<%= nav_link('/tasks', 'type' => 'next') %>">
+        <i class="bi bi-arrow-right-circle-fill me-1"></i> Next Actions
+      </a>
+    </li>
     <li>
-      <a href="/tasks?due_date=upcoming" class="<%= nav_link('/tasks', 'due_date' => 'upcoming') %>">
+      <a href="/tasks?type=upcoming" class="<%= nav_link('/tasks', 'due_date' => 'upcoming') %>">
         <i class="bi bi-calendar3 me-1"></i> Upcoming
       </a>
     </li>
     <li>
-      <a href="/tasks?due_date=never" class="<%= nav_link('/tasks', 'due_date' => 'never') %>">
+      <a href="/tasks?type=someday" class="<%= nav_link('/tasks', 'due_date' => 'never') %>">
         <i class="bi bi-moon-stars-fill me-1"></i> Someday
       </a>
     </li>
