@@ -1,7 +1,10 @@
-<div class="d-flex flex-column flex-shrink-0 p-3 vh-100 sidebar fixed-sidebar" style="width: 300px;">  <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-    <span class="fs-4">tu|du|di</span>
-  </a>
-  <hr>
+<div class="d-flex flex-column flex-shrink-0 p-3 vh-100 sidebar fixed-sidebar" style="width: 300px;">
+  <div class="d-flex justify-content-center mb-3 mb-md-0">
+    <a href="/" class="d-flex justify-content-center align-items-center mb-3 mb-md-0 link-dark text-decoration-none">
+      <span class="fs-4 fw-bold">tududi</span>
+    </a>
+  </div>
+  <div class="border-top my-3"></div>
   <ul class="nav nav-pills flex-column">
     <li>
       <a href="/tasks?type=today" class="<%= nav_link('/tasks', 'type' => 'today') %>">
@@ -19,12 +22,12 @@
       </a>
     </li>
     <li>
-      <a href="/tasks?type=upcoming" class="<%= nav_link('/tasks', 'due_date' => 'upcoming') %>">
+      <a href="/tasks?type=upcoming" class="<%= nav_link('/tasks', 'type' => 'upcoming') %>">
         <i class="bi bi-calendar3 me-1"></i> Upcoming
       </a>
     </li>
     <li>
-      <a href="/tasks?type=someday" class="<%= nav_link('/tasks', 'due_date' => 'never') %>">
+      <a href="/tasks?type=someday" class="<%= nav_link('/tasks', 'type' => 'someday') %>">
         <i class="bi bi-moon-stars-fill me-1"></i> Someday
       </a>
     </li>
@@ -79,8 +82,10 @@
       <li><a class="dropdown-item" href="/logout">Sign out</a></li>
     </ul>
   </div>
+  <button id="darkModeToggle" class="btn btn-link link-dark">
+    <i id="darkModeIcon" class="bi bi-moon"></i>
+  </button>
 </div>
 <%= partial :'projects/_new_project_modal' %>
 <%= partial :'areas/_new_area_modal' %>
 <%= partial :'notes/_new_note_modal', locals: {note: Note.new, context: 'sidebar'} %>
-

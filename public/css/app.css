@@ -100,10 +100,40 @@ h6 {
   background: #ececec;
 }
 
+.nav-link {
+  color: #000; 
+}
+
+.nav-link.active-link {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.dark-mode .nav-link {
+  color: #fff;
+}
+
+.dark-mode .nav-link.active-link {
+  background-color: var(--bs-dark);
+}
+
 /* tasks, notes */
+
+.task-item {
+  background: var(--bs-white);
+}
+
+.dark-mode .task-item,
+.dark-mode .note-item {
+  background: var(--bs-gray-dark);
+}
 
 .task-item:hover, .note-item:hover {
   background: #fafafa !important;
+}
+
+.dark-mode .task-item:hover, .dark-mode .note-item:hover {
+  background: var(--bs-black) !important;
 }
 
 /* task form */
@@ -128,3 +158,91 @@ h6 {
 a.project-card .card:hover {
   border: 1px solid #777 !important;
 }
+
+/* dark mode */
+.dark-mode {
+  background-color:  var(--bs-dark);
+  color: var(--bs-light);
+}
+
+.dark-mode .sidebar {
+  background-color: var(--bs-black);
+}
+
+.sidebar .border-top {
+  border-color: #ddd !important;
+}
+
+.dark-mode .sidebar .border-top {
+  border-color: #333 !important;
+}
+
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6 {
+  color: var(--bs-light) !important;
+}
+
+.dark-mode .modal .modal-dialog .modal-content {
+  background-color: var(--bs-gray-dark);
+  color: var(--bs-light);
+}
+
+.dark-mode .modal-header {
+  border-color: var(--bs-black);
+}
+
+.dark-mode input, 
+.dark-mode tags, 
+.dark-mode select,
+.dark-mode textarea {
+  background-color: var(--bs-dark);
+  color: var(--bs-light);
+  border-color: var(--bs-black);
+}
+
+.dark-mode input:focus,
+.dark-mode textarea:focus {
+  background-color: var(--bs-black);
+  color: var(--bs-light);
+}
+
+.dark-mode tag {
+  background-color: var(--bs-gray-dark) !important;
+  color: var(--bs-light) !important;
+}
+
+.dark-mode .project-card .card {
+  background-color: var(--bs-gray-dark) !important;
+  color: var(--bs-light) !important;
+}
+
+.dark-mode .progress {
+  background-color: var(--bs-dark);
+}
+
+.panel-card {
+  background-color: var(--bs-white) !important;
+  color: var(--bs-dark) !important;
+}
+
+.dark-mode .panel-card {
+  background-color: var(--bs-gray-dark) !important;
+  color: var(--bs-light) !important;
+}
+
+.panel {
+  background-color: var(--bs-light);
+}
+
+.dark-mode .panel {
+  background-color: var(--bs-black);
+}
+
+/* .dark-mode .panel .progress {
+  background-color: var(--bs-black);
+} */
+

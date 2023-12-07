@@ -1,4 +1,4 @@
-<div class="border-0 rounded bg-white shadow-sm mb-1 px-2 py-2 d-flex align-items-center task-item <%= 'opacity-50' if task.done? %>" data-task-id="<%= task.id %>">
+<div class="border-0 rounded shadow-sm mb-1 px-2 py-2 d-flex align-items-center task-item <%= 'opacity-50' if task.done? %>" data-task-id="<%= task.id %>">
   <div class="row flex-grow-1 align-items-top">
     <div class="col-md-6">
       <span onclick="toggleTaskCompletion(event, <%= task.id %>)" class="toggle-completion">
@@ -17,7 +17,7 @@
     </div>
     <div class="col-md-3 text-end">
       <% if task.project && params[:id].blank? %>
-        <a href="/project/<%= task.project.id %>" class="badge border text-decoration-none link-dark bg-light">
+        <a href="/project/<%= task.project.id %>" class="badge border text-decoration-none link-dark">
           <%= task.project.name %>
         </a>
       <% end %>

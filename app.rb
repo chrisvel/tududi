@@ -77,8 +77,7 @@ helpers do
     is_active = nav_link_active?(path, query_params, project_id)
 
     classes = 'nav-link py-1 px-3'
-    classes += ' active bg-dark' if is_active
-    classes += ' link-dark' unless is_active
+    classes += ' active-link' if is_active
 
     classes
   end
