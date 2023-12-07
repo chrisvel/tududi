@@ -1,6 +1,6 @@
 <% task_counts = @project.task_status_counts %>
 <% days_passed = (Date.today - @project.created_at.to_date).to_i %>
-<div class="bg-secondary-subtle mb-4 mx-3 p-3 rounded">
+<div class="mb-4 mx-3 p-3 panel rounded">
   <div class="row">
     <% task_stats = [['list-check', 'Total', task_counts[:total]],
                      ['arrow-repeat', 'In Progress', task_counts[:in_progress]],
@@ -8,13 +8,10 @@
                      ['hourglass-split', 'Not Started', task_counts[:not_started]]] %>
     <% task_stats.each do |icon, title, count| %>
       <div class="col-md-3 mb-2">
-        <div class="card bg-light text-center py-3 border-0">
-          <div class="card-body d-flex align-items-center justify-content-center py-1">
-            <i class="bi bi-<%= icon %> fs-4 me-2"></i>
-            <span class="card-title mb-1"><%= title %></span>
-          </div>
-          <div class="card-footer py-1 border-0 bg-transparent">
-            <p class="card-text fs-4"><%= count %></p>
+        <div class="card panel-card text-center py-3 border-0">
+          <div class="card-body fs-6 d-flex align-items-center justify-content-center py-1">
+            <i class="bi bi-<%= icon %> me-2"></i>
+            <span class=""><%= title %>: <%= count %></span>
           </div>
         </div>
       </div>

@@ -28,7 +28,7 @@
               <div class="card shadow-sm" style="min-height: 177px;">
                 <div class="d-flex flex-column justify-content-between h-100">
                   <div>
-                    <div class="bg-light rounded" style="height: 100px;"></div>
+                    <div class="rounded" style="height: 100px;"></div>
                     <div class="card-body p-0">
                       <div class="card-footer p-0">
                         <div class="progress rounded-0" style="height: 2px;">
@@ -36,7 +36,7 @@
                         </div>
                       </div>
                       <h5 class="card-title px-3 pt-3 pb-0 mb-1"><%= project.name.upcase %></h5>
-                      <div class="card-text px-3 small text-black-50 opacity-75">
+                      <div class="card-text px-3 small opacity-50">
                         <%= project.task_status_counts[:total] %> Tasks
                         <% if project.task_status_counts[:in_progress] > 0 %>
                           , <i class="bi bi-circle-fill text-success me-1" style="font-size: 0.5em; position: relative; top: -0.3em;"></i> <%= project.task_status_counts[:in_progress] %> in progress
@@ -51,9 +51,9 @@
         <% end %>
         <div class="col-md-4 mb-3">
           <a class="text-decoration-none project-card" href="#" data-bs-toggle="modal" data-bs-target="#newProjectModal">
-            <div class="card shadow-sm border-light p-0" style="min-height: 177px;">
-              <div class="card-body bg-light rounded px-0 p-0 text-center">
-                <i class="bi bi-plus" style="font-size: 72px; line-height: 175px; color: #eee"></i>
+            <div class="card shadow-sm p-0 opacity-25" style="min-height: 177px;">
+              <div class="card-body rounded px-0 p-0 text-center">
+                <i class="bi bi-plus opacity-25" style="font-size: 72px; line-height: 175px;"></i>
               </div>
             </div>
           </a>
