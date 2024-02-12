@@ -39,7 +39,7 @@
         <%= note.new_record? ? 'Create Note' : 'Update Note' %>
       </button>
       <% unless note.new_record? %>
-        <button type="submit" class="btn btn-outline-danger" onclick="deleteNote('<%= note.id %>')">
+        <button type="submit" class="btn btn-danger" onclick="deleteNote('<%= note.id %>')">
           <i class="bi bi-trash"></i>
         </button>
       <% end %>

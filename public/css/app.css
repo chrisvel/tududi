@@ -50,16 +50,20 @@ h6 {
   cursor: pointer;
 }
 
-::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: #eee;
-  opacity: 1; /* Firefox */
+  opacity: 1;
+  /* Firefox */
 }
 
-:-ms-input-placeholder { /* Internet Explorer 10-11 */
+:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
   color: gray;
 }
 
-::-ms-input-placeholder { /* Microsoft Edge */
+::-ms-input-placeholder {
+  /* Microsoft Edge */
   color: gray;
 }
 
@@ -87,6 +91,7 @@ h6 {
 /* main */
 
 .main-content {
+  margin-top: 50px;
   margin-left: 250px;
   background: transparent;
 }
@@ -101,7 +106,7 @@ h6 {
 }
 
 .nav-link {
-  color: #000; 
+  color: var(--bs-dark);
 }
 
 .nav-link.active-link {
@@ -119,20 +124,22 @@ h6 {
 
 /* tasks, notes */
 
-.task-item {
+.task-item, .note-item {
   background: var(--bs-white);
 }
 
 .dark-mode .task-item,
 .dark-mode .note-item {
-  background: var(--bs-gray-dark);
+  background: var(--bs-gray-dark) !important;
 }
 
-.task-item:hover, .note-item:hover {
+.task-item:hover,
+.note-item:hover {
   background: #fafafa !important;
 }
 
-.dark-mode .task-item:hover, .dark-mode .note-item:hover {
+.dark-mode .task-item:hover,
+.dark-mode .note-item:hover {
   background: var(--bs-black) !important;
 }
 
@@ -140,7 +147,7 @@ h6 {
 
 .task-name-input::placeholder {
   color: #ccc;
-  opacity: 1; /* Firefox */
+  opacity: 1;
 }
 
 .new-task-input {
@@ -161,7 +168,7 @@ a.project-card .card:hover {
 
 /* dark mode */
 .dark-mode {
-  background-color:  var(--bs-dark);
+  background-color: var(--bs-dark);
   color: var(--bs-light);
 }
 
@@ -195,8 +202,8 @@ a.project-card .card:hover {
   border-color: var(--bs-black);
 }
 
-.dark-mode input, 
-.dark-mode tags, 
+.dark-mode input,
+.dark-mode tags,
 .dark-mode select,
 .dark-mode textarea {
   background-color: var(--bs-dark);
@@ -213,6 +220,7 @@ a.project-card .card:hover {
 .dark-mode tag {
   background-color: var(--bs-gray-dark) !important;
   color: var(--bs-light) !important;
+  me
 }
 
 .dark-mode .project-card .card {
@@ -242,7 +250,11 @@ a.project-card .card:hover {
   background-color: var(--bs-black);
 }
 
-/* .dark-mode .panel .progress {
-  background-color: var(--bs-black);
-} */
+#newNoteForm .card {
+  color: var(--bs-dark) !important;
+}
 
+.dark-mode #newNoteForm .card {
+  background-color: var(--bs-gray-dark) !important;
+  color: var(--bs-light) !important;
+}

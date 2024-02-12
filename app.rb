@@ -103,7 +103,7 @@ get '/' do
 end
 
 get '/inbox' do
-  @tasks = current_user.tasks.incomplete.where(project_id: nil).order(:name)
+  @tasks = current_user.tasks.incomplete.where(project_id: nil).where(due_date: nil).order(:name)
 
   erb :inbox
 end

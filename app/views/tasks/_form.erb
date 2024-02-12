@@ -64,7 +64,7 @@
           <%= task.new_record? ? 'Create Task' : 'Update Task' %>
         </button>
         <% unless task.new_record? %>
-          <button type="button" class="btn btn-outline-danger" onclick="deleteTask('<%= task.id %>')">
+          <button type="button" class="btn btn-danger" onclick="deleteTask('<%= task.id %>')">
             <i class="bi bi-trash"></i>
           </button>
         <% end %>

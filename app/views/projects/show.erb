@@ -1,4 +1,4 @@
-<h2 class="mb-5"><i class="bi bi-hexagon ms-3 me-2"></i><%= @project.name.upcase %>
+<h2 class="mb-5"><i class="bi bi-hexagon ms-3 me-4"></i><%= @project.name.upcase %>
   <div class="dropdown d-inline-block">
     <button class="btn btn-link text-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
       <i class="bi bi-three-dots-vertical fs-6"></i>
@@ -54,8 +54,14 @@
   <% end %>
 </div>
 <h4 class="mt-5 ms-4 fw-bold">Notes</h4>
-<div class="rounded py-2 px-2 mx-3 d-flex align-items-center border" data-bs-toggle="collapse" data-bs-target="#newNoteForm" aria-expanded="false" aria-controls="newNoteForm" style="cursor: pointer; background: #eee;">
-  <i class=" bi bi-plus-circle-fill text-primary me-2"></i> <span class="">New note</span>
+<div class="rounded py-2 px-3 mx-3 d-flex align-items-center border border-black" 
+      data-bs-toggle="collapse" 
+      data-bs-target="#newNoteForm" 
+      aria-expanded="false" 
+      aria-controls="newNoteForm" 
+      style="cursor: pointer" 
+      data-context="notes">
+  + <span class="ms-2">Add note</span>
 </div>
 <div class="collapse" id="newNoteForm">
   <div class="card rounded bg-white shadow-sm mt-2 p-4 mx-3">

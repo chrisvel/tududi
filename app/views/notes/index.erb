@@ -22,11 +22,17 @@
     </div>
   </div>
 </div>
-<div class="rounded py-2 px-2 mx-3 d-flex align-items-center border" data-bs-toggle="collapse" data-bs-target="#newNoteForm" aria-expanded="false" aria-controls="newNoteForm" style="cursor: pointer; background: #eee;" data-context="notes">
-  <i class="bi bi-plus-circle-fill text-primary me-2"></i> <span class="">New note</span>
+<div class="rounded py-2 px-3 mx-3 d-flex align-items-center border border-black" 
+      data-bs-toggle="collapse" 
+      data-bs-target="#newNoteForm" 
+      aria-expanded="false" 
+      aria-controls="newNoteForm" 
+      style="cursor: pointer" 
+      data-context="notes">
+  + <span class="ms-2">Add note</span>
 </div>
 <div class="collapse" id="newNoteForm">
-  <div class="card rounded bg-white shadow-sm mt-2 p-4 mx-3">
+  <div class="card rounded shadow-sm mt-2 p-4 mx-3">
     <%= partial :'notes/_form',  locals: {note: Note.new, context: 'notes'} %>
   </div>
 </div>

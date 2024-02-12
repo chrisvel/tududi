@@ -34,6 +34,7 @@ function updateDarkMode(enabled) {
   darkModeIcon.classList.toggle('bi-sun', enabled);
   // Update link colors and other necessary elements
   updateLinkColors(enabled);
+  updateDropdownMenus(enabled);
 }
 
 function updateLinkColors(darkModeEnabled) {
@@ -52,6 +53,12 @@ function setInitialDarkModeState() {
     document.body.classList.toggle('dark-mode', isDarkMode);
     updateLinkColors(isDarkMode);
   }
+}
+
+function updateDropdownMenus(enableDarkMode) {
+  document.querySelectorAll('.dropdown-menu').forEach(menu => {
+    menu.classList.toggle('dropdown-menu-dark', enableDarkMode);
+  });
 }
 
 function initializeTagifyOnNotes() {
