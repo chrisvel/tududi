@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/activerecord'
 require 'securerandom'
+require 'byebug'
 
 require './app/models/user'
 require './app/models/area'
@@ -103,7 +104,7 @@ get '/' do
 end
 
 get '/inbox' do
-  @tasks = current_user.tasks.incomplete.where(project_id: nil).where(due_date: nil).order(:name)
+  @tasks = current_user.tasks.incomplete.where(project_id: nil, due_date: nil).order('tasks.created_at DESC')
 
   erb :inbox
 end

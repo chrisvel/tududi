@@ -58,7 +58,7 @@ module Sinatra
         @tasks = @tasks.where(id: tagged_task_ids)
       end
 
-      @tasks = @tasks.distinct
+      @tasks = @tasks.joins(:tags).distinct
 
       erb :'tasks/index'
     end

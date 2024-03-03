@@ -39,7 +39,7 @@
 <% end %>
 <div class="mx-3 mb-2">
   <% if @project.tasks.incomplete.any? %>
-    <% @project.tasks.incomplete.each do |task| %>
+    <% @project.tasks.incomplete.order('created_at DESC').each do |task| %>
       <div id="edit_task_form_<%= task.id %>" class="d-none">
         <%= partial :'tasks/_form', locals: { task: task } %>
       </div>
@@ -48,13 +48,13 @@
       </div>
     <% end %>
   <% else %>
-    <div class="rounded px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
+    <div class="rounded px-4 py-2 mb-4 bg-secondary-subtle fw-light blank-slate opacity-50">
       No tasks have been created yet for this project
     </div>
   <% end %>
 </div>
 <h4 class="mt-5 ms-4 fw-bold">Notes</h4>
-<div class="rounded py-2 px-3 mx-3 d-flex align-items-center border border-black" 
+<div class="rounded py-2 px-3 mx-3 d-flex align-items-center note-form-toggler" 
       data-bs-toggle="collapse" 
       data-bs-target="#newNoteForm" 
       aria-expanded="false" 
@@ -77,7 +77,7 @@
       <%= partial :'notes/_note', locals: {note: note} %>
     <% end %>
   <% else %>
-    <div class="rounded px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
+    <div class="rounded px-4 py-2 mb-4 bg-secondary-subtle fw-light blank-slate opacity-50">
       No notes have been created yet for this project
     </div>
   <% end %>

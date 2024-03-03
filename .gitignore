@@ -3,3 +3,5 @@
 *.sqlite3-wal
 certs/
 .DS_Store
+
+.byebug_history

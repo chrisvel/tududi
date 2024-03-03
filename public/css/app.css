@@ -124,7 +124,8 @@ h6 {
 
 /* tasks, notes */
 
-.task-item, .note-item {
+.task-item,
+.note-item {
   background: var(--bs-white);
 }
 
@@ -243,7 +244,7 @@ a.project-card .card:hover {
 }
 
 .panel {
-  background-color: var(--bs-light);
+  background-color: #eee;
 }
 
 .dark-mode .panel {
@@ -256,5 +257,27 @@ a.project-card .card:hover {
 
 .dark-mode #newNoteForm .card {
   background-color: var(--bs-gray-dark) !important;
+  color: var(--bs-light) !important;
+}
+
+.blank-slate {
+  background-color: #eee !important;
+  color: var(--bs-dark) !important;
+}
+
+.dark-mode .blank-slate {
+  background-color: var(--bs-gray-dark) !important;
+  color: var(--bs-light) !important;
+}
+
+.note-form-toggler {
+  border: 1px solid #ddd !important;
+  background-color: #f4f4f4 !important;
+  color: #ccc !important;
+}
+
+.dark-mode .note-form-toggler {
+  border: 1px solid #000 !important;
+  background-color: var(--bs-dark) !important;
   color: var(--bs-light) !important;
 }

@@ -17,7 +17,7 @@
       </a>
     </li>
     <li class="nav-item">
-      <a href="/tasks?type=next" class="<%= nav_link('/tasks', 'type' => 'next') %>">
+      <a href="/tasks?type=next&order_by=created_at:desc" class="<%= nav_link('/tasks', 'type' => 'next') %>">
         <i class="bi bi-arrow-right-circle-fill me-1"></i> Next Actions
       </a>
     </li>
@@ -43,7 +43,7 @@
     </li>
     <li class="border-top my-3"></li>
     <li class="nav-item d-flex justify-content-between align-items-center w-100 <%= nav_link('/projects') %>">
-      <a href="/projects" class="text-decoration-none flex-grow-1 <%= nav_link_active?('/projects') ? 'link-light' : 'link-dark' %>">
+      <a href="/projects" class="text-decoration-none flex-grow-1 <%= nav_link_active?('/projects') ? 'text-light' : 'link-dark' %>">
         <i class="bi bi-hexagon-fill me-1"></i> Areas & Projects
       </a>
       <button class="btn btn-link text-secondary p-0 ms-2" type="button" id="addNewDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -61,7 +61,7 @@
     </li>
     <li class="border-top my-3"></li>
     <li class="nav-item d-flex justify-content-between align-items-center <%= nav_link('/notes') %>">
-      <a href="/notes" class="text-decoration-none flex-grow-1 <%= nav_link_active?('/notes') ? 'link-light' : 'link-dark' %>">
+      <a href="/notes" class="text-decoration-none flex-grow-1 <%= nav_link_active?('/notes') ? 'text-light' : 'link-dark' %>">
         <i class="bi bi-journal-text me-1"></i> Notes
       </a>
       <a class="text-no-decoration link-secondary btn-outline-dark" href="#" data-bs-toggle="modal" data-bs-target="#newNoteModal">
