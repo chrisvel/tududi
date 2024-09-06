@@ -1,0 +1,39 @@
+<% projects.each do |project| %>
+<% counts = @task_status_counts[project.id] %>
+  <div class="col-md-4 mb-3">
+    <a class="text-decoration-none project-card" href="/project/<%= project.id %>">
+      <div class="card shadow-sm" style="min-height: 177px;">
+        <div class="d-flex flex-column justify-content-between h-100">
+          <div>
+            <div class="rounded" style="height: 100px;"></div>
+            <div class="card-body p-0">
+              <div class="card-footer p-0">
+                <div class="progress rounded-0" style="height: 2px;">
+                  <div class="progress-bar" role="progressbar" style="width: <%= project.progress_percentage %>%" aria-valuenow="<%= project.progress_percentage %>" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+              <h5 class="card-title px-3 pt-3 pb-0 mb-1">
+                <%= project.name.length > 20 ? project.name.upcase[0,25] + "..." : project.name.upcase %>
+              </h5>
+              <div class="card-text px-3 small opacity-50">
+                <%= counts[:total] %> Tasks
+                <% if counts[:in_progress] > 0 %>
+                  , <i class="bi bi-circle-fill text-success me-1" style="font-size: 0.5em; position: relative; top: -0.3em;"></i> <%= counts[:in_progress] %> in progress
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+<% end %>
+<div class="col-md-4 mb-3">
+  <a class="text-decoration-none project-card" href="#" data-bs-toggle="modal" data-bs-target="#newProjectModal">
+    <div class="card shadow-sm p-0 opacity-25" style="min-height: 177px;">
+      <div class="card-body rounded px-0 p-0 text-center">
+        <i class="bi bi-plus opacity-25" style="font-size: 72px; line-height: 175px;"></i>
+      </div>
+    </div>
+  </a>
+</div>

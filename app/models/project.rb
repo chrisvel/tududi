@@ -10,11 +10,15 @@ class Project < ActiveRecord::Base
   validates :name, presence: true
 
   def task_status_counts
+    status_counts = tasks.group(:status).count
+
+    total = status_counts.values.sum
+
     {
-      total: tasks.count,
-      in_progress: tasks.where(status: Task.statuses[:in_progress]).count,
-      done: tasks.where(status: Task.statuses[:done]).count,
-      not_started: tasks.where(status: Task.statuses[:not_started]).count
+      total: total,
+      in_progress: status_counts[Task.statuses[:in_progress]] || 0,
+      done: status_counts[Task.statuses[:done]] || 0,
+      not_started: status_counts[Task.statuses[:not_started]] || 0
     }
   end
 

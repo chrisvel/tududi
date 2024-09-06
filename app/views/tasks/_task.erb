@@ -1,34 +1,32 @@
-<div class="border-0 rounded shadow-sm mb-1 px-3 py-2 d-flex align-items-center task-item <%= 'opacity-50' if task.done? %>" data-task-id="<%= task.id %>">
+<div class="border-0 rounded bg-transparent px-2 py-1 d-flex align-items-center task-item <%= 'opacity-50' if task.done? %>" data-task-id="<%= task.id %>">
   <div class="row flex-grow-1 align-items-top">
     <div class="col-md-6">
       <span onclick="toggleTaskCompletion(event, <%= task.id %>)" class="toggle-completion">
         <i class="fs-6 bi <%= task.done? ? 'bi-check-circle-fill' : 'bi-circle' %> <%= priority_class(task) %> me-2"></i>
       </span>
       <span class="fw-light"><%= task.name %></span>
+    </div>
+    <div class="col-md-6 text-end">
       <% if task.tags.any? %>
         <div class="ms-3 opacity-75 d-inline-block">
           <% task.tags.each do |tag| %>
-            <a href="<%= "/tasks?#{update_query_params('tag', tag.name)}" %>" class="badge bg-primary-subtle link-primary text-decoration-none">
+            <a href="<%= "/tasks?#{update_query_params('tag', tag.name)}" %>" class="badge bg-primary-subtle py-1 link-primary text-decoration-none">
               <i class="bi bi-tag-fill me-1 opacity-50"></i><%= tag.name %>
             </a>
           <% end %>
         </div>
       <% end %>
-    </div>
-    <div class="col-md-3 text-end">
       <% if task.project && params[:id].blank? %>
-        <a href="/project/<%= task.project.id %>" class="badge border border-secondary text-decoration-none link-dark fw-light">
-          <%= task.project.name %>
+        <a href="/project/<%= task.project.id %>" class="badge border border-secondary text-decoration-none py-1 link-dark fw-normal">
+          <%= task.project.name.length > 25 ? task.project.name[0,25] + "..." : task.project.name %>
         </a>
       <% end %>
-    </div>
-    <div class="col-md-3 text-end">
       <% if task.due_date %>
-        <span class="badge <%= due_date_badge_class(task.due_date) %> fw-light">
+        <span class="badge py-1 <%= due_date_badge_class(task.due_date) %>" style="width: 95px">
           <i class="bi bi-clock me-2"></i> <%= format_due_date(task.due_date) %>
         </span>
       <% end %>
-      <span class="badge <%= status_badge_class(task.status) %> fw-light">
+      <span class="badge py-1 <%= status_badge_class(task.status) %>">
         <i class="bi bi-circle-fill me-1" style="font-size: 0.6em; position: relative; top: -0.15em;"></i> 
         <span class="text-dark"><%= task.status.gsub('_', ' ').capitalize %></span>
       </span>
