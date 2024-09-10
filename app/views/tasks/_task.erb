@@ -1,4 +1,4 @@
-<div class="border-0 rounded bg-transparent px-2 py-1 d-flex align-items-center task-item <%= 'opacity-50' if task.done? %>" data-task-id="<%= task.id %>">
+<div class="bg-transparent px-2 pt-2 d-flex align-items-center task-item <%= 'opacity-50' if task.done? %>" data-task-id="<%= task.id %>">
   <div class="row flex-grow-1 align-items-top">
     <div class="col-md-6">
       <span onclick="toggleTaskCompletion(event, <%= task.id %>)" class="toggle-completion">

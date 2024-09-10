@@ -1,27 +1,31 @@
 <h2 class="mb-5"><i class="bi bi-hexagon ms-3 me-2"></i>Projects</h2>
-<div class="row px-3">
+<div class="row bg-white mx-2 project-list">
   <% @grouped_projects.each do |area, projects| %>
     <% projects.each_with_index do |project, index| %>
       <% counts = @task_status_counts[project.id] %>
-      <div class="border-0 rounded bg-transparent px-2 py-1 d-flex align-items-center task-item" data-project-id="<%= project.id %>" onclick="window.location.href='/project/<%= project.id %>'" style="cursor: pointer;">
+      <div class="bg-transparent px-2 py-2 d-flex align-items-center task-item" data-project-id="<%= project.id %>" onclick="window.location.href='/project/<%= project.id %>'" style="cursor: pointer;">
         <div class="row flex-grow-1 align-items-top">
-          <div class="col-md-6 d-flex align-items-center">
-            <i class="bi bi-circle me-2"></i>
+          <div class="col-md-4 d-flex align-items-center">
+            <i class="bi bi-hexagon me-3"></i>
             <span class="fw-light"><%= project.name %></span>
-            <span>— <%= area&.name || 'No area' %></span>
           </div>
-          <div class="col-md-6 text-end">
-            <div class="progress" style="height: 5px; width: 100px; display: inline-block; vertical-align: middle;">
-              <div class="progress-bar bg-success" role="progressbar" style="width: <%= project.progress_percentage %>%;" aria-valuenow="<%= project.progress_percentage %>" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="col-md-4 d-flex align-items-center">
+            <span class="badge border border-secondary text-decoration-none link-dark"><%= area&.name || 'No area' %></span>
+          </div>
+          <div class="col-md-4 d-flex justify-content-end">
+            <div class="d-flex align-items-center">
+              <div class="progress" style="height: 5px; width: 100px; display: inline-block;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: <%= project.progress_percentage %>%;" aria-valuenow="<%= project.progress_percentage %>" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <span class="ms-2">
+                <%= counts[:total] %> /
+                <% if counts[:in_progress] > 0 %>
+                  <i class="bi bi-circle-fill text-success" style="font-size: 0.5em;"></i> <%= counts[:in_progress] %>
+                <% else %>
+                  0
+                <% end %>
+              </span>
             </div>
-            <span>
-              <%= counts[:total] %> /
-              <% if counts[:in_progress] > 0 %>
-                <i class="bi bi-circle-fill text-success" style="font-size: 0.5em; position: relative; top: -0.3em;"></i> <%= counts[:in_progress] %>
-              <% else %>
-                0
-              <% end %>
-            </span>
           </div>
         </div>
       </div>

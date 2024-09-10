@@ -36,7 +36,7 @@
     <%= partial :'notes/_form',  locals: {note: Note.new, context: 'notes'} %>
   </div>
 </div>
-<div class="mx-3 my-2">
+<div class="mx-3 my-2 note-list bg-white">
   <% @notes.each do |note| %>
     <div id="edit_note_form_<%= note.id %>" class="d-none">
       <%= partial :'notes/_form', locals: { note: note } %>

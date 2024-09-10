@@ -133,13 +133,21 @@ h6 {
 /* tasks, notes */
 
 .task-item,
-.note-item {
-  /* background: var(--bs-white); */
+.note-item{
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
 }
 
 .dark-mode .task-item,
-.dark-mode .note-item {
-  /* background: var(--bs-gray-dark) !important; */
+.dark-mode .note-item{
+  border-bottom: 1px solid #222;
+  padding-bottom: 8px;
+}
+
+.dark-mode .task-list,
+.dark-mode .note-list,
+.dark-mode .project-list {
+  background: var(--bs-black) !important;
 }
 
 .task-item:hover,

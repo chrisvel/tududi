@@ -4,7 +4,7 @@
   <%= partial :'tasks/_minimal_form', locals: { task: Task.new } %>
 <% end %>
 
-<div class="mx-3 mb-2">
+<div class="mx-3 mb-2 bg-white task-list">
   <% if @tasks %>
     <% @tasks.each do |task| %>
       <div id="edit_task_form_<%= task.id %>" class="d-none">
