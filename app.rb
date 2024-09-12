@@ -104,7 +104,12 @@ get '/' do
 end
 
 get '/inbox' do
-  @tasks = current_user.tasks.incomplete.where(project_id: nil, due_date: nil).order('tasks.created_at DESC')
+  @tasks = current_user.tasks
+                       .incomplete
+                       .left_joins(:tags)
+                       .where(project_id: nil, due_date: nil)
+                       .where(tags: { id: nil }) # Filter tasks with no tags
+                       .order('tasks.created_at DESC')
 
   erb :inbox
 end

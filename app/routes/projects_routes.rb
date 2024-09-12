@@ -1,6 +1,6 @@
 class Sinatra::Application
   get '/projects' do
-    @projects_with_tasks = current_user.projects.left_joins(:tasks, :area).order('projects.name ASC') # , areas.name ASC')
+    @projects_with_tasks = current_user.projects.left_joins(:tasks, :area).distinct.order('projects.name ASC') # , areas.name ASC')
 
     @task_status_counts = @projects_with_tasks.each_with_object({}) do |project, counts|
       counts[project.id] = project.task_status_counts

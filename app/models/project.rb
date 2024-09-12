@@ -16,9 +16,9 @@ class Project < ActiveRecord::Base
 
     {
       total: total,
-      in_progress: status_counts[Task.statuses[:in_progress]] || 0,
-      done: status_counts[Task.statuses[:done]] || 0,
-      not_started: status_counts[Task.statuses[:not_started]] || 0
+      in_progress: status_counts['in_progress'] || 0,
+      done: status_counts['done'] || 0,
+      not_started: status_counts['not_started'] || 0
     }
   end
 

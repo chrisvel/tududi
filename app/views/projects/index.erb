@@ -14,17 +14,14 @@
           </div>
           <div class="col-md-4 d-flex justify-content-end">
             <div class="d-flex align-items-center">
-              <div class="progress" style="height: 5px; width: 100px; display: inline-block;">
+              <div class="progress" style="height: 5px; width: 100px;">
                 <div class="progress-bar bg-success" role="progressbar" style="width: <%= project.progress_percentage %>%;" aria-valuenow="<%= project.progress_percentage %>" aria-valuemin="0" aria-valuemax="100"></div>
               </div>
-              <span class="ms-2">
-                <%= counts[:total] %> /
-                <% if counts[:in_progress] > 0 %>
-                  <i class="bi bi-circle-fill text-success" style="font-size: 0.5em;"></i> <%= counts[:in_progress] %>
-                <% else %>
-                  0
-                <% end %>
-              </span>
+              <div class="ms-2 d-flex" style="width: 50px; justify-content: space-between;">
+                <span style="text-align: right; flex: 1;"><%= counts[:done] %></span>
+                <span style="flex: 0;">/</span>
+                <span style="text-align: left; flex: 1;"><%= counts[:total] %></span>
+              </div>
             </div>
           </div>
         </div>
@@ -32,11 +29,9 @@
     <% end %>
   <% end %>
 </div>
-
 <div class="mt-3">
   <a href="#" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#newProjectModal">Add New Project</a>
 </div>
-
 <%= partial :'tasks/_edit_task_modal' %>
 <% current_user.areas.each do |area| %>
   <%= partial :'areas/_edit_area_modal', locals: { area: area } %>
