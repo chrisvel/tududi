@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
   attachEventListeners();
   initializeTagifyOnNotes();
+  initializeDarkModeToggle();
+  setInitialDarkModeState();
 });
 
 function attachEventListeners() {
@@ -10,6 +12,53 @@ function attachEventListeners() {
   attachProjectModalListeners();
   attachAreaModalListeners();
   attachNoteClickListeners();
+}
+
+function initializeDarkModeToggle() {
+  const darkModeToggle = document.querySelector('#darkModeToggle');
+  const darkModeIcon = document.querySelector('#darkModeIcon');
+  const isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+  updateDarkMode(isDarkMode);
+
+  darkModeToggle.addEventListener('click', function () {
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    updateDarkMode(!isDarkMode);
+  });
+}
+
+function updateDarkMode(enabled) {
+  document.body.classList.toggle('dark-mode', enabled);
+  localStorage.setItem('darkMode', enabled);
+  darkModeIcon.classList.toggle('bi-moon', !enabled);
+  darkModeIcon.classList.toggle('bi-sun', enabled);
+  // Update link colors and other necessary elements
+  updateLinkColors(enabled);
+  updateDropdownMenus(enabled);
+}
+
+function updateLinkColors(darkModeEnabled) {
+  const links = document.querySelectorAll('.link-dark, .link-light');
+  links.forEach(link => {
+    link.classList.toggle('link-dark', !darkModeEnabled);
+    link.classList.toggle('link-light', darkModeEnabled);
+  });
+}
+
+function setInitialDarkModeState() {
+  const isDarkMode = localStorage.getItem('darkMode') === 'true';
+  const darkModeToggle = document.querySelector('#darkModeToggle');
+  if (darkModeToggle) {
+    darkModeToggle.checked = isDarkMode;
+    document.body.classList.toggle('dark-mode', isDarkMode);
+    updateLinkColors(isDarkMode);
+  }
+}
+
+function updateDropdownMenus(enableDarkMode) {
+  document.querySelectorAll('.dropdown-menu').forEach(menu => {
+    menu.classList.toggle('dropdown-menu-dark', enableDarkMode);
+  });
 }
 
 function initializeTagifyOnNotes() {

@@ -20,10 +20,12 @@ module TaskHelper
       'bg-primary'
     when Date.tomorrow
       'bg-info'
-    when Date.yesterday..Date.today
-      'bg-danger'
     else
-      'bg-light text-dark'
+      if due_date.to_date < Date.today
+        'bg-danger'
+      else
+        'bg-light text-dark'
+      end
     end
   end
 

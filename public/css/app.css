@@ -1,7 +1,7 @@
 body {
   font-family: 'Poppins', sans-serif;
-  font-size: 0.85rem;
-  background: #f8f8f8;
+  font-size: 0.86rem;
+  background: #fafafa;
 }
 
 h1 {
@@ -50,16 +50,20 @@ h6 {
   cursor: pointer;
 }
 
-::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: #eee;
-  opacity: 1; /* Firefox */
+  opacity: 1;
+  /* Firefox */
 }
 
-:-ms-input-placeholder { /* Internet Explorer 10-11 */
+:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
   color: gray;
 }
 
-::-ms-input-placeholder { /* Microsoft Edge */
+::-ms-input-placeholder {
+  /* Microsoft Edge */
   color: gray;
 }
 
@@ -87,6 +91,7 @@ h6 {
 /* main */
 
 .main-content {
+  margin-top: 50px;
   margin-left: 250px;
   background: transparent;
 }
@@ -100,17 +105,66 @@ h6 {
   background: #ececec;
 }
 
+.nav-link {
+  color: var(--bs-dark);
+}
+
+.nav-link.active-link {
+  background-color: #343a40;
+  color: #fff;
+}
+
+.nav-link:hover, .nav-link a:hover {
+  color: #666 !important;
+}
+
+.nav-link.active-link:hover, .nav-link.active-link a:hover {
+  color: #ccc !important;
+}
+
+.dark-mode .nav-link {
+  color: #fff;
+}
+
+.dark-mode .nav-link.active-link {
+  background-color: var(--bs-dark);
+}
+
 /* tasks, notes */
 
-.task-item:hover, .note-item:hover {
-  background: #fafafa !important;
+.task-item,
+.note-item{
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.dark-mode .task-item,
+.dark-mode .note-item{
+  border-bottom: 1px solid #222;
+  padding-bottom: 8px;
+}
+
+.dark-mode .task-list,
+.dark-mode .note-list,
+.dark-mode .project-list {
+  background: var(--bs-black) !important;
+}
+
+.task-item:hover,
+.note-item:hover {
+  background: #eee !important;
+}
+
+.dark-mode .task-item:hover,
+.dark-mode .note-item:hover {
+  background: #292929 !important;
 }
 
 /* task form */
 
 .task-name-input::placeholder {
   color: #ccc;
-  opacity: 1; /* Firefox */
+  opacity: 1;
 }
 
 .new-task-input {
@@ -127,4 +181,119 @@ h6 {
 /* project card */
 a.project-card .card:hover {
   border: 1px solid #777 !important;
+}
+
+/* dark mode */
+.dark-mode {
+  background-color: #191919;
+  color: var(--bs-light);
+}
+
+.dark-mode .sidebar {
+  background-color: var(--bs-black);
+}
+
+.sidebar .border-top {
+  border-color: #ddd !important;
+}
+
+.dark-mode .sidebar .border-top {
+  border-color: #333 !important;
+}
+
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6 {
+  color: var(--bs-light) !important;
+}
+
+.dark-mode .modal .modal-dialog .modal-content {
+  background-color: var(--bs-gray-dark);
+  color: var(--bs-light);
+}
+
+.dark-mode .modal-header {
+  border-color: var(--bs-black);
+}
+
+.dark-mode input,
+.dark-mode tags,
+.dark-mode select,
+.dark-mode textarea {
+  background-color: var(--bs-dark);
+  color: var(--bs-light);
+  border-color: var(--bs-black);
+}
+
+.dark-mode input:focus,
+.dark-mode textarea:focus {
+  background-color: var(--bs-black);
+  color: var(--bs-light);
+}
+
+.dark-mode tag {
+  background-color: var(--bs-gray-dark) !important;
+  color: var(--bs-light) !important;
+  me
+}
+
+.dark-mode .project-card .card {
+  background-color: var(--bs-gray-dark) !important;
+  color: var(--bs-light) !important;
+}
+
+.dark-mode .progress {
+  background-color: var(--bs-dark);
+}
+
+.panel-card {
+  background-color: var(--bs-white) !important;
+  color: var(--bs-dark) !important;
+}
+
+.dark-mode .panel-card {
+  background-color: var(--bs-gray-dark) !important;
+  color: var(--bs-light) !important;
+}
+
+.panel {
+  background-color: #eee;
+}
+
+.dark-mode .panel {
+  background-color: var(--bs-black);
+}
+
+#newNoteForm .card {
+  color: var(--bs-dark) !important;
+}
+
+.dark-mode #newNoteForm .card {
+  background-color: var(--bs-gray-dark) !important;
+  color: var(--bs-light) !important;
+}
+
+.blank-slate {
+  background-color: #eee !important;
+  color: var(--bs-dark) !important;
+}
+
+.dark-mode .blank-slate {
+  background-color: var(--bs-gray-dark) !important;
+  color: var(--bs-light) !important;
+}
+
+.note-form-toggler {
+  border: 1px solid #ddd !important;
+  background-color: #f4f4f4 !important;
+  color: #ccc !important;
+}
+
+.dark-mode .note-form-toggler {
+  border: 1px solid #000 !important;
+  background-color: var(--bs-dark) !important;
+  color: var(--bs-light) !important;
 }

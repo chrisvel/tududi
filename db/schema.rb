@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_27_094906) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_26_093339) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.integer "user_id", null: false
@@ -44,6 +44,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_27_094906) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "description"
+    t.boolean "active", default: false
     t.index ["area_id"], name: "index_projects_on_area_id"
     t.index ["user_id"], name: "index_projects_on_user_id"
   end

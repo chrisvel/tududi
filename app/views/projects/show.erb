@@ -1,4 +1,4 @@
-<h2 class="mb-5"><i class="bi bi-hexagon ms-3 me-2"></i><%= @project.name.upcase %>
+<h2 class="mb-5"><i class="bi bi-hexagon ms-3 me-4"></i><%= @project.name.upcase %>
   <div class="dropdown d-inline-block">
     <button class="btn btn-link text-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
       <i class="bi bi-three-dots-vertical fs-6"></i>
@@ -21,7 +21,7 @@
   </div>
 </h2>
 <% unless @project.description.blank? %>
-  <div class="bg-primary-subtle mb-4 mx-3 rounded d-flex align-items-center">
+  <div class="mb-4 mx-3 rounded d-flex align-items-center">
     <i class="bi bi-info-circle-fill fs-1 text-primary ms-3"></i>
     <div class="px-4 py-3">
       <%= @project.description %>
@@ -39,7 +39,7 @@
 <% end %>
 <div class="mx-3 mb-2">
   <% if @project.tasks.incomplete.any? %>
-    <% @project.tasks.incomplete.each do |task| %>
+    <% @project.tasks.incomplete.order('created_at DESC').each do |task| %>
       <div id="edit_task_form_<%= task.id %>" class="d-none">
         <%= partial :'tasks/_form', locals: { task: task } %>
       </div>
@@ -48,14 +48,20 @@
       </div>
     <% end %>
   <% else %>
-    <div class="rounded px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
+    <div class="rounded px-4 py-2 mb-4 bg-secondary-subtle fw-light blank-slate opacity-50">
       No tasks have been created yet for this project
     </div>
   <% end %>
 </div>
 <h4 class="mt-5 ms-4 fw-bold">Notes</h4>
-<div class="rounded py-2 px-2 mx-3 d-flex align-items-center border" data-bs-toggle="collapse" data-bs-target="#newNoteForm" aria-expanded="false" aria-controls="newNoteForm" style="cursor: pointer; background: #eee;">
-  <i class=" bi bi-plus-circle-fill text-primary me-2"></i> <span class="">New note</span>
+<div class="rounded py-2 px-3 mx-3 d-flex align-items-center note-form-toggler" 
+      data-bs-toggle="collapse" 
+      data-bs-target="#newNoteForm" 
+      aria-expanded="false" 
+      aria-controls="newNoteForm" 
+      style="cursor: pointer" 
+      data-context="notes">
+  + <span class="ms-2">Add note</span>
 </div>
 <div class="collapse" id="newNoteForm">
   <div class="card rounded bg-white shadow-sm mt-2 p-4 mx-3">
@@ -71,7 +77,7 @@
       <%= partial :'notes/_note', locals: {note: note} %>
     <% end %>
   <% else %>
-    <div class="rounded px-4 py-2 mb-4 bg-secondary-subtle fw-light opacity-50">
+    <div class="rounded px-4 py-2 mb-4 bg-secondary-subtle fw-light blank-slate opacity-50">
       No notes have been created yet for this project
     </div>
   <% end %>

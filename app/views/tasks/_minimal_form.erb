@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-12">
         <div class="input-group">
-          <input type="text" id="task_name_<%= task.id %>" name="name" value="<%= task.name %>" class="form-control mb-2 mx-3 px-3 py-2 new-task-input task-name-input " placeholder="+ Add New Task" required>
+          <input type="text" id="task_name_<%= task.id %>" name="name" value="<%= task.name %>" class="form-control mb-2 mx-3 px-3 py-2 new-task-input task-name-input" placeholder="+ Add New Task" required>
           <% if @project %> 
             <input type="hidden" name="project_id" value="<%= @project.id %>">
           <% end %>

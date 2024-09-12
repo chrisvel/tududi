@@ -1,66 +1,36 @@
-<h2 class="mb-5"><i class="bi bi-hexagon ms-3 me-2"></i>Areas & Projects</h2>
-<div class="row px-3">
+<h2 class="mb-5"><i class="bi bi-hexagon ms-3 me-2"></i>Projects</h2>
+<div class="row bg-white mx-2 project-list">
   <% @grouped_projects.each do |area, projects| %>
-    <div class="mb-5">
-      <div class="area-item d-flex align-items-center mb-3">
-        <a href="#area_<%= area.id %>_projects" class="nav-link link-dark" data-bs-toggle="collapse" aria-expanded="false">
-          <h4 class="mb-0 pb-0 fw-bold"><%= area.name %></h4>
-        </a>
-        <div class="dropdown area-options ms-2">
-          <button class="btn btn-link link-dark p-0" type="button" id="dropdownMenuButton<%= area.id %>" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-three-dots-vertical"></i>
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton<%= area.id %>">
-            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editAreaModal<%= area.id %>">Edit</a></li>
-            <li>
-              <form action="/area/<%= area.id %>" method="post" onsubmit="return confirm('Are you sure you want to delete this area?');">
-                <input type="hidden" name="_method" value="delete">
-                <button type="submit" class="dropdown-item">Delete</button>
-              </form>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="row">
-        <% projects.each do |project| %>
-          <div class="col-md-4 mb-3">
-            <a class="text-decoration-none project-card" href="/project/<%= project.id %>">
-              <div class="card shadow-sm" style="min-height: 177px;">
-                <div class="d-flex flex-column justify-content-between h-100">
-                  <div>
-                    <div class="bg-light rounded" style="height: 100px;"></div>
-                    <div class="card-body p-0">
-                      <div class="card-footer p-0">
-                        <div class="progress rounded-0" style="height: 2px;">
-                          <div class="progress-bar" role="progressbar" style="width: <%= project.progress_percentage %>%" aria-valuenow="<%= project.progress_percentage %>" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                      </div>
-                      <h5 class="card-title px-3 pt-3 pb-0 mb-1"><%= project.name.upcase %></h5>
-                      <div class="card-text px-3 small text-black-50 opacity-75">
-                        <%= project.task_status_counts[:total] %> Tasks
-                        <% if project.task_status_counts[:in_progress] > 0 %>
-                          , <i class="bi bi-circle-fill text-success me-1" style="font-size: 0.5em; position: relative; top: -0.3em;"></i> <%= project.task_status_counts[:in_progress] %> in progress
-                        <% end %>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </a>
+    <% projects.each_with_index do |project, index| %>
+      <% counts = @task_status_counts[project.id] %>
+      <div class="bg-transparent px-2 py-2 d-flex align-items-center task-item" data-project-id="<%= project.id %>" onclick="window.location.href='/project/<%= project.id %>'" style="cursor: pointer;">
+        <div class="row flex-grow-1 align-items-top">
+          <div class="col-md-4 d-flex align-items-center">
+            <i class="bi bi-hexagon me-3"></i>
+            <span class="fw-light"><%= project.name %></span>
           </div>
-        <% end %>
-        <div class="col-md-4 mb-3">
-          <a class="text-decoration-none project-card" href="#" data-bs-toggle="modal" data-bs-target="#newProjectModal">
-            <div class="card shadow-sm border-light p-0" style="min-height: 177px;">
-              <div class="card-body bg-light rounded px-0 p-0 text-center">
-                <i class="bi bi-plus" style="font-size: 72px; line-height: 175px; color: #eee"></i>
+          <div class="col-md-4 d-flex align-items-center">
+            <span class="badge border border-secondary text-decoration-none link-dark"><%= area&.name || 'No area' %></span>
+          </div>
+          <div class="col-md-4 d-flex justify-content-end">
+            <div class="d-flex align-items-center">
+              <div class="progress" style="height: 5px; width: 100px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: <%= project.progress_percentage %>%;" aria-valuenow="<%= project.progress_percentage %>" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <div class="ms-2 d-flex" style="width: 50px; justify-content: space-between;">
+                <span style="text-align: right; flex: 1;"><%= counts[:done] %></span>
+                <span style="flex: 0;">/</span>
+                <span style="text-align: left; flex: 1;"><%= counts[:total] %></span>
               </div>
             </div>
-          </a>
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
   <% end %>
+</div>
+<div class="mt-3">
+  <a href="#" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#newProjectModal">Add New Project</a>
 </div>
 <%= partial :'tasks/_edit_task_modal' %>
 <% current_user.areas.each do |area| %>
