@@ -91,7 +91,7 @@ puma -C app/config/puma.rb
 Pull the latest image:
 
 ```bash
-docker pull chrisvel/tududi:0.18
+docker pull chrisvel/tududi:0.19
 ```
 
 In order to start the docker container you need 3 enviromental variables:
@@ -120,7 +120,7 @@ TUDUDI_INTERNAL_SSL_ENABLED
     -e TUDUDI_INTERNAL_SSL_ENABLED=false \
     -v ~/tududi_db:/usr/src/app/tududi_db \
     -p 9292:9292 \
-    -d chrisvel/tududi:0.18
+    -d chrisvel/tududi:0.19
     ```
 
 3. Navigate to https://localhost:9292 and fill in your email and password.
