@@ -1,9 +1,9 @@
-# tu | du | di
+# tududi
 
-`tu|du|di` is a task and project management web application built with Sinatra. It allows users to efficiently manage their tasks and projects, categorize them into different areas, and track due dates. `tu|du|di` is designed to be intuitive and easy to use, providing a seamless experience for personal productivity.
+`tududi` is a task and project management web application built with Sinatra. It allows users to efficiently manage their tasks and projects, categorize them into different areas, and track due dates. `tududi` is designed to be intuitive and easy to use, providing a seamless experience for personal productivity.
 
-![image](screenshots/tasks.png)
-![image](screenshots/projects.png)
+![image](screenshots/all-light.png)
+![image](screenshots/all-dark.png)
 
 ## Features
 
@@ -27,7 +27,7 @@ Before you begin, ensure you have met the following requirements:
 
 ### Installation
 
-To install `tu|du|di`, follow these steps:
+To install `tududi`, follow these steps:
 
 1. Clone the repository:
    ```bash
@@ -138,7 +138,7 @@ Open your browser and navigate to `http://localhost:9292` to access the applicat
 
 ## Contributing
 
-Contributions to `tu|du|di` are welcome. To contribute:
+Contributions to `tududi` are welcome. To contribute:
 
 1. Fork the repository.
 2. Create a new branch (`git checkout -b feature/AmazingFeature`).
@@ -153,8 +153,8 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
 
-If you have any questions or comments about `tu|du|di`, please feel free to [open an issue](https://github.com/chrisvel/tududi/issues) or contact the developer directly.
+If you have any questions or comments about `tududi`, please feel free to [open an issue](https://github.com/chrisvel/tududi/issues) or contact the developer directly.
 
 ---
 
-README created by [Chris Veleris](https://github.com/chrisvel) for `tu|du|di`.
+README created by [Chris Veleris](https://github.com/chrisvel) for `tududi`.
