@@ -29,7 +29,8 @@ set :public_folder, 'public'
 
 configure do
   enable :sessions
-  set :sessions, httponly: true, secure: production?, expire_after: 2_592_000
+  set :sessions, httponly: true, secure: (production? && ENV['TUDUDI_INTERNAL_SSL_ENABLED'] == 'true'),
+                 expire_after: 2_592_000
   set :session_secret, ENV.fetch('TUDUDI_SESSION_SECRET') { SecureRandom.hex(64) }
 
   # Auto-create user if not exists
