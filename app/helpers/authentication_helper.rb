@@ -8,8 +8,16 @@ module AuthenticationHelper
   end
 
   def require_login
-    return if ['/login', '/logout'].include? request.path
+    # Allow requests to '/login' and '/logout' without checking for login
+    return if ['/login', '/logout', '/api/current_user'].include? request.path
 
-    redirect '/login' unless logged_in?
+    # If the user is not logged in and the request is not an API request, redirect to login
+    return if logged_in?
+
+    if request.xhr? || request.path.start_with?('/api/')
+      halt 401, { error: 'You must be logged in' }.to_json # For API calls, return a 401 status
+    else
+      redirect '/login' # For non-API calls, redirect to login page
+    end
   end
 end

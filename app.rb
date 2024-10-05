@@ -18,6 +18,10 @@ require './app/routes/tasks_routes'
 require './app/routes/projects_routes'
 require './app/routes/areas_routes'
 require './app/routes/notes_routes'
+require './app/routes/tags_routes'
+require './app/routes/users_routes'
+
+require 'sinatra/cross_origin'
 
 helpers AuthenticationHelper
 
@@ -30,7 +34,8 @@ set :public_folder, 'public'
 configure do
   enable :sessions
   set :sessions, httponly: true, secure: (production? && ENV['TUDUDI_INTERNAL_SSL_ENABLED'] == 'true'),
-                 expire_after: 2_592_000
+                 expire_after: 2_592_000,
+                 same_site: production? ? :none : :lax
   set :session_secret, ENV.fetch('TUDUDI_SESSION_SECRET') { SecureRandom.hex(64) }
 
   # Auto-create user if not exists
@@ -47,6 +52,21 @@ use Rack::Protection
 
 before do
   require_login
+end
+
+configure do
+  enable :cross_origin
+end
+
+before do
+  response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080' # Adjust based on frontend URL
+  response.headers['Access-Control-Allow-Credentials'] = 'true' # Important for sending session cookies
+end
+
+options '*' do
+  response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+  response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, Accept'
+  200
 end
 
 helpers TaskHelper
@@ -100,17 +120,24 @@ helpers do
   end
 end
 
-get '/' do
-  redirect '/tasks?due_date=today'
+get '/*' do
+  # redirect '/tasks?due_date=today'
+  erb :index
 end
 
-get '/inbox' do
-  @tasks = current_user.tasks
-                       .incomplete
-                       .left_joins(:tags)
-                       .where(project_id: nil, due_date: nil)
-                       .where(tags: { id: nil }) # Filter tasks with no tags
-                       .order('tasks.created_at DESC')
-
-  erb :inbox
+not_found do
+  content_type :json
+  status 404
+  { error: 'Not Found', message: 'The requested resource could not be found.' }.to_json
 end
+
+# get '/inbox' do
+#   @tasks = current_user.tasks
+#                        .incomplete
+#                        .left_joins(:tags)
+#                        .where(project_id: nil, due_date: nil)
+#                        .where(tags: { id: nil }) # Filter tasks with no tags
+#                        .order('tasks.created_at DESC')
+
+#   erb :inbox
+# end

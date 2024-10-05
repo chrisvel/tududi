@@ -1,3 +1,4 @@
+# models/project.rb
 class Project < ActiveRecord::Base
   belongs_to :user
   belongs_to :area, optional: true
@@ -7,7 +8,7 @@ class Project < ActiveRecord::Base
   scope :with_incomplete_tasks, -> { joins(:tasks).where.not(tasks: { status: Task.statuses[:done] }).distinct }
   scope :with_complete_tasks, -> { joins(:tasks).where(tasks: { status: Task.statuses[:done] }).distinct }
 
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: { scope: :user_id }
 
   def task_status_counts
     status_counts = tasks.group(:status).count
