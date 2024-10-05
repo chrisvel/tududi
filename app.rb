@@ -18,6 +18,7 @@ require './app/routes/tasks_routes'
 require './app/routes/projects_routes'
 require './app/routes/areas_routes'
 require './app/routes/notes_routes'
+require './app/routes/tags_routes'
 
 helpers AuthenticationHelper
 
@@ -46,7 +47,7 @@ end
 use Rack::Protection
 
 before do
-  require_login
+  # require_login
 end
 
 helpers TaskHelper
@@ -100,17 +101,18 @@ helpers do
   end
 end
 
-get '/' do
-  redirect '/tasks?due_date=today'
+get '/*' do
+  # redirect '/tasks?due_date=today'
+  erb :index
 end
 
-get '/inbox' do
-  @tasks = current_user.tasks
-                       .incomplete
-                       .left_joins(:tags)
-                       .where(project_id: nil, due_date: nil)
-                       .where(tags: { id: nil }) # Filter tasks with no tags
-                       .order('tasks.created_at DESC')
+# get '/inbox' do
+#   @tasks = current_user.tasks
+#                        .incomplete
+#                        .left_joins(:tags)
+#                        .where(project_id: nil, due_date: nil)
+#                        .where(tags: { id: nil }) # Filter tasks with no tags
+#                        .order('tasks.created_at DESC')
 
-  erb :inbox
-end
+#   erb :inbox
+# end

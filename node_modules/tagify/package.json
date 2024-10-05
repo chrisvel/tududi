@@ -1,0 +1,29 @@
+{
+  "author": "alexstrat",
+  "name": "tagify",
+  "description": "Browserify middleware for embedded compilation options",
+  "version": "0.1.1",
+  "homepage": "https://github.com/alexstrat/node-tagify",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/alexstrat/node-tagify.git"
+  },
+  "main": "./lib/index.js",
+  "scripts": {
+    "test": "node_modules/tap/bin/tap.js test/*.js"
+  },
+  "dependencies": {
+    "optimist" : "~0.3"
+    },
+  "peerDependency": {
+    "browserify": "1.x"
+  },
+  "devDependencies": {
+    "browserify" : "~1.16",
+    "tap"        : "~0.3"
+    },
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}

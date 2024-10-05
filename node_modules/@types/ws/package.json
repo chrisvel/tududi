@@ -1,0 +1,71 @@
+{
+    "name": "@types/ws",
+    "version": "8.5.12",
+    "description": "TypeScript definitions for ws",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/ws",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Paul Loyd",
+            "githubUsername": "loyd",
+            "url": "https://github.com/loyd"
+        },
+        {
+            "name": "Margus Lamp",
+            "githubUsername": "mlamp",
+            "url": "https://github.com/mlamp"
+        },
+        {
+            "name": "Philippe D'Alva",
+            "githubUsername": "TitaneBoy",
+            "url": "https://github.com/TitaneBoy"
+        },
+        {
+            "name": "reduckted",
+            "githubUsername": "reduckted",
+            "url": "https://github.com/reduckted"
+        },
+        {
+            "name": "teidesu",
+            "githubUsername": "teidesu",
+            "url": "https://github.com/teidesu"
+        },
+        {
+            "name": "Bartosz Wojtkowiak",
+            "githubUsername": "wojtkowiak",
+            "url": "https://github.com/wojtkowiak"
+        },
+        {
+            "name": "Kyle Hensel",
+            "githubUsername": "k-yle",
+            "url": "https://github.com/k-yle"
+        },
+        {
+            "name": "Samuel Skeen",
+            "githubUsername": "cwadrupldijjit",
+            "url": "https://github.com/cwadrupldijjit"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "exports": {
+        ".": {
+            "types": {
+                "import": "./index.d.mts",
+                "default": "./index.d.ts"
+            }
+        },
+        "./package.json": "./package.json"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/ws"
+    },
+    "scripts": {},
+    "dependencies": {
+        "@types/node": "*"
+    },
+    "typesPublisherContentHash": "32ddd11d89328bee2bba51767ec4f352327efde9e14bd1107492d0c8676d2cf6",
+    "typeScriptVersion": "4.8"
+}

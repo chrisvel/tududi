@@ -1,87 +1,171 @@
-<% action_url = task.new_record? ? '/task/create' : "/task/#{task.id}" %>
-<% method = task.new_record? ? 'post' : 'patch' %>
-<form action="<%= action_url %>" method="post" class="">
-  <% unless task.new_record? %>
-    <input type="hidden" name="_method" value="<%= method %>">
-  <% end %>
-  <fieldset>
-    <div class="row mb-3">
-      <div class="col-md-12">
-        <div class="input-group input-group-lg">
-          <input type="text" id="task_name_<%= task.id %>" name="name" value="<%= task.name %>" class="form-control" placeholder="+ Add Task" required>
-        </div>
-      </div>
-    </div>
-     <div class="row mb-3">
-      <div class="col-md-12">
-        <label for="task_tags_<%= task.id %>" class="form-label">Tags:</label>
-        <input name="tags" id="task_tags_<%= task.id %>" class="form-control" value="<%= task.tags&.map(&:name)&.join(',') %>" placeholder="Add Tags">
-      </div>
-    </div>
-    <div class="row mb-3">
-      <div class="col-md-12">
-        <label for="task_project" class="form-label">Project (optional):</label>
-        <select id="task_project_<%= task.id %>" name="project_id" class="form-select">
-          <option value="">No Project</option>
-          <% current_user.projects.each do |project| %>
-            <option value="<%= project.id %>" <%= 'selected' if task.project_id == project.id %>><%= project.name %></option>
-          <% end %>
-        </select>
-      </div>
-    </div>
-    <div class="row mb-3">
-      <div class="col-md-4">
-        <label for="task_status" class="form-label">Status:</label>
-        <select id="task_status_<%= task.id %>" name="status" class="form-select">
-          <option value="not_started" <%= 'selected' if task.not_started? %>>Not Started</option>
-          <option value="in_progress" <%= 'selected' if task.in_progress? %>>In Progress</option>
-          <option value="done" <%= 'selected' if task.done? %>>Done</option>
-          <option value="archived" <%= 'selected' if task.archived? %>>Archived</option>
-        </select>
-      </div>
-      <div class="col-md-4">
-        <label for="task_priority" class="form-label">Priority:</label>
-        <select id="task_priority_<%= task.id %>" name="priority" class="form-select">
-          <option value="low" <%= 'selected' if task.low? %>>Low</option>
-          <option value="medium" <%= 'selected' if task.medium? %>>Medium</option>
-          <option value="high" <%= 'selected' if task.high? %>>High</option>
-        </select>
-      </div>
-      <div class="col-md-4">
-        <label for="task_due_date" class="form-label">Due Date:</label>
-        <input type="date" id="task_due_date_<%= task.id %>" name="due_date" value="<%= task.due_date.strftime('%Y-%m-%d') if task.due_date %>" class="form-control">
-      </div>
-    </div>
-    <div class="row mb-3">
-      <div class="col-md-12">
-        <label for="task_note" class="form-label">Note:</label>
-        <textarea rows="4" id="task_note_<%= task.id %>" name="note" class="form-control" placeholder=""><%= task.note %></textarea>
-      </div>
-    </div>
-    <div class="row">
-      <div class="mt-4">
-        <button type="submit" class="btn btn-primary">
-          <%= task.new_record? ? 'Create Task' : 'Update Task' %>
-        </button>
-        <% unless task.new_record? %>
-          <button type="button" class="btn btn-danger" onclick="deleteTask('<%= task.id %>')">
-            <i class="bi bi-trash"></i>
+import React, { useState } from 'react';
+
+interface Task {
+  id: number;
+  name: string;
+  status: string;
+  due_date: string;
+  tags?: { name: string }[];
+  project_id?: number;
+  done?: boolean;
+  priority?: string;
+  note?: string;
+}
+
+interface ModalProps {
+  task: Task;
+  projects: { id: number; name: string }[]; // List of available projects
+  onClose: () => void;
+  onSave: (task: Task) => void;
+  onDelete: (taskId: number) => void;
+}
+
+const TaskModal: React.FC<ModalProps> = ({ task, projects, onClose, onSave, onDelete }) => {
+  const [taskData, setTaskData] = useState<Task>(task);
+
+  // Update task data on input change
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setTaskData({ ...taskData, [name]: value });
+  };
+
+  // Save task
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(taskData);
+  };
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-auto p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">{task.id ? 'Update Task' : 'Create Task'}</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
-        <% end %>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Task Name</label>
+            <input
+              type="text"
+              name="name"
+              value={taskData.name}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              placeholder="+ Add Task"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Tags</label>
+            <input
+              type="text"
+              name="tags"
+              value={taskData.tags?.map((tag) => tag.name).join(', ') || ''}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              placeholder="Add Tags"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Project (optional)</label>
+            <select
+              name="project_id"
+              value={taskData.project_id || ''}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            >
+              <option value="">No Project</option>
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Status</label>
+              <select
+                name="status"
+                value={taskData.status}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              >
+                <option value="not_started">Not Started</option>
+                <option value="in_progress">In Progress</option>
+                <option value="done">Done</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Priority</label>
+              <select
+                name="priority"
+                value={taskData.priority}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Due Date</label>
+              <input
+                type="date"
+                name="due_date"
+                value={taskData.due_date}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Note</label>
+            <textarea
+              name="note"
+              rows={4}
+              value={taskData.note || ''}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              placeholder="Add a note"
+            ></textarea>
+          </div>
+
+          <div className="flex justify-between">
+            <button
+              type="submit"
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              {task.id ? 'Update Task' : 'Create Task'}
+            </button>
+
+            {task.id && (
+              <button
+                type="button"
+                onClick={() => onDelete(task.id)}
+                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                <i className="bi bi-trash"></i> Delete Task
+              </button>
+            )}
+          </div>
+        </form>
       </div>
     </div>
-  </fieldset>
-</form>
-<% if !task.new_record? %>
-  <form id="delete_task_<%= task.id %>" action="/task/<%= task.id %>" method="post" class="d-none">
-    <input type="hidden" name="_method" value="delete">
-  </form>
-<% end %>
-<script>
-  function deleteTask(taskId) {
-    if (confirm('Are you sure you want to delete this task?')) {
-      var form = document.getElementById('delete_task_' + taskId);
-      form.submit();
-    }
-  }
-</script>
+  );
+};
+
+export default TaskModal;

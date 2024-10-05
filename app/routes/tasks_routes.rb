@@ -1,20 +1,23 @@
 module Sinatra
   class Application
-    def update_task_tags(task, tags_json)
-      return if tags_json.blank?
+    def update_task_tags(task, tags_data)
+      return if tags_data.nil?
 
-      begin
-        tag_names = JSON.parse(tags_json).map { |tag| tag['value'] }.uniq
-        tags = tag_names.map do |name|
-          current_user.tags.find_or_create_by(name: name)
-        end
-        task.tags = tags
-      rescue JSON::ParserError
-        puts "Failed to parse JSON for tags: #{tags_json}"
-      end
+      # Filter out nil or empty tag names, then ensure uniqueness with `uniq`
+      tag_names = tags_data.map { |tag| tag['name'] }.compact.reject(&:empty?).uniq
+
+      # Find or create tags based on the tag names
+      existing_tags = Tag.where(name: tag_names)
+      new_tags = tag_names - existing_tags.pluck(:name)
+      created_tags = new_tags.map { |name| Tag.create(name: name) }
+
+      # Associate only unique tags with the task
+      task.tags = (existing_tags + created_tags).uniq
     end
 
-    get '/tasks' do
+    get '/api/tasks' do
+      content_type :json
+
       # Base query with necessary joins
       base_query = current_user.tasks.includes(:project, :tags)
 
@@ -60,50 +63,77 @@ module Sinatra
 
       @tasks = @tasks.left_joins(:tags).distinct
 
-      erb :'tasks/index'
+      # Return the tasks in JSON format
+      @tasks.to_json(include: { tags: { only: :name }, project: { only: :name } })
     end
 
-    post '/task/create' do
+    post '/api/task/create' do
+      content_type :json
+
+      # Parse the request body as JSON
+      request_body = request.body.read
+      task_data = begin
+        JSON.parse(request_body)
+      rescue StandardError
+        halt 400, { error: 'Invalid JSON' }.to_json
+      end
+
+      # Build task attributes
       task_attributes = {
-        name: params[:name],
-        priority: params[:priority],
-        due_date: params[:due_date],
-        status: params[:status] || Task.statuses[:not_started],
-        note: params[:note],
+        name: task_data['name'],
+        priority: task_data['priority'] || 'medium', # Default priority
+        due_date: task_data['due_date'],
+        status: task_data['status'] || Task.statuses[:not_started],
+        note: task_data['note'],
         user_id: current_user.id
       }
 
-      if params[:project_id].blank?
-        task = current_user.tasks.build(task_attributes)
-      else
-        project = current_user.projects.find_by(id: params[:project_id])
-        halt 400, 'Invalid project.' unless project
-        task = project.tasks.build(task_attributes)
-      end
+      # Create task
+      task = if task_data['project_id'].nil? || task_data['project_id'].empty?
+               current_user.tasks.build(task_attributes)
+             else
+               project = current_user.projects.find_by(id: task_data['project_id'])
+               halt 400, { error: 'Invalid project.' }.to_json unless project
+               project.tasks.build(task_attributes)
+             end
 
+      # Save task and respond
       if task.save
-        update_task_tags(task, params[:tags])
-        redirect request.referrer || '/'
+        update_task_tags(task, task_data['tags'])
+        status 201
+        task.to_json(include: { tags: { only: :name }, project: { only: :name } })
       else
-        halt 400, 'There was a problem creating the task.'
+        halt 400, { error: 'There was a problem creating the task.' }.to_json
       end
     end
 
-    patch '/task/:id' do
+    patch '/api/task/:id' do
+      content_type :json
+      puts "Request to update task with ID: #{params[:id]}"
+      puts "Current user: #{current_user&.id}"
+
+      # Parse the request body as JSON
+      request_body = request.body.read
+      task_data = begin
+        JSON.parse(request_body)
+      rescue StandardError
+        {}
+      end
+
       task = current_user.tasks.find_by(id: params[:id])
 
       halt 404, 'Task not found.' unless task
 
       task_attributes = {
-        name: params[:name],
-        priority: params[:priority],
-        status: params[:status] || Task.statuses[:not_started],
-        note: params[:note],
-        due_date: params[:due_date]
+        name: task_data['name'], # Get the name from the JSON body
+        priority: task_data['priority'],
+        status: task_data['status'] || Task.statuses[:not_started],
+        note: task_data['note'],
+        due_date: task_data['due_date']
       }
 
-      if params[:project_id] && !params[:project_id].empty?
-        project = current_user.projects.find_by(id: params[:project_id])
+      if task_data['project_id'] && !task_data['project_id'].empty?
+        project = current_user.projects.find_by(id: task_data['project_id'])
         halt 400, 'Invalid project.' unless project
         task.project = project
       else
@@ -111,45 +141,45 @@ module Sinatra
       end
 
       if task.update(task_attributes)
-        update_task_tags(task, params[:tags])
-        redirect request.referrer || '/'
+        update_task_tags(task, task_data['tags'])
+        task.to_json(include: { tags: { only: :name }, project: { only: :name } })
       else
         halt 400, 'There was a problem updating the task.'
       end
     end
 
-    patch '/task/:id/toggle_completion' do
+    patch '/api/task/:id/toggle_completion' do
       content_type :json
+
       task = current_user.tasks.find_by(id: params[:id])
+      halt 404, { error: 'Task not found.' }.to_json unless task
 
-      if task
-        new_status = if task.done?
-                       task.note.present? ? :in_progress : :not_started
-                     else
-                       :done
-                     end
-        task.status = new_status
+      new_status = if task.done?
+                     task.note.present? ? :in_progress : :not_started
+                   else
+                     :done
+                   end
+      task.status = new_status
 
-        if task.save
-          task.to_json
-        else
-          status 422
-          { error: 'Unable to update task' }.to_json
-        end
+      if task.save
+        task.to_json
       else
-        status 400
-        { error: 'Task not found' }.to_json
+        status 422
+        { error: 'Unable to update task' }.to_json
       end
     end
 
-    delete '/task/:id' do
+    delete '/api/task/:id' do
+      content_type :json
+
       task = current_user.tasks.find_by(id: params[:id])
-      halt 404, 'Task not found.' unless task
+      halt 404, { error: 'Task not found.' }.to_json unless task
 
       if task.destroy
-        redirect request.referrer || '/'
+        status 200
+        { message: 'Task successfully deleted' }.to_json
       else
-        halt 400, 'There was a problem deleting the task.'
+        halt 400, { error: 'There was a problem deleting the task.' }.to_json
       end
     end
   end
