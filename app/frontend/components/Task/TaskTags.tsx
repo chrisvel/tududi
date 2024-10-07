@@ -8,7 +8,10 @@ const TaskTags: React.FC<TaskTagsProps> = ({ tags }) => {
   return (
     <div className="flex space-x-2">
       {tags?.map((tag, index) => (
-        <span key={`${tag.name}-${index}`} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+        <span
+          key={`${tag.name}-${index}`}
+          className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded"
+        >
           {tag.name}
         </span>
       ))}

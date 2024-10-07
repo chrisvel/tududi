@@ -19,6 +19,7 @@ require './app/routes/projects_routes'
 require './app/routes/areas_routes'
 require './app/routes/notes_routes'
 require './app/routes/tags_routes'
+require './app/routes/users_routes'
 
 helpers AuthenticationHelper
 

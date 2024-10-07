@@ -1,4 +1,3 @@
-// TaskList.tsx
 import React from 'react';
 import TaskItem from './TaskItem';
 import { Project } from '../../entities/Project';
@@ -32,7 +31,9 @@ const TaskList: React.FC<TaskListProps> = ({
           />
         ))
       ) : (
-        <p className="text-gray-500 text-center mt-4">No tasks available.</p>
+        <p className="text-gray-500 dark:text-gray-400 text-center mt-4">
+          No tasks available.
+        </p>
       )}
     </div>
   );

@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+// src/TagInput.tsx
+
+import React, { useState } from 'react';
 
 interface TagInputProps {
   initialTags: string[];
@@ -6,13 +8,9 @@ interface TagInputProps {
   availableTags: string[]; // Available tags to preload
 }
 
-const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availableTags }) => {
+const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availableTags = [] }) => {
   const [inputValue, setInputValue] = useState('');
-  const [tags, setTags] = useState<string[]>(initialTags || []); // Ensure tags is always an array
-
-  useEffect(() => {
-    onTagsChange(tags);
-  }, [tags, onTagsChange]);
+  const [tags, setTags] = useState<string[]>(initialTags || []);
 
   // Handle input change
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,8 +21,11 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && inputValue.trim()) {
       event.preventDefault(); // Prevent form submission
-      if (!tags.includes(inputValue.trim())) {
-        setTags([...tags, inputValue.trim()]); // Add the tag
+      const trimmedValue = inputValue.trim();
+      if (!tags.includes(trimmedValue)) {
+        const updatedTags = [...tags, trimmedValue];
+        setTags(updatedTags); // Update internal state
+        onTagsChange(updatedTags); // Notify parent
       }
       setInputValue(''); // Clear the input
     }
@@ -32,18 +33,23 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
 
   // Handle removing a tag
   const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove));
+    const updatedTags = tags.filter((tag) => tag !== tagToRemove);
+    setTags(updatedTags); // Update internal state
+    onTagsChange(updatedTags); // Notify parent
   };
 
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap gap-2">
         {tags.map((tag, index) => (
-          <span key={index} className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full">
+          <span
+            key={index}
+            className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-2 py-1 rounded-full flex items-center"
+          >
             {tag}
             <button
               type="button"
-              className="ml-2 text-red-500"
+              className="ml-2 text-red-500 focus:outline-none"
               onClick={() => removeTag(tag)}
             >
               &times;
@@ -58,7 +64,7 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
         onKeyDown={handleKeyPress}
         list="available-tags" // Datalist for suggestions
         placeholder="Add a tag"
-        className="w-full border px-3 py-2 rounded-md shadow-sm"
+        className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
       />
       <datalist id="available-tags">
         {availableTags.map((tag, index) => (

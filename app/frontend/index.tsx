@@ -1,17 +1,25 @@
+// src/index.tsx
+
 import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom'; // Import BrowserRouter
 import App from './App';
 
-// Get the root element from the DOM
-const container = document.getElementById('root');
+// Determine initial dark mode preference
+const storedPreference = localStorage.getItem('isDarkMode');
+const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const isDarkMode = storedPreference ? storedPreference === 'true' : prefersDarkMode;
 
-// Use React 18's createRoot API
-const root = createRoot(container!); // The '!' asserts that 'container' is not null
+// Add or remove the 'dark' class before rendering the app
+if (isDarkMode) {
+  document.documentElement.classList.add('dark');
+} else {
+  document.documentElement.classList.remove('dark');
+}
 
-// Render the App component inside BrowserRouter
-root.render(
+ReactDOM.render(
   <BrowserRouter>
     <App />
-  </BrowserRouter>
+  </BrowserRouter>,
+  document.getElementById('root')
 );

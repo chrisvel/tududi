@@ -7,7 +7,6 @@ import { Project } from './entities/Project';
 
 const getTitleAndIcon = (query: URLSearchParams, projects: Project[]) => {
   const projectId = query.get('project_id');
-  console.log(projectId)
   if (projectId) {
     const project = projects.find((p) => p.id.toString() === projectId);
     return { title: project ? project.name : 'Project', icon: 'bi-folder-fill' };
@@ -44,7 +43,10 @@ const Tasks: React.FC = () => {
   const query = new URLSearchParams(location.search);
   const { title: stateTitle, icon: stateIcon } = location.state || {};
 
-  const { title, icon } = stateTitle && stateIcon ? { title: stateTitle, icon: stateIcon } : getTitleAndIcon(query, projects);
+  const { title, icon } =
+    stateTitle && stateIcon
+      ? { title: stateTitle, icon: stateIcon }
+      : getTitleAndIcon(query, projects);
 
   useEffect(() => {
     const fetchData = async () => {

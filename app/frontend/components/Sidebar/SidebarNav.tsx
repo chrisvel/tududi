@@ -1,10 +1,10 @@
-// SidebarNav.tsx
 import React from 'react';
 import { Location } from 'react-router-dom';
 
 interface SidebarNavProps {
   handleNavClick: (path: string, title: string, icon: string) => void;
   location: Location;
+  isDarkMode: boolean;
 }
 
 const navLinks = [
@@ -17,11 +17,13 @@ const navLinks = [
   { path: '/tasks', title: 'All Tasks', icon: 'bi-layers' },
 ];
 
-const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => {
+const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location, isDarkMode }) => {
   const isActive = (path: string, query?: string) => {
     const isPathMatch = location.pathname === '/tasks';
     const isQueryMatch = query ? location.search.includes(query) : location.search === '';
-    return isPathMatch && isQueryMatch ? 'bg-gray-700 text-white' : 'text-gray-300';
+    return isPathMatch && isQueryMatch
+      ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+      : 'text-gray-700 dark:text-gray-300';
   };
 
   return (
@@ -30,7 +32,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
         <li key={link.path}>
           <button
             onClick={() => handleNavClick(link.path, link.title, link.icon)}
-            className={`w-full text-left px-4 py-1 flex items-center rounded-lg hover:bg-gray-700 transition-all duration-200 ${isActive(
+            className={`w-full text-left px-4 py-1 flex items-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
               link.path,
               link.query
             )}`}
@@ -39,7 +41,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
           </button>
         </li>
       ))}
-      <li className="border-t border-gray-700 my-2"></li>
     </ul>
   );
 };

@@ -25,7 +25,7 @@ module Sinatra
       @tasks = case params[:type]
                when 'today'
                  base_query
-               .where('status = ? OR (status = ? AND due_date <= ?)',
+               .where('(status = ? OR status = ?) AND due_date <= ?',
                       Task.statuses[:in_progress],
                       Task.statuses[:not_started],
                       Date.today.end_of_day)
@@ -74,8 +74,8 @@ module Sinatra
       request_body = request.body.read
       task_data = begin
         JSON.parse(request_body)
-      rescue StandardError
-        halt 400, { error: 'Invalid JSON' }.to_json
+      rescue JSON::ParserError => e
+        halt 400, { error: 'Invalid JSON format.' }.to_json
       end
 
       # Build task attributes
@@ -88,11 +88,13 @@ module Sinatra
         user_id: current_user.id
       }
 
-      # Create task
-      task = if task_data['project_id'].nil? || task_data['project_id'].empty?
+      # Create and assign task to variable
+      value = task_data['project_id']
+      task = if value.nil? || value.to_s.strip.empty?
+               # Assign the built task to the 'task' variable
                current_user.tasks.build(task_attributes)
              else
-               project = current_user.projects.find_by(id: task_data['project_id'])
+               project = current_user.projects.find_by(id: value)
                halt 400, { error: 'Invalid project.' }.to_json unless project
                project.tasks.build(task_attributes)
              end
@@ -103,7 +105,9 @@ module Sinatra
         status 201
         task.to_json(include: { tags: { only: :name }, project: { only: :name } })
       else
-        halt 400, { error: 'There was a problem creating the task.' }.to_json
+        # Collect error messages for better debugging
+        errors = task.errors.full_messages
+        halt 400, { error: 'There was a problem creating the task.', details: errors }.to_json
       end
     end
 
@@ -116,14 +120,16 @@ module Sinatra
       request_body = request.body.read
       task_data = begin
         JSON.parse(request_body)
-      rescue StandardError
-        {}
+      rescue JSON::ParserError => e
+        halt 400, { error: 'Invalid JSON format.' }.to_json
       end
 
+      # Find the task belonging to the current user
       task = current_user.tasks.find_by(id: params[:id])
 
-      halt 404, 'Task not found.' unless task
+      halt 404, { error: 'Task not found.' }.to_json unless task
 
+      # Build task attributes
       task_attributes = {
         name: task_data['name'], # Get the name from the JSON body
         priority: task_data['priority'],
@@ -132,19 +138,23 @@ module Sinatra
         due_date: task_data['due_date']
       }
 
-      if task_data['project_id'] && !task_data['project_id'].empty?
+      # Safely handle project_id
+      if task_data['project_id'] && !task_data['project_id'].to_s.strip.empty?
         project = current_user.projects.find_by(id: task_data['project_id'])
-        halt 400, 'Invalid project.' unless project
+        halt 400, { error: 'Invalid project.' }.to_json unless project
         task.project = project
       else
         task.project = nil
       end
 
+      # Update task attributes
       if task.update(task_attributes)
         update_task_tags(task, task_data['tags'])
         task.to_json(include: { tags: { only: :name }, project: { only: :name } })
       else
-        halt 400, 'There was a problem updating the task.'
+        # Collect error messages for better debugging
+        errors = task.errors.full_messages
+        halt 400, { error: 'There was a problem updating the task.', details: errors }.to_json
       end
     end
 

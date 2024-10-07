@@ -5,6 +5,10 @@
 ![image](screenshots/all-light.png)
 ![image](screenshots/all-dark.png)
 
+## How It Works
+
+This app allows users to manage their tasks, projects, areas, notes, and tags in an organized way. A user can create tasks, projects, areas (to group projects), notes, and tags. Each task can be associated with a project, and both tasks and notes can be tagged for better organization. Projects can belong to areas, and can also have multiple notes and tags. This structure helps users categorize and track their work efficiently, whether they’re managing individual tasks, larger projects, or keeping detailed notes.
+
 ## Features
 
 - **Task Management**: Create, update, and delete tasks. Mark tasks as completed and view them by different filters (Today, Upcoming, Someday). Order them by Name, Due date, Date created or Priority.
@@ -13,6 +17,8 @@
 - **Project Tracking**: Organize tasks into projects. Each project can contain multiple tasks and/or multiple notes.
 - **Area Categorization**: Group projects into areas for better organization and focus.
 - **Due Date Tracking**: Set due dates for tasks and view them based on due date categories.
+
+## Roadmap (planned or in progress)
 - **Responsive Design (in progress)**: Accessible from various devices, ensuring a consistent experience across desktops, tablets, and mobile phones.
 
 ## Getting Started
@@ -94,7 +100,7 @@ Pull the latest image:
 docker pull chrisvel/tududi:0.20
 ```
 
-In order to start the docker container you need 3 enviromental variables:
+In order to start the docker container you need 4 enviromental variables:
 
 ```bash
 TUDUDI_USER_EMAIL
@@ -130,7 +136,7 @@ TUDUDI_INTERNAL_SSL_ENABLED
 
 To run tests:
 
-```bash 
+```bash
 bundle exec ruby -Itest test/test_app.rb
 ```
 
