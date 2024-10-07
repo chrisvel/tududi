@@ -5,4 +5,4 @@ certs/
 .DS_Store
 
 .byebug_history
-app/frontend/node_modules
+node_modules
