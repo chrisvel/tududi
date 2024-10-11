@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { TagIcon, PlusCircleIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
-import ConfirmDialog from './components/ConfirmDialog'; // Adjust the path as necessary
+import ConfirmDialog from './components/Shared/ConfirmDialog'; // Adjust the path as necessary
 
 interface Tag {
   id: number;

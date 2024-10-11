@@ -1,5 +1,3 @@
-// src/components/Projects.tsx
-
 import React, { useEffect, useState } from 'react';
 import { Project } from './entities/Project';
 import { useNavigate } from 'react-router-dom';
@@ -125,7 +123,15 @@ const Projects: React.FC = () => {
   const groupedProjects = groupProjectsByArea(projects);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto">
+      {/* Header Section with Icon and Title */}
+      <div className="flex items-center mb-8">
+        <i className="bi bi-folder-fill text-xl mr-2"></i> {/* Icon for Project */}
+        <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
+          Projects
+        </h2>
+      </div>
+
       {/* Filters Section */}
       <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-6">
         {/* Active Status Filter */}
@@ -169,7 +175,7 @@ const Projects: React.FC = () => {
       {/* Projects Listing */}
       <div className="space-y-8">
         {Object.keys(groupedProjects).map((areaName) => (
-          <div key={areaName} className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+          <div key={areaName} className="bg-white dark:bg-gray-900 shadow rounded-lg p-6">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">{areaName}</h3>
             <ul className="space-y-4">
               {groupedProjects[areaName].map((project) => (

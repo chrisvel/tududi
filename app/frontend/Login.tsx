@@ -24,7 +24,7 @@ const Login: React.FC = () => {
 
       if (response.ok) {
         console.log('Login successful:', data);
-        navigate('/tasks?due_date=today');
+        navigate('/tasks?type=today&order_by=due_date%3Aasc');
       } else {
         setError(data.errors[0] || 'Login failed. Please try again.');
       }

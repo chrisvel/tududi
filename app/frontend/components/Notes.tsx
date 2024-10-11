@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import TagInput from '../TagInput';
-import ConfirmDialog from './ConfirmDialog';
+import ConfirmDialog from './Shared/ConfirmDialog';
 
 
 interface Tag {
