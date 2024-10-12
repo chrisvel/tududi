@@ -1,11 +1,9 @@
-// src/components/Area/AreaDetails.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Area } from '../../entities/Area';
 
 const AreaDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [area, setArea] = useState<Area | null>(null);
+  const [area, setArea] = useState<any | null>(null); // Allow flexibility in the type for now
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,11 +16,17 @@ const AreaDetails: React.FC = () => {
             'Accept': 'application/json',
           },
         });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch area details');
+        }
+
         const data = await response.json();
-        if (response.ok) {
-          setArea(data);
+
+        if (typeof data === 'object' && data !== null) {
+          setArea(data); // Handle valid JSON data
         } else {
-          throw new Error(data.error || 'Failed to fetch area.');
+          throw new Error('Unexpected response format');
         }
       } catch (error) {
         setError((error as Error).message);
@@ -35,11 +39,29 @@ const AreaDetails: React.FC = () => {
   }, [id]);
 
   if (loading) {
-    return <div>Loading area details...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
+          Loading area details...
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="text-red-500 text-lg">{error}</div>
+      </div>
+    );
+  }
+
+  if (!area) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="text-red-500 text-lg">Area not found.</div>
+      </div>
+    );
   }
 
   return (
@@ -48,7 +70,6 @@ const AreaDetails: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
           Area: {area?.name}
         </h2>
-        {/* Add more area-related information here */}
         <Link to={`/projects?area_id=${area?.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
           View Projects in {area?.name}
         </Link>

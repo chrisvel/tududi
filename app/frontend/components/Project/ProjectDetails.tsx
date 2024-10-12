@@ -1,10 +1,10 @@
-// src/components/Project/ProjectDetails.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import NewTask from '../../NewTask';
 import TaskList from '../Task/TaskList';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid'; // Import icons
 
 interface Area {
   id: number;
@@ -14,7 +14,7 @@ interface Area {
 const ProjectDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
-  const navigate = useNavigate(); // Updated for React Router v6
+  const navigate = useNavigate();
 
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -30,10 +30,8 @@ const ProjectDetails: React.FC = () => {
     const fetchProject = async () => {
       try {
         const response = await fetch(`/api/project/${id}`, {
-          credentials: 'include', // Include cookies for authentication
-          headers: {
-            'Accept': 'application/json',
-          },
+          credentials: 'include',
+          headers: { Accept: 'application/json' },
         });
         const data = await response.json();
         if (response.ok) {
@@ -56,10 +54,8 @@ const ProjectDetails: React.FC = () => {
     const fetchProjects = async () => {
       try {
         const response = await fetch('/api/projects', {
-          credentials: 'include', // Include cookies for authentication
-          headers: {
-            'Accept': 'application/json',
-          },
+          credentials: 'include',
+          headers: { Accept: 'application/json' },
         });
         const data = await response.json();
         if (response.ok) {
@@ -78,9 +74,9 @@ const ProjectDetails: React.FC = () => {
     try {
       const response = await fetch('/api/task/create', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ ...taskData, project_id: project?.id }),
-        credentials: 'include', // Include cookies for authentication
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -100,9 +96,9 @@ const ProjectDetails: React.FC = () => {
     try {
       const response = await fetch(`/api/task/${updatedTask.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(updatedTask),
-        credentials: 'include', // Include cookies for authentication
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -124,10 +120,8 @@ const ProjectDetails: React.FC = () => {
     try {
       const response = await fetch(`/api/task/${taskId}`, {
         method: 'DELETE',
-        credentials: 'include', // Include cookies for authentication
-        headers: {
-          'Accept': 'application/json',
-        },
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
       });
 
       if (response.ok) {
@@ -143,13 +137,12 @@ const ProjectDetails: React.FC = () => {
   };
 
   const handleEditProject = () => {
-    // Navigate to the project edit page using navigate()
-    navigate(`/project/${id}/edit`);
+    // Open the project modal for editing
+    navigate('/projects', { state: { editProjectId: id } });
   };
 
   const handleDeleteProject = () => {
-    // Functionality to delete the project will be implemented later
-    // For now, this can be left empty or show a message
+    // Functionality to delete the project can be added here
     console.log('Delete project functionality to be implemented.');
   };
 
@@ -164,52 +157,26 @@ const ProjectDetails: React.FC = () => {
   }
 
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="text-red-500 text-lg">{error}</div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-        {/* Project Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center">
-            {/* Project Icon */}
-            <i className={`bi ${projectIcon} text-3xl mr-4`}></i>
-            {/* Project Title */}
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {projectTitle}
-            </h2>
-          </div>
-          <div className="flex space-x-4">
-            {/* Edit Project Button */}
-            <button
-              onClick={handleEditProject}
-              className="text-blue-500 hover:text-blue-700 focus:outline-none"
-              aria-label="Edit Project"
-              title="Edit Project"
-            >
-              <i className="bi bi-pencil-square text-2xl"></i>
-            </button>
-
-            {/* Delete Project Button */}
-            <button
-              onClick={handleDeleteProject}
-              className="text-red-500 hover:text-red-700 focus:outline-none opacity-50 cursor-not-allowed"
-              aria-label="Delete Project"
-              title="Delete Project (Disabled)"
-              disabled
-            >
-              <i className="bi bi-trash text-2xl"></i>
-            </button>
-          </div>
+    <div className="flex justify-center px-4">
+      <div className="w-full max-w-4xl">
+        {/* Header Section with Icon and Title */}
+        <div className="flex items-center mb-8">
+          <i className={`bi ${projectIcon} text-xl mr-2`}></i>
+          <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">{projectTitle}</h2>
         </div>
 
         {/* Project Area */}
         {project?.area && (
           <div className="flex items-center mb-4">
-            {/* Area Icon */}
             <i className="bi bi-geo-alt-fill text-xl text-gray-500 dark:text-gray-400 mr-2"></i>
-            {/* Area Name with Link */}
             <Link
               to={`/area/${project.area.id}`}
               className="text-blue-600 dark:text-blue-400 hover:underline"
@@ -221,10 +188,32 @@ const ProjectDetails: React.FC = () => {
 
         {/* Project Description */}
         {project?.description && (
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
-            {project.description}
-          </p>
+          <p className="text-gray-700 dark:text-gray-300 mb-6">{project.description}</p>
         )}
+
+        {/* Action Buttons */}
+        <div className="flex justify-end mb-4 space-x-2">
+          {/* Edit Project Button */}
+          <button
+            onClick={handleEditProject}
+            className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
+            aria-label="Edit Project"
+            title="Edit Project"
+          >
+            <PencilSquareIcon className="h-5 w-5" />
+          </button>
+
+          {/* Delete Project Button */}
+          <button
+            onClick={handleDeleteProject}
+            className="text-gray-500 opacity-50 cursor-not-allowed focus:outline-none"
+            aria-label="Delete Project"
+            title="Delete Project (Disabled)"
+            disabled
+          >
+            <TrashIcon className="h-5 w-5" />
+          </button>
+        </div>
 
         {/* New Task Form */}
         <NewTask

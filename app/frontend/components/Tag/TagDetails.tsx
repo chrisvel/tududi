@@ -21,7 +21,7 @@ const TagDetails: React.FC = () => {
         const response = await fetch(`/api/tag/${id}`);
         const data = await response.json();
         if (response.ok) {
-          setTag(data.tag);
+          setTag(data);
         } else {
           setError(data.error || 'Failed to fetch tag.');
         }

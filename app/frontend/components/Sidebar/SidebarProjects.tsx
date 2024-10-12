@@ -8,7 +8,7 @@ interface Project {
   id: number;
   name: string;
   active: boolean;
-  pin_to_sidebar: boolean; // Include the new attribute
+  pin_to_sidebar: boolean;
   // Add other project properties if needed
 }
 
@@ -16,17 +16,16 @@ interface SidebarProjectsProps {
   handleNavClick: (path: string, title: string, icon: string) => void;
   location: Location;
   isDarkMode: boolean;
+  openProjectModal: () => void; // Add this prop
 }
 
 const SidebarProjects: React.FC<SidebarProjectsProps> = ({
   handleNavClick,
   location,
   isDarkMode,
+  openProjectModal,
 }) => {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [isCreatingProject, setIsCreatingProject] = useState(false);
-  const [newProjectName, setNewProjectName] = useState('');
-  const [pinToSidebar, setPinToSidebar] = useState(false); // New state for pinning
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -44,43 +43,6 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
     };
     fetchProjects();
   }, []);
-
-  const startProjectCreation = () => {
-    setIsCreatingProject(true);
-  };
-
-  const handleProjectNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewProjectName(e.target.value);
-  };
-
-  const handlePinToSidebarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPinToSidebar(e.target.checked);
-  };
-
-  const handleProjectCreation = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && newProjectName.trim()) {
-      try {
-        const response = await fetch('/api/project', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: newProjectName, pin_to_sidebar: pinToSidebar }),
-        });
-
-        if (response.ok) {
-          const newProject = await response.json();
-          setProjects((prevProjects) => [...prevProjects, newProject]);
-          setNewProjectName('');
-          setPinToSidebar(false);
-          setIsCreatingProject(false);
-        } else {
-          const errorData = await response.json();
-          console.error('Failed to create project:', errorData.error);
-        }
-      } catch (error) {
-        console.error('Error creating project:', error);
-      }
-    }
-  };
 
   const isActiveProject = (path: string) => {
     return location.pathname === path
@@ -104,8 +66,8 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
           </span>
           <button
             onClick={(e) => {
-              e.stopPropagation();
-              startProjectCreation();
+              e.stopPropagation(); // Prevent triggering the parent onClick
+              openProjectModal(); // Open the modal
             }}
             className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
             aria-label="Add Project"
@@ -114,32 +76,6 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
             <PlusCircleIcon className="h-5 w-5" />
           </button>
         </li>
-
-        {/* Input for New Project Creation */}
-        {isCreatingProject && (
-          <li className="px-4 py-1">
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                value={newProjectName}
-                onChange={handleProjectNameChange}
-                onKeyDown={handleProjectCreation}
-                placeholder="New project name"
-                autoFocus
-                className="w-full px-2 py-1 text-gray-900 bg-white dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <label className="flex items-center space-x-1 text-sm text-gray-700 dark:text-gray-300">
-                <input
-                  type="checkbox"
-                  checked={pinToSidebar}
-                  onChange={handlePinToSidebarChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <span>Pin</span>
-              </label>
-            </div>
-          </li>
-        )}
 
         {/* List of Projects */}
         {projects.map((project) => (
@@ -152,7 +88,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                 `/project/${project.id}`
               )}`}
             >
-              <FolderIcon className="h-5 w-5 mr-2 text-blue-500" />
+              <FolderIcon className="h-5 w-5 mr-2" />
               {project.name}
             </button>
           </li>

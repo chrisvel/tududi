@@ -27,7 +27,7 @@ class Sinatra::Application
     @base_url = '/notes?'
     @base_url += "#{@base_query}&" unless @base_query.empty?
 
-    @notes.to_json
+    @notes.to_json(include: :tags)
   end
 
   get '/api/note/:id' do
@@ -40,24 +40,32 @@ class Sinatra::Application
     note.to_json(include: :tags)
   end
 
-  post '/api/note/create' do
+  post '/api/note' do
     content_type :json
+
+    # Parse the request body to extract the JSON data
+    request_body = request.body.read
+    note_data = JSON.parse(request_body, symbolize_names: true)
+
+    # Extract the attributes from the parsed JSON data
     note_attributes = {
-      title: params[:title],
-      content: params[:content],
+      title: note_data[:title],
+      content: note_data[:content],
       user_id: current_user.id
     }
 
-    if params[:project_id].to_s.empty?
+    # Check for the presence of a project_id
+    if note_data[:project_id].to_s.empty?
       note = current_user.notes.build(note_attributes)
     else
-      project = current_user.projects.find_by(id: params[:project_id])
+      project = current_user.projects.find_by(id: note_data[:project_id])
       halt 400, { error: 'Invalid project.' }.to_json unless project
       note = project.notes.build(note_attributes)
     end
 
+    # Save the note and update its tags
     if note.save
-      update_note_tags(note, params[:tags])
+      update_note_tags(note, note_data[:tags])
       status 201
       note.to_json(include: :tags)
     else

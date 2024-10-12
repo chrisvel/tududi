@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Area } from '../../entities/Area';
 
 interface ProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (project: Project) => void;
-  project?: Project; // Optional, for editing
+  onDelete?: () => void; // Add this for delete action in edit mode
+  project?: Project;
   areas: Area[];
 }
 
@@ -13,19 +15,18 @@ interface Project {
   name: string;
   description?: string;
   area_id?: number | null;
+  active: boolean;
+  pin_to_sidebar: boolean;
 }
 
-interface Area {
-  id: number;
-  name: string;
-}
-
-const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, project, areas }) => {
+const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, onDelete, project, areas }) => {
   const [formData, setFormData] = useState<Project>(
     project || {
       name: '',
       description: '',
       area_id: null,
+      active: true,
+      pin_to_sidebar: false,
     }
   );
 
@@ -47,15 +48,21 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, pr
     };
   }, [isOpen, onClose]);
 
+  // Update form state when editing a project
+  useEffect(() => {
+    if (project) {
+      setFormData(project);
+    }
+  }, [project]);
+
   // Handle form input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target;
-
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -69,14 +76,14 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, pr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-      <div ref={modalRef} className="bg-white rounded-lg shadow-lg w-full max-w-lg mx-auto overflow-hidden">
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50">
+      <div ref={modalRef} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg mx-auto overflow-hidden">
         <form onSubmit={handleSubmit}>
           <fieldset>
             <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
               {/* Project Name */}
               <div>
-                <label htmlFor="projectName" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Project Name
                 </label>
                 <input
@@ -86,13 +93,14 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, pr
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2"
+                  className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                  placeholder="Enter project name"
                 />
               </div>
 
               {/* Description */}
               <div>
-                <label htmlFor="projectDescription" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="projectDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Description
                 </label>
                 <textarea
@@ -101,13 +109,14 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, pr
                   rows={3}
                   value={formData.description || ''}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2"
+                  className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                  placeholder="Enter project description (optional)"
                 ></textarea>
               </div>
 
               {/* Area */}
               <div>
-                <label htmlFor="projectArea" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="projectArea" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Area (optional)
                 </label>
                 <select
@@ -115,7 +124,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, pr
                   name="area_id"
                   value={formData.area_id || ''}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2"
+                  className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
                 >
                   <option value="">No Area</option>
                   {areas.map((area) => (
@@ -125,21 +134,64 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, pr
                   ))}
                 </select>
               </div>
+
+              {/* Custom Active Checkbox */}
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="active"
+                  name="active"
+                  checked={formData.active}
+                  onChange={handleChange}
+                  className="h-5 w-5 appearance-none border border-gray-300 rounded-md bg-white dark:bg-gray-700 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <label htmlFor="active" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                  Active
+                </label>
+              </div>
+
+              {/* Custom Pin to Sidebar Checkbox */}
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="pin_to_sidebar"
+                  name="pin_to_sidebar"
+                  checked={formData.pin_to_sidebar}
+                  onChange={handleChange}
+                  className="h-5 w-5 appearance-none border border-gray-300 rounded-md bg-white dark:bg-gray-700 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <label htmlFor="pin_to_sidebar" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                  Pin to Sidebar
+                </label>
+              </div>
             </div>
-            <div className="flex justify-end items-center p-4 border-t">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 mr-2"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                {project ? 'Update Project' : 'Create Project'}
-              </button>
+
+            {/* Modal Actions */}
+            <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700">
+              {project && (
+                <button
+                  type="button"
+                  onClick={onDelete}
+                  className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              )}
+              <div className={`flex space-x-2 ${!project ? 'ml-auto' : ''}`}>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-3 py-1 text-xs bg-blue-600 dark:bg-blue-500 text-white rounded hover:bg-blue-700 dark:hover:bg-blue-600"
+                >
+                  {project ? 'Update Project' : 'Create Project'}
+                </button>
+              </div>
             </div>
           </fieldset>
         </form>

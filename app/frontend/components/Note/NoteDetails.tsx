@@ -1,24 +1,24 @@
+// src/components/NoteDetails.tsx
+
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { Note } from '../../entities/Note';
+import ConfirmDialog from '../Shared/ConfirmDialog';
+import NoteModal from './NoteModal';
 
-interface Note {
-  id: number;
-  title: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  tags?: { id: number; name: string }[];
-  project?: {
-    id: number;
-    name: string;
-  };
-}
 
 const NoteDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); // State for the modal
+
+  // State for managing the confirm delete dialog
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+  const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const NoteDetails: React.FC = () => {
         const response = await fetch(`/api/note/${id}`, {
           credentials: 'include',
           headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
           },
         });
         if (!response.ok) {
@@ -47,12 +47,14 @@ const NoteDetails: React.FC = () => {
   }, [id]);
 
   const handleDeleteNote = async () => {
+    if (!noteToDelete) return;
+
     try {
-      const response = await fetch(`/api/note/${id}`, {
+      const response = await fetch(`/api/note/${noteToDelete.id}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
       });
 
@@ -65,6 +67,20 @@ const NoteDetails: React.FC = () => {
     } catch (err) {
       setError((err as Error).message);
     }
+  };
+
+  const handleSaveNote = (updatedNote: Note) => {
+    setNote(updatedNote);
+    setIsNoteModalOpen(false); // Close modal after saving
+  };
+
+  const handleEditNote = () => {
+    setIsNoteModalOpen(true); // Open the modal when editing
+  };
+
+  const handleOpenConfirmDialog = (note: Note) => {
+    setNoteToDelete(note);
+    setIsConfirmDialogOpen(true);
   };
 
   if (loading) {
@@ -94,53 +110,64 @@ const NoteDetails: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+    <div className="flex justify-center px-4">
+      <div className="w-full max-w-4xl">
+        {/* Header Section with Title */}
+        <div className="flex items-center mb-8">
+          <i className="bi bi-journal-text text-xl mr-2"></i>
+          <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
             {note.title}
           </h2>
-          <div className="flex space-x-2">
-            <Link
-              to={`/note/${note.id}/edit`}
-              className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
-              aria-label={`Edit ${note.title}`}
-              title={`Edit ${note.title}`}
-            >
-              <i className="bi bi-pencil-square text-xl"></i>
-            </Link>
-            <button
-              onClick={handleDeleteNote}
-              className="text-red-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
-              aria-label={`Delete ${note.title}`}
-              title={`Delete ${note.title}`}
-            >
-              <i className="bi bi-trash text-xl"></i>
-            </button>
-          </div>
         </div>
 
+        {/* Action Buttons */}
+        <div className="flex justify-end mb-4 space-x-2">
+          <button
+            onClick={handleEditNote}
+            className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
+            aria-label={`Edit ${note.title}`}
+            title={`Edit ${note.title}`}
+          >
+            <PencilSquareIcon className="h-5 w-5" />
+          </button>
+          <button
+            onClick={() => handleOpenConfirmDialog(note)}
+            className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
+            aria-label={`Delete ${note.title}`}
+            title={`Delete ${note.title}`}
+          >
+            <TrashIcon className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Note Content */}
         <div className="mb-6">
           <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
             {note.content}
           </p>
         </div>
 
+        {/* Note Metadata */}
         <div className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-          <p>Created on: {new Date(note.created_at).toLocaleDateString()}</p>
-          <p>Last updated: {new Date(note.updated_at).toLocaleDateString()}</p>
+          <p>
+            Created on: {new Date(note.created_at || '').toLocaleDateString()}
+          </p>
+          <p>
+            Last updated: {new Date(note.updated_at || '').toLocaleDateString()}
+          </p>
         </div>
 
+        {/* Note Tags */}
         {note.tags && note.tags.length > 0 && (
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Tags
             </h3>
-            <div className="mt-2">
+            <div className="mt-2 flex flex-wrap">
               {note.tags.map((tag) => (
                 <span
                   key={tag.id}
-                  className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-900"
+                  className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 mb-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-900"
                 >
                   {tag.name}
                 </span>
@@ -149,6 +176,7 @@ const NoteDetails: React.FC = () => {
           </div>
         )}
 
+        {/* Note Project */}
         {note.project && (
           <div className="mt-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -161,6 +189,29 @@ const NoteDetails: React.FC = () => {
               {note.project.name}
             </Link>
           </div>
+        )}
+
+        {/* NoteModal for editing */}
+        {isNoteModalOpen && (
+          <NoteModal
+            isOpen={isNoteModalOpen}
+            onClose={() => setIsNoteModalOpen(false)}
+            onSave={handleSaveNote}
+            note={note} // Pass the current note to the modal for editing
+          />
+        )}
+
+        {/* ConfirmDialog */}
+        {isConfirmDialogOpen && noteToDelete && (
+          <ConfirmDialog
+            title="Delete Note"
+            message={`Are you sure you want to delete the note "${noteToDelete.title}"?`}
+            onConfirm={handleDeleteNote}
+            onCancel={() => {
+              setIsConfirmDialogOpen(false);
+              setNoteToDelete(null);
+            }}
+          />
         )}
       </div>
     </div>

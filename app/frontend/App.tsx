@@ -183,24 +183,6 @@ const App: React.FC = () => {
         }
       />
 
-      {/* Edit Project route */}
-      <Route
-        path="/project/:id/edit"
-        element={
-          currentUser ? (
-            <Layout
-              currentUser={currentUser}
-              isDarkMode={isDarkMode}
-              toggleDarkMode={toggleDarkMode}
-            >
-              <EditProject />
-            </Layout>
-          ) : (
-            <Login />
-          )
-        }
-      />
-
       {/* Areas List route */}
       <Route
         path="/areas"

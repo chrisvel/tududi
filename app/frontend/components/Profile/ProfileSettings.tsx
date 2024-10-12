@@ -29,7 +29,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
     const fetchProfile = async () => {
       try {
         const response = await fetch('/api/profile', {
-          headers: { 'Accept': 'application/json' },
+          headers: { Accept: 'application/json' },
         });
         if (!response.ok) {
           const data = await response.json();
@@ -78,7 +78,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: JSON.stringify(formData),
       });
@@ -97,20 +97,38 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
   };
 
   if (loading) {
-    return <div className="text-gray-700 dark:text-gray-300">Loading profile...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
+          Loading profile settings...
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-red-500">Error: {error}</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="text-red-500 text-lg">{error}</div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-800 shadow-md rounded-md">
-      <h2 className="text-2xl font-semibold mb-4">Profile Settings</h2>
-      {success && <div className="text-green-500 mb-4">{success}</div>}
+    <div className="max-w-4xl mx-auto p-6">
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+        Profile Settings
+      </h2>
+
+      {success && <div className="mb-4 text-green-500">{success}</div>}
+      {error && <div className="mb-4 text-red-500">{error}</div>}
+
       <form onSubmit={handleSubmit}>
+        {/* Appearance Selection */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Appearance</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Appearance
+          </label>
           <select
             name="appearance"
             value={formData.appearance}
@@ -122,8 +140,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
           </select>
         </div>
 
+        {/* Language Selection */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Language</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Language
+          </label>
           <select
             name="language"
             value={formData.language}
@@ -132,11 +153,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
           >
             <option value="en">English</option>
             <option value="es">Spanish</option>
+            {/* Add more languages if necessary */}
           </select>
         </div>
 
+        {/* Timezone Selection */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Timezone</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Timezone
+          </label>
           <select
             name="timezone"
             value={formData.timezone}
@@ -150,19 +175,32 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
           </select>
         </div>
 
+        {/* Avatar Image Upload */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Avatar Image</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Avatar Image
+          </label>
           <input
             type="file"
             accept="image/*"
             onChange={handleAvatarChange}
             className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-200 dark:hover:file:bg-gray-600"
           />
-          {formData.avatar_image && <img src={formData.avatar_image} alt="Avatar Preview" className="mt-2 h-24 w-24 rounded-full object-cover" />}
+          {formData.avatar_image && (
+            <img
+              src={formData.avatar_image}
+              alt="Avatar Preview"
+              className="mt-2 h-24 w-24 rounded-full object-cover"
+            />
+          )}
         </div>
 
+        {/* Save Button */}
         <div className="flex justify-end">
-          <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+          >
             Save Changes
           </button>
         </div>

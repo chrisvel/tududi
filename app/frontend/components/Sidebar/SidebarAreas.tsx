@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Location } from 'react-router-dom';
-import { Squares2X2Icon, PlusCircleIcon } from '@heroicons/react/24/outline'; // Using outline style
+import { Squares2X2Icon, PlusCircleIcon } from '@heroicons/react/24/solid'; // Using outline style
 
 interface Area {
   id: number;

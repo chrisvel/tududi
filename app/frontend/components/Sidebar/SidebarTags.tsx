@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Location } from 'react-router-dom';
-import { TagIcon, PlusCircleIcon } from '@heroicons/react/24/outline'; // Using outline style
+import { TagIcon, PlusCircleIcon } from '@heroicons/react/24/solid'; // Using outline style
 
 interface Tag {
   id: number;

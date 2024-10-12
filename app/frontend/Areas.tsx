@@ -1,6 +1,6 @@
-// src/components/Area/Areas.tsx
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid'; // Heroicons for edit and delete
 
 interface Area {
   id: number;
@@ -40,6 +40,8 @@ const Areas: React.FC = () => {
   }, []);
 
   const handleDeleteArea = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this area?')) return;
+
     try {
       const response = await fetch(`/api/areas/${id}`, {
         method: 'DELETE',
@@ -75,54 +77,52 @@ const Areas: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+    <div className="flex justify-center px-4 py-6">
+      <div className="w-full max-w-4xl">
         {/* Areas Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Areas
-          </h2>
-          <Link
-            to="/area/create"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-          >
-            Create New Area
-          </Link>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Areas</h2>
         </div>
 
         {/* Areas List */}
         {areas.length === 0 ? (
           <p className="text-gray-700 dark:text-gray-300">No areas found.</p>
         ) : (
-          <ul className="space-y-4">
+          <ul className="space-y-2">
             {areas.map((area) => (
-              <li key={area.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-4 rounded-md">
-                <div className="flex items-center">
-                  <i className="bi bi-geo-alt-fill text-xl text-gray-500 dark:text-gray-400 mr-2"></i>
+              <li key={area.id} className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center">
+                {/* Area Content */}
+                <div className="flex-grow overflow-hidden pr-4">
                   <Link
                     to={`/area/${area.id}`}
-                    className="text-lg font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline block"
                   >
                     {area.name}
                   </Link>
+                  {area.description && (
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate">
+                      {area.description}
+                    </p>
+                  )}
                 </div>
-                {/* Optional: Edit/Delete Buttons */}
+
+                {/* Action Buttons */}
                 <div className="flex space-x-2">
-                  <Link
-                    to={`/area/${area.id}/edit`}
-                    className="text-blue-500 hover:text-blue-700"
+                  <button
+                    onClick={() => navigate(`/area/${area.id}/edit`)}
+                    className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
                     aria-label={`Edit ${area.name}`}
                     title={`Edit ${area.name}`}
                   >
-                    <i className="bi bi-pencil-square text-xl"></i>
-                  </Link>
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
                   <button
                     onClick={() => handleDeleteArea(area.id)}
-                    className="text-red-500 hover:text-red-700 focus:outline-none"
+                    className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
                     aria-label={`Delete ${area.name}`}
                     title={`Delete ${area.name}`}
                   >
-                    <i className="bi bi-trash text-xl"></i>
+                    <TrashIcon className="h-5 w-5" />
                   </button>
                 </div>
               </li>

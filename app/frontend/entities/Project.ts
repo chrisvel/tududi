@@ -2,11 +2,10 @@ import { Task } from "./Task";
 
 // Project.ts
 export interface Project {
-  id: number;
+  id?: number;
   name: string;
   description?: string;
-  active?: boolean;
-  pin_to_sidebar: boolean;
-  area_id?: number;
-  tasks?: Task[];
+  area_id?: number | null;
+  active: boolean;            // Add this field
+  pin_to_sidebar: boolean;     // Add this field
 }
