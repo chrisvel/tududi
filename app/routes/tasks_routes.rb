@@ -24,22 +24,19 @@ module Sinatra
       # Apply filters based on due_date and status
       @tasks = case params[:type]
                when 'today'
-                 base_query
-               .where('(status = ? OR status = ?) AND due_date <= ?',
-                      Task.statuses[:in_progress],
-                      Task.statuses[:not_started],
-                      Date.today.end_of_day)
+                 Task.due_today
                when 'upcoming'
-                 base_query
-               .where('(status = ? OR status = ?) AND due_date BETWEEN ? AND ?',
-                      Task.statuses[:in_progress],
-                      Task.statuses[:not_started],
-                      Date.today,
-                      Date.today + 7.days)
-               when 'never'
-                 base_query.incomplete.where(due_date: nil)
+                 Task.upcoming
+               when 'next'
+                 Task.next_actions
+               when 'inbox'
+                 Task.inbox
+               when 'someday'
+                 Task.someday
+               when 'waiting'
+                 Task.waiting_for
                else
-                 params[:status] == 'done' ? base_query.complete : base_query.incomplete
+                 params[:status] == 'done' ? Task.complete : Task.incomplete
                end
 
       # Apply ordering

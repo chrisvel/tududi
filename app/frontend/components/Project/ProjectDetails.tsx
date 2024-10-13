@@ -4,7 +4,9 @@ import { Project } from '../../entities/Project';
 import { Task } from '../../entities/Task';
 import NewTask from '../../NewTask';
 import TaskList from '../Task/TaskList';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid'; // Import icons
+import { PencilSquareIcon, TrashIcon, Squares2X2Icon } from '@heroicons/react/24/solid'; // Import icons
+import ProjectModal from '../Project/ProjectModal'; // Import the ProjectModal
+import ConfirmDialog from '../Shared/ConfirmDialog'; // Import the ConfirmDialog
 
 interface Area {
   id: number;
@@ -18,9 +20,11 @@ const ProjectDetails: React.FC = () => {
 
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [areas, setAreas] = useState<Area[]>([]); // Fetch areas from API
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false); // For delete confirmation
 
   const { title: stateTitle, icon: stateIcon } = location.state || {};
   const projectTitle = stateTitle || project?.name || 'Project';
@@ -50,24 +54,30 @@ const ProjectDetails: React.FC = () => {
     fetchProject();
   }, [id]);
 
+  // Fetch areas, just like in the Projects component
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchAreas = async () => {
       try {
-        const response = await fetch('/api/projects', {
+        const response = await fetch('/api/areas', {
+          method: 'GET',
           credentials: 'include',
           headers: { Accept: 'application/json' },
         });
-        const data = await response.json();
-        if (response.ok) {
-          setProjects(data.projects || []);
-        } else {
-          throw new Error(data.error || 'Failed to fetch projects.');
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch areas.');
         }
-      } catch (error) {
-        console.error('Error fetching projects:', error);
+
+        const data: Area[] = await response.json();
+        setAreas(data);
+      } catch (err) {
+        console.error('Error fetching areas:', err);
+        setError((err as Error).message);
       }
     };
-    fetchProjects();
+
+    fetchAreas();
   }, []);
 
   const handleTaskCreate = async (taskData: Partial<Task>) => {
@@ -137,13 +147,55 @@ const ProjectDetails: React.FC = () => {
   };
 
   const handleEditProject = () => {
-    // Open the project modal for editing
-    navigate('/projects', { state: { editProjectId: id } });
+    setIsModalOpen(true);
   };
 
-  const handleDeleteProject = () => {
-    // Functionality to delete the project can be added here
-    console.log('Delete project functionality to be implemented.');
+  const handleSaveProject = async (updatedProject: Project) => {
+    const url = updatedProject.id ? `/api/project/${updatedProject.id}` : '/api/project';
+    const method = updatedProject.id ? 'PATCH' : 'POST'; // Use PATCH for updates
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedProject),
+      });
+
+      if (response.ok) {
+        const savedProject = await response.json();
+        setProject(savedProject);
+        setIsModalOpen(false);
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to save project:', errorData);
+      }
+    } catch (err) {
+      console.error('Error saving project:', err);
+    }
+  };
+
+  // Handle delete project with confirmation
+  const handleDeleteProject = async () => {
+    if (!project) return;
+
+    try {
+      const response = await fetch(`/api/project/${project.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      });
+
+      if (response.ok) {
+        navigate('/projects');
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete project.');
+      }
+    } catch (error) {
+      console.error('Error deleting project:', error);
+    }
   };
 
   if (loading) {
@@ -168,68 +220,80 @@ const ProjectDetails: React.FC = () => {
     <div className="flex justify-center px-4">
       <div className="w-full max-w-4xl">
         {/* Header Section with Icon and Title */}
-        <div className="flex items-center mb-8">
-          <i className={`bi ${projectIcon} text-xl mr-2`}></i>
-          <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">{projectTitle}</h2>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center">
+            <i className={`bi ${projectIcon} text-xl mr-2`}></i>
+            <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">{projectTitle}</h2>
+          </div>
+          <div className="flex space-x-2">
+            <button
+              onClick={handleEditProject}
+              className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
+              aria-label="Edit Project"
+              title="Edit Project"
+            >
+              <PencilSquareIcon className="h-5 w-5" />
+            </button>
+
+            <button
+              onClick={() => setIsConfirmDialogOpen(true)} // Show delete confirmation dialog
+              className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
+              aria-label="Delete Project"
+              title="Delete Project"
+            >
+              <TrashIcon className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Project Area */}
         {project?.area && (
           <div className="flex items-center mb-4">
-            <i className="bi bi-geo-alt-fill text-xl text-gray-500 dark:text-gray-400 mr-2"></i>
+            <Squares2X2Icon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
             <Link
               to={`/area/${project.area.id}`}
-              className="text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-gray-600 dark:text-gray-400 hover:underline"
             >
-              {project.area.name}
+              {project.area.name.toUpperCase()}
             </Link>
           </div>
         )}
 
-        {/* Project Description */}
         {project?.description && (
           <p className="text-gray-700 dark:text-gray-300 mb-6">{project.description}</p>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex justify-end mb-4 space-x-2">
-          {/* Edit Project Button */}
-          <button
-            onClick={handleEditProject}
-            className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
-            aria-label="Edit Project"
-            title="Edit Project"
-          >
-            <PencilSquareIcon className="h-5 w-5" />
-          </button>
-
-          {/* Delete Project Button */}
-          <button
-            onClick={handleDeleteProject}
-            className="text-gray-500 opacity-50 cursor-not-allowed focus:outline-none"
-            aria-label="Delete Project"
-            title="Delete Project (Disabled)"
-            disabled
-          >
-            <TrashIcon className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* New Task Form */}
         <NewTask
           onTaskCreate={(taskName: string) =>
             handleTaskCreate({ name: taskName, status: 'not_started', project_id: project?.id })
           }
         />
 
-        {/* Task List */}
+        {/* TaskList is used with the current project and its tasks */}
         <TaskList
           tasks={tasks}
           onTaskCreate={handleTaskCreate}
           onTaskUpdate={handleTaskUpdate}
           onTaskDelete={handleTaskDelete}
-          projects={projects}
+          projects={[project!]} // Pass project as an array since TaskList expects projects array
         />
+
+        <ProjectModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSaveProject}
+          project={project || undefined}
+          areas={areas} // Areas fetched directly from API
+        />
+
+        {/* Delete Confirmation Dialog */}
+        {isConfirmDialogOpen && (
+          <ConfirmDialog
+            title="Delete Project"
+            message={`Are you sure you want to delete the project "${project?.name}"?`}
+            onConfirm={handleDeleteProject}
+            onCancel={() => setIsConfirmDialogOpen(false)}
+          />
+        )}
       </div>
     </div>
   );

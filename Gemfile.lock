@@ -92,6 +92,7 @@ GEM
       rack-protection (= 3.1.0)
       sinatra (= 3.1.0)
       tilt (~> 2.0)
+    sinatra-cross_origin (0.4.0)
     sinatra-namespace (1.0)
       sinatra-contrib
     sqlite3 (1.6.8-arm64-darwin)
@@ -118,6 +119,7 @@ DEPENDENCIES
   rubocop
   sinatra
   sinatra-activerecord
+  sinatra-cross_origin
   sinatra-namespace
   sqlite3
 

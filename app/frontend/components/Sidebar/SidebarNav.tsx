@@ -1,20 +1,31 @@
 import React from 'react';
 import { Location } from 'react-router-dom';
+import {
+  CalendarDaysIcon,
+  CalendarIcon,
+  ArrowRightCircleIcon,
+  InboxIcon,
+  ClockIcon,
+  PauseCircleIcon,
+  CheckCircleIcon,
+  ListBulletIcon,
+} from '@heroicons/react/24/solid';
 
 interface SidebarNavProps {
-  handleNavClick: (path: string, title: string, icon: string) => void;
+  handleNavClick: (path: string, title: string) => void; // Removed `icon` from the parameters
   location: Location;
   isDarkMode: boolean;
 }
 
 const navLinks = [
-  { path: '/tasks?type=today', title: 'Today', icon: 'bi-calendar-day-fill', query: 'type=today' },
-  { path: '/tasks?type=inbox', title: 'Inbox', icon: 'bi-inbox-fill', query: 'type=inbox' },
-  { path: '/tasks?type=next', title: 'Next Actions', icon: 'bi-arrow-right-circle-fill', query: 'type=next' },
-  { path: '/tasks?type=upcoming', title: 'Upcoming', icon: 'bi-calendar3', query: 'type=upcoming' },
-  { path: '/tasks?type=someday', title: 'Someday', icon: 'bi-moon-stars-fill', query: 'type=someday' },
-  { path: '/tasks?status=done', title: 'Completed', icon: 'bi-check-circle', query: 'status=done' },
-  { path: '/tasks', title: 'All Tasks', icon: 'bi-layers' },
+  { path: '/tasks?type=today', title: 'Today', icon: <CalendarDaysIcon className="h-5 w-5" />, query: 'type=today' },
+  { path: '/tasks?type=upcoming', title: 'Upcoming', icon: <CalendarIcon className="h-5 w-5" />, query: 'type=upcoming' },
+  { path: '/tasks?type=next', title: 'Next Actions', icon: <ArrowRightCircleIcon className="h-5 w-5" />, query: 'type=next' },
+  { path: '/tasks?type=inbox', title: 'Inbox', icon: <InboxIcon className="h-5 w-5" />, query: 'type=inbox' },
+  { path: '/tasks?type=someday', title: 'Someday', icon: <ClockIcon className="h-5 w-5" />, query: 'type=someday' },
+  { path: '/tasks?type=waiting', title: 'Waiting for', icon: <PauseCircleIcon className="h-5 w-5" />, query: 'type=waiting' },
+  { path: '/tasks?status=done', title: 'Completed', icon: <CheckCircleIcon className="h-5 w-5" />, query: 'status=done' },
+  { path: '/tasks', title: 'All Tasks', icon: <ListBulletIcon className="h-5 w-5" /> },
 ];
 
 const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location, isDarkMode }) => {
@@ -31,13 +42,14 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location, isDar
       {navLinks.map((link) => (
         <li key={link.path}>
           <button
-            onClick={() => handleNavClick(link.path, link.title, link.icon)}
+            onClick={() => handleNavClick(link.path, link.title)} // Removed `link.icon` from the arguments
             className={`w-full text-left px-4 py-1 flex items-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
               link.path,
               link.query
             )}`}
           >
-            <i className={`bi ${link.icon} mr-2`}></i> {link.title}
+            {link.icon}
+            <span className="ml-2">{link.title}</span>
           </button>
         </li>
       ))}

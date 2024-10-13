@@ -9,7 +9,7 @@ module AuthenticationHelper
 
   def require_login
     # Allow requests to '/login' and '/logout' without checking for login
-    return if ['/login', '/logout'].include? request.path
+    return if ['/login', '/logout', '/api/current_user'].include? request.path
 
     # If the user is not logged in and the request is not an API request, redirect to login
     return if logged_in?

@@ -9,6 +9,7 @@ class Sinatra::Application
   # Handle login requests (now accepting JSON)
   get '/api/current_user' do
     content_type :json
+
     if logged_in?
       { user: { email: current_user.email, id: current_user.id } }.to_json
     else
@@ -32,7 +33,6 @@ class Sinatra::Application
     end
 
     user = User.find_by(email: email)
-
     if user&.authenticate(password)
       session[:user_id] = user.id
       status 200

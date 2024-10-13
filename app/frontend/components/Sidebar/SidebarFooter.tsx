@@ -31,12 +31,22 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
           {/* Dropdown menu */}
           {isDropdownOpen && (
             <ul className="absolute bottom-full mb-2 w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg shadow-lg z-50">
-              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                <Link to="/profile">Profile</Link> {/* Link to Profile */}
+              <li className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                <Link
+                  to="/profile"
+                  className="block w-full px-4 py-2 text-left"
+                >
+                  Profile
+                </Link>
               </li>
               <li className="border-t border-gray-200 dark:border-gray-700"></li>
-              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-red-500">
-                <a href="/logout" className="w-full text-left block">Sign out</a>
+              <li className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                <a
+                  href="/logout"
+                  className="block w-full px-4 py-2 text-left text-red-500"
+                >
+                  Sign out
+                </a>
               </li>
             </ul>
           )}

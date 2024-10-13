@@ -6,6 +6,7 @@ gem 'sinatra'
 
 # DB
 gem 'sinatra-activerecord'
+gem 'sinatra-cross_origin'
 gem 'sinatra-namespace'
 gem 'sqlite3'
 
