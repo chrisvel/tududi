@@ -1,57 +1,84 @@
-class Sinatra::Application
-  get '/api/areas' do
-    areas = current_user.areas.order('name ASC')
-    areas.to_json
-  end
+# app.rb or your main Sinatra application file
 
-  get '/api/areas/:id' do
-    area = current_user.areas.find_by(id: params[:id])
-    halt 404, { error: "Area not found or doesn't belong to the current user." }.to_json unless area
-    area.to_json
-  end
+require 'sinatra'
+require 'json'
 
-  # API Route to Create a New Area
-  post '/api/areas' do
-    area = current_user.areas.create(name: params[:name])
+# Assuming you have a helper method `current_user` to get the authenticated user
 
-    if area.persisted?
+# Create a new Area
+post '/api/areas' do
+  content_type :json
+  begin
+    request_body = request.body.read
+    area_data = JSON.parse(request_body, symbolize_names: true)
+
+    # Validate required fields
+    halt 400, { error: 'Area name is required.' }.to_json unless area_data[:name] && !area_data[:name].strip.empty?
+
+    # Create new Area
+    area = current_user.areas.build(name: area_data[:name], description: area_data[:description])
+
+    if area.save
       status 201
       area.to_json
     else
       status 400
       { error: 'There was a problem creating the area.', details: area.errors.full_messages }.to_json
     end
+  rescue JSON::ParserError
+    halt 400, { error: 'Invalid JSON.' }.to_json
   end
+end
 
-  # API Route to Update an Area
-  patch '/api/areas/:id' do
+get '/api/areas/:id' do
+  area = current_user.areas.find_by(id: params[:id])
+  halt 404, { error: "Area not found or doesn't belong to the current user." }.to_json unless area
+  area.to_json
+end
+
+# Update an existing Area
+patch '/api/areas/:id' do
+  content_type :json
+  begin
     area = current_user.areas.find_by(id: params[:id])
+    halt 404, { error: 'Area not found.' }.to_json unless area
 
-    if area
-      area.name = params[:name]
+    request_body = request.body.read
+    area_data = JSON.parse(request_body, symbolize_names: true)
 
-      if area.save
-        area.to_json
-      else
-        status 400
-        { error: 'There was a problem updating the area.', details: area.errors.full_messages }.to_json
-      end
+    # Update Area attributes
+    area.name = area_data[:name] if area_data[:name]
+    area.description = area_data[:description] if area_data[:description]
+
+    if area.save
+      status 200
+      area.to_json
     else
-      status 404
-      { error: "Area not found or doesn't belong to the current user." }.to_json
+      status 400
+      { error: 'There was a problem updating the area.', details: area.errors.full_messages }.to_json
     end
+  rescue JSON::ParserError
+    halt 400, { error: 'Invalid JSON.' }.to_json
   end
+end
 
-  # API Route to Delete an Area
-  delete '/api/areas/:id' do
-    area = current_user.areas.find_by(id: params[:id])
+# Delete an Area
+delete '/api/areas/:id' do
+  content_type :json
+  area = current_user.areas.find_by(id: params[:id])
+  halt 404, { error: 'Area not found.' }.to_json unless area
 
-    if area
-      area.destroy
-      status 204
-    else
-      status 404
-      { error: 'Area not found or not owned by the current user.' }.to_json
-    end
+  if area.destroy
+    status 204
+  else
+    status 400
+    { error: 'There was a problem deleting the area.' }.to_json
   end
+end
+
+# Fetch all Areas
+get '/api/areas' do
+  content_type :json
+  areas = current_user.areas
+  areas.to_json
 end

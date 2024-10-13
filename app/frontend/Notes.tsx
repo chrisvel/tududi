@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid'; // Heroicons for edit and delete
+import { BookOpenIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid'; // Heroicons for edit and delete
 import TaskTags from './components/Task/TaskTags'; // Ensure correct path
 import NoteModal from './components/Note/NoteModal'; // Ensure the path is correct
 import { Note } from './entities/Note'; // Ensure correct path
@@ -165,11 +165,14 @@ const Notes: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center px-4 py-6">
+    <div className="flex justify-center px-4">
       <div className="w-full max-w-4xl">
         {/* Notes Header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Notes</h2>
+          <div className="flex items-center">
+            <BookOpenIcon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
+            <h2 className="text-2xl font-light text-gray-900 dark:text-white">Notes</h2>
+          </div>
         </div>
 
         {/* Filters Section */}

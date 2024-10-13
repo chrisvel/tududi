@@ -11,13 +11,16 @@ class Sinatra::Application
     end
 
     # Get all projects and associated tasks with JSON response
+    # Get all projects and associated tasks with JSON response
     get '/projects' do
-      # Parse query parameters for 'active' and 'pin_to_sidebar'
+      # Parse query parameters for 'active', 'pin_to_sidebar', and 'area_id'
       active_param = params[:active]
       is_active = active_param == 'true' unless active_param.nil?
 
       pin_to_sidebar_param = params[:pin_to_sidebar]
       is_pinned = pin_to_sidebar_param == 'true' unless pin_to_sidebar_param.nil?
+
+      area_id_param = params[:area_id]
 
       # Build the query
       projects = current_user.projects
@@ -30,6 +33,9 @@ class Sinatra::Application
 
       # Apply 'pin_to_sidebar' filter if provided
       projects = projects.where(pin_to_sidebar: is_pinned) unless is_pinned.nil?
+
+      # Apply 'area_id' filter if provided
+      projects = projects.where(area_id: area_id_param) if area_id_param
 
       # Count task statuses for each project
       task_status_counts = projects.each_with_object({}) do |project, counts|

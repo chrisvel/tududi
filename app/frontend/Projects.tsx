@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Project } from './entities/Project';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
-import ConfirmDialog from './components/Shared/ConfirmDialog'; // Assuming you have a shared confirmation dialog
+import ConfirmDialog from './components/Shared/ConfirmDialog';
 import ProjectModal from './components/Project/ProjectModal';
 
 interface Area {
@@ -12,7 +12,7 @@ interface Area {
 
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [areas, setAreas] = useState<Area[]>([]); 
+  const [areas, setAreas] = useState<Area[]>([]);
   const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, any>>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,9 +22,31 @@ const Projects: React.FC = () => {
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
 
-  const [activeFilter, setActiveFilter] = useState<string>('true');
-  const [areaFilter, setAreaFilter] = useState<string>(''); 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Parse query parameters from URL
+  const params = new URLSearchParams(location.search);
+  const initialActiveFilter = params.get('active') || 'true';
+  const initialAreaFilter = params.get('area_id') || '';
+
+  const [activeFilter, setActiveFilter] = useState<string>(initialActiveFilter);
+  const [areaFilter, setAreaFilter] = useState<string>(initialAreaFilter);
+
+  const hasMounted = useRef(false);
+
+  // Update URL when filters change, after initial mount
+  useEffect(() => {
+    if (hasMounted.current) {
+      const params = new URLSearchParams();
+      if (activeFilter !== 'all') params.append('active', activeFilter);
+      if (areaFilter) params.append('area_id', areaFilter);
+
+      navigate(`/projects?${params.toString()}`, { replace: true });
+    } else {
+      hasMounted.current = true;
+    }
+  }, [activeFilter, areaFilter, navigate]);
 
   // Fetch areas on component mount
   useEffect(() => {

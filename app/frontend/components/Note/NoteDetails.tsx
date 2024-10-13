@@ -1,12 +1,9 @@
-// src/components/NoteDetails.tsx
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { PencilSquareIcon, TrashIcon, TagIcon } from '@heroicons/react/24/solid';
 import { Note } from '../../entities/Note';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
-
 
 const NoteDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,8 +11,6 @@ const NoteDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); // State for the modal
-
-  // State for managing the confirm delete dialog
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
 
@@ -112,32 +107,75 @@ const NoteDetails: React.FC = () => {
   return (
     <div className="flex justify-center px-4">
       <div className="w-full max-w-4xl">
-        {/* Header Section with Title */}
-        <div className="flex items-center mb-8">
-          <i className="bi bi-journal-text text-xl mr-2"></i>
-          <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
-            {note.title}
-          </h2>
+        {/* Header Section with Title and Action Buttons */}
+        <div className="flex items-center justify-between mb-4">
+          {/* Title */}
+          <div className="flex items-center">
+            <i className="bi bi-journal-text text-xl mr-2"></i>
+            <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
+              {note.title}
+            </h2>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex space-x-2">
+            <button
+              onClick={handleEditNote}
+              className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
+              aria-label={`Edit ${note.title}`}
+              title={`Edit ${note.title}`}
+            >
+              <PencilSquareIcon className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => handleOpenConfirmDialog(note)}
+              className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
+              aria-label={`Delete ${note.title}`}
+              title={`Delete ${note.title}`}
+            >
+              <TrashIcon className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-end mb-4 space-x-2">
-          <button
-            onClick={handleEditNote}
-            className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
-            aria-label={`Edit ${note.title}`}
-            title={`Edit ${note.title}`}
-          >
-            <PencilSquareIcon className="h-5 w-5" />
-          </button>
-          <button
-            onClick={() => handleOpenConfirmDialog(note)}
-            className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
-            aria-label={`Delete ${note.title}`}
-            title={`Delete ${note.title}`}
-          >
-            <TrashIcon className="h-5 w-5" />
-          </button>
+        {/* Card with Tags and Metadata */}
+        <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-4 mb-6">
+          {/* Note Tags */}
+          {note.tags && note.tags.length > 0 && (
+            <div className="mb-4">
+              <div className="mt-2 flex flex-wrap space-x-2">
+                {note.tags.map((tag) => (
+                  <button
+                    key={tag.id}
+                    onClick={() => navigate(`/tasks?tag=${tag.name}`)}
+                    className="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                  >
+                    <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-300" />
+                    <span className="text-xs text-gray-700 dark:text-gray-300">{tag.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Note Metadata */}
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            <p>Created on: {new Date(note.created_at || '').toLocaleDateString()}</p>
+            <p>Last updated: {new Date(note.updated_at || '').toLocaleDateString()}</p>
+          </div>
+
+          {/* Note Project */}
+          {note.project && (
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Project</h3>
+              <Link
+                to={`/project/${note.project.id}`}
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                {note.project.name}
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Note Content */}
@@ -146,50 +184,6 @@ const NoteDetails: React.FC = () => {
             {note.content}
           </p>
         </div>
-
-        {/* Note Metadata */}
-        <div className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-          <p>
-            Created on: {new Date(note.created_at || '').toLocaleDateString()}
-          </p>
-          <p>
-            Last updated: {new Date(note.updated_at || '').toLocaleDateString()}
-          </p>
-        </div>
-
-        {/* Note Tags */}
-        {note.tags && note.tags.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Tags
-            </h3>
-            <div className="mt-2 flex flex-wrap">
-              {note.tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 mb-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-900"
-                >
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Note Project */}
-        {note.project && (
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Project
-            </h3>
-            <Link
-              to={`/project/${note.project.id}`}
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              {note.project.name}
-            </Link>
-          </div>
-        )}
 
         {/* NoteModal for editing */}
         {isNoteModalOpen && (

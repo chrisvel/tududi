@@ -1,227 +1,203 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Import Link
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
-import ConfirmDialog from './components/Shared/ConfirmDialog'; // Adjust the path as necessary
-
-interface Tag {
-  id: number;
-  name: string | null;
-  active: boolean;
-}
+import React, { useEffect, useState } from 'react';
+import { Tag } from './entities/Tag';
+import { Link } from 'react-router-dom';
+import { PencilSquareIcon, TrashIcon, PlusCircleIcon, TagIcon } from '@heroicons/react/24/solid';
+import ConfirmDialog from './components/Shared/ConfirmDialog';
+import TagModal from './components/Tag/TagModal';
 
 const Tags: React.FC = () => {
   const [tags, setTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [newTagName, setNewTagName] = useState('');
-  const [isCreatingTag, setIsCreatingTag] = useState(false);
-  const [editingTagId, setEditingTagId] = useState<number | null>(null);
-  const [editingTagName, setEditingTagName] = useState<string>('');
-  const [deleteTagId, setDeleteTagId] = useState<number | null>(null);
+
+  const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
+  const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+  const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
 
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await fetch('/api/tags');
+        const response = await fetch('/api/tags', {
+          credentials: 'include',
+          headers: {
+            Accept: 'application/json',
+          },
+        });
         const data = await response.json();
         if (response.ok) {
-          setTags(data.filter((tag: Tag) => tag.name !== null)); // Filter out tags without names
+          setTags(data || []);
         } else {
-          setError(data.error || 'Failed to fetch tags.');
+          throw new Error(data.error || 'Failed to fetch tags.');
         }
       } catch (err) {
-        setError('Error fetching tags.');
+        setError((err as Error).message);
       } finally {
         setLoading(false);
       }
     };
+
     fetchTags();
   }, []);
 
-  const handleAddTag = async () => {
-    if (!newTagName.trim()) {
-      setError('Tag name cannot be empty.');
-      return;
-    }
+  const handleDeleteTag = async () => {
+    if (!tagToDelete) return;
 
     try {
-      const response = await fetch('/api/tag', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newTagName }),
-      });
-
-      if (response.ok) {
-        const newTag = await response.json();
-        setTags((prevTags) => [...prevTags, newTag]);
-        setNewTagName('');
-        setIsCreatingTag(false);
-        setError(null);
-      } else {
-        const data = await response.json();
-        setError(data.error || 'Failed to create tag.');
-      }
-    } catch (err) {
-      setError('Error creating tag.');
-    }
-  };
-
-  const handleEdit = (tag: Tag) => {
-    setEditingTagId(tag.id);
-    setEditingTagName(tag.name || '');
-  };
-
-  const handleUpdateTag = async (tagId: number) => {
-    if (!editingTagName.trim()) {
-      setError('Tag name cannot be empty.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/tag/${tagId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: editingTagName }),
-      });
-
-      if (response.ok) {
-        const updatedTag = await response.json();
-        setTags((prevTags) => prevTags.map((tag) => (tag.id === tagId ? updatedTag : tag)));
-        setEditingTagId(null);
-        setEditingTagName('');
-        setError(null);
-      } else {
-        const data = await response.json();
-        setError(data.error || 'Failed to update tag.');
-      }
-    } catch (err) {
-      setError('Error updating tag.');
-    }
-  };
-
-  const handleDelete = (tagId: number) => {
-    setDeleteTagId(tagId);
-  };
-
-  const confirmDelete = async () => {
-    if (!deleteTagId) return;
-
-    try {
-      const response = await fetch(`/api/tag/${deleteTagId}`, {
+      const response = await fetch(`/api/tag/${tagToDelete.id}`, {
         method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+        },
       });
 
       if (response.ok) {
-        setTags((prevTags) => prevTags.filter((tag) => tag.id !== deleteTagId));
-        setDeleteTagId(null);
-        setError(null);
+        setTags((prevTags) => prevTags.filter((tag) => tag.id !== tagToDelete.id));
+        setIsConfirmDialogOpen(false);
+        setTagToDelete(null);
       } else {
-        const data = await response.json();
-        setError(data.error || 'Failed to delete tag.');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete tag.');
       }
     } catch (err) {
-      setError('Error deleting tag.');
+      setError((err as Error).message);
     }
   };
 
-  const cancelDelete = () => {
-    setDeleteTagId(null);
+  const handleEditTag = (tag: Tag) => {
+    setSelectedTag(tag);
+    setIsTagModalOpen(true);
+  };
+
+  const handleCreateTag = () => {
+    setSelectedTag(null);
+    setIsTagModalOpen(true);
+  };
+
+  const handleSaveTag = async (tagData: Tag) => {
+    if (tagData.id) {
+      // Update existing tag
+      try {
+        const response = await fetch(`/api/tags/${tagData.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(tagData),
+        });
+
+        if (response.ok) {
+          const updatedTag = await response.json();
+          setTags((prevTags) =>
+            prevTags.map((t) => (t.id === updatedTag.id ? updatedTag : t))
+          );
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to update tag.');
+        }
+      } catch (error) {
+        setError((error as Error).message);
+      }
+    } else {
+      // Create new tag
+      try {
+        const response = await fetch('/api/tags', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(tagData),
+        });
+
+        if (response.ok) {
+          const newTag = await response.json();
+          setTags((prevTags) => [...prevTags, newTag]);
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to create tag.');
+        }
+      } catch (error) {
+        setError((error as Error).message);
+      }
+    }
+
+    setIsTagModalOpen(false);
+    setSelectedTag(null);
+  };
+
+  const openConfirmDialog = (tag: Tag) => {
+    setTagToDelete(tag);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const closeConfirmDialog = () => {
+    setIsConfirmDialogOpen(false);
+    setTagToDelete(null);
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">Loading tags...</div>
+        <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
+          Loading tags...
+        </div>
       </div>
     );
   }
 
   if (error) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-red-500 text-lg">{error}</div>
-      </div>
-    );
+    return <div className="text-red-500 p-4">{error}</div>;
   }
 
   return (
-    <div className="flex justify-center px-4 py-6">
+    <div className="flex justify-center px-4">
       <div className="w-full max-w-4xl">
         {/* Tags Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            <i className="bi bi-tags-fill text-xl mr-2"></i>
-            <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">Tags</h2>
+            <TagIcon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
+            <h2 className="text-2xl font-light text-gray-900 dark:text-white">Tags</h2>
           </div>
-          <button
-            onClick={() => setIsCreatingTag(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-          >
-            Add New Tag
-          </button>
         </div>
-
-        {/* Add Tag Form */}
-        {isCreatingTag && (
-          <div className="mb-4">
-            <input
-              type="text"
-              value={newTagName}
-              onChange={(e) => setNewTagName(e.target.value)}
-              placeholder="Enter tag name"
-              autoFocus
-              className="w-full px-3 py-2 mb-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-            />
-            <div className="flex space-x-2">
-              <button
-                onClick={handleAddTag}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => setIsCreatingTag(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Tags List */}
         {tags.length === 0 ? (
-          <p className="text-gray-700 dark:text-gray-300">No tags available.</p>
+          <p className="text-gray-700 dark:text-gray-300">No tags found.</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {tags.map((tag) => (
               <li
                 key={tag.id}
                 className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center"
               >
-                <div className="flex-grow overflow-hidden">
-                  {/* Make tag name clickable */}
+                {/* Tag Content */}
+                <div className="flex-grow overflow-hidden pr-4">
                   <Link
                     to={`/tag/${tag.id}`}
-                    className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
+                    className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline block"
                   >
-                    #{tag.name}
+                    {tag.name}
                   </Link>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => handleEdit(tag)}
+                    onClick={() => handleEditTag(tag)}
                     className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
                     aria-label={`Edit ${tag.name}`}
+                    title={`Edit ${tag.name}`}
                   >
                     <PencilSquareIcon className="h-5 w-5" />
                   </button>
                   <button
-                    onClick={() => handleDelete(tag.id)}
+                    onClick={() => openConfirmDialog(tag)}
                     className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
                     aria-label={`Delete ${tag.name}`}
+                    title={`Delete ${tag.name}`}
                   >
                     <TrashIcon className="h-5 w-5" />
                   </button>
@@ -231,44 +207,23 @@ const Tags: React.FC = () => {
           </ul>
         )}
 
-        {/* Edit Tag Form */}
-        {editingTagId !== null && (
-          <div className="mt-4 p-4 border rounded bg-gray-50 dark:bg-gray-800">
-            <input
-              type="text"
-              value={editingTagName}
-              onChange={(e) => setEditingTagName(e.target.value)}
-              placeholder="Enter new tag name"
-              autoFocus
-              className="w-full px-3 py-2 mb-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
-            />
-            <div className="flex space-x-2">
-              <button
-                onClick={() => handleUpdateTag(editingTagId)}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-              >
-                Update
-              </button>
-              <button
-                onClick={() => {
-                  setEditingTagId(null);
-                  setEditingTagName('');
-                }}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+        {/* TagModal */}
+        {isTagModalOpen && (
+          <TagModal
+            isOpen={isTagModalOpen}
+            onClose={() => setIsTagModalOpen(false)}
+            onSave={handleSaveTag}
+            tag={selectedTag}
+          />
         )}
 
-        {/* Delete Confirmation Dialog */}
-        {deleteTagId !== null && (
+        {/* ConfirmDialog */}
+        {isConfirmDialogOpen && tagToDelete && (
           <ConfirmDialog
             title="Delete Tag"
-            message="Are you sure you want to delete this tag? This action cannot be undone."
-            onConfirm={confirmDelete}
-            onCancel={cancelDelete}
+            message={`Are you sure you want to delete the tag "${tagToDelete.name}"?`}
+            onConfirm={handleDeleteTag}
+            onCancel={closeConfirmDialog}
           />
         )}
       </div>

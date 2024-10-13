@@ -1,11 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import TaskList from './components/Task/TaskList';
-import NewTask from './NewTask';
-import { Task } from './entities/Task';
-import { Project } from './entities/Project';
-import { getTitleAndIcon } from './components/Task/getTitleAndIcon';
-import { getDescription } from './components/Task/getDescription';
+import React, { useEffect, useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import TaskList from "./components/Task/TaskList";
+import NewTask from "./NewTask";
+import TaskTags from "./components/Task/TaskTags"; // Import TaskTags component
+import { Task } from "./entities/Task";
+import { Project } from "./entities/Project";
+import { getTitleAndIcon } from "./components/Task/getTitleAndIcon";
+import { getDescription } from "./components/Task/getDescription";
+import { TagIcon, XMarkIcon } from "@heroicons/react/24/solid"; // Import X icon for removing tag
 
 // Helper function to capitalize the first letter of a string
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -16,7 +18,7 @@ const Tasks: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-  const [orderBy, setOrderBy] = useState<string>('due_date:asc'); // State for sorting
+  const [orderBy, setOrderBy] = useState<string>("due_date:asc"); // State for sorting
   const dropdownRef = useRef<HTMLDivElement>(null); // Reference to the dropdown
 
   const location = useLocation();
@@ -29,14 +31,17 @@ const Tasks: React.FC = () => {
       ? { title: stateTitle, icon: stateIcon }
       : getTitleAndIcon(query, projects);
 
+  // Extract tag from query params
+  const tag = query.get("tag");
+
   // Load orderBy from localStorage or use default
   useEffect(() => {
-    const savedOrderBy = localStorage.getItem('order_by') || 'due_date:asc';
+    const savedOrderBy = localStorage.getItem("order_by") || "due_date:asc";
     setOrderBy(savedOrderBy);
 
     const params = new URLSearchParams(location.search);
-    if (!params.get('order_by')) {
-      params.set('order_by', savedOrderBy); // Set the default to URL if not present
+    if (!params.get("order_by")) {
+      params.set("order_by", savedOrderBy); // Set the default to URL if not present
       navigate({
         pathname: location.pathname,
         search: `?${params.toString()}`,
@@ -47,15 +52,18 @@ const Tasks: React.FC = () => {
   // Close dropdown if clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     };
     if (dropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownOpen]);
 
@@ -65,23 +73,25 @@ const Tasks: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
+        // Fetch tasks with the selected tag if present
+        const tagId = query.get("tag");
         const [tasksResponse, projectsResponse] = await Promise.all([
-          fetch(`/api/tasks${location.search}`),
-          fetch('/api/projects'),
+          fetch(`/api/tasks${location.search}${tagId ? `&tag=${tagId}` : ""}`),
+          fetch("/api/projects"),
         ]);
 
         if (tasksResponse.ok) {
           const tasksData = await tasksResponse.json();
           setTasks(tasksData || []);
         } else {
-          throw new Error('Failed to fetch tasks.');
+          throw new Error("Failed to fetch tasks.");
         }
 
         if (projectsResponse.ok) {
           const projectsData = await projectsResponse.json();
           setProjects(projectsData?.projects || []);
         } else {
-          throw new Error('Failed to fetch projects.');
+          throw new Error("Failed to fetch projects.");
         }
       } catch (error) {
         setError((error as Error).message);
@@ -93,12 +103,22 @@ const Tasks: React.FC = () => {
     fetchData();
   }, [location]);
 
+  // Function to remove the tag from the URL
+  const handleRemoveTag = () => {
+    const params = new URLSearchParams(location.search);
+    params.delete("tag"); // Remove tag from query params
+    navigate({
+      pathname: location.pathname,
+      search: `?${params.toString()}`, // Update the URL without the tag parameter
+    });
+  };
+
   // Function to create a new task
   const handleTaskCreate = async (taskData: Partial<Task>) => {
     try {
-      const response = await fetch('/api/task/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/task/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(taskData),
       });
 
@@ -107,12 +127,12 @@ const Tasks: React.FC = () => {
         setTasks((prevTasks) => [newTask, ...prevTasks]);
       } else {
         const errorData = await response.json();
-        console.error('Failed to create task:', errorData.error);
-        setError('Failed to create task.');
+        console.error("Failed to create task:", errorData.error);
+        setError("Failed to create task.");
       }
     } catch (error) {
-      console.error('Error creating task:', error);
-      setError('Error creating task.');
+      console.error("Error creating task:", error);
+      setError("Error creating task.");
     }
   };
 
@@ -120,8 +140,8 @@ const Tasks: React.FC = () => {
   const handleTaskUpdate = async (updatedTask: Task) => {
     try {
       const response = await fetch(`/api/task/${updatedTask.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedTask),
       });
 
@@ -133,8 +153,8 @@ const Tasks: React.FC = () => {
         );
       }
     } catch (error) {
-      console.error('Error updating task:', error);
-      setError('Error updating task.');
+      console.error("Error updating task:", error);
+      setError("Error updating task.");
     }
   };
 
@@ -142,28 +162,28 @@ const Tasks: React.FC = () => {
   const handleTaskDelete = async (taskId: number) => {
     try {
       const response = await fetch(`/api/task/${taskId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (response.ok) {
         setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
       } else {
         const errorData = await response.json();
-        console.error('Failed to delete task:', errorData.error);
-        setError('Failed to delete task.');
+        console.error("Failed to delete task:", errorData.error);
+        setError("Failed to delete task.");
       }
     } catch (error) {
-      console.error('Error deleting task:', error);
-      setError('Error deleting task.');
+      console.error("Error deleting task:", error);
+      setError("Error deleting task.");
     }
   };
 
   // Handle sorting changes
   const handleSortChange = (order: string) => {
     setOrderBy(order);
-    localStorage.setItem('order_by', order); // Save the selected order to localStorage
+    localStorage.setItem("order_by", order); // Save the selected order to localStorage
     const params = new URLSearchParams(location.search);
-    params.set('order_by', order); // Update or add the order_by param
+    params.set("order_by", order); // Update or add the order_by param
     navigate({
       pathname: location.pathname,
       search: `?${params.toString()}`,
@@ -175,13 +195,33 @@ const Tasks: React.FC = () => {
   const description = getDescription(query, projects);
 
   return (
-    <div className="flex justify-center px-4"> {/* Center the content with padding */}
-      <div className="w-full max-w-4xl"> {/* Limit the width to 3xl (48rem) */}
+    <div className="flex justify-center px-4">
+      {" "}
+      {/* Center the content with padding */}
+      <div className="w-full max-w-4xl">
+        {" "}
+        {/* Limit the width to 3xl (48rem) */}
         {/* Title and Icon */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <i className={`bi ${icon} text-xl mr-2`}></i>
-            <h2 className="text-2xl font-light">{title}</h2>
+            <h2 className="text-2xl font-light">
+              {title}
+            </h2>
+
+            {/* If tag exists, display it as a styled button with an X to remove */}
+            {tag && (
+              <div className="ml-4 flex items-center space-x-2">
+                <button
+                  className="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+                  onClick={handleRemoveTag}
+                >
+                  <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-300" />
+                  <span className="text-xs text-gray-700 dark:text-gray-300">{capitalize(tag)}</span>
+                  <XMarkIcon className="h-4 w-4 text-gray-500 dark:text-gray-300 hover:text-red-500" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Sort Dropdown */}
@@ -195,8 +235,8 @@ const Tasks: React.FC = () => {
                 aria-haspopup="true"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
               >
-                <i className="bi bi-sort-alpha-down me-2"></i>{' '}
-                {capitalize(orderBy.split(':')[0].replace('_', ' '))}
+                <i className="bi bi-sort-alpha-down me-2"></i>{" "}
+                {capitalize(orderBy.split(":")[0].replace("_", " "))}
                 <svg
                   className="-mr-1 ml-2 h-5 w-5"
                   xmlns="http://www.w3.org/2000/svg"
@@ -221,13 +261,19 @@ const Tasks: React.FC = () => {
                 aria-labelledby="menu-button"
               >
                 <div className="py-1" role="none">
-                  {['due_date:asc', 'name:asc', 'priority:desc', 'status:desc', 'created_at:desc'].map((order) => (
+                  {[
+                    "due_date:asc",
+                    "name:asc",
+                    "priority:desc",
+                    "status:desc",
+                    "created_at:desc",
+                  ].map((order) => (
                     <button
                       key={order}
                       onClick={() => handleSortChange(order)}
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
                     >
-                      {capitalize(order.split(':')[0].replace('_', ' '))}
+                      {capitalize(order.split(":")[0].replace("_", " "))}
                     </button>
                   ))}
                 </div>
@@ -235,10 +281,10 @@ const Tasks: React.FC = () => {
             )}
           </div>
         </div>
-
         {/* Description */}
-        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">{description}</p>
-
+        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+          {description}
+        </p>
         {loading ? (
           <p>Loading...</p>
         ) : error ? (
@@ -248,7 +294,7 @@ const Tasks: React.FC = () => {
             {/* New Task Form */}
             <NewTask
               onTaskCreate={(taskName: string) =>
-                handleTaskCreate({ name: taskName, status: 'not_started' })
+                handleTaskCreate({ name: taskName, status: "not_started" })
               }
             />
 
@@ -262,7 +308,9 @@ const Tasks: React.FC = () => {
                 projects={projects}
               />
             ) : (
-              <p className="text-gray-500 text-center mt-4">No tasks available.</p>
+              <p className="text-gray-500 text-center mt-4">
+                No tasks available.
+              </p>
             )}
           </>
         )}

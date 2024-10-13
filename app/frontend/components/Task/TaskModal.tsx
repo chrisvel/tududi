@@ -5,6 +5,7 @@ import TaskActions from './TaskActions';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import StatusDropdown from '../Shared/StatusDropdown';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import { useToast } from '../Shared/ToastContext'; // Import the toast hook
 
 interface Tag {
   id?: number;
@@ -45,6 +46,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const modalRef = useRef<HTMLDivElement>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false); // State to control confirm dialog
+
+  const { showSuccessToast, showErrorToast } = useToast(); // Use toast functions
 
   useEffect(() => {
     setFormData(task);
@@ -100,7 +103,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
         setFilteredProjects([...filteredProjects, newProject]);
         setNewProjectName(newProject.name);
         setDropdownOpen(false);
+        showSuccessToast('Project created successfully!');
       } catch (error) {
+        showErrorToast('Failed to create project.');
         console.error('Error creating project:', error);
       } finally {
         setIsCreatingProject(false);
@@ -110,6 +115,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   const handleSubmit = () => {
     onSave({ ...formData, tags: tags.map(tag => ({ name: tag })) });
+    showSuccessToast('Task updated successfully!');
     handleClose();
   };
 
@@ -120,6 +126,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const handleDeleteConfirm = () => {
     if (formData.id) {
       onDelete(formData.id);
+      showSuccessToast('Task deleted successfully!');
       setShowConfirmDialog(false);
       handleClose();
     }

@@ -107,6 +107,12 @@ get '/*' do
   erb :index
 end
 
+not_found do
+  content_type :json
+  status 404
+  { error: 'Not Found', message: 'The requested resource could not be found.' }.to_json
+end
+
 # get '/inbox' do
 #   @tasks = current_user.tasks
 #                        .incomplete

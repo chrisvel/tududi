@@ -9,16 +9,22 @@ import SidebarHeader from './components/Sidebar/SidebarHeader';
 import SidebarNav from './components/Sidebar/SidebarNav';
 import SidebarProjects from './components/Sidebar/SidebarProjects';
 import SidebarTags from './components/Sidebar/SidebarTags';
-import SidebarNotes from './components/Sidebar/SidebarNotes'; // Add this import
+import SidebarNotes from './components/Sidebar/SidebarNotes';
 import { Note } from './entities/Note';
+import { Area } from './entities/Area';
+import { Tag } from './entities/Tag';
 
 interface SidebarProps {
   currentUser: { email: string };
   isDarkMode: boolean;
   toggleDarkMode: () => void;
-  openProjectModal: () => void; // Add this prop
+  openProjectModal: () => void;
   openNoteModal: (note: Note | null) => void;
+  openAreaModal: (area: Area | null) => void;
+  openTagModal: (tag: Tag | null) => void;
   notes: Note[];
+  areas: Area[];
+  tags: Tag[];
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -27,10 +33,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   toggleDarkMode,
   openProjectModal,
   openNoteModal,
+  openAreaModal,
+  openTagModal,
   notes,
+  areas,
+  tags,
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,12 +51,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen); // Toggles dropdown visibility
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   return (
     <>
-      {/* Sidebar Toggle Button for small screens */}
       <div className="lg:hidden p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
         <button
           className="flex items-center focus:outline-none"
@@ -60,13 +69,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* Sidebar */}
       <div
         className={`fixed lg:static z-50 h-screen w-72 bg-white dark:bg-gray-900 text-gray-900 dark:text-white lg:translate-x-0 transform transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:flex lg:flex-col flex-shrink-0`}
       >
-        {/* Scrollable content */}
         <div className="flex flex-col h-full overflow-y-auto p-3">
           <SidebarHeader />
           <SidebarNav
@@ -78,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             handleNavClick={handleNavClick}
             location={location}
             isDarkMode={isDarkMode}
-            openProjectModal={openProjectModal} // Pass down the function
+            openProjectModal={openProjectModal}
           />
           <SidebarNotes
             handleNavClick={handleNavClick}
@@ -89,20 +96,24 @@ const Sidebar: React.FC<SidebarProps> = ({
           />
           <SidebarAreas
             handleNavClick={handleNavClick}
+            areas={areas}
             location={location}
             isDarkMode={isDarkMode}
+            openAreaModal={openAreaModal}
           />
           <SidebarTags
             handleNavClick={handleNavClick}
             location={location}
             isDarkMode={isDarkMode}
+            openTagModal={openTagModal}
+            tags={tags}
           />
           <SidebarFooter
             currentUser={currentUser}
             isDarkMode={isDarkMode}
             toggleDarkMode={toggleDarkMode}
-            isDropdownOpen={isDropdownOpen} // Pass isDropdownOpen
-            toggleDropdown={toggleDropdown} // Pass toggleDropdown
+            isDropdownOpen={isDropdownOpen}
+            toggleDropdown={toggleDropdown}
           />
         </div>
       </div>

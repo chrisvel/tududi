@@ -1,29 +1,24 @@
 // src/components/Sidebar/SidebarAreas.tsx
 
-import React, { useState, useEffect } from 'react';
-import { Location } from 'react-router-dom';
-import { Squares2X2Icon, PlusCircleIcon } from '@heroicons/react/24/solid'; // Using outline style
-
-interface Area {
-  id: number;
-  name: string;
-  active: boolean;
-}
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Squares2X2Icon, PlusCircleIcon } from '@heroicons/react/24/solid'; // Using solid style
+import { Area } from '../../entities/Area'; // Adjust the import path
 
 interface SidebarAreasProps {
   handleNavClick: (path: string, title: string, icon: string) => void;
   location: Location;
   isDarkMode: boolean;
+  openAreaModal: (area: Area | null) => void; // Receive the function as a prop
 }
 
 const SidebarAreas: React.FC<SidebarAreasProps> = ({
   handleNavClick,
   location,
   isDarkMode,
+  openAreaModal,
 }) => {
   const [areas, setAreas] = useState<Area[]>([]);
-  const [isCreatingArea, setIsCreatingArea] = useState(false);
-  const [newAreaName, setNewAreaName] = useState('');
 
   useEffect(() => {
     const fetchAreas = async () => {
@@ -42,35 +37,8 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
     fetchAreas();
   }, []);
 
-  const startAreaCreation = () => {
-    setIsCreatingArea(true);
-  };
-
-  const handleAreaNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewAreaName(e.target.value);
-  };
-
-  const handleAreaCreation = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && newAreaName.trim()) {
-      try {
-        const response = await fetch('/api/area', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: newAreaName }),
-        });
-
-        if (response.ok) {
-          const newArea = await response.json();
-          setAreas((prevAreas) => [...prevAreas, newArea]);
-          setNewAreaName('');
-          setIsCreatingArea(false);
-        } else {
-          console.error('Failed to create area');
-        }
-      } catch (error) {
-        console.error('Error creating area:', error);
-      }
-    }
+  const handleAreaEdit = (area: Area) => {
+    openAreaModal(area); // Open the modal with the selected area's data
   };
 
   const isActiveArea = (path: string) => {
@@ -96,7 +64,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              startAreaCreation();
+              openAreaModal(null); // Open modal for creating a new area
             }}
             className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
             aria-label="Add Area"
@@ -105,38 +73,6 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
             <PlusCircleIcon className="h-5 w-5" />
           </button>
         </li>
-
-        {/* Input for New Area Creation */}
-        {isCreatingArea && (
-          <li className="px-4 py-1">
-            <input
-              type="text"
-              value={newAreaName}
-              onChange={handleAreaNameChange}
-              onKeyDown={handleAreaCreation}
-              placeholder="New area name"
-              autoFocus
-              className="w-full px-2 py-1 text-gray-900 bg-white dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </li>
-        )}
-
-        {/* List of Areas */}
-        {areas.map((area) => (
-          <li key={area.id}>
-            <button
-              onClick={() =>
-                handleNavClick(`/area/${area.id}`, area.name, 'squares2x2')
-              }
-              className={`w-full text-left px-4 py-1 flex items-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActiveArea(
-                `/area/${area.id}`
-              )}`}
-            >
-              <Squares2X2Icon className="h-5 w-5 mr-2 text-blue-500" />
-              {area.name}
-            </button>
-          </li>
-        ))}
       </ul>
     </>
   );

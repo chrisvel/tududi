@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid'; // Heroicons for edit and delete
-
-interface Area {
-  id: number;
-  name: string;
-  description?: string;
-}
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { PencilSquareIcon, TrashIcon, Squares2X2Icon } from '@heroicons/react/24/solid'; // Icons for edit, delete, and area
+import ConfirmDialog from './components/Shared/ConfirmDialog'; // Import ConfirmDialog
+import AreaModal from './components/Area/AreaModal'; // Import AreaModal
+import { Area } from './entities/Area'; // Import Area entity
 
 const Areas: React.FC = () => {
   const [areas, setAreas] = useState<Area[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
+  const [selectedArea, setSelectedArea] = useState<Area | null>(null); // For editing
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+  const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
 
   useEffect(() => {
     const fetchAreas = async () => {
       try {
         const response = await fetch('/api/areas', {
-          credentials: 'include', // Include cookies for authentication
+          credentials: 'include',
           headers: {
             'Accept': 'application/json',
           },
         });
         const data = await response.json();
         if (response.ok) {
-          setAreas(data);
+          setAreas(data || []);
         } else {
           throw new Error(data.error || 'Failed to fetch areas.');
         }
@@ -39,11 +39,11 @@ const Areas: React.FC = () => {
     fetchAreas();
   }, []);
 
-  const handleDeleteArea = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this area?')) return;
+  const handleDeleteArea = async () => {
+    if (!areaToDelete) return;
 
     try {
-      const response = await fetch(`/api/areas/${id}`, {
+      const response = await fetch(`/api/areas/${areaToDelete.id}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -52,7 +52,9 @@ const Areas: React.FC = () => {
       });
 
       if (response.ok) {
-        setAreas((prevAreas) => prevAreas.filter((area) => area.id !== id));
+        setAreas((prevAreas) => prevAreas.filter((area) => area.id !== areaToDelete.id));
+        setIsConfirmDialogOpen(false);
+        setAreaToDelete(null);
       } else {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to delete area.');
@@ -60,6 +62,79 @@ const Areas: React.FC = () => {
     } catch (err) {
       setError((err as Error).message);
     }
+  };
+
+  const handleEditArea = (area: Area) => {
+    setSelectedArea(area);
+    setIsAreaModalOpen(true);
+  };
+
+  const handleCreateArea = () => {
+    setSelectedArea(null);
+    setIsAreaModalOpen(true);
+  };
+
+  const handleSaveArea = async (areaData: Area) => {
+    if (areaData.id) {
+      // Update existing area
+      try {
+        const response = await fetch(`/api/areas/${areaData.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify(areaData),
+        });
+
+        if (response.ok) {
+          const updatedArea = await response.json();
+          setAreas((prevAreas) =>
+            prevAreas.map((a) => (a.id === updatedArea.id ? updatedArea : a))
+          );
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to update area.');
+        }
+      } catch (error) {
+        setError((error as Error).message);
+      }
+    } else {
+      // Create new area
+      try {
+        const response = await fetch('/api/areas', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify(areaData),
+        });
+
+        if (response.ok) {
+          const newArea = await response.json();
+          setAreas((prevAreas) => [...prevAreas, newArea]);
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to create area.');
+        }
+      } catch (error) {
+        setError((error as Error).message);
+      }
+    }
+
+    setIsAreaModalOpen(false);
+    setSelectedArea(null);
+  };
+
+  const openConfirmDialog = (area: Area) => {
+    setAreaToDelete(area);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const closeConfirmDialog = () => {
+    setIsConfirmDialogOpen(false);
+    setAreaToDelete(null);
   };
 
   if (loading) {
@@ -73,15 +148,18 @@ const Areas: React.FC = () => {
   }
 
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return <div className="text-red-500 p-4">{error}</div>;
   }
 
   return (
-    <div className="flex justify-center px-4 py-6">
+    <div className="flex justify-center px-4">
       <div className="w-full max-w-4xl">
         {/* Areas Header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Areas</h2>
+          <div className="flex items-center">
+            <Squares2X2Icon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
+            <h2 className="text-2xl font-light text-gray-900 dark:text-white">Areas</h2>
+          </div>
         </div>
 
         {/* Areas List */}
@@ -90,7 +168,10 @@ const Areas: React.FC = () => {
         ) : (
           <ul className="space-y-2">
             {areas.map((area) => (
-              <li key={area.id} className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center">
+              <li
+                key={area.id}
+                className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center"
+              >
                 {/* Area Content */}
                 <div className="flex-grow overflow-hidden pr-4">
                   <Link
@@ -109,7 +190,7 @@ const Areas: React.FC = () => {
                 {/* Action Buttons */}
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => navigate(`/area/${area.id}/edit`)}
+                    onClick={() => handleEditArea(area)}
                     className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
                     aria-label={`Edit ${area.name}`}
                     title={`Edit ${area.name}`}
@@ -117,7 +198,7 @@ const Areas: React.FC = () => {
                     <PencilSquareIcon className="h-5 w-5" />
                   </button>
                   <button
-                    onClick={() => handleDeleteArea(area.id)}
+                    onClick={() => openConfirmDialog(area)}
                     className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
                     aria-label={`Delete ${area.name}`}
                     title={`Delete ${area.name}`}
@@ -128,6 +209,26 @@ const Areas: React.FC = () => {
               </li>
             ))}
           </ul>
+        )}
+
+        {/* AreaModal */}
+        {isAreaModalOpen && (
+          <AreaModal
+            isOpen={isAreaModalOpen}
+            onClose={() => setIsAreaModalOpen(false)}
+            onSave={handleSaveArea}
+            area={selectedArea}
+          />
+        )}
+
+        {/* ConfirmDialog */}
+        {isConfirmDialogOpen && areaToDelete && (
+          <ConfirmDialog
+            title="Delete Area"
+            message={`Are you sure you want to delete the area "${areaToDelete.name}"?`}
+            onConfirm={handleDeleteArea}
+            onCancel={closeConfirmDialog}
+          />
         )}
       </div>
     </div>

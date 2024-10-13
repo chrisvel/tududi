@@ -64,7 +64,7 @@ module Sinatra
       @tasks = @tasks.left_joins(:tags).distinct
 
       # Return the tasks in JSON format
-      @tasks.to_json(include: { tags: { only: :name }, project: { only: :name } })
+      @tasks.to_json(include: { tags: { only: %i[id name] }, project: { only: :name } })
     end
 
     post '/api/task/create' do

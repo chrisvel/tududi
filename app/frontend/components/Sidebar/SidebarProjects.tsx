@@ -76,23 +76,6 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
             <PlusCircleIcon className="h-5 w-5" />
           </button>
         </li>
-
-        {/* List of Projects */}
-        {projects.map((project) => (
-          <li key={project.id}>
-            <button
-              onClick={() =>
-                handleNavClick(`/project/${project.id}`, project.name, 'folder')
-              }
-              className={`w-full text-left px-4 py-1 flex items-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActiveProject(
-                `/project/${project.id}`
-              )}`}
-            >
-              <FolderIcon className="h-5 w-5 mr-2" />
-              {project.name}
-            </button>
-          </li>
-        ))}
       </ul>
     </>
   );

@@ -1,7 +1,5 @@
-// src/components/Tag/TagDetails.tsx
-
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 interface Tag {
   id: number;
@@ -14,6 +12,7 @@ const TagDetails: React.FC = () => {
   const [tag, setTag] = useState<Tag | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate(); // Use the `useNavigate` hook for navigation
 
   useEffect(() => {
     const fetchTag = async () => {
@@ -33,6 +32,13 @@ const TagDetails: React.FC = () => {
     };
     fetchTag();
   }, [id]);
+
+  // Function to handle the redirection to tasks with the tag
+  const handleViewTasks = () => {
+    if (tag) {
+      navigate(`/tasks?tag=${encodeURIComponent(tag.name)}`); // Redirect to the tasks page with the tag as a query param
+    }
+  };
 
   if (loading) {
     return <div className="text-gray-700 dark:text-gray-300">Loading tag details...</div>;
@@ -55,7 +61,14 @@ const TagDetails: React.FC = () => {
       <p className="text-gray-700 dark:text-gray-300">
         <strong>Status:</strong> {tag.active ? 'Active' : 'Inactive'}
       </p>
-      {/* Add more tag details and functionalities as needed */}
+
+      {/* "View tasks with this tag" button */}
+      <button
+        onClick={handleViewTasks}
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+      >
+        View tasks with this tag
+      </button>
     </div>
   );
 };

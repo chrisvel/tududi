@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useToast } from './components/Shared/ToastContext'; // Adjust the import path accordingly
 
 interface NewTaskProps {
   onTaskCreate: (taskName: string) => void;
@@ -6,15 +7,22 @@ interface NewTaskProps {
 
 const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
   const [taskName, setTaskName] = useState<string>('');
+  const { showSuccessToast, showErrorToast } = useToast(); // Use the toast functions
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTaskName(event.target.value);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && taskName.trim()) {
-      onTaskCreate(taskName.trim());
-      setTaskName('');
+      try {
+        await onTaskCreate(taskName.trim());
+        setTaskName('');
+        showSuccessToast('Task created successfully!');
+      } catch (error) {
+        console.error('Error creating task:', error);
+        showErrorToast('Failed to create task.');
+      }
     }
   };
 
