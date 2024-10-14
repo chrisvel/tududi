@@ -12,7 +12,7 @@ import {
 } from '@heroicons/react/24/solid';
 
 interface SidebarNavProps {
-  handleNavClick: (path: string, title: string) => void; // Removed `icon` from the parameters
+  handleNavClick: (path: string, title: string) => void;
   location: Location;
   isDarkMode: boolean;
 }
@@ -42,7 +42,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location, isDar
       {navLinks.map((link) => (
         <li key={link.path}>
           <button
-            onClick={() => handleNavClick(link.path, link.title)} // Removed `link.icon` from the arguments
+            onClick={() => handleNavClick(link.path, link.title)}
             className={`w-full text-left px-4 py-1 flex items-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
               link.path,
               link.query

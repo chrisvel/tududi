@@ -8,43 +8,23 @@ class Task < ActiveRecord::Base
 
   scope :complete, -> { where(status: statuses[:done]) }
   scope :incomplete, -> { where.not(status: statuses[:done]) }
+  scope :due_today, -> { where('due_date <= ?', Date.today.end_of_day) }
+  scope :upcoming, -> { where('due_date BETWEEN ? AND ?', Date.today, Date.today + 7.days) }
+  scope :someday, -> { incomplete.where(due_date: nil) }
+  scope :next_actions, -> { incomplete.where(due_date: nil, project_id: nil) }
+  scope :waiting_for, -> { where(status: statuses[:waiting]) }
+  scope :inbox, -> { incomplete.where('due_date IS NULL OR project_id IS NULL') }
 
-  # Scope for tasks due today
-  scope :due_today, lambda {
-    where('(status = ? OR status = ?) AND due_date <= ?',
-          statuses[:in_progress],
-          statuses[:not_started],
-          Date.today.end_of_day)
+  scope :ordered_by_due_date, lambda { |direction = 'asc'|
+    order(Arel.sql("CASE WHEN due_date IS NULL THEN 1 ELSE 0 END, due_date #{direction}"))
   }
 
-  # Scope for tasks due in the upcoming week
-  scope :upcoming, lambda {
-    where('(status = ? OR status = ?) AND due_date BETWEEN ? AND ?',
-          statuses[:in_progress],
-          statuses[:not_started],
-          Date.tomorrow,
-          Date.today + 7.days)
+  scope :with_tag, lambda { |tag_name|
+    joins(:tags).where(tags: { name: tag_name })
   }
 
-  # Scope for Next Actions (tasks without due dates but need action soon)
-  scope :next_actions, lambda {
-    incomplete.where('due_date IS NULL AND project_id IS NOT NULL')
-  }
-
-  # Scope for Someday/Maybe tasks (tasks without a due date or that are not urgent)
-  scope :someday, lambda {
-    incomplete.where('due_date IS NULL')
-  }
-
-  # Scope for Inbox (unprocessed tasks that have no project and no due date)
-  scope :inbox, lambda {
-    incomplete.where('due_date IS NULL AND project_id IS NULL')
-  }
-
-  # Scope for Waiting For (tasks waiting on someone else or another dependency)
-  scope :waiting_for, lambda {
-    where(status: statuses[:waiting])
-  }
+  scope :by_status, ->(status) { where(status: statuses[status]) }
+  scope :by_priority, ->(priority) { where(priority: priorities[priority]) }
 
   validates :name, presence: true
 end

@@ -18,49 +18,45 @@ module Sinatra
     get '/api/tasks' do
       content_type :json
 
-      # Base query with necessary joins
-      base_query = current_user.tasks.includes(:project, :tags)
+      # Start with a base query for tasks belonging to the current user
+      @tasks = current_user.tasks.includes(:project, :tags)
 
-      # Apply filters based on due_date and status
+      # Filter tasks based on the provided `type` parameter
       @tasks = case params[:type]
                when 'today'
-                 Task.due_today
+                 @tasks.due_today
                when 'upcoming'
-                 Task.upcoming
+                 @tasks.upcoming
                when 'next'
-                 Task.next_actions
+                 @tasks.next_actions
                when 'inbox'
-                 Task.inbox
+                 @tasks.inbox
                when 'someday'
-                 Task.someday
+                 @tasks.someday
                when 'waiting'
-                 Task.waiting_for
+                 @tasks.waiting_for
                else
-                 params[:status] == 'done' ? Task.complete : Task.incomplete
+                 params[:status] == 'done' ? @tasks.complete : @tasks.incomplete
                end
 
-      # Apply ordering
+      # Apply ordering by due_date or other columns
       if params[:order_by]
         order_column, order_direction = params[:order_by].split(':')
         order_direction ||= 'asc'
 
         @tasks = if order_column == 'due_date'
-                   @tasks.order(Arel.sql("CASE WHEN tasks.due_date IS NULL THEN 1 ELSE 0 END, tasks.due_date #{order_direction}"))
+                   @tasks.ordered_by_due_date(order_direction)
                  else
-                   @tasks.order("tasks.#{order_column} #{order_direction}")
+                   @tasks.order("#{order_column} #{order_direction}")
                  end
       end
 
       # Filter by tag if provided
-      if params[:tag]
-        tagged_task_ids = Tag.joins(:tasks).where(name: params[:tag],
-                                                  tasks: { user_id: current_user.id }).select('tasks.id')
-        @tasks = @tasks.where(id: tagged_task_ids)
-      end
+      @tasks = @tasks.with_tag(params[:tag]) if params[:tag]
 
       @tasks = @tasks.left_joins(:tags).distinct
 
-      # Return the tasks in JSON format
+      # Return the tasks in JSON format with their tags and project
       @tasks.to_json(include: { tags: { only: %i[id name] }, project: { only: :name } })
     end
 

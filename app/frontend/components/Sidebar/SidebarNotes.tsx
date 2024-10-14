@@ -3,7 +3,7 @@
 import React from 'react';
 import { Location } from 'react-router-dom';
 import { BookOpenIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
-import { Note } from '../../entities/Note'; // Import the centralized Note type
+import { Note } from '../../entities/Note';
 
 interface SidebarNotesProps {
   handleNavClick: (path: string, title: string, icon: string) => void;
@@ -29,7 +29,6 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
   return (
     <>
       <ul className="flex flex-col space-y-1">
-        {/* "NOTES" Title with Add Button */}
         <li
           className={`flex justify-between items-center px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveNote(
             '/notes'
@@ -43,7 +42,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              openNoteModal(null); // Open the modal for a new note
+              openNoteModal(null);
             }}
             className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
             aria-label="Add Note"
