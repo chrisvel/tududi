@@ -38,10 +38,10 @@ const TaskStatusBadge: React.FC<TaskStatusBadgeProps> = ({ status, className }) 
 
   return (
     <div
-      className={`flex items-center justify-center space-x-2 px-2 py-1 rounded-md border ${badgeClass} w-28 ${className}`}
+      className={`flex items-center justify-center px-2 py-1 rounded-md border ${badgeClass} w-10 ${className}`}
     >
       {statusIcon}
-      <span className="text-xs font-medium">{statusLabel}</span>
+      <span className="text-xs font-medium"></span>
     </div>
   );
 };

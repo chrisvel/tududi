@@ -255,17 +255,34 @@ const Projects: React.FC = () => {
               <ul className="space-y-2">
                 {groupedProjects[areaName].map((project) => (
                   <li key={project.id} className="pb-2">
-                    <div className="flex justify-between items-center">
-                      <div className="flex flex-col">
-                        <Link
-                          to={`/project/${project.id}`}
-                          className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline"
+                  <div className="flex justify-between items-center w-full">
+                    {/* Title */}
+                    <Link
+                      to={`/project/${project.id}`}
+                      className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline flex-shrink-0"
+                    >
+                      {project.name}
+                    </Link>
+                
+                    {/* Right side: Progress Bar, Completion Percentage, Action Icons */}
+                    <div className="flex items-center space-x-4">
+                      {/* Progress Bar and Completion Percentage */}
+                      <div className="flex items-center space-x-2">
+                        <div className="w-40 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div
+                            className="bg-blue-500 h-2 rounded-full"
+                            style={{ width: `${getCompletionPercentage(project.id)}%` }}
+                          ></div>
+                        </div>
+                        <span
+                          className="text-xs text-gray-500 dark:text-gray-400"
+                          style={{ width: '32px', textAlign: 'right' }} // Fixed width and right alignment
                         >
-                          {project.name}
-                        </Link>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{areaName}</span>
+                          {getCompletionPercentage(project.id)}%
+                        </span>
                       </div>
-
+                
+                      {/* Action Icons */}
                       <div className="flex space-x-2">
                         <button
                           onClick={() => handleEditProject(project)}
@@ -288,19 +305,9 @@ const Projects: React.FC = () => {
                         </button>
                       </div>
                     </div>
-
-                    <div className="mt-2">
-                      <div className="relative w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div
-                          className="bg-blue-500 h-2 rounded-full"
-                          style={{ width: `${getCompletionPercentage(project.id)}%` }}
-                        ></div>
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {getCompletionPercentage(project.id)}% Completed
-                      </p>
-                    </div>
-                  </li>
+                  </div>
+                </li>
+                
                 ))}
               </ul>
             </div>
@@ -314,7 +321,7 @@ const Projects: React.FC = () => {
           isOpen={isProjectModalOpen}
           onClose={() => setIsProjectModalOpen(false)}
           onSave={handleSaveProject}
-          project={projectToEdit || undefined} // Handle `undefined` instead of `null`
+          project={projectToEdit || undefined}
           areas={areas}
         />
       )}
