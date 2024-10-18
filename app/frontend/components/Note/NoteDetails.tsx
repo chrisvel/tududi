@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon, TagIcon } from '@heroicons/react/24/solid';
-import { Note } from '../../entities/Note';
+import { useDataContext } from '../../contexts/DataContext'; // Import the DataContext
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
+import { Note } from '../../entities/Note'; // Adjust path as necessary
 
 const NoteDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { notes, deleteNote, isLoading, isError } = useDataContext(); // Get notes and deleteNote from context
   const [note, setNote] = useState<Note | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); // State for the modal
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
@@ -17,55 +17,23 @@ const NoteDetails: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchNote = async () => {
-      try {
-        const response = await fetch(`/api/note/${id}`, {
-          credentials: 'include',
-          headers: {
-            Accept: 'application/json',
-          },
-        });
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to fetch note.');
-        }
-        const data: Note = await response.json();
-        setNote(data);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNote();
-  }, [id]);
+    // Find the note with the matching ID from the context
+    const foundNote = notes.find((n) => n.id === Number(id));
+    setNote(foundNote || null);
+  }, [id, notes]);
 
   const handleDeleteNote = async () => {
     if (!noteToDelete) return;
-
     try {
-      const response = await fetch(`/api/note/${noteToDelete.id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        navigate('/notes');
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete note.');
-      }
+      await deleteNote(noteToDelete.id);
+      navigate('/notes'); // Navigate back to the notes list after deletion
     } catch (err) {
-      setError((err as Error).message);
+      console.error('Error deleting note:', err);
     }
   };
 
   const handleSaveNote = (updatedNote: Note) => {
-    setNote(updatedNote);
+    setNote(updatedNote); // Update the note after saving
     setIsNoteModalOpen(false); // Close modal after saving
   };
 
@@ -78,7 +46,7 @@ const NoteDetails: React.FC = () => {
     setIsConfirmDialogOpen(true);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
         <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
@@ -88,18 +56,12 @@ const NoteDetails: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (isError || !note) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-red-500 text-lg">{error}</div>
-      </div>
-    );
-  }
-
-  if (!note) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-red-500 text-lg">Note not found.</div>
+        <div className="text-red-500 text-lg">
+          {isError ? 'Error loading note details.' : 'Note not found.'}
+        </div>
       </div>
     );
   }
@@ -109,7 +71,6 @@ const NoteDetails: React.FC = () => {
       <div className="w-full max-w-4xl">
         {/* Header Section with Title and Action Buttons */}
         <div className="flex items-center justify-between mb-4">
-          {/* Title */}
           <div className="flex items-center">
             <i className="bi bi-journal-text text-xl mr-2"></i>
             <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">

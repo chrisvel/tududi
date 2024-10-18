@@ -1,67 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { Tag } from './entities/Tag';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon, PlusCircleIcon, TagIcon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './components/Shared/ConfirmDialog';
 import TagModal from './components/Tag/TagModal';
+import { useDataContext } from './contexts/DataContext'; // Import the DataContext
 
 const Tags: React.FC = () => {
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
+  const { tags, createTag, updateTag, deleteTag, isLoading, isError } = useDataContext(); // Use DataContext for tags and CRUD functions
   const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
 
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const response = await fetch('/api/tags', {
-          credentials: 'include',
-          headers: {
-            Accept: 'application/json',
-          },
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setTags(data || []);
-        } else {
-          throw new Error(data.error || 'Failed to fetch tags.');
-        }
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTags();
-  }, []);
-
   const handleDeleteTag = async () => {
     if (!tagToDelete) return;
-
     try {
-      const response = await fetch(`/api/tag/${tagToDelete.id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        setTags((prevTags) => prevTags.filter((tag) => tag.id !== tagToDelete.id));
-        setIsConfirmDialogOpen(false);
-        setTagToDelete(null);
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete tag.');
-      }
+      await deleteTag(tagToDelete.id);
+      setIsConfirmDialogOpen(false);
+      setTagToDelete(null);
     } catch (err) {
-      setError((err as Error).message);
+      console.error('Failed to delete tag:', err);
     }
   };
 
@@ -76,52 +34,16 @@ const Tags: React.FC = () => {
   };
 
   const handleSaveTag = async (tagData: Tag) => {
-    if (tagData.id) {
-      // Update existing tag
-      try {
-        const response = await fetch(`/api/tags/${tagData.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify(tagData),
-        });
-
-        if (response.ok) {
-          const updatedTag = await response.json();
-          setTags((prevTags) =>
-            prevTags.map((t) => (t.id === updatedTag.id ? updatedTag : t))
-          );
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to update tag.');
-        }
-      } catch (error) {
-        setError((error as Error).message);
+    try {
+      if (tagData.id) {
+        // Update existing tag
+        await updateTag(tagData.id, tagData);
+      } else {
+        // Create new tag
+        await createTag(tagData);
       }
-    } else {
-      // Create new tag
-      try {
-        const response = await fetch('/api/tags', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify(tagData),
-        });
-
-        if (response.ok) {
-          const newTag = await response.json();
-          setTags((prevTags) => [...prevTags, newTag]);
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to create tag.');
-        }
-      } catch (error) {
-        setError((error as Error).message);
-      }
+    } catch (err) {
+      console.error('Failed to save tag:', err);
     }
 
     setIsTagModalOpen(false);
@@ -138,7 +60,7 @@ const Tags: React.FC = () => {
     setTagToDelete(null);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
         <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
@@ -148,8 +70,8 @@ const Tags: React.FC = () => {
     );
   }
 
-  if (error) {
-    return <div className="text-red-500 p-4">{error}</div>;
+  if (isError) {
+    return <div className="text-red-500 p-4">Error loading tags</div>;
   }
 
   return (

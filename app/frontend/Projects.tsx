@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Project } from './entities/Project';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './components/Shared/ConfirmDialog';
 import ProjectModal from './components/Project/ProjectModal';
+import { useDataContext } from './contexts/DataContext'; // Use the DataContext
 
 interface Area {
   id: number;
@@ -11,12 +12,18 @@ interface Area {
 }
 
 const Projects: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [areas, setAreas] = useState<Area[]>([]);
-  const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, any>>({});
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    projects,
+    areas,
+    createProject,
+    updateProject,
+    deleteProject,
+    isLoading,
+    isError,
+    mutateProjects,  // Fetching/mutating projects
+  } = useDataContext();
 
+  const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, any>>({});
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false);
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
@@ -35,7 +42,7 @@ const Projects: React.FC = () => {
 
   const hasMounted = useRef(false);
 
-  // Update URL when filters change, after initial mount
+  // Update URL and refetch data when filters change, after initial mount
   useEffect(() => {
     if (hasMounted.current) {
       const params = new URLSearchParams();
@@ -43,69 +50,11 @@ const Projects: React.FC = () => {
       if (areaFilter) params.append('area_id', areaFilter);
 
       navigate(`/projects?${params.toString()}`, { replace: true });
+      mutateProjects();  // Refetch projects when filters change
     } else {
       hasMounted.current = true;
     }
-  }, [activeFilter, areaFilter, navigate]);
-
-  // Fetch areas on component mount
-  useEffect(() => {
-    const fetchAreas = async () => {
-      try {
-        const response = await fetch('/api/areas', {
-          method: 'GET',
-          credentials: 'include',
-          headers: { Accept: 'application/json' },
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to fetch areas.');
-        }
-
-        const data: Area[] = await response.json();
-        setAreas(data);
-      } catch (err) {
-        console.error('Error fetching areas:', err);
-        setError((err as Error).message);
-      }
-    };
-
-    fetchAreas();
-  }, []);
-
-  // Fetch projects whenever filters change
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const params = new URLSearchParams();
-        if (activeFilter !== 'all') params.append('active', activeFilter);
-        if (areaFilter) params.append('area_id', areaFilter);
-
-        const response = await fetch(`/api/projects?${params.toString()}`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: { Accept: 'application/json' },
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to fetch projects.');
-        }
-
-        const data = await response.json();
-        setProjects(data.projects);
-        setTaskStatusCounts(data.task_status_counts);
-      } catch (err) {
-        console.error('Error fetching projects:', err);
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, [activeFilter, areaFilter]);
+  }, [activeFilter, areaFilter, navigate, mutateProjects]);
 
   // Calculate the completion percentage for the project
   const getCompletionPercentage = (projectId: number) => {
@@ -119,35 +68,13 @@ const Projects: React.FC = () => {
 
   // Handle project save (either create or update)
   const handleSaveProject = async (project: Project) => {
-    const url = project.id ? `/api/project/${project.id}` : '/api/project';
-    const method = project.id ? 'PATCH' : 'POST'; // Use PATCH for updates
-    
-    try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(project),
-      });
-
-      if (response.ok) {
-        const updatedProject = await response.json();
-        setProjects((prevProjects) => {
-          if (project.id) {
-            return prevProjects.map((p) => (p.id === project.id ? updatedProject : p));
-          } else {
-            return [updatedProject, ...prevProjects];
-          }
-        });
-        setIsProjectModalOpen(false);
-      } else {
-        const errorData = await response.json();
-        console.error('Failed to save project:', errorData);
-      }
-    } catch (err) {
-      console.error('Error saving project:', err);
+    if (project.id) {
+      await updateProject(project.id, project);
+    } else {
+      await createProject(project);
     }
+    setIsProjectModalOpen(false);
+    mutateProjects();  // Refetch projects after save
   };
 
   // Open edit modal and populate form data
@@ -159,28 +86,13 @@ const Projects: React.FC = () => {
   // Handle delete project
   const handleDeleteProject = async () => {
     if (!projectToDelete) return;
-
-    try {
-      const response = await fetch(`/api/project/${projectToDelete.id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: { Accept: 'application/json' },
-      });
-
-      if (response.ok) {
-        setProjects((prevProjects) => prevProjects.filter((project) => project.id !== projectToDelete.id));
-        setIsConfirmDialogOpen(false);
-        setProjectToDelete(null);
-      } else {
-        const errorData = await response.json();
-        console.error('Failed to delete project:', errorData);
-      }
-    } catch (err) {
-      console.error('Error deleting project:', err);
-    }
+    await deleteProject(projectToDelete.id);
+    setIsConfirmDialogOpen(false);
+    setProjectToDelete(null);
+    mutateProjects();  // Refetch projects after delete
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
         <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">Loading projects...</div>
@@ -188,10 +100,10 @@ const Projects: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-red-500 text-lg">{error}</div>
+        <div className="text-red-500 text-lg">Error loading projects.</div>
       </div>
     );
   }
@@ -212,6 +124,7 @@ const Projects: React.FC = () => {
           <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">Projects</h2>
         </div>
 
+        {/* Filters for Active Status and Area */}
         <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-6">
           <div className="mb-4 md:mb-0 w-full md:w-1/3">
             <label htmlFor="activeFilter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -255,59 +168,54 @@ const Projects: React.FC = () => {
               <ul className="space-y-2">
                 {groupedProjects[areaName].map((project) => (
                   <li key={project.id} className="pb-2">
-                  <div className="flex justify-between items-center w-full">
-                    {/* Title */}
-                    <Link
-                      to={`/project/${project.id}`}
-                      className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline flex-shrink-0"
-                    >
-                      {project.name}
-                    </Link>
-                
-                    {/* Right side: Progress Bar, Completion Percentage, Action Icons */}
-                    <div className="flex items-center space-x-4">
-                      {/* Progress Bar and Completion Percentage */}
-                      <div className="flex items-center space-x-2">
-                        <div className="w-40 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-blue-500 h-2 rounded-full"
-                            style={{ width: `${getCompletionPercentage(project.id)}%` }}
-                          ></div>
+                    <div className="flex justify-between items-center w-full">
+                      <Link
+                        to={`/project/${project.id}`}
+                        className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline flex-shrink-0"
+                      >
+                        {project.name}
+                      </Link>
+
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-40 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div
+                              className="bg-blue-500 h-2 rounded-full"
+                              style={{ width: `${getCompletionPercentage(project.id)}%` }}
+                            ></div>
+                          </div>
+                          <span
+                            className="text-xs text-gray-500 dark:text-gray-400"
+                            style={{ width: '32px', textAlign: 'right' }}
+                          >
+                            {getCompletionPercentage(project.id)}%
+                          </span>
                         </div>
-                        <span
-                          className="text-xs text-gray-500 dark:text-gray-400"
-                          style={{ width: '32px', textAlign: 'right' }} // Fixed width and right alignment
-                        >
-                          {getCompletionPercentage(project.id)}%
-                        </span>
-                      </div>
-                
-                      {/* Action Icons */}
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEditProject(project)}
-                          className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
-                          aria-label={`Edit ${project.name}`}
-                          title={`Edit ${project.name}`}
-                        >
-                          <PencilSquareIcon className="h-5 w-5" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setProjectToDelete(project);
-                            setIsConfirmDialogOpen(true);
-                          }}
-                          className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
-                          aria-label={`Delete ${project.name}`}
-                          title={`Delete ${project.name}`}
-                        >
-                          <TrashIcon className="h-5 w-5" />
-                        </button>
+
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleEditProject(project)}
+                            className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
+                            aria-label={`Edit ${project.name}`}
+                            title={`Edit ${project.name}`}
+                          >
+                            <PencilSquareIcon className="h-5 w-5" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setProjectToDelete(project);
+                              setIsConfirmDialogOpen(true);
+                            }}
+                            className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
+                            aria-label={`Delete ${project.name}`}
+                            title={`Delete ${project.name}`}
+                          >
+                            <TrashIcon className="h-5 w-5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </li>
-                
+                  </li>
                 ))}
               </ul>
             </div>

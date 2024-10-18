@@ -43,7 +43,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, active: true }),
       });
 
       if (!response.ok) {

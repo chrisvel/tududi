@@ -1,66 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PencilSquareIcon, TrashIcon, Squares2X2Icon } from '@heroicons/react/24/solid'; // Icons for edit, delete, and area
-import ConfirmDialog from './components/Shared/ConfirmDialog'; // Import ConfirmDialog
-import AreaModal from './components/Area/AreaModal'; // Import AreaModal
-import { Area } from './entities/Area'; // Import Area entity
+import {
+  PencilSquareIcon,
+  TrashIcon,
+  Squares2X2Icon,
+} from '@heroicons/react/24/solid'; 
+import ConfirmDialog from './components/Shared/ConfirmDialog';
+import AreaModal from './components/Area/AreaModal'; 
+import { useDataContext } from './contexts/DataContext'; // Use DataContext instead of hooks
+import { Area } from './entities/Area';
 
 const Areas: React.FC = () => {
-  const [areas, setAreas] = useState<Area[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { areas, isLoading, isError, createArea, updateArea, deleteArea } = useDataContext(); // Get areas from context
   const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
-  const [selectedArea, setSelectedArea] = useState<Area | null>(null); // For editing
+  const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
 
-  useEffect(() => {
-    const fetchAreas = async () => {
-      try {
-        const response = await fetch('/api/areas', {
-          credentials: 'include',
-          headers: {
-            'Accept': 'application/json',
-          },
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setAreas(data || []);
-        } else {
-          throw new Error(data.error || 'Failed to fetch areas.');
-        }
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAreas();
-  }, []);
-
-  const handleDeleteArea = async () => {
-    if (!areaToDelete) return;
-
+  const handleSaveArea = async (areaData: Area) => {
     try {
-      const response = await fetch(`/api/areas/${areaToDelete.id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        setAreas((prevAreas) => prevAreas.filter((area) => area.id !== areaToDelete.id));
-        setIsConfirmDialogOpen(false);
-        setAreaToDelete(null);
+      if (areaData.id) {
+        await updateArea(areaData.id, {
+          name: areaData.name,
+          description: areaData.description,
+        });
       } else {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete area.');
+        await createArea({
+          name: areaData.name,
+          description: areaData.description,
+        });
       }
-    } catch (err) {
-      setError((err as Error).message);
+    } catch (error) {
+      console.error('Error saving area:', error);
+    } finally {
+      setIsAreaModalOpen(false);
+      setSelectedArea(null);
     }
   };
 
@@ -74,62 +48,21 @@ const Areas: React.FC = () => {
     setIsAreaModalOpen(true);
   };
 
-  const handleSaveArea = async (areaData: Area) => {
-    if (areaData.id) {
-      // Update existing area
-      try {
-        const response = await fetch(`/api/areas/${areaData.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify(areaData),
-        });
-
-        if (response.ok) {
-          const updatedArea = await response.json();
-          setAreas((prevAreas) =>
-            prevAreas.map((a) => (a.id === updatedArea.id ? updatedArea : a))
-          );
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to update area.');
-        }
-      } catch (error) {
-        setError((error as Error).message);
-      }
-    } else {
-      // Create new area
-      try {
-        const response = await fetch('/api/areas', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify(areaData),
-        });
-
-        if (response.ok) {
-          const newArea = await response.json();
-          setAreas((prevAreas) => [...prevAreas, newArea]);
-        } else {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to create area.');
-        }
-      } catch (error) {
-        setError((error as Error).message);
-      }
-    }
-
-    setIsAreaModalOpen(false);
-    setSelectedArea(null);
-  };
-
   const openConfirmDialog = (area: Area) => {
     setAreaToDelete(area);
     setIsConfirmDialogOpen(true);
+  };
+
+  const handleDeleteArea = async () => {
+    if (!areaToDelete) return;
+
+    try {
+      await deleteArea(areaToDelete.id);
+      setIsConfirmDialogOpen(false);
+      setAreaToDelete(null);
+    } catch (error) {
+      console.error('Error deleting area:', error);
+    }
   };
 
   const closeConfirmDialog = () => {
@@ -137,7 +70,7 @@ const Areas: React.FC = () => {
     setAreaToDelete(null);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
         <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
@@ -147,8 +80,12 @@ const Areas: React.FC = () => {
     );
   }
 
-  if (error) {
-    return <div className="text-red-500 p-4">{error}</div>;
+  if (isError) {
+    return (
+      <div className="text-red-500 p-4">
+        An error occurred while fetching areas.
+      </div>
+    );
   }
 
   return (
@@ -158,7 +95,9 @@ const Areas: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <Squares2X2Icon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
-            <h2 className="text-2xl font-light text-gray-900 dark:text-white">Areas</h2>
+            <h2 className="text-2xl font-light text-gray-900 dark:text-white">
+              Areas
+            </h2>
           </div>
         </div>
 

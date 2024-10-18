@@ -1,22 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Area } from '../../entities/Area';
+import { Project } from '../../entities/Project';
 
 interface ProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (project: Project) => void;
-  onDelete?: () => void; // Add this for delete action in edit mode
+  onDelete?: () => void; 
   project?: Project;
   areas: Area[];
-}
-
-interface Project {
-  id?: number;
-  name: string;
-  description?: string;
-  area_id?: number | null;
-  active: boolean;
-  pin_to_sidebar: boolean;
 }
 
 const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, onDelete, project, areas }) => {
@@ -32,7 +24,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
 
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Close modal if clicked outside of it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -48,14 +39,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
     };
   }, [isOpen, onClose]);
 
-  // Update form state when editing a project
   useEffect(() => {
     if (project) {
       setFormData(project);
     }
   }, [project]);
 
-  // Handle form input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -66,7 +55,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
     }));
   };
 
-  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
@@ -151,7 +139,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
               </div>
 
               {/* Custom Pin to Sidebar Checkbox */}
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <input
                   type="checkbox"
                   id="pin_to_sidebar"
@@ -163,7 +151,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
                 <label htmlFor="pin_to_sidebar" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                   Pin to Sidebar
                 </label>
-              </div>
+              </div> */}
             </div>
 
             {/* Modal Actions */}

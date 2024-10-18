@@ -3,14 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import { FolderIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
-
-interface Project {
-  id: number;
-  name: string;
-  active: boolean;
-  pin_to_sidebar: boolean;
-  // Add other project properties if needed
-}
+import { Project } from '../../entities/Project';
 
 interface SidebarProjectsProps {
   handleNavClick: (path: string, title: string, icon: string) => void;

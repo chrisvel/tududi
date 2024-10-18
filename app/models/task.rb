@@ -26,5 +26,5 @@ class Task < ActiveRecord::Base
   scope :by_status, ->(status) { where(status: statuses[status]) }
   scope :by_priority, ->(priority) { where(priority: priorities[priority]) }
 
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: { scope: :user_id }
 end

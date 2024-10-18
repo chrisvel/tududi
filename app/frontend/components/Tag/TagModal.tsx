@@ -14,7 +14,6 @@ const TagModal: React.FC<TagModalProps> = ({ isOpen, onClose, onSave, tag }) => 
   const [formData, setFormData] = useState<Tag>(
     tag || {
       name: '',
-      active: true,
     }
   );
 
@@ -43,7 +42,6 @@ const TagModal: React.FC<TagModalProps> = ({ isOpen, onClose, onSave, tag }) => 
     } else {
       setFormData({
         name: '',
-        active: true,
       });
     }
   }, [tag]);
@@ -86,21 +84,6 @@ const TagModal: React.FC<TagModalProps> = ({ isOpen, onClose, onSave, tag }) => 
                   className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
                   placeholder="Enter tag name"
                 />
-              </div>
-
-              {/* Active Checkbox */}
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="active"
-                  name="active"
-                  checked={formData.active}
-                  onChange={handleChange}
-                  className="h-5 w-5 appearance-none border border-gray-300 rounded-md bg-white dark:bg-gray-700 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <label htmlFor="active" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                  Active
-                </label>
               </div>
             </div>
 

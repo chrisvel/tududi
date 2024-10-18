@@ -1,22 +1,17 @@
-// src/components/Note/NoteModal.tsx
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import TagInput from '../../TagInput'; // Adjust the import path
 import { Note } from '../../entities/Note'; // Import the centralized Note type
-
-interface Tag {
-  id: number | null;
-  name: string;
-}
+import { useDataContext } from '../../contexts/DataContext'; // Use DataContext
 
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (note: Note) => void;
   note?: Note | null; // If null, it's for new note creation
+  onSave?: (note: Note) => void; // Optional callback for saving
 }
 
-const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) => {
+const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
+  const { createNote, updateNote } = useDataContext(); // Use create and update methods from DataContext
   const [formData, setFormData] = useState<Note>(
     note || {
       title: '',
@@ -97,7 +92,17 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
       return;
     }
 
-    onSave(formData);
+    try {
+      if (note?.id) {
+        await updateNote(note.id, formData); // Call updateNote if editing
+      } else {
+        await createNote(formData); // Call createNote if creating
+      }
+      onClose(); // Close modal after saving
+    } catch (err) {
+      console.error('Error saving note:', err);
+      setError('Failed to save note.');
+    }
   };
 
   if (!isOpen) return null;
@@ -106,7 +111,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50">
       <div
         ref={modalRef}
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg mx-auto overflow-hidden"
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl mx-auto overflow-hidden"
       >
         <form onSubmit={handleSubmit}>
           <fieldset>
@@ -157,7 +162,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
                   Tags
                 </label>
                 <TagInput
-                  initialTags={formData.tags.map((tag) => tag.name)}
+                  initialTags={formData?.tags?.map((tag) => tag.name) || []}
                   onTagsChange={handleTagsChange}
                   availableTags={availableTags}
                 />

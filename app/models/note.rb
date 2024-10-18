@@ -4,4 +4,5 @@ class Note < ActiveRecord::Base
   has_and_belongs_to_many :tags
 
   validates :content, presence: true
+  validates :title, presence: true, uniqueness: { scope: :user_id }
 end

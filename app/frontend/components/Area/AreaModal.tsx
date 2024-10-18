@@ -1,26 +1,37 @@
-// src/components/Area/AreaModal.tsx
-
 import React, { useState, useEffect, useRef } from 'react';
-import { Area } from '../../entities/Area'; // Adjust the path as necessary
+import { Area } from '../../entities/Area'; 
+import { useDataContext } from '../../contexts/DataContext'; // Import DataContext
 
 interface AreaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (area: Area) => void;
-  area?: Area | null; // If null, it's for creating a new Area
+  area?: Area | null; 
 }
 
-const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, onSave, area }) => {
-  const [formData, setFormData] = useState<Area>(
-    area || {
-      name: '',
-      description: '',
-    }
-  );
+const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area }) => {
+  const { createArea, updateArea } = useDataContext(); // Use create and update methods from DataContext
+  const [formData, setFormData] = useState<Area>({
+    id: area?.id || 0,
+    name: area?.name || '',
+    description: area?.description || '',
+  });
   const [error, setError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Close modal if clicked outside
+  // Synchronize formData with the area prop when the modal opens or area changes
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        id: area?.id || 0,
+        name: area?.name || '',
+        description: area?.description || '',
+      });
+      setError(null); // Reset error when modal opens
+    }
+  }, [isOpen, area]);
+
+  // Close modal when clicking outside of it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -36,7 +47,7 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, onSave, area }) 
     };
   }, [isOpen, onClose]);
 
-  // Handle input change
+  // Handle input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -47,16 +58,31 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, onSave, area }) 
     }));
   };
 
-  // Handle form submit
-  const handleSubmit = (e: React.FormEvent) => {
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Basic validation
     if (!formData.name.trim()) {
       setError('Area name is required.');
       return;
     }
 
-    onSave(formData);
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      if (formData.id && formData.id !== 0) {
+        await updateArea(formData.id, formData); // Call updateArea from DataContext
+      } else {
+        await createArea(formData); // Call createArea from DataContext
+      }
+      onClose(); // Close modal after success
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -65,11 +91,18 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, onSave, area }) 
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
       <div
         ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
         className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md mx-auto overflow-hidden"
       >
         <form onSubmit={handleSubmit}>
           <fieldset>
             <div className="p-4 space-y-4">
+              <h3 id="modal-title" className="text-lg font-medium text-gray-900 dark:text-white">
+                {formData.id && formData.id !== 0 ? 'Edit Area' : 'Create Area'}
+              </h3>
+
               {/* Area Name */}
               <div>
                 <label
@@ -124,9 +157,12 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, onSave, area }) 
               </button>
               <button
                 type="submit"
-                className="px-4 text-xs py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none"
+                disabled={isSubmitting}
+                className={`px-4 text-xs py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
-                {area ? 'Update Area' : 'Create Area'}
+                {isSubmitting ? 'Submitting...' : formData.id && formData.id !== 0 ? 'Update Area' : 'Create Area'}
               </button>
             </div>
           </fieldset>

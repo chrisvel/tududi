@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TaskList from "./components/Task/TaskList";
 import NewTask from "./NewTask";
-import TaskTags from "./components/Task/TaskTags"; // Import TaskTags component
 import { Task } from "./entities/Task";
 import { Project } from "./entities/Project";
 import { getTitleAndIcon } from "./components/Task/getTitleAndIcon";

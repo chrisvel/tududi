@@ -1,16 +1,14 @@
-// src/components/Layout.tsx
-
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import './styles/tailwind.css';
-import { Project } from './entities/Project';
-import { Area } from './entities/Area';
-import { Tag } from './entities/Tag';
 import ProjectModal from './components/Project/ProjectModal';
 import NoteModal from './components/Note/NoteModal';
 import AreaModal from './components/Area/AreaModal';
 import TagModal from './components/Tag/TagModal';
 import { Note } from './entities/Note';
+import { Area } from './entities/Area';
+import { Tag } from './entities/Tag';
+import { useDataContext } from './contexts/DataContext';  // Import the data context
 
 interface LayoutProps {
   currentUser: {
@@ -27,92 +25,37 @@ const Layout: React.FC<LayoutProps> = ({
   toggleDarkMode,
   children,
 }) => {
+  // State for modals
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
-  
-  const [areas, setAreas] = useState<Area[]>([]);
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [tags, setTags] = useState<Tag[]>([]);
-  
+
+  // State for selected entities
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
 
-  // Fetch tags when the component mounts
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const response = await fetch('/api/tags', {
-          credentials: 'include',
-          headers: {
-            'Accept': 'application/json',
-          },
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-          setTags(data || []);
-        } else {
-          console.error('Failed to fetch tags:', data.error);
-        }
-      } catch (error) {
-        console.error('Error fetching tags:', error);
-      }
-    };
-
-    fetchTags();
-  }, []);
-
-  // Fetch areas when the component mounts
-  useEffect(() => {
-    const fetchAreas = async () => {
-      try {
-        const response = await fetch('/api/areas', {
-          credentials: 'include',
-          headers: {
-            'Accept': 'application/json',
-          },
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-          setAreas(data || []);
-        } else {
-          console.error('Failed to fetch areas:', data.error);
-        }
-      } catch (error) {
-        console.error('Error fetching areas:', error);
-      }
-    };
-
-    fetchAreas();
-  }, []);
-
-  // Fetch notes when the component mounts
-  useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        const response = await fetch('/api/notes', {
-          credentials: 'include',
-          headers: {
-            'Accept': 'application/json',
-          },
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-          setNotes(data || []);
-        } else {
-          console.error('Failed to fetch notes:', data.error);
-        }
-      } catch (error) {
-        console.error('Error fetching notes:', error);
-      }
-    };
-    fetchNotes();
-  }, []);
+  // Use context to fetch data
+  const {
+    tags,
+    areas,
+    notes,
+    isLoading,
+    isError,
+    createNote,
+    updateNote,
+    deleteNote,
+    createArea,
+    updateArea,
+    deleteArea,
+    createTag,
+    updateTag,
+    deleteTag,
+    createProject,
+    updateProject,
+    deleteProject
+  } = useDataContext(); // Now includes project management functions
 
   // Handler functions for modals
   const openNoteModal = (note: Note | null = null) => {
@@ -153,68 +96,120 @@ const Layout: React.FC<LayoutProps> = ({
     setSelectedTag(null);
   };
 
+  // Handler for saving notes
   const handleSaveNote = async (noteData: Note) => {
-    const notePayload = {
-      title: noteData.title,
-      content: noteData.content,
-      tags: noteData.tags?.map((tag) => tag.name),
-      project_id: noteData.project?.id,
-    };
-
-    if (noteData.id) {
-      // Update existing note
-      try {
-        const response = await fetch(`/api/notes/${noteData.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify(notePayload),
+    try {
+      if (noteData.id) {
+        // Update existing note
+        await updateNote(noteData.id, {
+          title: noteData.title,
+          content: noteData.content,
+          tags: noteData.tags?.map((tag) => tag.name),
+          project_id: noteData.project?.id,
         });
-
-        if (response.ok) {
-          const updatedNote = await response.json();
-          setNotes((prevNotes) =>
-            prevNotes.map((note) => (note.id === updatedNote.id ? updatedNote : note))
-          );
-        } else {
-          const errorData = await response.json();
-          console.error('Failed to update note:', errorData.error);
-        }
-      } catch (error) {
-        console.error('Error updating note:', error);
-      }
-    } else {
-      // Create new note
-      try {
-        const response = await fetch('/api/notes', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify(notePayload),
+      } else {
+        // Create new note
+        await createNote({
+          title: noteData.title,
+          content: noteData.content,
+          tags: noteData.tags?.map((tag) => tag.name),
+          project_id: noteData.project?.id,
         });
-
-        if (response.ok) {
-          const newNote = await response.json();
-          setNotes((prevNotes) => [...prevNotes, newNote]);
-        } else {
-          const errorData = await response.json();
-          console.error('Failed to create note:', errorData.error);
-        }
-      } catch (error) {
-        console.error('Error creating note:', error);
       }
+    } catch (error) {
+      console.error('Error saving note:', error);
     }
-
     closeNoteModal();
   };
 
+  // Handler for saving projects
+  const handleSaveProject = async (projectData: Project) => {
+    try {
+      if (projectData.id) {
+        await updateProject(projectData.id, projectData);
+      } else {
+        await createProject(projectData);
+      }
+    } catch (error) {
+      console.error('Error saving project:', error);
+    }
+    closeProjectModal();
+  };
+
+  // Handler for saving areas
+  const handleSaveArea = async (areaData: Area) => {
+    try {
+      if (areaData.id) {
+        await updateArea(areaData.id, areaData);
+      } else {
+        await createArea(areaData);
+      }
+    } catch (error) {
+      console.error('Error saving area:', error);
+    }
+    closeAreaModal();
+  };
+
+  // Handler for saving tags
+  const handleSaveTag = async (tagData: Tag) => {
+    try {
+      if (tagData.id) {
+        await updateTag(tagData.id, tagData);
+      } else {
+        await createTag(tagData);
+      }
+    } catch (error) {
+      console.error('Error saving tag:', error);
+    }
+    closeTagModal();
+  };
+
+  if (isLoading) {
+    return (
+      <div className={`min-h-screen flex ${isDarkMode ? 'dark' : ''}`}>
+        <Sidebar
+          currentUser={currentUser}
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
+          openProjectModal={openProjectModal}
+          openNoteModal={openNoteModal}
+          openAreaModal={openAreaModal}
+          openTagModal={openTagModal}
+          notes={notes}
+          areas={areas}
+          tags={tags}
+        />
+        <div className="flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+          <div className="text-xl text-gray-700 dark:text-gray-200">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className={`min-h-screen flex ${isDarkMode ? 'dark' : ''}`}>
+        <Sidebar
+          currentUser={currentUser}
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
+          openProjectModal={openProjectModal}
+          openNoteModal={openNoteModal}
+          openAreaModal={openAreaModal}
+          openTagModal={openTagModal}
+          notes={notes}
+          areas={areas}
+          tags={tags}
+        />
+        <div className="flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
+          <div className="text-xl text-red-500">Error fetching data.</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen flex ${isDarkMode ? 'dark' : ''}`}>
-      {/* Sidebar */}
       <Sidebar
         currentUser={currentUser}
         isDarkMode={isDarkMode}
@@ -227,10 +222,7 @@ const Layout: React.FC<LayoutProps> = ({
         areas={areas}
         tags={tags}
       />
-
-      {/* Main content area */}
       <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 overflow-y-auto h-screen">
-        {/* Content wrapper */}
         <div className="flex-grow p-6 pt-20 overflow-y-auto">
           <div className="w-full max-w-5xl mx-auto">
             {children}
@@ -238,12 +230,11 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </div>
 
-      {/* Modals */}
       {isProjectModalOpen && (
         <ProjectModal
           isOpen={isProjectModalOpen}
           onClose={closeProjectModal}
-          onSave={() => {}}
+          onSave={handleSaveProject}
           areas={areas}
         />
       )}
@@ -261,7 +252,7 @@ const Layout: React.FC<LayoutProps> = ({
         <AreaModal
           isOpen={isAreaModalOpen}
           onClose={closeAreaModal}
-          onSave={() => {}}
+          onSave={handleSaveArea}
           area={selectedArea}
         />
       )}
@@ -270,7 +261,7 @@ const Layout: React.FC<LayoutProps> = ({
         <TagModal
           isOpen={isTagModalOpen}
           onClose={closeTagModal}
-          onSave={() => {}}
+          onSave={handleSaveTag}
           tag={selectedTag}
         />
       )}

@@ -1,5 +1,3 @@
-// src/App.tsx
-
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Login from "./Login";
@@ -15,6 +13,7 @@ import Notes from "./Notes";
 import NoteDetails from "./components/Note/NoteDetails";
 import ProfileSettings from "./components/Profile/ProfileSettings";
 import Layout from "./Layout";
+import { DataProvider } from './contexts/DataContext';  // Import the DataProvider
 
 interface User {
   email: string;
@@ -25,7 +24,6 @@ const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Initialize isDarkMode from localStorage or system preference
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const storedPreference = localStorage.getItem("isDarkMode");
     if (storedPreference !== null) {
@@ -105,212 +103,40 @@ const App: React.FC = () => {
   }
 
   return (
-    <>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            currentUser ? (
-              <Layout
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-              >
+    // Wrap the whole app in DataProvider to provide centralized data management
+    <DataProvider>
+      {currentUser ? (
+        <Layout
+          currentUser={currentUser}
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
+        >
+          <Routes>
+            <Route
+              path="/"
+              element={
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   Welcome back, {currentUser.email}
                 </h1>
-              </Layout>
-            ) : (
-              <Login />
-            )
-          }
-        />
-
-        {/* Tasks route */}
-        <Route
-          path="/tasks"
-          element={
-            currentUser ? (
-              <Layout
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-              >
-                <Tasks />
-              </Layout>
-            ) : (
-              <Login />
-            )
-          }
-        />
-
-        {/* Projects route */}
-        <Route
-          path="/projects"
-          element={
-            currentUser ? (
-              <Layout
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-              >
-                <Projects />
-              </Layout>
-            ) : (
-              <Login />
-            )
-          }
-        />
-
-        {/* Project details route */}
-        <Route
-          path="/project/:id"
-          element={
-            currentUser ? (
-              <Layout
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-              >
-                <ProjectDetails />
-              </Layout>
-            ) : (
-              <Login />
-            )
-          }
-        />
-
-        {/* Areas List route */}
-        <Route
-          path="/areas"
-          element={
-            currentUser ? (
-              <Layout
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-              >
-                <Areas />
-              </Layout>
-            ) : (
-              <Login />
-            )
-          }
-        />
-
-        {/* Area details route */}
-        <Route
-          path="/area/:id"
-          element={
-            currentUser ? (
-              <Layout
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-              >
-                <AreaDetails />
-              </Layout>
-            ) : (
-              <Login />
-            )
-          }
-        />
-
-        {/* Tags List route */}
-        <Route
-          path="/tags"
-          element={
-            currentUser ? (
-              <Layout
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-              >
-                <Tags />
-              </Layout>
-            ) : (
-              <Login />
-            )
-          }
-        />
-
-        {/* Tag details route */}
-        <Route
-          path="/tag/:id"
-          element={
-            currentUser ? (
-              <Layout
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-              >
-                <TagDetails />
-              </Layout>
-            ) : (
-              <Login />
-            )
-          }
-        />
-
-        {/* Notes route */}
-        <Route
-          path="/notes"
-          element={
-            currentUser ? (
-              <Layout
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-              >
-                <Notes />
-              </Layout>
-            ) : (
-              <Login />
-            )
-          }
-        />
-
-        <Route
-          path="/note/:id"
-          element={
-            currentUser ? (
-              <Layout
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-              >
-                <NoteDetails />
-              </Layout>
-            ) : (
-              <Login />
-            )
-          }
-        />
-
-        <Route
-          path="/profile"
-          element={
-            currentUser ? (
-              <Layout
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-              >
-                <ProfileSettings currentUser={currentUser} />
-              </Layout>
-            ) : (
-              <Login />
-            )
-          }
-        />
-
-        {/* Login route */}
-        <Route path="/login" element={<Login />} />
-
-        {/* Catch-all route */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </>
+              }
+            />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/project/:id" element={<ProjectDetails />} />
+            <Route path="/areas" element={<Areas />} />
+            <Route path="/area/:id" element={<AreaDetails />} />
+            <Route path="/tags" element={<Tags />} />
+            <Route path="/tag/:id" element={<TagDetails />} />
+            <Route path="/notes" element={<Notes />} />
+            <Route path="/note/:id" element={<NoteDetails />} />
+            <Route path="/profile" element={<ProfileSettings currentUser={currentUser} />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Layout>
+      ) : (
+        <Login />
+      )}
+    </DataProvider>
   );
 };
 

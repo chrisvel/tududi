@@ -1,44 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useDataContext } from '../../contexts/DataContext'; // Import the DataContext
 
 const AreaDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { areas, isLoading, isError } = useDataContext(); // Get areas and loading/error state from DataContext
   const [area, setArea] = useState<any | null>(null); // Allow flexibility in the type for now
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchArea = async () => {
-      try {
-        const response = await fetch(`/api/areas/${id}`, {
-          credentials: 'include',
-          headers: {
-            'Accept': 'application/json',
-          },
-        });
+    // Find the area with the matching ID from the DataContext
+    const foundArea = areas.find((a) => a.id === Number(id));
+    setArea(foundArea || null);
+  }, [id, areas]);
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch area details');
-        }
-
-        const data = await response.json();
-
-        if (typeof data === 'object' && data !== null) {
-          setArea(data); // Handle valid JSON data
-        } else {
-          throw new Error('Unexpected response format');
-        }
-      } catch (error) {
-        setError((error as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchArea();
-  }, [id]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
         <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
@@ -48,18 +23,12 @@ const AreaDetails: React.FC = () => {
     );
   }
 
-  if (error) {
+  if (isError || !area) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-red-500 text-lg">{error}</div>
-      </div>
-    );
-  }
-
-  if (!area) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-red-500 text-lg">Area not found.</div>
+        <div className="text-red-500 text-lg">
+          {isError ? 'Error loading area details.' : 'Area not found.'}
+        </div>
       </div>
     );
   }
@@ -70,7 +39,11 @@ const AreaDetails: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
           Area: {area?.name}
         </h2>
-        <Link to={`/projects?area_id=${area?.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
+        <p className="text-md text-gray-700 dark:text-gray-300">{area?.description}</p>
+        <Link
+          to={`/projects?area_id=${area?.id}`}
+          className="text-blue-600 dark:text-blue-400 hover:underline mt-4 block"
+        >
           View Projects in {area?.name}
         </Link>
       </div>

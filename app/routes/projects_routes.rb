@@ -79,8 +79,8 @@ class Sinatra::Application
         name: project_data['name'],
         description: project_data['description'] || '',
         area_id: project_data['area_id'],
-        active: project_data['active'] || false,
-        pin_to_sidebar: project_data['pin_to_sidebar'] || false
+        active: true,
+        pin_to_sidebar: false
       )
 
       if project.save

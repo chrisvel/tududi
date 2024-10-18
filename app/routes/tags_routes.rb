@@ -25,11 +25,12 @@ class Sinatra::Application
   end
 
   # Create a new tag with JSON response
-  post '/api/tag/create' do
+  post '/api/tag' do
     content_type :json
 
-    # Build a new tag with the provided name
-    tag = current_user.tags.new(name: params[:name])
+    # Parse the request body to get the tag name
+    request_body = JSON.parse(request.body.read)
+    tag = current_user.tags.new(name: request_body['name'])
 
     # Attempt to save the tag
     if tag.save
@@ -53,8 +54,9 @@ class Sinatra::Application
     # Return a 404 status if the tag is not found
     halt 404, { error: 'Tag not found' }.to_json unless tag
 
-    # Update the tag with the provided name
-    tag.name = params[:name]
+    # Parse the request body to get the updated tag name
+    request_body = JSON.parse(request.body.read)
+    tag.name = request_body['name']
 
     # Attempt to save the updated tag
     if tag.save
