@@ -65,7 +65,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50">
-      <div ref={modalRef} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg mx-auto overflow-hidden">
+      <div ref={modalRef} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl mx-auto overflow-hidden">
         <form onSubmit={handleSubmit}>
           <fieldset>
             <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">

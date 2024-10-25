@@ -1,12 +1,6 @@
 require 'json'
 
 class Sinatra::Application
-  # Serve the login page (if needed for non-React or fallback)
-  # get '/login' do
-  #   erb :login
-  # end
-
-  # Handle login requests (now accepting JSON)
   get '/api/current_user' do
     content_type :json
 
@@ -42,7 +36,6 @@ class Sinatra::Application
     end
   end
 
-  # Handle logout
   get '/logout' do
     session.clear
     redirect '/login'

@@ -36,25 +36,21 @@ class Sinatra::Application
 
     halt 404, { error: 'Note not found.' }.to_json unless note
 
-    # Return the note and its associated tags as JSON
     note.to_json(include: :tags)
   end
 
   post '/api/note' do
     content_type :json
 
-    # Parse the request body to extract the JSON data
     request_body = request.body.read
     note_data = JSON.parse(request_body, symbolize_names: true)
 
-    # Extract the attributes from the parsed JSON data
     note_attributes = {
       title: note_data[:title],
       content: note_data[:content],
       user_id: current_user.id
     }
 
-    # Check for the presence of a project_id
     if note_data[:project_id].to_s.empty?
       note = current_user.notes.build(note_attributes)
     else
@@ -63,7 +59,6 @@ class Sinatra::Application
       note = project.notes.build(note_attributes)
     end
 
-    # Save the note and update its tags
     if note.save
       update_note_tags(note, note_data[:tags])
       status 201
@@ -79,7 +74,6 @@ class Sinatra::Application
     note = current_user.notes.find_by(id: params[:id])
     halt 404, { error: 'Note not found.' }.to_json unless note
 
-    # Parse the request body to get the content, title, and tags
     request_body = request.body.read
     request_data = JSON.parse(request_body)
 
@@ -88,7 +82,6 @@ class Sinatra::Application
       content: request_data['content']
     }
 
-    # Handle project association if provided
     if request_data['project_id'] && !request_data['project_id'].to_s.empty?
       project = current_user.projects.find_by(id: request_data['project_id'])
       halt 400, { error: 'Invalid project.' }.to_json unless project
@@ -97,10 +90,9 @@ class Sinatra::Application
       note.project = nil
     end
 
-    # Update the note and its tags
     if note.update(note_attributes)
-      update_note_tags(note, request_data['tags']) # Process tags correctly
-      note.to_json(include: :tags) # Return updated note with tags
+      update_note_tags(note, request_data['tags'])
+      note.to_json(include: :tags)
     else
       status 400
       { error: 'There was a problem updating the note.', details: note.errors.full_messages }.to_json

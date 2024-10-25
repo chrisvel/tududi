@@ -1,21 +1,14 @@
-# app.rb or your main Sinatra application file
-
 require 'sinatra'
 require 'json'
 
-# Assuming you have a helper method `current_user` to get the authenticated user
-
-# Create a new Area
 post '/api/areas' do
   content_type :json
   begin
     request_body = request.body.read
     area_data = JSON.parse(request_body, symbolize_names: true)
 
-    # Validate required fields
     halt 400, { error: 'Area name is required.' }.to_json unless area_data[:name] && !area_data[:name].strip.empty?
 
-    # Create new Area
     area = current_user.areas.build(name: area_data[:name], description: area_data[:description])
 
     if area.save
@@ -76,7 +69,6 @@ delete '/api/areas/:id' do
   end
 end
 
-# Fetch all Areas
 get '/api/areas' do
   content_type :json
   areas = current_user.areas
