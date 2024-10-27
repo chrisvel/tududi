@@ -1,5 +1,3 @@
-// src/hooks/useManageAreas.ts
-
 import { useCallback } from 'react';
 import { useSWRConfig } from 'swr';
 import { Area } from '../entities/Area';

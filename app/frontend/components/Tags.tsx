@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon, PlusCircleIcon, TagIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import ConfirmDialog from './components/Shared/ConfirmDialog';
-import TagModal from './components/Tag/TagModal';
-import { useDataContext } from './contexts/DataContext';
+import ConfirmDialog from './Shared/ConfirmDialog';
+import TagModal from './Tag/TagModal';
+import { useDataContext } from '../contexts/DataContext';
 
 const Tags: React.FC = () => {
   const { tags, createTag, updateTag, deleteTag, isLoading, isError } = useDataContext();
@@ -11,7 +11,7 @@ const Tags: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>(''); // State for search input
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleDeleteTag = async () => {
     if (!tagToDelete) return;
@@ -80,7 +80,7 @@ const Tags: React.FC = () => {
 
   return (
     <div className="flex justify-center px-4">
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-5xl">
         {/* Tags Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">

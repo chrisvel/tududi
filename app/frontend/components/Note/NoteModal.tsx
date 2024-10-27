@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import TagInput from '../../TagInput'; // Adjust the import path
-import { Note } from '../../entities/Note'; // Import the centralized Note type
-import { useDataContext } from '../../contexts/DataContext'; // Use DataContext
+import TagInput from '../Tag/TagInput';
+import { Note } from '../../entities/Note'; 
+import { useDataContext } from '../../contexts/DataContext'; 
 
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  note?: Note | null; // If null, it's for new note creation
-  onSave?: (note: Note) => void; // Optional callback for saving
+  note?: Note | null;
+  onSave?: (note: Note) => void;
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
-  const { createNote, updateNote } = useDataContext(); // Use create and update methods from DataContext
+  const { createNote, updateNote } = useDataContext(); 
   const [formData, setFormData] = useState<Note>(
     note || {
       title: '',
@@ -23,7 +23,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
   const [error, setError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Fetch available tags when the modal opens
   useEffect(() => {
     if (isOpen) {
       const fetchAvailableTags = async () => {
@@ -48,7 +47,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
     }
   }, [isOpen]);
 
-  // Close modal if clicked outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -64,7 +62,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
     };
   }, [isOpen, onClose]);
 
-  // Handle input change
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -75,15 +72,13 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
     }));
   };
 
-  // Handle tags change
   const handleTagsChange = useCallback((newTags: string[]) => {
     setFormData((prev) => ({
       ...prev,
-      tags: newTags.map((tagName) => ({ id: null, name: tagName })),
+      tags: newTags.map((tagName) => ({ id: -1, name: tagName })),
     }));
   }, []);
 
-  // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -94,11 +89,11 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
 
     try {
       if (note?.id) {
-        await updateNote(note.id, formData); // Call updateNote if editing
+        await updateNote(note.id, formData);
       } else {
-        await createNote(formData); // Call createNote if creating
+        await createNote(formData); 
       }
-      onClose(); // Close modal after saving
+      onClose(); 
     } catch (err) {
       console.error('Error saving note:', err);
       setError('Failed to save note.');

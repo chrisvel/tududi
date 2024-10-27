@@ -1,4 +1,3 @@
-// contexts/DataContext.tsx
 import React, { createContext, useContext } from 'react';
 import useFetchTags from '../hooks/useFetchTags';
 import useFetchAreas from '../hooks/useFetchAreas';
@@ -6,7 +5,7 @@ import useManageAreas from '../hooks/useManageAreas';
 import useManageNotes from '../hooks/useManageNotes';
 import useManageProjects from '../hooks/useManageProjects';
 import useManageTags from '../hooks/useManageTags';
-import useManageTasks from '../hooks/useManageTasks'; // Import the tasks hook
+import useManageTasks from '../hooks/useManageTasks'; 
 
 interface DataContextProps {
   tasks: any[];
@@ -86,9 +85,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         createTag,
         updateTag,
         deleteTag,
-        createTask, // Added task creation
-        updateTask, // Added task update
-        deleteTask, // Added task deletion
+        createTask, 
+        updateTask, 
+        deleteTask, 
         mutateTags,
         mutateAreas,
         mutateNotes,

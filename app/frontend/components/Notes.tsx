@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpenIcon, PencilSquareIcon, TrashIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import NoteModal from './components/Note/NoteModal';
-import ConfirmDialog from './components/Shared/ConfirmDialog';
-import { useDataContext } from './contexts/DataContext';
-import { Note } from './entities/Note';
+import NoteModal from './Note/NoteModal';
+import ConfirmDialog from './Shared/ConfirmDialog';
+import { useDataContext } from '../contexts/DataContext';
+import { Note } from '../entities/Note';
 
 const Notes: React.FC = () => {
   const { notes, createNote, updateNote, deleteNote, isLoading, isError } = useDataContext();
@@ -70,7 +70,7 @@ const Notes: React.FC = () => {
 
   return (
     <div className="flex justify-center px-4">
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-5xl">
         {/* Notes Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">

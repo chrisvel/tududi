@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon, Squares2X2Icon } from '@heroicons/react/24/solid';
-import NewTask from '../../NewTask';
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useDataContext } from '../../contexts/DataContext';
+import NewTask from '../Task/NewTask';
 
 const ProjectDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -137,7 +137,7 @@ const ProjectDetails: React.FC = () => {
 
   return (
     <div className="flex justify-center px-4">
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-5xl">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
             <i className={`bi ${projectIcon} text-xl mr-2`}></i>

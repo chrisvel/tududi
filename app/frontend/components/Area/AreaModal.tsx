@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Area } from '../../entities/Area'; 
-import { useDataContext } from '../../contexts/DataContext'; // Import DataContext
+import { useDataContext } from '../../contexts/DataContext';
 
 interface AreaModalProps {
   isOpen: boolean;
@@ -9,7 +9,7 @@ interface AreaModalProps {
 }
 
 const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area }) => {
-  const { createArea, updateArea } = useDataContext(); // Use create and update methods from DataContext
+  const { createArea, updateArea } = useDataContext();
   const [formData, setFormData] = useState<Area>({
     id: area?.id || 0,
     name: area?.name || '',
@@ -19,7 +19,6 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Synchronize formData with the area prop when the modal opens or area changes
   useEffect(() => {
     if (isOpen) {
       setFormData({
@@ -27,11 +26,10 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area }) => {
         name: area?.name || '',
         description: area?.description || '',
       });
-      setError(null); // Reset error when modal opens
+      setError(null); 
     }
   }, [isOpen, area]);
 
-  // Close modal when clicking outside of it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -47,7 +45,6 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area }) => {
     };
   }, [isOpen, onClose]);
 
-  // Handle input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -58,11 +55,9 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area }) => {
     }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
     if (!formData.name.trim()) {
       setError('Area name is required.');
       return;
@@ -73,11 +68,11 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area }) => {
 
     try {
       if (formData.id && formData.id !== 0) {
-        await updateArea(formData.id, formData); // Call updateArea from DataContext
+        await updateArea(formData.id, formData);
       } else {
-        await createArea(formData); // Call createArea from DataContext
+        await createArea(formData);
       }
-      onClose(); // Close modal after success
+      onClose();
     } catch (err) {
       setError((err as Error).message);
     } finally {

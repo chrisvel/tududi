@@ -9,15 +9,14 @@ interface Tag {
 
 interface TaskTagsProps {
   tags: Tag[];
-  className?: string; // Allows passing custom classes for spacing
+  className?: string; 
 }
 
 const TaskTags: React.FC<TaskTagsProps> = ({ tags = [], className }) => {
   const navigate = useNavigate();
 
-  // Function to handle tag click and navigate to a filtered view
   const handleTagClick = (tagName: string) => {
-    navigate(`/tasks?tag=${tagName}`); // Navigate to tasks filtered by the clicked tag
+    navigate(`/tasks?tag=${tagName}`); 
   };
 
   return (

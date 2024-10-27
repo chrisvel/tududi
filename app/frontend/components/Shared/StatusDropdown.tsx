@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDownIcon, MinusIcon, ClockIcon, CheckCircleIcon, ArchiveBoxIcon } from '@heroicons/react/24/outline'; // Import Heroicons
+import { ChevronDownIcon, MinusIcon, ClockIcon, CheckCircleIcon, ArchiveBoxIcon } from '@heroicons/react/24/outline'; 
 
 interface StatusDropdownProps {
   value: string;
@@ -53,7 +53,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({ value, onChange }) => {
         className="inline-flex justify-between w-full px-3 py-2 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-900 rounded-md shadow-sm focus:outline-none"
         onClick={handleToggle}
       >
-        <span className="flex items-center space-x-2"> {/* Added space-x-3 here */}
+        <span className="flex items-center space-x-2">
           {selectedStatus ? selectedStatus.icon : ''} 
           <span>{selectedStatus ? selectedStatus.label : 'Select Status'}</span>
         </span>

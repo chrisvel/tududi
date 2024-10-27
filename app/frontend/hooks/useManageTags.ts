@@ -1,8 +1,6 @@
-// src/hooks/useManageTags.ts
-
 import { useCallback } from 'react';
 import { useSWRConfig } from 'swr';
-import { Tag } from '../entities/Tag';  // Adjust the path if needed
+import { Tag } from '../entities/Tag';  
 
 const useManageTags = () => {
   const { mutate } = useSWRConfig();

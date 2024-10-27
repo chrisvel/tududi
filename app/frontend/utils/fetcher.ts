@@ -1,5 +1,3 @@
-// src/utils/fetcher.ts
-
 export const fetcher = async (url: string) => {
   const response = await fetch(url, {
     credentials: 'include',
@@ -11,7 +9,6 @@ export const fetcher = async (url: string) => {
   if (!response.ok) {
     const errorData = await response.json();
     const error = new Error(errorData.error || 'An error occurred while fetching the data.');
-    // Attach extra info to the error object.
     (error as any).info = errorData;
     (error as any).status = response.status;
     throw error;

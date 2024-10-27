@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useDataContext } from '../../contexts/DataContext'; // Import the DataContext
+import { useDataContext } from '../../contexts/DataContext';
 
 const AreaDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { areas, isLoading, isError } = useDataContext(); // Get areas and loading/error state from DataContext
-  const [area, setArea] = useState<any | null>(null); // Allow flexibility in the type for now
+  const { areas, isLoading, isError } = useDataContext(); 
+  const [area, setArea] = useState<any | null>(null);
 
   useEffect(() => {
-    // Find the area with the matching ID from the DataContext
     const foundArea = areas.find((a) => a.id === Number(id));
     setArea(foundArea || null);
   }, [id, areas]);
@@ -35,7 +34,7 @@ const AreaDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+      <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
           Area: {area?.name}
         </h2>

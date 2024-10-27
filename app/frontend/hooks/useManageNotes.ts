@@ -1,5 +1,3 @@
-// src/hooks/useManageNotes.ts
-
 import useSWR from 'swr';
 import { Note } from '../entities/Note';
 import { fetcher } from '../utils/fetcher';
@@ -26,7 +24,6 @@ const useManageNotes = () => {
 
       const newNote: Note = await response.json();
 
-      // Optimistically update the cache
       mutate([...notes, newNote], false);
     },
     [mutate, notes]
@@ -50,7 +47,6 @@ const useManageNotes = () => {
 
       const updatedNote: Note = await response.json();
 
-      // Optimistically update the cache
       mutate(notes.map((note) => (note.id === noteId ? updatedNote : note)), false);
     },
     [mutate, notes]
@@ -71,7 +67,6 @@ const useManageNotes = () => {
         throw new Error(errorData.error || 'Failed to delete note.');
       }
 
-      // Optimistically update the cache
       mutate(notes.filter((note) => note.id !== noteId), false);
     },
     [mutate, notes]

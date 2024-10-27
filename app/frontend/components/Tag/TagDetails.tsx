@@ -12,7 +12,7 @@ const TagDetails: React.FC = () => {
   const [tag, setTag] = useState<Tag | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate(); // Use the `useNavigate` hook for navigation
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchTag = async () => {
@@ -33,10 +33,9 @@ const TagDetails: React.FC = () => {
     fetchTag();
   }, [id]);
 
-  // Function to handle the redirection to tasks with the tag
   const handleViewTasks = () => {
     if (tag) {
-      navigate(`/tasks?tag=${encodeURIComponent(tag.name)}`); // Redirect to the tasks page with the tag as a query param
+      navigate(`/tasks?tag=${encodeURIComponent(tag.name)}`); 
     }
   };
 

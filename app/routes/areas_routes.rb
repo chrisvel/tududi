@@ -29,7 +29,6 @@ get '/api/areas/:id' do
   area.to_json
 end
 
-# Update an existing Area
 patch '/api/areas/:id' do
   content_type :json
   begin
@@ -55,7 +54,6 @@ patch '/api/areas/:id' do
   end
 end
 
-# Delete an Area
 delete '/api/areas/:id' do
   content_type :json
   area = current_user.areas.find_by(id: params[:id])

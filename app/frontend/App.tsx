@@ -1,24 +1,30 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
-import Login from "./Login";
-import Tasks from "./Tasks";
-import NotFound from "./NotFound";
+import {
+  Routes,
+  Route,
+  useNavigate,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import Login from "./components/Login";
+import Tasks from "./components/Tasks";
+import NotFound from "./components/Shared/NotFound";
 import ProjectDetails from "./components/Project/ProjectDetails";
-import Projects from "./Projects";
+import Projects from "./components/Projects";
 import AreaDetails from "./components/Area/AreaDetails";
-import Areas from "./Areas";
+import Areas from "./components/Areas";
 import TagDetails from "./components/Tag/TagDetails";
-import Tags from "./Tags";
-import Notes from "./Notes";
+import Tags from "./components/Tags";
+import Notes from "./components/Notes";
 import NoteDetails from "./components/Note/NoteDetails";
 import ProfileSettings from "./components/Profile/ProfileSettings";
 import Layout from "./Layout";
-import { DataProvider } from './contexts/DataContext';  // Import the DataProvider
-import { CalendarDaysIcon } from "@heroicons/react/24/solid";
+import { DataProvider } from "./contexts/DataContext";
 
 interface User {
   email: string;
   id: number;
+  avatarUrl?: string;
 }
 
 const App: React.FC = () => {
@@ -35,6 +41,7 @@ const App: React.FC = () => {
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -89,8 +96,18 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (currentUser && location.pathname === "/") {
-      const options = { path: '/tasks?type=today', title: 'Today', icon: <CalendarDaysIcon className="h-5 w-5" /> }
-      navigate(options.path, { state: { title: options.title, icon: options.icon }, replace: true });
+      const options = {
+        path: "/tasks?type=today",
+        title: "Today",
+        icon: "calendar", 
+      };
+      navigate(options.path, {
+        state: {
+          title: options.title,
+          icon: options.icon, 
+        },
+        replace: true,
+      });
     }
   }, [currentUser, location.pathname, navigate]);
 
@@ -119,10 +136,7 @@ const App: React.FC = () => {
           toggleDarkMode={toggleDarkMode}
         >
           <Routes>
-          <Route
-              path="/"
-              element={<Navigate to="/tasks" replace />}
-            />
+            <Route path="/" element={<Navigate to="/tasks" replace />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/project/:id" element={<ProjectDetails />} />
@@ -132,7 +146,10 @@ const App: React.FC = () => {
             <Route path="/tag/:id" element={<TagDetails />} />
             <Route path="/notes" element={<Notes />} />
             <Route path="/note/:id" element={<NoteDetails />} />
-            <Route path="/profile" element={<ProfileSettings currentUser={currentUser} />} />
+            <Route
+              path="/profile"
+              element={<ProfileSettings currentUser={currentUser} />}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>

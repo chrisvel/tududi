@@ -1,6 +1,5 @@
-// src/hooks/useFetchTags.ts
 import useSWR from 'swr';
-import { fetcher } from '../utils/fetcher'; // Adjust the path to the fetcher if needed
+import { fetcher } from '../utils/fetcher'; 
 
 const useFetchTags = () => {
   const { data, error, mutate } = useSWR('/api/tags', fetcher);

@@ -3,7 +3,7 @@ export interface Note {
   title: string;
   content: string;
   created_at?: string;
-  updated_at?: string; // Make updated_at optional
+  updated_at?: string; 
   tags?: { id: number; name: string }[];
   project?: {
     id: number;

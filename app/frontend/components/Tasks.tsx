@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import TaskList from "./components/Task/TaskList";
-import NewTask from "./NewTask";
-import { Task } from "./entities/Task";
-import { Project } from "./entities/Project";
-import { getTitleAndIcon } from "./components/Task/getTitleAndIcon";
-import { getDescription } from "./components/Task/getDescription";
-import { TagIcon, XMarkIcon } from "@heroicons/react/24/solid"; // Import X icon for removing tag
+import TaskList from "./Task/TaskList";
+import NewTask from "./Task/NewTask";
+import { Task } from "../entities/Task";
+import { Project } from "../entities/Project";
+import { getTitleAndIcon } from "./Task/getTitleAndIcon";
+import { getDescription } from "./Task/getDescription";
+import { TagIcon, XMarkIcon } from "@heroicons/react/24/solid"; 
 
-// Helper function to capitalize the first letter of a string
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const Tasks: React.FC = () => {
@@ -17,8 +16,8 @@ const Tasks: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-  const [orderBy, setOrderBy] = useState<string>("due_date:asc"); // State for sorting
-  const dropdownRef = useRef<HTMLDivElement>(null); // Reference to the dropdown
+  const [orderBy, setOrderBy] = useState<string>("due_date:asc"); 
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -30,17 +29,15 @@ const Tasks: React.FC = () => {
       ? { title: stateTitle, icon: stateIcon }
       : getTitleAndIcon(query, projects);
 
-  // Extract tag from query params
   const tag = query.get("tag");
 
-  // Load orderBy from localStorage or use default
   useEffect(() => {
     const savedOrderBy = localStorage.getItem("order_by") || "due_date:asc";
     setOrderBy(savedOrderBy);
 
     const params = new URLSearchParams(location.search);
     if (!params.get("order_by")) {
-      params.set("order_by", savedOrderBy); // Set the default to URL if not present
+      params.set("order_by", savedOrderBy); 
       navigate({
         pathname: location.pathname,
         search: `?${params.toString()}`,
@@ -48,7 +45,6 @@ const Tasks: React.FC = () => {
     }
   }, [location, navigate]);
 
-  // Close dropdown if clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -66,13 +62,11 @@ const Tasks: React.FC = () => {
     };
   }, [dropdownOpen]);
 
-  // Fetch data when location changes
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Fetch tasks with the selected tag if present
         const tagId = query.get("tag");
         const [tasksResponse, projectsResponse] = await Promise.all([
           fetch(`/api/tasks${location.search}${tagId ? `&tag=${tagId}` : ""}`),
@@ -102,17 +96,15 @@ const Tasks: React.FC = () => {
     fetchData();
   }, [location]);
 
-  // Function to remove the tag from the URL
   const handleRemoveTag = () => {
     const params = new URLSearchParams(location.search);
-    params.delete("tag"); // Remove tag from query params
+    params.delete("tag"); 
     navigate({
       pathname: location.pathname,
-      search: `?${params.toString()}`, // Update the URL without the tag parameter
+      search: `?${params.toString()}`, 
     });
   };
 
-  // Function to create a new task
   const handleTaskCreate = async (taskData: Partial<Task>) => {
     try {
       const response = await fetch("/api/task", {
@@ -135,7 +127,6 @@ const Tasks: React.FC = () => {
     }
   };
 
-  // Function to update an existing task
   const handleTaskUpdate = async (updatedTask: Task) => {
     try {
       const response = await fetch(`/api/task/${updatedTask.id}`, {
@@ -157,7 +148,6 @@ const Tasks: React.FC = () => {
     }
   };
 
-  // Function to delete a task
   const handleTaskDelete = async (taskId: number) => {
     try {
       const response = await fetch(`/api/task/${taskId}`, {
@@ -177,27 +167,25 @@ const Tasks: React.FC = () => {
     }
   };
 
-  // Handle sorting changes
   const handleSortChange = (order: string) => {
     setOrderBy(order);
-    localStorage.setItem("order_by", order); // Save the selected order to localStorage
+    localStorage.setItem("order_by", order); 
     const params = new URLSearchParams(location.search);
-    params.set("order_by", order); // Update or add the order_by param
+    params.set("order_by", order); 
     navigate({
       pathname: location.pathname,
       search: `?${params.toString()}`,
     });
-    setDropdownOpen(false); // Close dropdown on selection
+    setDropdownOpen(false); 
   };
 
-  // Get the description for the current task view
   const description = getDescription(query, projects);
 
   return (
     <div className="flex justify-center px-4">
       {" "}
       {/* Center the content with padding */}
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-5xl">
         {" "}
         {/* Limit the width to 3xl (48rem) */}
         {/* Title and Icon */}

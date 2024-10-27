@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import Sidebar from './Sidebar';
-import './styles/tailwind.css';
-import ProjectModal from './components/Project/ProjectModal';
-import NoteModal from './components/Note/NoteModal';
-import AreaModal from './components/Area/AreaModal';
-import TagModal from './components/Tag/TagModal';
-import { Note } from './entities/Note';
-import { Area } from './entities/Area';
-import { Tag } from './entities/Tag';
-import { useDataContext } from './contexts/DataContext';  // Import the data context
+import React, { useState, useEffect } from "react";
+import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
+import "./styles/tailwind.css";
+import ProjectModal from "./components/Project/ProjectModal";
+import NoteModal from "./components/Note/NoteModal";
+import AreaModal from "./components/Area/AreaModal";
+import TagModal from "./components/Tag/TagModal";
+import { Note } from "./entities/Note";
+import { Area } from "./entities/Area";
+import { Tag } from "./entities/Tag";
+import { Project } from "./entities/Project";
+import { useDataContext } from "./contexts/DataContext";
 
 interface LayoutProps {
   currentUser: {
@@ -25,18 +27,15 @@ const Layout: React.FC<LayoutProps> = ({
   toggleDarkMode,
   children,
 }) => {
-  // State for modals
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
 
-  // State for selected entities
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
 
-  // Use context to fetch data
   const {
     tags,
     areas,
@@ -54,10 +53,25 @@ const Layout: React.FC<LayoutProps> = ({
     deleteTag,
     createProject,
     updateProject,
-    deleteProject
-  } = useDataContext(); // Now includes project management functions
+    deleteProject,
+  } = useDataContext();
 
-  // Handler functions for modals
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(
+    window.innerWidth >= 1024
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const openNoteModal = (note: Note | null = null) => {
     setSelectedNote(note);
     setIsNoteModalOpen(true);
@@ -96,11 +110,9 @@ const Layout: React.FC<LayoutProps> = ({
     setSelectedTag(null);
   };
 
-  // Handler for saving notes
   const handleSaveNote = async (noteData: Note) => {
     try {
       if (noteData.id) {
-        // Update existing note
         await updateNote(noteData.id, {
           title: noteData.title,
           content: noteData.content,
@@ -108,7 +120,6 @@ const Layout: React.FC<LayoutProps> = ({
           project_id: noteData.project?.id,
         });
       } else {
-        // Create new note
         await createNote({
           title: noteData.title,
           content: noteData.content,
@@ -117,12 +128,11 @@ const Layout: React.FC<LayoutProps> = ({
         });
       }
     } catch (error) {
-      console.error('Error saving note:', error);
+      console.error("Error saving note:", error);
     }
     closeNoteModal();
   };
 
-  // Handler for saving projects
   const handleSaveProject = async (projectData: Project) => {
     try {
       if (projectData.id) {
@@ -131,12 +141,11 @@ const Layout: React.FC<LayoutProps> = ({
         await createProject(projectData);
       }
     } catch (error) {
-      console.error('Error saving project:', error);
+      console.error("Error saving project:", error);
     }
     closeProjectModal();
   };
 
-  // Handler for saving areas
   const handleSaveArea = async (areaData: Area) => {
     try {
       if (areaData.id) {
@@ -145,12 +154,11 @@ const Layout: React.FC<LayoutProps> = ({
         await createArea(areaData);
       }
     } catch (error) {
-      console.error('Error saving area:', error);
+      console.error("Error saving area:", error);
     }
     closeAreaModal();
   };
 
-  // Handler for saving tags
   const handleSaveTag = async (tagData: Tag) => {
     try {
       if (tagData.id) {
@@ -159,15 +167,23 @@ const Layout: React.FC<LayoutProps> = ({
         await createTag(tagData);
       }
     } catch (error) {
-      console.error('Error saving tag:', error);
+      console.error("Error saving tag:", error);
     }
     closeTagModal();
   };
 
+  const mainContentMarginLeft = isSidebarOpen ? "ml-64" : "ml-16";
+
   if (isLoading) {
     return (
-      <div className={`min-h-screen flex ${isDarkMode ? 'dark' : ''}`}>
+      <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
+        {/* Navbar */}
+        <Navbar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} currentUser={currentUser} />
+
+        {/* Sidebar */}
         <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
           currentUser={currentUser}
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
@@ -179,8 +195,14 @@ const Layout: React.FC<LayoutProps> = ({
           areas={areas}
           tags={tags}
         />
-        <div className="flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-          <div className="text-xl text-gray-700 dark:text-gray-200">Loading...</div>
+
+        {/* Main Content */}
+        <div
+          className={`flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
+        >
+          <div className="text-xl text-gray-700 dark:text-gray-200">
+            Loading...
+          </div>
         </div>
       </div>
     );
@@ -188,8 +210,18 @@ const Layout: React.FC<LayoutProps> = ({
 
   if (isError) {
     return (
-      <div className={`min-h-screen flex ${isDarkMode ? 'dark' : ''}`}>
+      <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
+        {/* Navbar */}
+        <Navbar
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
+          currentUser={currentUser}
+        />
+
+        {/* Sidebar */}
         <Sidebar
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
           currentUser={currentUser}
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
@@ -201,7 +233,11 @@ const Layout: React.FC<LayoutProps> = ({
           areas={areas}
           tags={tags}
         />
-        <div className="flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
+
+        {/* Main Content */}
+        <div
+          className={`flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
+        >
           <div className="text-xl text-red-500">Error fetching data.</div>
         </div>
       </div>
@@ -209,8 +245,14 @@ const Layout: React.FC<LayoutProps> = ({
   }
 
   return (
-    <div className={`min-h-screen flex ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
+      {/* Navbar */}
+      <Navbar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} currentUser={currentUser}/>
+
+      {/* Sidebar */}
       <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
         currentUser={currentUser}
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
@@ -222,14 +264,19 @@ const Layout: React.FC<LayoutProps> = ({
         areas={areas}
         tags={tags}
       />
-      <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 overflow-y-auto h-screen">
-        <div className="flex-grow p-6 pt-20 overflow-y-auto">
-          <div className="w-full max-w-5xl mx-auto">
-            {children}
+
+      {/* Main Content */}
+      <div
+        className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
+      >
+        <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 min-h-screen overflow-y-auto">
+          <div className="flex-grow p-6 pt-24">
+            <div className="w-full max-w-5xl mx-auto">{children}</div>
           </div>
         </div>
       </div>
 
+      {/* Modals */}
       {isProjectModalOpen && (
         <ProjectModal
           isOpen={isProjectModalOpen}

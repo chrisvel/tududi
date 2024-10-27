@@ -5,10 +5,10 @@ import {
   TrashIcon,
   Squares2X2Icon,
 } from '@heroicons/react/24/solid'; 
-import ConfirmDialog from './components/Shared/ConfirmDialog';
-import AreaModal from './components/Area/AreaModal'; 
-import { useDataContext } from './contexts/DataContext';
-import { Area } from './entities/Area';
+import ConfirmDialog from './Shared/ConfirmDialog';
+import AreaModal from './Area/AreaModal'; 
+import { useDataContext } from '../contexts/DataContext';
+import { Area } from '../entities/Area';
 
 const Areas: React.FC = () => {
   const { areas, isLoading, isError, createArea, updateArea, deleteArea } = useDataContext();
@@ -90,7 +90,7 @@ const Areas: React.FC = () => {
 
   return (
     <div className="flex justify-center px-4">
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-5xl">
         {/* Areas Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">

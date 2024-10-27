@@ -1,5 +1,3 @@
-# app/controllers/user_routes.rb
-
 module Sinatra
   class Application
     get '/api/profile' do

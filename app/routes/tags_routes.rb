@@ -32,7 +32,7 @@ class Sinatra::Application
     end
   end
 
-=  patch '/api/tag/:id' do
+  patch '/api/tag/:id' do
     content_type :json
 
     tag = current_user.tags.find_by(id: params[:id])

@@ -1,31 +1,26 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
-// Define the shape of the context
 interface ToastContextProps {
   showSuccessToast: (message: string) => void;
   showErrorToast: (message: string) => void;
 }
 
-// Create a context with default values
 const ToastContext = createContext<ToastContextProps | undefined>(undefined);
 
-// Toast provider component
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
-  // Show success toast
   const showSuccessToast = useCallback((message: string) => {
     setToastMessage(message);
     setToastType('success');
-    setTimeout(() => setToastMessage(null), 3000); // Auto-hide after 3 seconds
+    setTimeout(() => setToastMessage(null), 3000); 
   }, []);
 
-  // Show error toast
   const showErrorToast = useCallback((message: string) => {
     setToastMessage(message);
     setToastType('error');
-    setTimeout(() => setToastMessage(null), 3000); // Auto-hide after 3 seconds
+    setTimeout(() => setToastMessage(null), 3000); 
   }, []);
 
   return (
@@ -36,7 +31,6 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
-// Custom hook to use the ToastContext
 export const useToast = () => {
   const context = useContext(ToastContext);
   if (context === undefined) {
@@ -45,7 +39,6 @@ export const useToast = () => {
   return context;
 };
 
-// Toast component
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
   return (
     <div

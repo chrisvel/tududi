@@ -1,15 +1,13 @@
-// src/components/Sidebar/SidebarProjects.tsx
-
 import React, { useState, useEffect } from 'react';
 import { Location } from 'react-router-dom';
-import { FolderIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
+import { FolderIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { Project } from '../../entities/Project';
 
 interface SidebarProjectsProps {
   handleNavClick: (path: string, title: string, icon: string) => void;
   location: Location;
   isDarkMode: boolean;
-  openProjectModal: () => void; // Add this prop
+  openProjectModal: () => void; 
 }
 
 const SidebarProjects: React.FC<SidebarProjectsProps> = ({
@@ -23,7 +21,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch('/api/projects?pin_to_sidebar=true'); // Fetch only pinned projects
+        const response = await fetch('/api/projects?pin_to_sidebar=true'); 
         const data = await response.json();
         if (response.ok) {
           setProjects(data.projects || []);
@@ -59,8 +57,8 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
           </span>
           <button
             onClick={(e) => {
-              e.stopPropagation(); // Prevent triggering the parent onClick
-              openProjectModal(); // Open the modal
+              e.stopPropagation(); 
+              openProjectModal(); 
             }}
             className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
             aria-label="Add Project"

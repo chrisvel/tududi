@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Task } from '../../entities/Task';
-import TagInput from '../../TagInput';
 import TaskActions from './TaskActions';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import StatusDropdown from '../Shared/StatusDropdown';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useToast } from '../Shared/ToastContext'; // Import the toast hook
+import TagInput from '../Tag/TagInput';
 
 interface Tag {
   id?: number;

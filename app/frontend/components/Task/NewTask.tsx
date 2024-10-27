@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useToast } from './components/Shared/ToastContext'; // Adjust the import path accordingly
+import { useToast } from '../../components/Shared/ToastContext'; 
 
 interface NewTaskProps {
   onTaskCreate: (taskName: string) => void;
@@ -7,7 +7,7 @@ interface NewTaskProps {
 
 const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
   const [taskName, setTaskName] = useState<string>('');
-  const { showSuccessToast, showErrorToast } = useToast(); // Use the toast functions
+  const { showSuccessToast, showErrorToast } = useToast(); 
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTaskName(event.target.value);

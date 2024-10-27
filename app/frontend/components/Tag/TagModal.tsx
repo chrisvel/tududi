@@ -19,7 +19,6 @@ const TagModal: React.FC<TagModalProps> = ({ isOpen, onClose, onSave, tag }) => 
 
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Close modal if clicked outside of it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -35,7 +34,6 @@ const TagModal: React.FC<TagModalProps> = ({ isOpen, onClose, onSave, tag }) => 
     };
   }, [isOpen, onClose]);
 
-  // Update form state when editing a tag
   useEffect(() => {
     if (tag) {
       setFormData(tag);
@@ -46,7 +44,6 @@ const TagModal: React.FC<TagModalProps> = ({ isOpen, onClose, onSave, tag }) => 
     }
   }, [tag]);
 
-  // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -55,7 +52,6 @@ const TagModal: React.FC<TagModalProps> = ({ isOpen, onClose, onSave, tag }) => 
     }));
   };
 
-  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);

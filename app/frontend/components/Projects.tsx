@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Project } from "./entities/Project";
+import { Project } from "../entities/Project";
 import {
   Link,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
-import ConfirmDialog from "./components/Shared/ConfirmDialog";
-import ProjectModal from "./components/Project/ProjectModal";
-import { useDataContext } from "./contexts/DataContext";
-import useFetchProjects from "./hooks/useFetchProjects";
+import ConfirmDialog from "./Shared/ConfirmDialog";
+import ProjectModal from "./Project/ProjectModal";
+import { useDataContext } from "../contexts/DataContext";
+import useFetchProjects from "../hooks/useFetchProjects";
 
 // Utility function to generate initials
 const getProjectInitials = (name: string) => {
-  const words = name.trim().split(' ').filter(word => word.length > 0); // Filter out any empty strings
+  const words = name.trim().split(' ').filter(word => word.length > 0);
   if (words.length === 1) {
     return name.toUpperCase();
   }
@@ -28,16 +28,14 @@ const Projects: React.FC = () => {
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
-  const [activeDropdown, setActiveDropdown] = useState<number | null>(null); // To track which dropdown is active
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null); 
 
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Get filters from URL query parameters
   const activeFilter = searchParams.get("active");
   const areaFilter = searchParams.get("area_id") || "";
 
-  // Fetch projects with current filters
   const {
     projects,
     taskStatusCounts: fetchedTaskStatusCounts,
@@ -46,12 +44,10 @@ const Projects: React.FC = () => {
     mutate,
   } = useFetchProjects(activeFilter, areaFilter);
 
-  // Update local task status counts when fetched data changes
   useEffect(() => {
     setTaskStatusCounts(fetchedTaskStatusCounts);
   }, [fetchedTaskStatusCounts]);
 
-  // Calculate the completion percentage for the project
   const getCompletionPercentage = (projectId: number) => {
     const taskStatus = taskStatusCounts[projectId] || {};
     const totalTasks =
@@ -64,7 +60,6 @@ const Projects: React.FC = () => {
     return Math.round((taskStatus.done / totalTasks) * 100);
   };
 
-  // Handle project save (either create or update)
   const handleSaveProject = async (project: Project) => {
     if (project.id) {
       await updateProject(project.id, project);
@@ -72,16 +67,14 @@ const Projects: React.FC = () => {
       await createProject(project);
     }
     setIsProjectModalOpen(false);
-    mutate(); // Refetch projects after save
+    mutate(); 
   };
 
-  // Open edit modal and populate form data
   const handleEditProject = (project: Project) => {
     setProjectToEdit(project);
     setIsProjectModalOpen(true);
   };
 
-  // Handle delete project
   const handleDeleteProject = async () => {
     if (!projectToDelete) return;
     await deleteProject(projectToDelete.id);
@@ -90,15 +83,14 @@ const Projects: React.FC = () => {
     mutate();
   };
 
-  // Handle filter changes
   const handleActiveFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newActiveFilter = e.target.value;
     const params = new URLSearchParams(searchParams);
 
     if (newActiveFilter === "all") {
-      params.delete("active"); // Remove 'active' filter when "All" is selected
+      params.delete("active"); 
     } else {
-      params.set("active", newActiveFilter); // Set 'active' filter to 'true' or 'false'
+      params.set("active", newActiveFilter);
     }
 
     setSearchParams(params);
@@ -133,7 +125,6 @@ const Projects: React.FC = () => {
     );
   }
 
-  // Group projects by area
   const groupedProjects = projects.reduce<Record<string, Project[]>>(
     (acc, project) => {
       const areaName = project.area ? project.area.name : "Uncategorized";

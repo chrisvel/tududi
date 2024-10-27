@@ -1,41 +1,37 @@
-import { TagIcon } from '@heroicons/react/24/solid';
 import React, { useState } from 'react';
-import TaskTags from './components/Task/TaskTags'; // Import TaskTags
+import TaskTags from '../Task/TaskTags';
 
 interface TagInputProps {
   initialTags: string[];
   onTagsChange: (tags: string[]) => void;
-  availableTags: string[]; // Available tags to preload
+  availableTags: string[]; 
 }
 
 const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availableTags = [] }) => {
   const [inputValue, setInputValue] = useState('');
   const [tags, setTags] = useState<string[]>(initialTags || []);
 
-  // Handle input change
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  // Handle key press (Enter) to add the tag
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && inputValue.trim()) {
-      event.preventDefault(); // Prevent form submission
+      event.preventDefault(); 
       const trimmedValue = inputValue.trim();
       if (!tags.includes(trimmedValue)) {
         const updatedTags = [...tags, trimmedValue];
-        setTags(updatedTags); // Update internal state
-        onTagsChange(updatedTags); // Notify parent
+        setTags(updatedTags); 
+        onTagsChange(updatedTags); 
       }
-      setInputValue(''); // Clear the input
+      setInputValue(''); 
     }
   };
 
-  // Handle removing a tag
   const removeTag = (tagToRemoveId: number) => {
     const updatedTags = tags.filter((_, index) => index !== tagToRemoveId);
-    setTags(updatedTags); // Update internal state
-    onTagsChange(updatedTags); // Notify parent
+    setTags(updatedTags);
+    onTagsChange(updatedTags); 
   };
 
   return (

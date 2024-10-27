@@ -11,7 +11,6 @@ require './app/models/tag'
 require './app/models/note'
 
 require './app/helpers/authentication_helper'
-require './app/helpers/task_helper'
 
 require './app/routes/authentication_routes'
 require './app/routes/tasks_routes'
@@ -61,8 +60,8 @@ configure do
 end
 
 before do
-  response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080' # Adjust based on frontend URL
-  response.headers['Access-Control-Allow-Credentials'] = 'true' # Important for sending session cookies
+  response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
+  response.headers['Access-Control-Allow-Credentials'] = 'true'
 end
 
 options '*' do
@@ -70,8 +69,6 @@ options '*' do
   response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, Accept'
   200
 end
-
-helpers TaskHelper
 
 helpers do
   def current_path
@@ -109,7 +106,7 @@ helpers do
   def update_query_params(key, value)
     uri = URI(request.url)
     params = Rack::Utils.parse_nested_query(uri.query)
-    params[key] = value # Update or add the key-value pair
+    params[key] = value
     Rack::Utils.build_query(params)
   end
 
@@ -123,7 +120,6 @@ helpers do
 end
 
 get '/*' do
-  # redirect '/tasks?due_date=today'
   erb :index
 end
 
@@ -132,14 +128,3 @@ not_found do
   status 404
   { error: 'Not Found', message: 'The requested resource could not be found.' }.to_json
 end
-
-# get '/inbox' do
-#   @tasks = current_user.tasks
-#                        .incomplete
-#                        .left_joins(:tags)
-#                        .where(project_id: nil, due_date: nil)
-#                        .where(tags: { id: nil }) # Filter tasks with no tags
-#                        .order('tasks.created_at DESC')
-
-#   erb :inbox
-# end

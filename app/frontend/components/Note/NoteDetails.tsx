@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon, TagIcon } from '@heroicons/react/24/solid';
-import { useDataContext } from '../../contexts/DataContext'; // Import the DataContext
+import { useDataContext } from '../../contexts/DataContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
-import { Note } from '../../entities/Note'; // Adjust path as necessary
+import { Note } from '../../entities/Note'; 
 
 const NoteDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { notes, deleteNote, isLoading, isError } = useDataContext(); // Get notes and deleteNote from context
+  const { notes, deleteNote, isLoading, isError } = useDataContext(); 
   const [note, setNote] = useState<Note | null>(null);
-  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); // State for the modal
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Find the note with the matching ID from the context
     const foundNote = notes.find((n) => n.id === Number(id));
     setNote(foundNote || null);
   }, [id, notes]);
@@ -26,19 +25,19 @@ const NoteDetails: React.FC = () => {
     if (!noteToDelete) return;
     try {
       await deleteNote(noteToDelete.id);
-      navigate('/notes'); // Navigate back to the notes list after deletion
+      navigate('/notes'); 
     } catch (err) {
       console.error('Error deleting note:', err);
     }
   };
 
   const handleSaveNote = (updatedNote: Note) => {
-    setNote(updatedNote); // Update the note after saving
-    setIsNoteModalOpen(false); // Close modal after saving
+    setNote(updatedNote); 
+    setIsNoteModalOpen(false); 
   };
 
   const handleEditNote = () => {
-    setIsNoteModalOpen(true); // Open the modal when editing
+    setIsNoteModalOpen(true); 
   };
 
   const handleOpenConfirmDialog = (note: Note) => {
@@ -68,7 +67,7 @@ const NoteDetails: React.FC = () => {
 
   return (
     <div className="flex justify-center px-4">
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-5xl">
         {/* Header Section with Title and Action Buttons */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
@@ -152,7 +151,7 @@ const NoteDetails: React.FC = () => {
             isOpen={isNoteModalOpen}
             onClose={() => setIsNoteModalOpen(false)}
             onSave={handleSaveNote}
-            note={note} // Pass the current note to the modal for editing
+            note={note}
           />
         )}
 

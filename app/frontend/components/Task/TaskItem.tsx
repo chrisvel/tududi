@@ -18,24 +18,23 @@ const TaskItem: React.FC<TaskItemProps> = ({
   projects,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [projectList, setProjectList] = useState<Project[]>(projects); // Keep track of projects
+  const [projectList, setProjectList] = useState<Project[]>(projects); 
 
   const handleTaskClick = () => {
-    setIsModalOpen(true); // Open the modal when task title is clicked
+    setIsModalOpen(true); 
   };
 
   const handleSave = (updatedTask: Task) => {
-    onTaskUpdate(updatedTask); // Save the updated task
-    setIsModalOpen(false); // Close the modal after saving
+    onTaskUpdate(updatedTask); 
+    setIsModalOpen(false); 
   };
 
   const handleDelete = () => {
     if (task.id) {
-      onTaskDelete(task.id); // Delete the task
+      onTaskDelete(task.id); 
     }
   };
 
-  // Function to create a new project
   const handleCreateProject = async (name: string): Promise<Project> => {
     try {
       const response = await fetch('/api/project', {
@@ -51,7 +50,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
       }
 
       const newProject = await response.json();
-      // Update local project list
       setProjectList((prevProjects) => [...prevProjects, newProject]);
       return newProject;
     } catch (error) {
@@ -60,7 +58,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
     }
   };
 
-  // Find the project associated with this task
   const project = projectList.find((p) => p.id === task.project_id);
 
   return (
@@ -74,8 +71,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
         task={task}
         onSave={handleSave}
         onDelete={onTaskDelete}
-        projects={projectList} // Pass updated project list to modal
-        onCreateProject={handleCreateProject} // Pass project creation function
+        projects={projectList} 
+        onCreateProject={handleCreateProject} 
       />
     </div>
   );

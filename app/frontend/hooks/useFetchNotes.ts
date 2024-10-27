@@ -1,4 +1,3 @@
-// src/hooks/useFetchNotes.ts
 import useFetch from './useFetch';
 import { Note } from '../entities/Note';
 

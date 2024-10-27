@@ -1,4 +1,3 @@
-// src/hooks/useFetch.ts
 import { useState, useEffect } from 'react';
 
 interface UseFetchResult<T> {
@@ -13,8 +12,8 @@ const useFetch = <T,>(url: string, options?: RequestInit): UseFetchResult<T> => 
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let isMounted = true; // To prevent setting state on unmounted component
-    const controller = new AbortController(); // To handle component unmounting
+    let isMounted = true; 
+    const controller = new AbortController(); 
 
     const fetchData = async () => {
       setLoading(true);
@@ -42,12 +41,11 @@ const useFetch = <T,>(url: string, options?: RequestInit): UseFetchResult<T> => 
 
     fetchData();
 
-    // Cleanup function to abort fetch on unmount
     return () => {
       isMounted = false;
       controller.abort();
     };
-  }, [url, JSON.stringify(options)]); // Note: Be cautious with dependencies
+  }, [url, JSON.stringify(options)]); 
 
   return { data, loading, error };
 };

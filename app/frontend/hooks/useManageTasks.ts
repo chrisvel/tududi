@@ -1,4 +1,3 @@
-// hooks/useManageTasks.ts
 import { useState } from 'react';
 import { Task } from '../entities/Task';
 

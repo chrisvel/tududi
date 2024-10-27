@@ -1,10 +1,21 @@
+// src/components/Sidebar/SidebarFooter.tsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
+import {
+  SunIcon,
+  MoonIcon,
+  ArrowLeftIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+} from '@heroicons/react/24/outline';
 
 interface SidebarFooterProps {
   currentUser: { email: string };
   isDarkMode: boolean;
   toggleDarkMode: () => void;
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isDropdownOpen: boolean;
   toggleDropdown: () => void;
 }
@@ -13,53 +24,42 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
   currentUser,
   isDarkMode,
   toggleDarkMode,
+  isSidebarOpen,
+  setIsSidebarOpen,
   isDropdownOpen,
   toggleDropdown,
 }) => {
+  if (!isSidebarOpen) {
+    return null; 
+  }
+
   return (
-    <div className="mt-auto">
+    <div className="mt-auto p-3">
       <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
-        <div className="relative">
+        {/* Footer Buttons */}
+        <div className="flex items-center justify-between">
+          {/* Dark Mode Toggle */}
           <button
-            className="flex justify-center items-center text-gray-700 dark:text-gray-300 w-full focus:outline-none"
-            onClick={toggleDropdown}
+            onClick={toggleDarkMode}
+            className="flex items-center focus:outline-none text-gray-700 dark:text-gray-300"
+            aria-label="Toggle Dark Mode"
           >
-            <strong>{currentUser.email}</strong>
-            <i className={`ml-2 bi ${isDropdownOpen ? 'bi-caret-up-fill' : 'bi-caret-down-fill'}`}></i>
+            {isDarkMode ? (
+              <SunIcon className="h-6 w-6 text-yellow-500" />
+            ) : (
+              <MoonIcon className="h-6 w-6 text-gray-500" />
+            )}
           </button>
 
-          {/* Dropdown menu */}
-          {isDropdownOpen && (
-            <ul className="absolute bottom-full mb-2 w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg shadow-lg z-50">
-              <li className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                <Link
-                  to="/profile"
-                  className="block w-full px-4 py-2 text-left"
-                >
-                  Profile
-                </Link>
-              </li>
-              <li className="border-t border-gray-200 dark:border-gray-700"></li>
-              <li className="hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                <a
-                  href="/logout"
-                  className="block w-full px-4 py-2 text-left text-red-500"
-                >
-                  Sign out
-                </a>
-              </li>
-            </ul>
-          )}
+          {/* Collapse Sidebar Button */}
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="flex items-center focus:outline-none text-gray-700 dark:text-gray-300"
+            aria-label="Collapse Sidebar"
+          >
+            <ArrowLeftIcon className="h-6 w-6" />
+          </button>
         </div>
-
-        {/* Dark Mode Toggle */}
-        <button
-          id="darkModeToggle"
-          className="mt-3 w-full flex items-center justify-center text-gray-700 dark:text-gray-300"
-          onClick={toggleDarkMode}
-        >
-          <i className={`bi ${isDarkMode ? 'bi-sun' : 'bi-moon'} text-lg`}></i>
-        </button>
       </div>
     </div>
   );

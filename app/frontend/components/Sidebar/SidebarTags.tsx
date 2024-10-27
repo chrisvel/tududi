@@ -1,6 +1,6 @@
 import React from 'react';
 import { Location } from 'react-router-dom';
-import { TagIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
+import { TagIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { Tag } from '../../entities/Tag';
 
 interface SidebarTagsProps {
@@ -40,8 +40,8 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
           </span>
           <button
             onClick={(e) => {
-              e.stopPropagation(); // Prevent triggering the parent onClick
-              openTagModal(null); // Open the modal for creating a new tag
+              e.stopPropagation(); 
+              openTagModal(null); 
             }}
             className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
             aria-label="Add Tag"
