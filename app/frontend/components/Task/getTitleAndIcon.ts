@@ -1,7 +1,9 @@
+import { Project } from "../../entities/Project";
+
 export const getTitleAndIcon = (query: URLSearchParams, projects: Project[]) => {
   const projectId = query.get('project_id');
   if (projectId) {
-    const project = projects.find((p) => p.id.toString() === projectId);
+    const project = projects.find((p) => p.id?.toString() === projectId);
     return { title: project ? project.name : 'Project', icon: 'bi-folder-fill' };
   }
 

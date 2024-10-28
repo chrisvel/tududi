@@ -24,7 +24,7 @@ const NoteDetails: React.FC = () => {
   const handleDeleteNote = async () => {
     if (!noteToDelete) return;
     try {
-      await deleteNote(noteToDelete.id);
+      await deleteNote(noteToDelete.id!);
       navigate('/notes'); 
     } catch (err) {
       console.error('Error deleting note:', err);

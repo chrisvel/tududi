@@ -1,7 +1,8 @@
 // src/components/Navbar.tsx
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { UserIcon } from "@heroicons/react/24/solid";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -30,9 +31,9 @@ const Navbar: React.FC<NavbarProps> = ({
         setIsDropdownOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -63,14 +64,17 @@ const Navbar: React.FC<NavbarProps> = ({
               className="flex items-center focus:outline-none"
               aria-label="User Menu"
             >
-              <img
-                src={
-                  currentUser?.avatarUrl ||
-                  'https://www.gravatar.com/avatar/placeholder?d=mp'
-                }
-                alt="User Avatar"
-                className="h-8 w-8 rounded-full object-cover border-2 border-green-500"
-              />
+              {currentUser?.avatarUrl ? (
+                <img
+                  src={currentUser.avatarUrl}
+                  alt="User Avatar"
+                  className="h-8 w-8 rounded-full object-cover border-2 border-green-500"
+                />
+              ) : (
+                <div className="h-8 w-8 rounded-full border-2 border-green-500 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  <UserIcon className="h-6 w-6 text-gray-500 dark:text-gray-300" />
+                </div>
+              )}
             </button>
 
             {/* Dropdown Menu */}
@@ -84,8 +88,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 </Link>
                 <button
                   onClick={() => {
-                    // Handle logout logic here
-                    console.log('Logout clicked');
+                    console.log("Logout clicked");
                   }}
                   className="w-full text-left block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >

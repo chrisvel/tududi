@@ -4,7 +4,7 @@ import { TagIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { Tag } from '../../entities/Tag';
 
 interface SidebarTagsProps {
-  handleNavClick: (path: string, title: string, icon: string) => void;
+  handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
   location: Location;
   isDarkMode: boolean;
   openTagModal: (tag: Tag | null) => void;
@@ -32,7 +32,7 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
           className={`flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveTag(
             '/tags'
           )}`}
-          onClick={() => handleNavClick('/tags', 'Tags', 'tag')}
+          onClick={() => handleNavClick('/tags', 'Tags', <TagIcon className="h-5 w-5 mr-2" />)}
         >
           <span className="flex items-center">
             <TagIcon className="h-5 w-5 mr-2" />

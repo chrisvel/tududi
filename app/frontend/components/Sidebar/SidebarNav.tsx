@@ -12,7 +12,7 @@ import {
 } from '@heroicons/react/24/solid';
 
 interface SidebarNavProps {
-  handleNavClick: (path: string, title: string) => void;
+  handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
   location: Location;
   isDarkMode: boolean;
 }
@@ -28,7 +28,7 @@ const navLinks = [
   { path: '/tasks', title: 'All Tasks', icon: <ListBulletIcon className="h-5 w-5" /> },
 ];
 
-const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location, isDarkMode }) => {
+const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => {
   const isActive = (path: string, query?: string) => {
     const isPathMatch = location.pathname === '/tasks';
     const isQueryMatch = query ? location.search.includes(query) : location.search === '';
@@ -42,7 +42,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location, isDar
       {navLinks.map((link) => (
         <li key={link.path}>
           <button
-            onClick={() => handleNavClick(link.path, link.title)}
+            onClick={() => handleNavClick(link.path, link.title, link.icon)}
             className={`w-full text-left px-4 py-1 flex items-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
               link.path,
               link.query

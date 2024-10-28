@@ -44,16 +44,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  // State for the dropdown in SidebarFooter
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Function to toggle the dropdown
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleNavClick = (path: string, title: string, icon: string) => {
-    navigate(path, { state: { title, icon } });
+  const handleNavClick = (path: string, title: string, icon: JSX.Element) => {
+    navigate(path, { state: { title } });
     if (window.innerWidth < 1024) {
       setIsSidebarOpen(false);
     }
@@ -68,7 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex flex-col h-full overflow-y-auto">
         {isSidebarOpen ? (
           <>
-            <div className="p-3">
+            <div className="px-3 pb-3 pt-6">
               {/* Sidebar Content */}
               <SidebarNav
                 handleNavClick={handleNavClick}

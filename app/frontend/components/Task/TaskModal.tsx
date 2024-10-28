@@ -1,21 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Task } from '../../entities/Task';
+import { PriorityType, StatusType, Task } from '../../entities/Task';
 import TaskActions from './TaskActions';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import StatusDropdown from '../Shared/StatusDropdown';
 import ConfirmDialog from '../Shared/ConfirmDialog';
-import { useToast } from '../Shared/ToastContext'; // Import the toast hook
+import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
-
-interface Tag {
-  id?: number;
-  name: string;
-}
-
-interface Project {
-  id: number;
-  name: string;
-}
+import { Project } from '../../entities/Project';
+import { Tag } from '../../entities/Tag';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -257,7 +249,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     </label>
                     <StatusDropdown
                       value={formData.status}
-                      onChange={(value) => setFormData({ ...formData, status: value })}
+                      onChange={(value: StatusType) => setFormData({ ...formData, status: value })}
                     />
                   </div>
                   <div>
@@ -266,7 +258,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     </label>
                     <PriorityDropdown
                       value={formData.priority || 'medium'}
-                      onChange={(value) => setFormData({ ...formData, priority: value })}
+                      onChange={(value: PriorityType) => setFormData({ ...formData, priority: value })}
                     />
                   </div>
                   <div>

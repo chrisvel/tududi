@@ -1,6 +1,6 @@
 {
   "name": "tududi",
-  "version": "1.0.0",
+  "version": "0.3",
   "description": "`tududi` is a task and project management web application built with Sinatra. It allows users to efficiently manage their tasks and projects, categorize them into different areas, and track due dates. `tududi` is designed to be intuitive and easy to use, providing a seamless experience for personal productivity.",
   "main": "index.js",
   "directories": {
@@ -8,8 +8,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --config webpack.config.js",
-    "start": "NODE_ENV=development webpack serve --config webpack.config.js"
+    "build": "tsc --noEmit && webpack --config webpack.config.js",
+    "start": "tsc --noEmit && NODE_ENV=development webpack serve --config webpack.config.js",
+    "lint": "eslint 'app/frontend/**/*.{js,jsx,ts,tsx}'"
   },
   "keywords": [],
   "author": "",
@@ -19,13 +20,19 @@
     "@babel/preset-env": "^7.25.7",
     "@babel/preset-react": "^7.25.7",
     "@babel/preset-typescript": "^7.25.7",
+    "@eslint/js": "^9.13.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
     "@types/react-router-dom": "^5.3.3",
+    "@typescript-eslint/eslint-plugin": "^8.11.0",
+    "@typescript-eslint/parser": "^8.11.0",
     "autoprefixer": "^10.4.20",
     "babel-loader": "^9.2.1",
     "css-loader": "^7.1.2",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react": "^7.37.2",
+    "globals": "^15.11.0",
     "postcss": "^8.4.47",
     "postcss-loader": "^8.1.1",
     "react-refresh": "^0.14.2",
@@ -33,6 +40,7 @@
     "tailwindcss": "^3.4.13",
     "ts-loader": "^9.5.1",
     "typescript": "^5.6.2",
+    "typescript-eslint": "^8.11.0",
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.1.0"

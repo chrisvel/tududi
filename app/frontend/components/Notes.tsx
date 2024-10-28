@@ -17,7 +17,7 @@ const Notes: React.FC = () => {
   const handleDeleteNote = async () => {
     if (!noteToDelete) return;
     try {
-      await deleteNote(noteToDelete.id);
+      await deleteNote(noteToDelete.id!);
       setIsConfirmDialogOpen(false);
       setNoteToDelete(null);
     } catch (err) {
@@ -30,7 +30,7 @@ const Notes: React.FC = () => {
     setIsNoteModalOpen(true);
   };
 
-  const handleSaveNote = async (noteData: { id: number; }) => {
+  const handleSaveNote = async (noteData: Note) => {
     try {
       if (noteData.id) {
         await updateNote(noteData.id, noteData);

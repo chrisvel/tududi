@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, ArrowDownIcon, ArrowUpIcon, FireIcon } from '@heroicons/react/24/outline'; // Import the icons
+import { PriorityType } from '../../entities/Task';
 
 interface PriorityDropdownProps {
-  value: string;
-  onChange: (value: string) => void;
+  value: PriorityType;
+  onChange: (value: PriorityType) => void;
 }
 
 const priorities = [
@@ -26,7 +27,7 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({ value, onChange }) 
     }
   };
 
-  const handleSelect = (priority: string) => {
+  const handleSelect = (priority: PriorityType) => {
     onChange(priority);
     setIsOpen(false);
   };
@@ -64,7 +65,7 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({ value, onChange }) 
           {priorities.map((priority) => (
             <button
               key={priority.value}
-              onClick={() => handleSelect(priority.value)}
+              onClick={() => handleSelect(priority.value as PriorityType)}
               className="flex items-center justify-between px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 w-full"
             >
               <span className="flex items-center space-x-2">

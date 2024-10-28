@@ -57,7 +57,7 @@ const Areas: React.FC = () => {
     if (!areaToDelete) return;
 
     try {
-      await deleteArea(areaToDelete.id);
+      await deleteArea(areaToDelete.id!);
       setIsConfirmDialogOpen(false);
       setAreaToDelete(null);
     } catch (error) {

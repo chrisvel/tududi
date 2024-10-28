@@ -3,7 +3,7 @@ import { Project } from "../../entities/Project";
 export const getDescription = (query: URLSearchParams, projects: Project[]): string => {
   const projectId = query.get('project_id');
   if (projectId) {
-    const project = projects.find((p) => p.id.toString() === projectId);
+    const project = projects.find((p) => p.id?.toString() === projectId);
     return project
       ? `You are currently viewing all tasks associated with the "${project.name}" project. You can organize tasks within this project, set their priority, and track their completion. Use this space to focus on the tasks that belong specifically to this project.`
       : 'You are viewing tasks for a specific project. Use this space to manage and track tasks associated with this project.';

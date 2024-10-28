@@ -1,23 +1,25 @@
-import React from 'react';
-import { Squares2X2Icon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import React from "react";
+import { Squares2X2Icon, PlusCircleIcon } from "@heroicons/react/24/outline";
+import { Location } from "react-router-dom";
+import { Area } from "../../entities/Area";
 
 interface SidebarAreasProps {
-  handleNavClick: (path: string, title: string, icon: string) => void;
+  handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
   location: Location;
   isDarkMode: boolean;
-  openAreaModal: () => void; 
+  openAreaModal: (area: Area | null) => void;
+  areas: Area[];
 }
 
 const SidebarAreas: React.FC<SidebarAreasProps> = ({
   handleNavClick,
   location,
-  isDarkMode,
   openAreaModal,
 }) => {
   const isActiveArea = (path: string) => {
     return location.pathname === path
-      ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-      : 'text-gray-700 dark:text-gray-300';
+      ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
+      : "text-gray-700 dark:text-gray-300";
   };
 
   return (
@@ -26,9 +28,15 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
         {/* "AREAS" Title with Add Button */}
         <li
           className={`flex justify-between items-center px-4 py-2 rounded-md uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveArea(
-            '/areas'
+            "/areas"
           )}`}
-          onClick={() => handleNavClick('/areas', 'Areas', 'squares2x2')}
+          onClick={() =>
+            handleNavClick(
+              "/areas",
+              "Areas",
+              <Squares2X2Icon className="h-5 w-5 mr-2" />
+            )
+          }
         >
           <span className="flex items-center">
             <Squares2X2Icon className="h-5 w-5 mr-2" />
@@ -37,7 +45,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              openAreaModal(); 
+              openAreaModal(null);
             }}
             className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
             aria-label="Add Area"

@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, MinusIcon, ClockIcon, CheckCircleIcon, ArchiveBoxIcon } from '@heroicons/react/24/outline'; 
+import { StatusType } from '../../entities/Task';
 
 interface StatusDropdownProps {
-  value: string;
-  onChange: (value: string) => void;
+  value: StatusType;
+  onChange: (value: StatusType) => void;
 }
 
 const statuses = [
@@ -27,7 +28,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({ value, onChange }) => {
     }
   };
 
-  const handleSelect = (status: string) => {
+  const handleSelect = (status: StatusType) => {
     onChange(status);
     setIsOpen(false);
   };
@@ -65,7 +66,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({ value, onChange }) => {
           {statuses.map((status) => (
             <button
               key={status.value}
-              onClick={() => handleSelect(status.value)}
+              onClick={() => handleSelect(status.value as StatusType)}
               className="flex items-center justify-between space-x-2 px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 w-full"
             >
               <span className="flex items-center space-x-2">

@@ -24,7 +24,7 @@ const useManageNotes = () => {
 
       const newNote: Note = await response.json();
 
-      mutate([...notes, newNote], false);
+      mutate([...(notes || []), newNote], false); 
     },
     [mutate, notes]
   );
@@ -47,7 +47,7 @@ const useManageNotes = () => {
 
       const updatedNote: Note = await response.json();
 
-      mutate(notes.map((note) => (note.id === noteId ? updatedNote : note)), false);
+      mutate((notes || []).map((note) => (note.id === noteId ? updatedNote : note)), false); 
     },
     [mutate, notes]
   );
@@ -66,8 +66,8 @@ const useManageNotes = () => {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to delete note.');
       }
-
-      mutate(notes.filter((note) => note.id !== noteId), false);
+      
+      mutate((notes || []).filter((note) => note.id !== noteId), false); 
     },
     [mutate, notes]
   );
@@ -79,6 +79,7 @@ const useManageNotes = () => {
     createNote,
     updateNote,
     deleteNote,
+    mutate
   };
 };
 

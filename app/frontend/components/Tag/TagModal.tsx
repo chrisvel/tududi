@@ -7,7 +7,7 @@ interface TagModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (tag: Tag) => void;
-  tag?: Tag;
+  tag?: Tag | null;
 }
 
 const TagModal: React.FC<TagModalProps> = ({ isOpen, onClose, onSave, tag }) => {

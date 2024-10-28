@@ -176,7 +176,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
         </div>
 
         {/* Avatar Image Upload */}
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Avatar Image
           </label>
@@ -193,7 +193,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
               className="mt-2 h-24 w-24 rounded-full object-cover"
             />
           )}
-        </div>
+        </div> */}
 
         {/* Save Button */}
         <div className="flex justify-end">

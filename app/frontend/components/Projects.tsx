@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Project } from "../entities/Project";
-import {
-  Link,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import ConfirmDialog from "./Shared/ConfirmDialog";
 import ProjectModal from "./Project/ProjectModal";
@@ -13,28 +9,35 @@ import useFetchProjects from "../hooks/useFetchProjects";
 
 // Utility function to generate initials
 const getProjectInitials = (name: string) => {
-  const words = name.trim().split(' ').filter(word => word.length > 0);
+  const words = name
+    .trim()
+    .split(" ")
+    .filter((word) => word.length > 0);
   if (words.length === 1) {
     return name.toUpperCase();
   }
-  return words.map(word => word[0].toUpperCase()).join('');
+  return words.map((word) => word[0].toUpperCase()).join("");
 };
 
 const Projects: React.FC = () => {
-  const { areas, createProject, updateProject, deleteProject } = useDataContext();
+  const { areas, createProject, updateProject, deleteProject } =
+    useDataContext();
 
-  const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, any>>({});
+  const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, any>>(
+    {}
+  );
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false);
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
-  const [activeDropdown, setActiveDropdown] = useState<number | null>(null); 
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+    useState<boolean>(false);
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
 
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const activeFilter = searchParams.get("active");
-  const areaFilter = searchParams.get("area_id") || "";
+  const activeFilter = searchParams.get("active") ?? "active";
+  const areaFilter = searchParams.get("area_id") ?? "";
 
   const {
     projects,
@@ -48,7 +51,8 @@ const Projects: React.FC = () => {
     setTaskStatusCounts(fetchedTaskStatusCounts);
   }, [fetchedTaskStatusCounts]);
 
-  const getCompletionPercentage = (projectId: number) => {
+  const getCompletionPercentage = (projectId: number | undefined) => {
+    if (!projectId) return 0;
     const taskStatus = taskStatusCounts[projectId] || {};
     const totalTasks =
       (taskStatus.done || 0) +
@@ -67,7 +71,7 @@ const Projects: React.FC = () => {
       await createProject(project);
     }
     setIsProjectModalOpen(false);
-    mutate(); 
+    mutate();
   };
 
   const handleEditProject = (project: Project) => {
@@ -77,18 +81,21 @@ const Projects: React.FC = () => {
 
   const handleDeleteProject = async () => {
     if (!projectToDelete) return;
-    await deleteProject(projectToDelete.id);
+
+    await deleteProject(projectToDelete.id!);
     setIsConfirmDialogOpen(false);
     setProjectToDelete(null);
     mutate();
   };
 
-  const handleActiveFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleActiveFilterChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const newActiveFilter = e.target.value;
     const params = new URLSearchParams(searchParams);
 
     if (newActiveFilter === "all") {
-      params.delete("active"); 
+      params.delete("active");
     } else {
       params.set("active", newActiveFilter);
     }
@@ -208,7 +215,10 @@ const Projects: React.FC = () => {
                     className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative"
                     style={{ minHeight: "280px", maxHeight: "280px" }} // Increased card height for image space
                   >
-                    <div className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg" style={{ height: "160px" }}>
+                    <div
+                      className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg"
+                      style={{ height: "160px" }}
+                    >
                       <span className="text-2xl font-extrabold text-gray-500 dark:text-gray-400 opacity-20">
                         {getProjectInitials(project.name)}
                       </span>
@@ -225,10 +235,17 @@ const Projects: React.FC = () => {
                       <div className="relative">
                         <button
                           className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none"
-                          onClick={() => setActiveDropdown(activeDropdown === project.id ? null : project.id)}
+                          onClick={() =>
+                            setActiveDropdown(
+                              activeDropdown === project.id
+                                ? null
+                                : project.id ?? null
+                            )
+                          }
                         >
                           <EllipsisVerticalIcon className="h-5 w-5" />
                         </button>
+
                         {activeDropdown === project.id && (
                           <div className="absolute right-0 mt-2 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
                             <button
@@ -257,12 +274,12 @@ const Projects: React.FC = () => {
                           <div
                             className="bg-blue-500 h-2 rounded-full"
                             style={{
-                              width: `${getCompletionPercentage(project.id)}%`,
+                              width: `${getCompletionPercentage(project?.id)}%`,
                             }}
                           ></div>
                         </div>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {getCompletionPercentage(project.id)}%
+                          {getCompletionPercentage(project?.id)}%
                         </span>
                       </div>
                     </div>

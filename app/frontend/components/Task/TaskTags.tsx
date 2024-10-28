@@ -1,14 +1,11 @@
 import { TagIcon } from '@heroicons/react/24/solid';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface Tag {
-  id: number;
-  name: string;
-}
+import { Tag } from '../../entities/Tag';
 
 interface TaskTagsProps {
   tags: Tag[];
+  onTagRemove: (tagToRemoveId: number) => void;
   className?: string; 
 }
 

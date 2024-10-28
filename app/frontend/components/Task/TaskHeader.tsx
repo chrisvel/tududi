@@ -34,7 +34,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({ task, project, onTaskClick }) =
 
         {/* Second Line (Tags, Due Date, Status) */}
         <div className="flex items-center flex-wrap justify-start md:justify-end space-x-4">
-          <TaskTags tags={task.tags} />
+          <TaskTags tags={task.tags || []} onTagRemove={() => {}}/>
           {task.due_date && <TaskDueDate dueDate={task.due_date} />}
           <TaskStatusBadge status={task.status} />
         </div>
@@ -60,7 +60,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({ task, project, onTaskClick }) =
 
         {/* Third Line (Tags, indented) */}
         <div className="pl-6">
-          <TaskTags tags={task.tags} />
+          <TaskTags tags={task.tags || []} onTagRemove={() => {}} />
         </div>
       </div>
     </div>

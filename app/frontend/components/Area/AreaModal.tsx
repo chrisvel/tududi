@@ -5,6 +5,7 @@ import { useDataContext } from '../../contexts/DataContext';
 interface AreaModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSave: (areaData: Area) => void;
   area?: Area | null; 
 }
 

@@ -4,7 +4,7 @@ import { BookOpenIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { Note } from '../../entities/Note';
 
 interface SidebarNotesProps {
-  handleNavClick: (path: string, title: string, icon: string) => void;
+  handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
   location: Location;
   isDarkMode: boolean;
   openNoteModal: (note: Note | null) => void;
@@ -14,9 +14,7 @@ interface SidebarNotesProps {
 const SidebarNotes: React.FC<SidebarNotesProps> = ({
   handleNavClick,
   location,
-  isDarkMode,
   openNoteModal,
-  notes,
 }) => {
   const isActiveNote = (path: string) => {
     return location.pathname === path
@@ -31,7 +29,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
           className={`flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer hover:text-black dark:hover:text-white ${isActiveNote(
             '/notes'
           )}`}
-          onClick={() => handleNavClick('/notes', 'Notes', 'book')}
+          onClick={() => handleNavClick('/notes', 'Notes', <BookOpenIcon className="h-5 w-5 mr-2" />)}
         >
           <span className="flex items-center">
             <BookOpenIcon className="h-5 w-5 mr-2" />

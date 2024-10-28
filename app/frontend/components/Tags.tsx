@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PencilSquareIcon, TrashIcon, PlusCircleIcon, TagIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { PencilSquareIcon, TrashIcon, TagIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import TagModal from './Tag/TagModal';
 import { useDataContext } from '../contexts/DataContext';
+import { Tag } from '../entities/Tag';
 
 const Tags: React.FC = () => {
   const { tags, createTag, updateTag, deleteTag, isLoading, isError } = useDataContext();
@@ -16,7 +17,7 @@ const Tags: React.FC = () => {
   const handleDeleteTag = async () => {
     if (!tagToDelete) return;
     try {
-      await deleteTag(tagToDelete.id);
+      await deleteTag(tagToDelete.id!);
       setIsConfirmDialogOpen(false);
       setTagToDelete(null);
     } catch (err) {
@@ -26,11 +27,6 @@ const Tags: React.FC = () => {
 
   const handleEditTag = (tag: Tag) => {
     setSelectedTag(tag);
-    setIsTagModalOpen(true);
-  };
-
-  const handleCreateTag = () => {
-    setSelectedTag(null);
     setIsTagModalOpen(true);
   };
 
