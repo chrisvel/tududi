@@ -1,8 +1,6 @@
-// src/components/Navbar.tsx
-
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { UserIcon } from "@heroicons/react/24/solid";
+import { UserIcon, Bars3Icon } from "@heroicons/react/24/solid";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -11,12 +9,16 @@ interface NavbarProps {
     email: string;
     avatarUrl?: string;
   };
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
   isDarkMode,
   toggleDarkMode,
   currentUser,
+  isSidebarOpen,
+  setIsSidebarOpen,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -44,14 +46,22 @@ const Navbar: React.FC<NavbarProps> = ({
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md h-16">
       <div className="px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
-        {/* Left side */}
         <div className="flex items-center">
+          {/* Sidebar Toggle Button */}
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="flex items-center focus:outline-none text-gray-500 dark:text-gray-500"
+            aria-label={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+          >
+            <Bars3Icon className="h-6 mt-1 w-6 mr-2" />
+          </button>
+          
           {/* Logo */}
           <Link
             to="/"
             className="flex items-center no-underline text-gray-900 dark:text-white"
           >
-            <span className="text-2xl font-bold mt-1">tududi</span>
+            <span className="text-2xl font-bold">tududi</span>
           </Link>
         </div>
 

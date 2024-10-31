@@ -14,9 +14,7 @@ interface SidebarTagsProps {
 const SidebarTags: React.FC<SidebarTagsProps> = ({
   handleNavClick,
   location,
-  isDarkMode,
   openTagModal,
-  tags,
 }) => {
   const isActiveTag = (path: string) => {
     return location.pathname === path

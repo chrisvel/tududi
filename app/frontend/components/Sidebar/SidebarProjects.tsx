@@ -13,28 +13,8 @@ interface SidebarProjectsProps {
 const SidebarProjects: React.FC<SidebarProjectsProps> = ({
   handleNavClick,
   location,
-  isDarkMode,
   openProjectModal,
 }) => {
-  const [projects, setProjects] = useState<Project[]>([]);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await fetch('/api/projects?pin_to_sidebar=true'); 
-        const data = await response.json();
-        if (response.ok) {
-          setProjects(data.projects || []);
-        } else {
-          console.error('Failed to fetch projects:', data.error);
-        }
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-      }
-    };
-    fetchProjects();
-  }, []);
-
   const isActiveProject = (path: string) => {
     return location.pathname === path
       ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'

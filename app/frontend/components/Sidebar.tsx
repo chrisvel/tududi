@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Bars3Icon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { Area } from '../entities/Area';
 import { Note } from '../entities/Note';
 import { Tag } from '../entities/Tag';
@@ -10,7 +9,6 @@ import SidebarNav from './Sidebar/SidebarNav';
 import SidebarNotes from './Sidebar/SidebarNotes';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
-
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -59,86 +57,61 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div
-      className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-all duration-300 ease-in-out ${
-        isSidebarOpen ? 'w-64' : 'w-16'
-      }`}
+      className={`fixed top-16 left-0 ${isSidebarOpen ? 'w-full sm:w-64' : 'w-0'} h-[calc(100vh-4rem)] bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-width duration-300 ease-in-out z-50`}
+      style={{
+        visibility: isSidebarOpen ? 'visible' : 'hidden',
+        overflow: 'hidden',
+      }}
     >
-      <div className="flex flex-col h-full overflow-y-auto">
-        {isSidebarOpen ? (
-          <>
-            <div className="px-3 pb-3 pt-6">
-              {/* Sidebar Content */}
-              <SidebarNav
-                handleNavClick={handleNavClick}
-                location={location}
-                isDarkMode={isDarkMode}
-              />
-              <SidebarProjects
-                handleNavClick={handleNavClick}
-                location={location}
-                isDarkMode={isDarkMode}
-                openProjectModal={openProjectModal}
-              />
-              <SidebarNotes
-                handleNavClick={handleNavClick}
-                openNoteModal={openNoteModal}
-                notes={notes}
-                location={location}
-                isDarkMode={isDarkMode}
-              />
-              <SidebarAreas
-                handleNavClick={handleNavClick}
-                areas={areas}
-                location={location}
-                isDarkMode={isDarkMode}
-                openAreaModal={openAreaModal}
-              />
-              <SidebarTags
-                handleNavClick={handleNavClick}
-                location={location}
-                isDarkMode={isDarkMode}
-                openTagModal={openTagModal}
-                tags={tags}
-              />
-            </div>
-
-            {/* Sidebar Footer */}
-            <SidebarFooter
-              currentUser={currentUser}
+      {isSidebarOpen && (
+        <div className="flex flex-col h-full overflow-y-auto">
+          <div className="px-3 pb-3 pt-6">
+            {/* Sidebar Contents */}
+            <SidebarNav
+              handleNavClick={handleNavClick}
+              location={location}
               isDarkMode={isDarkMode}
-              toggleDarkMode={toggleDarkMode}
-              isSidebarOpen={isSidebarOpen}
-              setIsSidebarOpen={setIsSidebarOpen}
-              isDropdownOpen={isDropdownOpen}
-              toggleDropdown={toggleDropdown}
             />
-          </>
-        ) : (
-          <div className="flex flex-col items-center justify-between h-full py-4">
-            {/* Expand Sidebar Button */}
-            <button
-              onClick={() => setIsSidebarOpen(true)}
-              className="focus:outline-none text-gray-700 dark:text-gray-300"
-              aria-label="Expand Sidebar"
-            >
-              <Bars3Icon className="h-6 w-6" />
-            </button>
-
-            {/* Dark Mode Toggle */}
-            <button
-              onClick={toggleDarkMode}
-              className="focus:outline-none text-gray-700 dark:text-gray-300"
-              aria-label="Toggle Dark Mode"
-            >
-              {isDarkMode ? (
-                <SunIcon className="h-6 w-6 text-yellow-500" />
-              ) : (
-                <MoonIcon className="h-6 w-6 text-gray-500" />
-              )}
-            </button>
+            <SidebarProjects
+              handleNavClick={handleNavClick}
+              location={location}
+              isDarkMode={isDarkMode}
+              openProjectModal={openProjectModal}
+            />
+            <SidebarNotes
+              handleNavClick={handleNavClick}
+              openNoteModal={openNoteModal}
+              notes={notes}
+              location={location}
+              isDarkMode={isDarkMode}
+            />
+            <SidebarAreas
+              handleNavClick={handleNavClick}
+              areas={areas}
+              location={location}
+              isDarkMode={isDarkMode}
+              openAreaModal={openAreaModal}
+            />
+            <SidebarTags
+              handleNavClick={handleNavClick}
+              location={location}
+              isDarkMode={isDarkMode}
+              openTagModal={openTagModal}
+              tags={tags}
+            />
           </div>
-        )}
-      </div>
+
+          <SidebarFooter
+            currentUser={currentUser}
+            isDarkMode={isDarkMode}
+            toggleDarkMode={toggleDarkMode}
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+            isDropdownOpen={isDropdownOpen}
+            toggleDropdown={toggleDropdown}
+          />
+        </div>
+      )}
     </div>
   );
 };

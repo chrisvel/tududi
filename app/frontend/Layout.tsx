@@ -172,13 +172,19 @@ const Layout: React.FC<LayoutProps> = ({
     closeTagModal();
   };
 
-  const mainContentMarginLeft = isSidebarOpen ? "ml-64" : "ml-16";
+  const mainContentMarginLeft = isSidebarOpen ? "ml-64" : "ml-0";
 
   if (isLoading) {
     return (
       <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
         {/* Navbar */}
-        <Navbar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} currentUser={currentUser} />
+        <Navbar
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
+          currentUser={currentUser}
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+        />
 
         {/* Sidebar */}
         <Sidebar
@@ -216,6 +222,8 @@ const Layout: React.FC<LayoutProps> = ({
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
           currentUser={currentUser}
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
         />
 
         {/* Sidebar */}
@@ -247,7 +255,13 @@ const Layout: React.FC<LayoutProps> = ({
   return (
     <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
       {/* Navbar */}
-      <Navbar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} currentUser={currentUser}/>
+      <Navbar
+        isDarkMode={isDarkMode}
+        toggleDarkMode={toggleDarkMode}
+        currentUser={currentUser}
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
 
       {/* Sidebar */}
       <Sidebar
