@@ -143,7 +143,7 @@ const Projects: React.FC = () => {
   );
 
   return (
-    <div className="flex justify-center px-4">
+    <div className="flex justify-center px-4 lg:px-2  ">
       <div className="w-full max-w-6xl">
         <div className="flex items-center mb-8">
           <i className="bi bi-folder-fill text-xl mr-2"></i>

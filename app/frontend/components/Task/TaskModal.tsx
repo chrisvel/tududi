@@ -157,14 +157,17 @@ const TaskModal: React.FC<TaskModalProps> = ({
       >
         <div
           ref={modalRef}
-          className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg shadow-2xl w-full max-w-3xl mx-auto overflow-hidden transform transition-transform duration-300 ${
+          className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg shadow-2xl w-full max-w-3xl mx-auto overflow-y-auto transform transition-transform duration-300 ${
             isClosing ? 'scale-95' : 'scale-100'
           }`}
           style={{ maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
         >
           <form>
             <fieldset>
-              <div className="p-4 space-y-3 flex-grow text-sm">
+              <div
+                className="p-4 space-y-3 flex-grow text-sm overflow-y-auto"
+                style={{ minHeight: 0 }}
+              >
                 {/* Task Name */}
                 <div className="py-4">
                   <input

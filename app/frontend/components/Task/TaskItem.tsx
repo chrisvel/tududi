@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
@@ -18,20 +18,20 @@ const TaskItem: React.FC<TaskItemProps> = ({
   projects,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [projectList, setProjectList] = useState<Project[]>(projects); 
+  const [projectList, setProjectList] = useState<Project[]>(projects);
 
   const handleTaskClick = () => {
-    setIsModalOpen(true); 
+    setIsModalOpen(true);
   };
 
   const handleSave = (updatedTask: Task) => {
-    onTaskUpdate(updatedTask); 
-    setIsModalOpen(false); 
+    onTaskUpdate(updatedTask);
+    setIsModalOpen(false);
   };
 
   const handleDelete = () => {
     if (task.id) {
-      onTaskDelete(task.id); 
+      onTaskDelete(task.id);
     }
   };
 
@@ -64,15 +64,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
     <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1">
       <TaskHeader task={task} project={project} onTaskClick={handleTaskClick} />
 
-      {/* Task Modal for editing */}
       <TaskModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         task={task}
         onSave={handleSave}
-        onDelete={onTaskDelete}
-        projects={projectList} 
-        onCreateProject={handleCreateProject} 
+        onDelete={handleDelete}
+        projects={projectList}
+        onCreateProject={handleCreateProject}
       />
     </div>
   );

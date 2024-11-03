@@ -66,7 +66,7 @@ const NoteDetails: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center px-4">
+    <div className="flex justify-center px-4 lg:px-2  ">
       <div className="w-full max-w-5xl">
         {/* Header Section with Title and Action Buttons */}
         <div className="flex items-center justify-between mb-4">

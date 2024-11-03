@@ -86,11 +86,6 @@ const Login: React.FC = () => {
             Login
           </button>
         </form>
-        <div className="mt-6 text-center">
-          <a href="#" className="text-blue-500 hover:underline">
-            Forgot Password?
-          </a>
-        </div>
       </div>
     </div>
   );

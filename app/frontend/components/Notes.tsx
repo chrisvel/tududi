@@ -69,7 +69,7 @@ const Notes: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center px-4">
+    <div className="flex justify-center px-4 lg:px-2  ">
       <div className="w-full max-w-5xl">
         {/* Notes Header */}
         <div className="flex items-center justify-between mb-8">

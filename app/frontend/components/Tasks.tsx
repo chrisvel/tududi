@@ -6,7 +6,7 @@ import { Task } from "../entities/Task";
 import { Project } from "../entities/Project";
 import { getTitleAndIcon } from "./Task/getTitleAndIcon";
 import { getDescription } from "./Task/getDescription";
-import { TagIcon, XMarkIcon } from "@heroicons/react/24/solid"; 
+import { TagIcon, XMarkIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -16,7 +16,7 @@ const Tasks: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-  const [orderBy, setOrderBy] = useState<string>("due_date:asc"); 
+  const [orderBy, setOrderBy] = useState<string>("due_date:asc");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const location = useLocation();
@@ -37,7 +37,7 @@ const Tasks: React.FC = () => {
 
     const params = new URLSearchParams(location.search);
     if (!params.get("order_by")) {
-      params.set("order_by", savedOrderBy); 
+      params.set("order_by", savedOrderBy);
       navigate({
         pathname: location.pathname,
         search: `?${params.toString()}`,
@@ -98,10 +98,10 @@ const Tasks: React.FC = () => {
 
   const handleRemoveTag = () => {
     const params = new URLSearchParams(location.search);
-    params.delete("tag"); 
+    params.delete("tag");
     navigate({
       pathname: location.pathname,
-      search: `?${params.toString()}`, 
+      search: `?${params.toString()}`,
     });
   };
 
@@ -169,34 +169,27 @@ const Tasks: React.FC = () => {
 
   const handleSortChange = (order: string) => {
     setOrderBy(order);
-    localStorage.setItem("order_by", order); 
+    localStorage.setItem("order_by", order);
     const params = new URLSearchParams(location.search);
-    params.set("order_by", order); 
+    params.set("order_by", order);
     navigate({
       pathname: location.pathname,
       search: `?${params.toString()}`,
     });
-    setDropdownOpen(false); 
+    setDropdownOpen(false);
   };
 
   const description = getDescription(query, projects);
 
   return (
-    <div className="flex justify-center px-4">
-      {" "}
-      {/* Center the content with padding */}
+    <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
-        {" "}
-        {/* Limit the width to 3xl (48rem) */}
         {/* Title and Icon */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+          <div className="flex items-center mb-2 sm:mb-0">
             <i className={`bi ${icon} text-xl mr-2`}></i>
-            <h2 className="text-2xl font-light">
-              {title}
-            </h2>
+            <h2 className="text-2xl font-light">{title}</h2>
 
-            {/* If tag exists, display it as a styled button with an X to remove */}
             {tag && (
               <div className="ml-4 flex items-center space-x-2">
                 <button
@@ -204,7 +197,9 @@ const Tasks: React.FC = () => {
                   onClick={handleRemoveTag}
                 >
                   <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-300" />
-                  <span className="text-xs text-gray-700 dark:text-gray-300">{capitalize(tag)}</span>
+                  <span className="text-xs text-gray-700 dark:text-gray-300">
+                    {capitalize(tag)}
+                  </span>
                   <XMarkIcon className="h-4 w-4 text-gray-500 dark:text-gray-300 hover:text-red-500" />
                 </button>
               </div>
@@ -213,32 +208,18 @@ const Tasks: React.FC = () => {
 
           {/* Sort Dropdown */}
           <div className="relative inline-block text-left" ref={dropdownRef}>
-            <div>
-              <button
-                type="button"
-                className="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                id="menu-button"
-                aria-expanded="true"
-                aria-haspopup="true"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              >
-                <i className="bi bi-sort-alpha-down me-2"></i>{" "}
-                {capitalize(orderBy.split(":")[0].replace("_", " "))}
-                <svg
-                  className="-mr-1 ml-2 h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M5.292 7.707a1 1 0 011.414 0L10 11.414l3.293-3.707a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            </div>
+            <button
+              type="button"
+              className="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              id="menu-button"
+              aria-expanded="true"
+              aria-haspopup="true"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <i className="bi bi-sort-alpha-down me-2"></i>{" "}
+              {capitalize(orderBy.split(":")[0].replace("_", " "))}
+              <ChevronDownIcon className="h-5 w-5 ml-2 text-gray-500 dark:text-gray-300" />
+            </button>
 
             {dropdownOpen && (
               <div
@@ -268,6 +249,7 @@ const Tasks: React.FC = () => {
             )}
           </div>
         </div>
+
         {/* Description */}
         <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
           {description}
@@ -307,3 +289,4 @@ const Tasks: React.FC = () => {
 };
 
 export default Tasks;
+

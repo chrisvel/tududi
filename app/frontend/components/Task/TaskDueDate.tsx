@@ -25,7 +25,6 @@ const TaskDueDate: React.FC<TaskDueDateProps> = ({ dueDate, className }) => {
     if (dueDate === tomorrow) return 'TOMORROW';
     if (dueDate === yesterday) return 'YESTERDAY';
 
-    // Format due date into a human-readable format
     return new Date(dueDate).toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
@@ -35,7 +34,6 @@ const TaskDueDate: React.FC<TaskDueDateProps> = ({ dueDate, className }) => {
 
   return (
     <div className={`flex items-center text-xs py-1 px-2 rounded-md ${getDueDateClass()} ${className}`}>
-      <i className="bi bi-clock mr-1"></i>
       {formatDueDate()}
     </div>
   );
