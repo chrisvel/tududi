@@ -1,4 +1,3 @@
-// src/components/Task/TaskHeader.tsx
 import React from "react";
 import TaskPriorityIcon from "./TaskPriorityIcon";
 import TaskTags from "./TaskTags";
@@ -38,7 +37,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({ task, project, onTaskClick }) =
             )}
           </div>
         </div>
-        <div className="flex items-center flex-wrap justify-start md:justify-end space-x-4">
+        <div className="flex items-center flex-wrap justify-start md:justify-end space-x-1">
           {/* Tags without onTagRemove prop */}
           <TaskTags tags={task.tags || []} />
           {task.due_date && <TaskDueDate dueDate={task.due_date} />}

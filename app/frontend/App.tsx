@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Routes,
   Route,
@@ -20,26 +20,11 @@ import NoteDetails from "./components/Note/NoteDetails";
 import ProfileSettings from "./components/Profile/ProfileSettings";
 import Layout from "./Layout";
 import { DataProvider } from "./contexts/DataContext";
-
-interface User {
-  email: string;
-  id: number;
-  avatarUrl?: string;
-}
+import { User } from "./entities/User";
 
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    const storedPreference = localStorage.getItem("isDarkMode");
-    if (storedPreference !== null) {
-      return storedPreference === "true";
-    } else {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches;
-    }
-  });
-
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -69,53 +54,40 @@ const App: React.FC = () => {
     fetchCurrentUser();
   }, [navigate]);
 
-  useLayoutEffect(() => {
-    const root = document.documentElement;
-    if (isDarkMode) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      if (localStorage.getItem("isDarkMode") === null) {
-        setIsDarkMode(e.matches);
-      }
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleChange);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (currentUser && location.pathname === "/") {
-      const options = {
-        path: "/tasks?type=today",
-        title: "Today",
-        icon: "calendar", 
-      };
-      navigate(options.path, {
-        state: {
-          title: options.title,
-          icon: options.icon, 
-        },
-        replace: true,
-      });
-    }
-  }, [currentUser, location.pathname, navigate]);
-
   const toggleDarkMode = () => {
     const newValue = !isDarkMode;
     setIsDarkMode(newValue);
     localStorage.setItem("isDarkMode", JSON.stringify(newValue));
   };
+
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    const storedPreference = localStorage.getItem("isDarkMode");
+    return storedPreference !== null
+      ? storedPreference === "true"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    const updateTheme = () => {
+      document.documentElement.classList.toggle("dark", isDarkMode);
+    };
+    updateTheme();
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const mediaListener = (e: MediaQueryListEvent) => {
+      if (!localStorage.getItem("isDarkMode")) {
+        setIsDarkMode(e.matches);
+      }
+    };
+    mediaQuery.addEventListener("change", mediaListener);
+    return () => mediaQuery.removeEventListener("change", mediaListener);
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    if (currentUser && location.pathname === "/") {
+      navigate("/tasks?type=today", { replace: true });
+    }
+  }, [currentUser, location.pathname, navigate]);
 
   if (loading) {
     return (
@@ -132,6 +104,7 @@ const App: React.FC = () => {
       {currentUser ? (
         <Layout
           currentUser={currentUser}
+          setCurrentUser={setCurrentUser} // Make sure to pass this down
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
         >
@@ -146,10 +119,7 @@ const App: React.FC = () => {
             <Route path="/tag/:id" element={<TagDetails />} />
             <Route path="/notes" element={<Notes />} />
             <Route path="/note/:id" element={<NoteDetails />} />
-            <Route
-              path="/profile"
-              element={<ProfileSettings currentUser={currentUser} />}
-            />
+            <Route path="/profile" element={<ProfileSettings currentUser={currentUser} />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>

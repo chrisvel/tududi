@@ -11,18 +11,19 @@ import { Area } from "./entities/Area";
 import { Tag } from "./entities/Tag";
 import { Project } from "./entities/Project";
 import { useDataContext } from "./contexts/DataContext";
+import { User } from "./entities/User";
 
 interface LayoutProps {
-  currentUser: {
-    email: string;
-  };
+  currentUser: User;
   isDarkMode: boolean;
+  setCurrentUser: React.Dispatch<React.SetStateAction<User|null>>;
   toggleDarkMode: () => void;
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({
   currentUser,
+  setCurrentUser,
   isDarkMode,
   toggleDarkMode,
   children,
@@ -182,6 +183,7 @@ const Layout: React.FC<LayoutProps> = ({
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
           currentUser={currentUser}
+          setCurrentUser={setCurrentUser}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
         />
@@ -222,6 +224,7 @@ const Layout: React.FC<LayoutProps> = ({
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
           currentUser={currentUser}
+          setCurrentUser={setCurrentUser}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
         />
@@ -259,6 +262,7 @@ const Layout: React.FC<LayoutProps> = ({
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
         currentUser={currentUser}
+        setCurrentUser={setCurrentUser}
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
       />

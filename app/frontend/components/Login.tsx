@@ -6,6 +6,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -34,7 +35,11 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center min-h-screen px-4">
+    <div className="bg-gray-100 flex flex-col items-center justify-center min-h-screen px-4">
+      {/* Logo with engraved effect */}
+      <h1 className="text-5xl font-bold text-gray-300 mb-6">
+        tududi
+      </h1>
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-700">
           Login
