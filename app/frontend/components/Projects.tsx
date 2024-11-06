@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Project } from "../entities/Project";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
+import { Link, useSearchParams } from "react-router-dom";
+import { EllipsisVerticalIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import ConfirmDialog from "./Shared/ConfirmDialog";
 import ProjectModal from "./Project/ProjectModal";
 import { useDataContext } from "../contexts/DataContext";
 import useFetchProjects from "../hooks/useFetchProjects";
 
-// Utility function to generate initials
 const getProjectInitials = (name: string) => {
   const words = name
     .trim()
@@ -20,21 +19,24 @@ const getProjectInitials = (name: string) => {
 };
 
 const Projects: React.FC = () => {
-  const { areas, createProject, updateProject, deleteProject } =
-    useDataContext();
-
-  const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, any>>(
-    {}
-  );
+  const { areas, createProject, updateProject, deleteProject } = useDataContext();
+  const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, any>>({});
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false);
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
-    useState<boolean>(false);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>(''); 
 
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Set default URL parameter ?active=true if not provided
+  useEffect(() => {
+    if (!searchParams.has("active")) {
+      searchParams.set("active", "true");
+      setSearchParams(searchParams);
+    }
+  }, [searchParams, setSearchParams]);
 
   const activeFilter = searchParams.get("active") ?? "active";
   const areaFilter = searchParams.get("area_id") ?? "";
@@ -54,10 +56,7 @@ const Projects: React.FC = () => {
   const getCompletionPercentage = (projectId: number | undefined) => {
     if (!projectId) return 0;
     const taskStatus = taskStatusCounts[projectId] || {};
-    const totalTasks =
-      (taskStatus.done || 0) +
-      (taskStatus.not_started || 0) +
-      (taskStatus.in_progress || 0);
+    const totalTasks = (taskStatus.done || 0) + (taskStatus.not_started || 0) + (taskStatus.in_progress || 0);
 
     if (totalTasks === 0) return 0;
 
@@ -81,16 +80,13 @@ const Projects: React.FC = () => {
 
   const handleDeleteProject = async () => {
     if (!projectToDelete) return;
-
     await deleteProject(projectToDelete.id!);
     setIsConfirmDialogOpen(false);
     setProjectToDelete(null);
     mutate();
   };
 
-  const handleActiveFilterChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleActiveFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newActiveFilter = e.target.value;
     const params = new URLSearchParams(searchParams);
 
@@ -114,6 +110,10 @@ const Projects: React.FC = () => {
     setSearchParams(params);
   };
 
+  const filteredProjects = projects.filter((project) =>
+    project.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
@@ -132,7 +132,7 @@ const Projects: React.FC = () => {
     );
   }
 
-  const groupedProjects = projects.reduce<Record<string, Project[]>>(
+  const groupedProjects = filteredProjects.reduce<Record<string, Project[]>>(
     (acc, project) => {
       const areaName = project.area ? project.area.name : "Uncategorized";
       if (!acc[areaName]) acc[areaName] = [];
@@ -143,7 +143,7 @@ const Projects: React.FC = () => {
   );
 
   return (
-    <div className="flex justify-center px-4 lg:px-2  ">
+    <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-6xl">
         <div className="flex items-center mb-8">
           <i className="bi bi-folder-fill text-xl mr-2"></i>
@@ -163,7 +163,7 @@ const Projects: React.FC = () => {
             </label>
             <select
               id="activeFilter"
-              value={activeFilter || "all"} // Use "all" when no active filter is selected
+              value={activeFilter || "all"}
               onChange={handleActiveFilterChange}
               className="block w-full p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -196,6 +196,20 @@ const Projects: React.FC = () => {
           </div>
         </div>
 
+        {/* Search Bar with Icon */} 
+        <div className="mb-4">
+          <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm p-2">
+            <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
+            />
+          </div>
+        </div>
+
         {/* Project Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Object.keys(groupedProjects).length === 0 ? (
@@ -205,7 +219,7 @@ const Projects: React.FC = () => {
           ) : (
             Object.keys(groupedProjects).map((areaName) => (
               <React.Fragment key={areaName}>
-                <h3 className="col-span-full text-md uppercase font-light text-gray-800 dark:text-gray-200 mb-4">
+                <h3 className="col-span-full text-md uppercase font-light text-gray-800 dark:text-gray-200 mb-2 mt-6">
                   {areaName}
                 </h3>
 
@@ -213,7 +227,7 @@ const Projects: React.FC = () => {
                   <div
                     key={project.id}
                     className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative"
-                    style={{ minHeight: "280px", maxHeight: "280px" }} // Increased card height for image space
+                    style={{ minHeight: "280px", maxHeight: "280px" }} // Consistent card height
                   >
                     <div
                       className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg"
@@ -319,3 +333,4 @@ const Projects: React.FC = () => {
 };
 
 export default Projects;
+

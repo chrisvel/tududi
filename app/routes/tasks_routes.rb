@@ -5,9 +5,9 @@ module Sinatra
 
       tag_names = tags_data.map { |tag| tag['name'] }.compact.reject(&:empty?).uniq
 
-      existing_tags = Tag.where(name: tag_names)
+      existing_tags = Tag.where(user: current_user, name: tag_names)
       new_tags = tag_names - existing_tags.pluck(:name)
-      created_tags = new_tags.map { |name| Tag.create(name: name) }
+      created_tags = new_tags.map { |name| Tag.create(name: name, user: current_user) }
 
       task.tags = (existing_tags + created_tags).uniq
     end

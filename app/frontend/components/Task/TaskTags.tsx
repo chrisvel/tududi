@@ -26,9 +26,9 @@ const TaskTags: React.FC<TaskTagsProps> = ({ tags = [], onTagRemove, className }
           <button
             type="button"
             onClick={() => handleTagClick(tag.name)}
-            className="flex items-center space-x-1"
+            className="flex items-center"
           >
-            <TagIcon className="hidden md:block h-4 w-4 text-gray-500 dark:text-gray-300" />
+            <TagIcon className="hidden md:block h-4 w-4 text-gray-500 dark:text-gray-300 mr-2" />
             <span className="text-xs text-gray-700 dark:text-gray-300">{tag.name}</span>
           </button>
           {onTagRemove && (

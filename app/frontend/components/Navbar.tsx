@@ -9,7 +9,7 @@ interface NavbarProps {
     email: string;
     avatarUrl?: string;
   };
-  setCurrentUser: React.Dispatch<React.SetStateAction<any>>; // Add this line
+  setCurrentUser: React.Dispatch<React.SetStateAction<any>>;
   isSidebarOpen: boolean;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -18,13 +18,13 @@ const Navbar: React.FC<NavbarProps> = ({
   isDarkMode,
   toggleDarkMode,
   currentUser,
-  setCurrentUser, // Add this line
+  setCurrentUser, 
   isSidebarOpen,
   setIsSidebarOpen,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate(); // Add this line
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

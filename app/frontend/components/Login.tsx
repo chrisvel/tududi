@@ -41,9 +41,6 @@ const Login: React.FC = () => {
         tududi
       </h1>
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-700">
-          Login
-        </h2>
         {error && (
           <div className="mb-4 text-center text-red-500">
             {error}
