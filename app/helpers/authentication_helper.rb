@@ -8,8 +8,14 @@ module AuthenticationHelper
   end
 
   def require_login
-    return if ['/login', '/logout'].include? request.path
+    return if ['/login', '/logout', '/api/current_user'].include? request.path
 
-    redirect '/login' unless logged_in?
+    return if logged_in?
+
+    if request.xhr? || request.path.start_with?('/api/')
+      halt 401, { error: 'You must be logged in' }.to_json
+    else
+      redirect '/login'
+    end
   end
 end

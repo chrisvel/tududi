@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_26_093339) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_16_105827) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "description"
     t.index ["user_id"], name: "index_areas_on_user_id"
   end
 
@@ -45,6 +46,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_26_093339) do
     t.datetime "updated_at", null: false
     t.text "description"
     t.boolean "active", default: false
+    t.boolean "pin_to_sidebar", default: false
     t.index ["area_id"], name: "index_projects_on_area_id"
     t.index ["user_id"], name: "index_projects_on_user_id"
   end
@@ -86,6 +88,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_26_093339) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "appearance", default: "light", null: false
+    t.string "language", default: "en", null: false
+    t.string "timezone", default: "UTC", null: false
+    t.string "avatar_image"
   end
 
   add_foreign_key "areas", "users"

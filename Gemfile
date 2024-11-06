@@ -1,24 +1,26 @@
 source 'https://rubygems.org'
 
-gem 'sinatra'
 gem 'puma'
 gem 'rake'
+gem 'sinatra'
 
 # DB
 gem 'sinatra-activerecord'
+gem 'sinatra-cross_origin'
+gem 'sinatra-namespace'
 gem 'sqlite3'
 
 # Authentication
 gem 'bcrypt'
 
 # Other
-gem 'rerun'
 gem 'byebug'
+gem 'rerun'
 
 # Development
 gem 'faker'
 gem 'rubocop'
 
 # Testing
-gem 'rack-test', group: :test
 gem 'minitest', group: :test
+gem 'rack-test', group: :test

@@ -1,31 +1,41 @@
-# tududi
+# 📝 tududi
 
-`tududi` is a task and project management web application built with Sinatra. It allows users to efficiently manage their tasks and projects, categorize them into different areas, and track due dates. `tududi` is designed to be intuitive and easy to use, providing a seamless experience for personal productivity.
+`tududi` is a task and project management web application that allows users to efficiently manage their tasks and projects, categorize them into different areas, and track due dates. It is designed to be intuitive and easy to use, providing a seamless experience for personal productivity.
 
-![image](screenshots/all-light.png)
-![image](screenshots/all-dark.png)
+![Light Mode Screenshot](screenshots/all-light.png)
 
-## Features
+![Dark Mode Screenshot](screenshots/all-dark.png)
 
-- **Task Management**: Create, update, and delete tasks. Mark tasks as completed and view them by different filters (Today, Upcoming, Someday). Order them by Name, Due date, Date created or Priority.
-- **Quick Notes**: Create, update, delete or assign text notes to projects.
-- **Tags**: Create tags for tasks and notes. 
+## 🚀 How It Works
+
+This app allows users to manage their tasks, projects, areas, notes, and tags in an organized way. Users can create tasks, projects, areas (to group projects), notes, and tags. Each task can be associated with a project, and both tasks and notes can be tagged for better organization. Projects can belong to areas and can also have multiple notes and tags. This structure helps users categorize and track their work efficiently, whether they’re managing individual tasks, larger projects, or keeping detailed notes.
+
+## ✨ Features
+
+- **Task Management**: Create, update, and delete tasks. Mark tasks as completed and view them by different filters (Today, Upcoming, Someday). Order them by Name, Due Date, Date Created, or Priority.
+- **Quick Notes**: Create, update, delete, or assign text notes to projects.
+- **Tags**: Create tags for tasks and notes to enhance organization.
 - **Project Tracking**: Organize tasks into projects. Each project can contain multiple tasks and/or multiple notes.
 - **Area Categorization**: Group projects into areas for better organization and focus.
 - **Due Date Tracking**: Set due dates for tasks and view them based on due date categories.
-- **Responsive Design (in progress)**: Accessible from various devices, ensuring a consistent experience across desktops, tablets, and mobile phones.
+- **Responsive Design**: Accessible from various devices, ensuring a consistent experience across desktops, tablets, and mobile phones.
 
-## Getting Started
+## 🗺️ Roadmap
+
+Check out our [GitHub Project](https://github.com/users/chrisvel/projects/2) for planned features and progress.
+
+## 🛠️ Getting Started
 
 ### Prerequisites
 
-Before you begin, ensure you have met the following requirements:
+Before you begin, ensure you have the following installed:
 - Ruby (version 3.2.2 or higher)
 - Sinatra
 - SQLite3
 - Puma
+- ReactJS
 
-### Installation
+### 🏗 Installation
 
 To install `tududi`, follow these steps:
 
@@ -42,51 +52,47 @@ To install `tududi`, follow these steps:
    bundle install
    ```
 
-#### SSL setup
+### 🔒 SSL Setup
 
 1. Create and enter the directory:
    ```bash
    mkdir certs
-   ```
-
-2. Navigate to the certs directory:
-   ```bash
    cd certs
    ```
-
 2. Create the key and cert:
    ```bash
    openssl genrsa -out server.key 2048
    openssl req -new -x509 -key server.key -out server.crt -days 365
    ```
 
-### DB setup
-1. Execute the migrations
+### 📂 Database Setup
 
-    ```bash 
-    rake db:migrate 
-    ```
+Execute the migrations:
 
-### Create your user
-1. Open console
+```bash 
+rake db:migrate 
+```
+
+### 👤 Create Your User
+
+1. Open the console:
    ```bash
    rake console
    ```
-
-2. Add the user
+2. Add the user:
    ```ruby
    User.create(email: "myemail@somewhere.com", password: "awes0meHax0Rp4ssword")
    ```
 
-### Usage
+### 🚀 Usage
 
-To start the application, run the following command in your terminal:
+To start the application, run:
 
 ```bash
 puma -C app/config/puma.rb
 ```
 
-### Docker 
+### 🐋 Docker
 
 Pull the latest image:
 
@@ -94,66 +100,58 @@ Pull the latest image:
 docker pull chrisvel/tududi:0.20
 ```
 
-In order to start the docker container you need 3 enviromental variables:
+Set up the necessary environment variables:
 
-```bash
-TUDUDI_USER_EMAIL
-TUDUDI_USER_PASSWORD
-TUDUDI_SESSION_SECRET
-TUDUDI_INTERNAL_SSL_ENABLED
-```
+- `TUDUDI_USER_EMAIL`
+- `TUDUDI_USER_PASSWORD`
+- `TUDUDI_SESSION_SECRET`
+- `TUDUDI_INTERNAL_SSL_ENABLED`
 
-**PLEASE NOTE:** I am generating a new SSL certificate inside the Dockerfile. There will be an option to create and link an externally generated one in the future - at this stage I am doing this for simplicity.
-
-1. (optional - only If you want to use the pre-generated SSL Certificate) Create a random session secret and copy the hash to use it as a `TUDUDI_SESSION_SECRET`:
+1. (Optional) Create a random session secret:
     ```bash
     openssl rand -hex 64
     ```
-    You will also have to set `TUDUDI_INTERNAL_SSL_ENABLED=true` in the docker command below.
 
-2. Run the docker command with your produced hash at the previous step:
+2. Run the Docker container:
     ```bash
     docker run \
     -e TUDUDI_USER_EMAIL=myemail@example.com \
     -e TUDUDI_USER_PASSWORD=mysecurepassword \
-    -e TUDUDI_SESSION_SECRET=3337c138d17ac7acefa412e5db0d7ef6540905b198cc28c5bf0d11e48807a71bdfe48d82ed0a0a6eb667c937cbdd1db3e1e6073b3148bff37f73cc6398a39671 \
+    -e TUDUDI_SESSION_SECRET=your_generated_hash_here \
     -e TUDUDI_INTERNAL_SSL_ENABLED=false \
     -v ~/tududi_db:/usr/src/app/tududi_db \
     -p 9292:9292 \
-    -d chrisvel/tududi:0.20
+    -d chrisvel/tududi:0.30
     ```
 
-3. Navigate to https://localhost:9292 and fill in your email and password.
-4. Enjoy
+3. Navigate to [https://localhost:9292](https://localhost:9292) and login with your credentials.
 
-### Testing 
+### 🔍 Testing 
 
-To run tests:
+To run tests, execute:
 
-```bash 
+```bash
 bundle exec ruby -Itest test/test_app.rb
 ```
 
-Open your browser and navigate to `http://localhost:9292` to access the application and login with the email and the password you created.
-
-## Contributing
+## 🤝 Contributing
 
 Contributions to `tududi` are welcome. To contribute:
 
 1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/AmazingFeature`).
+2. Create a new branch (\`git checkout -b feature/AmazingFeature\`).
 3. Make your changes.
-4. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-5. Push to the branch (`git push origin feature/AmazingFeature`).
+4. Commit your changes (\`git commit -m 'Add some AmazingFeature'\`).
+5. Push to the branch (\`git push origin feature/AmazingFeature\`).
 6. Open a pull request.
 
-## License
+## 📜 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed for free personal use, with consent required for commercial use. Refer to the LICENSE for further details.
 
-## Contact
+## 📬 Contact
 
-If you have any questions or comments about `tududi`, please feel free to [open an issue](https://github.com/chrisvel/tududi/issues) or contact the developer directly.
+For questions or comments, please [open an issue](https://github.com/chrisvel/tududi/issues) or contact the developer directly.
 
 ---
 
