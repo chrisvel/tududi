@@ -1,56 +1,46 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import TagInput from '../Tag/TagInput';
-import { Note } from '../../entities/Note'; 
-import { useDataContext } from '../../contexts/DataContext'; 
+import React, { useState, useEffect, useRef } from 'react';
+import { Note } from '../../entities/Note';
+import { useDataContext } from '../../contexts/DataContext';
 
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   note?: Note | null;
-  onSave?: (note: Note) => void;
+  onSave: (noteData: Note) => void;
 }
 
-const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
-  const { createNote, updateNote } = useDataContext(); 
-  const [formData, setFormData] = useState<Note>(
-    note || {
-      title: '',
-      content: '',
-      tags: [],
-    }
-  );
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
+const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) => {
+  const { createNote, updateNote } = useDataContext();
+  const [formData, setFormData] = useState<Note>({
+    id: note?.id || 0,
+    title: note?.title || '',
+    content: note?.content || '',
+    tags: note?.tags || [],
+  });
   const [error, setError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      const fetchAvailableTags = async () => {
-        try {
-          const response = await fetch('/api/tags', {
-            credentials: 'include',
-            headers: {
-              Accept: 'application/json',
-            },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setAvailableTags(data.map((tag: { name: string }) => tag.name));
-          } else {
-            console.error('Failed to fetch available tags');
-          }
-        } catch (err) {
-          console.error('Error fetching available tags:', err);
-        }
-      };
-      fetchAvailableTags();
+      setFormData({
+        id: note?.id || 0,
+        title: note?.title || '',
+        content: note?.content || '',
+        tags: note?.tags || [],
+      });
+      setError(null);
     }
-  }, [isOpen]);
+  }, [isOpen, note]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose();
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        handleClose();
       }
     };
 
@@ -60,7 +50,22 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleClose();
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -72,52 +77,69 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
     }));
   };
 
-  const handleTagsChange = useCallback((newTags: string[]) => {
-    setFormData((prev) => ({
-      ...prev,
-      tags: newTags.map((tagName) => ({ id: -1, name: tagName })),
-    }));
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title.trim() || !formData.content.trim()) {
-      setError('Title and Content are required.');
+    if (!formData.title.trim()) {
+      setError('Note title is required.');
       return;
     }
 
+    setIsSubmitting(true);
+    setError(null);
+
     try {
-      if (note?.id) {
-        await updateNote(note.id, formData);
+      if (formData.id && formData.id !== 0) {
+        await updateNote(formData.id, formData);
       } else {
-        await createNote(formData); 
+        await createNote(formData);
       }
-      onClose(); 
+      handleClose();
     } catch (err) {
-      console.error('Error saving note:', err);
-      setError('Failed to save note.');
+      setError((err as Error).message);
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+      setIsClosing(false);
+    }, 300);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50">
+    <>
       <div
-        ref={modalRef}
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl mx-auto overflow-hidden"
+        className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
+          isClosing ? 'opacity-0' : 'opacity-100'
+        }`}
       >
-        <form onSubmit={handleSubmit}>
-          <fieldset>
-            <div className="p-4 space-y-4">
+        <div
+          ref={modalRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          className={`bg-white dark:bg-gray-800 w-full sm:max-w-2xl mx-auto overflow-hidden h-screen sm:h-auto flex flex-col transform transition-transform duration-300 ${
+            isClosing ? 'scale-95' : 'scale-100'
+          } sm:rounded-lg sm:shadow-2xl`}
+          style={{
+            maxHeight: 'calc(100vh - 4rem)',
+          }}
+        >
+          <form className="flex flex-col flex-1" onSubmit={handleSubmit}>
+            <fieldset className="flex-1 overflow-y-auto p-4 space-y-4">
               {/* Note Title */}
               <div>
                 <label
                   htmlFor="noteTitle"
                   className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
-                  Note Title
+                  Title
                 </label>
                 <input
                   type="text"
@@ -132,7 +154,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
               </div>
 
               {/* Note Content */}
-              <div>
+              <div className="flex-1">
                 <label
                   htmlFor="noteContent"
                   className="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -144,49 +166,43 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note }) => {
                   name="content"
                   value={formData.content}
                   onChange={handleChange}
-                  required
-                  rows={5}
-                  className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                  rows={10}
+                  className="mt-1 block w-full h-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
                   placeholder="Enter note content"
-                />
-              </div>
-
-              {/* Tags Input */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Tags
-                </label>
-                <TagInput
-                  initialTags={formData?.tags?.map((tag) => tag.name) || []}
-                  onTagsChange={handleTagsChange}
-                  availableTags={availableTags}
-                />
+                ></textarea>
               </div>
 
               {/* Error Message */}
-              {error && <div className="text-red-500 mb-4">{error}</div>}
-            </div>
+              {error && <div className="text-red-500">{error}</div>}
+            </fieldset>
 
             {/* Modal Actions */}
-            <div className="flex justify-end items-center p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-end items-center p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
               <button
                 type="button"
-                onClick={onClose}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 mr-2"
+                onClick={handleClose}
+                className="px-4 mr-2 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 focus:outline-none"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                disabled={isSubmitting}
+                className={`px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
-                {note?.id ? 'Update Note' : 'Create Note'}
+                {isSubmitting
+                  ? 'Submitting...'
+                  : formData.id && formData.id !== 0
+                  ? 'Update Note'
+                  : 'Create Note'}
               </button>
             </div>
-          </fieldset>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

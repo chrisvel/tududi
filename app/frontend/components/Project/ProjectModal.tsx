@@ -6,12 +6,19 @@ interface ProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (project: Project) => void;
-  onDelete?: () => void; 
+  onDelete?: () => void;
   project?: Project;
   areas: Area[];
 }
 
-const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, onDelete, project, areas }) => {
+const ProjectModal: React.FC<ProjectModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  onDelete,
+  project,
+  areas,
+}) => {
   const [formData, setFormData] = useState<Project>(
     project || {
       name: '',
@@ -23,11 +30,15 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
   );
 
   const modalRef = useRef<HTMLDivElement>(null);
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose();
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        handleClose();
       }
     };
 
@@ -37,7 +48,22 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleClose();
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (project) {
@@ -46,35 +72,57 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
   }, [project]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value, type } = e.target;
-  
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]:
+        type === 'checkbox'
+          ? (e.target as HTMLInputElement).checked
+          : value,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
-    onClose();
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+      setIsClosing(false);
+    }, 300);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50">
-      <div ref={modalRef} className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl mx-auto overflow-hidden">
-        <form onSubmit={handleSubmit}>
-          <fieldset>
-            <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
-              {/* Project Name */}
+    <>
+      <div
+        className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
+          isClosing ? 'opacity-0' : 'opacity-100'
+        }`}
+      >
+        <div
+          ref={modalRef}
+          className={`bg-white dark:bg-gray-800 w-full sm:max-w-2xl mx-auto overflow-hidden h-screen sm:h-auto flex flex-col transform transition-transform duration-300 ${
+            isClosing ? 'scale-95' : 'scale-100'
+          } sm:rounded-lg sm:shadow-2xl`}
+          style={{
+            maxHeight: 'calc(100vh - 4rem)',
+          }}
+        >
+          <form className="flex flex-col flex-1" onSubmit={handleSubmit}>
+            <fieldset className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* Project details */}
               <div>
-                <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Project Name
-                </label>
                 <input
                   type="text"
                   id="projectName"
@@ -87,9 +135,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
                 />
               </div>
 
-              {/* Description */}
               <div>
-                <label htmlFor="projectDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="projectDescription"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   Description
                 </label>
                 <textarea
@@ -103,9 +153,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
                 ></textarea>
               </div>
 
-              {/* Area */}
               <div>
-                <label htmlFor="projectArea" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="projectArea"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   Area (optional)
                 </label>
                 <select
@@ -124,7 +176,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
                 </select>
               </div>
 
-              {/* Custom Active Checkbox */}
               <div className="flex items-center">
                 <input
                   type="checkbox"
@@ -134,58 +185,48 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, on
                   onChange={handleChange}
                   className="h-5 w-5 appearance-none border border-gray-300 rounded-md bg-white dark:bg-gray-700 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <label htmlFor="active" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="active"
+                  className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+                >
                   Active
                 </label>
               </div>
+            </fieldset>
 
-              {/* Custom Pin to Sidebar Checkbox */}
-              {/* <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="pin_to_sidebar"
-                  name="pin_to_sidebar"
-                  checked={formData.pin_to_sidebar}
-                  onChange={handleChange}
-                  className="h-5 w-5 appearance-none border border-gray-300 rounded-md bg-white dark:bg-gray-700 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <label htmlFor="pin_to_sidebar" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                  Pin to Sidebar
-                </label>
-              </div> */}
-            </div>
-
-            {/* Modal Actions */}
-            <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700">
+            {/* Action Buttons */}
+            <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
               {project && (
                 <button
                   type="button"
                   onClick={onDelete}
-                  className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
+                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
                 >
                   Delete
                 </button>
               )}
-              <div className={`flex space-x-2 ${!project ? 'ml-auto' : ''}`}>
+              <div
+                className={`flex space-x-2 ${!project ? 'ml-auto' : ''}`}
+              >
                 <button
                   type="button"
-                  onClick={onClose}
-                  className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                  onClick={handleClose}
+                  className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-3 py-1 text-sm bg-blue-600 dark:bg-blue-500 text-white rounded hover:bg-blue-700 dark:hover:bg-blue-600"
+                  className="px-3 py-1 bg-blue-600 dark:bg-blue-500 text-white rounded hover:bg-blue-700 dark:hover:bg-blue-600"
                 >
                   {project ? 'Update Project' : 'Create Project'}
                 </button>
               </div>
             </div>
-          </fieldset>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

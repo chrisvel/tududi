@@ -1,4 +1,3 @@
-// src/components/Task/TaskModal.tsx
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { PriorityType, StatusType, Task } from "../../entities/Task";
 import TaskActions from "./TaskActions";
@@ -191,21 +190,21 @@ const TaskModal: React.FC<TaskModalProps> = ({
   return (
     <>
       <div
-        className={`fixed inset-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-50 transition-opacity duration-300 ${
+        className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
           isClosing ? "opacity-0" : "opacity-100"
         }`}
       >
         <div
           ref={modalRef}
-          className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg shadow-2xl w-full sm:max-w-3xl overflow-hidden transform transition-transform duration-300 ${
+          className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-3xl overflow-hidden transform transition-transform duration-300 ${
             isClosing ? "scale-95" : "scale-100"
           } h-screen sm:h-auto flex flex-col`}
           style={{
-            maxHeight: "100vh",
+            maxHeight: "calc(100vh - 4rem)", 
           }}
         >
           <form className="flex flex-col flex-1">
-            <fieldset className="flex flex-col flex-1 justify-between">
+            <fieldset className="flex flex-col flex-1">
               <div className="p-4 space-y-3 flex-1 text-sm overflow-y-auto">
                 {/* Task Name */}
                 <div className="py-4">
@@ -338,7 +337,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
               </div>
 
               {/* Task Actions */}
-              <div className="p-3 border-t dark:border-gray-700 flex-shrink-0">
+              <div className="p-3 flex-shrink-0">
                 <TaskActions
                   taskId={task.id}
                   onDelete={handleDeleteClick}
