@@ -9,6 +9,7 @@ import SidebarNav from './Sidebar/SidebarNav';
 import SidebarNotes from './Sidebar/SidebarNotes';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
+import CreateNewDropdownButton from './Sidebar/CreateNewDropdownButton';
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -16,6 +17,7 @@ interface SidebarProps {
   currentUser: { email: string };
   isDarkMode: boolean;
   toggleDarkMode: () => void;
+  openTaskModal: () => void;
   openProjectModal: () => void;
   openNoteModal: (note: Note | null) => void;
   openAreaModal: (area: Area | null) => void;
@@ -31,6 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   currentUser,
   isDarkMode,
   toggleDarkMode,
+  openTaskModal,
   openProjectModal,
   openNoteModal,
   openAreaModal,
@@ -57,7 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div
-      className={`fixed top-16 left-0 ${isSidebarOpen ? 'w-full sm:w-64' : 'w-0'} h-[calc(100vh-4rem)] bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-width duration-300 ease-in-out z-40`}
+      className={`fixed top-16 left-0 ${isSidebarOpen ? 'w-full sm:w-72' : 'w-0'} h-[calc(100vh-4rem)] bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-width duration-300 ease-in-out z-40`}
       style={{
         visibility: isSidebarOpen ? 'visible' : 'hidden',
         overflow: 'hidden',
@@ -67,6 +70,12 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex flex-col h-full overflow-y-auto">
           <div className="px-3 pb-3 pt-6">
             {/* Sidebar Contents */}
+            <CreateNewDropdownButton
+              openTaskModal={openTaskModal}
+              openProjectModal={openProjectModal}
+              openNoteModal={openNoteModal}
+              openAreaModal={openAreaModal}
+            />
             <SidebarNav
               handleNavClick={handleNavClick}
               location={location}

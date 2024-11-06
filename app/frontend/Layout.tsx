@@ -6,17 +6,20 @@ import ProjectModal from "./components/Project/ProjectModal";
 import NoteModal from "./components/Note/NoteModal";
 import AreaModal from "./components/Area/AreaModal";
 import TagModal from "./components/Tag/TagModal";
+import TaskModal from "./components/Task/TaskModal";
+
 import { Note } from "./entities/Note";
 import { Area } from "./entities/Area";
 import { Tag } from "./entities/Tag";
 import { Project } from "./entities/Project";
+import { Task } from "./entities/Task";
 import { useDataContext } from "./contexts/DataContext";
 import { User } from "./entities/User";
 
 interface LayoutProps {
   currentUser: User;
   isDarkMode: boolean;
-  setCurrentUser: React.Dispatch<React.SetStateAction<User|null>>;
+  setCurrentUser: React.Dispatch<React.SetStateAction<User | null>>;
   toggleDarkMode: () => void;
   children: React.ReactNode;
 }
@@ -28,6 +31,7 @@ const Layout: React.FC<LayoutProps> = ({
   toggleDarkMode,
   children,
 }) => {
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
@@ -36,6 +40,7 @@ const Layout: React.FC<LayoutProps> = ({
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+  const [newTask, setNewTask] = useState<Task | null>(null);
 
   const {
     tags,
@@ -63,11 +68,7 @@ const Layout: React.FC<LayoutProps> = ({
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsSidebarOpen(true);
-      } else {
-        setIsSidebarOpen(false);
-      }
+      setIsSidebarOpen(window.innerWidth >= 1024);
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -81,6 +82,15 @@ const Layout: React.FC<LayoutProps> = ({
   const closeNoteModal = () => {
     setIsNoteModalOpen(false);
     setSelectedNote(null);
+  };
+
+  const openTaskModal = () => {
+    setIsTaskModalOpen(true);
+  };
+
+  const closeTaskModal = () => {
+    setIsTaskModalOpen(false);
+    setNewTask(null);
   };
 
   const openProjectModal = () => {
@@ -134,6 +144,12 @@ const Layout: React.FC<LayoutProps> = ({
     closeNoteModal();
   };
 
+  const handleSaveTask = async (taskData: Task) => {
+    // Implement the logic to save the task, either by creating or updating
+    console.log("Saving task:", taskData);
+    closeTaskModal();
+  };
+
   const handleSaveProject = async (projectData: Project) => {
     try {
       if (projectData.id) {
@@ -173,12 +189,11 @@ const Layout: React.FC<LayoutProps> = ({
     closeTagModal();
   };
 
-  const mainContentMarginLeft = isSidebarOpen ? "ml-64" : "ml-0";
+  const mainContentMarginLeft = isSidebarOpen ? "ml-72" : "ml-0";
 
   if (isLoading) {
     return (
       <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
-        {/* Navbar */}
         <Navbar
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
@@ -187,14 +202,13 @@ const Layout: React.FC<LayoutProps> = ({
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
         />
-
-        {/* Sidebar */}
         <Sidebar
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
           currentUser={currentUser}
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
+          openTaskModal={openTaskModal}
           openProjectModal={openProjectModal}
           openNoteModal={openNoteModal}
           openAreaModal={openAreaModal}
@@ -203,8 +217,6 @@ const Layout: React.FC<LayoutProps> = ({
           areas={areas}
           tags={tags}
         />
-
-        {/* Main Content */}
         <div
           className={`flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
         >
@@ -219,7 +231,6 @@ const Layout: React.FC<LayoutProps> = ({
   if (isError) {
     return (
       <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
-        {/* Navbar */}
         <Navbar
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
@@ -228,14 +239,13 @@ const Layout: React.FC<LayoutProps> = ({
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
         />
-
-        {/* Sidebar */}
         <Sidebar
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
           currentUser={currentUser}
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
+          openTaskModal={openTaskModal}
           openProjectModal={openProjectModal}
           openNoteModal={openNoteModal}
           openAreaModal={openAreaModal}
@@ -244,8 +254,6 @@ const Layout: React.FC<LayoutProps> = ({
           areas={areas}
           tags={tags}
         />
-
-        {/* Main Content */}
         <div
           className={`flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
         >
@@ -257,7 +265,6 @@ const Layout: React.FC<LayoutProps> = ({
 
   return (
     <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
-      {/* Navbar */}
       <Navbar
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
@@ -266,14 +273,13 @@ const Layout: React.FC<LayoutProps> = ({
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
       />
-
-      {/* Sidebar */}
       <Sidebar
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
         currentUser={currentUser}
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
+        openTaskModal={() => openTaskModal()}
         openProjectModal={openProjectModal}
         openNoteModal={openNoteModal}
         openAreaModal={openAreaModal}
@@ -283,7 +289,6 @@ const Layout: React.FC<LayoutProps> = ({
         tags={tags}
       />
 
-      {/* Main Content */}
       <div
         className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
       >
@@ -295,6 +300,20 @@ const Layout: React.FC<LayoutProps> = ({
       </div>
 
       {/* Modals */}
+      {isTaskModalOpen && (
+        <TaskModal
+          isOpen={isTaskModalOpen}
+          onClose={closeTaskModal}
+          task={newTask || { id: undefined, name: '', status: 'not_started', project_id: undefined, tags: [] }}
+          onSave={handleSaveTask}
+          onDelete={() => {}}
+          projects={[]} // Provide project list as necessary
+          onCreateProject={async (name: string) => {
+            return { id: Math.random(), name, active: true, pin_to_sidebar: false }; // Ensure all required fields are covered
+          }}
+        />
+      )}
+
       {isProjectModalOpen && (
         <ProjectModal
           isOpen={isProjectModalOpen}
@@ -335,3 +354,4 @@ const Layout: React.FC<LayoutProps> = ({
 };
 
 export default Layout;
+
