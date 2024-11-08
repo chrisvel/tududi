@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tag } from '../../entities/Tag';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useToast } from '../Shared/ToastContext';
 
 interface TagModalProps {
   isOpen: boolean;
@@ -22,6 +24,8 @@ const TagModal: React.FC<TagModalProps> = ({
 
   const modalRef = useRef<HTMLDivElement>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showSuccessToast, showErrorToast } = useToast();
 
   useEffect(() => {
     if (tag) {
@@ -67,17 +71,39 @@ const TagModal: React.FC<TagModalProps> = ({
   }, [isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave(formData);
-    handleClose();
+  const handleSubmit = async () => {
+    if (!formData.name.trim()) {
+      showErrorToast('Tag name is required.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Assuming you have createTag and updateTag functions
+      if (tag) {
+        // Update existing tag
+        // await updateTag(formData.id, formData);
+        showSuccessToast('Tag updated successfully!');
+      } else {
+        // Create new tag
+        // await createTag(formData);
+        showSuccessToast('Tag created successfully!');
+      }
+      onSave(formData);
+      handleClose();
+    } catch (err) {
+      showErrorToast('Failed to save tag.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
@@ -99,52 +125,52 @@ const TagModal: React.FC<TagModalProps> = ({
       >
         <div
           ref={modalRef}
-          className={`bg-white dark:bg-gray-800 w-full sm:max-w-md mx-auto overflow-hidden h-screen sm:h-auto flex flex-col transform transition-transform duration-300 ${
+          className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-md overflow-hidden transform transition-transform duration-300 ${
             isClosing ? 'scale-95' : 'scale-100'
-          } sm:rounded-lg sm:shadow-2xl`}
+          } h-screen sm:h-auto flex flex-col`}
           style={{
             maxHeight: 'calc(100vh - 4rem)',
           }}
         >
-          <form className="flex flex-col flex-1" onSubmit={handleSubmit}>
-            <fieldset className="flex-1 overflow-y-auto p-4 space-y-4">
-              {/* Tag Name */}
-              <div>
-                <label
-                  htmlFor="tagName"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          <form className="flex flex-col flex-1">
+            <fieldset className="flex flex-col flex-1">
+              <div className="p-4 space-y-3 flex-1 text-sm overflow-y-auto">
+                {/* Tag Name */}
+                <div className="py-4">
+                  <input
+                    type="text"
+                    id="tagName"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
+                    placeholder="Enter tag name"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="p-3 flex-shrink-0 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none transition duration-150 ease-in-out"
                 >
-                  Tag Name
-                </label>
-                <input
-                  type="text"
-                  id="tagName"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
-                  placeholder="Enter tag name"
-                />
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out ${
+                    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {isSubmitting ? 'Submitting...' : tag ? 'Update Tag' : 'Create Tag'}
+                </button>
               </div>
             </fieldset>
-
-            {/* Modal Actions */}
-            <div className="flex justify-end items-center p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
-              <button
-                type="button"
-                onClick={handleClose}
-                className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="ml-2 px-3 py-1 bg-blue-600 dark:bg-blue-500 text-white rounded hover:bg-blue-700 dark:hover:bg-blue-600"
-              >
-                {tag ? 'Update Tag' : 'Create Tag'}
-              </button>
-            </div>
           </form>
         </div>
       </div>

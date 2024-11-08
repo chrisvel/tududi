@@ -1,15 +1,15 @@
 class Sinatra::Application
-  def update_note_tags(note, tags_json)
-    return if tags_json.blank?
+  def update_note_tags(note, tags_array)
+    return if tags_array.blank?
 
     begin
-      tag_names = JSON.parse(tags_json).map { |tag| tag['value'] }.uniq
+      tag_names = tags_array.uniq
       tags = tag_names.map do |name|
         current_user.tags.find_or_create_by(name: name)
       end
       note.tags = tags
-    rescue JSON::ParserError
-      puts "Failed to parse JSON for tags: #{tags_json}"
+    rescue StandardError => e
+      puts "Failed to update tags: #{e.message}"
     end
   end
 
@@ -91,7 +91,7 @@ class Sinatra::Application
     end
 
     if note.update(note_attributes)
-      update_note_tags(note, request_data['tags'])
+      update_note_tags(note, request_data['tags']) # Pass the array directly
       note.to_json(include: :tags)
     else
       status 400

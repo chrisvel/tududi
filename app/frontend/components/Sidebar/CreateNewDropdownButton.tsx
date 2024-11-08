@@ -57,7 +57,7 @@ const CreateNewDropdownButton: React.FC<CreateNewDropdownButtonProps> = ({
   ];
 
   return (
-    <div className="mb-8">
+    <div className="mb-8 px-4">
       <div className="relative">
         <button
           type="button"

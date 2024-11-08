@@ -29,7 +29,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   onCreateProject,
 }) => {
   const [formData, setFormData] = useState<Task>(task);
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [tags, setTags] = useState<string[]>(
     task.tags?.map((tag) => tag.name) || []
   );
@@ -215,7 +215,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="block w-full text-xl font-semibold border-none focus:outline-none shadow-sm py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200"
+                    className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
                     placeholder="Add Task Name"
                   />
                 </div>
@@ -244,7 +244,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     placeholder="Search or create a project..."
                     value={newProjectName}
                     onChange={handleProjectSearch}
-                    className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                   />
                   {dropdownOpen && newProjectName && (
                     <div className="absolute mt-1 bg-white dark:bg-gray-900 shadow-md rounded-md w-full z-10">
@@ -314,7 +314,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                       name="due_date"
                       value={formData.due_date || ""}
                       onChange={handleChange}
-                      className="block w-full focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-900 rounded-md text-gray-900 dark:text-gray-100"
+                      className="block w-full focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-900 rounded-md text-gray-900 dark:text-gray-100"
                     />
                   </div>
                 </div>
@@ -330,7 +330,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     rows={3}
                     value={formData.note || ""}
                     onChange={handleChange}
-                    className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                     placeholder="Add any additional notes here"
                   ></textarea>
                 </div>

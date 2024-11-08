@@ -10,10 +10,10 @@ const TaskDueDate: React.FC<TaskDueDateProps> = ({ dueDate, className }) => {
     const today = new Date().toISOString().split('T')[0];
     const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    if (dueDate === today) return 'bg-blue-700 text-white';
-    if (dueDate === tomorrow) return 'bg-blue-700 text-white';
-    if (dueDate < today) return 'bg-red-700 text-white';
-    return 'bg-gray-300 text-gray-700';
+    if (dueDate === today) return 'border-blue-700 dark:text-white';
+    if (dueDate === tomorrow) return 'border-blue-700 dark:text-white';
+    if (dueDate < today) return 'border-red-700 dark:text-white';
+    return 'border-gray-300 dark:text-white';
   };
 
   const formatDueDate = () => {
@@ -33,7 +33,7 @@ const TaskDueDate: React.FC<TaskDueDateProps> = ({ dueDate, className }) => {
   };
 
   return (
-    <div className={`flex items-center text-xs py-1 px-2 rounded-md ${getDueDateClass()} ${className}`}>
+    <div className={`flex items-center text-xs py-1 px-2 rounded-md border ${getDueDateClass()} ${className}`}>
       {formatDueDate()}
     </div>
   );

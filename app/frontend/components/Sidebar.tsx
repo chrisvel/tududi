@@ -68,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     >
       {isSidebarOpen && (
         <div className="flex flex-col h-full overflow-y-auto">
-          <div className="px-3 pb-3 pt-6">
+          <div className="px-3 pb-3 pt-8">
             {/* Sidebar Contents */}
             <CreateNewDropdownButton
               openTaskModal={openTaskModal}
