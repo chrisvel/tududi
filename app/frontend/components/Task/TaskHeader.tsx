@@ -27,13 +27,13 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
   };
 
   return (
-    <div className="py-4 px-4 cursor-pointer" onClick={onTaskClick}>
+    <div className="py-2 px-4 cursor-pointer" onClick={onTaskClick}>
       {/* Full view (md and larger) */}
       <div className="hidden md:flex flex-col md:flex-row md:items-center md:justify-between">
         <div className="flex items-center space-x-4 mb-2 md:mb-0">
           <TaskPriorityIcon priority={task.priority} status={task.status} />
           <div className="flex flex-col">
-            <span className="font-medium text-md text-gray-900 dark:text-gray-100">
+            <span className="text-md text-gray-900 dark:text-gray-100">
               {task.name}
             </span>
             {project && (

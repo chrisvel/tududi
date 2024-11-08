@@ -1,3 +1,5 @@
+// app/frontend/components/Tasks.tsx
+
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TaskList from "./Task/TaskList";
@@ -141,6 +143,10 @@ const Tasks: React.FC = () => {
             task.id === updatedTask.id ? updatedTask : task
           )
         );
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to update task:", errorData.error);
+        setError("Failed to update task.");
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -210,9 +216,9 @@ const Tasks: React.FC = () => {
           <div className="relative inline-block text-left" ref={dropdownRef}>
             <button
               type="button"
-              className="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
               id="menu-button"
-              aria-expanded="true"
+              aria-expanded={dropdownOpen}
               aria-haspopup="true"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
@@ -223,12 +229,12 @@ const Tasks: React.FC = () => {
 
             {dropdownOpen && (
               <div
-                className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                className="origin-top-right absolute left-0 sm:right-0 sm:left-auto mt-2 w-full sm:w-56 max-w-full rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="menu-button"
               >
-                <div className="py-1" role="none">
+                <div className="py-1 max-h-60 overflow-y-auto" role="none">
                   {[
                     "due_date:asc",
                     "name:asc",
@@ -240,6 +246,7 @@ const Tasks: React.FC = () => {
                       key={order}
                       onClick={() => handleSortChange(order)}
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                      role="menuitem"
                     >
                       {capitalize(order.split(":")[0].replace("_", " "))}
                     </button>
@@ -289,4 +296,3 @@ const Tasks: React.FC = () => {
 };
 
 export default Tasks;
-
