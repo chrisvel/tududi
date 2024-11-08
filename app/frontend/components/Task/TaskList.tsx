@@ -6,7 +6,7 @@ import { Task } from '../../entities/Task';
 interface TaskListProps {
   tasks: Task[];
   onTaskUpdate: (task: Task) => void;
-  onTaskCreate: (task: Task) => void;
+  onTaskCreate?: (task: Task) => void;
   onTaskDelete: (taskId: number) => void;
   projects: Project[];
 }

@@ -121,7 +121,7 @@ Set up the necessary environment variables:
     -e TUDUDI_INTERNAL_SSL_ENABLED=false \
     -v ~/tududi_db:/usr/src/app/tududi_db \
     -p 9292:9292 \
-    -d chrisvel/tududi:0.30
+    -d chrisvel/tududi:latest
     ```
 
 3. Navigate to [https://localhost:9292](https://localhost:9292) and login with your credentials.

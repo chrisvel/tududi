@@ -1,3 +1,5 @@
+// app/frontend/components/Project/ProjectDetails.tsx
+
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
 import {
@@ -12,16 +14,14 @@ import { useDataContext } from "../../contexts/DataContext";
 import NewTask from "../Task/NewTask";
 import { Project } from "../../entities/Project";
 import { Task } from "../../entities/Task";
-import useManageTasks from "../../hooks/useManageTasks";
 
 const ProjectDetails: React.FC = () => {
-  const { updateTask, deleteTask } = useManageTasks();
+  const { updateTask, deleteTask, updateProject, deleteProject } = useDataContext();
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
 
   const { areas } = useDataContext();
-  const { updateProject, deleteProject } = useDataContext();
 
   const [project, setProject] = useState<Project>();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -33,6 +33,9 @@ const ProjectDetails: React.FC = () => {
   const { title: stateTitle, icon: stateIcon } = location.state || {};
   const projectTitle = stateTitle || project?.name || "Project";
   const projectIcon = stateIcon || "bi-folder-fill";
+
+  // State for Collapsible Completed Tasks
+  const [isCompletedOpen, setIsCompletedOpen] = useState(false);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -58,7 +61,7 @@ const ProjectDetails: React.FC = () => {
     fetchProject();
   }, [id]);
 
-  const handleTaskCreate = async (taskData: Partial<any>) => {
+  const handleTaskCreate = async (taskData: Partial<Task>) => {
     if (!project?.id) {
       console.error("Project ID is missing");
       return;
@@ -166,9 +169,18 @@ const ProjectDetails: React.FC = () => {
     );
   }
 
+  // Separate tasks into active and completed
+  const activeTasks = tasks.filter(task => task.status !== 'done');
+  const completedTasks = tasks.filter(task => task.status === 'done');
+
+  const toggleCompleted = () => {
+    setIsCompletedOpen(!isCompletedOpen);
+  };
+
   return (
-    <div className="flex justify-center px-4 lg:px-2  ">
+    <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
+        {/* Project Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
             <i className={`bi ${projectIcon} text-xl mr-2`}></i>
@@ -193,6 +205,7 @@ const ProjectDetails: React.FC = () => {
           </div>
         </div>
 
+        {/* Project Area */}
         {project?.area && (
           <div className="flex items-center mb-4">
             <Squares2X2Icon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
@@ -205,31 +218,81 @@ const ProjectDetails: React.FC = () => {
           </div>
         )}
 
+        {/* Project Description */}
         {project?.description && (
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {project.description}
           </p>
         )}
 
-        {/* Create a new task for this project */}
+        {/* New Task Form */}
         <NewTask
           onTaskCreate={(taskName: string) =>
             handleTaskCreate({
               name: taskName,
               status: "not_started",
-              project: project,
+              project_id: project?.id, // Ensure project_id is correctly assigned
             })
           }
         />
 
-        <TaskList
-          tasks={tasks}
-          onTaskCreate={handleTaskCreate}
-          onTaskUpdate={handleTaskUpdate}
-          onTaskDelete={handleTaskDelete}
-          projects={project ? [project] : []}
-        />
+        {/* Active Tasks */}
+        <div className="mt-2">
+          {activeTasks.length > 0 ? (
+            <TaskList
+              tasks={activeTasks}
+              onTaskUpdate={handleTaskUpdate}
+              onTaskDelete={handleTaskDelete}
+              projects={project ? [project] : []}
+            />
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400">No active tasks.</p>
+          )}
+        </div>
 
+        {/* Collapsible Completed Tasks */}
+        <div className="mt-6">
+          <button
+            onClick={toggleCompleted}
+            className="flex items-center justify-between w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md focus:outline-none"
+          >
+            <span className="text-xl font-semibold">Completed Tasks</span>
+            <svg
+              className={`w-6 h-6 transform transition-transform duration-200 ${
+                isCompletedOpen ? "rotate-180" : "rotate-0"
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          {isCompletedOpen && (
+            <div className="mt-4">
+              {completedTasks.length > 0 ? (
+                <TaskList
+                  tasks={completedTasks}
+                  onTaskUpdate={handleTaskUpdate}
+                  onTaskDelete={handleTaskDelete}
+                  projects={project ? [project] : []}
+                />
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400">
+                  No completed tasks.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Modals */}
         <ProjectModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

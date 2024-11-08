@@ -15,7 +15,6 @@ import { Project } from "./entities/Project";
 import { Task } from "./entities/Task";
 import { useDataContext } from "./contexts/DataContext";
 import { User } from "./entities/User";
-import { BookOpenIcon, ClipboardIcon, FolderIcon, PlusCircleIcon, Squares2X2Icon } from "@heroicons/react/24/solid";
 
 interface LayoutProps {
   currentUser: User;
@@ -74,35 +73,6 @@ const Layout: React.FC<LayoutProps> = ({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  const [isFABDropdownOpen, setFABDropdownOpen] = useState(false);
-
-  const handleFABDropdownSelect = (type: string) => {
-    switch (type) {
-      case 'Task':
-        openTaskModal();
-        break;
-      case 'Project':
-        openProjectModal();
-        break;
-      case 'Note':
-        openNoteModal(null);
-        break;
-      case 'Area':
-        openAreaModal(null);
-        break;
-      default:
-        break;
-    }
-    setFABDropdownOpen(false);
-  };
-
-  const fabDropdownItems = [
-    { label: 'Task', icon: <ClipboardIcon className="h-5 w-5 mr-2" /> },
-    { label: 'Project', icon: <FolderIcon className="h-5 w-5 mr-2" /> },
-    { label: 'Note', icon: <BookOpenIcon className="h-5 w-5 mr-2" /> },
-    { label: 'Area', icon: <Squares2X2Icon className="h-5 w-5 mr-2" /> },
-  ];
 
   const openNoteModal = (note: Note | null = null) => {
     setSelectedNote(note);
@@ -331,30 +301,25 @@ const Layout: React.FC<LayoutProps> = ({
 
       {/* Floating Action Button */}
       <button
-          onClick={() => setFABDropdownOpen(!isFABDropdownOpen)}
-          className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg focus:outline-none transform transition-transform duration-200 hover:scale-110"
-          aria-label="Open Create New Dropdown"
+        onClick={openTaskModal}
+        className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg focus:outline-none transform transition-transform duration-200 hover:scale-110"
+        aria-label="Open Task Modal"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
         >
-          <PlusCircleIcon className="h-6 w-6" />
-        </button>
-
-        {isFABDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-20">
-            <ul className="py-1" role="menu" aria-orientation="vertical">
-              {fabDropdownItems.map(({ label, icon }) => (
-                <li
-                  key={label}
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center"
-                  onClick={() => handleFABDropdownSelect(label)}
-                  role="menuitem"
-                >
-                  {icon}
-                  {label}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+      </button>
 
       {/* Modals */}
       {isTaskModalOpen && (
