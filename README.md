@@ -6,6 +6,10 @@
 
 ![Dark Mode Screenshot](screenshots/all-dark.png)
 
+![Light Mobile Screenshot](screenshots/mobile-all-light.png)
+
+![Dark Mobile Screenshot](screenshots/mobile-all-dark.png)
+
 ## 🚀 How It Works
 
 This app allows users to manage their tasks, projects, areas, notes, and tags in an organized way. Users can create tasks, projects, areas (to group projects), notes, and tags. Each task can be associated with a project, and both tasks and notes can be tagged for better organization. Projects can belong to areas and can also have multiple notes and tags. This structure helps users categorize and track their work efficiently, whether they’re managing individual tasks, larger projects, or keeping detailed notes.
