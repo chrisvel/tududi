@@ -7,3 +7,5 @@ certs/
 .byebug_history
 node_modules
 .env
+
+public/js/bundle.js

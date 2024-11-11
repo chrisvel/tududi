@@ -26,6 +26,44 @@ Check out our [GitHub Project](https://github.com/users/chrisvel/projects/2) for
 
 ## 🛠️ Getting Started
 
+**One simple command**, that's all it takes to run tududi with _docker_.
+
+### 🐋 Docker
+
+First pull the latest image:
+
+```bash
+docker pull chrisvel/tududi:latest
+```
+
+Then set up the necessary environment variables:
+
+- `TUDUDI_USER_EMAIL`
+- `TUDUDI_USER_PASSWORD`
+- `TUDUDI_SESSION_SECRET`
+- `TUDUDI_INTERNAL_SSL_ENABLED`
+
+1. (Optional) Create a random session secret:
+    ```bash
+    openssl rand -hex 64
+    ```
+
+2. Run the Docker container:
+    ```bash
+    docker run \
+    -e TUDUDI_USER_EMAIL=myemail@example.com \
+    -e TUDUDI_USER_PASSWORD=mysecurepassword \
+    -e TUDUDI_SESSION_SECRET=your_generated_hash_here \
+    -e TUDUDI_INTERNAL_SSL_ENABLED=false \
+    -v ~/tududi_db:/usr/src/app/tududi_db \
+    -p 9292:9292 \
+    -d chrisvel/tududi:latest
+    ```
+
+3. Navigate to [https://localhost:9292](https://localhost:9292) and login with your credentials.
+
+## 🚧 Development
+
 ### Prerequisites
 
 Before you begin, ensure you have the following installed:
@@ -91,40 +129,6 @@ To start the application, run:
 ```bash
 puma -C app/config/puma.rb
 ```
-
-### 🐋 Docker
-
-Pull the latest image:
-
-```bash
-docker pull chrisvel/tududi:0.20
-```
-
-Set up the necessary environment variables:
-
-- `TUDUDI_USER_EMAIL`
-- `TUDUDI_USER_PASSWORD`
-- `TUDUDI_SESSION_SECRET`
-- `TUDUDI_INTERNAL_SSL_ENABLED`
-
-1. (Optional) Create a random session secret:
-    ```bash
-    openssl rand -hex 64
-    ```
-
-2. Run the Docker container:
-    ```bash
-    docker run \
-    -e TUDUDI_USER_EMAIL=myemail@example.com \
-    -e TUDUDI_USER_PASSWORD=mysecurepassword \
-    -e TUDUDI_SESSION_SECRET=your_generated_hash_here \
-    -e TUDUDI_INTERNAL_SSL_ENABLED=false \
-    -v ~/tududi_db:/usr/src/app/tududi_db \
-    -p 9292:9292 \
-    -d chrisvel/tududi:latest
-    ```
-
-3. Navigate to [https://localhost:9292](https://localhost:9292) and login with your credentials.
 
 ### 🔍 Testing 
 
