@@ -60,6 +60,8 @@ const Layout: React.FC<LayoutProps> = ({
     createProject,
     updateProject,
     deleteProject,
+    createTask,
+    updateTask,
   } = useDataContext();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(
@@ -145,8 +147,15 @@ const Layout: React.FC<LayoutProps> = ({
   };
 
   const handleSaveTask = async (taskData: Task) => {
-    // Implement the logic to save the task, either by creating or updating
-    console.log("Saving task:", taskData);
+    try {
+      if (taskData.id) {
+        await updateTask(taskData.id, taskData);
+      } else {
+        await createTask(taskData);
+      }
+    } catch (error) {
+      console.error("Error saving task:", error);
+    }
     closeTaskModal();
   };
 

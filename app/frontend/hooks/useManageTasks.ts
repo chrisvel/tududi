@@ -10,7 +10,10 @@ const useManageTasks = () => {
     setIsLoading(true);
     setIsError(false);
     try {
-      const response = await fetch(`/api/tasks${query}`);
+      const response = await fetch(`/api/tasks${query}`, {
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      });
       if (response.ok) {
         const data = await response.json();
         setTasks(data);
@@ -26,14 +29,17 @@ const useManageTasks = () => {
 
   const createTask = async (taskData: Partial<Task>) => {
     try {
-      const response = await fetch('/api/tasks', {
+      const response = await fetch('/api/task', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(taskData),
       });
       if (response.ok) {
         const newTask = await response.json();
         setTasks((prevTasks) => [newTask, ...prevTasks]);
+      } else {
+        throw new Error('Failed to create task.');
       }
     } catch (error) {
       console.error('Error creating task:', error);
@@ -42,15 +48,19 @@ const useManageTasks = () => {
 
   const updateTask = async (taskId: number, taskData: Partial<Task>) => {
     try {
-      const response = await fetch(`/api/tasks/${taskId}`, {
+      const response = await fetch(`/api/task/${taskId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(taskData),
       });
       if (response.ok) {
+        const updatedTask = await response.json();
         setTasks((prevTasks) =>
-          prevTasks.map((task) => (task.id === taskId ? { ...task, ...taskData } : task))
+          prevTasks.map((task) => (task.id === taskId ? updatedTask : task))
         );
+      } else {
+        throw new Error('Failed to update task.');
       }
     } catch (error) {
       console.error('Error updating task:', error);
@@ -59,18 +69,23 @@ const useManageTasks = () => {
 
   const deleteTask = async (taskId: number) => {
     try {
-      const response = await fetch(`/api/tasks/${taskId}`, {
+      const response = await fetch(`/api/task/${taskId}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
       if (response.ok) {
         setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+      } else {
+        throw new Error('Failed to delete task.');
       }
     } catch (error) {
       console.error('Error deleting task:', error);
     }
   };
 
-  return { tasks, isLoading, isError, fetchTasks, createTask, updateTask, deleteTask };
+  const mutateTasks = fetchTasks; // Expose fetchTasks as mutateTasks
+
+  return { tasks, isLoading, isError, fetchTasks, mutateTasks, createTask, updateTask, deleteTask };
 };
 
 export default useManageTasks;
