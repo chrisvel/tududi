@@ -26,20 +26,12 @@ const Projects: React.FC = () => {
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>(''); 
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const [searchParams, setSearchParams] = useSearchParams();
-  
-  // Set default URL parameter ?active=true if not provided
-  useEffect(() => {
-    if (!searchParams.has("active")) {
-      searchParams.set("active", "true");
-      setSearchParams(searchParams);
-    }
-  }, [searchParams, setSearchParams]);
 
-  const activeFilter = searchParams.get("active") ?? "active";
-  const areaFilter = searchParams.get("area_id") ?? "";
+  const activeFilter = searchParams.get("active") || "all";
+  const areaFilter = searchParams.get("area_id") || "";
 
   const {
     projects,
@@ -47,16 +39,17 @@ const Projects: React.FC = () => {
     isLoading,
     isError,
     mutate,
-  } = useFetchProjects(activeFilter, areaFilter);
+  } = useFetchProjects({ activeFilter, areaFilter });
 
   useEffect(() => {
-    setTaskStatusCounts(fetchedTaskStatusCounts);
-  }, [fetchedTaskStatusCounts]);
+    setTaskStatusCounts(fetchedTaskStatusCounts || {});
+  }, [fetchedTaskStatusCounts]);  
 
   const getCompletionPercentage = (projectId: number | undefined) => {
     if (!projectId) return 0;
     const taskStatus = taskStatusCounts[projectId] || {};
-    const totalTasks = (taskStatus.done || 0) + (taskStatus.not_started || 0) + (taskStatus.in_progress || 0);
+    const totalTasks =
+      (taskStatus.done || 0) + (taskStatus.not_started || 0) + (taskStatus.in_progress || 0);
 
     if (totalTasks === 0) return 0;
 
@@ -102,11 +95,13 @@ const Projects: React.FC = () => {
   const handleAreaFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newAreaFilter = e.target.value;
     const params = new URLSearchParams(searchParams);
-    if (newAreaFilter) {
-      params.set("area_id", newAreaFilter);
-    } else {
+
+    if (newAreaFilter === "") {
       params.delete("area_id");
+    } else {
+      params.set("area_id", newAreaFilter);
     }
+
     setSearchParams(params);
   };
 
@@ -163,7 +158,7 @@ const Projects: React.FC = () => {
             </label>
             <select
               id="activeFilter"
-              value={activeFilter || "all"}
+              value={activeFilter}
               onChange={handleActiveFilterChange}
               className="block w-full p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -196,7 +191,7 @@ const Projects: React.FC = () => {
           </div>
         </div>
 
-        {/* Search Bar with Icon */} 
+        {/* Search Bar with Icon */}
         <div className="mb-4">
           <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm p-2">
             <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
@@ -227,7 +222,7 @@ const Projects: React.FC = () => {
                   <div
                     key={project.id}
                     className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative"
-                    style={{ minHeight: "280px", maxHeight: "280px" }} // Consistent card height
+                    style={{ minHeight: "280px", maxHeight: "280px" }}
                   >
                     <div
                       className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg"
@@ -242,7 +237,7 @@ const Projects: React.FC = () => {
                       <Link
                         to={`/project/${project.id}`}
                         className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline line-clamp-2"
-                        style={{ minHeight: "3.3rem", maxHeight: "3.3rem" }} // Fixed title height
+                        style={{ minHeight: "3.3rem", maxHeight: "3.3rem" }}
                       >
                         {project.name}
                       </Link>
@@ -333,4 +328,3 @@ const Projects: React.FC = () => {
 };
 
 export default Projects;
-

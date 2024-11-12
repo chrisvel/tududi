@@ -154,6 +154,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
   };
 
   useEffect(() => {
+    setFilteredProjects(projects);
+  }, [projects]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         modalRef.current &&

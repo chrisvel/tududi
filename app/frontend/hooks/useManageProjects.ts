@@ -1,28 +1,31 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useSWRConfig } from 'swr';
 import { Project } from '../entities/Project';
 
 const useManageProjects = () => {
   const { mutate } = useSWRConfig();
+  const [projects, setProjects] = useState<Project[]>([]);
 
-  const createProject = useCallback(async (projectData: Partial<Project>) => {
+  const createProject = async (projectData: Partial<Project>): Promise<Project> => {
     try {
-      const response = await fetch('/api/project', {
+      const response = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(projectData),
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create project.');
+      if (response.ok) {
+        const newProject = await response.json();
+        setProjects((prevProjects) => [...prevProjects, newProject]);
+        return newProject; 
+      } else {
+        throw new Error('Failed to create project.');
       }
-      const newProject: Project = await response.json();
-      mutate('/api/projects', (current: Project[] = []) => [...current, newProject], false);
     } catch (error) {
       console.error('Error creating project:', error);
       throw error;
     }
-  }, [mutate]);
+  };
 
   const updateProject = useCallback(async (projectId: number, projectData: Partial<Project>) => {
     try {
@@ -61,7 +64,7 @@ const useManageProjects = () => {
     }
   }, [mutate]);
 
-  return { createProject, updateProject, deleteProject };
+  return { projects, createProject, updateProject, deleteProject };
 };
 
 export default useManageProjects;

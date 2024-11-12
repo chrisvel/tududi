@@ -46,6 +46,7 @@ const Layout: React.FC<LayoutProps> = ({
     tags,
     areas,
     notes,
+    projects,
     isLoading,
     isError,
     createNote,
@@ -170,6 +171,16 @@ const Layout: React.FC<LayoutProps> = ({
       console.error("Error saving project:", error);
     }
     closeProjectModal();
+  };
+
+  const handleCreateProject = async (name: string): Promise<Project> => {
+    try {
+      const newProject = await createProject({ name });
+      return newProject;
+    } catch (error) {
+      console.error("Error creating project:", error);
+      throw error;
+    }
   };
 
   const handleSaveArea = async (areaData: Area) => {
@@ -338,23 +349,16 @@ const Layout: React.FC<LayoutProps> = ({
           task={
             newTask || {
               id: undefined,
-              name: '',
-              status: 'not_started',
+              name: "",
+              status: "not_started",
               project_id: undefined,
               tags: [],
             }
           }
           onSave={handleSaveTask}
           onDelete={() => {}}
-          projects={[]} // Provide project list as necessary
-          onCreateProject={async (name: string) => {
-            return {
-              id: Math.random(),
-              name,
-              active: true,
-              pin_to_sidebar: false,
-            }; // Ensure all required fields are covered
-          }}
+          projects={projects} 
+          onCreateProject={handleCreateProject}
         />
       )}
 
