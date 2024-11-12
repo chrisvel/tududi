@@ -1,4 +1,5 @@
 import React from 'react';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
 interface TaskPriorityIconProps {
   priority: string | undefined;
@@ -6,7 +7,7 @@ interface TaskPriorityIconProps {
 }
 
 const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({ priority, status }) => {
-  const getPriorityClass = () => {
+  const getIconColor = () => {
     if (status === 'done') return 'text-green-500';
     switch (priority) {
       case 'high':
@@ -18,7 +19,24 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({ priority, status })
     }
   };
 
-  return <i className={`bi bi-circle ${getPriorityClass()}`}></i>;
+  const colorClass = getIconColor();
+
+  if (status === 'done') {
+    return <CheckCircleIcon className={`h-5 w-5 ${colorClass}`} />;
+  } else {
+    return (
+      <svg
+        className={`h-5 w-5 ${colorClass}`}
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+      >
+        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" fill="none" />
+      </svg>
+    );
+  }
 };
 
 export default TaskPriorityIcon;

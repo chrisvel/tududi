@@ -32,7 +32,7 @@ const ProjectDetails: React.FC = () => {
 
   const { title: stateTitle, icon: stateIcon } = location.state || {};
   const projectTitle = stateTitle || project?.name || "Project";
-  const projectIcon = stateIcon || "bi-folder-fill";
+  const projectIcon = stateIcon;
 
   // State for Collapsible Completed Tasks
   const [isCompletedOpen, setIsCompletedOpen] = useState(false);
@@ -183,7 +183,7 @@ const ProjectDetails: React.FC = () => {
         {/* Project Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
-            <i className={`bi ${projectIcon} text-xl mr-2`}></i>
+            <i className={`${projectIcon} text-xl mr-2`}></i>
             <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
               {projectTitle}
             </h2>

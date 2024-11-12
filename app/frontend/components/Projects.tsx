@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Project } from "../entities/Project";
 import { Link, useSearchParams } from "react-router-dom";
-import { EllipsisVerticalIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import {
+  EllipsisVerticalIcon,
+  MagnifyingGlassIcon,
+  FolderIcon
+} from "@heroicons/react/24/solid";
 import ConfirmDialog from "./Shared/ConfirmDialog";
 import ProjectModal from "./Project/ProjectModal";
 import { useDataContext } from "../contexts/DataContext";
@@ -19,12 +23,16 @@ const getProjectInitials = (name: string) => {
 };
 
 const Projects: React.FC = () => {
-  const { areas, createProject, updateProject, deleteProject } = useDataContext();
-  const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, any>>({});
+  const { areas, createProject, updateProject, deleteProject } =
+    useDataContext();
+  const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, any>>(
+    {}
+  );
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false);
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+    useState<boolean>(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -43,13 +51,15 @@ const Projects: React.FC = () => {
 
   useEffect(() => {
     setTaskStatusCounts(fetchedTaskStatusCounts || {});
-  }, [fetchedTaskStatusCounts]);  
+  }, [fetchedTaskStatusCounts]);
 
   const getCompletionPercentage = (projectId: number | undefined) => {
     if (!projectId) return 0;
     const taskStatus = taskStatusCounts[projectId] || {};
     const totalTasks =
-      (taskStatus.done || 0) + (taskStatus.not_started || 0) + (taskStatus.in_progress || 0);
+      (taskStatus.done || 0) +
+      (taskStatus.not_started || 0) +
+      (taskStatus.in_progress || 0);
 
     if (totalTasks === 0) return 0;
 
@@ -79,7 +89,9 @@ const Projects: React.FC = () => {
     mutate();
   };
 
-  const handleActiveFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleActiveFilterChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const newActiveFilter = e.target.value;
     const params = new URLSearchParams(searchParams);
 
@@ -141,7 +153,7 @@ const Projects: React.FC = () => {
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-6xl">
         <div className="flex items-center mb-8">
-          <i className="bi bi-folder-fill text-xl mr-2"></i>
+          <FolderIcon className="h-6 w-6 text-gray-500 mr-2" />
           <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
             Projects
           </h2>

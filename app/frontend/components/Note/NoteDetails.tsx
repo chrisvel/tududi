@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { PencilSquareIcon, TrashIcon, TagIcon } from '@heroicons/react/24/solid';
+import { PencilSquareIcon, TrashIcon, TagIcon, DocumentTextIcon } from '@heroicons/react/24/solid';
 import { useDataContext } from '../../contexts/DataContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
@@ -71,7 +71,7 @@ const NoteDetails: React.FC = () => {
         {/* Header Section with Title and Action Buttons */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            <i className="bi bi-journal-text text-xl mr-2"></i>
+            <DocumentTextIcon className="h-6 w-6 text-xl mr-2" />
             <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
               {note.title}
             </h2>

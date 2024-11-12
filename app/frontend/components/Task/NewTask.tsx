@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useToast } from '../../components/Shared/ToastContext'; 
+import { PlusCircleIcon } from '@heroicons/react/24/outline';
 
 interface NewTaskProps {
   onTaskCreate: (taskName: string) => void;
@@ -29,7 +30,7 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
   return (
     <div className="flex items-center justify-between py-3 px-4 mb-2 border-b border-gray-200 dark:border-gray-800 rounded-lg shadow-sm bg-white dark:bg-gray-900">
       <span className="text-xl text-gray-500 dark:text-gray-400 mr-4">
-        <i className="bi bi-plus-circle"></i>
+        <PlusCircleIcon className="h-6 w-6" />
       </span>
       <input
         type="text"
