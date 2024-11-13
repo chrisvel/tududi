@@ -68,7 +68,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     };
   }, [isOpen]);
 
-  // Handle Escape key to close modal
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {

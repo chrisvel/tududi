@@ -1,6 +1,6 @@
 import React from "react";
-import { createRoot } from "react-dom/client"; // Import createRoot from react-dom
-import { BrowserRouter } from "react-router-dom"; // Import BrowserRouter
+import { createRoot } from "react-dom/client"; 
+import { BrowserRouter } from "react-router-dom"; 
 import App from "./App";
 import { ToastProvider } from "./components/Shared/ToastContext";
 

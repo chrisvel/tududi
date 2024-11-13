@@ -1,5 +1,3 @@
-// app/frontend/components/Project/ProjectDetails.tsx
-
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
 import {
@@ -34,7 +32,6 @@ const ProjectDetails: React.FC = () => {
   const projectTitle = stateTitle || project?.name || "Project";
   const projectIcon = stateIcon;
 
-  // State for Collapsible Completed Tasks
   const [isCompletedOpen, setIsCompletedOpen] = useState(false);
 
   useEffect(() => {
@@ -169,7 +166,6 @@ const ProjectDetails: React.FC = () => {
     );
   }
 
-  // Separate tasks into active and completed
   const activeTasks = tasks.filter(task => task.status !== 'done');
   const completedTasks = tasks.filter(task => task.status === 'done');
 
@@ -231,7 +227,7 @@ const ProjectDetails: React.FC = () => {
             handleTaskCreate({
               name: taskName,
               status: "not_started",
-              project_id: project?.id, // Ensure project_id is correctly assigned
+              project_id: project?.id, 
             })
           }
         />

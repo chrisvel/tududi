@@ -104,7 +104,7 @@ const App: React.FC = () => {
       {currentUser ? (
         <Layout
           currentUser={currentUser}
-          setCurrentUser={setCurrentUser} // Make sure to pass this down
+          setCurrentUser={setCurrentUser} 
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
         >

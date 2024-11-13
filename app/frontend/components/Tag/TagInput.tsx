@@ -1,5 +1,3 @@
-// app/frontend/components/Tag/TagInput.tsx
-
 import React, { useState } from 'react';
 import TaskTags from '../Task/TaskTags';
 import { Tag } from '../../entities/Tag';

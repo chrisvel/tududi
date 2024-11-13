@@ -9,7 +9,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'public/js'),
     filename: 'bundle.js',
-    publicPath: '/js/', // Ensure HMR works properly
+    publicPath: '/js/', 
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],

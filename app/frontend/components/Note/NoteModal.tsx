@@ -1,5 +1,3 @@
-// app/frontend/components/Note/NoteModal.tsx
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Note } from '../../entities/Note';
 import { useDataContext } from '../../contexts/DataContext';
@@ -31,7 +29,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
 
   const { showSuccessToast, showErrorToast } = useToast();
 
-  // Fetch available tags when modal is opened
   useEffect(() => {
     if (isOpen) {
       fetch('/api/tags')
@@ -44,7 +41,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
     }
   }, [isOpen, showErrorToast]);
 
-  // Reset form data when modal opens or note changes
   useEffect(() => {
     if (isOpen) {
       setFormData({
@@ -58,7 +54,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
     }
   }, [isOpen, note]);
 
-  // Handle click outside to close modal
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -77,7 +72,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
     };
   }, [isOpen]);
 
-  // Handle Escape key to close modal
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -105,7 +99,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
   const handleTagsChange = useCallback((newTags: string[]) => {
     setTags(newTags);
 
-    // Map newTags to Tag objects with 'id' if they exist in availableTags
     const updatedTags: Tag[] = newTags.map((name) => {
       const existingTag = availableTags.find((tag) => tag.name === name);
       return existingTag ? { id: existingTag.id, name } : { name };

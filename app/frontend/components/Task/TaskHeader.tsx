@@ -1,5 +1,3 @@
-// app/frontend/components/Task/TaskHeader.tsx
-
 import React from "react";
 import TaskPriorityIcon from "./TaskPriorityIcon";
 import TaskTags from "./TaskTags";

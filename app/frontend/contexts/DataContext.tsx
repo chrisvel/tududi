@@ -1,9 +1,7 @@
-// app/frontend/contexts/DataContext.tsx
-
 import React, { createContext, useContext } from 'react';
 import useFetchTags from '../hooks/useFetchTags';
 import useFetchAreas from '../hooks/useFetchAreas';
-import useFetchProjects from '../hooks/useFetchProjects'; // Use the updated hook
+import useFetchProjects from '../hooks/useFetchProjects'; 
 import useManageAreas from '../hooks/useManageAreas';
 import useManageNotes from '../hooks/useManageNotes';
 import useManageProjects from '../hooks/useManageProjects';
@@ -37,7 +35,7 @@ interface DataContextProps {
   mutateTags: () => void;
   mutateAreas: () => void;
   mutateNotes: () => void;
-  mutateProjects: () => void; // Include mutateProjects
+  mutateProjects: () => void; 
 }
 
 const DataContext = createContext<DataContextProps | undefined>(undefined);
@@ -58,7 +56,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading: isLoadingProjects,
     isError: isErrorProjects,
     mutate: mutateProjects,
-  } = useFetchProjects(); // Use the updated hook without options
+  } = useFetchProjects(); 
   const { createArea, updateArea, deleteArea } = useManageAreas();
   const { createProject, updateProject, deleteProject } = useManageProjects();
   const { createTag, updateTag, deleteTag } = useManageTags();
@@ -111,7 +109,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         mutateTags,
         mutateAreas,
         mutateNotes,
-        mutateProjects, // Include mutateProjects
+        mutateProjects, 
       }}
     >
       {children}

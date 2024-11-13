@@ -83,7 +83,7 @@ const useManageTasks = () => {
     }
   };
 
-  const mutateTasks = fetchTasks; // Expose fetchTasks as mutateTasks
+  const mutateTasks = fetchTasks; 
 
   return { tasks, isLoading, isError, fetchTasks, mutateTasks, createTask, updateTask, deleteTask };
 };

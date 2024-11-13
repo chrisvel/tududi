@@ -1,5 +1,3 @@
-// app/frontend/components/Tasks.tsx
-
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import TaskList from "./Task/TaskList";

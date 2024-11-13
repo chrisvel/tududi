@@ -54,7 +54,6 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area, onSave }) 
     };
   }, [isOpen]);
 
-  // Handle Escape key to close modal
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {

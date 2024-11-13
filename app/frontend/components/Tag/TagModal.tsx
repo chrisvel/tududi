@@ -55,7 +55,6 @@ const TagModal: React.FC<TagModalProps> = ({
     };
   }, [isOpen]);
 
-  // Handle Escape key to close modal
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -87,14 +86,9 @@ const TagModal: React.FC<TagModalProps> = ({
     setIsSubmitting(true);
 
     try {
-      // Assuming you have createTag and updateTag functions
       if (tag) {
-        // Update existing tag
-        // await updateTag(formData.id, formData);
         showSuccessToast('Tag updated successfully!');
       } else {
-        // Create new tag
-        // await createTag(formData);
         showSuccessToast('Tag created successfully!');
       }
       onSave(formData);

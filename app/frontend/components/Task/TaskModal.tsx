@@ -39,9 +39,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const [isClosing, setIsClosing] = useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false); // State to control confirm dialog
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false); 
 
-  const { showSuccessToast, showErrorToast } = useToast(); // Use toast functions
+  const { showSuccessToast, showErrorToast } = useToast(); 
 
   useEffect(() => {
     setFormData(task);
@@ -118,7 +118,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   };
 
   const handleDeleteClick = () => {
-    setShowConfirmDialog(true); // Show confirmation dialog
+    setShowConfirmDialog(true); 
   };
 
   const handleDeleteConfirm = () => {
@@ -138,7 +138,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }, 300);
   };
 
-  // Handler to remove tag
   const handleTagRemove = (tagId: string | number | undefined) => {
     if (tagId === undefined) return;
     const tagIndex = Number(tagId);
@@ -174,7 +173,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     };
   }, [isOpen]);
 
-  // Handle Escape key to close modal
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {

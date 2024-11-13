@@ -53,8 +53,8 @@ const Navbar: React.FC<NavbarProps> = ({
       });
 
       if (response.ok) {
-        setCurrentUser(null); // Update the application state
-        navigate("/login"); // Redirect to the login page
+        setCurrentUser(null); 
+        navigate("/login"); 
       } else {
         console.error("Failed to log out");
       }

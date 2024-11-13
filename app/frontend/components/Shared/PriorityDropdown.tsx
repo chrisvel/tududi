@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDownIcon, ArrowDownIcon, ArrowUpIcon, FireIcon } from '@heroicons/react/24/outline'; // Import the icons
+import { ChevronDownIcon, ArrowDownIcon, ArrowUpIcon, FireIcon } from '@heroicons/react/24/outline'; 
 import { PriorityType } from '../../entities/Task';
 
 interface PriorityDropdownProps {

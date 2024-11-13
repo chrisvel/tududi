@@ -1,5 +1,3 @@
-// app/frontend/hooks/useFetchProjects.ts
-
 import { useState, useEffect } from 'react';
 import { Project } from '../entities/Project';
 
