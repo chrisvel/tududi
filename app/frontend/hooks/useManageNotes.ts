@@ -8,13 +8,17 @@ const useManageNotes = () => {
 
   const createNote = useCallback(
     async (noteData: Partial<Note>) => {
+      const noteDataToSend = {
+        ...noteData,
+        tags: noteData.tags?.map((tag) => (typeof tag === 'string' ? tag : tag.name)),
+      };
       const response = await fetch('/api/note', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify(noteData),
+        body: JSON.stringify(noteDataToSend),
       });
 
       if (!response.ok) {
@@ -31,13 +35,17 @@ const useManageNotes = () => {
 
   const updateNote = useCallback(
     async (noteId: number, noteData: Partial<Note>) => {
+      const noteDataToSend = {
+        ...noteData,
+        tags: noteData.tags?.map((tag) => (typeof tag === 'string' ? tag : tag.name)),
+      };
       const response = await fetch(`/api/note/${noteId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify(noteData),
+        body: JSON.stringify(noteDataToSend),
       });
 
       if (!response.ok) {
