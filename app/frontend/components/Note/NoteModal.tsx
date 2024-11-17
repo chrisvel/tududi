@@ -98,17 +98,11 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
 
   const handleTagsChange = useCallback((newTags: string[]) => {
     setTags(newTags);
-
-    const updatedTags: Tag[] = newTags.map((name) => {
-      const existingTag = availableTags.find((tag) => tag.name === name);
-      return existingTag ? { id: existingTag.id, name } : { name };
-    });
-
     setFormData((prev) => ({
       ...prev,
-      tags: updatedTags,
+      tags: newTags.map((name) => ({ name })),
     }));
-  }, [availableTags]);
+  }, []);
 
   const handleSubmit = async () => {
     if (!formData.title.trim()) {
@@ -121,10 +115,10 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
 
     try {
       if (formData.id && formData.id !== 0) {
-        await updateNote(formData.id, formData);
+        await updateNote(formData.id, { ...formData, tags });
         showSuccessToast('Note updated successfully!');
       } else {
-        await createNote(formData);
+        await createNote({ ...formData, tags });
         showSuccessToast('Note created successfully!');
       }
       onSave(formData);
@@ -166,7 +160,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
           <form className="flex flex-col flex-1">
             <fieldset className="flex flex-col flex-1">
               <div className="p-4 space-y-3 flex-1 text-sm overflow-y-auto">
-                {/* Note Title */}
                 <div className="py-4">
                   <input
                     type="text"
@@ -180,7 +173,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
                   />
                 </div>
 
-                {/* Tags */}
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Tags
@@ -194,7 +186,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
                   </div>
                 </div>
 
-                {/* Note Content */}
                 <div className="pb-3 flex-1">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Content
@@ -210,11 +201,9 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
                   ></textarea>
                 </div>
 
-                {/* Error Message */}
                 {error && <div className="text-red-500">{error}</div>}
               </div>
 
-              {/* Action Buttons */}
               <div className="p-3 flex-shrink-0 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2">
                 <button
                   type="button"

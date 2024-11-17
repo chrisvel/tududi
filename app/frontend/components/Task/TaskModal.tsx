@@ -8,6 +8,7 @@ import { useToast } from "../Shared/ToastContext";
 import TagInput from "../Tag/TagInput";
 import { Project } from "../../entities/Project";
 import { Tag } from "../../entities/Tag";
+import useFetchTags from "../../hooks/useFetchTags";
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -29,7 +30,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
   onCreateProject,
 }) => {
   const [formData, setFormData] = useState<Task>(task);
-  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [tags, setTags] = useState<string[]>(
     task.tags?.map((tag) => tag.name) || []
   );
@@ -43,19 +43,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   const { showSuccessToast, showErrorToast } = useToast(); 
 
+  const { tags: availableTags, isLoading, isError } = useFetchTags();
+
   useEffect(() => {
     setFormData(task);
     setTags(task.tags?.map((tag) => tag.name) || []);
   }, [task]);
-
-  useEffect(() => {
-    if (isOpen) {
-      fetch("/api/tags")
-        .then((response) => response.json())
-        .then((data) => setAvailableTags(data.map((tag: Tag) => tag.name)))
-        .catch((error) => console.error("Failed to fetch tags", error));
-    }
-  }, [isOpen]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -138,20 +131,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }, 300);
   };
 
-  const handleTagRemove = (tagId: string | number | undefined) => {
-    if (tagId === undefined) return;
-    const tagIndex = Number(tagId);
-    if (tagIndex >= 0 && tagIndex < tags.length) {
-      const updatedTags = tags.filter((_, index) => index !== tagIndex);
-      setTags(updatedTags);
-      setFormData((prev) => ({
-        ...prev,
-        tags: updatedTags.map((name) => ({ name })),
-      }));
-      showSuccessToast("Tag removed successfully!");
-    }
-  };
-
   useEffect(() => {
     setFilteredProjects(projects);
   }, [projects]);
@@ -188,6 +167,26 @@ const TaskModal: React.FC<TaskModalProps> = ({
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  if (isLoading) {
+    return (
+      <div className="fixed top-16 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-40">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          Loading tags...
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="fixed top-16 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-40">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          Error loading tags.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

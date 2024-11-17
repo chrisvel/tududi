@@ -4,13 +4,13 @@ import { fetcher } from '../utils/fetcher';
 import { useCallback } from 'react';
 
 const useManageNotes = () => {
-  const { data: notes, error, mutate } = useSWR<Note[]>('/api/notes', fetcher);
+  const { data, error, mutate } = useSWR<Note[]>('/api/notes', fetcher);
 
   const createNote = useCallback(
     async (noteData: Partial<Note>) => {
       const noteDataToSend = {
         ...noteData,
-        tags: noteData.tags?.map((tag) => (typeof tag === 'string' ? tag : tag.name)),
+        tags: noteData.tags?.map((tag) => tag.name) || [],
       };
       const response = await fetch('/api/note', {
         method: 'POST',
@@ -27,17 +27,16 @@ const useManageNotes = () => {
       }
 
       const newNote: Note = await response.json();
-
-      mutate([...(notes || []), newNote], false); 
+      mutate([...(data || []), newNote], false);
     },
-    [mutate, notes]
+    [mutate, data]
   );
 
   const updateNote = useCallback(
     async (noteId: number, noteData: Partial<Note>) => {
       const noteDataToSend = {
         ...noteData,
-        tags: noteData.tags?.map((tag) => (typeof tag === 'string' ? tag : tag.name)),
+        tags: noteData.tags?.map((tag) => tag.name) || [],
       };
       const response = await fetch(`/api/note/${noteId}`, {
         method: 'PATCH',
@@ -54,10 +53,9 @@ const useManageNotes = () => {
       }
 
       const updatedNote: Note = await response.json();
-
-      mutate((notes || []).map((note) => (note.id === noteId ? updatedNote : note)), false); 
+      mutate((data || []).map((note) => (note.id === noteId ? updatedNote : note)), false);
     },
-    [mutate, notes]
+    [mutate, data]
   );
 
   const deleteNote = useCallback(
@@ -75,14 +73,14 @@ const useManageNotes = () => {
         throw new Error(errorData.error || 'Failed to delete note.');
       }
       
-      mutate((notes || []).filter((note) => note.id !== noteId), false); 
+      mutate((data || []).filter((note) => note.id !== noteId), false);
     },
-    [mutate, notes]
+    [mutate, data]
   );
 
   return {
-    notes: notes || [],
-    isLoading: !error && !notes,
+    notes: data || [],
+    isLoading: !error && !data,
     isError: error,
     createNote,
     updateNote,

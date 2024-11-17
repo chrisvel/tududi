@@ -91,7 +91,7 @@ class Sinatra::Application
     end
 
     if note.update(note_attributes)
-      update_note_tags(note, request_data['tags']) # Pass the array directly
+      update_note_tags(note, request_data['tags'])
       note.to_json(include: :tags)
     else
       status 400
