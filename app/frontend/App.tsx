@@ -21,6 +21,7 @@ import ProfileSettings from "./components/Profile/ProfileSettings";
 import Layout from "./Layout";
 import { DataProvider } from "./contexts/DataContext";
 import { User } from "./entities/User";
+import TasksToday from "./components/Task/TasksToday";
 
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -85,7 +86,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (currentUser && location.pathname === "/") {
-      navigate("/tasks?type=today", { replace: true });
+      navigate("/today", { replace: true }); // Navigate to /today instead of /tasks?type=today
     }
   }, [currentUser, location.pathname, navigate]);
 
@@ -104,12 +105,13 @@ const App: React.FC = () => {
       {currentUser ? (
         <Layout
           currentUser={currentUser}
-          setCurrentUser={setCurrentUser} 
+          setCurrentUser={setCurrentUser}
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
         >
           <Routes>
-            <Route path="/" element={<Navigate to="/tasks" replace />} />
+            <Route path="/" element={<Navigate to="/today" replace />} />
+            <Route path="/today" element={<TasksToday />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/project/:id" element={<ProjectDetails />} />
@@ -119,7 +121,10 @@ const App: React.FC = () => {
             <Route path="/tag/:id" element={<TagDetails />} />
             <Route path="/notes" element={<Notes />} />
             <Route path="/note/:id" element={<NoteDetails />} />
-            <Route path="/profile" element={<ProfileSettings currentUser={currentUser} />} />
+            <Route
+              path="/profile"
+              element={<ProfileSettings currentUser={currentUser} />}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>

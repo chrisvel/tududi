@@ -15,47 +15,31 @@ module Sinatra
     get '/api/tasks' do
       content_type :json
 
-      @tasks = current_user.tasks.includes(:project, :tags)
-
-      @tasks = case params[:type]
-               when 'today'
-                 @tasks.due_today
-               when 'upcoming'
-                 @tasks.upcoming
-               when 'next'
-                 @tasks.next_actions
-               when 'inbox'
-                 @tasks.inbox
-               when 'someday'
-                 @tasks.someday
-               when 'waiting'
-                 @tasks.waiting_for
-               else
-                 params[:status] == 'done' ? @tasks.complete : @tasks.incomplete
-               end
-
-      @tasks = @tasks.with_tag(params[:tag]) if params[:tag]
-
-      if params[:order_by]
-        order_column, order_direction = params[:order_by].split(':')
-        order_direction ||= 'asc'
-        order_direction = order_direction.downcase == 'desc' ? :desc : :asc
-
-        allowed_columns = %w[created_at updated_at name priority status due_date]
-        if allowed_columns.include?(order_column)
-          @tasks = if order_column == 'due_date'
-                     @tasks.ordered_by_due_date(order_direction)
-                   else
-                     @tasks.order("tasks.#{order_column} #{order_direction}")
-                   end
-        else
-          halt 400, { error: 'Invalid order column specified.' }.to_json
-        end
+      begin
+        tasks = Task.filter_by_params(params, current_user)
+      rescue ArgumentError => e
+        halt 400, { error: e.message }.to_json
       end
 
-      @tasks = @tasks.left_joins(:tags).distinct
+      metrics = Task.compute_metrics(current_user)
 
-      @tasks.to_json(include: { tags: { only: %i[id name] }, project: { only: :name } })
+      # Prepare the response
+      response = {
+        tasks: tasks.as_json(include: { tags: { only: %i[id name] }, project: { only: :name } }),
+        metrics: {
+          total_open_tasks: metrics[:total_open_tasks],
+          tasks_pending_over_month: metrics[:tasks_pending_over_month],
+          tasks_in_progress_count: metrics[:tasks_in_progress_count],
+          tasks_in_progress: metrics[:tasks_in_progress].as_json(include: { tags: { only: %i[id name] },
+                                                                            project: { only: :name } }),
+          tasks_due_today: metrics[:tasks_due_today].as_json(include: { tags: { only: %i[id name] },
+                                                                        project: { only: :name } }),
+          suggested_tasks: metrics[:suggested_tasks].as_json(include: { tags: { only: %i[id name] },
+                                                                        project: { only: :name } })
+        }
+      }
+
+      response.to_json
     end
 
     post '/api/task' do
@@ -70,7 +54,7 @@ module Sinatra
 
       task_attributes = {
         name: task_data['name'],
-        priority: task_data['priority'] || 'medium',
+        priority: task_data['priority'],
         due_date: task_data['due_date'],
         status: task_data['status'] || Task.statuses[:not_started],
         note: task_data['note'],

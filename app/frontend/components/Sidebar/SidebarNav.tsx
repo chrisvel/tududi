@@ -18,7 +18,7 @@ interface SidebarNavProps {
 }
 
 const navLinks = [
-  { path: '/tasks?type=today', title: 'Today', icon: <CalendarDaysIcon className="h-5 w-5" />, query: 'type=today' },
+  { path: '/today', title: 'Today', icon: <CalendarDaysIcon className="h-5 w-5" />, query: 'type=today' },
   { path: '/tasks?type=upcoming', title: 'Upcoming', icon: <CalendarIcon className="h-5 w-5" />, query: 'type=upcoming' },
   { path: '/tasks?type=next', title: 'Next Actions', icon: <ArrowRightCircleIcon className="h-5 w-5" />, query: 'type=next' },
   { path: '/tasks?type=inbox', title: 'Inbox', icon: <InboxIcon className="h-5 w-5" />, query: 'type=inbox' },

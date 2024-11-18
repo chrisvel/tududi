@@ -77,7 +77,7 @@ const Tasks: React.FC = () => {
 
         if (tasksResponse.ok) {
           const tasksData = await tasksResponse.json();
-          setTasks(tasksData || []);
+          setTasks(tasksData.tasks || []);
         } else {
           throw new Error("Failed to fetch tasks.");
         }

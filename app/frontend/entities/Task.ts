@@ -9,6 +9,7 @@ export interface Task {
   note?: string;
   tags?: Tag[];
   project_id?: number;
+  created_at?: string;
 }
 
 export type StatusType = 'not_started' | 'in_progress' | 'done' | 'archived';
