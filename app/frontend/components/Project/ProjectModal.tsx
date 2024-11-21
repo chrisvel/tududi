@@ -23,7 +23,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   project,
   areas,
 }) => {
-  // Initialize form data with existing project or default values
   const [formData, setFormData] = useState<Project>(
     project || {
       name: "",
@@ -34,21 +33,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     }
   );
 
-  // State to manage tags as an array of tag names
   const [tags, setTags] = useState<string[]>(project?.tags?.map(tag => tag.name) || []);
 
-  // Fetch available tags from the backend
   const { tags: availableTags, isLoading: isTagsLoading, isError: isTagsError } = useFetchTags();
 
-  // Refs and state for handling modal animations and confirmations
   const modalRef = useRef<HTMLDivElement>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  // Toast notifications for user feedback
   const { showSuccessToast, showErrorToast } = useToast();
 
-  // Update form data and tags when the `project` prop changes
   useEffect(() => {
     if (project) {
       setFormData({
@@ -68,7 +62,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     }
   }, [project]);
 
-  // Handle clicks outside the modal to close it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -87,7 +80,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     };
   }, [isOpen]);
 
-  // Handle pressing the Escape key to close the modal
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -102,7 +94,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     };
   }, [isOpen]);
 
-  // Handle changes in form inputs
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -112,7 +103,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const { name, type, value } = target;
 
     if (type === "checkbox") {
-      // Type Narrowing: Ensure target is HTMLInputElement before accessing 'checked'
       if (target instanceof HTMLInputElement) {
         const checked = target.checked;
         setFormData((prev) => ({
@@ -128,7 +118,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     }
   };
 
-  // Handle changes in tags using the TagInput component
   const handleTagsChange = useCallback((newTags: string[]) => {
     setTags(newTags);
     setFormData((prev) => ({
@@ -137,7 +126,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     }));
   }, []);
 
-  // Handle form submission
   const handleSubmit = () => {
     onSave({ ...formData, tags: tags.map(name => ({ name })) });
     showSuccessToast(
@@ -148,12 +136,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     handleClose();
   };
 
-  // Handle delete button click to show confirmation dialog
   const handleDeleteClick = () => {
     setShowConfirmDialog(true);
   };
 
-  // Confirm deletion of the project
   const handleDeleteConfirm = () => {
     if (project && project.id && onDelete) {
       onDelete(project.id);
@@ -163,19 +149,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     }
   };
 
-  // Handle closing the modal with animation
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
       onClose();
       setIsClosing(false);
-    }, 300); // Duration should match the CSS transition
+    }, 300); 
   };
 
-  // Render nothing if the modal is not open
   if (!isOpen) return null;
 
-  // Show loading state while tags are being fetched
   if (isTagsLoading) {
     return (
       <div className="fixed top-16 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50">
@@ -186,7 +169,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     );
   }
 
-  // Show error state if tags failed to load
   if (isTagsError) {
     return (
       <div className="fixed top-16 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50">
@@ -212,7 +194,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             isClosing ? "scale-95" : "scale-100"
           } h-screen sm:h-auto flex flex-col`}
           style={{
-            maxHeight: "calc(100vh - 4rem)", // Prevent modal from exceeding viewport height
+            maxHeight: "calc(100vh - 4rem)",
           }}
         >
           {/* Form */}

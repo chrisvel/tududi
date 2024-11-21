@@ -5,7 +5,7 @@ import {
   TrashIcon,
   FolderIcon,
   Squares2X2Icon,
-} from "@heroicons/react/24/outline"; // Updated import
+} from "@heroicons/react/24/outline";
 import TaskList from "../Task/TaskList";
 import ProjectModal from "../Project/ProjectModal";
 import ConfirmDialog from "../Shared/ConfirmDialog";
@@ -28,7 +28,6 @@ const ProjectDetails: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
-  // Removed location.state related code
   const projectTitle = project?.name || "Project";
 
   const [isCompletedOpen, setIsCompletedOpen] = useState(false);

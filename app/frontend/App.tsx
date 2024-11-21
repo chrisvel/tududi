@@ -86,7 +86,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (currentUser && location.pathname === "/") {
-      navigate("/today", { replace: true }); // Navigate to /today instead of /tasks?type=today
+      navigate("/today", { replace: true });
     }
   }, [currentUser, location.pathname, navigate]);
 

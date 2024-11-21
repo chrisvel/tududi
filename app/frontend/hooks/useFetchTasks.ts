@@ -32,7 +32,6 @@ const initialMetrics: Metrics = {
   suggested_tasks: [],
 };
 
-// Define the fetcher function
 const fetcher = (url: string) =>
   fetch(url, {
     credentials: 'include',
@@ -56,8 +55,6 @@ const useFetchTasks = (options?: UseFetchTasksOptions): UseFetchTasksResult => {
 
   const queryString = params.toString();
   const url = `/api/tasks${queryString ? `?${queryString}` : ''}`;
-
-  // Use SWR to fetch data
   const { data, error, mutate } = useSWR(url, fetcher);
 
   return {
