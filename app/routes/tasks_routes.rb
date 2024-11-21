@@ -55,7 +55,7 @@ module Sinatra
       task_attributes = {
         name: task_data['name'],
         priority: task_data['priority'],
-        due_date: task_data['due_date'],
+        due_date: task_data['due_date'].presence,
         status: task_data['status'] || Task.statuses[:not_started],
         note: task_data['note'],
         user_id: current_user.id
@@ -101,7 +101,7 @@ module Sinatra
         priority: task_data['priority'],
         status: task_data['status'] || Task.statuses[:not_started],
         note: task_data['note'],
-        due_date: task_data['due_date']
+        due_date: task_data['due_date'].presence
       }
 
       if task_data['project_id'] && !task_data['project_id'].to_s.strip.empty?

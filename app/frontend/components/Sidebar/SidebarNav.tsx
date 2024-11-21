@@ -22,8 +22,8 @@ const navLinks = [
   { path: '/tasks?type=upcoming', title: 'Upcoming', icon: <CalendarIcon className="h-5 w-5" />, query: 'type=upcoming' },
   { path: '/tasks?type=next', title: 'Next Actions', icon: <ArrowRightCircleIcon className="h-5 w-5" />, query: 'type=next' },
   { path: '/tasks?type=inbox', title: 'Inbox', icon: <InboxIcon className="h-5 w-5" />, query: 'type=inbox' },
-  { path: '/tasks?type=someday', title: 'Someday', icon: <ClockIcon className="h-5 w-5" />, query: 'type=someday' },
-  { path: '/tasks?type=waiting', title: 'Waiting for', icon: <PauseCircleIcon className="h-5 w-5" />, query: 'type=waiting' },
+  // { path: '/tasks?type=someday', title: 'Someday', icon: <ClockIcon className="h-5 w-5" />, query: 'type=someday' },
+  // { path: '/tasks?type=waiting', title: 'Waiting for', icon: <PauseCircleIcon className="h-5 w-5" />, query: 'type=waiting' },
   { path: '/tasks?status=done', title: 'Completed', icon: <CheckCircleIcon className="h-5 w-5" />, query: 'status=done' },
   { path: '/tasks', title: 'All Tasks', icon: <ListBulletIcon className="h-5 w-5" /> },
 ];

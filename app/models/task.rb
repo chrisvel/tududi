@@ -102,4 +102,10 @@ class Task < ActiveRecord::Base
       suggested_tasks: suggested_tasks
     }
   end
+
+  def as_json(options = {})
+    super(options).merge(
+      'due_date' => due_date&.strftime('%Y-%m-%d')
+    )
+  end
 end

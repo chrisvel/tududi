@@ -18,27 +18,24 @@ import NewTask from "./NewTask";
 import TaskList from "./TaskList";
 
 const TasksToday: React.FC = () => {
-  // Fetch tasks and metrics
   const {
     tasks,
     metrics,
     isLoading: loadingTasks,
     isError: errorTasks,
+    mutate: mutateTasks,
   } = useFetchTasks({
     type: "today",
   });
 
-  // Fetch projects
   const {
     projects,
     isLoading: loadingProjects,
     isError: errorProjects,
   } = useFetchProjects();
 
-  // Task management functions
   const { updateTask, deleteTask } = useManageTasks();
 
-  // Handle task updates
   const handleTaskUpdate = (updatedTask: Task): void => {
     if (updatedTask.id === undefined) {
       console.error("Error updating task: Task ID is undefined.");
@@ -46,25 +43,23 @@ const TasksToday: React.FC = () => {
     }
     updateTask(updatedTask.id, updatedTask)
       .then(() => {
-        // Optionally, refetch tasks or update local state
+        mutateTasks();
       })
       .catch((error) => {
         console.error("Error updating task:", error);
       });
   };
 
-  // Handle task deletion
   const handleTaskDelete = (taskId: number): void => {
     deleteTask(taskId)
       .then(() => {
-        // Optionally, refetch tasks or update local state
+        mutateTasks();
       })
       .catch((error) => {
         console.error("Error deleting task:", error);
       });
   };
 
-  // Handle loading and error states
   if (loadingTasks || loadingProjects) {
     return <p>Loading...</p>;
   }
