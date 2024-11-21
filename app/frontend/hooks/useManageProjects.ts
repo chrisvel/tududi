@@ -41,6 +41,7 @@ const useManageProjects = () => {
       const updatedProject: Project = await response.json();
       mutate('/api/projects', (current: Project[] = []) =>
         current.map((project) => (project.id === projectId ? updatedProject : project)), false);
+      return updatedProject;
     } catch (error) {
       console.error('Error updating project:', error);
       throw error;

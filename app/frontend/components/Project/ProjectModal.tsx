@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Area } from '../../entities/Area';
-import { Project } from '../../entities/Project';
-import ConfirmDialog from '../Shared/ConfirmDialog';
-import { useToast } from '../Shared/ToastContext';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Area } from "../../entities/Area";
+import { Project } from "../../entities/Project";
+import ConfirmDialog from "../Shared/ConfirmDialog";
+import { useToast } from "../Shared/ToastContext";
+import TagInput from "../Tag/TagInput";
+import useFetchTags from "../../hooks/useFetchTags";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -22,34 +23,52 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   project,
   areas,
 }) => {
+  // Initialize form data with existing project or default values
   const [formData, setFormData] = useState<Project>(
     project || {
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       area_id: null,
       active: true,
+      tags: [],
     }
   );
 
+  // State to manage tags as an array of tag names
+  const [tags, setTags] = useState<string[]>(project?.tags?.map(tag => tag.name) || []);
+
+  // Fetch available tags from the backend
+  const { tags: availableTags, isLoading: isTagsLoading, isError: isTagsError } = useFetchTags();
+
+  // Refs and state for handling modal animations and confirmations
   const modalRef = useRef<HTMLDivElement>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
+  // Toast notifications for user feedback
   const { showSuccessToast, showErrorToast } = useToast();
 
+  // Update form data and tags when the `project` prop changes
   useEffect(() => {
     if (project) {
-      setFormData(project);
+      setFormData({
+        ...project,
+        tags: project.tags || [],
+      });
+      setTags(project.tags?.map(tag => tag.name) || []);
     } else {
       setFormData({
-        name: '',
-        description: '',
+        name: "",
+        description: "",
         area_id: null,
         active: true,
+        tags: [],
       });
+      setTags([]);
     }
   }, [project]);
 
+  // Handle clicks outside the modal to close it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -61,43 +80,47 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
+  // Handle pressing the Escape key to close the modal
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         handleClose();
       }
     };
     if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown);
+      document.addEventListener("keydown", handleKeyDown);
     }
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen]);
 
+  // Handle changes in form inputs
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
     const target = e.target;
-    const { name, type } = target;
+    const { name, type, value } = target;
 
-    if (type === 'checkbox') {
-      const checked = (target as HTMLInputElement).checked;
-      setFormData((prev) => ({
-        ...prev,
-        [name]: checked,
-      }));
+    if (type === "checkbox") {
+      // Type Narrowing: Ensure target is HTMLInputElement before accessing 'checked'
+      if (target instanceof HTMLInputElement) {
+        const checked = target.checked;
+        setFormData((prev) => ({
+          ...prev,
+          [name]: checked,
+        }));
+      }
     } else {
-      const value = target.value;
       setFormData((prev) => ({
         ...prev,
         [name]: value,
@@ -105,55 +128,97 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     }
   };
 
+  // Handle changes in tags using the TagInput component
+  const handleTagsChange = useCallback((newTags: string[]) => {
+    setTags(newTags);
+    setFormData((prev) => ({
+      ...prev,
+      tags: newTags.map((name) => ({ name })),
+    }));
+  }, []);
+
+  // Handle form submission
   const handleSubmit = () => {
-    onSave(formData);
+    onSave({ ...formData, tags: tags.map(name => ({ name })) });
     showSuccessToast(
-      project ? 'Project updated successfully!' : 'Project created successfully!'
+      project
+        ? "Project updated successfully!"
+        : "Project created successfully!"
     );
     handleClose();
   };
 
+  // Handle delete button click to show confirmation dialog
   const handleDeleteClick = () => {
     setShowConfirmDialog(true);
   };
 
+  // Confirm deletion of the project
   const handleDeleteConfirm = () => {
     if (project && project.id && onDelete) {
       onDelete(project.id);
-      showSuccessToast('Project deleted successfully!');
+      showSuccessToast("Project deleted successfully!");
       setShowConfirmDialog(false);
       handleClose();
     }
   };
 
+  // Handle closing the modal with animation
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
       onClose();
       setIsClosing(false);
-    }, 300);
+    }, 300); // Duration should match the CSS transition
   };
 
+  // Render nothing if the modal is not open
   if (!isOpen) return null;
+
+  // Show loading state while tags are being fetched
+  if (isTagsLoading) {
+    return (
+      <div className="fixed top-16 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          Loading tags...
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if tags failed to load
+  if (isTagsError) {
+    return (
+      <div className="fixed top-16 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          Error loading tags.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
+      {/* Modal Overlay */}
       <div
         className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
-          isClosing ? 'opacity-0' : 'opacity-100'
+          isClosing ? "opacity-0" : "opacity-100"
         }`}
       >
+        {/* Modal Content */}
         <div
           ref={modalRef}
           className={`bg-white dark:bg-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-2xl overflow-hidden transform transition-transform duration-300 ${
-            isClosing ? 'scale-95' : 'scale-100'
+            isClosing ? "scale-95" : "scale-100"
           } h-screen sm:h-auto flex flex-col`}
           style={{
-            maxHeight: 'calc(100vh - 4rem)',
+            maxHeight: "calc(100vh - 4rem)", // Prevent modal from exceeding viewport height
           }}
         >
+          {/* Form */}
           <form className="flex flex-col flex-1">
             <fieldset className="flex flex-col flex-1">
+              {/* Form Fields */}
               <div className="p-4 space-y-3 flex-1 text-sm overflow-y-auto">
                 {/* Project Name */}
                 <div className="py-4">
@@ -178,11 +243,25 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     id="projectDescription"
                     name="description"
                     rows={4}
-                    value={formData.description || ''}
+                    value={formData.description || ""}
                     onChange={handleChange}
                     className="block w-full rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
                     placeholder="Enter project description (optional)"
                   ></textarea>
+                </div>
+
+                {/* Tags */}
+                <div className="pb-3">
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Tags
+                  </label>
+                  <div className="w-full">
+                    <TagInput
+                      onTagsChange={handleTagsChange}
+                      initialTags={tags}
+                      availableTags={availableTags}
+                    />
+                  </div>
                 </div>
 
                 {/* Area */}
@@ -193,7 +272,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                   <select
                     id="projectArea"
                     name="area_id"
-                    value={formData.area_id || ''}
+                    value={formData.area_id || ""}
                     onChange={handleChange}
                     className="block w-full rounded-md shadow-sm px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
                   >
@@ -248,7 +327,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                   onClick={handleSubmit}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out"
                 >
-                  {project ? 'Update Project' : 'Create Project'}
+                  {project ? "Update Project" : "Create Project"}
                 </button>
               </div>
             </fieldset>
@@ -256,6 +335,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         </div>
       </div>
 
+      {/* Confirmation Dialog for Deletion */}
       {showConfirmDialog && (
         <ConfirmDialog
           title="Delete Project"

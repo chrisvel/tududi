@@ -1,4 +1,5 @@
 import { Area } from "./Area";
+import { Tag } from "./Tag";
 
 export interface Project {
   id?: number;
@@ -7,5 +8,6 @@ export interface Project {
   active: boolean;   
   pin_to_sidebar?: boolean; 
   area?: Area;
-  area_id?: number | null;     
+  area_id?: number | null;   
+  tags?: Tag[];  
 }

@@ -3,6 +3,7 @@ class Project < ActiveRecord::Base
   belongs_to :area, optional: true
   has_many :tasks, dependent: :destroy
   has_many :notes, dependent: :destroy
+  has_and_belongs_to_many :tags
 
   scope :with_incomplete_tasks, -> { joins(:tasks).where.not(tasks: { status: Task.statuses[:done] }).distinct }
   scope :with_complete_tasks, -> { joins(:tasks).where(tasks: { status: Task.statuses[:done] }).distinct }

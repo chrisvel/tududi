@@ -24,7 +24,7 @@ interface DataContextProps {
   updateArea: (areaId: number, areaData: any) => Promise<void>;
   deleteArea: (areaId: number) => Promise<void>;
   createProject: (projectData: any) => Promise<Project>;
-  updateProject: (projectId: number, projectData: any) => Promise<void>;
+  updateProject: (projectId: number, projectData: any) => Promise<Project>;
   deleteProject: (projectId: number) => Promise<void>;
   createTag: (tagData: any) => Promise<void>;
   updateTag: (tagId: number, tagData: any) => Promise<void>;
