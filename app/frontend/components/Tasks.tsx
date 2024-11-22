@@ -6,7 +6,12 @@ import { Task } from "../entities/Task";
 import { Project } from "../entities/Project";
 import { getTitleAndIcon } from "./Task/getTitleAndIcon";
 import { getDescription } from "./Task/getDescription";
-import { TagIcon, XMarkIcon, ChevronDownIcon, ChevronDoubleDownIcon } from "@heroicons/react/24/solid";
+import {
+  TagIcon,
+  XMarkIcon,
+  ChevronDownIcon,
+  ChevronDoubleDownIcon,
+} from "@heroicons/react/24/solid";
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -28,10 +33,12 @@ const Tasks: React.FC = () => {
     stateTitle && stateIcon
       ? { title: stateTitle, icon: stateIcon }
       : getTitleAndIcon(query, projects);
-  
-  const IconComponent = typeof icon === 'string' ? React.createElement(icon) : icon;
+
+  const IconComponent =
+    typeof icon === "string" ? React.createElement(icon) : icon;
 
   const tag = query.get("tag");
+  const status = query.get("status");
 
   useEffect(() => {
     const savedOrderBy = localStorage.getItem("order_by") || "due_date:asc";
@@ -187,6 +194,10 @@ const Tasks: React.FC = () => {
 
   const description = getDescription(query, projects);
 
+  const isNewTaskAllowed = () => {
+    return status !== "done";
+  };
+
   return (
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
@@ -268,11 +279,13 @@ const Tasks: React.FC = () => {
         ) : (
           <>
             {/* New Task Form */}
-            <NewTask
-              onTaskCreate={(taskName: string) =>
-                handleTaskCreate({ name: taskName, status: "not_started" })
-              }
-            />
+            {isNewTaskAllowed() && (
+              <NewTask
+                onTaskCreate={(taskName: string) =>
+                  handleTaskCreate({ name: taskName, status: "not_started" })
+                }
+              />
+            )}
 
             {/* Task List */}
             {tasks.length > 0 ? (
