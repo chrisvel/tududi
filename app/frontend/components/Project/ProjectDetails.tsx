@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   PencilSquareIcon,
   TrashIcon,
+  FolderIcon,
   Squares2X2Icon,
-} from "@heroicons/react/24/solid";
+} from "@heroicons/react/24/outline";
 import TaskList from "../Task/TaskList";
 import ProjectModal from "../Project/ProjectModal";
 import ConfirmDialog from "../Shared/ConfirmDialog";
@@ -16,7 +17,6 @@ import { Task } from "../../entities/Task";
 const ProjectDetails: React.FC = () => {
   const { updateTask, deleteTask, updateProject, deleteProject } = useDataContext();
   const { id } = useParams<{ id: string }>();
-  const location = useLocation();
   const navigate = useNavigate();
 
   const { areas } = useDataContext();
@@ -28,9 +28,7 @@ const ProjectDetails: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
-  const { title: stateTitle, icon: stateIcon } = location.state || {};
-  const projectTitle = stateTitle || project?.name || "Project";
-  const projectIcon = stateIcon;
+  const projectTitle = project?.name || "Project";
 
   const [isCompletedOpen, setIsCompletedOpen] = useState(false);
 
@@ -129,8 +127,8 @@ const ProjectDetails: React.FC = () => {
     if (!updatedProject) return;
 
     try {
-      await updateProject(updatedProject.id!, updatedProject);
-      setProject(updatedProject);
+      const savedProject = await updateProject(updatedProject.id!, updatedProject);
+      setProject(savedProject);
       setIsModalOpen(false);
     } catch (err) {
       console.error("Error saving project:", err);
@@ -179,7 +177,7 @@ const ProjectDetails: React.FC = () => {
         {/* Project Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
-            <i className={`${projectIcon} text-xl mr-2`}></i>
+            <FolderIcon className="h-6 w-6 text-gray-500 mr-2" /> 
             <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
               {projectTitle}
             </h2>

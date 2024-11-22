@@ -3,6 +3,18 @@ require 'sinatra/namespace'
 class Sinatra::Application
   register Sinatra::Namespace
 
+  def update_project_tags(project, tags_data)
+    return if tags_data.nil?
+
+    tag_names = tags_data.map { |tag| tag['name'] }.compact.reject(&:empty?).uniq
+
+    existing_tags = Tag.where(user: current_user, name: tag_names)
+    new_tags = tag_names - existing_tags.pluck(:name)
+    created_tags = new_tags.map { |name| Tag.create(name: name, user: current_user) }
+
+    project.tags = (existing_tags + created_tags).uniq
+  end
+
   namespace '/api' do
     before do
       content_type :json
@@ -18,6 +30,7 @@ class Sinatra::Application
       area_id_param = params[:area_id]
 
       projects = current_user.projects
+                             .includes(:tags)
                              .left_joins(:tasks, :area)
                              .distinct
                              .order('projects.name ASC')
@@ -32,18 +45,18 @@ class Sinatra::Application
       grouped_projects = projects.group_by(&:area)
 
       {
-        projects: projects.as_json(include: { tasks: {}, area: { only: :name } }),
+        projects: projects.as_json(include: { tasks: {}, area: { only: :name }, tags: { only: %i[id name] } }),
         task_status_counts: task_status_counts,
         grouped_projects: grouped_projects.as_json(include: { area: { only: :name } })
       }.to_json
     end
 
     get '/project/:id' do
-      project = current_user.projects.includes(:tasks).find_by(id: params[:id])
+      project = current_user.projects.includes(:tasks, :tags).find_by(id: params[:id])
 
       halt 404, { error: 'Project not found' }.to_json unless project
 
-      project.as_json(include: { tasks: {}, area: { only: %i[id name] } }).to_json
+      project.as_json(include: { tasks: {}, area: { only: %i[id name] }, tags: { only: %i[id name] } }).to_json
     end
 
     post '/project' do
@@ -63,8 +76,9 @@ class Sinatra::Application
       )
 
       if project.save
+        update_project_tags(project, project_data['tags'])
         status 201
-        project.as_json.to_json
+        project.as_json(include: { tags: { only: %i[id name] } }).to_json
       else
         status 400
         { error: 'There was a problem creating the project.', details: project.errors.full_messages }.to_json
@@ -92,7 +106,8 @@ class Sinatra::Application
       )
 
       if project.save
-        project.as_json.to_json
+        update_project_tags(project, project_data['tags'])
+        project.as_json(include: { tags: { only: %i[id name] } }).to_json
       else
         status 400
         { error: 'There was a problem updating the project.', details: project.errors.full_messages }.to_json

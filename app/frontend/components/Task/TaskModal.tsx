@@ -255,7 +255,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                             key={project.id}
                             type="button"
                             onClick={() => handleProjectSelection(project)}
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
+                            className="block w-full text-gray-500 dark:text-gray-300 text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
                           >
                             {project.name}
                           </button>

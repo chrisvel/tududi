@@ -17,11 +17,11 @@ const TaskTags: React.FC<TaskTagsProps> = ({ tags = [], onTagRemove, className }
   };
 
   return (
-    <div className={`flex flex-wrap gap-1 ${className}`}>
+    <div className={`flex flex-wrap gap-2 ${className}`}>
       {tags.map((tag, index) => (
         <div
           key={tag.id || index}
-          className="flex items-center bg-gray-200 text-gray-800 text-xs font-medium mr-2 px-2.5 py-1 rounded-md dark:bg-gray-700 dark:text-gray-200 cursor-pointer"
+          className="flex items-center bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1.5 rounded-md dark:bg-gray-700 dark:text-gray-200 cursor-pointer"
         >
           <button
             type="button"

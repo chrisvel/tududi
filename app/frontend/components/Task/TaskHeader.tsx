@@ -41,7 +41,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             )}
           </div>
         </div>
-        <div className="flex items-center flex-wrap justify-start md:justify-end space-x-1">
+        <div className="flex items-center flex-wrap justify-start md:justify-end space-x-2">
           {/* Tags without onTagRemove prop */}
           <TaskTags tags={task.tags || []} />
           {task.due_date && <TaskDueDate dueDate={task.due_date} />}

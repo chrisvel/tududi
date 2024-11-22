@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_16_105827) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_21_113756) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.integer "user_id", null: false
@@ -49,6 +49,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_16_105827) do
     t.boolean "pin_to_sidebar", default: false
     t.index ["area_id"], name: "index_projects_on_area_id"
     t.index ["user_id"], name: "index_projects_on_user_id"
+  end
+
+  create_table "projects_tags", id: false, force: :cascade do |t|
+    t.integer "project_id", null: false
+    t.integer "tag_id", null: false
+    t.index ["project_id"], name: "index_projects_tags_on_project_id"
+    t.index ["tag_id"], name: "index_projects_tags_on_tag_id"
   end
 
   create_table "tags", force: :cascade do |t|
@@ -99,6 +106,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_16_105827) do
   add_foreign_key "notes", "users", on_delete: :cascade
   add_foreign_key "projects", "areas", on_delete: :cascade
   add_foreign_key "projects", "users"
+  add_foreign_key "projects_tags", "projects"
+  add_foreign_key "projects_tags", "tags"
   add_foreign_key "tags", "users", on_delete: :cascade
   add_foreign_key "tags_tasks", "tags"
   add_foreign_key "tags_tasks", "tasks"
