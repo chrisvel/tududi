@@ -67,12 +67,15 @@ class Sinatra::Application
         halt 400, { error: 'Invalid JSON format.' }.to_json
       end
 
+      project_data['priority'] = Project.priorities[project_data['priority']] if project_data['priority'].is_a?(String)
+
       project = current_user.projects.new(
         name: project_data['name'],
         description: project_data['description'] || '',
         area_id: project_data['area_id'],
         active: true,
-        pin_to_sidebar: false
+        pin_to_sidebar: false,
+        priority: project_data['priority']
       )
 
       if project.save
@@ -102,7 +105,8 @@ class Sinatra::Application
         description: project_data['description'],
         area_id: project_data['area_id'],
         active: project_data['active'],
-        pin_to_sidebar: project_data['pin_to_sidebar']
+        pin_to_sidebar: project_data['pin_to_sidebar'],
+        priority: project_data ['priority']
       )
 
       if project.save
