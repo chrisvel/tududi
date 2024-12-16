@@ -9,7 +9,7 @@ class Task < ActiveRecord::Base
   # Existing scopes
   scope :complete, -> { where(status: statuses[:done]) }
   scope :incomplete, -> { where.not(status: statuses[:done]) }
-  scope :due_today, -> { incomplete.where('DATE(due_date) < ?', Date.today) }
+  scope :due_today, -> { incomplete.where('DATE(due_date) <= ?', Date.today) }
   scope :upcoming, -> { incomplete.where('due_date BETWEEN ? AND ?', Date.today, Date.today + 7.days) }
   scope :someday, -> { incomplete.where(due_date: nil) }
   scope :next_actions, -> { incomplete.where(due_date: nil, project_id: nil) }
@@ -85,13 +85,27 @@ class Task < ActiveRecord::Base
 
     tasks_due_today = user.tasks.due_today
 
-    # Suggested tasks
+    # Exclude tasks that are in progress or due today
     excluded_task_ids = tasks_in_progress.pluck(:id) + tasks_due_today.pluck(:id)
-    suggested_tasks = user.tasks.incomplete
-                          .where(status: statuses[:not_started])
-                          .where.not(id: excluded_task_ids)
-                          .order_by_priority
-                          .limit(5)
+
+    # Fetch suggested tasks not in projects, ordered by task priority
+    tasks_without_projects = user.tasks.incomplete
+                                   .where(status: statuses[:not_started], project_id: nil)
+                                   .where.not(id: excluded_task_ids)
+                                   .order(priority: :desc)
+                                   .limit(3)
+
+    # Fetch suggested tasks in projects, ordered by task priority and project priority
+    tasks_in_projects = user.tasks.incomplete
+                               .where(status: statuses[:not_started])
+                               .where.not(project_id: nil)
+                               .where.not(id: excluded_task_ids)
+                               .joins('LEFT JOIN projects ON tasks.project_id = projects.id')
+                               .order(
+                                 Arel.sql('tasks.priority DESC, projects.priority DESC')
+                               )
+                               .distinct
+                               .limit(3)
 
     {
       total_open_tasks: total_open_tasks,
@@ -99,7 +113,7 @@ class Task < ActiveRecord::Base
       tasks_in_progress: tasks_in_progress,
       tasks_in_progress_count: tasks_in_progress_count,
       tasks_due_today: tasks_due_today,
-      suggested_tasks: suggested_tasks
+      suggested_tasks: (tasks_without_projects + tasks_in_projects)
     }
   end
 

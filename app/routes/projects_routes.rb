@@ -22,7 +22,7 @@ class Sinatra::Application
 
     get '/projects' do
       active_param = params[:active]
-      is_active = active_param == 'true' unless active_param.nil?
+      is_active = active_param == 'true' unless active_param.nil? || active_param == 'all'
 
       pin_to_sidebar_param = params[:pin_to_sidebar]
       is_pinned = pin_to_sidebar_param == 'true' unless pin_to_sidebar_param.nil?
@@ -37,7 +37,7 @@ class Sinatra::Application
 
       projects = projects.where(active: is_active) unless is_active.nil?
       projects = projects.where(pin_to_sidebar: is_pinned) unless is_pinned.nil?
-      projects = projects.where(area_id: area_id_param) if area_id_param
+      projects = projects.where(area_id: area_id_param) unless area_id_param.blank?
       task_status_counts = projects.each_with_object({}) do |project, counts|
         counts[project.id] = project.task_status_counts
       end
