@@ -5,6 +5,9 @@ import ConfirmDialog from "../Shared/ConfirmDialog";
 import { useToast } from "../Shared/ToastContext";
 import TagInput from "../Tag/TagInput";
 import useFetchTags from "../../hooks/useFetchTags";
+import PriorityDropdown from "../Shared/PriorityDropdown";
+import { PriorityType } from "../../entities/Task";
+import Switch from "../Shared/Switch";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -30,12 +33,19 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
       area_id: null,
       active: true,
       tags: [],
+      priority: "low",
     }
   );
 
-  const [tags, setTags] = useState<string[]>(project?.tags?.map(tag => tag.name) || []);
+  const [tags, setTags] = useState<string[]>(
+    project?.tags?.map((tag) => tag.name) || []
+  );
 
-  const { tags: availableTags, isLoading: isTagsLoading, isError: isTagsError } = useFetchTags();
+  const {
+    tags: availableTags,
+    isLoading: isTagsLoading,
+    isError: isTagsError,
+  } = useFetchTags();
 
   const modalRef = useRef<HTMLDivElement>(null);
   const [isClosing, setIsClosing] = useState(false);
@@ -49,7 +59,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         ...project,
         tags: project.tags || [],
       });
-      setTags(project.tags?.map(tag => tag.name) || []);
+      setTags(project.tags?.map((tag) => tag.name) || []);
     } else {
       setFormData({
         name: "",
@@ -127,7 +137,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   }, []);
 
   const handleSubmit = () => {
-    onSave({ ...formData, tags: tags.map(name => ({ name })) });
+    onSave({ ...formData, tags: tags.map((name) => ({ name })) });
     showSuccessToast(
       project
         ? "Project updated successfully!"
@@ -154,7 +164,14 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     setTimeout(() => {
       onClose();
       setIsClosing(false);
-    }, 300); 
+    }, 300);
+  };
+
+  const handleToggleActive = () => {
+    setFormData((prev) => ({
+      ...prev,
+      active: !prev.active,
+    }));
   };
 
   if (!isOpen) return null;
@@ -232,6 +249,18 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                   ></textarea>
                 </div>
 
+                <div className="pb-3">
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    Priority
+                  </label>
+                  <PriorityDropdown
+                    value={formData.priority || "medium"}
+                    onChange={(value: PriorityType) =>
+                      setFormData({ ...formData, priority: value })
+                    }
+                  />
+                </div>
+
                 {/* Tags */}
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -269,13 +298,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
                 {/* Active Checkbox */}
                 <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="active"
-                    name="active"
-                    checked={formData.active}
-                    onChange={handleChange}
-                    className="h-5 w-5 appearance-none border border-gray-300 rounded-md bg-white dark:bg-gray-700 checked:bg-blue-600 checked:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <Switch
+                    isChecked={formData.active}
+                    onToggle={handleToggleActive}
                   />
                   <label
                     htmlFor="active"

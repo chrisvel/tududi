@@ -1,43 +1,46 @@
 import React, { useState, useEffect } from "react";
 import { Project } from "../entities/Project";
-import { Link, useSearchParams } from "react-router-dom";
 import {
-  EllipsisVerticalIcon,
   MagnifyingGlassIcon,
-  FolderIcon
+  FolderIcon,
+  Squares2X2Icon,
+  Bars3Icon,
 } from "@heroicons/react/24/solid";
 import ConfirmDialog from "./Shared/ConfirmDialog";
 import ProjectModal from "./Project/ProjectModal";
 import { useDataContext } from "../contexts/DataContext";
 import useFetchProjects from "../hooks/useFetchProjects";
+import { PriorityType, StatusType } from "../entities/Task";
+import { useSearchParams } from "react-router-dom";
+import ProjectItem from "./Project/ProjectItem";
 
-const getProjectInitials = (name: string) => {
-  const words = name
-    .trim()
-    .split(" ")
-    .filter((word) => word.length > 0);
-  if (words.length === 1) {
-    return name.toUpperCase();
+type ProjectTaskCounts = Record<StatusType, number>;
+
+const getPriorityStyles = (priority: PriorityType) => {
+  switch (priority) {
+    case "low":
+      return { color: "bg-green-500" };
+    case "medium":
+      return { color: "bg-yellow-500" };
+    case "high":
+      return { color: "bg-red-500" };
+    default:
+      return { color: "bg-gray-500" };
   }
-  return words.map((word) => word[0].toUpperCase()).join("");
 };
 
 const Projects: React.FC = () => {
-  const { areas, createProject, updateProject, deleteProject } =
-    useDataContext();
-  const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, any>>(
-    {}
-  );
+  const { areas, createProject, updateProject, deleteProject } = useDataContext();
+  const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, ProjectTaskCounts>>({});
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false);
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
-    useState<boolean>(false);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
 
   const [searchParams, setSearchParams] = useSearchParams();
-
   const activeFilter = searchParams.get("active") || "all";
   const areaFilter = searchParams.get("area_id") || "";
 
@@ -55,14 +58,14 @@ const Projects: React.FC = () => {
 
   const getCompletionPercentage = (projectId: number | undefined) => {
     if (!projectId) return 0;
-    const taskStatus = taskStatusCounts[projectId] || {};
-    const totalTasks =
-      (taskStatus.done || 0) +
-      (taskStatus.not_started || 0) +
-      (taskStatus.in_progress || 0);
-
+    const taskStatus = taskStatusCounts[projectId] || {
+      not_started: 0,
+      in_progress: 0,
+      done: 0,
+      archived: 0,
+    };
+    const totalTasks = taskStatus.done + taskStatus.not_started + taskStatus.in_progress;
     if (totalTasks === 0) return 0;
-
     return Math.round((taskStatus.done / totalTasks) * 100);
   };
 
@@ -89,9 +92,7 @@ const Projects: React.FC = () => {
     mutate();
   };
 
-  const handleActiveFilterChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleActiveFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newActiveFilter = e.target.value;
     const params = new URLSearchParams(searchParams);
 
@@ -100,7 +101,6 @@ const Projects: React.FC = () => {
     } else {
       params.set("active", newActiveFilter);
     }
-
     setSearchParams(params);
   };
 
@@ -159,51 +159,79 @@ const Projects: React.FC = () => {
           </h2>
         </div>
 
-        {/* Filters for Active Status and Area */}
-        <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mb-6">
-          <div className="mb-4 md:mb-0 w-full md:w-1/3">
-            <label
-              htmlFor="activeFilter"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        {/* View Mode and Filters */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 space-y-4 md:space-y-0">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setViewMode("cards")}
+              className={`p-2 rounded-md focus:outline-none ${
+                viewMode === "cards"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+              }`}
+              aria-label="Card View"
             >
-              Status
-            </label>
-            <select
-              id="activeFilter"
-              value={activeFilter}
-              onChange={handleActiveFilterChange}
-              className="block w-full p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Squares2X2Icon className="h-5 w-5" />
+            </button>
+
+            <button
+              onClick={() => setViewMode("list")}
+              className={`p-2 rounded-md focus:outline-none ${
+                viewMode === "list"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+              }`}
+              aria-label="List View"
             >
-              <option value="true">Active</option>
-              <option value="false">Inactive</option>
-              <option value="all">All</option>
-            </select>
+              <Bars3Icon className="h-5 w-5" />
+            </button>
           </div>
 
-          <div className="w-full md:w-1/3">
-            <label
-              htmlFor="areaFilter"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-            >
-              Area
-            </label>
-            <select
-              id="areaFilter"
-              value={areaFilter}
-              onChange={handleAreaFilterChange}
-              className="block w-full p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Areas</option>
-              {areas.map((area) => (
-                <option key={area.id} value={area.id.toString()}>
-                  {area.name}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
+            <div className="w-full md:w-auto">
+              <label
+                htmlFor="activeFilter"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
+                Status
+              </label>
+              <select
+                id="activeFilter"
+                value={activeFilter}
+                onChange={handleActiveFilterChange}
+                className="block w-full p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+                <option value="all">All</option>
+              </select>
+            </div>
+
+            <div className="w-full md:w-auto">
+              <label
+                htmlFor="areaFilter"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              >
+                Area
+              </label>
+              <select
+                id="areaFilter"
+                value={areaFilter}
+                onChange={handleAreaFilterChange}
+                className="block w-full p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Areas</option>
+                {areas.map((area) => (
+                  <option key={area.id} value={area.id.toString()}>
+                    {area.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
-        {/* Search Bar with Icon */}
+        {/* Search Bar */}
         <div className="mb-4">
           <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm p-2">
             <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
@@ -217,8 +245,14 @@ const Projects: React.FC = () => {
           </div>
         </div>
 
-        {/* Project Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Projects Grid/List */}
+        <div
+          className={`${
+            viewMode === "cards"
+              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+              : "flex flex-col space-y-4"
+          }`}
+        >
           {Object.keys(groupedProjects).length === 0 ? (
             <div className="text-gray-700 dark:text-gray-300">
               No projects found.
@@ -226,93 +260,34 @@ const Projects: React.FC = () => {
           ) : (
             Object.keys(groupedProjects).map((areaName) => (
               <React.Fragment key={areaName}>
-                <h3 className="col-span-full text-md uppercase font-light text-gray-800 dark:text-gray-200 mb-2 mt-6">
-                  {areaName}
-                </h3>
-
-                {groupedProjects[areaName].map((project) => (
-                  <div
-                    key={project.id}
-                    className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative"
-                    style={{ minHeight: "280px", maxHeight: "280px" }}
-                  >
-                    <div
-                      className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg"
-                      style={{ height: "160px" }}
-                    >
-                      <span className="text-2xl font-extrabold text-gray-500 dark:text-gray-400 opacity-20">
-                        {getProjectInitials(project.name)}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-start p-4">
-                      <Link
-                        to={`/project/${project.id}`}
-                        className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline line-clamp-2"
-                        style={{ minHeight: "3.3rem", maxHeight: "3.3rem" }}
-                      >
-                        {project.name}
-                      </Link>
-                      <div className="relative">
-                        <button
-                          className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none"
-                          onClick={() =>
-                            setActiveDropdown(
-                              activeDropdown === project.id
-                                ? null
-                                : project.id ?? null
-                            )
-                          }
-                        >
-                          <EllipsisVerticalIcon className="h-5 w-5" />
-                        </button>
-
-                        {activeDropdown === project.id && (
-                          <div className="absolute right-0 mt-2 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
-                            <button
-                              onClick={() => handleEditProject(project)}
-                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => {
-                                setProjectToDelete(project);
-                                setIsConfirmDialogOpen(true);
-                                setActiveDropdown(null);
-                              }}
-                              className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="absolute bottom-4 left-0 right-0 px-4">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-blue-500 h-2 rounded-full"
-                            style={{
-                              width: `${getCompletionPercentage(project?.id)}%`,
-                            }}
-                          ></div>
-                        </div>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {getCompletionPercentage(project?.id)}%
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                {viewMode === "cards" && (
+                  <h3 className="col-span-full text-md uppercase font-light text-gray-800 dark:text-gray-200 mb-2 mt-6">
+                    {areaName}
+                  </h3>
+                )}
+                {groupedProjects[areaName].map((project) => {
+                  const { color } = getPriorityStyles(project.priority || "low");
+                  return (
+                    <ProjectItem
+                      key={project.id}
+                      project={project}
+                      viewMode={viewMode}
+                      color={color}
+                      getCompletionPercentage={getCompletionPercentage}
+                      activeDropdown={activeDropdown}
+                      setActiveDropdown={setActiveDropdown}
+                      handleEditProject={handleEditProject}
+                      setProjectToDelete={setProjectToDelete}
+                      setIsConfirmDialogOpen={setIsConfirmDialogOpen}
+                    />
+                  );
+                })}
               </React.Fragment>
             ))
           )}
         </div>
       </div>
 
-      {/* Project Modal */}
       {isProjectModalOpen && (
         <ProjectModal
           isOpen={isProjectModalOpen}
@@ -326,7 +301,6 @@ const Projects: React.FC = () => {
         />
       )}
 
-      {/* Delete Confirmation Dialog */}
       {isConfirmDialogOpen && (
         <ConfirmDialog
           title="Delete Project"
