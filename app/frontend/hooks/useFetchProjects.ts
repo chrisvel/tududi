@@ -27,11 +27,11 @@ const useFetchProjects = (options?: UseFetchProjectsOptions): UseFetchProjectsRe
       let url = '/api/projects';
       const params = new URLSearchParams();
 
-      if (options?.activeFilter !== undefined) {
+      if (options?.activeFilter !== undefined && options.activeFilter !== "all") {
         params.append('active', String(options.activeFilter));
       }
       if (options?.areaFilter !== undefined) {
-        params.append('area', options.areaFilter);
+        params.append('area_id', options.areaFilter);
       }
 
       if (params.toString()) {

@@ -5,6 +5,8 @@ class Project < ActiveRecord::Base
   has_many :notes, dependent: :destroy
   has_and_belongs_to_many :tags
 
+  enum priority: { low: 0, medium: 1, high: 2 }
+
   scope :with_incomplete_tasks, -> { joins(:tasks).where.not(tasks: { status: Task.statuses[:done] }).distinct }
   scope :with_complete_tasks, -> { joins(:tasks).where(tasks: { status: Task.statuses[:done] }).distinct }
 

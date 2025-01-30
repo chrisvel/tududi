@@ -12,7 +12,16 @@ import ConfirmDialog from "../Shared/ConfirmDialog";
 import { useDataContext } from "../../contexts/DataContext";
 import NewTask from "../Task/NewTask";
 import { Project } from "../../entities/Project";
-import { Task } from "../../entities/Task";
+import { PriorityType, Task } from "../../entities/Task";
+
+type PriorityStyles = Record<PriorityType, string> & { default: string };
+
+const priorityStyles: PriorityStyles = {
+  high: 'bg-red-500',   
+  medium: 'bg-yellow-500',
+  low: 'bg-green-500',
+  default: 'bg-gray-400',
+};
 
 const ProjectDetails: React.FC = () => {
   const { updateTask, deleteTask, updateProject, deleteProject } = useDataContext();
@@ -21,7 +30,7 @@ const ProjectDetails: React.FC = () => {
 
   const { areas } = useDataContext();
 
-  const [project, setProject] = useState<Project>();
+  const [project, setProject] = useState<Project | undefined>(undefined);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,14 +65,15 @@ const ProjectDetails: React.FC = () => {
     fetchProject();
   }, [id]);
 
-  const handleTaskCreate = async (taskData: Partial<Task>) => {
-    if (!project?.id) {
-      console.error("Project ID is missing");
+  const handleTaskCreate = async (taskName: string) => {
+    if (!project || project.id === undefined) {
+      console.error("Cannot create task: Project or Project ID is missing");
       return;
     }
 
     const taskPayload = {
-      ...taskData,
+      name: taskName,
+      status: "not_started",
       project_id: project.id,
     };
 
@@ -124,10 +134,13 @@ const ProjectDetails: React.FC = () => {
   };
 
   const handleSaveProject = async (updatedProject: Project) => {
-    if (!updatedProject) return;
+    if (!updatedProject || updatedProject.id === undefined) {
+      console.error("Cannot save project: Project or Project ID is missing");
+      return;
+    }
 
     try {
-      const savedProject = await updateProject(updatedProject.id!, updatedProject);
+      const savedProject = await updateProject(updatedProject.id, updatedProject);
       setProject(savedProject);
       setIsModalOpen(false);
     } catch (err) {
@@ -136,10 +149,13 @@ const ProjectDetails: React.FC = () => {
   };
 
   const handleDeleteProject = async () => {
-    if (!project) return;
+    if (!project || project.id === undefined) {
+      console.error("Cannot delete project: Project or Project ID is missing");
+      return;
+    }
 
     try {
-      await deleteProject(project.id!);
+      await deleteProject(project.id);
       navigate("/projects");
     } catch (err) {
       console.error("Error deleting project:", err);
@@ -164,6 +180,14 @@ const ProjectDetails: React.FC = () => {
     );
   }
 
+  if (!project) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="text-red-500 text-lg">Project not found.</div>
+      </div>
+    );
+  }
+
   const activeTasks = tasks.filter(task => task.status !== 'done');
   const completedTasks = tasks.filter(task => task.status === 'done');
 
@@ -177,12 +201,21 @@ const ProjectDetails: React.FC = () => {
         {/* Project Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
-            <FolderIcon className="h-6 w-6 text-gray-500 mr-2" /> 
-            <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
+            <FolderIcon className="h-6 w-6 text-gray-500 mr-2" />
+            <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100 mr-2">
               {projectTitle}
             </h2>
+            {/* Priority Circle placed after the title */}
+            {project.priority && (
+              <div
+                className={`w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${priorityStyles[project.priority] || priorityStyles.default}`}
+                title={`Priority: ${priorityLabel(project.priority)}`}
+                aria-label={`Priority: ${priorityLabel(project.priority)}`}
+              ></div>
+            )}
           </div>
           <div className="flex space-x-2">
+            {/* Edit Project Button */}
             <button
               onClick={handleEditProject}
               className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
@@ -190,6 +223,7 @@ const ProjectDetails: React.FC = () => {
               <PencilSquareIcon className="h-5 w-5" />
             </button>
 
+            {/* Delete Project Button */}
             <button
               onClick={() => setIsConfirmDialogOpen(true)}
               className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
@@ -200,11 +234,11 @@ const ProjectDetails: React.FC = () => {
         </div>
 
         {/* Project Area */}
-        {project?.area && (
+        {project.area && (
           <div className="flex items-center mb-4">
             <Squares2X2Icon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
             <Link
-              to={`/projects/?area_id=${project?.area.id}`}
+              to={`/projects/?area_id=${project.area.id}`}
               className="text-gray-600 dark:text-gray-400 hover:underline"
             >
               {project.area.name.toUpperCase()}
@@ -213,7 +247,7 @@ const ProjectDetails: React.FC = () => {
         )}
 
         {/* Project Description */}
-        {project?.description && (
+        {project.description && (
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {project.description}
           </p>
@@ -221,13 +255,7 @@ const ProjectDetails: React.FC = () => {
 
         {/* New Task Form */}
         <NewTask
-          onTaskCreate={(taskName: string) =>
-            handleTaskCreate({
-              name: taskName,
-              status: "not_started",
-              project_id: project?.id, 
-            })
-          }
+          onTaskCreate={handleTaskCreate}
         />
 
         {/* Active Tasks */}
@@ -250,7 +278,7 @@ const ProjectDetails: React.FC = () => {
             onClick={toggleCompleted}
             className="flex items-center justify-between w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md focus:outline-none"
           >
-            <span className="text-xl font-semibold">Completed Tasks</span>
+            <span className="text-sm uppercase font-medium">Completed Tasks</span>
             <svg
               className={`w-6 h-6 transform transition-transform duration-200 ${
                 isCompletedOpen ? "rotate-180" : "rotate-0"
@@ -291,14 +319,15 @@ const ProjectDetails: React.FC = () => {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSave={handleSaveProject}
-          project={project || undefined}
+          project={project}
           areas={areas}
         />
 
+        {/* Confirm Delete Dialog */}
         {isConfirmDialogOpen && (
           <ConfirmDialog
             title="Delete Project"
-            message={`Are you sure you want to delete the project "${project?.name}"?`}
+            message={`Are you sure you want to delete the project "${project.name}"?`}
             onConfirm={handleDeleteProject}
             onCancel={() => setIsConfirmDialogOpen(false)}
           />
@@ -306,6 +335,19 @@ const ProjectDetails: React.FC = () => {
       </div>
     </div>
   );
+};
+
+const priorityLabel = (priority: PriorityType) => {
+  switch (priority) {
+    case 'high':
+      return 'High';
+    case 'medium':
+      return 'Medium';
+    case 'low':
+      return 'Low';
+    default:
+      return '';
+  }
 };
 
 export default ProjectDetails;
