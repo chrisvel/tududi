@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   PencilSquareIcon,
@@ -6,26 +6,35 @@ import {
   Squares2X2Icon,
 } from '@heroicons/react/24/solid'; 
 import ConfirmDialog from './Shared/ConfirmDialog';
-import AreaModal from './Area/AreaModal'; 
-import { useDataContext } from '../contexts/DataContext';
+import AreaModal from './Area/AreaModal';
+import { useStore } from '../store/useStore';
 import { Area } from '../entities/Area';
 
 const Areas: React.FC = () => {
-  const { areas, isLoading, isError, createArea, updateArea, deleteArea } = useDataContext();
-  const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
+  const {
+    areasStore: { areas, create, update, delete: deleteArea, fetchAll },
+    isLoading,
+    isError
+  } = useStore();
+
+  const [isAreaModalOpen, setIsAreaModalOpen] = useState <boolean>(false);
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
 
+  useEffect(() => {
+    fetchAll(); // Fetch all areas on component mount
+  }, [fetchAll]);
+
   const handleSaveArea = async (areaData: Area) => {
     try {
       if (areaData.id) {
-        await updateArea(areaData.id, {
+        await update(areaData.id, {
           name: areaData.name,
           description: areaData.description,
         });
       } else {
-        await createArea({
+        await create({
           name: areaData.name,
           description: areaData.description,
         });
@@ -89,7 +98,7 @@ const Areas: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center px-4 lg:px-2  ">
+    <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
         {/* Areas Header */}
         <div className="flex items-center justify-between mb-4">

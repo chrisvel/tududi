@@ -15,6 +15,7 @@ import { Project } from "./entities/Project";
 import { Task } from "./entities/Task";
 import { useDataContext } from "./contexts/DataContext";
 import { User } from "./entities/User";
+import { useStore } from "./store/useStore";
 
 interface LayoutProps {
   currentUser: User;
@@ -42,6 +43,8 @@ const Layout: React.FC<LayoutProps> = ({
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [newTask, setNewTask] = useState<Task | null>(null);
 
+  const { areasStore: { create, update }} = useStore();
+
   const {
     tags,
     areas,
@@ -52,9 +55,6 @@ const Layout: React.FC<LayoutProps> = ({
     createNote,
     updateNote,
     deleteNote,
-    createArea,
-    updateArea,
-    deleteArea,
     createTag,
     updateTag,
     deleteTag,
@@ -186,9 +186,9 @@ const Layout: React.FC<LayoutProps> = ({
   const handleSaveArea = async (areaData: Area) => {
     try {
       if (areaData.id) {
-        await updateArea(areaData.id, areaData);
+        await update(areaData.id, areaData);
       } else {
-        await createArea(areaData);
+        await create(areaData);
       }
     } catch (error) {
       console.error("Error saving area:", error);
