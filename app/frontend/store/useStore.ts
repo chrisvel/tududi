@@ -296,33 +296,182 @@ export const useStore = create<StoreState>((set) => ({
 
   tagsStore: {
     tags: [],
+
+    fetchAll: async () => {
+      try {
+        const response = await fetch('/api/tags');
+        if (!response.ok) throw new Error('Failed to fetch tags.');
+        
+        const tags = await response.json();
+        set((state) => ({
+          tagsStore: {
+            ...state.tagsStore,
+            tags,
+          },
+        }));
+      } catch (error) {
+        console.error('Error fetching tags:', error);
+      }
+    },
+
     create: async (tagData) => {
-      /* Implementation */
+      try {
+        const response = await fetch('/api/tag', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(tagData),
+        });
+        if (!response.ok) throw new Error('Failed to create tag.');
+
+        const newTag = await response.json();
+        set((state) => ({
+          tagsStore: {
+            ...state.tagsStore,
+            tags: [...state.tagsStore.tags, newTag],
+          },
+        }));
+      } catch (error) {
+        console.error('Error creating tag:', error);
+        throw error;
+      }
     },
+
     update: async (tagId, tagData) => {
-      /* Implementation */
+      try {
+        const response = await fetch(`/api/tag/${tagId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(tagData),
+        });
+        if (!response.ok) throw new Error('Failed to update tag.');
+
+        const updatedTag = await response.json();
+        set((state) => ({
+          tagsStore: {
+            ...state.tagsStore,
+            tags: state.tagsStore.tags.map(tag =>
+              tag.id === tagId ? updatedTag : tag
+            ),
+          },
+        }));
+      } catch (error) {
+        console.error('Error updating tag:', error);
+        throw error;
+      }
     },
+
     delete: async (tagId) => {
-      /* Implementation */
-    },
-    fetchAll: () => {
-      /* Implementation */
+      try {
+        const response = await fetch(`/api/tag/${tagId}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) throw new Error('Failed to delete tag.');
+
+        set((state) => ({
+          tagsStore: {
+            ...state.tagsStore,
+            tags: state.tagsStore.tags.filter(tag => tag.id !== tagId),
+          },
+        }));
+      } catch (error) {
+        console.error('Error deleting tag:', error);
+        throw error;
+      }
     },
   },
 
   tasksStore: {
     tasks: [],
+
+    fetchAll: async (query: string = '') => {
+      set({ isLoading: true, isError: false });
+      try {
+        const response = await fetch(`/api/tasks${query}`, {
+          credentials: 'include',
+          headers: { Accept: 'application/json' },
+        });
+        if (!response.ok) throw new Error('Failed to fetch tasks.');
+        
+        const tasks = await response.json();
+        set((state) => ({
+          tasksStore: {
+            ...state.tasksStore,
+            tasks,
+          },
+          isLoading: false,
+        }));
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+        set({ isError: true, isLoading: false });
+      }
+    },
+
     create: async (taskData) => {
-      /* Implementation */
+      try {
+        const response = await fetch('/api/task', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(taskData),
+        });
+        if (!response.ok) throw new Error('Failed to create task.');
+
+        const newTask = await response.json();
+        set((state) => ({
+          tasksStore: {
+            ...state.tasksStore,
+            tasks: [newTask, ...state.tasksStore.tasks],
+          },
+        }));
+      } catch (error) {
+        console.error('Error creating task:', error);
+        throw error;
+      }
     },
+
     update: async (taskId, taskData) => {
-      /* Implementation */
+      try {
+        const response = await fetch(`/api/task/${taskId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(taskData),
+        });
+        if (!response.ok) throw new Error('Failed to update task.');
+
+        const updatedTask = await response.json();
+        set((state) => ({
+          tasksStore: {
+            ...state.tasksStore,
+            tasks: state.tasksStore.tasks.map((task) => 
+              task.id === taskId ? updatedTask : task
+            ),
+          },
+        }));
+      } catch (error) {
+        console.error('Error updating task:', error);
+        throw error;
+      }
     },
+
     delete: async (taskId) => {
-      /* Implementation */
-    },
-    fetchAll: () => {
-      /* Implementation */
+      try {
+        const response = await fetch(`/api/task/${taskId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+        if (!response.ok) throw new Error('Failed to delete task.');
+
+        set((state) => ({
+          tasksStore: {
+            ...state.tasksStore,
+            tasks: state.tasksStore.tasks.filter((task) => task.id !== taskId),
+          },
+        }));
+      } catch (error) {
+        console.error('Error deleting task:', error);
+        throw error;
+      }
     },
   },
 }));

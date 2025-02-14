@@ -9,7 +9,7 @@ import {
 import TaskList from "../Task/TaskList";
 import ProjectModal from "../Project/ProjectModal";
 import ConfirmDialog from "../Shared/ConfirmDialog";
-import { useStore } from "../../store/useStore";  // Use useStore instead of useDataContext
+import { useStore } from "../../store/useStore"; 
 import NewTask from "../Task/NewTask";
 import { Project } from "../../entities/Project";
 import { PriorityType, Task } from "../../entities/Task";
