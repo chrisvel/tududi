@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useDataContext } from '../../contexts/DataContext';
+import { useStore } from '../../store/useStore'; // Use Zustand store
+import { Area } from '../../entities/Area';
 
 const AreaDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { areas, isLoading, isError } = useDataContext(); 
-  const [area, setArea] = useState<any | null>(null);
+  const { areas } = useStore((state) => state.areasStore);
+  const [area, setArea] = useState<Area | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    const foundArea = areas.find((a) => a.id === Number(id));
+    if (!areas.length) setIsLoading(true);
+    const foundArea = areas.find((a: Area) => a.id === Number(id));
     setArea(foundArea || null);
+    if (!foundArea) {
+      setIsError(true);
+    }
+    setIsLoading(false);
   }, [id, areas]);
 
   if (isLoading) {
@@ -25,7 +33,7 @@ const AreaDetails: React.FC = () => {
   if (isError || !area) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="textpro-red-500 text-lg">
+        <div className="text-red-500 text-lg">
           {isError ? 'Error loading area details.' : 'Area not found.'}
         </div>
       </div>

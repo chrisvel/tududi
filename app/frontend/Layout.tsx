@@ -13,7 +13,6 @@ import { Area } from "./entities/Area";
 import { Tag } from "./entities/Tag";
 import { Project } from "./entities/Project";
 import { Task } from "./entities/Task";
-import { useDataContext } from "./contexts/DataContext";
 import { User } from "./entities/User";
 import { useStore } from "./store/useStore";
 
@@ -43,27 +42,16 @@ const Layout: React.FC<LayoutProps> = ({
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [newTask, setNewTask] = useState<Task | null>(null);
 
-  const { areasStore: { create, update }} = useStore();
-
+  // Utilize the Zustand store for all entities that are being managed
   const {
-    tags,
-    areas,
-    notes,
-    projects,
-    isLoading,
-    isError,
-    createNote,
-    updateNote,
-    deleteNote,
-    createTag,
-    updateTag,
-    deleteTag,
-    createProject,
-    updateProject,
-    deleteProject,
-    createTask,
-    updateTask,
-  } = useDataContext();
+    notesStore: { notes, create: createNote, update: updateNote, fetchAll: fetchNotes },
+    areasStore: { areas, create: createArea, update: updateArea, fetchAll: fetchAreas },
+    tasksStore: { create: createTask, update: updateTask },
+    projectsStore: { projects, create: createProject, update: updateProject },
+    tagsStore: { tags, create: createTag, update: updateTag },
+    isLoading, // If you manage loading state centrally
+    isError,   // If you manage error state centrally
+  } = useStore();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(
     window.innerWidth >= 1024
@@ -76,6 +64,11 @@ const Layout: React.FC<LayoutProps> = ({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    fetchNotes();
+    fetchAreas();
+  }, [fetchNotes, fetchAreas]);
 
   const openNoteModal = (note: Note | null = null) => {
     setSelectedNote(note);
@@ -127,19 +120,9 @@ const Layout: React.FC<LayoutProps> = ({
   const handleSaveNote = async (noteData: Note) => {
     try {
       if (noteData.id) {
-        await updateNote(noteData.id, {
-          title: noteData.title,
-          content: noteData.content,
-          tags: noteData.tags?.map((tag) => tag.name),
-          project_id: noteData.project?.id,
-        });
+        await updateNote(noteData.id, noteData);
       } else {
-        await createNote({
-          title: noteData.title,
-          content: noteData.content,
-          tags: noteData.tags?.map((tag) => tag.name),
-          project_id: noteData.project?.id,
-        });
+        await createNote(noteData);
       }
     } catch (error) {
       console.error("Error saving note:", error);
@@ -173,22 +156,12 @@ const Layout: React.FC<LayoutProps> = ({
     closeProjectModal();
   };
 
-  const handleCreateProject = async (name: string): Promise<Project> => {
-    try {
-      const newProject = await createProject({ name });
-      return newProject;
-    } catch (error) {
-      console.error("Error creating project:", error);
-      throw error;
-    }
-  };
-
   const handleSaveArea = async (areaData: Area) => {
     try {
       if (areaData.id) {
-        await update(areaData.id, areaData);
+        await updateArea(areaData.id, areaData);
       } else {
-        await create(areaData);
+        await createArea(areaData);
       }
     } catch (error) {
       console.error("Error saving area:", error);
@@ -207,6 +180,19 @@ const Layout: React.FC<LayoutProps> = ({
       console.error("Error saving tag:", error);
     }
     closeTagModal();
+  };
+
+  const handleCreateProject = async (name: string): Promise<Project> => {
+    try {
+      const newProject = await createProject({
+        name,
+        active: true
+      });
+      return newProject;
+    } catch (error) {
+      console.error("Error creating project:", error);
+      throw error;
+    }
   };
 
   const mainContentMarginLeft = isSidebarOpen ? "ml-72" : "ml-0";
@@ -402,4 +388,3 @@ const Layout: React.FC<LayoutProps> = ({
 };
 
 export default Layout;
-

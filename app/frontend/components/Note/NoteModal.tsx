@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Note } from '../../entities/Note';
-import { useDataContext } from '../../contexts/DataContext';
+import { useStore } from '../../store/useStore';  // Adjusted to use the provided store
 import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
 import { Tag } from '../../entities/Tag';
@@ -13,7 +13,7 @@ interface NoteModalProps {
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) => {
-  const { createNote, updateNote } = useDataContext();
+  const { notesStore } = useStore();  // Use the notesStore from useStore
   const [formData, setFormData] = useState<Note>({
     id: note?.id || 0,
     title: note?.title || '',
@@ -109,19 +109,21 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
       setError('Note title is required.');
       return;
     }
-
+  
     setIsSubmitting(true);
     setError(null);
-
+  
     try {
+      const noteTags: Tag[] = tags.map(tagName => ({ name: tagName })); 
+  
       if (formData.id && formData.id !== 0) {
-        await updateNote(formData.id, { ...formData, tags });
+        await notesStore.update(formData.id, { ...formData, tags: noteTags });
         showSuccessToast('Note updated successfully!');
       } else {
-        await createNote({ ...formData, tags });
+        const newNote = await notesStore.create({ ...formData, tags: noteTags }); 
         showSuccessToast('Note created successfully!');
+        onSave(newNote);
       }
-      onSave(formData);
       handleClose();
     } catch (err) {
       setError((err as Error).message);

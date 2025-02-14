@@ -1,43 +1,60 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon, TagIcon, DocumentTextIcon } from '@heroicons/react/24/solid';
-import { useDataContext } from '../../contexts/DataContext';
+import { useStore } from '../../store/useStore'; // Use Zustand store
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
-import { Note } from '../../entities/Note'; 
+import { Note } from '../../entities/Note';
 
 const NoteDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { notes, deleteNote, isLoading, isError } = useDataContext(); 
+  const { notes, delete: deleteNote } = useStore((state) => state.notesStore); // Extract required actions
   const [note, setNote] = useState<Note | null>(null);
-  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); 
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+  
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const foundNote = notes.find((n) => n.id === Number(id));
-    setNote(foundNote || null);
+    const fetchNote = () => {
+      try {
+        setIsLoading(true);
+        const foundNote = notes.find((n: Note) => n.id === Number(id));
+        setNote(foundNote || null);
+        if (!foundNote) {
+          setIsError(true);
+        }
+      } catch (err) {
+        setIsError(true);
+        console.error('Error fetching note:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchNote();
   }, [id, notes]);
 
   const handleDeleteNote = async () => {
     if (!noteToDelete) return;
     try {
       await deleteNote(noteToDelete.id!);
-      navigate('/notes'); 
+      navigate('/notes');
     } catch (err) {
       console.error('Error deleting note:', err);
     }
   };
 
   const handleSaveNote = (updatedNote: Note) => {
-    setNote(updatedNote); 
-    setIsNoteModalOpen(false); 
+    setNote(updatedNote);
+    setIsNoteModalOpen(false);
   };
 
   const handleEditNote = () => {
-    setIsNoteModalOpen(true); 
+    setIsNoteModalOpen(true);
   };
 
   const handleOpenConfirmDialog = (note: Note) => {

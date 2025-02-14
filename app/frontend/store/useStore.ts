@@ -7,7 +7,7 @@ import { Tag } from "../entities/Tag";
 
 interface NotesStore {
   notes: Note[];
-  create: (noteData: Note) => Promise<void>;
+  create: (noteData: Note) => Promise<Note>;
   update: (noteId: number, noteData: Note) => Promise<void>;
   delete: (noteId: number) => Promise<void>;
   fetchAll: () => void;
@@ -23,7 +23,7 @@ interface AreasStore {
 
 interface ProjectsStore {
   projects: Project[];
-  create: (projectData: Project) => Promise<void>;
+  create: (projectData: Project) => Promise<Project>;
   update: (projectId: number, projectData: Project) => Promise<Project>;
   delete: (projectId: number) => Promise<void>;
   fetchAll: () => void;
@@ -68,15 +68,18 @@ export const useStore = create<StoreState>((set) => ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(noteData),
         });
-        const createdNote = await response.json();
+        if (!response.ok) throw new Error('Failed to create note.');
+        const newNote = await response.json();
         set((state) => ({
           notesStore: {
             ...state.notesStore,
-            notes: [...state.notesStore.notes, createdNote],
+            notes: [...state.notesStore.notes, newNote],
           },
         }));
+        return newNote; // Make sure to return the new note here
       } catch (error) {
         console.error("Error creating note:", error);
+        throw error;
       }
     },
     update: async (noteId, noteData) => {
@@ -196,91 +199,94 @@ export const useStore = create<StoreState>((set) => ({
 
   projectsStore: {
     projects: [],
-
+    
     fetchAll: async () => {
       try {
-        // Fetching all projects
         const response = await fetch('/api/projects');
         if (!response.ok) throw new Error('Failed to fetch projects.');
+        
         const projects = await response.json();
-        set((state) => ({ projectsStore: { ...state.projectsStore, projects } }));
+        set((state) => ({
+          projectsStore: {
+            ...state.projectsStore,
+            projects
+          }
+        }));
       } catch (error) {
         console.error('Error fetching projects:', error);
       }
     },
-
-    create: async (projectData) => {
+    
+    create: async (projectData: Partial<Project>): Promise<Project> => {
       try {
         const response = await fetch('/api/project', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(projectData),
         });
-
-        if (response.ok) {
-          const newProject = await response.json();
-          set((state) => ({
-            projectsStore: {
-              ...state.projectsStore,
-              projects: [...state.projectsStore.projects, newProject],
-            },
-          }));
-          return newProject;
-        } else {
-          throw new Error('Failed to create project.');
-        }
+        
+        if (!response.ok) throw new Error('Failed to create project.');
+        
+        const newProject = await response.json();
+        set((state) => ({
+          projectsStore: {
+            ...state.projectsStore,
+            projects: [...state.projectsStore.projects, newProject],
+          }
+        }));
+        return newProject;
       } catch (error) {
         console.error('Error creating project:', error);
         throw error;
       }
     },
-
-    update: async (projectId, projectData) => {
+    
+    update: async (projectId, projectData: Partial<Project>) => {
       try {
         const response = await fetch(`/api/project/${projectId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(projectData),
         });
-    
-        if (response.ok) {
-          const updatedProject = await response.json();
-          set((state) => ({
-            projectsStore: {
-              ...state.projectsStore,
-              projects: state.projectsStore.projects.map((project) =>
-                project.id === projectId ? updatedProject : project
-              ),
-            },
-          }));
-          return updatedProject; 
-        } else {
+        
+        if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || 'Failed to update project.');
         }
+        
+        const updatedProject = await response.json();
+        set((state) => ({
+          projectsStore: {
+            ...state.projectsStore,
+            projects: state.projectsStore.projects.map((project) =>
+              project.id === projectId ? updatedProject : project
+            ),
+          }
+        }));
+        return updatedProject;
       } catch (error) {
         console.error('Error updating project:', error);
         throw error;
       }
     },
-
+    
     delete: async (projectId) => {
       try {
         const response = await fetch(`/api/project/${projectId}`, {
           method: 'DELETE',
         });
-
-        if (response.ok) {
-          set((state) => ({
-            projectsStore: {
-              ...state.projectsStore,
-              projects: state.projectsStore.projects.filter((project) => project.id !== projectId),
-            },
-          }));
-        } else {
+        
+        if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || 'Failed to delete project.');
         }
+        
+        set((state) => ({
+          projectsStore: {
+            ...state.projectsStore,
+            projects: state.projectsStore.projects.filter((project) => project.id !== projectId),
+          }
+        }));
       } catch (error) {
         console.error('Error deleting project:', error);
         throw error;

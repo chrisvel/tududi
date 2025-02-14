@@ -1,7 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import useFetchTags from '../hooks/useFetchTags';
 import useFetchProjects from '../hooks/useFetchProjects'; 
-import useManageProjects from '../hooks/useManageProjects';
 import useManageTags from '../hooks/useManageTags';
 import useManageTasks from '../hooks/useManageTasks';
 import { Project } from '../entities/Project';
@@ -12,9 +11,6 @@ interface DataContextProps {
   projects: Project[];
   isLoading: boolean;
   isError: boolean;
-  createProject: (projectData: any) => Promise<Project>;
-  updateProject: (projectId: number, projectData: any) => Promise<Project>;
-  deleteProject: (projectId: number) => Promise<void>;
   createTag: (tagData: any) => Promise<void>;
   updateTag: (tagId: number, tagData: any) => Promise<void>;
   deleteTag: (tagId: number) => Promise<void>;
@@ -43,7 +39,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isError: isErrorProjects,
     mutate: mutateProjects,
   } = useFetchProjects(); 
-  const { createProject, updateProject, deleteProject } = useManageProjects();
   const { createTag, updateTag, deleteTag } = useManageTags();
   const {
     tasks,
@@ -65,9 +60,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         projects,
         isLoading,
         isError,
-        createProject,
-        updateProject,
-        deleteProject,
         createTag,
         updateTag,
         deleteTag,
