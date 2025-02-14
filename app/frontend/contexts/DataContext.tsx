@@ -29,7 +29,6 @@ interface DataContextProps {
   updateTask: (taskId: number, taskData: any) => Promise<void>;
   deleteTask: (taskId: number) => Promise<void>;
   mutateTags: () => void;
-  mutateAreas: () => void;
   mutateNotes: () => void;
   mutateProjects: () => void; 
 }
@@ -46,7 +45,6 @@ export const useDataContext = () => {
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { tags, isLoading: isLoadingTags, isError: isErrorTags, mutate: mutateTags } = useFetchTags();
-  const { areas, isLoading: isLoadingAreas, isError: isErrorAreas, mutate: mutateAreas } = useFetchAreas();
   const {
     projects,
     isLoading: isLoadingProjects,
@@ -99,7 +97,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateTask,
         deleteTask,
         mutateTags,
-        mutateAreas,
         mutateNotes,
         mutateProjects, 
       }}

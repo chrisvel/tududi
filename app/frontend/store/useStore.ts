@@ -1,9 +1,9 @@
-import { create } from 'zustand';
-import { Project } from '../entities/Project';
-import { Note } from '../entities/Note';
-import { Area } from '../entities/Area';
-import { Task } from '../entities/Task';
-import { Tag } from '../entities/Tag';
+import { create } from "zustand";
+import { Project } from "../entities/Project";
+import { Note } from "../entities/Note";
+import { Area } from "../entities/Area";
+import { Task } from "../entities/Task";
+import { Tag } from "../entities/Tag";
 
 interface NotesStore {
   notes: Note[];
@@ -60,10 +60,18 @@ export const useStore = create<StoreState>((set) => ({
 
   notesStore: {
     notes: [],
-    create: async (noteData) => { /* Implementation */ },
-    update: async (noteId, noteData) => { /* Implementation */ },
-    delete: async (noteId) => { /* Implementation */ },
-    mutate: () => { /* Implementation */ },
+    create: async (noteData) => {
+      /* Implementation */
+    },
+    update: async (noteId, noteData) => {
+      /* Implementation */
+    },
+    delete: async (noteId) => {
+      /* Implementation */
+    },
+    mutate: () => {
+      /* Implementation */
+    },
   },
 
   areasStore: {
@@ -71,7 +79,7 @@ export const useStore = create<StoreState>((set) => ({
 
     fetchAll: async () => {
       try {
-        const response = await fetch('/api/areas?active=true');
+        const response = await fetch("/api/areas?active=true");
         const areas = await response.json();
         set((state) => ({
           areasStore: {
@@ -80,15 +88,15 @@ export const useStore = create<StoreState>((set) => ({
           },
         }));
       } catch (error) {
-        console.error('Failed to fetch areas:', error);
+        console.error("Failed to fetch areas:", error);
       }
     },
 
     create: async (areaData) => {
       try {
-        const response = await fetch('/api/areas', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/api/areas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(areaData),
         });
         const newArea = await response.json();
@@ -99,15 +107,15 @@ export const useStore = create<StoreState>((set) => ({
           },
         }));
       } catch (error) {
-        console.error('Error creating area:', error);
+        console.error("Error creating area:", error);
       }
     },
 
     update: async (areaId, areaData) => {
       try {
         const response = await fetch(`/api/areas/${areaId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(areaData),
         });
         const updatedArea = await response.json();
@@ -120,14 +128,14 @@ export const useStore = create<StoreState>((set) => ({
           },
         }));
       } catch (error) {
-        console.error('Error updating area:', error);
+        console.error("Error updating area:", error);
       }
     },
 
     delete: async (areaId) => {
       try {
         await fetch(`/api/areas/${areaId}`, {
-          method: 'DELETE',
+          method: "DELETE",
         });
         set((state) => ({
           areasStore: {
@@ -136,31 +144,53 @@ export const useStore = create<StoreState>((set) => ({
           },
         }));
       } catch (error) {
-        console.error('Error deleting area:', error);
+        console.error("Error deleting area:", error);
       }
     },
   },
 
   projectsStore: {
     projects: [],
-    create: async (projectData) => { /* Implementation */ },
-    update: async (projectId, projectData) => { /* Implementation */ },
-    delete: async (projectId) => { /* Implementation */ },
-    mutate: () => { /* Implementation */ },
+    create: async (projectData) => {
+      /* Implementation */
+    },
+    update: async (projectId, projectData) => {
+      /* Implementation */
+    },
+    delete: async (projectId) => {
+      /* Implementation */
+    },
+    mutate: () => {
+      /* Implementation */
+    },
   },
 
   tagsStore: {
     tags: [],
-    create: async (tagData) => { /* Implementation */ },
-    update: async (tagId, tagData) => { /* Implementation */ },
-    delete: async (tagId) => { /* Implementation */ },
-    mutate: () => { /* Implementation */ },
+    create: async (tagData) => {
+      /* Implementation */
+    },
+    update: async (tagId, tagData) => {
+      /* Implementation */
+    },
+    delete: async (tagId) => {
+      /* Implementation */
+    },
+    mutate: () => {
+      /* Implementation */
+    },
   },
 
   tasksStore: {
     tasks: [],
-    create: async (taskData) => { /* Implementation */ },
-    update: async (taskId, taskData) => { /* Implementation */ },
-    delete: async (taskId) => { /* Implementation */ },
+    create: async (taskData) => {
+      /* Implementation */
+    },
+    update: async (taskId, taskData) => {
+      /* Implementation */
+    },
+    delete: async (taskId) => {
+      /* Implementation */
+    },
   },
 }));
