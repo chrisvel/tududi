@@ -3,11 +3,16 @@ import { Link } from 'react-router-dom';
 import { BookOpenIcon, PencilSquareIcon, TrashIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
-import { useDataContext } from '../contexts/DataContext';
+import { useStore } from '../store/useStore';
 import { Note } from '../entities/Note';
 
 const Notes: React.FC = () => {
-  const { notes, createNote, updateNote, deleteNote, isLoading, isError } = useDataContext();
+  const {
+    notesStore: { notes, create, update, delete: deleteNote },
+    isLoading,
+    isError
+  } = useStore();
+
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -33,9 +38,9 @@ const Notes: React.FC = () => {
   const handleSaveNote = async (noteData: Note) => {
     try {
       if (noteData.id) {
-        await updateNote(noteData.id, noteData);
+        await update(noteData.id, noteData);
       } else {
-        await createNote(noteData);
+        await create(noteData);
       }
       setIsNoteModalOpen(false);
       setSelectedNote(null);
@@ -69,7 +74,7 @@ const Notes: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center px-4 lg:px-2  ">
+    <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
         {/* Notes Header */}
         <div className="flex items-center justify-between mb-8">

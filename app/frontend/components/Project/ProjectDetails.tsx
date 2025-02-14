@@ -9,7 +9,7 @@ import {
 import TaskList from "../Task/TaskList";
 import ProjectModal from "../Project/ProjectModal";
 import ConfirmDialog from "../Shared/ConfirmDialog";
-import { useDataContext } from "../../contexts/DataContext";
+import { useStore } from "../../store/useStore";  // Use useStore instead of useDataContext
 import NewTask from "../Task/NewTask";
 import { Project } from "../../entities/Project";
 import { PriorityType, Task } from "../../entities/Task";
@@ -24,11 +24,16 @@ const priorityStyles: PriorityStyles = {
 };
 
 const ProjectDetails: React.FC = () => {
-  const { updateTask, deleteTask, updateProject, deleteProject } = useDataContext();
+  const updateTask = useStore((state) => state.tasksStore.update); // Use updateTask from store
+  const deleteTask = useStore((state) => state.tasksStore.delete); // Use deleteTask from store
+  const updateProject = useStore((state) => state.projectsStore.update); // Assume updateProject is available
+  const deleteProject = useStore((state) => state.projectsStore.delete); // Assume deleteProject is available
+  
+  const areas = useStore((state) => state.areasStore.areas);
+  const fetchAllAreas = useStore((state) => state.areasStore.fetchAll);
+
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
-  const { areas } = useDataContext();
 
   const [project, setProject] = useState<Project | undefined>(undefined);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -38,10 +43,11 @@ const ProjectDetails: React.FC = () => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const projectTitle = project?.name || "Project";
-
   const [isCompletedOpen, setIsCompletedOpen] = useState(false);
 
   useEffect(() => {
+    fetchAllAreas(); // Fetch areas when component mounts
+
     const fetchProject = async () => {
       try {
         const response = await fetch(`/api/project/${id}`, {
@@ -63,7 +69,7 @@ const ProjectDetails: React.FC = () => {
     };
 
     fetchProject();
-  }, [id]);
+  }, [id, fetchAllAreas]);
 
   const handleTaskCreate = async (taskName: string) => {
     if (!project || project.id === undefined) {
@@ -138,10 +144,10 @@ const ProjectDetails: React.FC = () => {
       console.error("Cannot save project: Project or Project ID is missing");
       return;
     }
-
+  
     try {
       const savedProject = await updateProject(updatedProject.id, updatedProject);
-      setProject(savedProject);
+      setProject(savedProject); 
       setIsModalOpen(false);
     } catch (err) {
       console.error("Error saving project:", err);
@@ -320,7 +326,7 @@ const ProjectDetails: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
           onSave={handleSaveProject}
           project={project}
-          areas={areas}
+          areas={areas}  // Pass areas from the store
         />
 
         {/* Confirm Delete Dialog */}

@@ -10,7 +10,7 @@ interface NotesStore {
   create: (noteData: Note) => Promise<void>;
   update: (noteId: number, noteData: Note) => Promise<void>;
   delete: (noteId: number) => Promise<void>;
-  mutate: () => void;
+  fetchAll: () => void;
 }
 
 interface AreasStore {
@@ -24,9 +24,9 @@ interface AreasStore {
 interface ProjectsStore {
   projects: Project[];
   create: (projectData: Project) => Promise<void>;
-  update: (projectId: number, projectData: Project) => Promise<void>;
+  update: (projectId: number, projectData: Project) => Promise<Project>;
   delete: (projectId: number) => Promise<void>;
-  mutate: () => void;
+  fetchAll: () => void;
 }
 
 interface TagsStore {
@@ -34,7 +34,7 @@ interface TagsStore {
   create: (tagData: Tag) => Promise<void>;
   update: (tagId: number, tagData: Tag) => Promise<void>;
   delete: (tagId: number) => Promise<void>;
-  mutate: () => void;
+  fetchAll: () => void;
 }
 
 interface TasksStore {
@@ -42,6 +42,7 @@ interface TasksStore {
   create: (taskData: Task) => Promise<void>;
   update: (taskId: number, taskData: Task) => Promise<void>;
   delete: (taskId: number) => Promise<void>;
+  fetchAll: () => void;
 }
 
 interface StoreState {
@@ -61,15 +62,59 @@ export const useStore = create<StoreState>((set) => ({
   notesStore: {
     notes: [],
     create: async (noteData) => {
-      /* Implementation */
+      try {
+        const response = await fetch("/api/notes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(noteData),
+        });
+        const createdNote = await response.json();
+        set((state) => ({
+          notesStore: {
+            ...state.notesStore,
+            notes: [...state.notesStore.notes, createdNote],
+          },
+        }));
+      } catch (error) {
+        console.error("Error creating note:", error);
+      }
     },
     update: async (noteId, noteData) => {
-      /* Implementation */
+      try {
+        const response = await fetch(`/api/notes/${noteId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(noteData),
+        });
+        const updatedNote = await response.json();
+        set((state) => ({
+          notesStore: {
+            ...state.notesStore,
+            notes: state.notesStore.notes.map((note) =>
+              note.id === noteId ? updatedNote : note
+            ),
+          },
+        }));
+      } catch (error) {
+        console.error("Error updating note:", error);
+      }
     },
     delete: async (noteId) => {
-      /* Implementation */
+      try {
+        await fetch(`/api/notes/${noteId}`, {
+          method: "DELETE",
+        });
+        set((state) => ({
+          notesStore: {
+            ...state.notesStore,
+            notes: state.notesStore.notes.filter((note) => note.id !== noteId),
+          },
+        }));
+      } catch (error) {
+        console.error("Error deleting note:", error);
+      }
     },
-    mutate: () => {
+    fetchAll: () => {
       /* Implementation */
     },
   },
@@ -151,17 +196,95 @@ export const useStore = create<StoreState>((set) => ({
 
   projectsStore: {
     projects: [],
+
+    fetchAll: async () => {
+      try {
+        // Fetching all projects
+        const response = await fetch('/api/projects');
+        if (!response.ok) throw new Error('Failed to fetch projects.');
+        const projects = await response.json();
+        set((state) => ({ projectsStore: { ...state.projectsStore, projects } }));
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    },
+
     create: async (projectData) => {
-      /* Implementation */
+      try {
+        const response = await fetch('/api/project', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(projectData),
+        });
+
+        if (response.ok) {
+          const newProject = await response.json();
+          set((state) => ({
+            projectsStore: {
+              ...state.projectsStore,
+              projects: [...state.projectsStore.projects, newProject],
+            },
+          }));
+          return newProject;
+        } else {
+          throw new Error('Failed to create project.');
+        }
+      } catch (error) {
+        console.error('Error creating project:', error);
+        throw error;
+      }
     },
+
     update: async (projectId, projectData) => {
-      /* Implementation */
+      try {
+        const response = await fetch(`/api/project/${projectId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(projectData),
+        });
+    
+        if (response.ok) {
+          const updatedProject = await response.json();
+          set((state) => ({
+            projectsStore: {
+              ...state.projectsStore,
+              projects: state.projectsStore.projects.map((project) =>
+                project.id === projectId ? updatedProject : project
+              ),
+            },
+          }));
+          return updatedProject; 
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to update project.');
+        }
+      } catch (error) {
+        console.error('Error updating project:', error);
+        throw error;
+      }
     },
+
     delete: async (projectId) => {
-      /* Implementation */
-    },
-    mutate: () => {
-      /* Implementation */
+      try {
+        const response = await fetch(`/api/project/${projectId}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          set((state) => ({
+            projectsStore: {
+              ...state.projectsStore,
+              projects: state.projectsStore.projects.filter((project) => project.id !== projectId),
+            },
+          }));
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to delete project.');
+        }
+      } catch (error) {
+        console.error('Error deleting project:', error);
+        throw error;
+      }
     },
   },
 
@@ -176,7 +299,7 @@ export const useStore = create<StoreState>((set) => ({
     delete: async (tagId) => {
       /* Implementation */
     },
-    mutate: () => {
+    fetchAll: () => {
       /* Implementation */
     },
   },
@@ -190,6 +313,9 @@ export const useStore = create<StoreState>((set) => ({
       /* Implementation */
     },
     delete: async (taskId) => {
+      /* Implementation */
+    },
+    fetchAll: () => {
       /* Implementation */
     },
   },

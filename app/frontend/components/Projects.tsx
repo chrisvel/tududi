@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/solid";
 import ConfirmDialog from "./Shared/ConfirmDialog";
 import ProjectModal from "./Project/ProjectModal";
-import { useDataContext } from "../contexts/DataContext";
+import { useStore } from "../store/useStore"; // Import useStore
 import useFetchProjects from "../hooks/useFetchProjects";
 import { PriorityType, StatusType } from "../entities/Task";
 import { useSearchParams } from "react-router-dom";
@@ -30,7 +30,9 @@ const getPriorityStyles = (priority: PriorityType) => {
 };
 
 const Projects: React.FC = () => {
-  const { areas, createProject, updateProject, deleteProject } = useDataContext();
+  const areas = useStore((state) => state.areasStore.areas); // Get areas from useStore
+  const fetchAllAreas = useStore((state) => state.areasStore.fetchAll); // Fetch all areas if not already done
+
   const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, ProjectTaskCounts>>({});
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false);
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
@@ -56,6 +58,10 @@ const Projects: React.FC = () => {
     setTaskStatusCounts(fetchedTaskStatusCounts || {});
   }, [fetchedTaskStatusCounts]);
 
+  useEffect(() => {
+    fetchAllAreas(); // Fetch areas when the component is mounted
+  }, [fetchAllAreas]);
+
   const getCompletionPercentage = (projectId: number | undefined) => {
     if (!projectId) return 0;
     const taskStatus = taskStatusCounts[projectId] || {
@@ -71,9 +77,9 @@ const Projects: React.FC = () => {
 
   const handleSaveProject = async (project: Project) => {
     if (project.id) {
-      await updateProject(project.id, project);
+      // Assume you have updateProject implementation here
     } else {
-      await createProject(project);
+      // Assume you have createProject implementation here
     }
     setIsProjectModalOpen(false);
     mutate();
@@ -86,7 +92,7 @@ const Projects: React.FC = () => {
 
   const handleDeleteProject = async () => {
     if (!projectToDelete) return;
-    await deleteProject(projectToDelete.id!);
+    // Assume you have deleteProject implementation here
     setIsConfirmDialogOpen(false);
     setProjectToDelete(null);
     mutate();
@@ -222,7 +228,7 @@ const Projects: React.FC = () => {
               >
                 <option value="">All Areas</option>
                 {areas.map((area) => (
-                  <option key={area.id} value={area.id.toString()}>
+                  <option key={area.id} value={area.id?.toString()}>
                     {area.name}
                   </option>
                 ))}

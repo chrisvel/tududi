@@ -1,8 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import useFetchTags from '../hooks/useFetchTags';
-import useFetchAreas from '../hooks/useFetchAreas';
 import useFetchProjects from '../hooks/useFetchProjects'; 
-import useManageNotes from '../hooks/useManageNotes';
 import useManageProjects from '../hooks/useManageProjects';
 import useManageTags from '../hooks/useManageTags';
 import useManageTasks from '../hooks/useManageTasks';
@@ -11,14 +9,9 @@ import { Project } from '../entities/Project';
 interface DataContextProps {
   tasks: any[];
   tags: any[];
-  areas: any[];
-  notes: any[];
   projects: Project[];
   isLoading: boolean;
   isError: boolean;
-  createNote: (noteData: any) => Promise<void>;
-  updateNote: (noteId: number, noteData: any) => Promise<void>;
-  deleteNote: (noteId: number) => Promise<void>;
   createProject: (projectData: any) => Promise<Project>;
   updateProject: (projectId: number, projectData: any) => Promise<Project>;
   deleteProject: (projectId: number) => Promise<void>;
@@ -29,7 +22,6 @@ interface DataContextProps {
   updateTask: (taskId: number, taskData: any) => Promise<void>;
   deleteTask: (taskId: number) => Promise<void>;
   mutateTags: () => void;
-  mutateNotes: () => void;
   mutateProjects: () => void; 
 }
 
@@ -61,32 +53,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updateTask,
     deleteTask,
   } = useManageTasks();
-  const {
-    notes,
-    isLoading: isLoadingNotes,
-    isError: isErrorNotes,
-    createNote,
-    updateNote,
-    deleteNote,
-    mutate: mutateNotes,
-  } = useManageNotes();
 
-  const isLoading = isLoadingTags || isLoadingAreas || isLoadingNotes || isLoadingTasks || isLoadingProjects;
-  const isError = isErrorTags || isErrorAreas || isErrorNotes || isErrorTasks || isErrorProjects;
+  const isLoading = isLoadingTags || isLoadingTasks || isLoadingProjects;
+  const isError = isErrorTags || isErrorTasks || isErrorProjects;
 
   return (
     <DataContext.Provider
       value={{
         tasks,
         tags,
-        areas,
-        notes,
         projects,
         isLoading,
         isError,
-        createNote,
-        updateNote,
-        deleteNote,
         createProject,
         updateProject,
         deleteProject,
@@ -97,7 +75,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateTask,
         deleteTask,
         mutateTags,
-        mutateNotes,
         mutateProjects, 
       }}
     >
