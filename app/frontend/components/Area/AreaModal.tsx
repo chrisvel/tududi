@@ -1,19 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Area } from '../../entities/Area';
-import { useStore } from '../../store/useStore'; // Import Zustad store
 import { useToast } from '../Shared/ToastContext';
 
 interface AreaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (areaData: Area) => void;
+  onSave: (areaData: Partial<Area>) => Promise<void>; 
   area?: Area | null;
 }
 
 const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area, onSave }) => {
-  const {
-    areasStore: { create, update }
-  } = useStore(); // Use Zustand store
   const [formData, setFormData] = useState<Area>({
     id: area?.id || 0,
     name: area?.name || '',
@@ -25,7 +21,7 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area, onSave }) 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isClosing, setIsClosing] = useState(false);
 
-  const { showSuccessToast, showErrorToast } = useToast(); // Toast for notifications
+  const { showSuccessToast, showErrorToast } = useToast(); 
 
   useEffect(() => {
     if (isOpen) {
@@ -91,14 +87,8 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area, onSave }) 
     setError(null);
 
     try {
-      if (formData.id && formData.id !== 0) {
-        await update(formData.id, formData);
-        showSuccessToast('Area updated successfully!');
-      } else {
-        await create(formData);
-        showSuccessToast('Area created successfully!');
-      }
-      onSave(formData); // Callback to update parent component
+      await onSave(formData);
+      showSuccessToast(`Area ${formData.id ? 'updated' : 'created'} successfully!`);
       handleClose();
     } catch (err) {
       setError((err as Error).message);
@@ -120,15 +110,11 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area, onSave }) 
 
   return (
     <div
-      className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
-        isClosing ? 'opacity-0' : 'opacity-100'
-      }`}
+      className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}
     >
       <div
         ref={modalRef}
-        className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-md overflow-hidden transform transition-transform duration-300 ${
-          isClosing ? 'scale-95' : 'scale-100'
-        } h-screen sm:h-auto flex flex-col`}
+        className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-md overflow-hidden transform transition-transform duration-300 ${isClosing ? 'scale-95' : 'scale-100'} h-screen sm:h-auto flex flex-col`}
         style={{
           maxHeight: 'calc(100vh - 4rem)',
         }}
@@ -183,9 +169,7 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area, onSave }) 
                 type="button"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out ${
-                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {isSubmitting
                   ? 'Submitting...'

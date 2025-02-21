@@ -4,7 +4,7 @@ import {
   PencilSquareIcon,
   TrashIcon,
   FolderIcon,
-  Squares2X2Icon,
+  Squares2X2Icon
 } from "@heroicons/react/24/outline";
 import TaskList from "../Task/TaskList";
 import ProjectModal from "../Project/ProjectModal";
@@ -13,6 +13,7 @@ import { useStore } from "../../store/useStore";
 import NewTask from "../Task/NewTask";
 import { Project } from "../../entities/Project";
 import { PriorityType, Task } from "../../entities/Task";
+import { fetchProjectById, createTask, updateTask, deleteTask, updateProject, deleteProject, fetchAreas } from "../../utils/apiService";
 
 type PriorityStyles = Record<PriorityType, string> & { default: string };
 
@@ -24,16 +25,10 @@ const priorityStyles: PriorityStyles = {
 };
 
 const ProjectDetails: React.FC = () => {
-  const updateTask = useStore((state) => state.tasksStore.update); // Use updateTask from store
-  const deleteTask = useStore((state) => state.tasksStore.delete); // Use deleteTask from store
-  const updateProject = useStore((state) => state.projectsStore.update); // Assume updateProject is available
-  const deleteProject = useStore((state) => state.projectsStore.delete); // Assume deleteProject is available
-  
-  const areas = useStore((state) => state.areasStore.areas);
-  const fetchAllAreas = useStore((state) => state.areasStore.fetchAll);
-
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  
+  const areas = useStore((state) => state.areasStore.areas);
 
   const [project, setProject] = useState<Project | undefined>(undefined);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -41,72 +36,50 @@ const ProjectDetails: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-
-  const projectTitle = project?.name || "Project";
   const [isCompletedOpen, setIsCompletedOpen] = useState(false);
 
   useEffect(() => {
-    fetchAllAreas(); // Fetch areas when component mounts
-
-    const fetchProject = async () => {
+    const loadProjectData = async () => {
+      if (!id) {
+        console.error("Project ID is missing.");
+        return;
+      }
+      
+      setLoading(true);
       try {
-        const response = await fetch(`/api/project/${id}`, {
-          credentials: "include",
-          headers: { Accept: "application/json" },
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setProject(data);
-          setTasks(data.tasks || []);
-        } else {
-          throw new Error(data.error || "Failed to fetch project.");
-        }
+        fetchAreas();
+        const projectData = await fetchProjectById(id);
+        setProject(projectData);
       } catch (error) {
-        setError((error as Error).message);
+        console.error("Error fetching project data:", error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchProject();
-  }, [id, fetchAllAreas]);
+    
+    loadProjectData();
+  }, [id, fetchAreas]);
 
   const handleTaskCreate = async (taskName: string) => {
-    if (!project || project.id === undefined) {
-      console.error("Cannot create task: Project or Project ID is missing");
+    if (!project) {
+      console.error("Cannot create task: Project is missing");
       return;
     }
 
-    const taskPayload = {
-      name: taskName,
-      status: "not_started",
-      project_id: project.id,
-    };
-
     try {
-      const response = await fetch(`/api/task`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(taskPayload),
+      const newTask = await createTask({
+        name: taskName,
+        status: "not_started",
+        project_id: project.id,
       });
-
-      const newTask = await response.json();
-      if (response.ok) {
-        setTasks([...tasks, newTask]);
-      } else {
-        throw new Error(newTask.error || "Failed to create task");
-      }
+      setTasks((prevTasks) => [...prevTasks, newTask]);
     } catch (err) {
       console.error("Error creating task:", err);
     }
   };
 
   const handleTaskUpdate = async (updatedTask: Task) => {
-    if (updatedTask.id === undefined) {
+    if (!updatedTask.id) {
       console.error("Cannot update task: Task ID is missing");
       return;
     }
@@ -123,7 +96,7 @@ const ProjectDetails: React.FC = () => {
   };
 
   const handleTaskDelete = async (taskId: number | undefined) => {
-    if (taskId === undefined) {
+    if (!taskId) {
       console.error("Cannot delete task: Task ID is missing");
       return;
     }
@@ -140,14 +113,14 @@ const ProjectDetails: React.FC = () => {
   };
 
   const handleSaveProject = async (updatedProject: Project) => {
-    if (!updatedProject || updatedProject.id === undefined) {
-      console.error("Cannot save project: Project or Project ID is missing");
+    if (!updatedProject.id) {
+      console.error("Cannot save project: Project ID is missing");
       return;
     }
   
     try {
       const savedProject = await updateProject(updatedProject.id, updatedProject);
-      setProject(savedProject); 
+      setProject(savedProject);
       setIsModalOpen(false);
     } catch (err) {
       console.error("Error saving project:", err);
@@ -155,8 +128,8 @@ const ProjectDetails: React.FC = () => {
   };
 
   const handleDeleteProject = async () => {
-    if (!project || project.id === undefined) {
-      console.error("Cannot delete project: Project or Project ID is missing");
+    if (!project?.id) {
+      console.error("Cannot delete project: Project ID is missing");
       return;
     }
 
@@ -194,8 +167,8 @@ const ProjectDetails: React.FC = () => {
     );
   }
 
-  const activeTasks = tasks.filter(task => task.status !== 'done');
-  const completedTasks = tasks.filter(task => task.status === 'done');
+  const activeTasks = project?.tasks?.filter((task) => task.status !== 'done') || [];
+  const completedTasks = tasks.filter((task) => task.status === 'done');
 
   const toggleCompleted = () => {
     setIsCompletedOpen(!isCompletedOpen);
@@ -209,27 +182,25 @@ const ProjectDetails: React.FC = () => {
           <div className="flex items-center">
             <FolderIcon className="h-6 w-6 text-gray-500 mr-2" />
             <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100 mr-2">
-              {projectTitle}
+              {project.name}
             </h2>
-            {/* Priority Circle placed after the title */}
             {project.priority && (
               <div
-                className={`w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${priorityStyles[project.priority] || priorityStyles.default}`}
+                className={`w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${
+                  priorityStyles[project.priority] || priorityStyles.default
+                }`}
                 title={`Priority: ${priorityLabel(project.priority)}`}
                 aria-label={`Priority: ${priorityLabel(project.priority)}`}
               ></div>
             )}
           </div>
           <div className="flex space-x-2">
-            {/* Edit Project Button */}
             <button
               onClick={handleEditProject}
               className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
             >
               <PencilSquareIcon className="h-5 w-5" />
             </button>
-
-            {/* Delete Project Button */}
             <button
               onClick={() => setIsConfirmDialogOpen(true)}
               className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
@@ -239,7 +210,6 @@ const ProjectDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Project Area */}
         {project.area && (
           <div className="flex items-center mb-4">
             <Squares2X2Icon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
@@ -252,19 +222,14 @@ const ProjectDetails: React.FC = () => {
           </div>
         )}
 
-        {/* Project Description */}
         {project.description && (
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             {project.description}
           </p>
         )}
 
-        {/* New Task Form */}
-        <NewTask
-          onTaskCreate={handleTaskCreate}
-        />
+        <NewTask onTaskCreate={handleTaskCreate} />
 
-        {/* Active Tasks */}
         <div className="mt-2">
           {activeTasks.length > 0 ? (
             <TaskList
@@ -278,7 +243,6 @@ const ProjectDetails: React.FC = () => {
           )}
         </div>
 
-        {/* Collapsible Completed Tasks */}
         <div className="mt-6">
           <button
             onClick={toggleCompleted}
@@ -320,16 +284,14 @@ const ProjectDetails: React.FC = () => {
           )}
         </div>
 
-        {/* Modals */}
         <ProjectModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSave={handleSaveProject}
           project={project}
-          areas={areas}  // Pass areas from the store
+          areas={areas}
         />
 
-        {/* Confirm Delete Dialog */}
         {isConfirmDialogOpen && (
           <ConfirmDialog
             title="Delete Project"

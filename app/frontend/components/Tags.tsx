@@ -3,30 +3,41 @@ import { Link } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon, TagIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import TagModal from './Tag/TagModal';
-import { useStore } from '../store/useStore';  // Import useStore from Zustand store
 import { Tag } from '../entities/Tag';
+import { fetchTags, createTag, updateTag, deleteTag as apiDeleteTag } from '../utils/apiService';
 
 const Tags: React.FC = () => {
+  const [tags, setTags] = useState<Tag[]>([]);
   const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-
-  const {
-    tagsStore: { tags, fetchAll, create, update, delete: deleteTag },
-    isLoading,
-    isError 
-  } = useStore();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchAll(); // Fetch tags when component mounts
-  }, [fetchAll]);
+    const loadTags = async () => {
+      setIsLoading(true);
+      try {
+        const fetchedTags = await fetchTags();
+        setTags(fetchedTags);
+      } catch (error) {
+        console.error('Failed to fetch tags:', error);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadTags();
+  }, []);
 
   const handleDeleteTag = async () => {
     if (!tagToDelete) return;
     try {
-      await deleteTag(tagToDelete.id!);
+      await apiDeleteTag(tagToDelete.id!);
+      setTags((prev) => prev.filter((tag) => tag.id !== tagToDelete.id));
       setIsConfirmDialogOpen(false);
       setTagToDelete(null);
     } catch (err) {
@@ -41,17 +52,20 @@ const Tags: React.FC = () => {
 
   const handleSaveTag = async (tagData: Tag) => {
     try {
+      let updatedTags;
       if (tagData.id) {
-        await update(tagData.id, tagData);
+        await updateTag(tagData.id, tagData);
+        updatedTags = tags.map((tag) => (tag.id === tagData.id ? tagData : tag));
       } else {
-        await create(tagData);
+        const newTag = await createTag(tagData);
+        updatedTags = [...tags, newTag];
       }
+      setTags(updatedTags);
+      setIsTagModalOpen(false);
+      setSelectedTag(null);
     } catch (err) {
       console.error('Failed to save tag:', err);
     }
-
-    setIsTagModalOpen(false);
-    setSelectedTag(null);
   };
 
   const openConfirmDialog = (tag: Tag) => {
@@ -64,9 +78,8 @@ const Tags: React.FC = () => {
     setTagToDelete(null);
   };
 
-  const filteredTags = tags.filter(
-    (tag) =>
-      tag.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTags = tags.filter((tag) =>
+    tag.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (isLoading) {
@@ -80,7 +93,7 @@ const Tags: React.FC = () => {
   }
 
   if (isError) {
-    return <div className="text-red-500 p-4">Error loading tags</div>;
+    return <div className="text-red-500 p-4">Error loading tags.</div>;
   }
 
   return (

@@ -4,10 +4,13 @@ import { Project } from "../../entities/Project";
 import ConfirmDialog from "../Shared/ConfirmDialog";
 import { useToast } from "../Shared/ToastContext";
 import TagInput from "../Tag/TagInput";
-import useFetchTags from "../../hooks/useFetchTags";
 import PriorityDropdown from "../Shared/PriorityDropdown";
 import { PriorityType } from "../../entities/Task";
 import Switch from "../Shared/Switch";
+import { useStore } from "../../store/useStore";
+import {
+  fetchTags,
+} from '../../utils/apiService';
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -41,17 +44,14 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     project?.tags?.map((tag) => tag.name) || []
   );
 
-  const {
-    tags: availableTags,
-    isLoading: isTagsLoading,
-    isError: isTagsError,
-  } = useFetchTags();
+  const { tagsStore } = useStore();
+  const { tags: availableTags } = tagsStore;
 
   const modalRef = useRef<HTMLDivElement>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  const { showSuccessToast, showErrorToast } = useToast();
+  const { showSuccessToast } = useToast();
 
   useEffect(() => {
     if (project) {
@@ -67,10 +67,17 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         area_id: null,
         active: true,
         tags: [],
+        priority: "low",
       });
       setTags([]);
     }
   }, [project]);
+
+  useEffect(() => {
+    if (availableTags.length === 0) {
+      fetchTags();
+    }
+  }, [availableTags.length, fetchTags]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -176,35 +183,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
   if (!isOpen) return null;
 
-  if (isTagsLoading) {
-    return (
-      <div className="fixed top-16 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-          Loading tags...
-        </div>
-      </div>
-    );
-  }
-
-  if (isTagsError) {
-    return (
-      <div className="fixed top-16 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-50">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-          Error loading tags.
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
-      {/* Modal Overlay */}
       <div
         className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
           isClosing ? "opacity-0" : "opacity-100"
         }`}
       >
-        {/* Modal Content */}
         <div
           ref={modalRef}
           className={`bg-white dark:bg-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-2xl overflow-hidden transform transition-transform duration-300 ${
@@ -214,12 +199,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             maxHeight: "calc(100vh - 4rem)",
           }}
         >
-          {/* Form */}
           <form className="flex flex-col flex-1">
             <fieldset className="flex flex-col flex-1">
-              {/* Form Fields */}
               <div className="p-4 space-y-3 flex-1 text-sm overflow-y-auto">
-                {/* Project Name */}
                 <div className="py-4">
                   <input
                     type="text"
@@ -233,7 +215,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                   />
                 </div>
 
-                {/* Description */}
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Description
@@ -261,7 +242,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                   />
                 </div>
 
-                {/* Tags */}
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Tags
@@ -275,7 +255,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                   </div>
                 </div>
 
-                {/* Area */}
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Area (optional)
@@ -296,7 +275,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                   </select>
                 </div>
 
-                {/* Active Checkbox */}
                 <div className="flex items-center">
                   <Switch
                     isChecked={formData.active}
@@ -311,7 +289,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="p-3 flex-shrink-0 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2">
                 {project && onDelete && (
                   <button
@@ -342,7 +319,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         </div>
       </div>
 
-      {/* Confirmation Dialog for Deletion */}
       {showConfirmDialog && (
         <ConfirmDialog
           title="Delete Project"

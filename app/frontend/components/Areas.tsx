@@ -4,44 +4,56 @@ import {
   PencilSquareIcon,
   TrashIcon,
   Squares2X2Icon,
-} from '@heroicons/react/24/solid'; 
+} from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import AreaModal from './Area/AreaModal';
 import { useStore } from '../store/useStore';
+import { fetchAreas, createArea, updateArea, deleteArea } from '../utils/apiService';
 import { Area } from '../entities/Area';
 
 const Areas: React.FC = () => {
-  const {
-    areasStore: { areas, create, update, delete: deleteArea, fetchAll },
-    isLoading,
-    isError
-  } = useStore();
+  const { areas, setAreas, setLoading, setError } = useStore((state) => state.areasStore);
 
-  const [isAreaModalOpen, setIsAreaModalOpen] = useState <boolean>(false);
+  const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
 
   useEffect(() => {
-    fetchAll(); // Fetch all areas on component mount
-  }, [fetchAll]);
+    const loadAreas = async () => {
+      try {
+        const areasData = await fetchAreas();
+        setAreas(areasData);
+      } catch (error) {
+        console.error('Error fetching areas:', error);
+        setError(true);
+      }
+    };
 
-  const handleSaveArea = async (areaData: Area) => {
+    loadAreas();
+  }, []);
+
+  const handleSaveArea = async (areaData: Partial<Area>) => {
+    setLoading(true);
     try {
       if (areaData.id) {
-        await update(areaData.id, {
+        await updateArea(areaData.id, {
           name: areaData.name,
           description: areaData.description,
         });
       } else {
-        await create({
+        await createArea({
           name: areaData.name,
           description: areaData.description,
         });
       }
+      const updatedAreas = await fetchAreas();
+      setAreas(updatedAreas);
     } catch (error) {
       console.error('Error saving area:', error);
+      setError(true);
     } finally {
+      setLoading(false);
       setIsAreaModalOpen(false);
       setSelectedArea(null);
     }
@@ -65,12 +77,18 @@ const Areas: React.FC = () => {
   const handleDeleteArea = async () => {
     if (!areaToDelete) return;
 
+    setLoading(true);
     try {
       await deleteArea(areaToDelete.id!);
+      const updatedAreas = await fetchAreas();
+      setAreas(updatedAreas);
       setIsConfirmDialogOpen(false);
       setAreaToDelete(null);
     } catch (error) {
       console.error('Error deleting area:', error);
+      setError(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,24 +96,6 @@ const Areas: React.FC = () => {
     setIsConfirmDialogOpen(false);
     setAreaToDelete(null);
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-          Loading areas...
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="text-red-500 p-4">
-        An error occurred while fetching areas.
-      </div>
-    );
-  }
 
   return (
     <div className="flex justify-center px-4 lg:px-2">
@@ -108,6 +108,12 @@ const Areas: React.FC = () => {
               Areas
             </h2>
           </div>
+          <button
+            onClick={handleCreateArea}
+            className="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600"
+          >
+            Add Area
+          </button>
         </div>
 
         {/* Areas List */}

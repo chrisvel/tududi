@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useStore } from '../../store/useStore'; // Use Zustand store
+import { useStore } from '../../store/useStore'; 
 import { Area } from '../../entities/Area';
 
 const AreaDetails: React.FC = () => {

@@ -1,28 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon, TagIcon, DocumentTextIcon } from '@heroicons/react/24/solid';
-import { useStore } from '../../store/useStore'; // Use Zustand store
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
 import { Note } from '../../entities/Note';
+import { fetchNotes, deleteNote as apiDeleteNote, updateNote as apiUpdateNote } from '../../utils/apiService';
 
 const NoteDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { notes, delete: deleteNote } = useStore((state) => state.notesStore); // Extract required actions
   const [note, setNote] = useState<Note | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
-  
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchNote = () => {
+    const fetchNote = async () => {
       try {
         setIsLoading(true);
+        const notes = await fetchNotes();
         const foundNote = notes.find((n: Note) => n.id === Number(id));
         setNote(foundNote || null);
         if (!foundNote) {
@@ -36,20 +34,29 @@ const NoteDetails: React.FC = () => {
       }
     };
     fetchNote();
-  }, [id, notes]);
+  }, [id]);
 
   const handleDeleteNote = async () => {
     if (!noteToDelete) return;
     try {
-      await deleteNote(noteToDelete.id!);
+      await apiDeleteNote(noteToDelete.id!);
       navigate('/notes');
     } catch (err) {
       console.error('Error deleting note:', err);
     }
   };
 
-  const handleSaveNote = (updatedNote: Note) => {
-    setNote(updatedNote);
+  const handleSaveNote = async (updatedNote: Note) => {
+    try {
+      if (updatedNote.id !== undefined) {
+        await apiUpdateNote(updatedNote.id, updatedNote);
+        setNote(updatedNote);
+      } else {
+        console.error("Error: Note ID is undefined.");
+      }
+    } catch (err) {
+      console.error('Error saving note:', err);
+    }
     setIsNoteModalOpen(false);
   };
 
@@ -83,7 +90,7 @@ const NoteDetails: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center px-4 lg:px-2  ">
+    <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
         {/* Header Section with Title and Action Buttons */}
         <div className="flex items-center justify-between mb-4">
@@ -93,7 +100,6 @@ const NoteDetails: React.FC = () => {
               {note.title}
             </h2>
           </div>
-
           {/* Action Buttons */}
           <div className="flex space-x-2">
             <button
@@ -114,7 +120,6 @@ const NoteDetails: React.FC = () => {
             </button>
           </div>
         </div>
-
         {/* Card with Tags and Metadata */}
         <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-4 mb-6">
           {/* Note Tags */}
@@ -128,23 +133,25 @@ const NoteDetails: React.FC = () => {
                     className="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
                   >
                     <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-300" />
-                    <span className="text-xs text-gray-700 dark:text-gray-300">{tag.name}</span>
+                    <span className="text-xs text-gray-700 dark:text-gray-300">
+                      {tag.name}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
           )}
-
           {/* Note Metadata */}
           <div className="text-sm text-gray-500 dark:text-gray-400">
             <p>Created on: {new Date(note.created_at || '').toLocaleDateString()}</p>
             <p>Last updated: {new Date(note.updated_at || '').toLocaleDateString()}</p>
           </div>
-
           {/* Note Project */}
           {note.project && (
             <div className="mt-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Project</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Project
+              </h3>
               <Link
                 to={`/project/${note.project.id}`}
                 className="text-blue-600 dark:text-blue-400 hover:underline"
@@ -154,14 +161,12 @@ const NoteDetails: React.FC = () => {
             </div>
           )}
         </div>
-
         {/* Note Content */}
         <div className="mb-6">
           <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
             {note.content}
           </p>
         </div>
-
         {/* NoteModal for editing */}
         {isNoteModalOpen && (
           <NoteModal
@@ -171,7 +176,6 @@ const NoteDetails: React.FC = () => {
             note={note}
           />
         )}
-
         {/* ConfirmDialog */}
         {isConfirmDialogOpen && noteToDelete && (
           <ConfirmDialog

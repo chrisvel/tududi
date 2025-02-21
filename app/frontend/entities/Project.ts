@@ -1,6 +1,6 @@
 import { Area } from "./Area";
 import { Tag } from "./Tag";
-import { PriorityType } from "./Task";
+import { PriorityType, Task } from "./Task";
 
 export interface Project {
   id?: number;
@@ -12,4 +12,5 @@ export interface Project {
   area_id?: number | null;   
   tags?: Tag[];  
   priority?: PriorityType;
+  tasks?: Task[];
 }

@@ -1,81 +1,100 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { format } from "date-fns";
 import {
   ClipboardDocumentListIcon,
-  ClockIcon,
   ArrowPathIcon,
-  CalendarDaysIcon, 
+  CalendarDaysIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
-
+import { fetchTasks, updateTask, deleteTask, fetchProjects } from "../../utils/apiService";
 import { Task } from "../../entities/Task";
-import { Project } from "../../entities/Project";
-
-import useFetchTasks from "../../hooks/useFetchTasks";
-import useFetchProjects from "../../hooks/useFetchProjects";
-import useManageTasks from "../../hooks/useManageTasks";
-
-import NewTask from "./NewTask";
+import { useStore } from "../../store/useStore";
 import TaskList from "./TaskList";
+import { Metrics } from "../../entities/Metrics";
 
 const TasksToday: React.FC = () => {
   const {
     tasks,
-    metrics,
-    isLoading: loadingTasks,
-    isError: errorTasks,
-    mutate: mutateTasks,
-  } = useFetchTasks({
-    type: "today",
-  });
-
+    setTasks,
+    setLoading: setTasksLoading,
+    setError: setTasksError,
+  } = useStore((state) => state.tasksStore);
   const {
     projects,
-    isLoading: loadingProjects,
-    isError: errorProjects,
-  } = useFetchProjects();
+    setProjects,
+    setLoading: setProjectsLoading,
+    setError: setProjectsError,
+  } = useStore((state) => state.projectsStore);
 
-  const { updateTask, deleteTask } = useManageTasks();
+  const [metrics, setMetrics] = React.useState<Metrics>({
+    total_open_tasks: 0,
+    tasks_pending_over_month: 0,
+    tasks_in_progress_count: 0,
+    tasks_in_progress: [],
+    tasks_due_today: [],
+    suggested_tasks: [],
+  });
 
-  const handleTaskUpdate = (updatedTask: Task): void => {
-    if (updatedTask.id === undefined) {
-      console.error("Error updating task: Task ID is undefined.");
-      return;
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // setProjectsLoading(true);
+        const projectsData = await fetchProjects();
+        setProjects(projectsData);
+
+        const { tasks: fetchedTasks, metrics } = await fetchTasks("?type=today");
+        setTasks(fetchedTasks);
+        setMetrics(metrics);
+      } catch (error) {
+        console.error("Error loading data:", error);
+        setProjectsError(true);
+        setTasksError(true);
+      } finally {
+        // setProjectsLoading(false);
+        // setTasksLoading(false);
+      }
+    };
+
+    loadData();
+  }, [setProjects, setProjectsLoading, setProjectsError, setTasks, setTasksLoading, setTasksError]);
+
+  const handleTaskUpdate = async (updatedTask: Task): Promise<void> => {
+    if (!updatedTask.id) return;
+
+    try {
+      setTasksLoading(true);
+      await updateTask(updatedTask.id, updatedTask);
+      const { tasks: updatedTasks, metrics } = await fetchTasks("?type=today");
+      setTasks(updatedTasks);
+      setMetrics(metrics);
+    } catch (error) {
+      console.error("Error updating task:", error);
+      setTasksError(true);
+    } finally {
+      setTasksLoading(false);
     }
-    updateTask(updatedTask.id, updatedTask)
-      .then(() => {
-        mutateTasks();
-      })
-      .catch((error) => {
-        console.error("Error updating task:", error);
-      });
   };
 
-  const handleTaskDelete = (taskId: number): void => {
-    deleteTask(taskId)
-      .then(() => {
-        mutateTasks();
-      })
-      .catch((error) => {
-        console.error("Error deleting task:", error);
-      });
+  const handleTaskDelete = async (taskId: number): Promise<void> => {
+    try {
+      setTasksLoading(true);
+      await deleteTask(taskId);
+      const { tasks: updatedTasks, metrics } = await fetchTasks("?type=today");
+      setTasks(updatedTasks);
+      setMetrics(metrics);
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      setTasksError(true);
+    } finally {
+      setTasksLoading(false);
+    }
   };
 
-  if (loadingTasks || loadingProjects) {
-    return <p>Loading...</p>;
-  }
-
-  if (errorTasks) {
-    return <p className="text-red-500">Error loading tasks.</p>;
-  }
-
-  if (errorProjects) {
-    return <p className="text-red-500">Error loading projects.</p>;
-  }
+  const todayDate = format(new Date(), "yyyy-MM-dd");
 
   return (
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
-        {/* Header */}
         <div className="flex items-center mb-4">
           <h2 className="text-2xl font-light flex items-center">
             <CalendarDaysIcon className="h-5 w-5 mr-2" /> Today
@@ -85,29 +104,17 @@ const TasksToday: React.FC = () => {
           </span>
         </div>
 
-        {/* Overview of Tasks */}
         <div className="mb-6 grid grid-cols-1 sm:grid-cols-4 gap-4">
-          {/* Total Open Tasks */}
           <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
             <ClipboardDocumentListIcon className="h-8 w-8 text-blue-500 mr-4" />
             <div>
               <p className="text-gray-500 dark:text-gray-400">Backlog</p>
-              <p className="text-2xl font-semibold">{metrics.total_open_tasks}</p>
-            </div>
-          </div>
-
-          {/* Tasks Pending Over a Month */}
-          <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
-            <ClockIcon className="h-8 w-8 text-yellow-500 mr-4" />
-            <div>
-              <p className="text-gray-500 dark:text-gray-400">Stale</p>
               <p className="text-2xl font-semibold">
-                {metrics.tasks_pending_over_month}
+                {metrics.total_open_tasks}
               </p>
             </div>
           </div>
 
-          {/* Tasks In Progress */}
           <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
             <ArrowPathIcon className="h-8 w-8 text-green-500 mr-4" />
             <div>
@@ -118,7 +125,6 @@ const TasksToday: React.FC = () => {
             </div>
           </div>
 
-          {/* Tasks Due Today */}
           <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
             <CalendarDaysIcon className="h-8 w-8 text-red-500 mr-4" />
             <div>
@@ -128,9 +134,18 @@ const TasksToday: React.FC = () => {
               </p>
             </div>
           </div>
+
+          <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
+            <ClockIcon className="h-8 w-8 text-yellow-500 mr-4" />
+            <div>
+              <p className="text-gray-500 dark:text-gray-400">Stale</p>
+              <p className="text-2xl font-semibold">
+                {metrics.tasks_pending_over_month}
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Tasks Due Today */}
         {metrics.tasks_due_today.length > 0 && (
           <>
             <h3 className="text-xl font-medium mt-6 mb-2">Tasks Due Today</h3>
@@ -143,7 +158,6 @@ const TasksToday: React.FC = () => {
           </>
         )}
 
-        {/* Tasks In Progress */}
         {metrics.tasks_in_progress.length > 0 && (
           <>
             <h3 className="text-xl font-medium mt-6 mb-2">Tasks In Progress</h3>
@@ -156,7 +170,6 @@ const TasksToday: React.FC = () => {
           </>
         )}
 
-        {/* Suggested Tasks */}
         {metrics.suggested_tasks.length > 0 && (
           <>
             <h3 className="text-xl font-medium mt-6 mb-2">Suggested Tasks</h3>
@@ -169,7 +182,6 @@ const TasksToday: React.FC = () => {
           </>
         )}
 
-        {/* Fallback Message */}
         {tasks.length === 0 && (
           <p className="text-gray-500 text-center mt-4">
             No tasks available for today.

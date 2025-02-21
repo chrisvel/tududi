@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Project } from "../entities/Project";
 import {
   MagnifyingGlassIcon,
   FolderIcon,
@@ -8,8 +7,9 @@ import {
 } from "@heroicons/react/24/solid";
 import ConfirmDialog from "./Shared/ConfirmDialog";
 import ProjectModal from "./Project/ProjectModal";
-import { useStore } from "../store/useStore"; // Import useStore
-import useFetchProjects from "../hooks/useFetchProjects";
+import { useStore } from "../store/useStore";
+import { fetchProjects, createProject, updateProject, deleteProject, fetchAreas } from "../utils/apiService";
+import { Project } from "../entities/Project";
 import { PriorityType, StatusType } from "../entities/Task";
 import { useSearchParams } from "react-router-dom";
 import ProjectItem from "./Project/ProjectItem";
@@ -30,8 +30,9 @@ const getPriorityStyles = (priority: PriorityType) => {
 };
 
 const Projects: React.FC = () => {
-  const areas = useStore((state) => state.areasStore.areas); // Get areas from useStore
-  const fetchAllAreas = useStore((state) => state.areasStore.fetchAll); // Fetch all areas if not already done
+  const { areas, setAreas, setLoading: setAreasLoading, setError: setAreasError } = useStore((state) => state.areasStore);
+  const { projects, setProjects, setLoading: setProjectsLoading, setError: setProjectsError } = useStore((state) => state.projectsStore);
+  const { isLoading, isError } = useStore((state) => state.projectsStore);
 
   const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, ProjectTaskCounts>>({});
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false);
@@ -46,21 +47,79 @@ const Projects: React.FC = () => {
   const activeFilter = searchParams.get("active") || "all";
   const areaFilter = searchParams.get("area_id") || "";
 
-  const {
-    projects,
-    taskStatusCounts: fetchedTaskStatusCounts,
-    isLoading,
-    isError,
-    mutate,
-  } = useFetchProjects({ activeFilter, areaFilter });
+useEffect(() => {
+  const loadAreas = async () => {
+    try {
+      const areasData = await fetchAreas();
+      setAreas(areasData);
+    } catch (error) {
+      console.error("Failed to fetch areas:", error);
+      setAreasError(true);
+    }
+  };
 
-  useEffect(() => {
-    setTaskStatusCounts(fetchedTaskStatusCounts || {});
-  }, [fetchedTaskStatusCounts]);
+  loadAreas();
+}, []); 
 
-  useEffect(() => {
-    fetchAllAreas(); // Fetch areas when the component is mounted
-  }, [fetchAllAreas]);
+useEffect(() => {
+  const loadProjects = async () => {
+    try {
+      const projectsData = await fetchProjects(activeFilter, areaFilter);
+      setProjects(projectsData);
+    } catch (error) {
+      console.error("Failed to fetch projects:", error);
+      setProjectsError(true);
+    }
+  };
+
+  loadProjects();
+}, [activeFilter, areaFilter]); 
+
+  const handleSaveProject = async (project: Project) => {
+    setProjectsLoading(true);
+    try {
+      if (project.id) {
+        await updateProject(project.id, project);
+      } else {
+        await createProject(project);
+      }
+      const updatedProjects = await fetchProjects(activeFilter, areaFilter);
+      setProjects(updatedProjects);
+    } catch (error) {
+      console.error("Error saving project:", error);
+      setProjectsError(true);
+    } finally {
+      setProjectsLoading(false);
+      setIsProjectModalOpen(false);
+    }
+  };
+
+  const handleEditProject = (project: Project) => {
+    setProjectToEdit(project);
+    setIsProjectModalOpen(true);
+  };
+
+  const handleDeleteProject = async () => {
+    if (!projectToDelete) return;
+    
+    try {
+      if (projectToDelete.id !== undefined) {
+        setProjectsLoading(true);
+        await deleteProject(projectToDelete.id);
+        const updatedProjects = await fetchProjects(activeFilter, areaFilter);
+        setProjects(updatedProjects);
+      } else {
+        console.error("Cannot delete project: ID is undefined.");
+      }
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      setProjectsError(true);
+    } finally {
+      setProjectsLoading(false);
+      setIsConfirmDialogOpen(false);
+      setProjectToDelete(null);
+    }
+  };
 
   const getCompletionPercentage = (projectId: number | undefined) => {
     if (!projectId) return 0;
@@ -73,29 +132,6 @@ const Projects: React.FC = () => {
     const totalTasks = taskStatus.done + taskStatus.not_started + taskStatus.in_progress;
     if (totalTasks === 0) return 0;
     return Math.round((taskStatus.done / totalTasks) * 100);
-  };
-
-  const handleSaveProject = async (project: Project) => {
-    if (project.id) {
-      // Assume you have updateProject implementation here
-    } else {
-      // Assume you have createProject implementation here
-    }
-    setIsProjectModalOpen(false);
-    mutate();
-  };
-
-  const handleEditProject = (project: Project) => {
-    setProjectToEdit(project);
-    setIsProjectModalOpen(true);
-  };
-
-  const handleDeleteProject = async () => {
-    if (!projectToDelete) return;
-    // Assume you have deleteProject implementation here
-    setIsConfirmDialogOpen(false);
-    setProjectToDelete(null);
-    mutate();
   };
 
   const handleActiveFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -127,6 +163,16 @@ const Projects: React.FC = () => {
     project.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const groupedProjects = filteredProjects.reduce<Record<string, Project[]>>(
+    (acc, project) => {
+      const areaName = project.area ? project.area.name : "Uncategorized";
+      if (!acc[areaName]) acc[areaName] = [];
+      acc[areaName].push(project);
+      return acc;
+    },
+    {}
+  );
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
@@ -144,16 +190,6 @@ const Projects: React.FC = () => {
       </div>
     );
   }
-
-  const groupedProjects = filteredProjects.reduce<Record<string, Project[]>>(
-    (acc, project) => {
-      const areaName = project.area ? project.area.name : "Uncategorized";
-      if (!acc[areaName]) acc[areaName] = [];
-      acc[areaName].push(project);
-      return acc;
-    },
-    {}
-  );
 
   return (
     <div className="flex justify-center px-4 lg:px-2">
