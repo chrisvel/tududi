@@ -10,7 +10,7 @@ import Switch from "../Shared/Switch";
 import { useStore } from "../../store/useStore";
 import {
   fetchTags,
-} from '../../utils/apiService';
+} from '../../utils/tagsService';
 
 interface ProjectModalProps {
   isOpen: boolean;

@@ -3,7 +3,7 @@ import { Note } from '../../entities/Note';
 import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
 import { Tag } from '../../entities/Tag';
-import { fetchTags } from '../../utils/apiService'; 
+import { fetchTags } from '../../utils/tagsService'; 
 
 interface NoteModalProps {
   isOpen: boolean;

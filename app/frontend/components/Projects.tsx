@@ -8,7 +8,9 @@ import {
 import ConfirmDialog from "./Shared/ConfirmDialog";
 import ProjectModal from "./Project/ProjectModal";
 import { useStore } from "../store/useStore";
-import { fetchProjects, createProject, updateProject, deleteProject, fetchAreas } from "../utils/apiService";
+import { fetchProjects, createProject, updateProject, deleteProject } from "../utils/projectsService";
+import {  fetchAreas } from "../utils/areasService";
+
 import { Project } from "../entities/Project";
 import { PriorityType, StatusType } from "../entities/Task";
 import { useSearchParams } from "react-router-dom";

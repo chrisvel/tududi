@@ -8,7 +8,7 @@ import {
 import ConfirmDialog from './Shared/ConfirmDialog';
 import AreaModal from './Area/AreaModal';
 import { useStore } from '../store/useStore';
-import { fetchAreas, createArea, updateArea, deleteArea } from '../utils/apiService';
+import { fetchAreas, createArea, updateArea, deleteArea } from '../utils/areasService';
 import { Area } from '../entities/Area';
 
 const Areas: React.FC = () => {

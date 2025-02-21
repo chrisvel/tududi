@@ -15,23 +15,11 @@ import { Project } from "./entities/Project";
 import { Task } from "./entities/Task";
 import { User } from "./entities/User";
 import { useStore } from "./store/useStore";
-import {
-  fetchNotes,
-  createNote,
-  updateNote,
-  fetchAreas,
-  createArea,
-  updateArea,
-  fetchTags,
-  createTag,
-  updateTag,
-  fetchProjects,
-  createProject,
-  updateProject,
-  fetchTasks,
-  createTask,
-  updateTask,
-} from "./utils/apiService";
+import { fetchNotes, createNote, updateNote } from "./utils/notesService";
+import { fetchAreas, createArea, updateArea } from "./utils/areasService";
+import { fetchTags, createTag, updateTag } from "./utils/tagsService";
+import { fetchProjects, createProject, updateProject } from "./utils/projectsService";
+import { fetchTasks, createTask, updateTask } from "./utils/tasksService";
 
 interface LayoutProps {
   currentUser: User;

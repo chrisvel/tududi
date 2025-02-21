@@ -4,7 +4,7 @@ import { PencilSquareIcon, TrashIcon, TagIcon, MagnifyingGlassIcon } from '@hero
 import ConfirmDialog from './Shared/ConfirmDialog';
 import TagModal from './Tag/TagModal';
 import { Tag } from '../entities/Tag';
-import { fetchTags, createTag, updateTag, deleteTag as apiDeleteTag } from '../utils/apiService';
+import { fetchTags, createTag, updateTag, deleteTag as apiDeleteTag } from '../utils/tagsService';
 
 const Tags: React.FC = () => {
   const [tags, setTags] = useState<Tag[]>([]);

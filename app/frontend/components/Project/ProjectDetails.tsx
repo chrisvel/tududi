@@ -13,7 +13,11 @@ import { useStore } from "../../store/useStore";
 import NewTask from "../Task/NewTask";
 import { Project } from "../../entities/Project";
 import { PriorityType, Task } from "../../entities/Task";
-import { fetchProjectById, createTask, updateTask, deleteTask, updateProject, deleteProject, fetchAreas } from "../../utils/apiService";
+import { fetchProjectById, updateProject, deleteProject } from "../../utils/projectsService";
+import { createTask, updateTask, deleteTask } from "../../utils/tasksService";
+import { fetchAreas } from "../../utils/areasService";
+
+
 
 type PriorityStyles = Record<PriorityType, string> & { default: string };
 

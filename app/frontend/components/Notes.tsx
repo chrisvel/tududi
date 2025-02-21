@@ -14,7 +14,7 @@ import {
   createNote,
   updateNote,
   deleteNote as apiDeleteNote,
-} from '../utils/apiService';
+} from '../utils/notesService';
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);

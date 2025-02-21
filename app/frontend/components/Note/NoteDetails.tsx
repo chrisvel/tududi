@@ -4,7 +4,7 @@ import { PencilSquareIcon, TrashIcon, TagIcon, DocumentTextIcon } from '@heroico
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
 import { Note } from '../../entities/Note';
-import { fetchNotes, deleteNote as apiDeleteNote, updateNote as apiUpdateNote } from '../../utils/apiService';
+import { fetchNotes, deleteNote as apiDeleteNote, updateNote as apiUpdateNote } from '../../utils/notesService';
 
 const NoteDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();

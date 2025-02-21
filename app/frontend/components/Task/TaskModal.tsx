@@ -8,7 +8,7 @@ import { useToast } from "../Shared/ToastContext";
 import TagInput from "../Tag/TagInput";
 import { Project } from "../../entities/Project";
 import { useStore } from "../../store/useStore";
-import { fetchTags } from '../../utils/apiService';
+import { fetchTags } from '../../utils/tagsService';
 
 interface TaskModalProps {
   isOpen: boolean;
