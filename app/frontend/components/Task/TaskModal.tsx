@@ -45,7 +45,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
   useEffect(() => {
     setFormData(task);
     setTags(task.tags?.map((tag) => tag.name) || []);
-  }, [task]);
+    
+    const currentProject = projects.find((project) => project.id === task.project_id);
+    setNewProjectName(currentProject ? currentProject.name : '');
+  }, [task, projects]);
 
   useEffect(() => {
     const loadTags = async () => { 

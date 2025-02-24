@@ -93,7 +93,7 @@ class Task < ActiveRecord::Base
                                    .where(status: statuses[:not_started], project_id: nil)
                                    .where.not(id: excluded_task_ids)
                                    .order(priority: :desc)
-                                   .limit(3)
+                                   .limit(5)
 
     # Fetch suggested tasks in projects, ordered by task priority and project priority
     tasks_in_projects = user.tasks.incomplete
@@ -105,7 +105,7 @@ class Task < ActiveRecord::Base
                                  Arel.sql('tasks.priority DESC, projects.priority DESC')
                                )
                                .distinct
-                               .limit(3)
+                               .limit(5)
 
     {
       total_open_tasks: total_open_tasks,

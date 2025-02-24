@@ -17,8 +17,6 @@ import { fetchProjectById, updateProject, deleteProject } from "../../utils/proj
 import { createTask, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchAreas } from "../../utils/areasService";
 
-
-
 type PriorityStyles = Record<PriorityType, string> & { default: string };
 
 const priorityStyles: PriorityStyles = {
