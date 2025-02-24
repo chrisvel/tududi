@@ -13,4 +13,5 @@ export interface Project {
   tags?: Tag[];  
   priority?: PriorityType;
   tasks?: Task[];
+  due_date_at?: string;
 }

@@ -8,9 +8,7 @@ import PriorityDropdown from "../Shared/PriorityDropdown";
 import { PriorityType } from "../../entities/Task";
 import Switch from "../Shared/Switch";
 import { useStore } from "../../store/useStore";
-import {
-  fetchTags,
-} from '../../utils/tagsService';
+import { fetchTags } from "../../utils/tagsService";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -37,6 +35,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
       active: true,
       tags: [],
       priority: "low",
+      due_date_at: "", 
     }
   );
 
@@ -58,6 +57,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
       setFormData({
         ...project,
         tags: project.tags || [],
+        due_date_at: project.due_date_at || "",
       });
       setTags(project.tags?.map((tag) => tag.name) || []);
     } else {
@@ -68,6 +68,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         active: true,
         tags: [],
         priority: "low",
+        due_date_at: "",
       });
       setTags([]);
     }
@@ -77,7 +78,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     if (availableTags.length === 0) {
       fetchTags();
     }
-  }, [availableTags.length, fetchTags]);
+  }, [availableTags.length]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -228,6 +229,19 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     className="block w-full rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
                     placeholder="Enter project description (optional)"
                   ></textarea>
+                </div>
+
+                <div className="pb-3">
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Due Date
+                  </label>
+                  <input
+                    type="date"
+                    name="due_date_at"
+                    value={formData.due_date_at || ""}
+                    onChange={handleChange}
+                    className="block w-full rounded-md shadow-sm px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+                  />
                 </div>
 
                 <div className="pb-3">

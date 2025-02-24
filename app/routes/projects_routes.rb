@@ -75,7 +75,8 @@ class Sinatra::Application
         area_id: project_data['area_id'],
         active: true,
         pin_to_sidebar: false,
-        priority: project_data['priority']
+        priority: project_data['priority'],
+        due_date_at: project_data['due_date_at']
       )
 
       if project.save
@@ -106,7 +107,8 @@ class Sinatra::Application
         area_id: project_data['area_id'],
         active: project_data['active'],
         pin_to_sidebar: project_data['pin_to_sidebar'],
-        priority: project_data ['priority']
+        priority: project_data ['priority'],
+        due_date_at: project_data['due_date_at']
       )
 
       if project.save
