@@ -16,6 +16,7 @@ import { PriorityType, Task } from "../../entities/Task";
 import { fetchProjectById, updateProject, deleteProject } from "../../utils/projectsService";
 import { createTask, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchAreas } from "../../utils/areasService";
+import { CalendarDaysIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
 
 type PriorityStyles = Record<PriorityType, string> & { default: string };
 
@@ -52,6 +53,7 @@ const ProjectDetails: React.FC = () => {
         fetchAreas();
         const projectData = await fetchProjectById(id);
         setProject(projectData);
+        setTasks(projectData.tasks || []);
       } catch (error) {
         console.error("Error fetching project data:", error);
       } finally {
@@ -169,9 +171,9 @@ const ProjectDetails: React.FC = () => {
     );
   }
 
-  const activeTasks = project?.tasks?.filter((task) => task.status !== 'done') || [];
-  const completedTasks = tasks.filter((task) => task.status === 'done');
-
+  const activeTasks = tasks?.filter((task) => task.status !== 'done') || []; //TODO: Also add archived
+  const completedTasks = tasks?.filter((task) => task.status === 'done');
+  
   const toggleCompleted = () => {
     setIsCompletedOpen(!isCompletedOpen);
   };
@@ -182,7 +184,7 @@ const ProjectDetails: React.FC = () => {
         {/* Project Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
-            <FolderIcon className="h-6 w-6 text-gray-500 mr-2" />
+            <FolderIcon className="h-6 w-6 text-gray-500 mr-3" />
             <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100 mr-2">
               {project.name}
             </h2>
@@ -213,7 +215,7 @@ const ProjectDetails: React.FC = () => {
         </div>
 
         {project.area && (
-          <div className="flex items-center mb-4">
+          <div className="flex items-center mb-2">
             <Squares2X2Icon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
             <Link
               to={`/projects/?area_id=${project.area.id}`}
@@ -224,8 +226,16 @@ const ProjectDetails: React.FC = () => {
           </div>
         )}
 
+        {project.due_date_at && ( 
+          <div className="flex items-center mb-2">
+            <CalendarDaysIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+            {project.due_date_at}
+          </div>
+        )}
+
         {project.description && (
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <p className="flex items-center text-gray-700 dark:text-gray-300 mb-6">
+            <InformationCircleIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
             {project.description}
           </p>
         )}
@@ -270,7 +280,7 @@ const ProjectDetails: React.FC = () => {
 
           {isCompletedOpen && (
             <div className="mt-4">
-              {completedTasks.length > 0 ? (
+              {completedTasks && completedTasks.length > 0 ? (
                 <TaskList
                   tasks={completedTasks}
                   onTaskUpdate={handleTaskUpdate}

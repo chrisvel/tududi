@@ -40,7 +40,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const { showSuccessToast, showErrorToast } = useToast();
   const { tagsStore } = useStore();
-  const { tags: availableTags, setTags: setAvailableTags, setLoading: setTagsLoading, setError: setTagsError } = tagsStore; 
+  const { tags: availableTags, setTags: setAvailableTags, setLoading: setTagsLoading, setError: setTagsError } = tagsStore;
 
   useEffect(() => {
     setFormData(task);
@@ -51,7 +51,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   }, [task, projects]);
 
   useEffect(() => {
-    const loadTags = async () => { 
+    const loadTags = async () => {
       setTagsLoading(true);
       try {
         if (availableTags.length === 0) {

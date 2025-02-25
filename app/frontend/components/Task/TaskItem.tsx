@@ -28,7 +28,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     onTaskUpdate(updatedTask);
     setIsModalOpen(false);
   };
-
+  
   const handleDelete = () => {
     if (task.id) {
       onTaskDelete(task.id);

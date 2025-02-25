@@ -76,36 +76,39 @@ class Task < ActiveRecord::Base
 
   def self.compute_metrics(user)
     total_open_tasks = user.tasks.incomplete.count
-
     one_month_ago = Date.today - 30
     tasks_pending_over_month = user.tasks.incomplete.where('created_at < ?', one_month_ago).count
 
     tasks_in_progress = user.tasks.incomplete.where(status: statuses[:in_progress])
     tasks_in_progress_count = tasks_in_progress.count
 
-    tasks_due_today = user.tasks.due_today
+    # Calculate tasks due today including those due via projects
+    tasks_due_today = user.tasks.incomplete.joins(:project)
+                          .where('tasks.due_date <= ? OR projects.due_date_at <= ?', Date.today, Date.today)
+                          .distinct
 
-    # Exclude tasks that are in progress or due today
+    # Gather an array of IDs to be excluded from suggested tasks
     excluded_task_ids = tasks_in_progress.pluck(:id) + tasks_due_today.pluck(:id)
 
-    # Fetch suggested tasks not in projects, ordered by task priority
-    tasks_without_projects = user.tasks.incomplete
-                                   .where(status: statuses[:not_started], project_id: nil)
-                                   .where.not(id: excluded_task_ids)
-                                   .order(priority: :desc)
-                                   .limit(5)
+    # Gather tasks in projects expiring starting today, order by task priority
+    tasks_in_expiring_projects = user.tasks.incomplete
+                                        .joins(:project)
+                                        .where('projects.due_date_at >= ?', Date.today)
+                                        .where(projects: { active: true }) # Only active projects
+                                        .where.not(id: excluded_task_ids)
+                                        .order(Arel.sql('projects.due_date_at ASC, tasks.priority DESC'))
+                                        .limit(5)
 
-    # Fetch suggested tasks in projects, ordered by task priority and project priority
-    tasks_in_projects = user.tasks.incomplete
-                               .where(status: statuses[:not_started])
-                               .where.not(project_id: nil)
-                               .where.not(id: excluded_task_ids)
-                               .joins('LEFT JOIN projects ON tasks.project_id = projects.id')
-                               .order(
-                                 Arel.sql('tasks.priority DESC, projects.priority DESC')
-                               )
-                               .distinct
-                               .limit(5)
+    # Gather tasks not assigned to projects expiring today, ordered by task priority
+    tasks_without_projects = user.tasks.incomplete
+                                     .where(status: statuses[:not_started], project_id: nil)
+                                     .or(user.tasks.where(project_id: nil, status: statuses[:not_started]))
+                                     .where.not(id: excluded_task_ids)
+                                     .order(priority: :desc)
+                                     .limit(5)
+
+    # Combine both list of suggested tasks
+    suggested_tasks = tasks_in_expiring_projects + tasks_without_projects
 
     {
       total_open_tasks: total_open_tasks,
@@ -113,7 +116,7 @@ class Task < ActiveRecord::Base
       tasks_in_progress: tasks_in_progress,
       tasks_in_progress_count: tasks_in_progress_count,
       tasks_due_today: tasks_due_today,
-      suggested_tasks: (tasks_without_projects + tasks_in_projects)
+      suggested_tasks: suggested_tasks
     }
   end
 
