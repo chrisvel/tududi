@@ -7,8 +7,8 @@ import ConfirmDialog from "../Shared/ConfirmDialog";
 import { useToast } from "../Shared/ToastContext";
 import TagInput from "../Tag/TagInput";
 import { Project } from "../../entities/Project";
-import { Tag } from "../../entities/Tag";
-import useFetchTags from "../../hooks/useFetchTags";
+import { useStore } from "../../store/useStore";
+import { fetchTags } from '../../utils/tagsService';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -30,36 +30,50 @@ const TaskModal: React.FC<TaskModalProps> = ({
   onCreateProject,
 }) => {
   const [formData, setFormData] = useState<Task>(task);
-  const [tags, setTags] = useState<string[]>(
-    task.tags?.map((tag) => tag.name) || []
-  );
+  const [tags, setTags] = useState<string[]>(task.tags?.map((tag) => tag.name) || []);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(projects);
   const [newProjectName, setNewProjectName] = useState<string>("");
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const [isClosing, setIsClosing] = useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false); 
-
-  const { showSuccessToast, showErrorToast } = useToast(); 
-
-  const { tags: availableTags, isLoading, isError } = useFetchTags();
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const { showSuccessToast, showErrorToast } = useToast();
+  const { tagsStore } = useStore();
+  const { tags: availableTags, setTags: setAvailableTags, setLoading: setTagsLoading, setError: setTagsError } = tagsStore;
 
   useEffect(() => {
     setFormData(task);
     setTags(task.tags?.map((tag) => tag.name) || []);
-  }, [task]);
+    
+    const currentProject = projects.find((project) => project.id === task.project_id);
+    setNewProjectName(currentProject ? currentProject.name : '');
+  }, [task, projects]);
+
+  useEffect(() => {
+    const loadTags = async () => {
+      setTagsLoading(true);
+      try {
+        if (availableTags.length === 0) {
+          const fetchedTags = await fetchTags();
+          setAvailableTags(fetchedTags);
+        }
+      } catch (error) {
+        setTagsError(true);
+        console.error("Error fetching tags:", error);
+      } finally {
+        setTagsLoading(false);
+      }
+    };
+
+    loadTags();
+  }, [availableTags.length, setAvailableTags, setTagsError, setTagsLoading]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleTagsChange = useCallback((newTags: string[]) => {
@@ -75,7 +89,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
     setNewProjectName(query);
     setDropdownOpen(true);
     setFilteredProjects(
-      projects.filter((project) => project.name.toLowerCase().includes(query))
+      projects.filter((project) =>
+        project.name.toLowerCase().includes(query)
+      )
     );
   };
 
@@ -111,7 +127,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   };
 
   const handleDeleteClick = () => {
-    setShowConfirmDialog(true); 
+    setShowConfirmDialog(true);
   };
 
   const handleDeleteConfirm = () => {
@@ -137,10 +153,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         handleClose();
       }
     };
@@ -168,26 +181,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   if (!isOpen) return null;
 
-  if (isLoading) {
-    return (
-      <div className="fixed top-16 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-40">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-          Loading tags...
-        </div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="fixed top-16 left-0 right-0 bottom-0 flex items-center justify-center bg-gray-900 bg-opacity-80 z-40">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-          Error loading tags.
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <div
@@ -200,14 +193,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
           className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-3xl overflow-hidden transform transition-transform duration-300 ${
             isClosing ? "scale-95" : "scale-100"
           } h-screen sm:h-auto flex flex-col`}
-          style={{
-            maxHeight: "calc(100vh - 4rem)", 
-          }}
+          style={{ maxHeight: "calc(100vh - 4rem)" }}
         >
           <form className="flex flex-col flex-1">
             <fieldset className="flex flex-col flex-1">
               <div className="p-4 space-y-3 flex-1 text-sm overflow-y-auto">
-                {/* Task Name */}
                 <div className="py-4">
                   <input
                     type="text"
@@ -220,8 +210,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     placeholder="Add Task Name"
                   />
                 </div>
-
-                {/* Tags */}
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Tags
@@ -234,8 +222,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     />
                   </div>
                 </div>
-
-                {/* Project */}
                 <div className="pb-3 relative">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
                     Project
@@ -280,8 +266,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     </div>
                   )}
                 </div>
-
-                {/* Status and Priority */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pb-3 sm:grid-flow-col">
                   <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
@@ -319,8 +303,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     />
                   </div>
                 </div>
-
-                {/* Note */}
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
                     Note
@@ -336,8 +318,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   ></textarea>
                 </div>
               </div>
-
-              {/* Task Actions */}
               <div className="p-3 flex-shrink-0">
                 <TaskActions
                   taskId={task.id}
@@ -350,7 +330,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
           </form>
         </div>
       </div>
-
       {showConfirmDialog && (
         <ConfirmDialog
           title="Delete Task"

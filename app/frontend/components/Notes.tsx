@@ -1,23 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpenIcon, PencilSquareIcon, TrashIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import {
+  BookOpenIcon,
+  PencilSquareIcon,
+  TrashIcon,
+  MagnifyingGlassIcon,
+} from '@heroicons/react/24/solid';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
-import { useDataContext } from '../contexts/DataContext';
 import { Note } from '../entities/Note';
+import {
+  fetchNotes,
+  createNote,
+  updateNote,
+  deleteNote as apiDeleteNote,
+} from '../utils/notesService';
 
 const Notes: React.FC = () => {
-  const { notes, createNote, updateNote, deleteNote, isLoading, isError } = useDataContext();
+  const [notes, setNotes] = useState<Note[]>([]);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
-  const [searchQuery, setSearchQuery] = useState(''); 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    const loadNotes = async () => {
+      setIsLoading(true);
+      try {
+        const fetchedNotes = await fetchNotes();
+        setNotes(fetchedNotes);
+      } catch (error) {
+        console.error('Error loading notes:', error);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadNotes();
+  }, []);
 
   const handleDeleteNote = async () => {
     if (!noteToDelete) return;
     try {
-      await deleteNote(noteToDelete.id!);
+      await apiDeleteNote(noteToDelete.id!);
+      setNotes((prev) => prev.filter((note) => note.id !== noteToDelete.id));
       setIsConfirmDialogOpen(false);
       setNoteToDelete(null);
     } catch (err) {
@@ -32,11 +62,17 @@ const Notes: React.FC = () => {
 
   const handleSaveNote = async (noteData: Note) => {
     try {
+      let updatedNotes;
       if (noteData.id) {
         await updateNote(noteData.id, noteData);
+        updatedNotes = notes.map((note) =>
+          note.id === noteData.id ? noteData : note
+        );
       } else {
-        await createNote(noteData);
+        const newNote = await createNote(noteData);
+        updatedNotes = [...notes, newNote];
       }
+      setNotes(updatedNotes);
       setIsNoteModalOpen(false);
       setSelectedNote(null);
     } catch (err) {
@@ -69,13 +105,15 @@ const Notes: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center px-4 lg:px-2  ">
+    <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
         {/* Notes Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
             <BookOpenIcon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
-            <h2 className="text-2xl font-light text-gray-900 dark:text-white">Notes</h2>
+            <h2 className="text-2xl font-light text-gray-900 dark:text-white">
+              Notes
+            </h2>
           </div>
         </div>
 
@@ -99,7 +137,10 @@ const Notes: React.FC = () => {
         ) : (
           <ul className="space-y-2">
             {filteredNotes.map((note) => (
-              <li key={note.id} className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center">
+              <li
+                key={note.id}
+                className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center"
+              >
                 <div className="flex-grow overflow-hidden pr-4">
                   <Link
                     to={`/note/${note.id}`}

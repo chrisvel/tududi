@@ -76,45 +76,101 @@ class Task < ActiveRecord::Base
 
   def self.compute_metrics(user)
     total_open_tasks = user.tasks.incomplete.count
-
     one_month_ago = Date.today - 30
     tasks_pending_over_month = user.tasks.incomplete.where('created_at < ?', one_month_ago).count
 
-    tasks_in_progress = user.tasks.incomplete.where(status: statuses[:in_progress])
+    tasks_in_progress = user.tasks.incomplete.where(status: statuses[:in_progress]).order(priority: :desc)
     tasks_in_progress_count = tasks_in_progress.count
 
-    tasks_due_today = user.tasks.due_today
+    # Calculate tasks due today including those due via projects
+    tasks_due_today = user.tasks.incomplete.joins(:project)
+                          .where('tasks.due_date <= ? OR projects.due_date_at <= ?', Date.today, Date.today)
+                          .distinct
 
-    # Exclude tasks that are in progress or due today
+    # Gather an array of IDs to be excluded from suggested tasks
     excluded_task_ids = tasks_in_progress.pluck(:id) + tasks_due_today.pluck(:id)
 
-    # Fetch suggested tasks not in projects, ordered by task priority
+    # Gather tasks in projects expiring starting today, order by task priority
+    tasks_in_expiring_projects = user.tasks.incomplete
+                                        .joins(:project)
+                                        .where('projects.due_date_at >= ?', Date.today)
+                                        .where(projects: { active: true }) # Only active projects
+                                        .where.not(id: excluded_task_ids)
+                                        .order(Arel.sql('projects.due_date_at ASC, tasks.priority DESC'))
+                                        .limit(5)
+
+    # Gather tasks not assigned to projects expiring today, ordered by task priority
     tasks_without_projects = user.tasks.incomplete
-                                   .where(status: statuses[:not_started], project_id: nil)
-                                   .where.not(id: excluded_task_ids)
-                                   .order(priority: :desc)
-                                   .limit(3)
+                                     .where(status: statuses[:not_started], project_id: nil)
+                                     .or(user.tasks.where(project_id: nil, status: statuses[:not_started]))
+                                     .where.not(id: excluded_task_ids)
+                                     .order(priority: :desc)
+                                     .limit(5)
 
-    # Fetch suggested tasks in projects, ordered by task priority and project priority
-    tasks_in_projects = user.tasks.incomplete
-                               .where(status: statuses[:not_started])
-                               .where.not(project_id: nil)
-                               .where.not(id: excluded_task_ids)
-                               .joins('LEFT JOIN projects ON tasks.project_id = projects.id')
-                               .order(
-                                 Arel.sql('tasks.priority DESC, projects.priority DESC')
-                               )
-                               .distinct
-                               .limit(3)
+    # Combine both list of suggested tasks
 
+    suggested_tasks = sort_suggested_tasks(tasks_in_expiring_projects + tasks_without_projects)
     {
       total_open_tasks: total_open_tasks,
       tasks_pending_over_month: tasks_pending_over_month,
       tasks_in_progress: tasks_in_progress,
       tasks_in_progress_count: tasks_in_progress_count,
       tasks_due_today: tasks_due_today,
-      suggested_tasks: (tasks_without_projects + tasks_in_projects)
+      suggested_tasks: suggested_tasks
     }
+  end
+
+  def self.sort_suggested_tasks(tasks)
+    tasks.sort_by do |task|
+      # Parse or default the task due date
+      task_due_date = if task.due_date.is_a?(String)
+                        Date.parse(task.due_date)
+                      else
+                        task.due_date || Date.new(9999, 12, 31)
+                      end
+
+      # Parse or default the project due date
+      project_due_date = if (task.project&.due_date_at).is_a?(String)
+                           Date.parse(task&.project&.due_date_at)
+                         else
+                           task.project&.due_date_at || Date.new(9999, 12, 31)
+                         end
+
+      # Priority in descending order (sorted values should be negative for sort_by)
+      priority_value = -(Task.priorities.fetch(task.priority, -1))
+
+      # Determine sorting flags based on various criteria
+      is_high_priority_proj_with_due_date = (task.priority == 'high' && task&.project&.due_date_at) ? 0 : 1
+      is_high_priority_with_due_date = (task.priority == 'high' && task.due_date) ? 0 : 1
+      is_high_priority = (task.priority == 'high' && !task.due_date && !task&.project&.due_date_at) ? 0 : 1
+
+      is_medium_priority_proj_with_due_date = (task.priority == 'medium' && task&.project&.due_date_at) ? 0 : 1
+      is_medium_priority_with_due_date = (task.priority == 'medium' && task.due_date) ? 0 : 1
+      is_medium_priority = (task.priority == 'medium' && !task.due_date && !task&.project&.due_date_at) ? 0 : 1
+
+      is_low_priority_proj_with_due_date = (task.priority == 'low' && task&.project&.due_date_at) ? 0 : 1
+      is_low_priority_with_due_date = (task.priority == 'low' && task.due_date) ? 0 : 1
+      is_low_priority = (task.priority == 'low' && !task.due_date && !task&.project&.due_date_at) ? 0 : 1
+
+      # Primary sorting criteria
+      [
+        is_high_priority_proj_with_due_date,
+        is_high_priority_with_due_date,
+        is_high_priority,
+
+        is_medium_priority_proj_with_due_date,
+        is_medium_priority_with_due_date,
+        is_medium_priority,
+
+        is_low_priority_proj_with_due_date,
+        is_low_priority_with_due_date,
+        is_low_priority,
+
+        task_due_date,
+        project_due_date,
+        priority_value
+      ]
+    end
   end
 
   def as_json(options = {})

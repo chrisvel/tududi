@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_26_095028) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_24_162915) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.integer "user_id", null: false
@@ -48,6 +48,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_26_095028) do
     t.boolean "active", default: false
     t.boolean "pin_to_sidebar", default: false
     t.integer "priority"
+    t.datetime "due_date_at"
     t.index ["area_id"], name: "index_projects_on_area_id"
     t.index ["user_id"], name: "index_projects_on_user_id"
   end

@@ -85,7 +85,7 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
   };
 
   const addNewTag = (tag: string) => {
-    if (tags.length >= 10) { // Example limit
+    if (tags.length >= 10) { 
       return;
     }
 

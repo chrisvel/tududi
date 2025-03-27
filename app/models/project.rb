@@ -32,4 +32,8 @@ class Project < ActiveRecord::Base
     completed_tasks = counts[:total] - counts[:not_started]
     (completed_tasks.to_f / counts[:total] * 100).round
   end
+
+  def due_date_at
+    self[:due_date_at]&.strftime('%Y-%m-%d')
+  end
 end

@@ -11,6 +11,7 @@ import {
   XMarkIcon,
   ChevronDownIcon,
   ChevronDoubleDownIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/solid";
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -22,8 +23,9 @@ const Tasks: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [orderBy, setOrderBy] = useState<string>("due_date:asc");
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [taskSearchQuery, setTaskSearchQuery] = useState<string>("");
 
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const query = new URLSearchParams(location.search);
@@ -198,6 +200,10 @@ const Tasks: React.FC = () => {
     return status !== "done";
   };
 
+  const filteredTasks = tasks.filter((task) =>
+    task.name.toLowerCase().includes(taskSearchQuery.toLowerCase())
+  );
+
   return (
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
@@ -268,10 +274,25 @@ const Tasks: React.FC = () => {
           </div>
         </div>
 
+
         {/* Description */}
         <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
           {description}
         </p>
+        
+        {/* Search Bar */}
+        <div className="mb-4">
+          <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm p-2">
+            <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={taskSearchQuery}
+              onChange={(e) => setTaskSearchQuery(e.target.value)}
+              className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
+            />
+          </div>
+        </div>
         {loading ? (
           <p>Loading...</p>
         ) : error ? (
@@ -288,9 +309,9 @@ const Tasks: React.FC = () => {
             )}
 
             {/* Task List */}
-            {tasks.length > 0 ? (
+            {filteredTasks.length > 0 ? (
               <TaskList
-                tasks={tasks}
+                tasks={filteredTasks}
                 onTaskCreate={handleTaskCreate}
                 onTaskUpdate={handleTaskUpdate}
                 onTaskDelete={handleTaskDelete}

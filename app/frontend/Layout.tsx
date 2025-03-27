@@ -13,8 +13,13 @@ import { Area } from "./entities/Area";
 import { Tag } from "./entities/Tag";
 import { Project } from "./entities/Project";
 import { Task } from "./entities/Task";
-import { useDataContext } from "./contexts/DataContext";
 import { User } from "./entities/User";
+import { useStore } from "./store/useStore";
+import { fetchNotes, createNote, updateNote } from "./utils/notesService";
+import { fetchAreas, createArea, updateArea } from "./utils/areasService";
+import { fetchTags, createTag, updateTag } from "./utils/tagsService";
+import { fetchProjects, createProject, updateProject } from "./utils/projectsService";
+import { fetchTasks, createTask, updateTask } from "./utils/tasksService";
 
 interface LayoutProps {
   currentUser: User;
@@ -43,27 +48,47 @@ const Layout: React.FC<LayoutProps> = ({
   const [newTask, setNewTask] = useState<Task | null>(null);
 
   const {
-    tags,
-    areas,
-    notes,
-    projects,
-    isLoading,
-    isError,
-    createNote,
-    updateNote,
-    deleteNote,
-    createArea,
-    updateArea,
-    deleteArea,
-    createTag,
-    updateTag,
-    deleteTag,
-    createProject,
-    updateProject,
-    deleteProject,
-    createTask,
-    updateTask,
-  } = useDataContext();
+    notesStore: {
+      notes,
+      setNotes,
+      setLoading: setNotesLoading,
+      setError: setNotesError,
+      isLoading: isNotesLoading,
+      isError: isNotesError,
+    },
+    areasStore: {
+      areas,
+      setAreas,
+      setLoading: setAreasLoading,
+      setError: setAreasError,
+      isLoading: isAreasLoading,
+      isError: isAreasError,
+    },
+    tasksStore: {
+      tasks,
+      setTasks,
+      setLoading: setTasksLoading,
+      setError: setTasksError,
+      isLoading: isTasksLoading,
+      isError: isTasksError,
+    },
+    projectsStore: {
+      projects,
+      setProjects,
+      setLoading: setProjectsLoading,
+      setError: setProjectsError,
+      isLoading: isProjectsLoading,
+      isError: isProjectsError,
+    },
+    tagsStore: {
+      tags,
+      setTags,
+      setLoading: setTagsLoading,
+      setError: setTagsError,
+      isLoading: isTagsLoading,
+      isError: isTagsError,
+    },
+  } = useStore();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(
     window.innerWidth >= 1024
@@ -75,6 +100,37 @@ const Layout: React.FC<LayoutProps> = ({
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const loadNotes = async () => {
+    setNotesLoading(true);
+    try {
+      const notesData = await fetchNotes();
+      setNotes(notesData);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+      setNotesError(true);
+    } finally {
+      setNotesLoading(false);
+    }
+  };
+
+  const loadAreas = async () => {
+    setAreasLoading(true);
+    try {
+      const areasData = await fetchAreas();
+      setAreas(areasData);
+    } catch (error) {
+      console.error("Error fetching areas:", error);
+      setAreasError(true);
+    } finally {
+      setAreasLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadNotes();
+    loadAreas();
   }, []);
 
   const openNoteModal = (note: Note | null = null) => {
@@ -127,20 +183,11 @@ const Layout: React.FC<LayoutProps> = ({
   const handleSaveNote = async (noteData: Note) => {
     try {
       if (noteData.id) {
-        await updateNote(noteData.id, {
-          title: noteData.title,
-          content: noteData.content,
-          tags: noteData.tags?.map((tag) => tag.name),
-          project_id: noteData.project?.id,
-        });
+        await updateNote(noteData.id, noteData);
       } else {
-        await createNote({
-          title: noteData.title,
-          content: noteData.content,
-          tags: noteData.tags?.map((tag) => tag.name),
-          project_id: noteData.project?.id,
-        });
+        await createNote(noteData);
       }
+      loadNotes();
     } catch (error) {
       console.error("Error saving note:", error);
     }
@@ -154,10 +201,25 @@ const Layout: React.FC<LayoutProps> = ({
       } else {
         await createTask(taskData);
       }
+      const { tasks } = await fetchTasks();
+      setTasks(tasks);
     } catch (error) {
       console.error("Error saving task:", error);
     }
     closeTaskModal();
+  };
+
+  const handleCreateProject = async (name: string): Promise<Project> => {
+    try {
+      const newProject = await createProject({
+        name,
+        active: true,
+      });
+      return newProject;
+    } catch (error) {
+      console.error("Error creating project:", error);
+      throw error;
+    }
   };
 
   const handleSaveProject = async (projectData: Project) => {
@@ -167,29 +229,22 @@ const Layout: React.FC<LayoutProps> = ({
       } else {
         await createProject(projectData);
       }
+      const projectsData = await fetchProjects();
+      setProjects(projectsData);
     } catch (error) {
       console.error("Error saving project:", error);
     }
     closeProjectModal();
   };
 
-  const handleCreateProject = async (name: string): Promise<Project> => {
-    try {
-      const newProject = await createProject({ name });
-      return newProject;
-    } catch (error) {
-      console.error("Error creating project:", error);
-      throw error;
-    }
-  };
-
-  const handleSaveArea = async (areaData: Area) => {
+  const handleSaveArea = async (areaData: Partial<Area>) => {
     try {
       if (areaData.id) {
         await updateArea(areaData.id, areaData);
       } else {
         await createArea(areaData);
       }
+      loadAreas();
     } catch (error) {
       console.error("Error saving area:", error);
     }
@@ -203,6 +258,8 @@ const Layout: React.FC<LayoutProps> = ({
       } else {
         await createTag(tagData);
       }
+      const tagsData = await fetchTags();
+      setTags(tagsData);
     } catch (error) {
       console.error("Error saving tag:", error);
     }
@@ -210,6 +267,19 @@ const Layout: React.FC<LayoutProps> = ({
   };
 
   const mainContentMarginLeft = isSidebarOpen ? "ml-72" : "ml-0";
+
+  const isLoading =
+    isNotesLoading ||
+    isAreasLoading ||
+    isTasksLoading ||
+    isProjectsLoading ||
+    isTagsLoading;
+  const isError =
+    isNotesError ||
+    isAreasError ||
+    isTasksError ||
+    isProjectsError ||
+    isTagsError;
 
   if (isLoading) {
     return (
@@ -357,7 +427,7 @@ const Layout: React.FC<LayoutProps> = ({
           }
           onSave={handleSaveTask}
           onDelete={() => {}}
-          projects={projects} 
+          projects={projects}
           onCreateProject={handleCreateProject}
         />
       )}
@@ -402,4 +472,3 @@ const Layout: React.FC<LayoutProps> = ({
 };
 
 export default Layout;
-

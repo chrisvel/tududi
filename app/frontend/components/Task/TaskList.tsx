@@ -14,7 +14,6 @@ interface TaskListProps {
 const TaskList: React.FC<TaskListProps> = ({
   tasks,
   onTaskUpdate,
-  onTaskCreate,
   onTaskDelete,
   projects,
 }) => {

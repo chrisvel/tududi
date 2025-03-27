@@ -1,23 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon, TagIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import TagModal from './Tag/TagModal';
-import { useDataContext } from '../contexts/DataContext';
 import { Tag } from '../entities/Tag';
+import { fetchTags, createTag, updateTag, deleteTag as apiDeleteTag } from '../utils/tagsService';
 
 const Tags: React.FC = () => {
-  const { tags, createTag, updateTag, deleteTag, isLoading, isError } = useDataContext();
+  const [tags, setTags] = useState<Tag[]>([]);
   const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
   const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
+
+  useEffect(() => {
+    const loadTags = async () => {
+      setIsLoading(true);
+      try {
+        const fetchedTags = await fetchTags();
+        setTags(fetchedTags);
+      } catch (error) {
+        console.error('Failed to fetch tags:', error);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadTags();
+  }, []);
 
   const handleDeleteTag = async () => {
     if (!tagToDelete) return;
     try {
-      await deleteTag(tagToDelete.id!);
+      await apiDeleteTag(tagToDelete.id!);
+      setTags((prev) => prev.filter((tag) => tag.id !== tagToDelete.id));
       setIsConfirmDialogOpen(false);
       setTagToDelete(null);
     } catch (err) {
@@ -32,17 +52,20 @@ const Tags: React.FC = () => {
 
   const handleSaveTag = async (tagData: Tag) => {
     try {
+      let updatedTags;
       if (tagData.id) {
         await updateTag(tagData.id, tagData);
+        updatedTags = tags.map((tag) => (tag.id === tagData.id ? tagData : tag));
       } else {
-        await createTag(tagData);
+        const newTag = await createTag(tagData);
+        updatedTags = [...tags, newTag];
       }
+      setTags(updatedTags);
+      setIsTagModalOpen(false);
+      setSelectedTag(null);
     } catch (err) {
       console.error('Failed to save tag:', err);
     }
-
-    setIsTagModalOpen(false);
-    setSelectedTag(null);
   };
 
   const openConfirmDialog = (tag: Tag) => {
@@ -55,9 +78,8 @@ const Tags: React.FC = () => {
     setTagToDelete(null);
   };
 
-  const filteredTags = tags.filter(
-    (tag) =>
-      tag.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTags = tags.filter((tag) =>
+    tag.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (isLoading) {
@@ -71,11 +93,11 @@ const Tags: React.FC = () => {
   }
 
   if (isError) {
-    return <div className="text-red-500 p-4">Error loading tags</div>;
+    return <div className="text-red-500 p-4">Error loading tags.</div>;
   }
 
   return (
-    <div className="flex justify-center px-4 lg:px-2  ">
+    <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
         {/* Tags Header */}
         <div className="flex items-center justify-between mb-8">
@@ -109,7 +131,6 @@ const Tags: React.FC = () => {
                 key={tag.id}
                 className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center"
               >
-                {/* Tag Content */}
                 <div className="flex-grow overflow-hidden pr-4">
                   <Link
                     to={`/tag/${tag.id}`}
@@ -119,7 +140,6 @@ const Tags: React.FC = () => {
                   </Link>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEditTag(tag)}

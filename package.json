@@ -54,6 +54,7 @@
     "react-router-dom": "^6.26.2",
     "react-tagify": "^1.0.7",
     "swr": "^2.2.5",
-    "tagify": "^0.1.1"
+    "tagify": "^0.1.1",
+    "zustand": "^5.0.3"
   }
 }

@@ -19,7 +19,6 @@ import Notes from "./components/Notes";
 import NoteDetails from "./components/Note/NoteDetails";
 import ProfileSettings from "./components/Profile/ProfileSettings";
 import Layout from "./Layout";
-import { DataProvider } from "./contexts/DataContext";
 import { User } from "./entities/User";
 import TasksToday from "./components/Task/TasksToday";
 
@@ -101,7 +100,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <DataProvider>
+    <>
       {currentUser ? (
         <Layout
           currentUser={currentUser}
@@ -131,7 +130,7 @@ const App: React.FC = () => {
       ) : (
         <Login />
       )}
-    </DataProvider>
+    </>
   );
 };
 
