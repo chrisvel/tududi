@@ -149,7 +149,7 @@ const TasksToday: React.FC = () => {
 
         {metrics.tasks_due_today.length > 0 && (
           <>
-            <h3 className="text-xl font-medium mt-6 mb-2">Tasks Due Today</h3>
+            <h3 className="text-xl font-medium mt-6 mb-2">Due Today</h3>
             <TaskList
               tasks={metrics.tasks_due_today}
               onTaskUpdate={handleTaskUpdate}
@@ -161,7 +161,7 @@ const TasksToday: React.FC = () => {
 
         {metrics.tasks_in_progress.length > 0 && (
           <>
-            <h3 className="text-xl font-medium mt-6 mb-2">Tasks In Progress</h3>
+            <h3 className="text-xl font-medium mt-6 mb-2">In Progress</h3>
             <TaskList
               tasks={metrics.tasks_in_progress}
               onTaskUpdate={handleTaskUpdate}
@@ -173,7 +173,7 @@ const TasksToday: React.FC = () => {
 
         {metrics.suggested_tasks.length > 0 && (
           <>
-            <h3 className="text-xl font-medium mt-6 mb-2">Suggested Tasks</h3>
+            <h3 className="text-xl font-medium mt-6 mb-2">Suggested</h3>
             <TaskList
               tasks={metrics.suggested_tasks}
               onTaskUpdate={handleTaskUpdate}

@@ -79,7 +79,7 @@ class Task < ActiveRecord::Base
     one_month_ago = Date.today - 30
     tasks_pending_over_month = user.tasks.incomplete.where('created_at < ?', one_month_ago).count
 
-    tasks_in_progress = user.tasks.incomplete.where(status: statuses[:in_progress])
+    tasks_in_progress = user.tasks.incomplete.where(status: statuses[:in_progress]).order(priority: :desc)
     tasks_in_progress_count = tasks_in_progress.count
 
     # Calculate tasks due today including those due via projects
@@ -108,8 +108,8 @@ class Task < ActiveRecord::Base
                                      .limit(5)
 
     # Combine both list of suggested tasks
-    suggested_tasks = tasks_in_expiring_projects + tasks_without_projects
 
+    suggested_tasks = sort_suggested_tasks(tasks_in_expiring_projects + tasks_without_projects)
     {
       total_open_tasks: total_open_tasks,
       tasks_pending_over_month: tasks_pending_over_month,
@@ -118,6 +118,59 @@ class Task < ActiveRecord::Base
       tasks_due_today: tasks_due_today,
       suggested_tasks: suggested_tasks
     }
+  end
+
+  def self.sort_suggested_tasks(tasks)
+    tasks.sort_by do |task|
+      # Parse or default the task due date
+      task_due_date = if task.due_date.is_a?(String)
+                        Date.parse(task.due_date)
+                      else
+                        task.due_date || Date.new(9999, 12, 31)
+                      end
+
+      # Parse or default the project due date
+      project_due_date = if (task.project&.due_date_at).is_a?(String)
+                           Date.parse(task&.project&.due_date_at)
+                         else
+                           task.project&.due_date_at || Date.new(9999, 12, 31)
+                         end
+
+      # Priority in descending order (sorted values should be negative for sort_by)
+      priority_value = -(Task.priorities.fetch(task.priority, -1))
+
+      # Determine sorting flags based on various criteria
+      is_high_priority_proj_with_due_date = (task.priority == 'high' && task&.project&.due_date_at) ? 0 : 1
+      is_high_priority_with_due_date = (task.priority == 'high' && task.due_date) ? 0 : 1
+      is_high_priority = (task.priority == 'high' && !task.due_date && !task&.project&.due_date_at) ? 0 : 1
+
+      is_medium_priority_proj_with_due_date = (task.priority == 'medium' && task&.project&.due_date_at) ? 0 : 1
+      is_medium_priority_with_due_date = (task.priority == 'medium' && task.due_date) ? 0 : 1
+      is_medium_priority = (task.priority == 'medium' && !task.due_date && !task&.project&.due_date_at) ? 0 : 1
+
+      is_low_priority_proj_with_due_date = (task.priority == 'low' && task&.project&.due_date_at) ? 0 : 1
+      is_low_priority_with_due_date = (task.priority == 'low' && task.due_date) ? 0 : 1
+      is_low_priority = (task.priority == 'low' && !task.due_date && !task&.project&.due_date_at) ? 0 : 1
+
+      # Primary sorting criteria
+      [
+        is_high_priority_proj_with_due_date,
+        is_high_priority_with_due_date,
+        is_high_priority,
+
+        is_medium_priority_proj_with_due_date,
+        is_medium_priority_with_due_date,
+        is_medium_priority,
+
+        is_low_priority_proj_with_due_date,
+        is_low_priority_with_due_date,
+        is_low_priority,
+
+        task_due_date,
+        project_due_date,
+        priority_value
+      ]
+    end
   end
 
   def as_json(options = {})
