@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tududi - Task Management Made Simple</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e88e5;
+            --secondary-color: #666666;
+            --light-color: #f5f5f5;
+            --dark-color: #212121;
+            --success-color: #0d47a1;
+            
+            --bg-color: #ffffff;
+            --text-color: #212121;
+            --card-bg: #f5f5f5;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --button-hover: #1565c0;
+        }
+        
+        [data-theme="dark"] {
+            --primary-color: #42a5f5;
+            --secondary-color: #aaaaaa;
+            --light-color: #333333;
+            --dark-color: #f5f5f5;
+            --success-color: #64b5f6;
+            
+            --bg-color: #121212;
+            --text-color: #f5f5f5;
+            --card-bg: #1e1e1e;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --button-hover: #2196f3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            transition: all 0.3s ease;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header */
+        header {
+            background-color: var(--bg-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .logo i {
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            align-items: center;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-switch {
+            margin-left: 30px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .theme-switch-label {
+            margin-right: 10px;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .cta-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .cta-button:hover {
+            background-color: var(--button-hover);
+            color: white;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 150px 0 100px;
+            text-align: center;
+            background-color: var(--bg-color);
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+        
+        .hero-buttons a {
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .primary-button {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .primary-button:hover {
+            background-color: var(--button-hover);
+        }
+        
+        .secondary-button {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .secondary-button:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .hero-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+        
+        /* Features */
+        .features {
+            padding: 100px 0;
+            background-color: var(--bg-color);
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+        
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .feature-card p {
+            color: var(--secondary-color);
+        }
+        
+        /* Screenshots */
+        .screenshots {
+            padding: 100px 0;
+            background-color: var(--card-bg);
+        }
+        
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .screenshot {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .screenshot img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s;
+        }
+        
+        .screenshot:hover img {
+            transform: scale(1.03);
+        }
+        
+        /* Installation */
+        .installation {
+            padding: 100px 0;
+            background-color: var(--bg-color);
+        }
+        
+        .installation-steps {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .step {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .step-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .step-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+        
+        .step-content p {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        code {
+            background-color: #f0f0f0;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            display: block;
+            margin: 15px 0;
+            white-space: pre-wrap;
+            color: #333;
+        }
+        
+        [data-theme="dark"] code {
+            background-color: #2a2a2a;
+            color: #f0f0f0;
+        }
+        
+        /* CTA */
+        .cta {
+            padding: 100px 0;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .cta-white {
+            background-color: white;
+            color: var(--primary-color);
+            padding: 15px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .cta-white:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .cta-outline {
+            border: 2px solid white;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .cta-outline:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #212121;
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+        
+        .social-icons a:hover {
+            color: var(--primary-color);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .screenshots-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .theme-switch {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-check-square"></i>
+                    <span>tududi</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#screenshots">Screenshots</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li class="theme-switch">
+                        <span class="theme-switch-label"><i class="fas fa-moon"></i></span>
+                        <label class="switch">
+                            <input type="checkbox" id="theme-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </li>
+                    <li><a href="https://github.com/chrisvel/tududi" class="cta-button">GitHub</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Task Management Made Simple</h1>
+                <p>Efficiently manage your tasks and projects, categorize them into different areas, and track due dates with this intuitive and easy-to-use web application.</p>
+                <div class="hero-buttons">
+                    <a href="https://github.com/chrisvel/tududi" class="primary-button">View on GitHub</a>
+                    <a href="#installation" class="secondary-button">Quick Install</a>
+                </div>
+                <img src="screenshots/all-light.png" alt="tududi Screenshot" class="hero-image" id="hero-screenshot">
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Features</h2>
+                <p>tududi provides everything you need for efficient task and project management in a clean, intuitive interface.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3>Task Management</h3>
+                    <p>Create, update, and delete tasks. Mark them as completed and view them by different filters. Order them by Name, Due Date, Date Created, or Priority.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sticky-note"></i>
+                    </div>
+                    <h3>Quick Notes</h3>
+                    <p>Create, update, delete, or assign text notes to projects for better organization and documentation of your work.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <h3>Tags</h3>
+                    <p>Create tags for tasks and notes to enhance organization and make filtering your work items easier.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3>Project Tracking</h3>
+                    <p>Organize tasks into projects. Each project can contain multiple tasks and/or multiple notes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>Area Categorization</h3>
+                    <p>Group projects into areas for better organization and focus on what matters to you.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3>Due Date Tracking</h3>
+                    <p>Set due dates for tasks and view them based on due date categories like Today, Upcoming, or Someday.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="screenshots" id="screenshots">
+        <div class="container">
+            <div class="section-header">
+                <h2>Screenshots</h2>
+                <p>See tududi in action with these screenshots showcasing its clean interface and functionality.</p>
+            </div>
+            <div class="screenshots-grid">
+                <div class="screenshot">
+                    <img src="screenshots/all-light.png" alt="Light Mode - Desktop">
+                </div>
+                <div class="screenshot">
+                    <img src="screenshots/all-dark.png" alt="Dark Mode - Desktop">
+                </div>
+                <div class="screenshot">
+                    <img src="screenshots/mobile-all-light.png" alt="Light Mode - Mobile">
+                </div>
+                <div class="screenshot">
+                    <img src="screenshots/mobile-all-dark.png" alt="Dark Mode - Mobile">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="installation" id="installation">
+        <div class="container">
+            <div class="section-header">
+                <h2>Quick Installation</h2>
+                <p>Get started with tududi in just a few simple steps using Docker.</p>
+            </div>
+            <div class="installation-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Pull the latest image</h3>
+                        <p>First, pull the latest Docker image:</p>
+                        <code>docker pull chrisvel/tududi:latest</code>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Create a session secret (optional)</h3>
+                        <p>Generate a random session secret:</p>
+                        <code>openssl rand -hex 64</code>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Run the Docker container</h3>
+                        <p>Launch the application with your configuration:</p>
+                        <code>docker run \
+-e TUDUDI_USER_EMAIL=myemail@example.com \
+-e TUDUDI_USER_PASSWORD=mysecurepassword \
+-e TUDUDI_SESSION_SECRET=your_generated_hash_here \
+-e TUDUDI_INTERNAL_SSL_ENABLED=false \
+-v ~/tududi_db:/usr/src/app/tududi_db \
+-p 9292:9292 \
+-d chrisvel/tududi:latest</code>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Access the application</h3>
+                        <p>Navigate to <a href="https://localhost:9292" style="color: var(--primary-color);">https://localhost:9292</a> and login with your credentials.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Get Started?</h2>
+            <p>Join our open-source community and contribute to the development of tududi or simply start using it today!</p>
+            <div class="cta-buttons">
+                <a href="https://github.com/chrisvel/tududi" class="cta-white">View on GitHub</a>
+                <a href="https://github.com/chrisvel/tududi/issues" class="cta-outline">Report Issues</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>tududi</h3>
+                    <p>A task and project management web application designed to be intuitive and easy to use.</p>
+                    <div class="social-icons">
+                        <a href="https://github.com/chrisvel/tududi"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#screenshots">Screenshots</a></li>
+                        <li><a href="#installation">Installation</a></li>
+                        <li><a href="https://github.com/chrisvel/tududi">GitHub Repository</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/chrisvel/tududi#-getting-started">Documentation</a></li>
+                        <li><a href="https://github.com/users/chrisvel/projects/2">Roadmap</a></li>
+                        <li><a href="https://github.com/chrisvel/tududi/issues">Issues</a></li>
+                        <li><a href="https://github.com/chrisvel/tududi#-contributing">Contributing</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 tududi. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Dark mode toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // Check for saved theme preference or use system preference
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        const savedTheme = localStorage.getItem('theme');
+        
+        // If saved theme is dark or system prefers dark and no saved preference
+        if (savedTheme === 'dark' || (!savedTheme && prefersDarkScheme.matches)) {
+            document.body.setAttribute('data-theme', 'dark');
+            themeToggle.checked = true;
+            document.querySelector('.theme-switch-label i').classList.remove('fa-moon');
+            document.querySelector('.theme-switch-label i').classList.add('fa-sun');
+            document.getElementById('hero-screenshot').src = "screenshots/all-dark.png";
+        }
+        
+        // Theme toggle event listener
+        themeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                document.querySelector('.theme-switch-label i').classList.remove('fa-moon');
+                document.querySelector('.theme-switch-label i').classList.add('fa-sun');
+                document.getElementById('hero-screenshot').src = "screenshots/all-dark.png";
+            } else {
+                document.body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                document.querySelector('.theme-switch-label i').classList.remove('fa-sun');
+                document.querySelector('.theme-switch-label i').classList.add('fa-moon');
+                document.getElementById('hero-screenshot').src = "screenshots/all-light.png";
+            }
+        });
+    </script>
+</body>
+</html>
