@@ -1,3 +1,10 @@
+// Add type declaration for module.hot
+declare const module: {
+  hot?: {
+    accept: (path: string, callback: () => void) => void;
+  };
+};
+
 import React from "react";
 import { createRoot } from "react-dom/client"; 
 import { BrowserRouter } from "react-router-dom"; 
@@ -18,8 +25,11 @@ if (isDarkMode) {
 
 const container = document.getElementById("root");
 
+// Store the root outside the if block so it can be accessed by the HMR code
+let root: any;
+
 if (container) {
-  const root = createRoot(container); 
+  root = createRoot(container); 
   root.render(
     <BrowserRouter>
       <ToastProvider>
@@ -27,4 +37,21 @@ if (container) {
       </ToastProvider>
     </BrowserRouter>
   );
+}
+
+// Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
+// Learn more: https://www.webpackjs.com/concepts/hot-module-replacement/
+if (module.hot) {
+  module.hot.accept('./App', () => {
+    // New version of App component imported
+    if (root) {
+      root.render(
+        <BrowserRouter>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </BrowserRouter>
+      );
+    }
+  });
 }

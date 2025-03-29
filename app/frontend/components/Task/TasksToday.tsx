@@ -91,7 +91,7 @@ const TasksToday: React.FC = () => {
     }
   };
 
-  const todayDate = format(new Date(), "yyyy-MM-dd");
+  // const todayDate = format(new Date(), "yyyy-MM-dd");
 
   return (
     <div className="flex justify-center px-4 lg:px-2">

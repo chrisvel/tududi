@@ -23,7 +23,6 @@ module.exports = {
     historyApiFallback: true,
   },
   plugins: [
-    isDevelopment && new webpack.HotModuleReplacementPlugin(),
     isDevelopment && new ReactRefreshWebpackPlugin(),
   ].filter(Boolean),
   module: {

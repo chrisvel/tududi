@@ -20,7 +20,7 @@ import NoteDetails from "./components/Note/NoteDetails";
 import ProfileSettings from "./components/Profile/ProfileSettings";
 import Layout from "./Layout";
 import { User } from "./entities/User";
-import TasksToday from "./components/Task/TasksToday";
+import TasksToday from "./components/Task/TasksToday"; 
 
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -93,7 +93,7 @@ const App: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
         <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-          Loading...
+          Loading application... Please wait.
         </div>
       </div>
     );
