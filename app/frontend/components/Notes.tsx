@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   BookOpenIcon,
   PencilSquareIcon,
@@ -17,6 +18,7 @@ import {
 } from '../utils/notesService';
 
 const Notes: React.FC = () => {
+  const { t } = useTranslation();
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -90,7 +92,7 @@ const Notes: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
         <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-          Loading notes...
+          {t('notes.loading')}
         </div>
       </div>
     );
@@ -99,7 +101,7 @@ const Notes: React.FC = () => {
   if (isError) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-red-500 text-lg">Error loading notes.</div>
+        <div className="text-red-500 text-lg">{t('notes.error')}</div>
       </div>
     );
   }
@@ -112,7 +114,7 @@ const Notes: React.FC = () => {
           <div className="flex items-center">
             <BookOpenIcon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
             <h2 className="text-2xl font-light text-gray-900 dark:text-white">
-              Notes
+              {t('notes.title')}
             </h2>
           </div>
         </div>
@@ -123,7 +125,7 @@ const Notes: React.FC = () => {
             <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
             <input
               type="text"
-              placeholder="Search notes..."
+              placeholder={t('notes.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
@@ -133,7 +135,7 @@ const Notes: React.FC = () => {
 
         {/* Notes List */}
         {filteredNotes.length === 0 ? (
-          <p className="text-gray-700 dark:text-gray-300">No notes found.</p>
+          <p className="text-gray-700 dark:text-gray-300">{t('notes.noNotesFound')}</p>
         ) : (
           <ul className="space-y-2">
             {filteredNotes.map((note) => (
@@ -156,8 +158,8 @@ const Notes: React.FC = () => {
                   <button
                     onClick={() => handleEditNote(note)}
                     className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
-                    aria-label={`Edit ${note.title}`}
-                    title={`Edit ${note.title}`}
+                    aria-label={t('notes.editNoteAriaLabel', { noteTitle: note.title })}
+                    title={t('notes.editNoteTitle', { noteTitle: note.title })}
                   >
                     <PencilSquareIcon className="h-5 w-5" />
                   </button>
@@ -166,9 +168,8 @@ const Notes: React.FC = () => {
                       setNoteToDelete(note);
                       setIsConfirmDialogOpen(true);
                     }}
-                    className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
-                    aria-label={`Delete ${note.title}`}
-                    title={`Delete ${note.title}`}
+                    aria-label={t('notes.deleteNoteAriaLabel', { noteTitle: note.title })}
+                    title={t('notes.deleteNoteTitle', { noteTitle: note.title })}
                   >
                     <TrashIcon className="h-5 w-5" />
                   </button>
@@ -191,8 +192,8 @@ const Notes: React.FC = () => {
         {/* ConfirmDialog */}
         {isConfirmDialogOpen && noteToDelete && (
           <ConfirmDialog
-            title="Delete Note"
-            message={`Are you sure you want to delete the note "${noteToDelete.title}"?`}
+            title={t('modals.deleteNote.title')}
+            message={t('modals.deleteNote.message', { noteTitle: noteToDelete.title })}
             onConfirm={handleDeleteNote}
             onCancel={() => setIsConfirmDialogOpen(false)}
           />

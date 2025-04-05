@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import i18n from 'i18next';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -24,6 +25,14 @@ const Login: React.FC = () => {
 
       if (response.ok) {
         console.log('Login successful:', data);
+        
+        // Set the language based on user data if available
+        if (data.user && data.user.language) {
+          console.log('Setting language from login response:', data.user.language);
+          await i18n.changeLanguage(data.user.language);
+          console.log('Language changed to:', i18n.language);
+        }
+        
         navigate('/today');
       } else {
         setError(data.errors[0] || 'Login failed. Please try again.');

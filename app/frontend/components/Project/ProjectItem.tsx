@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import { Project } from "../../entities/Project";
+import { useTranslation } from "react-i18next";
 
 interface ProjectItemProps {
   project: Project;
@@ -37,6 +38,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
   setProjectToDelete,
   setIsConfirmDialogOpen,
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       className={`${
@@ -54,7 +56,10 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
           className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg"
           style={{ height: "140px" }}
         >
-          <span className="text-2xl font-extrabold text-gray-500 dark:text-gray-400 opacity-20">
+          <span 
+            className="text-2xl font-extrabold text-gray-500 dark:text-gray-400 opacity-20"
+            aria-label={t("projectItem.projectInitials")}
+          >
             {getProjectInitials(project.name)}
           </span>
           <div
@@ -86,6 +91,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 activeDropdown === project.id ? null : project.id ?? null
               )
             }
+            aria-label={t("projectItem.toggleDropdownMenu")}
           >
             <EllipsisVerticalIcon className="h-5 w-5" />
           </button>
@@ -96,7 +102,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 onClick={() => handleEditProject(project)}
                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
               >
-                Edit
+                {t("projectItem.edit")}
               </button>
               <button
                 onClick={() => {
@@ -106,7 +112,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 }}
                 className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
               >
-                Delete
+                {t("projectItem.delete")}
               </button>
             </div>
           )}
@@ -125,7 +131,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
               ></div>
             </div>
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              {getCompletionPercentage(project?.id)}%
+              {t("projectItem.completionPercentage", { percentage: getCompletionPercentage(project?.id) })}
             </span>
           </div>
         </div>

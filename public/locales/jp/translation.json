@@ -1,0 +1,229 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "submit": "送信",
+    "close": "閉じる",
+    "back": "戻る",
+    "next": "次へ",
+    "loading": "読み込み中...",
+    "completed": "完了",
+    "error": "エラー",
+    "success": "成功"
+  },
+
+  "sidebar": {
+    "dashboard": "ダッシュボード",
+    "projects": "プロジェクト",
+    "tasks": "タスク",
+    "calendar": "カレンダー",
+    "notes": "ノート",
+    "settings": "設定",
+    "areas": "エリア",
+    "tags": "タグ",
+    "today": "今日",
+    "upcoming": "近日",
+    "nextActions": "次のアクション",
+    "inbox": "受信箱",
+    "completed": "完了",
+    "allTasks": "すべてのタスク"
+  },
+  "navigation": {
+    "home": "ホーム",
+    "dashboard": "ダッシュボード",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "logout": "ログアウト"
+  },
+  "tasks": {
+    "today": "今日",
+    "backlog": "バックログ",
+    "inProgress": "進行中",
+    "dueToday": "本日の期限",
+    "stale": "古い",
+    "suggested": "おすすめ",
+    "noTasksAvailable": "今日のタスクはありません。",
+    "searchPlaceholder": "タスクを検索...",
+    "addNewTask": "新しいタスクを追加"
+  },
+  "profile": {
+    "settings": "プロフィール設定",
+    "language": "言語",
+    "theme": "テーマ",
+    "notifications": "通知",
+    "english": "英語",
+    "spanish": "スペイン語",
+    "greek": "ギリシャ語",
+    "Japanese": "日本語"
+  },
+  "modals": {
+    "confirmDelete": "本当に削除してよろしいですか？",
+    "taskCreation": "新しいタスクの作成",
+    "taskEdit": "タスクの編集",
+    "noteCreation": "新しいノートの作成",
+    "noteEdit": "ノートの編集",
+    "updateNote": "ノートを更新",
+    "createNote": "ノートを作成",
+    "submitting": "送信中...",
+    "deleteTag": {
+      "title": "タグの削除",
+      "message": "\"{{tagName}}\" タグを削除してもよろしいですか？"
+    },
+    "deleteArea": {
+      "title": "エリアの削除",
+      "message": "\"{{areaName}}\" エリアを削除してもよろしいですか？"
+    },
+    "deleteNote": {
+      "title": "ノートの削除",
+      "message": "\"{{noteTitle}}\" ノートを削除してもよろしいですか？"
+    },
+    "deleteProject": {
+      "title": "プロジェクトの削除",
+      "message": "\"{{projectName}}\" プロジェクトを削除してもよろしいですか？"
+    }
+  },
+  "forms": {
+    "title": "タイトル",
+    "description": "説明",
+    "dueDate": "期限",
+    "priority": "優先度",
+    "status": "状態",
+    "assignedTo": "担当者",
+    "category": "カテゴリー",
+    "tags": "タグ",
+    "required": "この項目は必須です",
+    "optional": "任意",
+    "noteTitle": "ノートタイトル",
+    "noteContent": "ノート内容",
+    "noteTitlePlaceholder": "ノートのタイトルを入力",
+    "noteContentPlaceholder": "ノートの内容を入力"
+  },
+  "auth": {
+    "login": "ログイン",
+    "register": "登録",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "email": "メール",
+    "password": "パスワード",
+    "confirmPassword": "パスワードの確認",
+    "username": "ユーザー名",
+    "signup": "サインアップ",
+    "signin": "サインイン",
+    "signout": "サインアウト",
+    "resetPassword": "パスワードのリセット",
+    "newPassword": "新しいパスワード",
+    "rememberMe": "ログイン状態を保持する",
+    "loginSuccess": "ログイン成功",
+    "loginFailed": "ログイン失敗",
+    "logoutSuccess": "ログアウト成功"
+  },
+  "dropdown": {
+    "createNew": "新規作成",
+    "task": "タスク",
+    "project": "プロジェクト",
+    "note": "ノート",
+    "area": "エリア"
+  },
+  "sort": {
+    "due_date": "期限日",
+    "name": "名前",
+    "priority": "優先度",
+    "status": "状態",
+    "created_at": "作成日時"
+  },
+  "errors": {
+    "required": "この項目は必須です",
+    "invalidEmail": "無効なメールアドレス",
+    "passwordMismatch": "パスワードが一致しません",
+    "minLength": "最小文字数は {{length}} 文字です",
+    "maxLength": "最大文字数は {{length}} 文字です",
+    "serverError": "サーバーエラーが発生しました。しばらくしてから再試行してください",
+    "networkError": "ネットワークエラー。接続を確認してください",
+    "somethingWentWrong": "問題が発生しました。再試行してください",
+    "taskFetch": "タスクの取得に失敗しました。",
+    "projectFetch": "プロジェクトの取得に失敗しました。",
+    "taskCreate": "タスクの作成に失敗しました。",
+    "taskUpdate": "タスクの更新に失敗しました。",
+    "taskDelete": "タスクの削除に失敗しました。",
+    "noteTitleRequired": "ノートのタイトルは必須です。",
+    "failedToLoadTags": "利用可能なタグの読み込みに失敗しました。",
+    "failedToSaveNote": "ノートの保存に失敗しました。"
+  },
+  "success": {
+    "noteUpdated": "ノートが正常に更新されました！",
+    "noteCreated": "ノートが正常に作成されました！"
+  },
+  "dateFormats": {
+    "long": "EEEE, MMMM d, yyyy",
+    "short": "MMM d, yyyy",
+    "monthYear": "MMMM yyyy",
+    "dayMonth": "MMMM d",
+    "time": "h:mm a",
+    "dateTime": "MMM d, yyyy h:mm a"
+  },
+  "taskViews": {
+    "project": {
+      "withName": "「{{projectName}}」プロジェクトに関連するすべてのタスクを表示しています。このプロジェクト内でタスクを整理し、優先順位を設定し、完了状況を追跡できます。このスペースを使って、特定のプロジェクトに属するタスクに集中してください。",
+      "noName": "特定のプロジェクトのタスクを表示しています。このスペースでプロジェクトに関連するタスクを管理してください。"
+    },
+    "today": "本日期限のタスクまたは即時対応のためのタスクが表示されます。今日完了すべきタスクに集中してください。ステータスの更新や完了マークが可能です。",
+    "inbox": "受信トレイは、カテゴリ未割り当てのタスクが一覧表示されます。プロジェクトや期限が設定されていないタスクはここに集まります。アイデアやタスクをすぐに記録する場所としてご利用ください。",
+    "next": "近日中に実行可能なタスクを表示します。すぐに取り掛かるべきタスクにフォーカスしてください。",
+    "upcoming": "今後1週間以内に期限が来るタスクを表示します。今後の予定を把握し、締め切りに備えるのに役立ちます。",
+    "someday": "「いつか」実施するタスクです。今は優先度が低いですが、将来的に取りかかる可能性のあるタスクを管理します。",
+    "completed": "完了したタスク一覧です。過去の達成を振り返ることができます。",
+    "allTasks": "すべてのタスクが表示されます。各プロジェクトのタスク、期限未設定のタスク、優先度の異なるタスクなどを含みます。全体を把握するためにご利用ください。"
+  },
+  "projects": {
+    "loading": "プロジェクトを読み込み中...",
+    "error": "プロジェクトの読み込みエラー",
+    "searchPlaceholder": "プロジェクトを検索...",
+    "title": "プロジェクト",
+    "noProjectsFound": "プロジェクトが見つかりません",
+    "cardViewAriaLabel": "カードビュー",
+    "listViewAriaLabel": "リストビュー",
+    "filters": {
+      "active": "有効",
+      "inactive": "無効",
+      "all": "すべて",
+      "allAreas": "すべてのエリア"
+    }
+  },
+  "projectItem": {
+    "edit": "編集",
+    "delete": "削除",
+    "completion": "完了度",
+    "completionPercentage": "{{percentage}}% 完了",
+    "toggleDropdownMenu": "ドロップダウンメニューを切り替え",
+    "projectInitials": "プロジェクトの頭文字"
+  },
+  "areas": {
+    "title": "エリア",
+    "noAreasFound": "エリアが見つかりませんでした",
+    "editAreaAriaLabel": "エリア {{name}} を編集",
+    "editAreaTitle": "エリア {{name}} の編集",
+    "deleteAreaAriaLabel": "エリア {{name}} を削除",
+    "deleteAreaTitle": "エリア {{name}} の削除"
+  },
+  "notes": {
+    "loading": "ノートを読み込み中...",
+    "noNotesFound": "ノートが見つかりませんでした",
+    "title": "ノート",
+    "deleteNoteAriaLabel": "ノート {{noteTitle}} を削除",
+    "deleteNoteTitle": "ノート {{noteTitle}} の削除",
+    "editNoteAriaLabel": "ノート {{noteTitle}} を編集",
+    "editNoteTitle": "ノート {{noteTitle}} の編集"
+  },
+  "tags": {
+    "loading": "タグを読み込み中...",
+    "searchPlaceholder": "タグを検索...",
+    "title": "タグ",
+    "noTagsFound": "タグが見つかりませんでした",
+    "editTagAriaLabel": "タグ {{tagName}} を編集",
+    "editTagTitle": "タグ {{tagName}} の編集",
+    "deleteTagAriaLabel": "タグ {{tagName}} を削除",
+    "deleteTagTitle": "タグ {{tagName}} の削除"
+  }
+}

@@ -1,5 +1,6 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-
+import React, { useState, useEffect, ChangeEvent, FormEvent, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 interface ProfileSettingsProps {
   currentUser: { id: number; email: string };
 }
@@ -14,10 +15,17 @@ interface Profile {
 }
 
 const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
+  const { t, i18n } = useTranslation();
+  // Add this to check the initial language
+  console.log('Current language on component mount:', i18n.language);
+  console.log('Available languages:', i18n.languages);
+  console.log('Available namespaces:', i18n.options.ns);
+  
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [, forceUpdate] = useState({});
   const [formData, setFormData] = useState({
     appearance: 'light',
     language: 'en',
@@ -52,9 +60,48 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
     fetchProfile();
   }, []);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  // Add an effect to monitor language changes
+  useEffect(() => {
+    const handleLanguageChanged = (lng: string) => {
+      console.log(`Language changed to ${lng}`);
+      // Force component to re-render when language changes
+      forceUpdate({});
+    };
+
+    // Add language change listener
+    i18n.on('languageChanged', handleLanguageChanged);
+
+    // Clean up listener on unmount
+    return () => {
+      i18n.off('languageChanged', handleLanguageChanged);
+    };
+  }, []);
+
+  const handleChange = async (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // Change language immediately when selected
+    if (name === 'language') {
+      console.log('Changing language to:', value);
+      console.log('Translation before change:', t('profile.title'));
+      
+      try {
+        await i18n.changeLanguage(value);
+        console.log('Current language after change:', i18n.language);
+        console.log('Translation after change:', t('profile.title'));
+        console.log('Is i18n initialized:', i18n.isInitialized);
+        
+        // Verify translations are loaded
+        const resources = i18n.getResourceBundle(value, 'translation');
+        console.log('Resources loaded for language:', value, resources ? 'Yes' : 'No');
+        if (resources) {
+          console.log('Sample translations:', resources.profile?.title);
+        }
+      } catch (error) {
+        console.error('Error changing language:', error);
+      }
+    }
   };
 
   const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -90,7 +137,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
 
       const updatedProfile: Profile = await response.json();
       setProfile(updatedProfile);
-      setSuccess('Profile updated successfully.');
+      
+      // Make sure to update language if it was changed
+      if (updatedProfile.language !== i18n.language) {
+        console.log('Updating language after form submission:', updatedProfile.language);
+        await i18n.changeLanguage(updatedProfile.language);
+      }
+      
+      setSuccess(t('profile.successMessage'));
     } catch (err) {
       setError((err as Error).message);
     }
@@ -100,7 +154,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
         <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-          Loading profile settings...
+          {t('common.loading')}
         </div>
       </div>
     );
@@ -117,8 +171,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
   return (
     <div className="max-w-5xl mx-auto p-6">
       <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-        Profile Settings
+        {t('profile.title')}
       </h2>
+      
+      {/* Debug information */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mb-4 p-2 bg-gray-100 dark:bg-gray-800 text-xs font-mono">
+          <p>Current language: {i18n.language}</p>
+          <p>Initialized: {i18n.isInitialized ? 'Yes' : 'No'}</p>
+          <p>Available languages: {i18n.languages?.join(', ')}</p>
+        </div>
+      )}
 
       {success && <div className="mb-4 text-green-500">{success}</div>}
       {error && <div className="mb-4 text-red-500">{error}</div>}
@@ -127,7 +190,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
         {/* Appearance Selection */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Appearance
+            {t('profile.appearance')}
           </label>
           <select
             name="appearance"
@@ -135,15 +198,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           >
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
+            <option value="light">{t('profile.lightMode', 'Light')}</option>
+            <option value="dark">{t('profile.darkMode', 'Dark')}</option>
           </select>
         </div>
 
         {/* Language Selection */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Language
+            {t('profile.language')}
           </label>
           <select
             name="language"
@@ -151,8 +214,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
             onChange={handleChange}
             className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           >
-            <option value="en">English</option>
-            <option value="es">Spanish</option>
+            <option value="en">{t('profile.english')}</option>
+            <option value="es">{t('profile.spanish')}</option>
+            <option value="el">{t('profile.greek')}</option>
+            <option value="jp">{t('profile.japanese')}</option>
+            <option value="jp">{t('profile.ukrainian')}</option>
+            <option value="jp">{t('profile.deutsch')}</option>
             {/* Add more languages if necessary */}
           </select>
         </div>
@@ -160,7 +227,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
         {/* Timezone Selection */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Timezone
+            {t('profile.timezone')}
           </label>
           <select
             name="timezone"
@@ -201,7 +268,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
             type="submit"
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
           >
-            Save Changes
+            {t('profile.saveChanges')}
           </button>
         </div>
       </form>

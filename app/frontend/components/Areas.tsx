@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   PencilSquareIcon,
   TrashIcon,
@@ -12,6 +13,7 @@ import { fetchAreas, createArea, updateArea, deleteArea } from '../utils/areasSe
 import { Area } from '../entities/Area';
 
 const Areas: React.FC = () => {
+  const { t } = useTranslation();
   const { areas, setAreas, setLoading, setError } = useStore((state) => state.areasStore);
 
   const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
@@ -105,20 +107,20 @@ const Areas: React.FC = () => {
           <div className="flex items-center">
             <Squares2X2Icon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
             <h2 className="text-2xl font-light text-gray-900 dark:text-white">
-              Areas
+              {t('areas.title')}
             </h2>
           </div>
           <button
             onClick={handleCreateArea}
             className="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600"
           >
-            Add Area
+            {t('areas.addArea')}
           </button>
         </div>
 
         {/* Areas List */}
         {areas.length === 0 ? (
-          <p className="text-gray-700 dark:text-gray-300">No areas found.</p>
+          <p className="text-gray-700 dark:text-gray-300">{t('areas.noAreasFound')}</p>
         ) : (
           <ul className="space-y-2">
             {areas.map((area) => (
@@ -146,16 +148,16 @@ const Areas: React.FC = () => {
                   <button
                     onClick={() => handleEditArea(area)}
                     className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
-                    aria-label={`Edit ${area.name}`}
-                    title={`Edit ${area.name}`}
+                    aria-label={t('areas.editAreaAriaLabel', { name: area.name })}
+                    title={t('areas.editAreaTitle', { name: area.name })}
                   >
                     <PencilSquareIcon className="h-5 w-5" />
                   </button>
                   <button
                     onClick={() => openConfirmDialog(area)}
                     className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
-                    aria-label={`Delete ${area.name}`}
-                    title={`Delete ${area.name}`}
+                    aria-label={t('areas.deleteAreaAriaLabel', { name: area.name })}
+                    title={t('areas.deleteAreaTitle', { name: area.name })}
                   >
                     <TrashIcon className="h-5 w-5" />
                   </button>
@@ -178,8 +180,8 @@ const Areas: React.FC = () => {
         {/* ConfirmDialog */}
         {isConfirmDialogOpen && areaToDelete && (
           <ConfirmDialog
-            title="Delete Area"
-            message={`Are you sure you want to delete the area "${areaToDelete.name}"?`}
+            title={t('modals.deleteArea.title')}
+            message={t('modals.deleteArea.message', { name: areaToDelete.name })}
             onConfirm={handleDeleteArea}
             onCancel={closeConfirmDialog}
           />

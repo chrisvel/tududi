@@ -2,6 +2,7 @@ import React from "react";
 import { Squares2X2Icon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { Location } from "react-router-dom";
 import { Area } from "../../entities/Area";
+import { useTranslation } from "react-i18next";
 
 interface SidebarAreasProps {
   handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -16,6 +17,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
   location,
   openAreaModal,
 }) => {
+  const { t } = useTranslation();
   const isActiveArea = (path: string) => {
     return location.pathname === path
       ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -40,7 +42,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
         >
           <span className="flex items-center">
             <Squares2X2Icon className="h-5 w-5 mr-2" />
-            AREAS
+            {t('sidebar.areas')}
           </span>
           <button
             onClick={(e) => {
@@ -48,8 +50,8 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
               openAreaModal(null);
             }}
             className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
-            aria-label="Add Area"
-            title="Add Area"
+            aria-label={t('sidebar.addAreaAriaLabel')}
+            title={t('sidebar.addAreaTitle')}
           >
             <PlusCircleIcon className="h-5 w-5" />
           </button>

@@ -1,0 +1,306 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "submit": "Submit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading...",
+    "appLoading": "Loading application... Please wait.",
+    "completed": "Completed",
+    "error": "Error",
+    "success": "Success"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "tasks": "Tasks",
+    "calendar": "Calendar",
+    "notes": "Notes",
+    "settings": "Settings",
+    "areas": "Areas",
+    "tags": "Tags",
+    "addAreaAriaLabel": "Add Area",
+    "addAreaTitle": "Add Area",
+    "addTagAriaLabel": "Add Tag",
+    "addTagTitle": "Add Tag",
+    "today": "Today",
+    "upcoming": "Upcoming",
+    "nextActions": "Next Actions",
+    "inbox": "Inbox",
+    "completed": "Completed",
+    "allTasks": "All Tasks"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "tasks": {
+    "today": "Today",
+    "backlog": "Backlog",
+    "inProgress": "In Progress",
+    "dueToday": "Due Today",
+    "stale": "Stale",
+    "suggested": "Suggested",
+    "noTasksAvailable": "No tasks available for today.",
+    "searchPlaceholder": "Search tasks...",
+    "addNewTask": "Add New Task"
+  },
+  "profile": {
+    "settings": "Profile Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "english": "English",
+    "spanish": "Spanish",
+    "greek": "Greek",
+    "Japanese": "Japanese"
+  },
+  "modals": {
+    "confirmDelete": "Are you sure you want to delete?",
+    "taskCreation": "Create New Task",
+    "taskEdit": "Edit Task",
+    "deleteTask": {
+      "title": "Delete Task",
+      "confirmation": "Are you sure you want to delete this task? This action cannot be undone."
+    },
+    "noteCreation": "Create New Note",
+    "noteEdit": "Edit Note",
+    "updateNote": "Update Note",
+    "createNote": "Create Note",
+    "submitting": "Submitting...",
+    "areaCreation": "Create New Area",
+    "areaEdit": "Edit Area",
+    "updateArea": "Update Area",
+    "createArea": "Create Area",
+    "updateTag": "Update Tag",
+    "createTag": "Create Tag",
+    "deleteTag": {
+      "title": "Delete Tag",
+      "message": "Are you sure you want to delete the tag \"{{tagName}}\"?"
+    },
+    "deleteArea": {
+      "title": "Delete Area",
+      "message": "Are you sure you want to delete the area \"{{areaName}}\"?"
+    },
+    "deleteNote": {
+      "title": "Delete Note",
+      "message": "Are you sure you want to delete the note \"{{noteTitle}}\"?"
+    },
+    "deleteProject": {
+      "title": "Delete Project",
+      "message": "Are you sure you want to delete the project \"{{projectName}}\"?"
+    }
+  },
+  "forms": {
+    "title": "Title",
+    "description": "Description",
+    "dueDate": "Due Date",
+    "priority": "Priority",
+    "status": "Status",
+    "assignedTo": "Assigned To",
+    "category": "Category",
+    "tags": "Tags",
+    "required": "This field is required",
+    "optional": "Optional",
+    "task": {
+      "namePlaceholder": "Add Task Name",
+      "labels": {
+        "tags": "Tags",
+        "project": "Project",
+        "status": "Status",
+        "priority": "Priority",
+        "dueDate": "Due Date",
+        "note": "Note"
+      },
+      "projectSearchPlaceholder": "Search or create a project...",
+      "noMatchingProjects": "No matching projects",
+      "creatingProject": "Creating...",
+      "createProject": "+ Create"
+    },
+    "noteTitle": "Note Title",
+    "noteContent": "Note Content",
+    "noteTitlePlaceholder": "Enter note title",
+    "noteContentPlaceholder": "Enter note content",
+    "areaName": "Area Name",
+    "areaDescription": "Area Description",
+    "areaNamePlaceholder": "Enter area name",
+    "areaDescriptionPlaceholder": "Enter area description",
+    "tagName": "Tag Name",
+    "tagNamePlaceholder": "Enter tag name",
+    "tagInputPlaceholder": "Type to add a tag",
+    "createTagOption": "+ Create \"{{tagName}}\"",
+    "removeTagAriaLabel": "Remove tag {{tagName}}"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "forgotPassword": "Forgot Password",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "username": "Username",
+    "signup": "Sign Up",
+    "signin": "Sign In",
+    "signout": "Sign Out",
+    "resetPassword": "Reset Password",
+    "newPassword": "New Password",
+    "rememberMe": "Remember Me",
+    "loginSuccess": "Login Successful",
+    "loginFailed": "Login Failed",
+    "logoutSuccess": "Logout Successful"
+  },
+  "dropdown": {
+    "createNew": "Create New",
+    "task": "Task",
+    "project": "Project",
+    "note": "Note",
+    "area": "Area"
+  },
+  "sort": {
+    "due_date": "Due Date",
+    "name": "Name",
+    "priority": "Priority",
+    "status": "Status",
+    "created_at": "Created At"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "projectCreationFailed": "Failed to create project.",
+    "passwordMismatch": "Passwords do not match",
+    "minLength": "Minimum length is {{length}} characters",
+    "maxLength": "Maximum length is {{length}} characters",
+    "serverError": "Server error, please try again later",
+    "networkError": "Network error, please check your connection",
+    "somethingWentWrong": "Something went wrong, please try again",
+    "taskFetch": "Failed to fetch tasks.",
+    "projectFetch": "Failed to fetch projects.",
+    "taskCreate": "Failed to create task.",
+    "taskUpdate": "Failed to update task.",
+    "taskDelete": "Failed to delete task.",
+    "noteTitleRequired": "Note title is required.",
+    "failedToLoadTags": "Failed to load available tags.",
+    "failedToSaveNote": "Failed to save note.",
+    "areaNameRequired": "Area name is required.",
+    "failedToSaveArea": "Failed to save area.",
+    "tagNameRequired": "Tag name is required.",
+    "failedToSaveTag": "Failed to save tag."
+  },
+  "dateFormats": {
+    "long": "EEEE, MMMM d, yyyy",
+    "short": "MMM d, yyyy",
+    "monthYear": "MMMM yyyy",
+    "dayMonth": "MMMM d",
+    "time": "h:mm a",
+    "dateTime": "MMM d, yyyy h:mm a"
+  },
+  "taskViews": {
+    "project": {
+      "withName": "You are currently viewing all tasks associated with the \"{{projectName}}\" project. You can organize tasks within this project, set their priority, and track their completion. Use this space to focus on the tasks that belong specifically to this project.",
+      "noName": "You are viewing tasks for a specific project. Use this space to manage and track tasks associated with this project."
+    },
+    "today": "These are the tasks that are due today or tasks you've scheduled for immediate attention. Use this view to focus on what needs to be completed today. Mark tasks as completed, update their status, or adjust their due dates if needed.",
+    "inbox": "The inbox is where all uncategorized tasks live. Tasks that haven't been assigned to a project or given a due date will show up here. This is your \"brain dump\" area where you can quickly jot down tasks and organize them later.",
+    "next": "This view shows all the tasks that are actionable in the near future. These tasks are ready to be worked on next and don't have long-term deadlines. It's a good place to focus when you're looking to make quick progress on tasks.",
+    "upcoming": "This view highlights tasks that are scheduled for the upcoming week. It helps you prepare and stay ahead of deadlines by giving you an overview of the work you need to tackle in the near future. Tasks with due dates within the next 7 days will appear here.",
+    "someday": "The \"Someday\" view is for tasks that aren't urgent and don't have a specific due date. These are tasks you may want to get to at some point, but they aren't a priority right now. Use this section to keep track of ideas or long-term goals.",
+    "completed": "Here you can see all the tasks you've completed. It's a great way to review your accomplishments and reflect on the work you've finished. You can also find tasks that may need to be unarchived or referenced in the future.",
+    "allTasks": "You are viewing all tasks. This includes tasks from different projects, tasks without specific due dates, and tasks with varying levels of priority. Use this view for an overall look at everything on your to-do list."
+  },
+  "success": {
+    "noteUpdated": "Note updated successfully!",
+    "noteCreated": "Note created successfully!",
+    "areaUpdated": "Area updated successfully!",
+    "areaCreated": "Area created successfully!",
+    "tagUpdated": "Tag updated successfully!",
+    "tagCreated": "Tag created successfully!",
+    "projectCreated": "Project created successfully!",
+    "taskCreated": "Task created successfully!",
+    "taskUpdated": "Task updated successfully!",
+    "taskDeleted": "Task deleted successfully!"
+  },
+  "task": {
+    "labels": {
+      "tags": "Tags",
+      "project": "Project",
+      "status": "Status",
+      "priority": "Priority",
+      "dueDate": "Due Date",
+      "note": "Note"
+    }
+  },
+  "projects": {
+    "loading": "Loading projects...",
+    "error": "Error loading projects",
+    "searchPlaceholder": "Search projects...",
+    "title": "Projects",
+    "noProjectsFound": "No projects found",
+    "cardViewAriaLabel": "Card View",
+    "listViewAriaLabel": "List View",
+    "filters": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "all": "All",
+      "allAreas": "All Areas"
+    }
+  },
+  "projectItem": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "completion": "Completion",
+    "completionPercentage": "{{percentage}}% complete",
+    "toggleDropdownMenu": "Toggle dropdown menu",
+    "projectInitials": "Project initials"
+  },
+  "areas": {
+    "title": "Areas",
+    "noAreasFound": "No areas found",
+    "editAreaAriaLabel": "Edit area {{name}}",
+    "editAreaTitle": "Edit area {{name}}",
+    "deleteAreaAriaLabel": "Delete area {{name}}",
+    "deleteAreaTitle": "Delete area {{name}}",
+    "addArea": "Add Area",
+    "loading": "Loading area details...",
+    "error": "Error loading area details.",
+    "notFound": "Area not found.",
+    "details": "Area Details",
+    "viewProjects": "View Projects in {{name}}"
+  },
+  "notes": {
+    "loading": "Loading notes...",
+    "error": "Error loading notes",
+    "searchPlaceholder": "Search notes...",
+    "noNotesFound": "No notes found",
+    "title": "Notes",
+    "deleteNoteAriaLabel": "Delete note {{noteTitle}}",
+    "deleteNoteTitle": "Delete note {{noteTitle}}",
+    "editNoteAriaLabel": "Edit note {{noteTitle}}",
+    "editNoteTitle": "Edit note {{noteTitle}}"
+  },
+  "tags": {
+    "loading": "Loading tags...",
+    "searchPlaceholder": "Search tags...",
+    "title": "Tags",
+    "noTagsFound": "No tags found",
+    "editTagAriaLabel": "Edit tag {{tagName}}",
+    "editTagTitle": "Edit tag {{tagName}}",
+    "deleteTagAriaLabel": "Delete tag {{tagName}}",
+    "deleteTagTitle": "Delete tag {{tagName}}",
+    "error": "Error fetching tag.",
+    "notFound": "Tag not found.",
+    "details": "Tag Details",
+    "name": "Name",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "viewTasksWithTag": "View tasks with this tag"
+  }
+}

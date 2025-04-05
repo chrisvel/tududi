@@ -2,6 +2,7 @@ import React from 'react';
 import { Location } from 'react-router-dom';
 import { BookOpenIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { Note } from '../../entities/Note';
+import { useTranslation } from 'react-i18next';
 
 interface SidebarNotesProps {
   handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -16,6 +17,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
   location,
   openNoteModal,
 }) => {
+  const { t } = useTranslation();
   const isActiveNote = (path: string) => {
     return location.pathname === path
       ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
@@ -33,7 +35,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
         >
           <span className="flex items-center">
             <BookOpenIcon className="h-5 w-5 mr-2" />
-            NOTES
+            {t('sidebar.notes')}
           </span>
           <button
             onClick={(e) => {

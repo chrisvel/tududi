@@ -7,7 +7,7 @@ import NoteModal from "./components/Note/NoteModal";
 import AreaModal from "./components/Area/AreaModal";
 import TagModal from "./components/Tag/TagModal";
 import TaskModal from "./components/Task/TaskModal";
-
+import { useTranslation } from "react-i18next";
 import { Note } from "./entities/Note";
 import { Area } from "./entities/Area";
 import { Tag } from "./entities/Tag";
@@ -36,6 +36,7 @@ const Layout: React.FC<LayoutProps> = ({
   toggleDarkMode,
   children,
 }) => {
+  const { t } = useTranslation();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -311,7 +312,7 @@ const Layout: React.FC<LayoutProps> = ({
           className={`flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
         >
           <div className="text-xl text-gray-700 dark:text-gray-200">
-            Loading...
+            {t('common.loading')}
           </div>
         </div>
       </div>
@@ -347,7 +348,7 @@ const Layout: React.FC<LayoutProps> = ({
         <div
           className={`flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
         >
-          <div className="text-xl text-red-500">Error fetching data.</div>
+          <div className="text-xl text-red-500">{t('errors.somethingWentWrong')}</div>
         </div>
       </div>
     );

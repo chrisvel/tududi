@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import TaskList from "./Task/TaskList";
 import NewTask from "./Task/NewTask";
 import { Task } from "../entities/Task";
@@ -17,6 +18,7 @@ import {
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const Tasks: React.FC = () => {
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -194,7 +196,7 @@ const Tasks: React.FC = () => {
     setDropdownOpen(false);
   };
 
-  const description = getDescription(query, projects);
+  const description = getDescription(query, projects, t);
 
   const isNewTaskAllowed = () => {
     return status !== "done";

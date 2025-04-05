@@ -44,6 +44,7 @@ class Sinatra::Application
 
     if tag.save
       tag.as_json(only: %i[id name]).to_json
+    else
       status 400
       { error: 'There was a problem updating the tag.' }.to_json
     end

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Location } from 'react-router-dom';
 import { FolderIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 interface SidebarProjectsProps {
   handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -14,6 +15,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
   location,
   openProjectModal,
 }) => {
+  const { t } = useTranslation();
   const isActiveProject = (path: string) => {
     return location.pathname === path
       ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
@@ -31,7 +33,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
         >
           <span className="flex items-center">
             <FolderIcon className="h-5 w-5 mr-2" />
-            PROJECTS
+            {t('sidebar.projects')}
           </span>
           <button
             onClick={(e) => {

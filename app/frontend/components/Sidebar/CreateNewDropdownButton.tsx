@@ -7,6 +7,7 @@ import {
   BookOpenIcon,
   Squares2X2Icon,
 } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import { Note } from '../../entities/Note';
 import { Area } from '../../entities/Area';
 
@@ -23,6 +24,7 @@ const CreateNewDropdownButton: React.FC<CreateNewDropdownButtonProps> = ({
   openNoteModal,
   openAreaModal,
 }) => {
+  const { t } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -50,10 +52,10 @@ const CreateNewDropdownButton: React.FC<CreateNewDropdownButtonProps> = ({
   };
 
   const dropdownItems = [
-    { label: 'Task', icon: <ClipboardIcon className="h-5 w-5 mr-2" /> },
-    { label: 'Project', icon: <FolderIcon className="h-5 w-5 mr-2" /> },
-    { label: 'Note', icon: <BookOpenIcon className="h-5 w-5 mr-2" /> },
-    { label: 'Area', icon: <Squares2X2Icon className="h-5 w-5 mr-2" /> },
+    { label: 'Task', translationKey: 'dropdown.task', icon: <ClipboardIcon className="h-5 w-5 mr-2" /> },
+    { label: 'Project', translationKey: 'dropdown.project', icon: <FolderIcon className="h-5 w-5 mr-2" /> },
+    { label: 'Note', translationKey: 'dropdown.note', icon: <BookOpenIcon className="h-5 w-5 mr-2" /> },
+    { label: 'Area', translationKey: 'dropdown.area', icon: <Squares2X2Icon className="h-5 w-5 mr-2" /> },
   ];
 
   return (
@@ -69,7 +71,7 @@ const CreateNewDropdownButton: React.FC<CreateNewDropdownButtonProps> = ({
               className="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400"
               aria-hidden="true"
             />
-            Create New
+            {t('dropdown.createNew')}
           </span>
           <ChevronDownIcon
             className="w-5 h-5 text-gray-500 dark:text-gray-400"
@@ -86,7 +88,7 @@ const CreateNewDropdownButton: React.FC<CreateNewDropdownButtonProps> = ({
                 aria-orientation="vertical"
                 aria-labelledby="options-menu"
               >
-                {dropdownItems.map(({ label, icon }) => (
+                {dropdownItems.map(({ label, translationKey, icon }) => (
                   <li
                     key={label}
                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer flex items-center"
@@ -94,7 +96,7 @@ const CreateNewDropdownButton: React.FC<CreateNewDropdownButtonProps> = ({
                     role="menuitem"
                   >
                     {icon}
-                    {label}
+                    {t(translationKey)}
                   </li>
                 ))}
               </ul>

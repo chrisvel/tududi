@@ -60,7 +60,10 @@ configure do
 end
 
 before do
-  response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
+  allowed_origins = ['http://localhost:8080', 'http://localhost:9292']
+  if request.env['HTTP_ORIGIN'] && allowed_origins.include?(request.env['HTTP_ORIGIN'])
+    response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+  end
   response.headers['Access-Control-Allow-Credentials'] = 'true'
 end
 
