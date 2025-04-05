@@ -25,7 +25,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [, forceUpdate] = useState({});
+  // Use React's forceUpdate pattern with a function to guarantee a fresh render
+  const [updateKey, setUpdateKey] = useState(0);
+  const forceUpdate = useCallback(() => {
+    setUpdateKey(prev => prev + 1);
+  }, []);
+  
+  // Add a state for tracking if language is actively changing
+  const [isChangingLanguage, setIsChangingLanguage] = useState(false);
   const [formData, setFormData] = useState({
     appearance: 'light',
     language: 'en',
@@ -61,19 +68,38 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
   }, []);
 
   // Add an effect to monitor language changes
+  // Add effect with the updateKey dependency to refresh component on language change
+  useEffect(() => {
+    console.log(`Component refreshed with key: ${updateKey}, language: ${i18n.language}`);
+  }, [updateKey, i18n.language]);
+  
   useEffect(() => {
     const handleLanguageChanged = (lng: string) => {
       console.log(`Language changed to ${lng}`);
       // Force component to re-render when language changes
-      forceUpdate({});
+      forceUpdate();
+    };
+    
+    // Handler for the custom app-language-changed event
+    const handleAppLanguageChanged = (event: CustomEvent<{ language: string }>) => {
+      console.log('Custom language change event received:', event.detail.language);
+      // Force an update to re-render with new translations
+      forceUpdate();
+      // Mark language change as complete after a short delay
+      // This ensures the UI has time to update with new translations
+      setTimeout(() => {
+        setIsChangingLanguage(false);
+      }, 300);
     };
 
-    // Add language change listener
+    // Add language change listeners
     i18n.on('languageChanged', handleLanguageChanged);
+    window.addEventListener('app-language-changed', handleAppLanguageChanged as EventListener);
 
-    // Clean up listener on unmount
+    // Clean up listeners on unmount
     return () => {
       i18n.off('languageChanged', handleLanguageChanged);
+      window.removeEventListener('app-language-changed', handleAppLanguageChanged as EventListener);
     };
   }, []);
 
@@ -82,24 +108,74 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     
     // Change language immediately when selected
-    if (name === 'language') {
+    if (name === 'language' && value !== i18n.language) {
       console.log('Changing language to:', value);
-      console.log('Translation before change:', t('profile.title'));
+      // Set flag to indicate language is changing
+      setIsChangingLanguage(true);
       
       try {
+        // Save language preference to localStorage for persistence
+        localStorage.setItem('i18nextLng', value);
+        
+        // First, force a re-render to indicate language is changing
+        forceUpdate();
+        
+        // Trigger language change in i18next with a more robust approach
         await i18n.changeLanguage(value);
-        console.log('Current language after change:', i18n.language);
-        console.log('Translation after change:', t('profile.title'));
-        console.log('Is i18n initialized:', i18n.isInitialized);
+        console.log('Language changed successfully to:', i18n.language);
+        
+        // Explicitly force the document's lang attribute to match
+        document.documentElement.lang = value;
         
         // Verify translations are loaded
         const resources = i18n.getResourceBundle(value, 'translation');
         console.log('Resources loaded for language:', value, resources ? 'Yes' : 'No');
-        if (resources) {
-          console.log('Sample translations:', resources.profile?.title);
+        
+        if (!resources || Object.keys(resources).length === 0) {
+          console.warn('Translations might not be fully loaded for:', value);
+          
+          // Try to load translations manually if needed
+          const loadPath = `/locales/${value}/translation.json`;
+          try {
+            const response = await fetch(loadPath);
+            if (response.ok) {
+              const data = await response.json();
+              i18n.addResourceBundle(value, 'translation', data, true, true);
+              console.log('Manually loaded translations for:', value);
+              
+              // Force app to recognize new translations
+              if (window.forceLanguageReload) {
+                window.forceLanguageReload(value);
+              }
+            }
+          } catch (err) {
+            console.error('Failed to manually load translations:', err);
+          }
         }
+        
+        // Force another update to ensure UI reflects new language
+        setTimeout(() => {
+          forceUpdate();
+          
+          // Try to load translations again if they still aren't available
+          const checkAndLoadResources = i18n.getResourceBundle(value, 'translation');
+          if (!checkAndLoadResources || Object.keys(checkAndLoadResources).length === 0) {
+            console.warn('Still no translations after initial load, forcing reload');
+            if (window.forceLanguageReload) {
+              window.forceLanguageReload(value);
+            }
+          }
+          
+          // If change event wasn't fired, mark as complete after a delay
+          setTimeout(() => {
+            if (isChangingLanguage) {
+              setIsChangingLanguage(false);
+            }
+          }, 800); // Longer timeout to ensure translations load
+        }, 200);
       } catch (error) {
         console.error('Error changing language:', error);
+        setIsChangingLanguage(false);
       }
     }
   };
@@ -169,7 +245,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="max-w-5xl mx-auto p-6" key={`profile-settings-${updateKey}`}>
       <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
         {t('profile.title')}
       </h2>
@@ -218,10 +294,18 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
             <option value="es">{t('profile.spanish')}</option>
             <option value="el">{t('profile.greek')}</option>
             <option value="jp">{t('profile.japanese')}</option>
-            <option value="jp">{t('profile.ukrainian')}</option>
-            <option value="jp">{t('profile.deutsch')}</option>
+            <option value="ua">{t('profile.ukrainian')}</option>
+            <option value="de">{t('profile.deutsch')}</option>
             {/* Add more languages if necessary */}
           </select>
+          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            {t('profile.languageChangedNote', 'Language changes are applied immediately')}
+          </p>
+          {isChangingLanguage && (
+            <div className="mt-2 text-sm text-blue-500 animate-pulse">
+              {t('profile.languageChanging', 'Changing language...')}
+            </div>
+          )}
         </div>
 
         {/* Timezone Selection */}

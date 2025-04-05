@@ -14,7 +14,7 @@
     "error": "Помилка",
     "success": "Успішно"
   },
-  
+
   "sidebar": {
     "dashboard": "Дашборд",
     "projects": "Проекти",
@@ -31,7 +31,7 @@
     "completed": "Завершені",
     "allTasks": "Всі завдання"
   },
-  
+
   "tasks": {
     "today": "Сьогодні",
     "backlog": "Відкладені",
@@ -43,7 +43,7 @@
     "searchPlaceholder": "Пошук завдань...",
     "addNewTask": "Додати нове завдання"
   },
-  
+
   "projects": {
     "loading": "Завантаження проектів...",
     "error": "Помилка завантаження проектів",
@@ -59,7 +59,7 @@
       "allAreas": "Всі області"
     }
   },
-  
+
   "projectItem": {
     "edit": "Редагувати",
     "delete": "Видалити",
@@ -67,8 +67,7 @@
     "completionPercentage": "{{percentage}}% завершено",
     "toggleDropdownMenu": "Перемкнути випадаюче меню",
     "projectInitials": "Ініціали проекту"
-62|  },
-  
+  },
   "forms": {
     "noteTitle": "Заголовок нотатки",
     "noteContent": "Вміст нотатки",
@@ -78,7 +77,7 @@
     "required": "Це поле обов'язкове",
     "optional": "Необов'язково"
   },
-  
+
   "modals": {
     "updateNote": "Оновити нотатку",
     "createNote": "Створити нотатку",
@@ -86,18 +85,18 @@
     "noteCreation": "Створити нову нотатку",
     "noteEdit": "Редагувати нотатку"
   },
-  
+
   "errors": {
     "noteTitleRequired": "Заголовок нотатки обов'язковий.",
     "failedToLoadTags": "Не вдалося завантажити доступні теги.",
     "failedToSaveNote": "Не вдалося зберегти нотатку."
   },
-  
+
   "success": {
     "noteUpdated": "Нотатку успішно оновлено!",
     "noteCreated": "Нотатку успішно створено!"
   },
-  
+
   "notes": {
     "loading": "Завантаження нотаток...",
     "error": "Помилка завантаження нотаток",

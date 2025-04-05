@@ -167,15 +167,84 @@ i18n.on('missingKey', (lngs, namespace, key, res) => {
   console.warn(`Missing translation key: ${key} in namespace: ${namespace} for languages: ${lngs.join(', ')}`);
 });
 
+// Create a custom event for language changes that components can listen for
+const dispatchLanguageChangeEvent = (lng: string) => {
+  console.log(`Dispatching language change event for: ${lng}`);
+  const event = new CustomEvent('app-language-changed', { detail: { language: lng } });
+  window.dispatchEvent(event);
+};
+
 i18n.on('languageChanged', (lng) => {
   console.log(`Language changed to: ${lng}`);
+  
+  // Store language in localStorage for persistence
+  localStorage.setItem('i18nextLng', lng);
+  
+  // Update HTML lang attribute for accessibility and SEO
+  document.documentElement.lang = lng;
+  
+  const handleTranslationsLoaded = () => {
+    // Dispatch a custom event after translations are loaded
+    // This helps components know when to re-render
+    dispatchLanguageChangeEvent(lng);
+    
+    // Force update any i18next instances
+    if (i18n.services && i18n.services.resourceStore) {
+      // This triggers internal i18next change notifications
+      const currentNS = i18n.options.defaultNS || 'translation';
+      i18n.reloadResources(lng, currentNS);
+    }
+  };
+  
+  // Ensure translations are loaded when language changes
+  if (!i18n.hasResourceBundle(lng, 'translation')) {
+    console.log(`Loading translations for language ${lng}`);
+    
+    const loadPath = isDevelopment 
+      ? `./locales/${lng}/translation.json` 
+      : `/locales/${lng}/translation.json`;
+    
+    fetch(loadPath)
+      .then(response => {
+        if (!response.ok) {
+          console.warn(`Failed to fetch translations for ${lng}: ${response.status}`);
+          // Try alternative path
+          return fetch(`/locales/${lng}/translation.json`);
+        }
+        return response;
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data) {
+          console.log(`Successfully loaded translations for ${lng}`);
+          i18n.addResourceBundle(lng, 'translation', data, true, true);
+          
+          // After translations are loaded, dispatch the event
+          handleTranslationsLoaded();
+        }
+      })
+      .catch(err => {
+        console.error(`Error loading translations for ${lng}:`, err);
+        // Even if loading fails, we should still dispatch event so UI updates
+        handleTranslationsLoaded();
+      });
+  } else {
+    console.log(`Translations for ${lng} already loaded, skipping fetch`);
+    // If translations are already loaded, dispatch the event immediately
+    handleTranslationsLoaded();
+  }
 });
 
 // Add a function to manually check translation availability
-// Add type declaration for the global function
+// Add type declaration for the global function and custom events
 declare global {
+  interface WindowEventMap {
+    'app-language-changed': CustomEvent<{ language: string }>;
+  }
+  
   interface Window {
     checkTranslation: (key: string) => void;
+    forceLanguageReload: (lng?: string) => void;
   }
 }
 
@@ -190,6 +259,44 @@ window.checkTranslation = (key: string) => {
     console.error(`Error checking translation for key '${key}':`, error);
     return null;
   }
+};
+
+// Add a global function to force language reload
+window.forceLanguageReload = (lng?: string) => {
+  const targetLng = lng || i18n.language;
+  console.log(`Force reloading language: ${targetLng}`);
+  
+  // Force reload the resources for current language
+  i18n.reloadResources(targetLng, 'translation')
+    .then(() => {
+      console.log(`Resources reloaded for ${targetLng}`);
+      
+      // To guarantee a reload effect:
+      // 1. First dispatch the event
+      dispatchLanguageChangeEvent(targetLng);
+      
+      // 2. Force i18next to refresh its cache and notify all components
+      if (i18n.services && i18n.services.resourceStore) {
+        Object.values(i18n.services.resourceStore.data).forEach(lang => {
+          // Add a proper type guard to check if translation exists and is an object
+          if (lang.translation && typeof lang.translation === 'object' && lang.translation !== null) {
+            // Touch the translation object to ensure React detects changes
+            const temp = {...lang.translation as Record<string, unknown>};
+            lang.translation = temp;
+          }
+        });
+      }
+      
+      // 3. Explicitly change language if needed
+      if (lng) {
+        setTimeout(() => {
+          i18n.changeLanguage(targetLng);
+        }, 50); // Small delay to ensure the DOM has time to update
+      }
+    })
+    .catch(err => {
+      console.error(`Error reloading resources: ${err}`);
+    });
 };
 
 export default i18n;

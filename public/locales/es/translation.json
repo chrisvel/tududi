@@ -91,7 +91,7 @@
     "noTasksAvailable": "No hay tareas disponibles para hoy.",
     "searchPlaceholder": "Buscar tareas...",
     "addNewTask": "Añadir Nueva Tarea"
-    }
+    },
   "projects": {
     "loading": "Cargando proyectos...",
     "error": "Error al cargar proyectos",
