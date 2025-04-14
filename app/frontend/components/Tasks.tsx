@@ -36,7 +36,7 @@ const Tasks: React.FC = () => {
   const { title, icon } =
     stateTitle && stateIcon
       ? { title: stateTitle, icon: stateIcon }
-      : getTitleAndIcon(query, projects);
+      : getTitleAndIcon(query, projects, t);
 
   const IconComponent =
     typeof icon === "string" ? React.createElement(icon) : icon;

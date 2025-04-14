@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
   has_many :areas, dependent: :destroy
   has_many :notes, dependent: :destroy
   has_many :tags, dependent: :destroy
+  has_many :inbox_items, dependent: :destroy
 
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }, uniqueness: true
   validates :appearance, inclusion: { in: %w[light dark] }

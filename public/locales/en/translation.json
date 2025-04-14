@@ -13,7 +13,9 @@
     "appLoading": "Loading application... Please wait.",
     "completed": "Completed",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "saving": "Saving...",
+    "none": "None"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -61,7 +63,47 @@
     "english": "English",
     "spanish": "Spanish",
     "greek": "Greek",
-    "Japanese": "Japanese"
+    "Japanese": "Japanese",
+    "ukrainian": "Ukrainian",
+    "deutsch": "German",
+    "title": "Profile Settings",
+    "appearance": "Appearance",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "timezone": "Timezone",
+    "saveChanges": "Save Changes",
+    "successMessage": "Profile updated successfully!",
+    "languageChangedNote": "Language changes are applied immediately",
+    "languageChanging": "Changing language...",
+    "telegramIntegration": "Telegram Integration",
+    "telegramDescription": "Connect your Tududi account to a Telegram bot to add items to your inbox via Telegram messages.",
+    "telegramBotToken": "Telegram Bot Token",
+    "telegramTokenDescription": "Create a bot with @BotFather on Telegram and paste the token here.",
+    "telegramConnected": "Your Telegram account is connected! Send messages to your bot to add items to your Tududi inbox.",
+    "setupTelegram": "Setup Telegram",
+    "settingUp": "Setting up...",
+    "telegramSetupSuccess": "Telegram bot configured successfully!",
+    "telegramSetupFailed": "Failed to set up Telegram bot.",
+    "invalidTelegramToken": "Invalid Telegram bot token format.",
+    "telegramInstructions": "Go to https://t.me/{{botUsername}} and start chatting with your bot to connect it to your Tududi account.",
+    "botConfigured": "Bot configured successfully!",
+    "botUsername": "Bot Username:",
+    "pollingStatus": "Polling Status:",
+    "pollingActive": "Active - Receiving messages",
+    "pollingInactive": "Inactive - Not receiving messages",
+    "pollingNote": "Polling periodically checks for new messages from Telegram and adds them to your inbox.",
+    "startPolling": "Start Polling",
+    "stopPolling": "Stop Polling",
+    "pollingStarted": "Telegram polling started",
+    "pollingStopped": "Telegram polling stopped",
+    "pollingError": "Error managing Telegram polling",
+    "startPollingFailed": "Failed to start polling",
+    "stopPollingFailed": "Failed to stop polling",
+    "openTelegram": "Open in Telegram",
+    "testTelegramMessage": "Test Telegram",
+    "testMessageSent": "Test message sent successfully!",
+    "testMessageFailed": "Failed to send test message.",
+    "testMessageError": "Error sending test message."
   },
   "modals": {
     "confirmDelete": "Are you sure you want to delete?",
@@ -171,6 +213,14 @@
     "status": "Status",
     "created_at": "Created At"
   },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  },
+  "project": {
+    "name": "Project Name"
+  },
   "errors": {
     "required": "This field is required",
     "invalidEmail": "Invalid email address",
@@ -193,6 +243,29 @@
     "failedToSaveArea": "Failed to save area.",
     "tagNameRequired": "Tag name is required.",
     "failedToSaveTag": "Failed to save tag."
+  },
+  "inbox": {
+    "title": "Inbox",
+    "empty": "Your inbox is empty",
+    "emptyDescription": "Quickly capture thoughts and ideas using the + button in the bottom right corner",
+    "captureThought": "Capture your thought...",
+    "saveToInbox": "Save to Inbox",
+    "itemAdded": "Item added to inbox",
+    "itemProcessed": "Item processed",
+    "itemDeleted": "Item deleted",
+    "itemUpdated": "Item updated",
+    "newTelegramItem": "New item from Telegram: {{content}}",
+    "newItem": "New inbox item added: {{content}}",
+    "multipleNewItems": "{{count}} more new items added",
+    "loadError": "Failed to load inbox items",
+    "addError": "Failed to add inbox item",
+    "processError": "Failed to process inbox item",
+    "deleteError": "Failed to delete inbox item",
+    "updateError": "Failed to update inbox item",
+    "contentRequired": "Content cannot be empty",
+    "createTask": "Create task",
+    "createProject": "Create project",
+    "createNote": "Create note"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -227,6 +300,15 @@
     "taskUpdated": "Task updated successfully!",
     "taskDeleted": "Task deleted successfully!"
   },
+  "note": {
+    "title": "Title",
+    "content": "Content",
+    "titlePlaceholder": "Enter note title",
+    "contentPlaceholder": "Enter note content",
+    "project": "Related Project (Optional)",
+    "createSuccess": "Note created successfully",
+    "createError": "Failed to create note"
+  },
   "task": {
     "labels": {
       "tags": "Tags",
@@ -235,7 +317,12 @@
       "priority": "Priority",
       "dueDate": "Due Date",
       "note": "Note"
-    }
+    },
+    "create": "Create",
+    "addTaskName": "Add task name",
+    "createSuccess": "Task created successfully",
+    "createError": "Failed to create task",
+    "saveAsTask": "Save as Task"
   },
   "projects": {
     "loading": "Loading projects...",

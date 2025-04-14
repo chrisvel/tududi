@@ -9,6 +9,7 @@ require './app/models/project'
 require './app/models/task'
 require './app/models/tag'
 require './app/models/note'
+require './app/models/inbox_item'
 
 require './app/helpers/authentication_helper'
 
@@ -19,6 +20,9 @@ require './app/routes/areas_routes'
 require './app/routes/notes_routes'
 require './app/routes/tags_routes'
 require './app/routes/users_routes'
+require './app/routes/inbox_routes'
+require './app/routes/telegram_poller'
+require './app/routes/telegram_routes'
 
 require 'sinatra/cross_origin'
 

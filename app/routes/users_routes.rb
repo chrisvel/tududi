@@ -5,7 +5,7 @@ module Sinatra
       user = current_user
 
       if user
-        user.to_json(only: %i[id email appearance language timezone avatar_image])
+        user.to_json(only: %i[id email appearance language timezone avatar_image telegram_bot_token telegram_chat_id])
       else
         halt 404, { error: 'Profile not found.' }.to_json
       end
@@ -29,9 +29,10 @@ module Sinatra
       allowed_params[:language] = request_payload['language'] if request_payload.key?('language')
       allowed_params[:timezone] = request_payload['timezone'] if request_payload.key?('timezone')
       allowed_params[:avatar_image] = request_payload['avatar_image'] if request_payload.key?('avatar_image')
+      allowed_params[:telegram_bot_token] = request_payload['telegram_bot_token'] if request_payload.key?('telegram_bot_token')
 
       if user.update(allowed_params)
-        user.to_json(only: %i[id email appearance language timezone avatar_image])
+        user.to_json(only: %i[id email appearance language timezone avatar_image telegram_bot_token telegram_chat_id])
       else
         status 400
         { error: 'Failed to update profile.', details: user.errors.full_messages }.to_json

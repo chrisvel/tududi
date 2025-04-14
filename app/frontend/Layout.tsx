@@ -7,6 +7,7 @@ import NoteModal from "./components/Note/NoteModal";
 import AreaModal from "./components/Area/AreaModal";
 import TagModal from "./components/Tag/TagModal";
 import TaskModal from "./components/Task/TaskModal";
+import SimplifiedTaskModal from "./components/Task/SimplifiedTaskModal";
 import { useTranslation } from "react-i18next";
 import { Note } from "./entities/Note";
 import { Area } from "./entities/Area";
@@ -390,11 +391,12 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </div>
 
-      {/* Floating Action Button */}
+      {/* Floating Action Button for Quick Capture */}
       <button
         onClick={openTaskModal}
-        className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg focus:outline-none transform transition-transform duration-200 hover:scale-110"
-        aria-label="Open Task Modal"
+        className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg focus:outline-none transform transition-transform duration-200 hover:scale-110 z-50"
+        aria-label="Quick Capture"
+        title={t('inbox.captureThought')}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -414,22 +416,10 @@ const Layout: React.FC<LayoutProps> = ({
 
       {/* Modals */}
       {isTaskModalOpen && (
-        <TaskModal
+        <SimplifiedTaskModal
           isOpen={isTaskModalOpen}
           onClose={closeTaskModal}
-          task={
-            newTask || {
-              id: undefined,
-              name: "",
-              status: "not_started",
-              project_id: undefined,
-              tags: [],
-            }
-          }
           onSave={handleSaveTask}
-          onDelete={() => {}}
-          projects={projects}
-          onCreateProject={handleCreateProject}
         />
       )}
 

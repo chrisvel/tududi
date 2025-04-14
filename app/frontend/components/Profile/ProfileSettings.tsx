@@ -1,6 +1,8 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { useToast } from '../Shared/ToastContext';
 interface ProfileSettingsProps {
   currentUser: { id: number; email: string };
 }
@@ -12,10 +14,13 @@ interface Profile {
   language: string;
   timezone: string;
   avatar_image: string | null;
+  telegram_bot_token: string | null;
+  telegram_chat_id: string | null;
 }
 
 const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
   const { t, i18n } = useTranslation();
+  const { showSuccessToast, showErrorToast } = useToast();
   // Add this to check the initial language
   console.log('Current language on component mount:', i18n.language);
   console.log('Available languages:', i18n.languages);
@@ -38,7 +43,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
     language: 'en',
     timezone: 'UTC',
     avatar_image: '',
+    telegram_bot_token: '',
   });
+  
+  const [telegramSetupStatus, setTelegramSetupStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [telegramError, setTelegramError] = useState<string | null>(null);
+  const [telegramBotInfo, setTelegramBotInfo] = useState<{
+    username: string;
+    polling_status: any;
+    chat_url: string;
+  } | null>(null);
+  const [isPolling, setIsPolling] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -57,7 +72,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
           language: data.language,
           timezone: data.timezone,
           avatar_image: data.avatar_image || '',
+          telegram_bot_token: data.telegram_bot_token || '',
         });
+        
+        // If user has a token, check polling status
+        if (data.telegram_bot_token) {
+          fetchPollingStatus();
+        }
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -66,6 +87,29 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
     };
     fetchProfile();
   }, []);
+  
+  // Fetch polling status
+  const fetchPollingStatus = async () => {
+    try {
+      const response = await fetch('/api/telegram/polling-status');
+      const data = await response.json();
+      
+      if (data.success) {
+        setIsPolling(data.is_polling);
+        
+        // If the user has a token and we've previously set up the bot
+        if (profile?.telegram_bot_token && telegramBotInfo?.username) {
+          // Update polling status in the bot info
+          setTelegramBotInfo({
+            ...telegramBotInfo,
+            polling_status: data.status
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching polling status:', error);
+    }
+  };
 
   // Add an effect to monitor language changes
   // Add effect with the updateKey dependency to refresh component on language change
@@ -187,6 +231,116 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
         setFormData((prev) => ({ ...prev, avatar_image: reader.result as string }));
       };
       reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+  
+  const handleSetupTelegram = async () => {
+    setTelegramSetupStatus('loading');
+    setTelegramError(null);
+    setTelegramBotInfo(null);
+    
+    try {
+      // Validate the token format
+      if (!formData.telegram_bot_token || !formData.telegram_bot_token.includes(':')) {
+        throw new Error(t('profile.invalidTelegramToken'));
+      }
+      
+      // Send setup request to the server
+      const response = await fetch('/api/telegram/setup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: formData.telegram_bot_token }),
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || t('profile.telegramSetupFailed'));
+      }
+      
+      const data = await response.json();
+      setTelegramSetupStatus('success');
+      setSuccess(t('profile.telegramSetupSuccess'));
+      
+      // Save bot info for display
+      if (data.bot) {
+        setTelegramBotInfo(data.bot);
+        setIsPolling(true);
+      }
+      
+      // Format the URL to start the bot chat
+      const botUsername = data.bot?.username || formData.telegram_bot_token.split(':')[0];
+      
+      // Open the Telegram bot chat in a new window
+      window.open(`https://t.me/${botUsername}`, '_blank');
+      
+    } catch (error) {
+      console.error('Telegram setup error:', error);
+      setTelegramSetupStatus('error');
+      setTelegramError((error as Error).message);
+    }
+  };
+  
+  const handleStartPolling = async () => {
+    try {
+      const response = await fetch('/api/telegram/start-polling', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || t('profile.startPollingFailed'));
+      }
+      
+      const data = await response.json();
+      setIsPolling(true);
+      showSuccessToast(t('profile.pollingStarted'));
+      
+      // Update bot info if available
+      if (telegramBotInfo) {
+        setTelegramBotInfo({
+          ...telegramBotInfo,
+          polling_status: data.status
+        });
+      }
+    } catch (error) {
+      console.error('Start polling error:', error);
+      showErrorToast(t('profile.pollingError'));
+    }
+  };
+  
+  const handleStopPolling = async () => {
+    try {
+      const response = await fetch('/api/telegram/stop-polling', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || t('profile.stopPollingFailed'));
+      }
+      
+      const data = await response.json();
+      setIsPolling(false);
+      showSuccessToast(t('profile.pollingStopped'));
+      
+      // Update bot info if available
+      if (telegramBotInfo) {
+        setTelegramBotInfo({
+          ...telegramBotInfo,
+          polling_status: data.status
+        });
+      }
+    } catch (error) {
+      console.error('Stop polling error:', error);
+      showErrorToast(t('profile.pollingError'));
     }
   };
 
@@ -324,6 +478,149 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
             <option value="Europe/London">Europe/London</option>
             <option value="Asia/Tokyo">Asia/Tokyo</option>
           </select>
+        </div>
+        
+        {/* Telegram Integration */}
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
+            {t('profile.telegramIntegration', 'Telegram Integration')}
+          </h3>
+          
+          <div className="mb-4 text-sm text-gray-600 dark:text-gray-300 flex items-start">
+            <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
+            <p>
+              {t('profile.telegramDescription', 'Connect your Tududi account to a Telegram bot to add items to your inbox via Telegram messages.')}
+            </p>
+          </div>
+          
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              {t('profile.telegramBotToken', 'Telegram Bot Token')}
+            </label>
+            <input
+              type="text"
+              name="telegram_bot_token"
+              value={formData.telegram_bot_token}
+              onChange={handleChange}
+              placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ"
+              className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            />
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {t('profile.telegramTokenDescription', 'Create a bot with @BotFather on Telegram and paste the token here.')}
+            </p>
+          </div>
+          
+          {profile?.telegram_chat_id && (
+            <div className="mb-4 p-2 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-800 rounded text-green-800 dark:text-green-200">
+              <p className="text-sm">
+                {t('profile.telegramConnected', 'Your Telegram account is connected! Send messages to your bot to add items to your Tududi inbox.')}
+              </p>
+            </div>
+          )}
+          
+          {telegramError && (
+            <div className="mb-4 p-2 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-800 rounded text-red-800 dark:text-red-200">
+              <p className="text-sm">{telegramError}</p>
+            </div>
+          )}
+          
+          {telegramBotInfo && (
+            <div className="mb-4 p-2 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded text-blue-800 dark:text-blue-200">
+              <p className="font-medium mb-2">
+                {t('profile.botConfigured', 'Bot configured successfully!')}
+              </p>
+              
+              <div className="text-sm space-y-1">
+                <p>
+                  <span className="font-semibold">{t('profile.botUsername', 'Bot Username:')} </span> 
+                  @{telegramBotInfo.username}
+                </p>
+                
+                <div>
+                  <p className="font-semibold mb-1">{t('profile.pollingStatus', 'Polling Status:')} </p>
+                  
+                  <div className="flex items-center mb-2">
+                    <div className={`w-3 h-3 rounded-full mr-2 ${isPolling ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <span>{isPolling ? t('profile.pollingActive') : t('profile.pollingInactive')}</span>
+                  </div>
+                  
+                  <p className="text-xs mb-2">
+                    {t('profile.pollingNote', 'Polling periodically checks for new messages from Telegram and adds them to your inbox.')}
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center mt-2">
+                    {isPolling ? (
+                      <button
+                        onClick={handleStopPolling}
+                        className="px-3 py-1 bg-red-600 text-white dark:bg-red-700 rounded text-sm hover:bg-red-700 dark:hover:bg-red-800 text-center mb-2 sm:mb-0 sm:mr-3"
+                      >
+                        {t('profile.stopPolling', 'Stop Polling')}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleStartPolling}
+                        className="px-3 py-1 bg-blue-600 text-white dark:bg-blue-700 rounded text-sm hover:bg-blue-700 dark:hover:bg-blue-800 text-center mb-2 sm:mb-0 sm:mr-3"
+                      >
+                        {t('profile.startPolling', 'Start Polling')}
+                      </button>
+                    )}
+                    <a 
+                      href={telegramBotInfo.chat_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1 bg-green-600 text-white dark:bg-green-700 rounded text-sm hover:bg-green-700 dark:hover:bg-green-800 text-center mb-2 sm:mb-0 sm:mr-3"
+                    >
+                      {t('profile.openTelegram', 'Open in Telegram')}
+                    </a>
+                    
+                    {/* Test button for development */}
+                    <button
+                      onClick={async () => {
+                        try {
+                          const testMessage = prompt('Enter a test message:');
+                          if (testMessage) {
+                            const response = await fetch(`/api/telegram/test/${profile?.id}`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ text: testMessage })
+                            });
+                            
+                            const result = await response.json();
+                            if (result.success) {
+                              showSuccessToast(t('profile.testMessageSent', 'Test message sent successfully!'));
+                            } else {
+                              showErrorToast(t('profile.testMessageFailed', 'Failed to send test message.'));
+                            }
+                          }
+                        } catch (error) {
+                          console.error('Test message error:', error);
+                          showErrorToast(t('profile.testMessageError', 'Error sending test message.'));
+                        }
+                      }}
+                      className="px-3 py-1 bg-purple-600 text-white dark:bg-purple-700 rounded text-sm hover:bg-purple-700 dark:hover:bg-purple-800 text-center"
+                    >
+                      {t('profile.testTelegramMessage', 'Test Telegram')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <button
+            type="button"
+            onClick={handleSetupTelegram}
+            disabled={!formData.telegram_bot_token || telegramSetupStatus === 'loading'}
+            className={`px-4 py-2 rounded-md ${
+              !formData.telegram_bot_token || telegramSetupStatus === 'loading'
+                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
+            }`}
+          >
+            {telegramSetupStatus === 'loading'
+              ? t('profile.settingUp', 'Setting up...')
+              : t('profile.setupTelegram', 'Setup Telegram')}
+          </button>
         </div>
 
         {/* Avatar Image Upload */}

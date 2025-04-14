@@ -22,7 +22,7 @@ import Layout from "./Layout";
 import { User } from "./entities/User";
 import TasksToday from "./components/Task/TasksToday"; 
 import LoadingScreen from "./components/Shared/LoadingScreen";
-import TranslationDebugger from './components/Shared/TranslationDebugger';
+import InboxItems from "./components/Inbox/InboxItems";
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import("./components/Tasks"));
 
@@ -167,6 +167,7 @@ const App: React.FC = () => {
                   <Tasks />
                 </Suspense>
               } />
+            <Route path="/inbox" element={<InboxItems />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/project/:id" element={<ProjectDetails />} />
             <Route path="/areas" element={<Areas />} />
@@ -185,7 +186,6 @@ const App: React.FC = () => {
         ) : (
           <Login />
         )}
-        <TranslationDebugger />
       </Suspense>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 import {
   ClipboardDocumentListIcon,
   ArrowPathIcon,
@@ -14,6 +15,7 @@ import TaskList from "./TaskList";
 import { Metrics } from "../../entities/Metrics";
 
 const TasksToday: React.FC = () => {
+  const { t } = useTranslation();
   const {
     tasks,
     setTasks,
@@ -98,10 +100,10 @@ const TasksToday: React.FC = () => {
       <div className="w-full max-w-5xl">
         <div className="flex items-center mb-4">
           <h2 className="text-2xl font-light flex items-center">
-            <CalendarDaysIcon className="h-5 w-5 mr-2" /> Today
+            <CalendarDaysIcon className="h-5 w-5 mr-2" /> {t('tasks.today')}
           </h2>
           <span className="ml-4 text-gray-500">
-            {format(new Date(), "EEEE, MMMM d, yyyy")}
+            {format(new Date(), t('dateFormats.long'))}
           </span>
         </div>
 
@@ -109,7 +111,7 @@ const TasksToday: React.FC = () => {
           <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
             <ClipboardDocumentListIcon className="h-8 w-8 text-blue-500 mr-4" />
             <div>
-              <p className="text-gray-500 dark:text-gray-400">Backlog</p>
+              <p className="text-gray-500 dark:text-gray-400">{t('tasks.backlog')}</p>
               <p className="text-2xl font-semibold">
                 {metrics.total_open_tasks}
               </p>
@@ -119,7 +121,7 @@ const TasksToday: React.FC = () => {
           <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
             <ArrowPathIcon className="h-8 w-8 text-green-500 mr-4" />
             <div>
-              <p className="text-gray-500 dark:text-gray-400">In Progress</p>
+              <p className="text-gray-500 dark:text-gray-400">{t('tasks.inProgress')}</p>
               <p className="text-2xl font-semibold">
                 {metrics.tasks_in_progress_count}
               </p>
@@ -129,7 +131,7 @@ const TasksToday: React.FC = () => {
           <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
             <CalendarDaysIcon className="h-8 w-8 text-red-500 mr-4" />
             <div>
-              <p className="text-gray-500 dark:text-gray-400">Due Today</p>
+              <p className="text-gray-500 dark:text-gray-400">{t('tasks.dueToday')}</p>
               <p className="text-2xl font-semibold">
                 {metrics.tasks_due_today.length}
               </p>
@@ -139,7 +141,7 @@ const TasksToday: React.FC = () => {
           <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
             <ClockIcon className="h-8 w-8 text-yellow-500 mr-4" />
             <div>
-              <p className="text-gray-500 dark:text-gray-400">Stale</p>
+              <p className="text-gray-500 dark:text-gray-400">{t('tasks.stale')}</p>
               <p className="text-2xl font-semibold">
                 {metrics.tasks_pending_over_month}
               </p>
@@ -149,7 +151,7 @@ const TasksToday: React.FC = () => {
 
         {metrics.tasks_due_today.length > 0 && (
           <>
-            <h3 className="text-xl font-medium mt-6 mb-2">Due Today</h3>
+            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.dueToday')}</h3>
             <TaskList
               tasks={metrics.tasks_due_today}
               onTaskUpdate={handleTaskUpdate}
@@ -161,7 +163,7 @@ const TasksToday: React.FC = () => {
 
         {metrics.tasks_in_progress.length > 0 && (
           <>
-            <h3 className="text-xl font-medium mt-6 mb-2">In Progress</h3>
+            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.inProgress')}</h3>
             <TaskList
               tasks={metrics.tasks_in_progress}
               onTaskUpdate={handleTaskUpdate}
@@ -173,7 +175,7 @@ const TasksToday: React.FC = () => {
 
         {metrics.suggested_tasks.length > 0 && (
           <>
-            <h3 className="text-xl font-medium mt-6 mb-2">Suggested</h3>
+            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.suggested')}</h3>
             <TaskList
               tasks={metrics.suggested_tasks}
               onTaskUpdate={handleTaskUpdate}
@@ -185,7 +187,7 @@ const TasksToday: React.FC = () => {
 
         {tasks.length === 0 && (
           <p className="text-gray-500 text-center mt-4">
-            No tasks available for today.
+            {t('tasks.noTasksAvailable')}
           </p>
         )}
       </div>
