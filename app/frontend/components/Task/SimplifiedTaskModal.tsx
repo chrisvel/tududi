@@ -29,12 +29,10 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const { showSuccessToast, showErrorToast } = useToast();
   const nameInputRef = useRef<HTMLInputElement>(null);
-  // Default to inbox mode, where we create an inbox item rather than a task directly
   const [saveMode, setSaveMode] = useState<'task' | 'inbox'>('inbox');
 
   useEffect(() => {
     if (isOpen && nameInputRef.current) {
-      // Focus the input field when modal is opened
       nameInputRef.current.focus();
     }
   }, [isOpen]);
@@ -44,16 +42,13 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
   };
 
   const handleSubmit = useCallback(async () => {
-    // Guard conditions to prevent duplicate submissions
     if (!inputText.trim() || isSaving) return;
     
     setIsSaving(true);
     
     try {
       if (editMode && onEdit) {
-        // Edit existing inbox item
         await onEdit(inputText.trim());
-        // Don't clear input text when editing - just close the modal
         setIsClosing(true);
         setTimeout(() => {
           onClose();
@@ -63,7 +58,6 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
       }
       
       if (saveMode === 'task') {
-        // Create a new task
         const newTask: Task = {
           name: inputText.trim(),
           status: "not_started",
@@ -71,16 +65,13 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
         
         onSave(newTask);
         showSuccessToast(t('task.createSuccess'));
-        setInputText(''); // Clear input text for new entries
+        setInputText('');
       } else {
         try {
-          // Create a new inbox item (using store)
           const newItem = await createInboxItemWithStore(inputText.trim());
           
-          // Show success toast
           showSuccessToast(t('inbox.itemAdded'));
           
-          // Close the modal immediately after adding the item
           handleClose();
         } catch (error) {
           console.error('Failed to create inbox item:', error);
@@ -103,10 +94,9 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
     setIsClosing(true);
     setTimeout(() => {
       onClose();
-      // Only clear input if not in edit mode
       if (!editMode) {
         setInputText("");
-        setSaveMode('inbox'); // Reset to default
+        setSaveMode('inbox');
       }
       setIsClosing(false);
     }, 300);
@@ -131,7 +121,6 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
       if (event.key === "Escape") {
         handleClose();
       }
-      // Removed Enter key handling here - now handled directly on the input element
     };
     if (isOpen) {
       document.addEventListener("keydown", handleKeyDown);
@@ -151,11 +140,11 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
     >
       <div
         ref={modalRef}
-        className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-lg overflow-hidden transform transition-transform duration-300 ${
+        className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-2xl md:max-w-3xl overflow-hidden transform transition-transform duration-300 ${
           isClosing ? "scale-95" : "scale-100"
         } flex flex-col`}
       >
-        <div className="p-4 flex items-center">
+        <div className="p-6 px-8 flex items-center">
           <input
             ref={nameInputRef}
             type="text"
@@ -183,13 +172,6 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
             }`}
           >
             {isSaving ? t('common.saving') : t('common.save')}
-          </button>
-          <button
-            type="button"
-            onClick={handleClose}
-            className="ml-2 inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
-          >
-            {t('common.cancel')}
           </button>
         </div>
       </div>

@@ -10,9 +10,9 @@ interface ConfirmDialogProps {
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ title, message, onConfirm, onCancel }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-lg mx-4">
         <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">{title}</h3>
-        <p className="text-gray-700 dark:text-gray-300 mb-6">{message}</p>
+        <p className="text-gray-700 dark:text-gray-300 mb-8">{message}</p>
         <div className="flex justify-end space-x-4">
           <button
             onClick={onCancel}

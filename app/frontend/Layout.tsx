@@ -391,7 +391,6 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </div>
 
-      {/* Floating Action Button for Quick Capture */}
       <button
         onClick={openTaskModal}
         className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg focus:outline-none transform transition-transform duration-200 hover:scale-110 z-50"
@@ -414,7 +413,6 @@ const Layout: React.FC<LayoutProps> = ({
         </svg>
       </button>
 
-      {/* Modals */}
       {isTaskModalOpen && (
         <SimplifiedTaskModal
           isOpen={isTaskModalOpen}

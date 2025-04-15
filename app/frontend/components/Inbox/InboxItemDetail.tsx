@@ -7,6 +7,7 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
 import { useToast } from '../Shared/ToastContext';
+import ConfirmDialog from '../Shared/ConfirmDialog';
 
 interface InboxItemDetailProps {
   item: InboxItem;
@@ -30,6 +31,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
   const { t } = useTranslation();
   const { showSuccessToast, showErrorToast } = useToast();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
   // Handle click outside of dropdown
@@ -101,9 +103,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     : '';
     
   const handleDelete = () => {
+    setShowConfirmDialog(true);
+  };
+  
+  const confirmDelete = () => {
     if (item.id !== undefined) {
       onDelete(item.id);
     }
+    setShowConfirmDialog(false);
   };
     
   return (
@@ -184,6 +191,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           </button>
         </div>
       </div>
+      {showConfirmDialog && (
+        <ConfirmDialog
+          title={t('inbox.deleteConfirmTitle', 'Delete Item')}
+          message={t('inbox.deleteConfirmMessage', 'Are you sure you want to delete this inbox item? This action cannot be undone.')}
+          onConfirm={confirmDelete}
+          onCancel={() => setShowConfirmDialog(false)}
+        />
+      )}
     </div>
   );
 };
