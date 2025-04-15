@@ -75,9 +75,21 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
           telegram_bot_token: data.telegram_bot_token || '',
         });
         
-        // If user has a token, check polling status
+        // If user has a token, check polling status and start if not running
         if (data.telegram_bot_token) {
+          console.log('User has Telegram token, checking polling status...');
           fetchPollingStatus();
+          
+          // Also set an interval to check polling status every 30 seconds
+          // This ensures polling is restarted if it stops unexpectedly
+          const checkInterval = setInterval(() => {
+            if (data.telegram_bot_token) {
+              fetchPollingStatus();
+            }
+          }, 30000);
+          
+          // Clean up interval on component unmount
+          return () => clearInterval(checkInterval);
         }
       } catch (err) {
         setError((err as Error).message);
@@ -104,6 +116,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
             ...telegramBotInfo,
             polling_status: data.status
           });
+        }
+        
+        // If user has token but polling isn't active, start it automatically
+        if (profile?.telegram_bot_token && !data.is_polling) {
+          console.log('Telegram bot token exists but polling not active. Starting polling automatically...');
+          handleStartPolling();
         }
       }
     } catch (error) {
@@ -267,6 +285,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
       if (data.bot) {
         setTelegramBotInfo(data.bot);
         setIsPolling(true);
+        
+        // Explicitly verify polling is started
+        if (!data.bot.polling_status?.running) {
+          console.log('Polling not started automatically during setup. Starting manually...');
+          // Small delay to ensure the server has registered the token
+          setTimeout(() => {
+            handleStartPolling();
+          }, 1000);
+        }
       }
       
       // Format the URL to start the bot chat

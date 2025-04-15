@@ -6,8 +6,6 @@ import {
   CalendarIcon,
   ArrowRightCircleIcon,
   InboxIcon,
-  ClockIcon,
-  PauseCircleIcon,
   CheckCircleIcon,
   ListBulletIcon,
 } from '@heroicons/react/24/solid';
@@ -18,20 +16,20 @@ interface SidebarNavProps {
   isDarkMode: boolean;
 }
 
-
 const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => {
   const { t } = useTranslation();
   
   const navLinks = [
+    { path: '/inbox', title: t('sidebar.inbox', 'Inbox'), icon: <InboxIcon className="h-5 w-5" /> },
     { path: '/today', title: t('sidebar.today', 'Today'), icon: <CalendarDaysIcon className="h-5 w-5" />, query: 'type=today' },
     { path: '/tasks?type=upcoming', title: t('sidebar.upcoming', 'Upcoming'), icon: <CalendarIcon className="h-5 w-5" />, query: 'type=upcoming' },
     { path: '/tasks?type=next', title: t('sidebar.nextActions', 'Next Actions'), icon: <ArrowRightCircleIcon className="h-5 w-5" />, query: 'type=next' },
-    { path: '/inbox', title: t('sidebar.inbox', 'Inbox'), icon: <InboxIcon className="h-5 w-5" /> },
     // { path: '/tasks?type=someday', title: t('sidebar.someday', 'Someday'), icon: <ClockIcon className="h-5 w-5" />, query: 'type=someday' },
     // { path: '/tasks?type=waiting', title: t('sidebar.waitingFor', 'Waiting for'), icon: <PauseCircleIcon className="h-5 w-5" />, query: 'type=waiting' },
     { path: '/tasks?status=done', title: t('sidebar.completed', 'Completed'), icon: <CheckCircleIcon className="h-5 w-5" />, query: 'status=done' },
     { path: '/tasks', title: t('sidebar.allTasks', 'All Tasks'), icon: <ListBulletIcon className="h-5 w-5" /> },
   ];
+
   const isActive = (path: string, query?: string) => {
     // Handle special case for paths without query parameters
     if (path === '/inbox' || path === '/today') {
@@ -52,18 +50,24 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
   return (
     <ul className="flex flex-col space-y-1">
       {navLinks.map((link) => (
-        <li key={link.path}>
-          <button
-            onClick={() => handleNavClick(link.path, link.title, link.icon)}
-            className={`w-full text-left px-4 py-1 flex items-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
-              link.path,
-              link.query
-            )}`}
-          >
-            {link.icon}
-            <span className="ml-2">{link.title}</span>
-          </button>
-        </li>
+        <React.Fragment key={link.path}>
+          <li>
+            <button
+              onClick={() => handleNavClick(link.path, link.title, link.icon)}
+              className={`w-full text-left px-4 py-1 flex items-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
+                link.path,
+                link.query
+              )}`}
+            >
+              {link.icon}
+              <span className="ml-2">{link.title}</span>
+            </button>
+          </li>
+          {link.path === '/inbox' && (
+            // Inserting extra spacing after Inbox before the rest of the items
+            <li className="py-1" />
+          )}
+        </React.Fragment>
       ))}
     </ul>
   );

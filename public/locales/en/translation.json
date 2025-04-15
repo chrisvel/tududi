@@ -265,7 +265,8 @@
     "contentRequired": "Content cannot be empty",
     "createTask": "Create task",
     "createProject": "Create project",
-    "createNote": "Create note"
+    "createNote": "Create note",
+    "convertTo": "Convert to"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
