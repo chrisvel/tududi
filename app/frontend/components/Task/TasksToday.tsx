@@ -115,7 +115,7 @@ const TasksToday: React.FC = () => {
         <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Task Metrics */}
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-            <h3 className="text-lg font-medium mb-3 text-gray-700 dark:text-gray-300">{t('tasks.metrics', 'Task Metrics')}</h3>
+            <h3 className="text-lg font-medium mb-3 text-gray-700 dark:text-gray-300">{t('tasks.metrics', 'Tasks')}</h3>
             <div className="grid grid-cols-2 gap-4">
               {/* Left column */}
               <div className="space-y-3">
@@ -167,7 +167,7 @@ const TasksToday: React.FC = () => {
 
           {/* Project Metrics */}
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-            <h3 className="text-lg font-medium mb-3 text-gray-700 dark:text-gray-300">{t('projects.metrics', 'Project Metrics')}</h3>
+            <h3 className="text-lg font-medium mb-3 text-gray-700 dark:text-gray-300">{t('projects.metrics', 'Projects')}</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">

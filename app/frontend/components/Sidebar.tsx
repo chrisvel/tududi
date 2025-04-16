@@ -17,7 +17,7 @@ interface SidebarProps {
   currentUser: { email: string };
   isDarkMode: boolean;
   toggleDarkMode: () => void;
-  openTaskModal: () => void;
+  openTaskModal: (type?: 'simplified' | 'full') => void;
   openProjectModal: () => void;
   openNoteModal: (note: Note | null) => void;
   openAreaModal: (area: Area | null) => void;
@@ -71,7 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="px-3 pb-3 pt-8">
             {/* Sidebar Contents */}
             <CreateNewDropdownButton
-              openTaskModal={openTaskModal}
+              openTaskModal={(type) => openTaskModal(type || 'full')}
               openProjectModal={openProjectModal}
               openNoteModal={openNoteModal}
               openAreaModal={openAreaModal}

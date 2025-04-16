@@ -12,7 +12,7 @@ import { Note } from '../../entities/Note';
 import { Area } from '../../entities/Area';
 
 interface CreateNewDropdownButtonProps {
-  openTaskModal: () => void;
+  openTaskModal: (type?: 'simplified' | 'full') => void;
   openProjectModal: () => void;
   openNoteModal: (note: Note | null) => void;
   openAreaModal: (area: Area | null) => void;
@@ -34,7 +34,7 @@ const CreateNewDropdownButton: React.FC<CreateNewDropdownButtonProps> = ({
   const handleDropdownSelect = (type: string) => {
     switch (type) {
       case 'Task':
-        openTaskModal();
+        openTaskModal('full');
         break;
       case 'Project':
         openProjectModal();
