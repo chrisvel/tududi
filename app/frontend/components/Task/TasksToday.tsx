@@ -47,10 +47,11 @@ const TasksToday: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // setProjectsLoading(true);
+        // Load projects
         const projectsData = await fetchProjects();
         setProjects(projectsData);
 
+        // Load tasks
         const { tasks: fetchedTasks, metrics } = await fetchTasks("?type=today");
         setTasks(fetchedTasks);
         setMetrics(metrics);
@@ -61,14 +62,11 @@ const TasksToday: React.FC = () => {
         console.error("Error loading data:", error);
         setProjectsError(true);
         setTasksError(true);
-      } finally {
-        // setProjectsLoading(false);
-        // setTasksLoading(false);
       }
     };
 
     loadData();
-  }, [setProjects, setProjectsLoading, setProjectsError, setTasks, setTasksLoading, setTasksError]);
+  }, [setProjects, setProjectsError, setTasks, setTasksError]);
 
   const handleTaskUpdate = async (updatedTask: Task): Promise<void> => {
     if (!updatedTask.id) return;
@@ -102,8 +100,6 @@ const TasksToday: React.FC = () => {
     }
   };
 
-  // const todayDate = format(new Date(), "yyyy-MM-dd");
-
   return (
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
@@ -120,49 +116,55 @@ const TasksToday: React.FC = () => {
           {/* Task Metrics */}
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
             <h3 className="text-lg font-medium mb-3 text-gray-700 dark:text-gray-300">{t('tasks.metrics', 'Task Metrics')}</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <ClipboardDocumentListIcon className="h-6 w-6 text-blue-500 mr-3" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.backlog')}</p>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Left column */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <ClipboardDocumentListIcon className="h-6 w-6 text-blue-500 mr-3" />
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.backlog')}</p>
+                  </div>
+                  <p className="text-xl font-semibold">
+                    {metrics.total_open_tasks}
+                  </p>
                 </div>
-                <p className="text-xl font-semibold">
-                  {metrics.total_open_tasks}
-                </p>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <ArrowPathIcon className="h-6 w-6 text-green-500 mr-3" />
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.inProgress')}</p>
+                  </div>
+                  <p className="text-xl font-semibold">
+                    {metrics.tasks_in_progress_count}
+                  </p>
+                </div>
               </div>
               
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <ArrowPathIcon className="h-6 w-6 text-green-500 mr-3" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.inProgress')}</p>
+              {/* Right column */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <CalendarDaysIcon className="h-6 w-6 text-red-500 mr-3" />
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.dueToday')}</p>
+                  </div>
+                  <p className="text-xl font-semibold">
+                    {metrics.tasks_due_today.length}
+                  </p>
                 </div>
-                <p className="text-xl font-semibold">
-                  {metrics.tasks_in_progress_count}
-                </p>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <CalendarDaysIcon className="h-6 w-6 text-red-500 mr-3" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.dueToday')}</p>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <ClockIcon className="h-6 w-6 text-yellow-500 mr-3" />
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.stale')}</p>
+                  </div>
+                  <p className="text-xl font-semibold">
+                    {metrics.tasks_pending_over_month}
+                  </p>
                 </div>
-                <p className="text-xl font-semibold">
-                  {metrics.tasks_due_today.length}
-                </p>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <ClockIcon className="h-6 w-6 text-yellow-500 mr-3" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.stale')}</p>
-                </div>
-                <p className="text-xl font-semibold">
-                  {metrics.tasks_pending_over_month}
-                </p>
               </div>
             </div>
           </div>
-          
+
           {/* Project Metrics */}
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
             <h3 className="text-lg font-medium mb-3 text-gray-700 dark:text-gray-300">{t('projects.metrics', 'Project Metrics')}</h3>
@@ -184,16 +186,6 @@ const TasksToday: React.FC = () => {
                 </div>
                 <p className="text-xl font-semibold">
                   {projects.filter(project => !project.active).length}
-                </p>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <CalendarDaysIcon className="h-6 w-6 text-purple-500 mr-3" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.total', 'Total Projects')}</p>
-                </div>
-                <p className="text-xl font-semibold">
-                  {projects.length}
                 </p>
               </div>
             </div>

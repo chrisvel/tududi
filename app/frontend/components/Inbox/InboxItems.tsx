@@ -269,6 +269,10 @@ const InboxItems: React.FC = () => {
         <h1 className="text-2xl font-light">{t('inbox.title')}</h1>
       </div>
       
+      <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+        {t('taskViews.inbox', 'Inbox is where all uncategorized tasks are located. Tasks that have not been assigned to a project or don\'t have a due date will appear here. This is your \'brain dump\' area where you can quickly note down tasks and organize them later.')}
+      </p>
+      
       <div className="space-y-2">
         {inboxItems.map((item) => (
           <InboxItemDetail 
