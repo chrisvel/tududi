@@ -1,14 +1,19 @@
 import React, { useEffect } from "react";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
   ClipboardDocumentListIcon,
   ArrowPathIcon,
   CalendarDaysIcon,
   ClockIcon,
+  InboxIcon,
+  FolderIcon,
+  ArchiveBoxIcon,
 } from "@heroicons/react/24/outline";
 import { fetchTasks, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchProjects } from "../../utils/projectsService";
+import { loadInboxItemsToStore } from "../../utils/inboxService";
 import { Task } from "../../entities/Task";
 import { useStore } from "../../store/useStore";
 import TaskList from "./TaskList";
@@ -28,6 +33,7 @@ const TasksToday: React.FC = () => {
     setLoading: setProjectsLoading,
     setError: setProjectsError,
   } = useStore((state) => state.projectsStore);
+  const { inboxItems } = useStore((state) => state.inboxStore);
 
   const [metrics, setMetrics] = React.useState<Metrics>({
     total_open_tasks: 0,
@@ -48,6 +54,9 @@ const TasksToday: React.FC = () => {
         const { tasks: fetchedTasks, metrics } = await fetchTasks("?type=today");
         setTasks(fetchedTasks);
         setMetrics(metrics);
+        
+        // Load inbox items
+        await loadInboxItemsToStore();
       } catch (error) {
         console.error("Error loading data:", error);
         setProjectsError(true);
@@ -107,47 +116,106 @@ const TasksToday: React.FC = () => {
           </span>
         </div>
 
-        <div className="mb-6 grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
-            <ClipboardDocumentListIcon className="h-8 w-8 text-blue-500 mr-4" />
-            <div>
-              <p className="text-gray-500 dark:text-gray-400">{t('tasks.backlog')}</p>
-              <p className="text-2xl font-semibold">
-                {metrics.total_open_tasks}
-              </p>
+        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Task Metrics */}
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
+            <h3 className="text-lg font-medium mb-3 text-gray-700 dark:text-gray-300">{t('tasks.metrics', 'Task Metrics')}</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <ClipboardDocumentListIcon className="h-6 w-6 text-blue-500 mr-3" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.backlog')}</p>
+                </div>
+                <p className="text-xl font-semibold">
+                  {metrics.total_open_tasks}
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <ArrowPathIcon className="h-6 w-6 text-green-500 mr-3" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.inProgress')}</p>
+                </div>
+                <p className="text-xl font-semibold">
+                  {metrics.tasks_in_progress_count}
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <CalendarDaysIcon className="h-6 w-6 text-red-500 mr-3" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.dueToday')}</p>
+                </div>
+                <p className="text-xl font-semibold">
+                  {metrics.tasks_due_today.length}
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <ClockIcon className="h-6 w-6 text-yellow-500 mr-3" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.stale')}</p>
+                </div>
+                <p className="text-xl font-semibold">
+                  {metrics.tasks_pending_over_month}
+                </p>
+              </div>
             </div>
           </div>
-
-          <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
-            <ArrowPathIcon className="h-8 w-8 text-green-500 mr-4" />
-            <div>
-              <p className="text-gray-500 dark:text-gray-400">{t('tasks.inProgress')}</p>
-              <p className="text-2xl font-semibold">
-                {metrics.tasks_in_progress_count}
-              </p>
-            </div>
-          </div>
-
-          <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
-            <CalendarDaysIcon className="h-8 w-8 text-red-500 mr-4" />
-            <div>
-              <p className="text-gray-500 dark:text-gray-400">{t('tasks.dueToday')}</p>
-              <p className="text-2xl font-semibold">
-                {metrics.tasks_due_today.length}
-              </p>
-            </div>
-          </div>
-
-          <div className="p-4 bg-white dark:bg-gray-900 rounded-lg shadow flex items-center">
-            <ClockIcon className="h-8 w-8 text-yellow-500 mr-4" />
-            <div>
-              <p className="text-gray-500 dark:text-gray-400">{t('tasks.stale')}</p>
-              <p className="text-2xl font-semibold">
-                {metrics.tasks_pending_over_month}
-              </p>
+          
+          {/* Project Metrics */}
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
+            <h3 className="text-lg font-medium mb-3 text-gray-700 dark:text-gray-300">{t('projects.metrics', 'Project Metrics')}</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <FolderIcon className="h-6 w-6 text-blue-500 mr-3" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.active', 'Active Projects')}</p>
+                </div>
+                <p className="text-xl font-semibold">
+                  {projects.filter(project => project.active).length}
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <ArchiveBoxIcon className="h-6 w-6 text-gray-500 mr-3" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.inactive', 'Inactive Projects')}</p>
+                </div>
+                <p className="text-xl font-semibold">
+                  {projects.filter(project => !project.active).length}
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <CalendarDaysIcon className="h-6 w-6 text-purple-500 mr-3" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.total', 'Total Projects')}</p>
+                </div>
+                <p className="text-xl font-semibold">
+                  {projects.length}
+                </p>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Inbox Notification */}
+        {inboxItems.length > 0 && (
+          <div className="mb-6 p-4 bg-white dark:bg-gray-900 border-l-4 border-blue-500 rounded-lg shadow">
+            <Link to="/inbox" className="flex items-center">
+              <InboxIcon className="h-6 w-6 text-blue-500 dark:text-blue-400 mr-3" />
+              <div>
+                <p className="text-gray-700 dark:text-gray-300 font-medium">
+                  {t('inbox.unprocessedItems', { count: inboxItems.length, defaultValue: `You have ${inboxItems.length} item(s) in your inbox.` })}
+                </p>
+                <p className="text-blue-600 dark:text-blue-400 text-sm">
+                  {t('inbox.processNow', 'Process them now')}
+                </p>
+              </div>
+            </Link>
+          </div>
+        )}
 
         {metrics.tasks_due_today.length > 0 && (
           <>
