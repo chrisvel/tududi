@@ -46,27 +46,32 @@ const TasksToday: React.FC = () => {
 
   useEffect(() => {
     const loadData = async () => {
+      setTasksLoading(true);
+      setProjectsLoading(true);
       try {
-        // Load projects
-        const projectsData = await fetchProjects();
-        setProjects(projectsData);
-
-        // Load tasks
-        const { tasks: fetchedTasks, metrics } = await fetchTasks("?type=today");
-        setTasks(fetchedTasks);
-        setMetrics(metrics);
-        
-        // Load inbox items
-        await loadInboxItemsToStore();
+        const response = await fetchProjects();
+        setProjects(response.projects);
       } catch (error) {
-        console.error("Error loading data:", error);
+        console.error("Failed to fetch projects:", error);
         setProjectsError(true);
+      } finally {
+        setProjectsLoading(false);
+      }
+      
+      try {
+        const { tasks: fetchedTasks, metrics: fetchedMetrics } = await fetchTasks("?type=today");
+        setTasks(fetchedTasks);
+        setMetrics(fetchedMetrics);
+      } catch (error) {
+        console.error("Failed to fetch tasks:", error);
         setTasksError(true);
+      } finally {
+        setTasksLoading(false);
       }
     };
 
     loadData();
-  }, [setProjects, setProjectsError, setTasks, setTasksError]);
+  }, []); // Empty dependency array as the effect should only run once on mount
 
   const handleTaskUpdate = async (updatedTask: Task): Promise<void> => {
     if (!updatedTask.id) return;
