@@ -3,6 +3,7 @@ require 'sinatra/activerecord'
 require 'securerandom'
 require 'byebug'
 
+# Models
 require './app/models/user'
 require './app/models/area'
 require './app/models/project'
@@ -11,8 +12,12 @@ require './app/models/tag'
 require './app/models/note'
 require './app/models/inbox_item'
 
-require './app/helpers/authentication_helper'
+# Services
+require './app/services/task_summary_service'
+require './config/initializers/scheduler'
 
+# Helpers
+require './app/helpers/authentication_helper'
 require './app/routes/authentication_routes'
 require './app/routes/tasks_routes'
 require './app/routes/projects_routes'

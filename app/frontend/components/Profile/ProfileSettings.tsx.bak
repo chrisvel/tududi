@@ -1,24 +1,29 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent, useCallback } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import i18n from 'i18next';
+import { Switch } from '@headlessui/react';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { useToast } from '../Shared/ToastContext';
 
-interface ProfileSettingsProps {
-  currentUser: { id: number; email: string };
-}
-
-interface Profile {
+// Define interfaces for the component
+interface ProfileData {
   id: number;
+  name: string | null;
   email: string;
-  appearance: 'light' | 'dark';
+  appearance: string;
   language: string;
   timezone: string;
-  avatar_image: string | null;
+  avatar_image?: string | null;
   telegram_bot_token: string | null;
   telegram_chat_id: string | null;
   task_summary_enabled: boolean;
   task_summary_frequency: string;
+}
+
+interface ProfileFormData {
+  appearance: string;
+  language: string;
+  timezone: string;
+  avatar_image: string;
+  telegram_bot_token: string;
 }
 
 interface SchedulerStatus {
@@ -35,25 +40,29 @@ interface TelegramBotInfo {
   chat_url: string;
 }
 
+interface ProfileSettingsProps {
+  currentUser?: any;
+}
+
 // Helper functions
 const capitalize = (str: string): string => {
   if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-// Format frequency for display
-const formatFrequency = (frequency: string): string => {
-  if (frequency.endsWith('h')) {
-    const value = frequency.replace('h', '');
-    return `${value} ${parseInt(value) === 1 ? 'hour' : 'hours'}`;
-  } else if (frequency === 'daily') {
-    return '1 day';
-  } else if (frequency === 'weekly') {
-    return '1 week';
-  } else if (frequency === 'weekdays') {
-    return 'Weekdays';
-  }
-  return frequency;
+// Toast utility
+const useToast = () => {
+  const showSuccessToast = (message: string) => {
+    console.log('Success:', message);
+    // Implement toast notification
+  };
+
+  const showErrorToast = (message: string) => {
+    console.error('Error:', message);
+    // Implement toast notification
+  };
+
+  return { showSuccessToast, showErrorToast };
 };
 
 /**
@@ -66,21 +75,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
   const { showSuccessToast, showErrorToast } = useToast();
   
   // State variables
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [formData, setFormData] = useState<Partial<Profile>>({
-    appearance: 'light',
-    language: 'en',
-    timezone: 'UTC',
-    avatar_image: '',
-    telegram_bot_token: '',
-  });
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [updateKey, setUpdateKey] = useState(0);
   const [isChangingLanguage, setIsChangingLanguage] = useState(false);
-  const [telegramBotToken, setTelegramBotToken] = useState('');
-  const [telegramChatId, setTelegramChatId] = useState('');
   const [isTesting, setIsTesting] = useState(false);
   const [isSendingSummary, setIsSendingSummary] = useState(false);
   const [schedulerStatus, setSchedulerStatus] = useState<SchedulerStatus | null>(null);
@@ -90,12 +90,58 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
   const [telegramError, setTelegramError] = useState<string | null>(null);
   const [telegramBotInfo, setTelegramBotInfo] = useState<TelegramBotInfo | null>(null);
   
-  // Force update function for language changes
-  const forceUpdate = useCallback(() => {
-    setUpdateKey(prevKey => prevKey + 1);
-  }, []);
+  // Form data
+  const [formData, setFormData] = useState<ProfileFormData>({
+    appearance: 'light',
+    language: 'en',
+    timezone: 'UTC',
+    avatar_image: '',
+    telegram_bot_token: '',
+  });
   
-  // Fetch scheduler status data
+  // Force update function for language changes
+  const forceUpdate = () => setUpdateKey(prev => prev + 1);
+  // API functions
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/profile', {
+        headers: { Accept: 'application/json' },
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to fetch profile.');
+      }
+      
+      const data = await response.json();
+      setProfile(data);
+      setFormData({
+        appearance: data.appearance,
+        language: data.language,
+        timezone: data.timezone,
+        avatar_image: data.avatar_image || '',
+        telegram_bot_token: data.telegram_bot_token || '',
+      });
+      
+      // Fetch scheduler status if task summaries are enabled
+      if (data.task_summary_enabled) {
+        fetchSchedulerStatus();
+      }
+      
+      // If user has a token, check polling status
+      if (data.telegram_bot_token) {
+        fetchPollingStatus();
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Fetch scheduler status (last run and next run times)
   const fetchSchedulerStatus = async () => {
     try {
       setLoadingStatus(true);
@@ -108,18 +154,65 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
       const data = await response.json();
       setSchedulerStatus(data);
     } catch (error) {
+      console.error('Error fetching scheduler status:', error);
       showErrorToast((error as Error).message);
     } finally {
       setLoadingStatus(false);
     }
   };
   
-  // Send task summary now
-  const handleSendTaskSummaryNow = async () => {
+  // Check Telegram polling status
+  const fetchPollingStatus = async () => {
     try {
-      setIsSendingSummary(true);
-      const response = await fetch('/api/profile/task-summary/send-now', {
-        method: 'POST',
+      const response = await fetch('/api/telegram/polling-status');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch polling status');
+      }
+      
+      const data = await response.json();
+      setIsPolling(data.is_running || false);
+      
+      if (data.bot) {
+        setTelegramBotInfo({
+          username: data.bot.username,
+          polling_status: data.status,
+          chat_url: `https://t.me/${data.bot.username}`
+        });
+      }
+      
+      // Auto-start polling if needed
+      if (data.bot && !data.is_running) {
+        handleStartPolling();
+      }
+    } catch (error) {
+      console.error('Error fetching polling status:', error);
+    }
+  };
+    timezone: 'UTC',
+    avatar_image: '',
+    telegram_bot_token: '',
+  });
+  
+  const [telegramSetupStatus, setTelegramSetupStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [telegramError, setTelegramError] = useState<string | null>(null);
+  const [telegramBotInfo, setTelegramBotInfo] = useState<{
+    username: string;
+    polling_status: any;
+    chat_url: string;
+  } | null>(null);
+  const [isPolling, setIsPolling] = useState<boolean>(false);
+
+      
+      const data = await response.json();
+      showSuccessToast(data.message);
+    } catch (error) {
+      showErrorToast((error as Error).message);
+    } finally {
+      setIsTesting(false);
+    }
+  };
+  
         headers: { 'Content-Type': 'application/json' }
       });
       
@@ -130,15 +223,83 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
       
       const data = await response.json();
       showSuccessToast(data.message);
-      
-      // Fetch the updated scheduler status if enabled
-      if (data.enabled) {
-        fetchSchedulerStatus();
-      }
+      // Refresh scheduler status after sending
+      fetchSchedulerStatus();
     } catch (error) {
       showErrorToast((error as Error).message);
     } finally {
       setIsSendingSummary(false);
+    }
+  };
+  
+  const handleTaskSummaryToggle = async () => {
+    try {
+      const response = await fetch('/api/profile/task-summary/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || t('profile.toggleFailed', 'Failed to toggle task summary.'));
+      }
+      
+      const data = await response.json();
+      // Update the profile with the new setting
+      setProfile(prev => prev ? ({...prev, task_summary_enabled: data.enabled}) : null);
+      
+      // Fetch the updated scheduler status if enabled
+      if (data.enabled) {
+        fetchSchedulerStatus();
+      } else {
+        setSchedulerStatus(null);
+      }
+      
+      showSuccessToast(data.message);
+    } catch (error) {
+      showErrorToast((error as Error).message);
+    }
+  };
+  
+  const handleStartPolling = async () => {
+    try {
+      const response = await fetch('/api/telegram/start-polling', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || t('profile.startPollingFailed', 'Failed to start polling.'));
+      }
+      
+      const data = await response.json();
+      setIsPolling(true);
+      showSuccessToast(t('profile.pollingStarted', 'Polling started successfully.'));
+    } catch (error) {
+      console.error('Start polling error:', error);
+      showErrorToast(t('profile.pollingError', 'Error with polling.'));
+    }
+  };
+  
+  const handleStopPolling = async () => {
+    try {
+      const response = await fetch('/api/telegram/stop-polling', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || t('profile.stopPollingFailed', 'Failed to stop polling.'));
+      }
+      
+      const data = await response.json();
+      setIsPolling(false);
+      showSuccessToast(t('profile.pollingStopped', 'Polling stopped successfully.'));
+    } catch (error) {
+      console.error('Stop polling error:', error);
+      showErrorToast(t('profile.pollingError', 'Error with polling.'));
     }
   };
   
@@ -150,72 +311,185 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
     // Handle language change immediately
     if (name === 'language' && value !== i18n.language) {
       handleLanguageChange(value);
-    }
-  };
-  
-  const handleLanguageChange = async (value: string) => {
-    try {
-      setIsChangingLanguage(true);
-      console.log(`Changing language to: ${value}`);
-      
-      // Change the i18n language
-      await i18n.changeLanguage(value);
-      
-      // Explicitly force the document's lang attribute to match
-      document.documentElement.lang = value;
-      
-      // Verify translations are loaded
-      const resources = i18n.getResourceBundle(value, 'translation');
-      console.log('Resources loaded for language:', value, resources ? 'Yes' : 'No');
-      
-      if (!resources || Object.keys(resources).length === 0) {
-        console.warn('Translations might not be fully loaded for:', value);
+    
+                // Update the profile with the new frequency
+                            setProfile(prev => prev ? ({...prev, task_summary_frequency: frequency}) : null);
+                            // Fetch updated scheduler status
+                            fetchSchedulerStatus();
+                            showSuccessToast(data.message);
+                          } catch (error) {
+                            showErrorToast((error as Error).message);
+                          }
+                        }}
+                      >
+                        {frequency.includes('h')
+                          ? t(`profile.frequency.hourly`, `Every ${frequency.replace('h', ' hour')}${frequency === '1h' ? '' : 's'}`) 
+                          : t(`profile.frequency.${frequency}`, capitalize(frequency))}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    {t('profile.frequencyHelp', 'Choose how often you want to receive task summaries.')}
+                  </p>
+                </div>
+                
+                {/* Scheduler Status */}
+                {schedulerStatus && (
+                  <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                    <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
+                      {t('profile.schedulerStatus', 'Scheduler Status')}
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="text-gray-600 dark:text-gray-400">
+                        {t('profile.lastRun', 'Last Run:')}
+                      </div>
+                      <div className="text-gray-800 dark:text-gray-200">
+                        {schedulerStatus.last_run 
+                          ? new Date(schedulerStatus.last_run).toLocaleString() 
+                          : t('profile.neverRun', 'Never run')}
+                      </div>
+                      <div className="text-gray-600 dark:text-gray-400">
+                        {t('profile.nextRun', 'Next Run:')}
+                      </div>
+                      <div className="text-gray-800 dark:text-gray-200">
+                        {schedulerStatus.next_run 
+                          ? new Date(schedulerStatus.next_run).toLocaleString() 
+                          : t('profile.notScheduled', 'Not scheduled')}
+                      </div>
+                    </div>
+                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      {t('profile.schedulerHelp', 'This shows when task summaries were last sent and when they will be sent next.')}
+                    </p>
+                    <button
+                      type="button"
+                      className="mt-2 text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+                      onClick={fetchSchedulerStatus}
+                    >
+                      {loadingStatus ? t('profile.refreshing', 'Refreshing...') : t('profile.refresh', 'Refresh')}
+                    </button>
+                  </div>
+                )}
+                }}
+              >
+                {t('profile.checkStatus', 'Check scheduler status')}
+              </button>
+              
+              {schedulerStatus && (
+                <div className="mt-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                  <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
+                    {t('profile.schedulerStatus', 'Scheduler Status')}
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="text-gray-600 dark:text-gray-400">
+                      {t('profile.lastRun', 'Last Run:')}
+                    </div>
+                    <div className="text-gray-800 dark:text-gray-200">
+                      {schedulerStatus.last_run 
+                        ? new Date(schedulerStatus.last_run).toLocaleString() 
+                        : t('profile.neverRun', 'Never run')}
+                    </div>
+                    <div className="text-gray-600 dark:text-gray-400">
+                      {t('profile.nextRun', 'Next Run:')}
+                    </div>
+                    <div className="text-gray-800 dark:text-gray-200">
+                      {schedulerStatus.next_run 
+                        ? new Date(schedulerStatus.next_run).toLocaleString() 
+                        : t('profile.notScheduled', 'Not scheduled')}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+: 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  }`}
+            </div>
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              {t('profile.frequencyHelp', 'Choose how often you want to receive task summaries.')}
+            </p>
+          </div>
+          
+          {/* Scheduler Status */}
+          {schedulerStatus && (
+            <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+              <h4 className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
+                {t('profile.schedulerStatus', 'Scheduler Status')}
+              </h4>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="text-gray-600 dark:text-gray-400">
+                  {t('profile.lastRun', 'Last Run:')}
+                </div>
+                <div className="text-gray-800 dark:text-gray-200">
+                  {schedulerStatus.last_run 
+                    ? new Date(schedulerStatus.last_run).toLocaleString() 
+                    : t('profile.neverRun', 'Never run')}
+                </div>
+                <div className="text-gray-600 dark:text-gray-400">
+                  {t('profile.nextRun', 'Next Run:')}
+                </div>
+                <div className="text-gray-800 dark:text-gray-200">
+                  {schedulerStatus.next_run 
+                    ? new Date(schedulerStatus.next_run).toLocaleString() 
+                    : t('profile.notScheduled', 'Not scheduled')}
+                </div>
+              </div>
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                {t('profile.schedulerHelp', 'This shows when task summaries were last sent and when they will be sent next.')}
+              </p>
+              <button
+                type="button"
+                className="mt-2 text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+                onClick={fetchSchedulerStatus}
+              >
+                {loadingStatus ? t('profile.refreshing', 'Refreshing...') : t('profile.refresh', 'Refresh')}
+              </button>
+            </div>
+          )}
+ta = await response.json();
+                        throw new Error(data.error || t('profile.toggleFailed'));
+                      }
+                      
+                      const data = await response.json();
+                      // Update the profile with the new setting
+                      setProfile(prev => prev ? ({...prev, task_summary_enabled: data.enabled}) : null);
+                      
+                      // Fetch the updated scheduler status if enabled
+                      if (data.enabled) {
+                        fetchSchedulerStatus();
+                      } else {
+                        setSchedulerStatus(null);
+                      }
+                      
+                      showSuccessToast(data.message);
+        // Fetch scheduler status if task summaries are enabled
+        if (data.task_summary_enabled) {
+          fetchSchedulerStatus();
+        }
         
-        
-        // Try to load translations manually if needed
-        const loadPath = `/locales/${value}/translation.json`;
-        try {
-          const response = await fetch(loadPath);
-          if (response.ok) {
-            const data = await response.json();
-            i18n.addResourceBundle(value, 'translation', data, true, true);
-            console.log('Manually loaded translations for:', value);
-            
-            // Force app to recognize new translations
-            if (window.forceLanguageReload) {
-              window.forceLanguageReload(value);
+        // If user has a token, check polling status and start if not running
+        if (data.telegram_bot_token) {
+          console.log('User has Telegram token, checking polling status...');
+          fetchPollingStatus();
+          
+          // Also set an interval to check polling status every 30 seconds
+          // This ensures polling is restarted if it stops unexpectedly
+          const checkInterval = setInterval(() => {
+            if (data.telegram_bot_token) {
+              fetchPollingStatus();
             }
-          }
-        } catch (err) {
-          console.error('Failed to manually load translations:', err);
+          }, 30000);
+          
+          // Clean up interval on component unmount
+          return () => clearInterval(checkInterval);
         }
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
       }
-      
-      // Force another update to ensure UI reflects new language
-      setTimeout(() => {
-        forceUpdate();
-        
-        // Try to load translations again if they still aren't available
-        const checkAndLoadResources = i18n.getResourceBundle(value, 'translation');
-        if (!checkAndLoadResources || Object.keys(checkAndLoadResources).length === 0) {
-          console.warn('Still no translations after initial load, forcing reload');
-          if (window.forceLanguageReload) {
-            window.forceLanguageReload(value);
-          }
-        }
-        
-        // If change event wasn't fired, mark as complete after a delay
-        setTimeout(() => {
-          if (isChangingLanguage) {
-            setIsChangingLanguage(false);
-          }
-        }, 800); // Longer timeout to ensure translations load
-      }, 200);
-    } catch (error) {
-      console.error('Error changing language:', error);
-      setIsChangingLanguage(false);
-    }
-  };
+    };
+    fetchProfile();
+  }, []);
   
   // Fetch profile data when component mounts
   useEffect(() => {
@@ -230,13 +504,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
         
         const data = await response.json();
         setProfile(data);
-        setFormData({
-          appearance: data.appearance || 'light',
-          language: data.language || 'en',
-          timezone: data.timezone || 'UTC',
-          avatar_image: data.avatar_image || '',
-          telegram_bot_token: data.telegram_bot_token || '',
-        });
         setTelegramBotToken(data.telegram_bot_token || '');
         setTelegramChatId(data.telegram_chat_id || '');
         
@@ -244,11 +511,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
         if (data.task_summary_enabled) {
           fetchSchedulerStatus();
         }
-        
-        // If user has a token, check polling status
-        if (data.telegram_bot_token) {
-          fetchPollingStatus();
-        }
+      } catch (error) {
+        showErrorToast((error as Error).message);
+      } finally {
+        setLoading(false);
+      }
       } catch (error) {
         showErrorToast((error as Error).message);
       } finally {
@@ -256,30 +523,28 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
       }
     };
     
-    const fetchPollingStatus = async () => {
+    const fetchSchedulerStatus = async () => {
       try {
-        const response = await fetch('/api/telegram/polling-status');
+        setLoadingStatus(true);
+        const response = await fetch('/api/profile/task-summary/status');
         
         if (!response.ok) {
-          throw new Error(t('profile.pollingStatusError', 'Failed to fetch polling status.'));
+          throw new Error(t('profile.statusFetchError', 'Failed to fetch scheduler status.'));
         }
         
         const data = await response.json();
-        setIsPolling(data.running);
-        
-        // If bot token exists but polling is not active, start polling automatically
-        if (data.token_exists && !data.running) {
+        setSchedul
           console.log('Telegram bot token exists but polling not active. Starting polling automatically...');
           handleStartPolling();
         }
-      } catch (error) {
-        console.error('Error fetching polling status:', error);
       }
-    };
-    fetchProfile();
-  }, []);
+    } catch (error) {
+      console.error('Error fetching polling status:', error);
+    }
+  };
 
   // Add an effect to monitor language changes
+  // Add effect with the updateKey dependency to refresh component on language change
   useEffect(() => {
     console.log(`Component refreshed with key: ${updateKey}, language: ${i18n.language}`);
   }, [updateKey, i18n.language]);
@@ -313,6 +578,101 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
       window.removeEventListener('app-language-changed', handleAppLanguageChanged as EventListener);
     };
   }, []);
+
+  const handleSendTelegramTest = async () => {
+    try {
+      setIsTesting(true);
+      const response = await fetch('/api/profile/telegram/test', {
+        method: 'POST'
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || t('profile.telegramTestFailed', 'Failed to send test message.'));
+      }
+      
+      const data = await response.json();
+      showSuccessToast(data.message);
+    } catch (error) {
+      showErrorToast((error as Error).message);
+    } finally {
+      setIsTesting(false);
+    }
+  };
+  
+  const fetchSchedulerStatus = async () => {
+    try {
+      setLoadingStatus(true);
+      const response = await fetch('/api/profile/task-summary/status');
+      
+      if (!response.ok) {
+        throw new Error(t('profile.statusFetchError', 'Failed to fetch scheduler status.'));
+      }
+      
+      const data = await response.json();
+      setSchedulerStatus(data);
+    } catch (error) {
+      showErrorToast((error as Error).message);
+    } finally {
+      setLoadingStatus(false);
+    }
+  };
+        
+        // Explicitly force the document's lang attribute to match
+        document.documentElement.lang = value;
+        
+        // Verify translations are loaded
+        const resources = i18n.getResourceBundle(value, 'translation');
+        console.log('Resources loaded for language:', value, resources ? 'Yes' : 'No');
+        
+        if (!resources || Object.keys(resources).length === 0) {
+          console.warn('Translations might not be fully loaded for:', value);
+          
+          // Try to load translations manually if needed
+          const loadPath = `/locales/${value}/translation.json`;
+          try {
+            const response = await fetch(loadPath);
+            if (response.ok) {
+              const data = await response.json();
+              i18n.addResourceBundle(value, 'translation', data, true, true);
+              console.log('Manually loaded translations for:', value);
+              
+              // Force app to recognize new translations
+              if (window.forceLanguageReload) {
+                window.forceLanguageReload(value);
+              }
+            }
+          } catch (err) {
+            console.error('Failed to manually load translations:', err);
+          }
+        }
+        
+        // Force another update to ensure UI reflects new language
+        setTimeout(() => {
+          forceUpdate();
+          
+          // Try to load translations again if they still aren't available
+          const checkAndLoadResources = i18n.getResourceBundle(value, 'translation');
+          if (!checkAndLoadResources || Object.keys(checkAndLoadResources).length === 0) {
+            console.warn('Still no translations after initial load, forcing reload');
+            if (window.forceLanguageReload) {
+              window.forceLanguageReload(value);
+            }
+          }
+          
+          // If change event wasn't fired, mark as complete after a delay
+          setTimeout(() => {
+            if (isChangingLanguage) {
+              setIsChangingLanguage(false);
+            }
+          }, 800); // Longer timeout to ensure translations load
+        }, 200);
+      } catch (error) {
+        console.error('Error changing language:', error);
+        setIsChangingLanguage(false);
+      }
+    }
+  };
 
   const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -428,7 +788,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
       
       const data = await response.json();
       setIsPolling(false);
-      showSuccessToast(t('profile.pollingStopped', 'Polling stopped successfully.'));
+      showSuccessToast(t('profile.pollingStopped'));
       
       // Update bot info if available
       if (telegramBotInfo) {
@@ -599,14 +959,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
             <input
               type="text"
               name="telegram_bot_token"
-              value={formData.telegram_bot_token || ''}
+              value={formData.telegram_bot_token}
               onChange={handleChange}
               placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ"
               className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             />
-            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {t('profile.telegramTokenDescription', 'Create a bot with @BotFather on Telegram and paste the token here.')}
             </p>
+          </div>
           
           {profile?.telegram_chat_id && (
             <div className="mb-4 p-2 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-800 rounded text-green-800 dark:text-green-200">
@@ -720,7 +1081,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
               : t('profile.setupTelegram', 'Setup Telegram')}
           </button>
         </div>
+
         {/* Task Summary Notifications */}
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
             {t('profile.taskSummaryNotifications', 'Task Summary Notifications')}
           </h3>
@@ -776,7 +1139,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
               {t('profile.summaryFrequency', 'Summary Frequency')}
             </label>
             <div className="flex flex-wrap gap-2">
-              {['1h', '2h', '4h', '8h', '12h', 'daily', 'weekly'].map((frequency) => (
+              {['daily', 'weekdays', 'weekly'].map((frequency) => (
                 <button
                   key={frequency}
                   type="button"
@@ -807,7 +1170,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
                     }
                   }}
                 >
-                  {t(`profile.frequency.${frequency}`, formatFrequency(frequency))}
+                  {t(`profile.frequency.${frequency}`, capitalize(frequency))}
                 </button>
               ))}
             </div>

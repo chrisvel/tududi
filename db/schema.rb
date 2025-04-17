@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_14_150330) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_16_235420) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.integer "user_id", null: false
@@ -119,6 +119,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_14_150330) do
     t.string "avatar_image"
     t.string "telegram_bot_token"
     t.string "telegram_chat_id"
+    t.boolean "task_summary_enabled", default: false
+    t.string "task_summary_frequency", default: "daily"
+    t.datetime "task_summary_last_run"
+    t.datetime "task_summary_next_run"
   end
 
   add_foreign_key "areas", "users"

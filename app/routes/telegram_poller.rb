@@ -199,7 +199,8 @@ class TelegramPoller
     # Prepare message parameters
     message_params = {
       chat_id: chat_id,
-      text: text
+      text: text,
+      parse_mode: "MarkdownV2"
     }
     
     # Add reply_to_message_id if provided

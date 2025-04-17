@@ -1,8 +1,9 @@
 source 'https://rubygems.org'
 
 gem 'puma'
-gem 'rake'
-gem 'sinatra'
+gem 'rake', '~> 13.0'
+gem 'rack-protection', '~> 3.1.0'
+gem 'rufus-scheduler', '~> 3.8.2'
 
 # DB
 gem 'sinatra-activerecord'
@@ -11,10 +12,10 @@ gem 'sinatra-namespace'
 gem 'sqlite3'
 
 # Authentication
-gem 'bcrypt'
+gem 'bcrypt', '~> 3.1'
 
 # Other
-gem 'byebug'
+gem 'byebug', '~> 11.1'
 gem 'rerun'
 
 # Development
