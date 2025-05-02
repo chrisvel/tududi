@@ -75,17 +75,14 @@ i18nInstance.init({
   
   // Backend configuration for loading translations
   backend: {
-    // Path to load translations from - ensure it's properly pointing to the public directory
-    loadPath: isDevelopment ? './locales/{{lng}}/{{ns}}.json' : '/locales/{{lng}}/{{ns}}.json',
-    // Add cache busting
-    queryStringParams: { v: Date.now().toString() },
+    // Always use absolute path for development and production to avoid issues
+    loadPath: '/locales/{{lng}}/{{ns}}.json',
+    // Add deterministic cache busting parameter based on build timestamp
+    queryStringParams: { v: '1' },
     requestOptions: {
-      cache: 'no-cache',
+      cache: 'default', // Use default browser caching to improve performance
       credentials: 'same-origin',
-      mode: 'cors',
-      headers: {
-        'Cache-Control': 'no-cache'
-      }
+      mode: 'cors'
     }
   },
 })

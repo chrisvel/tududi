@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
 gem 'puma'
-gem 'rake', '~> 13.0'
 gem 'rack-protection', '~> 3.1.0'
+gem 'rake', '~> 13.0'
 gem 'rufus-scheduler', '~> 3.8.2'
 
 # DB
@@ -16,6 +16,7 @@ gem 'bcrypt', '~> 3.1'
 
 # Other
 gem 'byebug', '~> 11.1'
+gem 'nokogiri', '~> 1.15'
 gem 'rerun'
 
 # Development

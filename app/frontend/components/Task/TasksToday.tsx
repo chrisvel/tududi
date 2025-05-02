@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -13,7 +13,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { fetchTasks, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchProjects } from "../../utils/projectsService";
-import { loadInboxItemsToStore } from "../../utils/inboxService";
 import { Task } from "../../entities/Task";
 import { useStore } from "../../store/useStore";
 import TaskList from "./TaskList";
@@ -21,21 +20,19 @@ import { Metrics } from "../../entities/Metrics";
 
 const TasksToday: React.FC = () => {
   const { t } = useTranslation();
-  const {
-    tasks,
-    setTasks,
-    setLoading: setTasksLoading,
-    setError: setTasksError,
-  } = useStore((state) => state.tasksStore);
-  const {
-    projects,
-    setProjects,
-    setLoading: setProjectsLoading,
-    setError: setProjectsError,
-  } = useStore((state) => state.projectsStore);
-  const { inboxItems } = useStore((state) => state.inboxStore);
-
-  const [metrics, setMetrics] = React.useState<Metrics>({
+  
+  // Don't use multiple separate useStore calls - combine them into one
+  const store = useStore();
+  
+  // Use local state for data instead of directly using store state
+  // This prevents unnecessary re-renders from store updates
+  const [localTasks, setLocalTasks] = useState<Task[]>([]);
+  const [localProjects, setLocalProjects] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  
+  // Metrics from the API
+  const [metrics, setMetrics] = useState<Metrics>({
     total_open_tasks: 0,
     tasks_pending_over_month: 0,
     tasks_in_progress_count: 0,
@@ -44,66 +41,139 @@ const TasksToday: React.FC = () => {
     suggested_tasks: [],
   });
 
+  // Track mounting state to prevent state updates after unmount
+  const isMounted = React.useRef(false);
+  
+  // Load data once on component mount
   useEffect(() => {
+    isMounted.current = true;
+    
+    // Only fetch data once on mount
     const loadData = async () => {
-      setTasksLoading(true);
-      setProjectsLoading(true);
+      if (!isMounted.current) return;
+      
+      setIsLoading(true);
+      setIsError(false);
+      
       try {
-        const response = await fetchProjects();
-        setProjects(response.projects);
+        // Load projects first
+        const projectsData = await fetchProjects();
+        if (isMounted.current) {
+          setLocalProjects(projectsData);
+          // Also update the store
+          store.projectsStore.setProjects(projectsData);
+        }
       } catch (error) {
         console.error("Failed to fetch projects:", error);
-        setProjectsError(true);
-      } finally {
-        setProjectsLoading(false);
+        if (isMounted.current) {
+          setIsError(true);
+        }
       }
       
       try {
+        // Load tasks with metrics
         const { tasks: fetchedTasks, metrics: fetchedMetrics } = await fetchTasks("?type=today");
-        setTasks(fetchedTasks);
-        setMetrics(fetchedMetrics);
+        if (isMounted.current) {
+          setLocalTasks(fetchedTasks);
+          setMetrics(fetchedMetrics);
+          // Also update the store
+          store.tasksStore.setTasks(fetchedTasks);
+        }
       } catch (error) {
         console.error("Failed to fetch tasks:", error);
-        setTasksError(true);
+        if (isMounted.current) {
+          setIsError(true);
+        }
       } finally {
-        setTasksLoading(false);
+        if (isMounted.current) {
+          setIsLoading(false);
+        }
       }
     };
 
     loadData();
-  }, []); // Empty dependency array as the effect should only run once on mount
+    
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      isMounted.current = false;
+    };
+  }, []); // Empty dependency array - only run once on mount
 
-  const handleTaskUpdate = async (updatedTask: Task): Promise<void> => {
-    if (!updatedTask.id) return;
+  // Memoize task handlers to prevent recreating functions on each render
+  const handleTaskUpdate = useCallback(async (updatedTask: Task): Promise<void> => {
+    if (!updatedTask.id || !isMounted.current) return;
 
+    setIsLoading(true);
     try {
-      setTasksLoading(true);
       await updateTask(updatedTask.id, updatedTask);
+      // Refetch data to ensure consistency
       const { tasks: updatedTasks, metrics } = await fetchTasks("?type=today");
-      setTasks(updatedTasks);
-      setMetrics(metrics);
+      
+      if (isMounted.current) {
+        setLocalTasks(updatedTasks);
+        setMetrics(metrics);
+        // Update store
+        store.tasksStore.setTasks(updatedTasks);
+      }
     } catch (error) {
       console.error("Error updating task:", error);
-      setTasksError(true);
+      if (isMounted.current) {
+        setIsError(true);
+      }
     } finally {
-      setTasksLoading(false);
+      if (isMounted.current) {
+        setIsLoading(false);
+      }
     }
-  };
+  }, [store.tasksStore]);
 
-  const handleTaskDelete = async (taskId: number): Promise<void> => {
+  const handleTaskDelete = useCallback(async (taskId: number): Promise<void> => {
+    if (!isMounted.current) return;
+    
+    setIsLoading(true);
     try {
-      setTasksLoading(true);
       await deleteTask(taskId);
+      // Refetch data to ensure consistency
       const { tasks: updatedTasks, metrics } = await fetchTasks("?type=today");
-      setTasks(updatedTasks);
-      setMetrics(metrics);
+      
+      if (isMounted.current) {
+        setLocalTasks(updatedTasks);
+        setMetrics(metrics);
+        // Update store
+        store.tasksStore.setTasks(updatedTasks);
+      }
     } catch (error) {
       console.error("Error deleting task:", error);
-      setTasksError(true);
+      if (isMounted.current) {
+        setIsError(true);
+      }
     } finally {
-      setTasksLoading(false);
+      if (isMounted.current) {
+        setIsLoading(false);
+      }
     }
-  };
+  }, [store.tasksStore]);
+
+  // Get inbox items count from store for the notification
+  const inboxItemsCount = store.inboxStore.inboxItems.length;
+
+  // Show loading state
+  if (isLoading && localTasks.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-gray-500 dark:text-gray-400">{t('common.loading', 'Loading...')}</p>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (isError && localTasks.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-red-500">{t('errors.somethingWentWrong', 'Something went wrong')}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center px-4 lg:px-2">
@@ -180,7 +250,7 @@ const TasksToday: React.FC = () => {
                   <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.active', 'Active Projects')}</p>
                 </div>
                 <p className="text-xl font-semibold">
-                  {projects.filter(project => project.active).length}
+                  {localProjects.filter(project => project.active).length}
                 </p>
               </div>
               
@@ -190,7 +260,7 @@ const TasksToday: React.FC = () => {
                   <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.inactive', 'Inactive Projects')}</p>
                 </div>
                 <p className="text-xl font-semibold">
-                  {projects.filter(project => !project.active).length}
+                  {localProjects.filter(project => !project.active).length}
                 </p>
               </div>
             </div>
@@ -198,13 +268,13 @@ const TasksToday: React.FC = () => {
         </div>
 
         {/* Inbox Notification */}
-        {inboxItems.length > 0 && (
+        {inboxItemsCount > 0 && (
           <div className="mb-6 p-4 bg-white dark:bg-gray-900 border-l-4 border-blue-500 rounded-lg shadow">
             <Link to="/inbox" className="flex items-center">
               <InboxIcon className="h-6 w-6 text-blue-500 dark:text-blue-400 mr-3" />
               <div>
                 <p className="text-gray-700 dark:text-gray-300 font-medium">
-                  {t('inbox.unprocessedItems', { count: inboxItems.length, defaultValue: `You have ${inboxItems.length} item(s) in your inbox.` })}
+                  {t('inbox.unprocessedItems', { count: inboxItemsCount, defaultValue: `You have ${inboxItemsCount} item(s) in your inbox.` })}
                 </p>
                 <p className="text-blue-600 dark:text-blue-400 text-sm">
                   {t('inbox.processNow', 'Process them now')}
@@ -221,7 +291,7 @@ const TasksToday: React.FC = () => {
               tasks={metrics.tasks_due_today}
               onTaskUpdate={handleTaskUpdate}
               onTaskDelete={handleTaskDelete}
-              projects={projects}
+              projects={localProjects}
             />
           </>
         )}
@@ -233,7 +303,7 @@ const TasksToday: React.FC = () => {
               tasks={metrics.tasks_in_progress}
               onTaskUpdate={handleTaskUpdate}
               onTaskDelete={handleTaskDelete}
-              projects={projects}
+              projects={localProjects}
             />
           </>
         )}
@@ -245,12 +315,12 @@ const TasksToday: React.FC = () => {
               tasks={metrics.suggested_tasks}
               onTaskUpdate={handleTaskUpdate}
               onTaskDelete={handleTaskDelete}
-              projects={projects}
+              projects={localProjects}
             />
           </>
         )}
 
-        {tasks.length === 0 && (
+        {localTasks.length === 0 && (
           <p className="text-gray-500 text-center mt-4">
             {t('tasks.noTasksAvailable')}
           </p>

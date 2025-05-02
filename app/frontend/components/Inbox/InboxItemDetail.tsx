@@ -83,10 +83,34 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     setDropdownOpen(false);
   };
   
-  const handleConvertToNote = () => {
+  const handleConvertToNote = async () => {
+    // Default title extraction logic
+    let title = item.content.split('\n')[0] || item.content.substring(0, 50);
+    let content = item.content;
+    
+    try {
+      // Import the isUrl and extractUrlTitle functions from urlService
+      const { isUrl, extractUrlTitle } = await import("../../utils/urlService");
+      
+      // If the content looks like a URL, try to extract a title
+      if (isUrl(item.content.trim())) {
+        const result = await extractUrlTitle(item.content.trim());
+        
+        // If we got a title, use it for the note title
+        if (result && result.title) {
+          title = result.title;
+          // Keep the URL as the content
+          content = item.content;
+        }
+      }
+    } catch (error) {
+      console.error("Error checking URL or extracting title:", error);
+      // Fall back to default title if there's an error
+    }
+
     const newNote: Note = {
-      title: item.content.split('\n')[0] || item.content.substring(0, 50),
-      content: item.content
+      title: title,
+      content: content
     };
 
     if (item.id !== undefined) {

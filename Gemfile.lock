@@ -47,6 +47,10 @@ GEM
       ruby2_keywords (~> 0.0.1)
     mutex_m (0.2.0)
     nio4r (2.5.9)
+    nokogiri (1.18.8-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.18.8-x86_64-linux-gnu)
+      racc (~> 1.4)
     parallel (1.23.0)
     parser (3.2.2.4)
       ast (~> 2.4.1)
@@ -120,6 +124,7 @@ DEPENDENCIES
   byebug (~> 11.1)
   faker
   minitest
+  nokogiri (~> 1.15)
   puma
   rack-protection (~> 3.1.0)
   rack-test
