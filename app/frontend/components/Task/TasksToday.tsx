@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { format } from "date-fns";
 import { el, enUS, es, ja, uk, de } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import { Link } from "react-router-dom";
 import {
   ClipboardDocumentListIcon,
