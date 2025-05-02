@@ -45,9 +45,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     
     if (dropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-    } finally {
-      setLoading(false);
-    }
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
