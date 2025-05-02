@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { format } from "date-fns";
+import { el } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
@@ -183,7 +184,7 @@ const TasksToday: React.FC = () => {
             <CalendarDaysIcon className="h-5 w-5 mr-2" /> {t('tasks.today')}
           </h2>
           <span className="ml-4 text-gray-500">
-            {format(new Date(), t('dateFormats.long', { date: new Date() }))}
+            {format(new Date(), t('dateFormats.long', { date: new Date() }), { locale: el })}
           </span>
         </div>
 
