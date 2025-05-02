@@ -107,7 +107,8 @@
     "noProjectsFound": "Δεν βρέθηκαν έργα",
     "cardViewAriaLabel": "Προβολή Καρτών",
     "listViewAriaLabel": "Προβολή Λίστας",
-    "filters": {
+    "active": "Ενεργά Έργα",
+    "inactive": "Ανενεργά Έργα",
       "active": "Ενεργά",
       "inactive": "Ανενεργά",
       "all": "Όλα",

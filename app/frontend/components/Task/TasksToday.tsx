@@ -265,7 +265,7 @@ const TasksToday: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <FolderIcon className="h-6 w-6 text-blue-500 mr-3" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.active', 'Active Projects')}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.active')}</p>
                 </div>
                 <p className="text-xl font-semibold">
                   {localProjects.filter(project => project.active).length}
@@ -275,7 +275,7 @@ const TasksToday: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <ArchiveBoxIcon className="h-6 w-6 text-gray-500 mr-3" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.inactive', 'Inactive Projects')}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.inactive')}</p>
                 </div>
                 <p className="text-xl font-semibold">
                   {localProjects.filter(project => !project.active).length}
