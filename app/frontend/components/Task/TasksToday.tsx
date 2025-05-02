@@ -35,6 +35,7 @@ const getLocale = (language: string) => {
     default:
       return enUS;
   }
+const TasksToday: React.FC = () => {
   const { t } = useTranslation();
   
   // Don't use multiple separate useStore calls - combine them into one
