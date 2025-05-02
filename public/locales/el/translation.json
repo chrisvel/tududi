@@ -224,6 +224,14 @@
     "time": "H:mm",
     "dateTime": "d MMM yyyy, H:mm"
   },
+  "dateFormats": {
+    "long": "EEEE, d MMMM yyyy",
+    "short": "d MMM yyyy",
+    "monthYear": "MMMM yyyy",
+    "dayMonth": "d MMMM",
+    "time": "H:mm",
+    "dateTime": "d MMM yyyy, H:mm"
+  },
   "taskViews": {
     "project": {
       "withName": "Αυτή τη στιγμή βλέπετε όλες τις εργασίες που σχετίζονται με το έργο \"{{projectName}}\". Μπορείτε να οργανώσετε εργασίες σε αυτό το έργο, να καθορίσετε την προτεραιότητά τους και να παρακολουθήσετε την ολοκλήρωσή τους. Χρησιμοποιήστε αυτό το χώρο για να επικεντρωθείτε στις εργασίες που ανήκουν συγκεκριμένα σε αυτό το έργο.",
