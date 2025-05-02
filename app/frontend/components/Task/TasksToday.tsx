@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { format } from "date-fns";
-import { el } from "date-fns/locale";
+import { el, enUS, es, ja, uk, de } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
@@ -19,7 +19,22 @@ import { useStore } from "../../store/useStore";
 import TaskList from "./TaskList";
 import { Metrics } from "../../entities/Metrics";
 
-const TasksToday: React.FC = () => {
+const getLocale = (language: string) => {
+  switch (language) {
+    case 'el':
+      return el;
+    case 'es':
+      return es;
+    case 'jp':
+      return ja;
+    case 'ua':
+      return uk;
+    case 'de':
+      return de;
+    default:
+      return enUS;
+  }
+};
   const { t } = useTranslation();
   
   // Don't use multiple separate useStore calls - combine them into one
@@ -184,7 +199,7 @@ const TasksToday: React.FC = () => {
             <CalendarDaysIcon className="h-5 w-5 mr-2" /> {t('tasks.today')}
           </h2>
           <span className="ml-4 text-gray-500">
-            {format(new Date(), t('dateFormats.long', { date: new Date() }), { locale: el })}
+            {format(new Date(), t('dateFormats.long', { date: new Date() }), { locale: getLocale(i18n.language) })}
           </span>
         </div>
 
