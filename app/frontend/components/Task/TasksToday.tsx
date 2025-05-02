@@ -35,6 +35,7 @@ const getLocale = (language: string) => {
     default:
       return enUS;
   }
+};
 const TasksToday: React.FC = () => {
   const { t } = useTranslation();
   
