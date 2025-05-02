@@ -33,6 +33,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(false);
   
   // Handle click outside of dropdown
   useEffect(() => {
@@ -44,6 +45,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     
     if (dropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+    } finally {
+      setLoading(false);
     }
     
     return () => {
@@ -84,7 +87,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
   };
   
   const handleConvertToNote = async () => {
-    // Default title extraction logic
+    setLoading(true);
     let title = item.content.split('\n')[0] || item.content.substring(0, 50);
     let content = item.content;
     
@@ -155,6 +158,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
         {/* Action buttons */}
         <div className="flex items-center space-x-0">
+          {loading && <div className="spinner" />}
           <button
             onClick={() => {
               if (onUpdate && item.id !== undefined) {
