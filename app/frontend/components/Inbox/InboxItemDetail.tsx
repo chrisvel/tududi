@@ -84,7 +84,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
   };
   
   const handleConvertToNote = async () => {
-    setLoading(true);
     let title = item.content.split('\n')[0] || item.content.substring(0, 50);
     let content = item.content;
     
@@ -94,7 +93,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       
       // If the content looks like a URL, try to extract a title
       if (isUrl(item.content.trim())) {
+        setLoading(true);
         const result = await extractUrlTitle(item.content.trim());
+        setLoading(false);
         
         // If we got a title, use it for the note title
         if (result && result.title) {
