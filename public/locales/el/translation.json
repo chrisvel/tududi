@@ -109,8 +109,8 @@
     "listViewAriaLabel": "Προβολή Λίστας",
     "active": "Ενεργά Έργα",
     "inactive": "Ανενεργά Έργα",
-      "active": "Ενεργά",
-      "inactive": "Ανενεργά",
+      "active": "Ενεργά Έργα",
+      "inactive": "Ανενεργά Έργα",
       "all": "Όλα",
       "allAreas": "Όλες οι περιοχές"
     }
