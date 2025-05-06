@@ -86,7 +86,8 @@ const Notes: React.FC = () => {
     (note) =>
       note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       note.content.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  )
+  .sort((a, b) => a.title.localeCompare(b.title));
 
   if (isLoading) {
     return (
@@ -141,7 +142,7 @@ const Notes: React.FC = () => {
             {filteredNotes.map((note) => (
               <li
                 key={note.id}
-                className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center"
+                className="px-4 flex justify-between items-center"
               >
                 <div className="flex-grow overflow-hidden pr-4">
                   <Link
@@ -150,9 +151,6 @@ const Notes: React.FC = () => {
                   >
                     {note.title}
                   </Link>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate">
-                    {note.content}
-                  </p>
                 </div>
                 <div className="flex space-x-2">
                   <button
