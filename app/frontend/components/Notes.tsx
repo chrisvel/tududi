@@ -142,7 +142,7 @@ const Notes: React.FC = () => {
             {filteredNotes.map((note) => (
               <li
                 key={note.id}
-                className="px-4 flex justify-between items-center border-b border-gray-300 dark:border-gray-700"
+                className="px-4 py-2 flex justify-between items-center border-b border-gray-300 dark:border-gray-700"
               >
                 <div className="flex-grow overflow-hidden pr-4">
                   <Link
