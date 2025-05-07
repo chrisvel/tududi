@@ -4,6 +4,9 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
+// Force development mode for hot reloading
+process.env.NODE_ENV = 'development';
+
 module.exports = {
   entry: './app/frontend/index.tsx',
   output: {
@@ -26,6 +29,7 @@ module.exports = {
       }
     ],
     hot: true,
+    watchFiles: ['app/frontend/**/*'],
     port: 8080,
     historyApiFallback: true,
     // Add middleware to log requests for translation files to help with debugging
@@ -44,6 +48,7 @@ module.exports = {
   },
   plugins: [
     isDevelopment && new ReactRefreshWebpackPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
   ].filter(Boolean),
   module: {
     rules: [

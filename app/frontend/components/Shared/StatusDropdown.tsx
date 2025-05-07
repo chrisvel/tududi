@@ -1,20 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, MinusIcon, ClockIcon, CheckCircleIcon, ArchiveBoxIcon } from '@heroicons/react/24/outline'; 
 import { StatusType } from '../../entities/Task';
+import { useTranslation } from 'react-i18next';
 
 interface StatusDropdownProps {
   value: StatusType;
   onChange: (value: StatusType) => void;
 }
 
-const statuses = [
-  { value: 'not_started', label: 'Not Started', icon: <MinusIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
-  { value: 'in_progress', label: 'In Progress', icon: <ClockIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
-  { value: 'done', label: 'Done', icon: <CheckCircleIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
-  { value: 'archived', label: 'Archived', icon: <ArchiveBoxIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
-];
-
 const StatusDropdown: React.FC<StatusDropdownProps> = ({ value, onChange }) => {
+  const { t } = useTranslation();
+  
+  const statuses = [
+    { value: 'not_started', label: t('status.notStarted', 'Not Started'), icon: <MinusIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
+    { value: 'in_progress', label: t('status.inProgress', 'In Progress'), icon: <ClockIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
+    { value: 'done', label: t('status.done', 'Done'), icon: <CheckCircleIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
+    { value: 'archived', label: t('status.archived', 'Archived'), icon: <ArchiveBoxIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
+  ];
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 

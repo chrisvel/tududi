@@ -1,19 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, ArrowDownIcon, ArrowUpIcon, FireIcon } from '@heroicons/react/24/outline'; 
 import { PriorityType } from '../../entities/Task';
+import { useTranslation } from 'react-i18next';
 
 interface PriorityDropdownProps {
   value: PriorityType;
   onChange: (value: PriorityType) => void;
 }
 
-const priorities = [
-  { value: 'low', label: 'Low', icon: <ArrowDownIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
-  { value: 'medium', label: 'Medium', icon: <ArrowUpIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
-  { value: 'high', label: 'High', icon: <FireIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> }
-];
-
 const PriorityDropdown: React.FC<PriorityDropdownProps> = ({ value, onChange }) => {
+  const { t } = useTranslation();
+  
+  const priorities = [
+    { value: 'low', label: t('priority.low', 'Low'), icon: <ArrowDownIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
+    { value: 'medium', label: t('priority.medium', 'Medium'), icon: <ArrowUpIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> },
+    { value: 'high', label: t('priority.high', 'High'), icon: <FireIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" /> }
+  ];
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -55,7 +57,7 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({ value, onChange }) 
       >
         <span className="flex items-center space-x-2">
           {selectedPriority ? selectedPriority.icon : ''} 
-          <span>{selectedPriority ? selectedPriority.label : 'Select Priority'}</span>
+          <span>{selectedPriority ? selectedPriority.label : t('forms.priority', 'Select Priority')}</span>
         </span>
         <ChevronDownIcon className="w-5 h-5 text-gray-500 dark:text-gray-300" />
       </button>

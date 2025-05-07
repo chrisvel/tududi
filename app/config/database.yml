@@ -1,7 +1,7 @@
 # config/database.yml
 default: &default
   adapter: sqlite3
-  pool: 5
+  pool: 15
   timeout: 5000
 
 development:

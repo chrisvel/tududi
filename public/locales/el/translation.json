@@ -10,11 +10,14 @@
     "close": "Κλείσιμο",
     "back": "Πίσω",
     "next": "Επόμενο",
+    "appLoading": "Φόρτωση εφαρμογής... Παρακαλώ περιμένετε.",
     "completed": "Ολοκληρώθηκε",
     "error": "Σφάλμα",
     "success": "Επιτυχία",
     "area": "Περιοχή",
-    "status": "Κατάσταση"
+    "status": "Κατάσταση",
+    "saving": "Αποθήκευση...",
+    "none": "Κανένα"
   },
   "sidebar": {
     "dashboard": "Πίνακας Ελέγχου",
@@ -50,7 +53,16 @@
     "email": "Email",
     "password": "Κωδικός",
     "confirmPassword": "Επιβεβαίωση Κωδικού",
-    "username": "Όνομα Χρήστη"
+    "username": "Όνομα Χρήστη",
+    "signup": "Εγγραφή",
+    "signin": "Σύνδεση",
+    "signout": "Αποσύνδεση",
+    "resetPassword": "Επαναφορά Κωδικού",
+    "newPassword": "Νέος Κωδικός",
+    "rememberMe": "Απομνημόνευση",
+    "loginSuccess": "Επιτυχής Σύνδεση",
+    "loginFailed": "Αποτυχία Σύνδεσης",
+    "logoutSuccess": "Επιτυχής Αποσύνδεση"
   },
   "profile": {
     "title": "Ρυθμίσεις Προφίλ",
@@ -60,12 +72,42 @@
     "spanish": "Ισπανικά",
     "greek": "Ελληνικά",
     "japanese": "Ιαπωνικά",
+    "ukrainian": "Ουκρανικά",
+    "deutsch": "Γερμανικά",
     "languagePreference": "Προτίμηση Γλώσσας",
     "personalInfo": "Προσωπικές Πληροφορίες",
     "notifications": "Ειδοποιήσεις",
+    "appearance": "Εμφάνιση",
+    "lightMode": "Φωτεινό Θέμα",
+    "darkMode": "Σκοτεινό Θέμα",
+    "timezone": "Ζώνη Ώρας",
     "saveChanges": "Αποθήκευση Αλλαγών",
     "successMessage": "Το προφίλ ενημερώθηκε με επιτυχία!",
-    "errorMessage": "Αποτυχία ενημέρωσης προφίλ"
+    "errorMessage": "Αποτυχία ενημέρωσης προφίλ",
+    "languageChangedNote": "Οι αλλαγές γλώσσας εφαρμόζονται αμέσως",
+    "languageChanging": "Αλλαγή γλώσσας...",
+    "telegramIntegration": "Ενσωμάτωση Telegram",
+    "telegramDescription": "Συνδέστε τον λογαριασμό σας στο Tududi με ένα bot του Telegram για να προσθέσετε στοιχεία στα εισερχόμενά σας μέσω μηνυμάτων Telegram.",
+    "telegramBotToken": "Token Bot Telegram",
+    "telegramTokenDescription": "Δημιουργήστε ένα bot με το @BotFather στο Telegram και επικολλήστε το token εδώ.",
+    "telegramConnected": "Ο λογαριασμός σας στο Telegram είναι συνδεδεμένος! Στείλτε μηνύματα στο bot σας για να προσθέσετε στοιχεία στα εισερχόμενά σας στο Tududi.",
+    "setupTelegram": "Ρύθμιση Telegram",
+    "taskSummaryNotifications": "Ειδοποιήσεις Περίληψης Εργασιών",
+    "taskSummaryDescription": "Λάβετε τακτικές περιλήψεις των εργασιών σας μέσω Telegram. Αυτή η λειτουργία απαιτεί να έχει ρυθμιστεί η ενσωμάτωση Telegram.",
+    "enableTaskSummaries": "Ενεργοποίηση Περιλήψεων Εργασιών",
+    "summaryFrequency": "Συχνότητα περίληψης",
+    "summaryFrequencyDescription": "Επιλέξτε πόσο συχνά θέλετε να λαμβάνετε περιλήψεις εργασιών",
+    "sendTestSummary": "Αποστολή δοκιμαστικής περίληψης",
+    "frequency": {
+      "1h": "1 ώρα",
+      "2h": "2 ώρες",
+      "4h": "4 ώρες",
+      "8h": "8 ώρες",
+      "12h": "12 ώρες",
+      "daily": "1 ημέρα",
+      "weekly": "1 εβδομάδα"
+    },
+    "frequencyHelp": "Επιλέξτε πόσο συχνά θέλετε να λαμβάνετε περιλήψεις εργασιών"
   },
   "errors": {
     "required": "Αυτό το πεδίο είναι υποχρεωτικό",
@@ -79,7 +121,12 @@
     "taskDelete": "Αποτυχία διαγραφής εργασίας.",
     "noteTitleRequired": "Ο τίτλος της σημείωσης είναι υποχρεωτικός.",
     "failedToLoadTags": "Αποτυχία φόρτωσης διαθέσιμων ετικετών.",
-    "failedToSaveNote": "Αποτυχία αποθήκευσης σημείωσης."
+    "failedToSaveNote": "Αποτυχία αποθήκευσης σημείωσης.",
+    "tagNameRequired": "Το όνομα ετικέτας είναι υποχρεωτικό.",
+    "failedToSaveTag": "Αποτυχία αποθήκευσης ετικέτας.",
+    "areaNameRequired": "Το όνομα περιοχής είναι υποχρεωτικό.",
+    "failedToSaveArea": "Αποτυχία αποθήκευσης περιοχής.",
+    "projectCreationFailed": "Αποτυχία δημιουργίας έργου."
   },
   "dropdown": {
     "createNew": "Δημιουργία Νέου",
@@ -95,7 +142,7 @@
     "dueToday": "Λήγουν Σήμερα",
     "stale": "Σε αναμομή",
     "suggested": "Προτεινόμενα",
-    "noTasksAvailable": "Δεν υπάρχουν διαθέσιμες εργασίες για σήμερα.",
+    "noTasksAvailable": "Δεν υπάρχουν διαθέσιμες εργασίες.",
     "searchPlaceholder": "Αναζήτηση εργασιών...",
     "addNewTask": "Προσθήκη Νέας Εργασίας"
   },
@@ -107,10 +154,12 @@
     "noProjectsFound": "Δεν βρέθηκαν έργα",
     "cardViewAriaLabel": "Προβολή Καρτών",
     "listViewAriaLabel": "Προβολή Λίστας",
-    "active": "Ενεργά Έργα",
-    "inactive": "Ανενεργά Έργα",
-      "active": "Ενεργά Έργα",
-      "inactive": "Ανενεργά Έργα",
+    "active": "Ενεργά",
+    "inactive": "Ανενεργά",
+    "metrics": "Έργα",
+    "filters": {
+      "active": "Ενεργά",
+      "inactive": "Ανενεργά",
       "all": "Όλα",
       "allAreas": "Όλες οι περιοχές"
     }
@@ -156,7 +205,7 @@
     "submitting": "Υποβολή...",
     "deleteTask": {
       "title": "Διαγραφή Εργασίας",
-      "confirmation": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτή την εργασία;"
+      "confirmation": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτή την εργασία; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί."
     },
     "areaCreation": "Δημιουργία Νέας Περιοχής",
     "areaEdit": "Επεξεργασία Περιοχής",
@@ -217,13 +266,35 @@
       }
     }
   },
-  "dateFormats": {
-    "long": "EEEE, d MMMM yyyy",
-    "short": "d MMM yyyy",
-    "monthYear": "MMMM yyyy",
-    "dayMonth": "d MMMM",
-    "time": "H:mm",
-    "dateTime": "d MMM yyyy, H:mm"
+  "project": {
+    "name": "Όνομα Έργου"
+  },
+  "priority": {
+    "low": "Χαμηλή",
+    "medium": "Μεσαία",
+    "high": "Υψηλή"
+  },
+  "status": {
+    "notStarted": "Δεν Ξεκίνησε",
+    "inProgress": "Σε Εξέλιξη",
+    "done": "Ολοκληρώθηκε",
+    "archived": "Αρχειοθετημένο",
+    "unknown": "Άγνωστο"
+  },
+  "task": {
+    "labels": {
+      "tags": "Ετικέτες",
+      "project": "Έργο",
+      "status": "Κατάσταση",
+      "priority": "Προτεραιότητα",
+      "dueDate": "Ημερομηνία Λήξης",
+      "note": "Σημείωση"
+    },
+    "create": "Δημιουργία",
+    "addTaskName": "Προσθήκη ονόματος εργασίας",
+    "createSuccess": "Η εργασία δημιουργήθηκε με επιτυχία",
+    "createError": "Αποτυχία δημιουργίας εργασίας",
+    "saveAsTask": "Αποθήκευση ως Εργασία"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
@@ -232,6 +303,11 @@
     "dayMonth": "d MMMM",
     "time": "H:mm",
     "dateTime": "d MMM yyyy, H:mm"
+  },
+  "dateIndicators": {
+    "today": "ΣΗΜΕΡΑ",
+    "tomorrow": "ΑΥΡΙΟ",
+    "yesterday": "ΧΘΕΣ"
   },
   "taskViews": {
     "project": {
@@ -266,7 +342,12 @@
     "noteCreated": "Η σημείωση δημιουργήθηκε με επιτυχία!",
     "taskCreated": "Η εργασία δημιουργήθηκε με επιτυχία!",
     "taskUpdated": "Η εργασία ενημερώθηκε με επιτυχία!",
-    "taskDeleted": "Η εργασία διαγράφηκε με επιτυχία!"
+    "taskDeleted": "Η εργασία διαγράφηκε με επιτυχία!",
+    "areaUpdated": "Η περιοχή ενημερώθηκε με επιτυχία!",
+    "areaCreated": "Η περιοχή δημιουργήθηκε με επιτυχία!",
+    "tagUpdated": "Η ετικέτα ενημερώθηκε με επιτυχία!",
+    "tagCreated": "Η ετικέτα δημιουργήθηκε με επιτυχία!",
+    "projectCreated": "Το έργο δημιουργήθηκε με επιτυχία!"
   },
   "task": {
     "labels": {
@@ -309,5 +390,14 @@
     "active": "Ενεργή",
     "inactive": "Ανενεργή",
     "viewTasksWithTag": "Προβολή εργασιών με αυτή την ετικέτα"
+  },
+  "note": {
+    "title": "Τίτλος",
+    "content": "Περιεχόμενο",
+    "titlePlaceholder": "Εισάγετε τίτλο σημείωσης",
+    "contentPlaceholder": "Εισάγετε περιεχόμενο σημείωσης",
+    "project": "Σχετικό Έργο (Προαιρετικό)",
+    "createSuccess": "Η σημείωση δημιουργήθηκε με επιτυχία",
+    "createError": "Αποτυχία δημιουργίας σημείωσης"
   }
 }

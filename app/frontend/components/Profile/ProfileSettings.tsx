@@ -502,21 +502,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
       <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
         {t('profile.title')}
       </h2>
-      
-      {/* Debug information */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mb-4 p-2 bg-gray-100 dark:bg-gray-800 text-xs font-mono">
-          <p>Current language: {i18n.language}</p>
-          <p>Initialized: {i18n.isInitialized ? 'Yes' : 'No'}</p>
-          <p>Available languages: {i18n.languages?.join(', ')}</p>
-        </div>
-      )}
 
       {success && <div className="mb-4 text-green-500">{success}</div>}
       {error && <div className="mb-4 text-red-500">{error}</div>}
 
       <form onSubmit={handleSubmit}>
-        {/* Appearance Selection */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             {t('profile.appearance')}
@@ -532,7 +522,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
           </select>
         </div>
 
-        {/* Language Selection */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             {t('profile.language')}
@@ -549,7 +538,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
             <option value="jp">{t('profile.japanese')}</option>
             <option value="ua">{t('profile.ukrainian')}</option>
             <option value="de">{t('profile.deutsch')}</option>
-            {/* Add more languages if necessary */}
           </select>
           <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
             {t('profile.languageChangedNote', 'Language changes are applied immediately')}
@@ -561,7 +549,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
           )}
         </div>
 
-        {/* Timezone Selection */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             {t('profile.timezone')}
@@ -579,7 +566,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
           </select>
         </div>
         
-        {/* Telegram Integration */}
         <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
             {t('profile.telegramIntegration', 'Telegram Integration')}
@@ -671,7 +657,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
                       {t('profile.openTelegram', 'Open in Telegram')}
                     </a>
                     
-                    {/* Test button for development */}
                     <button
                       onClick={async () => {
                         try {
@@ -720,7 +705,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
               : t('profile.setupTelegram', 'Setup Telegram')}
           </button>
         </div>
-        {/* Task Summary Notifications */}
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
             {t('profile.taskSummaryNotifications', 'Task Summary Notifications')}
           </h3>
@@ -732,7 +716,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
             </p>
           </div>
           
-          {/* Enable/Disable Toggle */}
           <div className="mb-4 flex items-center justify-between">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {t('profile.enableTaskSummary', 'Enable Task Summaries')}
@@ -754,7 +737,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
                   }
                   
                   const data = await response.json();
-                  // Update the profile with the new setting
                   setProfile(prev => prev ? ({...prev, task_summary_enabled: data.enabled}) : null);
                   showSuccessToast(data.message);
                 } catch (error) {
@@ -770,7 +752,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
             </div>
           </div>
           
-          {/* Frequency Selection */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('profile.summaryFrequency', 'Summary Frequency')}
@@ -816,7 +797,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
             </p>
           </div>
           
-          {/* Test Button */}
           <div className="mt-4">
             <button
               type="button"
@@ -855,27 +835,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
           </div>
         </div>
 
-        {/* Avatar Image Upload */}
-        {/* <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Avatar Image
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleAvatarChange}
-            className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-200 dark:hover:file:bg-gray-600"
-          />
-          {formData.avatar_image && (
-            <img
-              src={formData.avatar_image}
-              alt="Avatar Preview"
-              className="mt-2 h-24 w-24 rounded-full object-cover"
-            />
-          )}
-        </div> */}
-
-        {/* Save Button */}
         <div className="flex justify-end">
           <button
             type="submit"

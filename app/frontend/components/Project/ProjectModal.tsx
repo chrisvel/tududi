@@ -9,6 +9,7 @@ import { PriorityType } from "../../entities/Task";
 import Switch from "../Shared/Switch";
 import { useStore } from "../../store/useStore";
 import { fetchTags } from "../../utils/tagsService";
+import { useTranslation } from "react-i18next";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -51,6 +52,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const { showSuccessToast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (project) {
@@ -212,13 +214,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     onChange={handleChange}
                     required
                     className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
-                    placeholder="Enter project name"
+                    placeholder={t('project.name', 'Enter project name')}
                   />
                 </div>
 
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Description
+                    {t('forms.description', 'Description')}
                   </label>
                   <textarea
                     id="projectDescription"
@@ -227,13 +229,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     value={formData.description || ""}
                     onChange={handleChange}
                     className="block w-full rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-                    placeholder="Enter project description (optional)"
+                    placeholder={t('forms.areaDescriptionPlaceholder', 'Enter project description (optional)')}
                   ></textarea>
                 </div>
 
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Due Date
+                    {t('forms.dueDate', 'Due Date')}
                   </label>
                   <input
                     type="date"
@@ -246,7 +248,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
-                    Priority
+                    {t('forms.priority', 'Priority')}
                   </label>
                   <PriorityDropdown
                     value={formData.priority || "medium"}
@@ -258,7 +260,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Tags
+                    {t('forms.tags', 'Tags')}
                   </label>
                   <div className="w-full">
                     <TagInput
@@ -271,7 +273,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Area (optional)
+                    {t('common.area', 'Area')} ({t('forms.optional', 'optional')})
                   </label>
                   <select
                     id="projectArea"
@@ -280,7 +282,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     onChange={handleChange}
                     className="block w-full rounded-md shadow-sm px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
                   >
-                    <option value="">No Area</option>
+                    <option value="">{t('common.none', 'No Area')}</option>
                     {areas.map((area) => (
                       <option key={area.id} value={area.id}>
                         {area.name}
@@ -298,7 +300,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     htmlFor="active"
                     className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
                   >
-                    Active
+                    {t('projects.active', 'Active')}
                   </label>
                 </div>
               </div>
@@ -310,7 +312,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     onClick={handleDeleteClick}
                     className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 focus:outline-none transition duration-150 ease-in-out"
                   >
-                    Delete
+                    {t('common.delete', 'Delete')}
                   </button>
                 )}
                 <button
@@ -318,14 +320,14 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                   onClick={handleClose}
                   className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none transition duration-150 ease-in-out"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="button"
                   onClick={handleSubmit}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out"
                 >
-                  {project ? "Update Project" : "Create Project"}
+                  {project ? t('modals.updateProject', 'Update Project') : t('modals.createProject', 'Create Project')}
                 </button>
               </div>
             </fieldset>

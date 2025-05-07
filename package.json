@@ -9,7 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --noEmit && webpack --config webpack.config.js",
-    "start": "tsc --noEmit && NODE_ENV=development webpack serve --config webpack.config.js",
+    "start": "tsc --noEmit && webpack serve --config webpack.config.js",
+    "dev": "webpack serve --config webpack.config.js --hot",
     "lint": "eslint 'app/frontend/**/*.{js,jsx,ts,tsx}'"
   },
   "keywords": [],

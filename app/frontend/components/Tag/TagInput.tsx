@@ -17,6 +17,25 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Update internal tags state when initialTags prop changes
+  useEffect(() => {
+    console.log("TagInput received initialTags:", initialTags);
+    
+    // Set the tags state with the initial tags
+    if (initialTags && initialTags.length > 0) {
+      // Simply set our internal state to match the initialTags
+      setTags(initialTags);
+      console.log("Set tags to match initialTags:", initialTags);
+    }
+  }, [initialTags]);
+  
+  // Clean up effect to notify parent when our tags state changes
+  useEffect(() => {
+    // Notify parent of current state
+    console.log("TagInput internal tags state changed to:", tags);
+    onTagsChange(tags);
+  }, [tags, onTagsChange]);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       if (inputValue.trim() === '') {
@@ -118,24 +137,28 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
     <div className="space-y-2 relative">
       <div
         ref={containerRef}
-        className="flex flex-wrap items-center border border-gray-300 dark:border-gray-900 bg-white dark:bg-gray-900 rounded-md p-2 h-10"
+        className="flex flex-wrap items-center border border-gray-300 dark:border-gray-900 bg-white dark:bg-gray-900 rounded-md p-2 min-h-[40px]"
       >
-        {tags.map((tag, index) => (
-          <span
-            key={index}
-            className="flex items-center bg-gray-200 text-gray-700 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
-          >
-            {tag}
-            <button
-              type="button"
-              onClick={() => removeTag(index)}
-              className="ml-1 text-gray-600 hover:text-gray-800 focus:outline-none"
-              aria-label={`Remove tag ${tag}`}
+        {tags.length > 0 ? (
+          tags.map((tag, index) => (
+            <span
+              key={index}
+              className="flex items-center bg-gray-200 text-gray-700 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
             >
-              &times;
-            </button>
-          </span>
-        ))}
+              {tag}
+              <button
+                type="button"
+                onClick={() => removeTag(index)}
+                className="ml-1 text-gray-600 hover:text-gray-800 focus:outline-none"
+                aria-label={`Remove tag ${tag}`}
+              >
+                &times;
+              </button>
+            </span>
+          ))
+        ) : (
+          <span className="text-gray-400 text-xs">No tags yet</span>
+        )}
 
         <input
           type="text"

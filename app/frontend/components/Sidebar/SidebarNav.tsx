@@ -64,7 +64,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
             </button>
           </li>
           {link.path === '/inbox' && (
-            // Inserting extra spacing after Inbox before the rest of the items
             <li className="py-1" />
           )}
         </React.Fragment>

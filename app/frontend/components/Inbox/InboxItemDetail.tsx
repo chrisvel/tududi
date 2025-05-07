@@ -86,32 +86,35 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
   const handleConvertToNote = async () => {
     let title = item.content.split('\n')[0] || item.content.substring(0, 50);
     let content = item.content;
+    let isBookmark = false;
     
     try {
-      // Import the isUrl and extractUrlTitle functions from urlService
       const { isUrl, extractUrlTitle } = await import("../../utils/urlService");
       
-      // If the content looks like a URL, try to extract a title
       if (isUrl(item.content.trim())) {
         setLoading(true);
         const result = await extractUrlTitle(item.content.trim());
         setLoading(false);
         
-        // If we got a title, use it for the note title
         if (result && result.title) {
           title = result.title;
-          // Keep the URL as the content
           content = item.content;
+          isBookmark = true;
         }
       }
     } catch (error) {
       console.error("Error checking URL or extracting title:", error);
-      // Fall back to default title if there's an error
     }
 
+    // Simple array of tag objects for the note
+    const tagObjects = isBookmark ? [{ name: "bookmark" }] : [];
+    
+    console.log("Creating note with bookmark tag:", isBookmark);
+    
     const newNote: Note = {
       title: title,
-      content: content
+      content: content,
+      tags: tagObjects
     };
 
     if (item.id !== undefined) {
@@ -141,7 +144,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
   return (
     <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1">
       <div className="flex items-center justify-between px-4 py-2">
-        {/* Content section */}
         <div className="flex-1 mr-4">
           <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
             {item.content}
@@ -154,7 +156,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           </p>
         </div>
 
-        {/* Action buttons */}
         <div className="flex items-center space-x-0">
           {loading && <div className="spinner" />}
           <button
@@ -169,7 +170,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             <PencilIcon className="h-5 w-5" />
           </button>
           
-          {/* Convert dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}

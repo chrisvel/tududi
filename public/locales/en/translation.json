@@ -218,6 +218,13 @@
     "medium": "Medium",
     "high": "High"
   },
+  "status": {
+    "notStarted": "Not Started",
+    "inProgress": "In Progress",
+    "done": "Done",
+    "archived": "Archived",
+    "unknown": "Unknown"
+  },
   "project": {
     "name": "Project Name"
   },
@@ -275,6 +282,11 @@
     "dayMonth": "MMMM d",
     "time": "h:mm a",
     "dateTime": "MMM d, yyyy h:mm a"
+  },
+  "dateIndicators": {
+    "today": "TODAY",
+    "tomorrow": "TOMORROW",
+    "yesterday": "YESTERDAY"
   },
   "taskViews": {
     "project": {

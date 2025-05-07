@@ -47,13 +47,18 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
 
   useEffect(() => {
     if (isOpen) {
+      // Extract tag names for display
+      const tagNames = note?.tags?.map((tag) => tag.name) || [];
+      console.log("NoteModal received note with tags:", note?.tags);
+      console.log("Converted tag names:", tagNames);
+      
       setFormData({
         id: note?.id || 0,
         title: note?.title || '',
         content: note?.content || '',
         tags: note?.tags || [],
       });
-      setTags(note?.tags?.map((tag) => tag.name) || []);
+      setTags(tagNames);
       setError(null);
     }
   }, [isOpen, note]);
@@ -102,6 +107,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
   };
 
   const handleTagsChange = useCallback((newTags: string[]) => {
+    console.log("NoteModal tags changed to:", newTags);
     setTags(newTags);
     setFormData((prev) => ({
       ...prev,
@@ -119,8 +125,17 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
     setError(null);
 
     try {
+      // Convert string tags to tag objects
       const noteTags: Tag[] = tags.map(tagName => ({ name: tagName }));
-      await onSave({ ...formData, tags: noteTags });
+      
+      console.log("Submitting note with tags array:", tags);
+      console.log("Converting to note tags:", noteTags);
+      
+      // Create final form data with the tags
+      const finalFormData = { ...formData, tags: noteTags };
+      console.log("Final note data being saved:", finalFormData);
+      
+      await onSave(finalFormData);
       showSuccessToast(formData.id && formData.id !== 0 ? t('success.noteUpdated') : t('success.noteCreated'));
       handleClose();
     } catch (err) {
@@ -174,7 +189,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
 
               <div className="pb-3">
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('forms.tags')}
+                  {t('forms.tags')} {tags.length > 0 ? `(${tags.join(', ')})` : ''}
                 </label>
                 <div className="w-full">
                   <TagInput

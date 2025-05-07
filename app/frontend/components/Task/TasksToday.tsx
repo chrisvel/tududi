@@ -201,7 +201,7 @@ const TasksToday: React.FC = () => {
             <CalendarDaysIcon className="h-5 w-5 mr-2" /> {t('tasks.today')}
           </h2>
           <span className="ml-4 text-gray-500">
-            {format(new Date(), t('dateFormats.long', { date: new Date() }), { locale: getLocale(i18n.language) })}
+            {format(new Date(), "PPP", { locale: getLocale(i18n.language) })}
           </span>
         </div>
 

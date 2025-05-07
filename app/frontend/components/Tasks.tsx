@@ -17,8 +17,22 @@ import {
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
+// Helper function to get search placeholder by language
+const getSearchPlaceholder = (language: string): string => {
+  const placeholders: Record<string, string> = {
+    en: 'Search tasks...',
+    el: 'Αναζήτηση εργασιών...',
+    es: 'Buscar tareas...',
+    de: 'Aufgaben suchen...',
+    jp: 'タスクを検索...',
+    ua: 'Пошук завдань...'
+  };
+  
+  return placeholders[language] || 'Search tasks...';
+};
+
 const Tasks: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -209,7 +223,6 @@ const Tasks: React.FC = () => {
   return (
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
-        {/* Title and Icon */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
           <div className="flex items-center mb-2 sm:mb-0">
             {IconComponent && <IconComponent className="h-6 w-6 mr-2" />}
@@ -231,7 +244,6 @@ const Tasks: React.FC = () => {
             )}
           </div>
 
-          {/* Sort Dropdown */}
           <div className="relative inline-block text-left" ref={dropdownRef}>
             <button
               type="button"
@@ -242,7 +254,7 @@ const Tasks: React.FC = () => {
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               <ChevronDoubleDownIcon className="h-5 w-5 text-gray-500 mr-2" />{" "}
-              {capitalize(orderBy.split(":")[0].replace("_", " "))}
+              {t(`sort.${orderBy.split(":")[0]}`, capitalize(orderBy.split(":")[0].replace("_", " ")))}
               <ChevronDownIcon className="h-5 w-5 ml-2 text-gray-500 dark:text-gray-300" />
             </button>
 
@@ -267,7 +279,7 @@ const Tasks: React.FC = () => {
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
                       role="menuitem"
                     >
-                      {capitalize(order.split(":")[0].replace("_", " "))}
+                      {t(`sort.${order.split(":")[0]}`, capitalize(order.split(":")[0].replace("_", " ")))}
                     </button>
                   ))}
                 </div>
@@ -277,18 +289,16 @@ const Tasks: React.FC = () => {
         </div>
 
 
-        {/* Description */}
         <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
           {description}
         </p>
         
-        {/* Search Bar */}
         <div className="mb-4">
           <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm p-2">
             <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
             <input
               type="text"
-              placeholder="Search tasks..."
+              placeholder={getSearchPlaceholder(i18n.language)}
               value={taskSearchQuery}
               onChange={(e) => setTaskSearchQuery(e.target.value)}
               className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
@@ -296,7 +306,7 @@ const Tasks: React.FC = () => {
           </div>
         </div>
         {loading ? (
-          <p>Loading...</p>
+          <p>{t('common.loading', 'Loading...')}</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
@@ -310,7 +320,6 @@ const Tasks: React.FC = () => {
               />
             )}
 
-            {/* Task List */}
             {filteredTasks.length > 0 ? (
               <TaskList
                 tasks={filteredTasks}
@@ -321,7 +330,7 @@ const Tasks: React.FC = () => {
               />
             ) : (
               <p className="text-gray-500 text-center mt-4">
-                No tasks available.
+                {t('tasks.noTasksAvailable', 'Δεν υπάρχουν διαθέσιμες εργασίες.')}
               </p>
             )}
           </>
