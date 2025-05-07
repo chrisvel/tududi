@@ -187,10 +187,10 @@ const InboxItems: React.FC = () => {
     }
     
     setNoteToEdit(note);
-    setIsNoteModalOpen(true);
     if (inboxItemId) {
       setCurrentConversionItemId(inboxItemId);
     }
+    setIsNoteModalOpen(true);
   };
   
   const handleSaveTask = async (task: Task) => {
