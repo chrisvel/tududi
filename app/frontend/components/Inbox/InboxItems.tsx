@@ -22,6 +22,7 @@ import { fetchProjects } from '../../utils/projectsService';
 import { createTask } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { createNote } from '../../utils/notesService';
+import { isUrl } from '../../utils/urlService';
 import { useStore } from '../../store/useStore';
 
 const InboxItems: React.FC = () => {
@@ -175,6 +176,16 @@ const InboxItems: React.FC = () => {
   };
   
   const handleOpenNoteModal = (note: Note | null, inboxItemId?: number) => {
+    // If note has content that's a URL, ensure it has a bookmark tag
+    if (note && note.content && isUrl(note.content.trim())) {
+      if (!note.tags) {
+        note.tags = [{ name: 'bookmark' }];
+      } else if (!note.tags.some(tag => tag.name === 'bookmark')) {
+        note.tags.push({ name: 'bookmark' });
+      }
+      console.log("Opening NoteModal with URL content and tags:", note.tags);
+    }
+    
     setNoteToEdit(note);
     if (inboxItemId) {
       setCurrentConversionItemId(inboxItemId);
@@ -220,6 +231,24 @@ const InboxItems: React.FC = () => {
   
   const handleSaveNote = async (note: Note) => {
     try {
+      // Check if the content appears to be a URL and add the bookmark tag
+      const noteContent = note.content || '';
+      const isBookmarkContent = isUrl(noteContent.trim());
+      
+      // Ensure tags property exists
+      if (!note.tags) {
+        note.tags = [];
+      }
+      
+      // Add a bookmark tag if content is a URL and doesn't already have the tag
+      if (isBookmarkContent && !note.tags.some(tag => tag.name === 'bookmark')) {
+        // Use spread operator to create a new array with the bookmark tag added
+        note.tags = [...note.tags, { name: 'bookmark' }];
+      }
+      
+      console.log('Creating note with tags:', JSON.stringify(note.tags));
+      
+      // Create the note with proper tags
       await createNote(note);
       showSuccessToast(t('note.createSuccess', 'Note created successfully'));
       
