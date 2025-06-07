@@ -161,18 +161,26 @@ const InboxItems: React.FC = () => {
   // Modal handlers
   const handleOpenTaskModal = (task: Task, inboxItemId?: number) => {
     setTaskToEdit(task);
+    
     if (inboxItemId) {
       setCurrentConversionItemId(inboxItemId);
     }
-    setIsTaskModalOpen(true);
+    
+    requestAnimationFrame(() => {
+      setIsTaskModalOpen(true);
+    });
   };
   
   const handleOpenProjectModal = (project: Project | null, inboxItemId?: number) => {
     setProjectToEdit(project);
+    
     if (inboxItemId) {
       setCurrentConversionItemId(inboxItemId);
     }
-    setIsProjectModalOpen(true);
+    
+    requestAnimationFrame(() => {
+      setIsProjectModalOpen(true);
+    });
   };
   
   const handleOpenNoteModal = (note: Note | null, inboxItemId?: number) => {
@@ -187,10 +195,14 @@ const InboxItems: React.FC = () => {
     }
     
     setNoteToEdit(note);
-    setIsNoteModalOpen(true);
+    
     if (inboxItemId) {
       setCurrentConversionItemId(inboxItemId);
     }
+    
+    requestAnimationFrame(() => {
+      setIsNoteModalOpen(true);
+    });
   };
   
   const handleSaveTask = async (task: Task) => {
@@ -317,39 +329,60 @@ const InboxItems: React.FC = () => {
         ))}
       </div>
       
-      {/* Task Modal */}
-      {isTaskModalOpen && taskToEdit && (
-        <TaskModal
-          isOpen={isTaskModalOpen}
-          onClose={() => setIsTaskModalOpen(false)}
-          task={taskToEdit}
-          onSave={handleSaveTask}
-          onDelete={() => {}} // No need to delete since it's a new task
-          projects={projects}
-          onCreateProject={handleCreateProject}
-        />
-      )}
+      {/* Task Modal - Always render it but control visibility with isOpen */}
+      <TaskModal
+        isOpen={isTaskModalOpen && taskToEdit !== null}
+        onClose={() => {
+          // First set the modal to not open, then clear the task
+          setIsTaskModalOpen(false);
+          // Clear task data after modal is closed
+          setTimeout(() => {
+            if (!isTaskModalOpen) {
+              setTaskToEdit(null);
+            }
+          }, 300); // Match the animation duration in TaskModal
+        }}
+        task={taskToEdit || { name: '', status: 'not_started', priority: 'medium' }}
+        onSave={handleSaveTask}
+        onDelete={() => {}} // No need to delete since it's a new task
+        projects={projects}
+        onCreateProject={handleCreateProject}
+      />
       
-      {/* Project Modal */}
-      {isProjectModalOpen && (
-        <ProjectModal
-          isOpen={isProjectModalOpen}
-          onClose={() => setIsProjectModalOpen(false)}
-          onSave={handleSaveProject}
-          project={projectToEdit || undefined}
-          areas={areas}
-        />
-      )}
+      {/* Project Modal - Always render it but control visibility with isOpen */}
+      <ProjectModal
+        isOpen={isProjectModalOpen && projectToEdit !== null}
+        onClose={() => {
+          // First set the modal to not open, then clear the project
+          setIsProjectModalOpen(false);
+          // Clear project data after modal is closed
+          setTimeout(() => {
+            if (!isProjectModalOpen) {
+              setProjectToEdit(null);
+            }
+          }, 300); // Match the animation duration
+        }}
+        onSave={handleSaveProject}
+        project={projectToEdit || undefined}
+        areas={areas}
+      />
       
-      {/* Note Modal */}
-      {isNoteModalOpen && (
-        <NoteModal
-          isOpen={isNoteModalOpen}
-          onClose={() => setIsNoteModalOpen(false)}
-          onSave={handleSaveNote}
-          note={noteToEdit}
-        />
-      )}
+      {/* Note Modal - Always render it but control visibility with isOpen */}
+      <NoteModal
+        isOpen={isNoteModalOpen && noteToEdit !== null}
+        onClose={() => {
+          // First set the modal to not open, then clear the note
+          setIsNoteModalOpen(false);
+          // Clear note data after modal is closed
+          setTimeout(() => {
+            if (!isNoteModalOpen) {
+              setNoteToEdit(null);
+            }
+          }, 300); // Match the animation duration
+        }}
+        onSave={handleSaveNote}
+        note={noteToEdit || { title: '', content: '' }}
+      />
       
       {/* Edit Inbox Item Modal */}
       {isEditModalOpen && itemToEdit !== null && (

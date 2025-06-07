@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Tag } from '../../entities/Tag';
+import { useTranslation } from 'react-i18next';
 
 interface TagInputProps {
   initialTags: string[];
@@ -8,6 +9,7 @@ interface TagInputProps {
 }
 
 const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availableTags }) => {
+  const { t } = useTranslation();
   const [inputValue, setInputValue] = useState('');
   const [tags, setTags] = useState<string[]>(initialTags || []);
   const [filteredTags, setFilteredTags] = useState<Tag[]>([]);
@@ -157,7 +159,7 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
             </span>
           ))
         ) : (
-          <span className="text-gray-400 text-xs">No tags yet</span>
+          <span className="text-gray-400 text-xs"></span>
         )}
 
         <input
@@ -166,7 +168,7 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="Type to add a tag"
+          placeholder={t('tags.typeToAdd')}
           className="flex-grow bg-transparent border-none outline-none text-sm text-gray-900 dark:text-gray-100"
           onFocus={() => {
             if (filteredTags.length > 0) setIsDropdownOpen(true);

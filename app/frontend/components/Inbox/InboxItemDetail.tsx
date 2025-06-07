@@ -58,13 +58,21 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       priority: 'medium'
     };
 
-    if (item.id !== undefined) {
-      openTaskModal(newTask, item.id);
-    } else {
-      openTaskModal(newTask);
-    }
-    
+    // First close the dropdown
     setDropdownOpen(false);
+    
+    // Use requestAnimationFrame for better timing than setTimeout
+    // This ensures the DOM has updated before we trigger the modal open
+    requestAnimationFrame(() => {
+      // To better prevent flicker, wait one extra frame
+      requestAnimationFrame(() => {
+        if (item.id !== undefined) {
+          openTaskModal(newTask, item.id);
+        } else {
+          openTaskModal(newTask);
+        }
+      });
+    });
   };
   
   const handleConvertToProject = () => {
@@ -74,13 +82,21 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       active: true
     };
 
-    if (item.id !== undefined) {
-      openProjectModal(newProject, item.id);
-    } else {
-      openProjectModal(newProject);
-    }
-    
+    // First close the dropdown
     setDropdownOpen(false);
+    
+    // Use requestAnimationFrame for better timing than setTimeout
+    // This ensures the DOM has updated before we trigger the modal open
+    requestAnimationFrame(() => {
+      // To better prevent flicker, wait one extra frame
+      requestAnimationFrame(() => {
+        if (item.id !== undefined) {
+          openProjectModal(newProject, item.id);
+        } else {
+          openProjectModal(newProject);
+        }
+      });
+    });
   };
   
   const handleConvertToNote = async () => {
@@ -117,13 +133,21 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       tags: tagObjects
     };
 
-    if (item.id !== undefined) {
-      openNoteModal(newNote, item.id);
-    } else {
-      openNoteModal(newNote);
-    }
-    
+    // First close the dropdown
     setDropdownOpen(false);
+    
+    // Use requestAnimationFrame for better timing than setTimeout
+    // This ensures the DOM has updated before we trigger the modal open
+    requestAnimationFrame(() => {
+      // To better prevent flicker, wait one extra frame
+      requestAnimationFrame(() => {
+        if (item.id !== undefined) {
+          openNoteModal(newNote, item.id);
+        } else {
+          openNoteModal(newNote);
+        }
+      });
+    });
   };
   
   const formattedDate = item.created_at 
