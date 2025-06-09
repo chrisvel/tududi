@@ -62,12 +62,12 @@ configure do
       user.save
     end
   end
-  
+
   # Initialize the Telegram polling after database is ready
   initialize_telegram_polling
 end
 
-use Rack::Protection
+use Rack::Protection, except: [:http_origin]
 
 before do
   require_login
@@ -79,10 +79,20 @@ end
 
 before do
   allowed_origins = ['http://localhost:8080', 'http://localhost:9292']
-  if request.env['HTTP_ORIGIN'] && allowed_origins.include?(request.env['HTTP_ORIGIN'])
-    response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+
+  if ENV['TUDUDI_ALLOWED_ORIGINS']
+    if ENV['TUDUDI_ALLOWED_ORIGINS'].strip.empty?
+      response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+    else
+      allowed_origins.concat(ENV['TUDUDI_ALLOWED_ORIGINS'].split(',').map(&:strip))
+      if request.env['HTTP_ORIGIN'] && allowed_origins.include?(request.env['HTTP_ORIGIN'])
+        response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+      end
+    end
   end
+
   response.headers['Access-Control-Allow-Credentials'] = 'true'
+  response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, Accept, X-Requested-With'
 end
 
 options '*' do
