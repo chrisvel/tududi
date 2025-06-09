@@ -4,6 +4,9 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
+// Force development mode for hot reloading
+process.env.NODE_ENV = 'development';
+
 module.exports = {
   entry: './app/frontend/index.tsx',
   output: {
@@ -15,16 +18,37 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   devServer: {
-    static: {
-      directory: path.join(__dirname, 'public'),
-    },
+    static: [
+      {
+        directory: path.join(__dirname, 'public'),
+        publicPath: '/'
+      },
+      {
+        directory: path.join(__dirname),
+        publicPath: '/'
+      }
+    ],
     hot: true,
+    watchFiles: ['app/frontend/**/*'],
     port: 8080,
     historyApiFallback: true,
+    // Add middleware to log requests for translation files to help with debugging
+    setupMiddlewares: (middlewares, devServer) => {
+      if (!devServer) {
+        throw new Error('webpack-dev-server is not defined');
+      }
+
+      devServer.app.get('/locales/*', (req, res, next) => {
+        console.log('Translation file requested:', req.path);
+        next();
+      });
+
+      return middlewares;
+    },
   },
   plugins: [
-    isDevelopment && new webpack.HotModuleReplacementPlugin(),
     isDevelopment && new ReactRefreshWebpackPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
   ].filter(Boolean),
   module: {
     rules: [

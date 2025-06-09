@@ -26,9 +26,14 @@ GEM
     connection_pool (2.4.1)
     drb (2.2.0)
       ruby2_keywords
+    et-orbi (1.2.11)
+      tzinfo
     faker (3.2.2)
       i18n (>= 1.8.11, < 2)
     ffi (1.16.3)
+    fugit (1.11.1)
+      et-orbi (~> 1, >= 1.2.11)
+      raabro (~> 1.4)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     json (2.6.3)
@@ -42,12 +47,17 @@ GEM
       ruby2_keywords (~> 0.0.1)
     mutex_m (0.2.0)
     nio4r (2.5.9)
+    nokogiri (1.18.8-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.18.8-x86_64-linux-gnu)
+      racc (~> 1.4)
     parallel (1.23.0)
     parser (3.2.2.4)
       ast (~> 2.4.1)
       racc
     puma (6.4.0)
       nio4r (~> 2.0)
+    raabro (1.4.0)
     racc (1.7.3)
     rack (2.2.8)
     rack-protection (3.1.0)
@@ -55,7 +65,7 @@ GEM
     rack-test (2.1.0)
       rack (>= 1.3)
     rainbow (3.1.1)
-    rake (13.1.0)
+    rake (13.2.1)
     rb-fsevent (0.11.2)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
@@ -78,6 +88,8 @@ GEM
       parser (>= 3.2.1.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
+    rufus-scheduler (3.8.2)
+      fugit (~> 1.1, >= 1.1.6)
     sinatra (3.1.0)
       mustermann (~> 3.0)
       rack (~> 2.2, >= 2.2.4)
@@ -105,19 +117,22 @@ GEM
 
 PLATFORMS
   arm64-darwin-22
+  arm64-darwin-24
   x86_64-linux
 
 DEPENDENCIES
-  bcrypt
-  byebug
+  bcrypt (~> 3.1)
+  byebug (~> 11.1)
   faker
   minitest
+  nokogiri (~> 1.15)
   puma
+  rack-protection (~> 3.1.0)
   rack-test
-  rake
+  rake (~> 13.0)
   rerun
   rubocop
-  sinatra
+  rufus-scheduler (~> 3.8.2)
   sinatra-activerecord
   sinatra-cross_origin
   sinatra-namespace

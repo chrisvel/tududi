@@ -5,7 +5,7 @@ class Sinatra::Application
     content_type :json
 
     if logged_in?
-      { user: { email: current_user.email, id: current_user.id } }.to_json
+      { user: { email: current_user.email, id: current_user.id, language: current_user.language, appearance: current_user.appearance, timezone: current_user.timezone } }.to_json
     else
       { user: nil }.to_json
     end
@@ -30,7 +30,7 @@ class Sinatra::Application
     if user&.authenticate(password)
       session[:user_id] = user.id
       status 200
-      { user: { email: user.email, id: user.id } }.to_json
+      { user: { email: user.email, id: user.id, language: user.language, appearance: user.appearance, timezone: user.timezone } }.to_json
     else
       halt 401, { errors: ['Invalid credentials'] }.to_json
     end

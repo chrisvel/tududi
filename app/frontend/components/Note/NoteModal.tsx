@@ -4,7 +4,7 @@ import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
 import { Tag } from '../../entities/Tag';
 import { fetchTags } from '../../utils/tagsService'; 
-
+import { useTranslation } from 'react-i18next';
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -13,6 +13,7 @@ interface NoteModalProps {
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<Note>({
     id: note?.id || 0,
     title: note?.title || '',
@@ -35,7 +36,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
         setAvailableTags(data);
       } catch (error) {
         console.error('Failed to fetch tags', error);
-        showErrorToast('Failed to load available tags.');
+        showErrorToast(t('errors.failedToLoadTags'));
       }
     };
 
@@ -46,13 +47,18 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
 
   useEffect(() => {
     if (isOpen) {
+      // Extract tag names for display
+      const tagNames = note?.tags?.map((tag) => tag.name) || [];
+      console.log("NoteModal received note with tags:", note?.tags);
+      console.log("Converted tag names:", tagNames);
+      
       setFormData({
         id: note?.id || 0,
         title: note?.title || '',
         content: note?.content || '',
         tags: note?.tags || [],
       });
-      setTags(note?.tags?.map((tag) => tag.name) || []);
+      setTags(tagNames);
       setError(null);
     }
   }, [isOpen, note]);
@@ -101,6 +107,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
   };
 
   const handleTagsChange = useCallback((newTags: string[]) => {
+    console.log("NoteModal tags changed to:", newTags);
     setTags(newTags);
     setFormData((prev) => ({
       ...prev,
@@ -110,7 +117,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
 
   const handleSubmit = async () => {
     if (!formData.title.trim()) {
-      setError('Note title is required.');
+      setError(t('errors.noteTitleRequired'));
       return;
     }
 
@@ -118,13 +125,22 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
     setError(null);
 
     try {
+      // Convert string tags to tag objects
       const noteTags: Tag[] = tags.map(tagName => ({ name: tagName }));
-      await onSave({ ...formData, tags: noteTags });
-      showSuccessToast(formData.id && formData.id !== 0 ? 'Note updated successfully!' : 'Note created successfully!');
+      
+      console.log("Submitting note with tags array:", tags);
+      console.log("Converting to note tags:", noteTags);
+      
+      // Create final form data with the tags
+      const finalFormData = { ...formData, tags: noteTags };
+      console.log("Final note data being saved:", finalFormData);
+      
+      await onSave(finalFormData);
+      showSuccessToast(formData.id && formData.id !== 0 ? t('success.noteUpdated') : t('success.noteCreated'));
       handleClose();
     } catch (err) {
       setError((err as Error).message);
-      showErrorToast('Failed to save note.');
+      showErrorToast(t('errors.failedToSaveNote'));
     } finally {
       setIsSubmitting(false);
     }
@@ -167,13 +183,13 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
                   onChange={handleChange}
                   required
                   className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
-                  placeholder="Enter note title"
+                  placeholder={t('forms.noteTitlePlaceholder')}
                 />
               </div>
 
               <div className="pb-3">
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Tags
+                  {t('forms.tags')} {tags.length > 0 ? `(${tags.join(', ')})` : ''}
                 </label>
                 <div className="w-full">
                   <TagInput
@@ -186,7 +202,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
 
               <div className="pb-3 flex-1">
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Content
+                  {t('forms.noteContent')}
                 </label>
                 <textarea
                   id="noteContent"
@@ -195,7 +211,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
                   onChange={handleChange}
                   rows={20}
                   className="block w-full h-full rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-                  placeholder="Enter note content"
+                  placeholder={t('forms.noteContentPlaceholder')}
                 ></textarea>
               </div>
 
@@ -208,7 +224,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
                 onClick={handleClose}
                 className="px-4 py-2 text-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none transition duration-150 ease-in-out"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="button"
@@ -219,10 +235,10 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
                 }`}
               >
                 {isSubmitting
-                  ? 'Submitting...'
+                  ? t('modals.submitting')
                   : formData.id && formData.id !== 0
-                  ? 'Update Note'
-                  : 'Create Note'}
+                  ? t('modals.updateNote')
+                  : t('modals.createNote')}
               </button>
             </div>
           </fieldset>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_24_162915) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_16_235420) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.integer "user_id", null: false
@@ -18,6 +18,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_24_162915) do
     t.datetime "updated_at", null: false
     t.string "description"
     t.index ["user_id"], name: "index_areas_on_user_id"
+  end
+
+  create_table "inbox_items", force: :cascade do |t|
+    t.string "content", null: false
+    t.integer "user_id", null: false
+    t.string "status", default: "added"
+    t.string "source", default: "tududi"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_inbox_items_on_user_id"
   end
 
   create_table "notes", force: :cascade do |t|
@@ -87,7 +97,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_24_162915) do
     t.integer "priority"
     t.text "note"
     t.integer "status", default: 0
+    t.string "recurrence_type", default: "none"
+    t.integer "recurrence_interval"
+    t.datetime "recurrence_end_date"
+    t.datetime "last_generated_date"
+    t.index ["last_generated_date"], name: "index_tasks_on_last_generated_date"
     t.index ["project_id"], name: "index_tasks_on_project_id"
+    t.index ["recurrence_type"], name: "index_tasks_on_recurrence_type"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
@@ -101,9 +117,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_24_162915) do
     t.string "language", default: "en", null: false
     t.string "timezone", default: "UTC", null: false
     t.string "avatar_image"
+    t.string "telegram_bot_token"
+    t.string "telegram_chat_id"
+    t.boolean "task_summary_enabled", default: false
+    t.string "task_summary_frequency", default: "daily"
+    t.datetime "task_summary_last_run"
+    t.datetime "task_summary_next_run"
   end
 
   add_foreign_key "areas", "users"
+  add_foreign_key "inbox_items", "users"
   add_foreign_key "notes", "projects"
   add_foreign_key "notes", "users", on_delete: :cascade
   add_foreign_key "projects", "areas", on_delete: :cascade

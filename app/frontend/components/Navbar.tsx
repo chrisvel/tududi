@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserIcon, Bars3Icon } from "@heroicons/react/24/solid";
+import { useTranslation } from "react-i18next";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -22,6 +23,7 @@ const Navbar: React.FC<NavbarProps> = ({
   isSidebarOpen,
   setIsSidebarOpen,
 }) => {
+  const { t } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate(); 
@@ -108,13 +110,13 @@ const Navbar: React.FC<NavbarProps> = ({
                   to="/profile"
                   className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
-                  Profile
+                  {t('navigation.profile')}
                 </Link>
                 <button
                   onClick={handleLogout}
                   className="w-full text-left block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
-                  Logout
+                  {t('navigation.logout')}
                 </button>
               </div>
             )}

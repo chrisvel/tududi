@@ -1,10 +1,23 @@
 import { Tag } from "../entities/Tag";
 
 export const fetchTags = async (): Promise<Tag[]> => {
-  const response = await fetch("/api/tags");
-  if (!response.ok) throw new Error('Failed to fetch tags.');
+  try {
+    const response = await fetch("/api/tags", {
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch tags.');
 
-  return await response.json();
+    return await response.json();
+  } catch (error) {
+    console.error("Tags fetch error:", error);
+    // Return empty array to prevent UI from breaking
+    return [];
+  }
 };
 
 export const createTag = async (tagData: Tag): Promise<Tag> => {

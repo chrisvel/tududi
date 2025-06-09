@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>i18n Test</title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <h1>i18n Test Page</h1>
+  <div>
+    <h2>Direct link test</h2>
+    <p>Click to test if translation files are accessible:</p>
+    <ul>
+      <li><a href="/locales/en/translation.json" target="_blank">English translation file</a></li>
+      <li><a href="/locales/es/translation.json" target="_blank">Spanish translation file</a></li>
+      <li><a href="/locales/de/translation.json" target="_blank">German translation file</a></li>
+    </ul>
+  </div>
+
+  <div>
+    <h2>Fetch API test</h2>
+    <button id="testFetch">Test fetch API</button>
+    <pre id="result" style="background-color: #f5f5f5; padding: 10px; max-height: 300px; overflow: auto;"></pre>
+  </div>
+
+  <script>
+    document.getElementById('testFetch').addEventListener('click', async () => {
+      const resultElement = document.getElementById('result');
+      try {
+        // Try to fetch the English translation file
+        resultElement.textContent = 'Fetching English translation...';
+        const response = await fetch('/locales/en/translation.json');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        resultElement.textContent = 'Success! Translation file content:\n\n' + 
+                                   JSON.stringify(data, null, 2);
+      } catch (error) {
+        resultElement.textContent = `Error fetching translation file: ${error.message}`;
+        console.error('Fetch error:', error);
+      }
+    });
+  </script>
+</body>
+</html>
+

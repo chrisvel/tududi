@@ -1,0 +1,111 @@
+{
+  "common": {
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "delete": "Видалити",
+    "edit": "Редагувати",
+    "create": "Створити",
+    "submit": "Надіслати",
+    "close": "Закрити",
+    "back": "Назад",
+    "next": "Далі",
+    "loading": "Завантаження...",
+    "completed": "Завершено",
+    "error": "Помилка",
+    "success": "Успішно"
+  },
+
+  "sidebar": {
+    "dashboard": "Дашборд",
+    "projects": "Проекти",
+    "tasks": "Завдання",
+    "calendar": "Календар",
+    "notes": "Нотатки",
+    "settings": "Налаштування",
+    "areas": "Області",
+    "tags": "Теги",
+    "today": "Сьогодні",
+    "upcoming": "Майбутні",
+    "nextActions": "Наступні дії",
+    "inbox": "Вхідні",
+    "completed": "Завершені",
+    "allTasks": "Всі завдання"
+  },
+
+  "tasks": {
+    "today": "Сьогодні",
+    "backlog": "Відкладені",
+    "inProgress": "В процесі",
+    "dueToday": "Термін сьогодні",
+    "stale": "Прострочені",
+    "suggested": "Запропоновані",
+    "noTasksAvailable": "Немає доступних завдань.",
+    "searchPlaceholder": "Пошук завдань...",
+    "addNewTask": "Додати нове завдання"
+  },
+
+  "projects": {
+    "loading": "Завантаження проектів...",
+    "error": "Помилка завантаження проектів",
+    "searchPlaceholder": "Пошук проектів...",
+    "title": "Проекти",
+    "noProjectsFound": "Проектів не знайдено",
+    "cardViewAriaLabel": "Вигляд картками",
+    "listViewAriaLabel": "Вигляд списком",
+    "filters": {
+      "active": "Активні",
+      "inactive": "Неактивні",
+      "all": "Всі",
+      "allAreas": "Всі області"
+    }
+  },
+
+  "projectItem": {
+    "edit": "Редагувати",
+    "delete": "Видалити",
+    "completion": "Завершення",
+    "completionPercentage": "{{percentage}}% завершено",
+    "toggleDropdownMenu": "Перемкнути випадаюче меню",
+    "projectInitials": "Ініціали проекту"
+  },
+  "forms": {
+    "noteTitle": "Заголовок нотатки",
+    "noteContent": "Вміст нотатки",
+    "noteTitlePlaceholder": "Введіть заголовок нотатки",
+    "noteContentPlaceholder": "Введіть вміст нотатки",
+    "tags": "Теги",
+    "required": "Це поле обов'язкове",
+    "optional": "Необов'язково"
+  },
+
+  "modals": {
+    "updateNote": "Оновити нотатку",
+    "createNote": "Створити нотатку",
+    "submitting": "Надсилання...",
+    "noteCreation": "Створити нову нотатку",
+    "noteEdit": "Редагувати нотатку"
+  },
+
+  "errors": {
+    "noteTitleRequired": "Заголовок нотатки обов'язковий.",
+    "failedToLoadTags": "Не вдалося завантажити доступні теги.",
+    "failedToSaveNote": "Не вдалося зберегти нотатку."
+  },
+
+  "success": {
+    "noteUpdated": "Нотатку успішно оновлено!",
+    "noteCreated": "Нотатку успішно створено!"
+  },
+
+  "notes": {
+    "loading": "Завантаження нотаток...",
+    "error": "Помилка завантаження нотаток",
+    "searchPlaceholder": "Пошук нотаток...",
+    "noNotesFound": "Нотаток не знайдено",
+    "title": "Нотатки",
+    "deleteNoteAriaLabel": "Видалити нотатку {{noteTitle}}",
+    "deleteNoteTitle": "Видалити нотатку {{noteTitle}}",
+    "editNoteAriaLabel": "Редагувати нотатку {{noteTitle}}",
+    "editNoteTitle": "Редагувати нотатку {{noteTitle}}"
+  }
+}

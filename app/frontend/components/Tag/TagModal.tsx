@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Tag } from '../../entities/Tag';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
+import { useTranslation } from 'react-i18next';
 
 interface TagModalProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ const TagModal: React.FC<TagModalProps> = ({
   const [isClosing, setIsClosing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showSuccessToast, showErrorToast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (tag) {
@@ -79,7 +81,7 @@ const TagModal: React.FC<TagModalProps> = ({
 
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
-      showErrorToast('Tag name is required.');
+      showErrorToast(t('errors.tagNameRequired', 'Tag name is required.'));
       return;
     }
 
@@ -87,14 +89,14 @@ const TagModal: React.FC<TagModalProps> = ({
 
     try {
       if (tag) {
-        showSuccessToast('Tag updated successfully!');
+        showSuccessToast(t('success.tagUpdated', 'Tag updated successfully!'));
       } else {
-        showSuccessToast('Tag created successfully!');
+        showSuccessToast(t('success.tagCreated', 'Tag created successfully!'));
       }
       onSave(formData);
       handleClose();
     } catch (err) {
-      showErrorToast('Failed to save tag.');
+      showErrorToast(t('errors.failedToSaveTag', 'Failed to save tag.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -139,7 +141,7 @@ const TagModal: React.FC<TagModalProps> = ({
                     onChange={handleChange}
                     required
                     className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
-                    placeholder="Enter tag name"
+                    placeholder={t('forms.tagNamePlaceholder', 'Enter tag name')}
                   />
                 </div>
               </div>
@@ -151,7 +153,7 @@ const TagModal: React.FC<TagModalProps> = ({
                   onClick={handleClose}
                   className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none transition duration-150 ease-in-out"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="button"
@@ -161,7 +163,11 @@ const TagModal: React.FC<TagModalProps> = ({
                     isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
-                  {isSubmitting ? 'Submitting...' : tag ? 'Update Tag' : 'Create Tag'}
+                  {isSubmitting 
+                    ? t('modals.submitting', 'Submitting...') 
+                    : tag 
+                      ? t('modals.updateTag', 'Update Tag') 
+                      : t('modals.createTag', 'Create Tag')}
                 </button>
               </div>
             </fieldset>

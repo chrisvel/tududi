@@ -9,7 +9,8 @@ import ConfirmDialog from "./Shared/ConfirmDialog";
 import ProjectModal from "./Project/ProjectModal";
 import { useStore } from "../store/useStore";
 import { fetchProjects, createProject, updateProject, deleteProject } from "../utils/projectsService";
-import {  fetchAreas } from "../utils/areasService";
+import { fetchAreas } from "../utils/areasService";
+import { useTranslation } from "react-i18next";
 
 import { Project } from "../entities/Project";
 import { PriorityType, StatusType } from "../entities/Task";
@@ -32,6 +33,7 @@ const getPriorityStyles = (priority: PriorityType) => {
 };
 
 const Projects: React.FC = () => {
+  const { t } = useTranslation();
   const { areas, setAreas, setLoading: setAreasLoading, setError: setAreasError } = useStore((state) => state.areasStore);
   const { projects, setProjects, setLoading: setProjectsLoading, setError: setProjectsError } = useStore((state) => state.projectsStore);
   const { isLoading, isError } = useStore((state) => state.projectsStore);
@@ -179,7 +181,7 @@ useEffect(() => {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
         <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-          Loading projects...
+          {t('projects.loading')}
         </div>
       </div>
     );
@@ -188,7 +190,7 @@ useEffect(() => {
   if (isError) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-red-500 text-lg">Error loading projects.</div>
+        <div className="text-red-500 text-lg">{t('projects.error')}</div>
       </div>
     );
   }
@@ -199,7 +201,7 @@ useEffect(() => {
         <div className="flex items-center mb-8">
           <FolderIcon className="h-6 w-6 text-gray-500 mr-2" />
           <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
-            Projects
+            {t('projects.title')}
           </h2>
         </div>
 
@@ -213,7 +215,7 @@ useEffect(() => {
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
               }`}
-              aria-label="Card View"
+              aria-label={t("projects.cardViewAriaLabel")}
             >
               <Squares2X2Icon className="h-5 w-5" />
             </button>
@@ -225,7 +227,7 @@ useEffect(() => {
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
               }`}
-              aria-label="List View"
+              aria-label={t("projects.listViewAriaLabel")}
             >
               <Bars3Icon className="h-5 w-5" />
             </button>
@@ -237,7 +239,7 @@ useEffect(() => {
                 htmlFor="activeFilter"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
               >
-                Status
+                {t('common.status')}
               </label>
               <select
                 id="activeFilter"
@@ -245,9 +247,9 @@ useEffect(() => {
                 onChange={handleActiveFilterChange}
                 className="block w-full p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
-                <option value="all">All</option>
+                <option value="true">{t('projects.filters.active')}</option>
+                <option value="false">{t('projects.filters.inactive')}</option>
+                <option value="all">{t('projects.filters.all')}</option>
               </select>
             </div>
 
@@ -256,7 +258,7 @@ useEffect(() => {
                 htmlFor="areaFilter"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
               >
-                Area
+                {t('common.area')}
               </label>
               <select
                 id="areaFilter"
@@ -264,7 +266,7 @@ useEffect(() => {
                 onChange={handleAreaFilterChange}
                 className="block w-full p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Areas</option>
+                <option value="">{t('projects.filters.allAreas')}</option>
                 {areas.map((area) => (
                   <option key={area.id} value={area.id?.toString()}>
                     {area.name}
@@ -281,7 +283,7 @@ useEffect(() => {
             <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
             <input
               type="text"
-              placeholder="Search projects..."
+              placeholder={t('projects.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
@@ -299,7 +301,7 @@ useEffect(() => {
         >
           {Object.keys(groupedProjects).length === 0 ? (
             <div className="text-gray-700 dark:text-gray-300">
-              No projects found.
+              {t('projects.noProjectsFound')}
             </div>
           ) : (
             Object.keys(groupedProjects).map((areaName) => (
@@ -347,8 +349,8 @@ useEffect(() => {
 
       {isConfirmDialogOpen && (
         <ConfirmDialog
-          title="Delete Project"
-          message={`Are you sure you want to delete the project "${projectToDelete?.name}"?`}
+          title={t('modals.deleteProject.title')}
+          message={t('modals.deleteProject.message', { projectName: projectToDelete?.name })}
           onConfirm={handleDeleteProject}
           onCancel={() => setIsConfirmDialogOpen(false)}
         />

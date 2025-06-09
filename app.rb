@@ -3,15 +3,23 @@ require 'sinatra/activerecord'
 require 'securerandom'
 require 'byebug'
 
+# Models
 require './app/models/user'
 require './app/models/area'
 require './app/models/project'
 require './app/models/task'
 require './app/models/tag'
 require './app/models/note'
+require './app/models/inbox_item'
 
+# Services
+require './app/services/task_summary_service'
+require './app/services/url_title_extractor_service'
+require './config/initializers/scheduler'
+require './config/initializers/telegram_initializer'
+
+# Helpers
 require './app/helpers/authentication_helper'
-
 require './app/routes/authentication_routes'
 require './app/routes/tasks_routes'
 require './app/routes/projects_routes'
@@ -19,6 +27,10 @@ require './app/routes/areas_routes'
 require './app/routes/notes_routes'
 require './app/routes/tags_routes'
 require './app/routes/users_routes'
+require './app/routes/inbox_routes'
+require './app/routes/telegram_poller'
+require './app/routes/telegram_routes'
+require './app/routes/url_routes'
 
 require 'sinatra/cross_origin'
 
@@ -39,6 +51,9 @@ configure do
                  same_site: secure_flag ? :none : :lax
   set :session_secret, ENV.fetch('TUDUDI_SESSION_SECRET') { SecureRandom.hex(64) }
 
+  # Ensure ActiveRecord connection is established
+  ActiveRecord::Base.establish_connection
+
   # Auto-create user if not exists
   if ENV['TUDUDI_USER_EMAIL'] && ENV['TUDUDI_USER_PASSWORD'] && ActiveRecord::Base.connection.table_exists?('users')
     user = User.find_or_initialize_by(email: ENV['TUDUDI_USER_EMAIL'])
@@ -47,9 +62,12 @@ configure do
       user.save
     end
   end
+
+  # Initialize the Telegram polling after database is ready
+  initialize_telegram_polling
 end
 
-use Rack::Protection
+use Rack::Protection, except: [:http_origin]
 
 before do
   require_login
@@ -60,8 +78,21 @@ configure do
 end
 
 before do
-  response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
+  allowed_origins = ['http://localhost:8080', 'http://localhost:9292']
+
+  if ENV['TUDUDI_ALLOWED_ORIGINS']
+    if ENV['TUDUDI_ALLOWED_ORIGINS'].strip.empty?
+      response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+    else
+      allowed_origins.concat(ENV['TUDUDI_ALLOWED_ORIGINS'].split(',').map(&:strip))
+      if request.env['HTTP_ORIGIN'] && allowed_origins.include?(request.env['HTTP_ORIGIN'])
+        response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+      end
+    end
+  end
+
   response.headers['Access-Control-Allow-Credentials'] = 'true'
+  response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, Accept, X-Requested-With'
 end
 
 options '*' do

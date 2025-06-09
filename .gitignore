@@ -9,3 +9,4 @@ node_modules
 .env
 
 public/js/bundle.js
+.aider*

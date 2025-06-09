@@ -6,7 +6,6 @@ class Task < ActiveRecord::Base
   enum priority: { low: 0, medium: 1, high: 2 }
   enum status: { not_started: 0, in_progress: 1, done: 2, archived: 3, waiting: 4 }
 
-  # Existing scopes
   scope :complete, -> { where(status: statuses[:done]) }
   scope :incomplete, -> { where.not(status: statuses[:done]) }
   scope :due_today, -> { incomplete.where('DATE(due_date) <= ?', Date.today) }
@@ -31,7 +30,6 @@ class Task < ActiveRecord::Base
 
   validates :name, presence: true, uniqueness: { scope: :user_id }
 
-  # New class method to filter tasks based on params
   def self.filter_by_params(params, user)
     tasks = user.tasks.includes(:project, :tags)
 
@@ -92,23 +90,22 @@ class Task < ActiveRecord::Base
 
     # Gather tasks in projects expiring starting today, order by task priority
     tasks_in_expiring_projects = user.tasks.incomplete
-                                        .joins(:project)
-                                        .where('projects.due_date_at >= ?', Date.today)
-                                        .where(projects: { active: true }) # Only active projects
-                                        .where.not(id: excluded_task_ids)
-                                        .order(Arel.sql('projects.due_date_at ASC, tasks.priority DESC'))
-                                        .limit(5)
+                                     .joins(:project)
+                                     .where('projects.due_date_at >= ?', Date.today)
+                                     .where(projects: { active: true }) # Only active projects
+                                     .where.not(id: excluded_task_ids)
+                                     .order(Arel.sql('projects.due_date_at ASC, tasks.priority DESC'))
+                                     .limit(5)
 
     # Gather tasks not assigned to projects expiring today, ordered by task priority
     tasks_without_projects = user.tasks.incomplete
-                                     .where(status: statuses[:not_started], project_id: nil)
-                                     .or(user.tasks.where(project_id: nil, status: statuses[:not_started]))
-                                     .where.not(id: excluded_task_ids)
-                                     .order(priority: :desc)
-                                     .limit(5)
+                                 .where(status: statuses[:not_started], project_id: nil)
+                                 .or(user.tasks.where(project_id: nil, status: statuses[:not_started]))
+                                 .where.not(id: excluded_task_ids)
+                                 .order(priority: :desc)
+                                 .limit(5)
 
     # Combine both list of suggested tasks
-
     suggested_tasks = sort_suggested_tasks(tasks_in_expiring_projects + tasks_without_projects)
     {
       total_open_tasks: total_open_tasks,
@@ -130,27 +127,27 @@ class Task < ActiveRecord::Base
                       end
 
       # Parse or default the project due date
-      project_due_date = if (task.project&.due_date_at).is_a?(String)
+      project_due_date = if task.project&.due_date_at.is_a?(String)
                            Date.parse(task&.project&.due_date_at)
                          else
                            task.project&.due_date_at || Date.new(9999, 12, 31)
                          end
 
       # Priority in descending order (sorted values should be negative for sort_by)
-      priority_value = -(Task.priorities.fetch(task.priority, -1))
+      priority_value = -Task.priorities.fetch(task.priority, -1)
 
       # Determine sorting flags based on various criteria
-      is_high_priority_proj_with_due_date = (task.priority == 'high' && task&.project&.due_date_at) ? 0 : 1
-      is_high_priority_with_due_date = (task.priority == 'high' && task.due_date) ? 0 : 1
-      is_high_priority = (task.priority == 'high' && !task.due_date && !task&.project&.due_date_at) ? 0 : 1
+      is_high_priority_proj_with_due_date = task.priority == 'high' && task&.project&.due_date_at ? 0 : 1
+      is_high_priority_with_due_date = task.priority == 'high' && task.due_date ? 0 : 1
+      is_high_priority = task.priority == 'high' && !task.due_date && !task&.project&.due_date_at ? 0 : 1
 
-      is_medium_priority_proj_with_due_date = (task.priority == 'medium' && task&.project&.due_date_at) ? 0 : 1
-      is_medium_priority_with_due_date = (task.priority == 'medium' && task.due_date) ? 0 : 1
-      is_medium_priority = (task.priority == 'medium' && !task.due_date && !task&.project&.due_date_at) ? 0 : 1
+      is_medium_priority_proj_with_due_date = task.priority == 'medium' && task&.project&.due_date_at ? 0 : 1
+      is_medium_priority_with_due_date = task.priority == 'medium' && task.due_date ? 0 : 1
+      is_medium_priority = task.priority == 'medium' && !task.due_date && !task&.project&.due_date_at ? 0 : 1
 
-      is_low_priority_proj_with_due_date = (task.priority == 'low' && task&.project&.due_date_at) ? 0 : 1
-      is_low_priority_with_due_date = (task.priority == 'low' && task.due_date) ? 0 : 1
-      is_low_priority = (task.priority == 'low' && !task.due_date && !task&.project&.due_date_at) ? 0 : 1
+      is_low_priority_proj_with_due_date = task.priority == 'low' && task&.project&.due_date_at ? 0 : 1
+      is_low_priority_with_due_date = task.priority == 'low' && task.due_date ? 0 : 1
+      is_low_priority = task.priority == 'low' && !task.due_date && !task&.project&.due_date_at ? 0 : 1
 
       # Primary sorting criteria
       [

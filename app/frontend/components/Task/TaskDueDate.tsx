@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface TaskDueDateProps {
   dueDate: string;
@@ -6,6 +7,7 @@ interface TaskDueDateProps {
 }
 
 const TaskDueDate: React.FC<TaskDueDateProps> = ({ dueDate, className }) => {
+  const { t } = useTranslation();
   const getDueDateClass = () => {
     const today = new Date().toISOString().split('T')[0];
     const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -21,9 +23,9 @@ const TaskDueDate: React.FC<TaskDueDateProps> = ({ dueDate, className }) => {
     const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    if (dueDate === today) return 'TODAY';
-    if (dueDate === tomorrow) return 'TOMORROW';
-    if (dueDate === yesterday) return 'YESTERDAY';
+    if (dueDate === today) return t('dateIndicators.today', 'TODAY');
+    if (dueDate === tomorrow) return t('dateIndicators.tomorrow', 'TOMORROW');
+    if (dueDate === yesterday) return t('dateIndicators.yesterday', 'YESTERDAY');
 
     return new Date(dueDate).toLocaleDateString(undefined, {
       year: 'numeric',

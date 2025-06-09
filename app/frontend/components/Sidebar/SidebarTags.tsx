@@ -2,6 +2,7 @@ import React from 'react';
 import { Location } from 'react-router-dom';
 import { TagIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { Tag } from '../../entities/Tag';
+import { useTranslation } from 'react-i18next';
 
 interface SidebarTagsProps {
   handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -16,6 +17,8 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
   location,
   openTagModal,
 }) => {
+  const { t } = useTranslation();
+  
   const isActiveTag = (path: string) => {
     return location.pathname === path
       ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
@@ -34,7 +37,7 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
         >
           <span className="flex items-center">
             <TagIcon className="h-5 w-5 mr-2" />
-            TAGS
+            {t('sidebar.tags')}
           </span>
           <button
             onClick={(e) => {
@@ -42,8 +45,8 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
               openTagModal(null); 
             }}
             className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
-            aria-label="Add Tag"
-            title="Add Tag"
+            aria-label={t('sidebar.addTagAriaLabel')}
+            title={t('sidebar.addTagTitle')}
           >
             <PlusCircleIcon className="h-5 w-5" />
           </button>

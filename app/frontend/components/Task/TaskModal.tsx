@@ -9,6 +9,7 @@ import TagInput from "../Tag/TagInput";
 import { Project } from "../../entities/Project";
 import { useStore } from "../../store/useStore";
 import { fetchTags } from '../../utils/tagsService';
+import { useTranslation } from "react-i18next";
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -41,6 +42,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const { showSuccessToast, showErrorToast } = useToast();
   const { tagsStore } = useStore();
   const { tags: availableTags, setTags: setAvailableTags, setLoading: setTagsLoading, setError: setTagsError } = tagsStore;
+  const { t } = useTranslation();
 
   useEffect(() => {
     setFormData(task);
@@ -207,12 +209,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     onChange={handleChange}
                     required
                     className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
-                    placeholder="Add Task Name"
+                    placeholder={t('forms.task.namePlaceholder', 'Add Task Name')}
                   />
                 </div>
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Tags
+                    {t('forms.task.labels.tags', 'Tags')}
                   </label>
                   <div className="w-full">
                     <TagInput
@@ -224,11 +226,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 </div>
                 <div className="pb-3 relative">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
-                    Project
+                    {t('forms.task.labels.project', 'Project')}
                   </label>
                   <input
                     type="text"
-                    placeholder="Search or create a project..."
+                    placeholder={t('forms.task.projectSearchPlaceholder', 'Search or create a project...')}
                     value={newProjectName}
                     onChange={handleProjectSearch}
                     className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
@@ -248,7 +250,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                         ))
                       ) : (
                         <div className="px-4 py-2 text-gray-500 dark:text-gray-300">
-                          No matching projects
+                          {t('forms.task.noMatchingProjects', 'No matching projects')}
                         </div>
                       )}
                       {newProjectName && (
@@ -259,8 +261,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
                           className="block w-full text-left px-4 py-2 bg-blue-500 text-white hover:bg-blue-600"
                         >
                           {isCreatingProject
-                            ? "Creating..."
-                            : `+ Create "${newProjectName}"`}
+                            ? t('forms.task.creatingProject', 'Creating...')
+                            : t('forms.task.createProject', '+ Create') + ` "${newProjectName}"`}
                         </button>
                       )}
                     </div>
@@ -269,7 +271,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pb-3 sm:grid-flow-col">
                   <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
-                      Status
+                      {t('forms.task.labels.status', 'Status')}
                     </label>
                     <StatusDropdown
                       value={formData.status}
@@ -280,7 +282,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
-                      Priority
+                      {t('forms.task.labels.priority', 'Priority')}
                     </label>
                     <PriorityDropdown
                       value={formData.priority || "medium"}
@@ -291,7 +293,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
-                      Due Date
+                      {t('forms.task.labels.dueDate', 'Due Date')}
                     </label>
                     <input
                       type="date"
@@ -305,7 +307,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 </div>
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
-                    Note
+                    {t('forms.noteContent')}
                   </label>
                   <textarea
                     id={`task_note_${task.id}`}
@@ -314,7 +316,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     value={formData.note || ""}
                     onChange={handleChange}
                     className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                    placeholder="Add any additional notes here"
+                    placeholder={t('forms.noteContentPlaceholder')}
                   ></textarea>
                 </div>
               </div>
@@ -332,8 +334,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
       </div>
       {showConfirmDialog && (
         <ConfirmDialog
-          title="Delete Task"
-          message="Are you sure you want to delete this task? This action cannot be undone."
+          title={t('modals.deleteTask.title', 'Delete Task')}
+          message={t('modals.deleteTask.confirmation', 'Are you sure you want to delete this task? This action cannot be undone.')}
           onConfirm={handleDeleteConfirm}
           onCancel={() => setShowConfirmDialog(false)}
         />

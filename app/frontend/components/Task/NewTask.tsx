@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useToast } from '../../components/Shared/ToastContext'; 
+import { useTranslation } from 'react-i18next';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 
 interface NewTaskProps {
@@ -8,7 +9,8 @@ interface NewTaskProps {
 
 const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
   const [taskName, setTaskName] = useState<string>('');
-  const { showSuccessToast, showErrorToast } = useToast(); 
+  const { showSuccessToast, showErrorToast } = useToast();
+  const { t } = useTranslation();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTaskName(event.target.value);
@@ -19,10 +21,10 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
       try {
         await onTaskCreate(taskName.trim());
         setTaskName('');
-        showSuccessToast('Task created successfully!');
+        showSuccessToast(t('success.taskCreated', 'Task created successfully!'));
       } catch (error) {
         console.error('Error creating task:', error);
-        showErrorToast('Failed to create task.');
+        showErrorToast(t('errors.taskCreate', 'Failed to create task.'));
       }
     }
   };
@@ -38,7 +40,7 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         className="font-medium text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 bg-transparent dark:bg-transparent focus:outline-none focus:ring-0 w-full appearance-none"
-        placeholder="Add New Task"
+        placeholder={t('tasks.addNewTask', 'Προσθήκη Νέας Εργασίας')}
       />
     </div>
   );

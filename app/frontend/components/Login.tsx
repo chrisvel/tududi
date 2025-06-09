@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import i18n from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +27,13 @@ const Login: React.FC = () => {
 
       if (response.ok) {
         console.log('Login successful:', data);
+        
+        if (data.user && data.user.language) {
+          console.log('Setting language from login response:', data.user.language);
+          await i18n.changeLanguage(data.user.language);
+          console.log('Language changed to:', i18n.language);
+        }
+        
         navigate('/today');
       } else {
         setError(data.errors[0] || 'Login failed. Please try again.');
@@ -36,7 +46,6 @@ const Login: React.FC = () => {
 
   return (
     <div className="bg-gray-100 flex flex-col items-center justify-center min-h-screen px-4">
-      {/* Logo with engraved effect */}
       <h1 className="text-5xl font-bold text-gray-300 mb-6">
         tududi
       </h1>
@@ -52,7 +61,7 @@ const Login: React.FC = () => {
               htmlFor="email"
               className="block text-gray-600 mb-1"
             >
-              Email
+              {t('auth.email', 'Email')}
             </label>
             <input
               type="email"
@@ -69,7 +78,7 @@ const Login: React.FC = () => {
               htmlFor="password"
               className="block text-gray-600 mb-1"
             >
-              Password
+              {t('auth.password', 'Password')}
             </label>
             <input
               type="password"
@@ -85,7 +94,7 @@ const Login: React.FC = () => {
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
           >
-            Login
+            {t('auth.login', 'Login')}
           </button>
         </form>
       </div>

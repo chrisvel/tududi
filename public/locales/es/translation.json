@@ -1,0 +1,176 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "submit": "Enviar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "completed": "Completado",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "sidebar": {
+    "dashboard": "Tablero",
+    "projects": "Proyectos",
+    "tasks": "Tareas",
+    "calendar": "Calendario",
+    "notes": "Notas",
+    "settings": "Ajustes",
+    "areas": "Áreas",
+    "tags": "Etiquetas",
+    "today": "Hoy",
+    "upcoming": "Próximamente",
+    "nextActions": "Próximas Acciones",
+    "inbox": "Bandeja de Entrada",
+    "completed": "Completadas",
+    "allTasks": "Todas las Tareas"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "dashboard": "Tablero",
+    "profile": "Perfil",
+    "settings": "Ajustes",
+    "logout": "Cerrar Sesión"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "forgotPassword": "Olvidé mi Contraseña",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "username": "Nombre de Usuario"
+  },
+  "profile": {
+    "title": "Configuración de Perfil",
+    "language": "Idioma",
+    "theme": "Tema",
+    "english": "Inglés",
+    "spanish": "Español",
+    "greek": "Griego",
+    "languagePreference": "Preferencia de Idioma",
+    "personalInfo": "Información Personal",
+    "notifications": "Notificaciones",
+    "saveChanges": "Guardar Cambios",
+    "successMessage": "¡Perfil actualizado con éxito!",
+    "errorMessage": "Error al actualizar el perfil"
+  },
+  "errors": {
+    "required": "Este campo es obligatorio",
+    "invalidEmail": "Por favor, introduce un correo electrónico válido",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "somethingWentWrong": "Algo salió mal, por favor intenta de nuevo",
+    "taskFetch": "Error al obtener tareas.",
+    "projectFetch": "Error al obtener proyectos.",
+    "taskCreate": "Error al crear la tarea.",
+    "taskUpdate": "Error al actualizar la tarea.",
+    "taskDelete": "Error al eliminar la tarea.",
+    "noteTitleRequired": "El título de la nota es obligatorio.",
+    "failedToLoadTags": "Error al cargar las etiquetas disponibles.",
+    "failedToSaveNote": "Error al guardar la nota."
+  },
+  "dropdown": {
+    "createNew": "Crear Nuevo",
+    "task": "Tarea",
+    "project": "Proyecto",
+    "note": "Nota",
+    "area": "Área"
+  },
+  "tasks": {
+    "today": "Hoy",
+    "backlog": "Pendientes",
+    "inProgress": "En Progreso",
+    "dueToday": "Vence Hoy",
+    "stale": "Atrasados",
+    "suggested": "Sugeridos",
+    "noTasksAvailable": "No hay tareas disponibles para hoy.",
+    "searchPlaceholder": "Buscar tareas...",
+    "addNewTask": "Añadir Nueva Tarea"
+    },
+  "projects": {
+    "loading": "Cargando proyectos...",
+    "error": "Error al cargar proyectos",
+    "searchPlaceholder": "Buscar proyectos...",
+    "title": "Proyectos",
+    "noProjectsFound": "No se encontraron proyectos",
+    "cardViewAriaLabel": "Vista de Tarjetas",
+    "listViewAriaLabel": "Vista de Lista",
+    "filters": {
+      "active": "Activos",
+      "inactive": "Inactivos",
+      "all": "Todos",
+      "allAreas": "Todas las áreas"
+    }
+  },
+  "projectItem": {
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "completion": "Finalización",
+    "completionPercentage": "{{percentage}}% completado",
+    "toggleDropdownMenu": "Alternar menú desplegable",
+    "projectInitials": "Iniciales del proyecto"
+  },
+  "sort": {
+    "due_date": "Fecha de Vencimiento",
+    "name": "Nombre",
+    "priority": "Prioridad",
+    "status": "Estado",
+    "created_at": "Fecha de Creación"
+  },
+  "modals": {
+    "confirmDelete": "¿Estás seguro que deseas eliminar?",
+    "taskCreation": "Crear Nueva Tarea",
+    "taskEdit": "Editar Tarea",
+    "noteCreation": "Crear Nueva Nota",
+    "noteEdit": "Editar Nota",
+    "updateNote": "Actualizar Nota",
+    "createNote": "Crear Nota",
+    "submitting": "Enviando..."
+  },
+  "forms": {
+    "title": "Título",
+    "description": "Descripción",
+    "dueDate": "Fecha de Vencimiento",
+    "priority": "Prioridad",
+    "status": "Estado",
+    "assignedTo": "Asignado a",
+    "category": "Categoría",
+    "tags": "Etiquetas",
+    "required": "Este campo es obligatorio",
+    "optional": "Opcional",
+    "noteTitle": "Título de la Nota",
+    "noteContent": "Contenido de la Nota",
+    "noteTitlePlaceholder": "Ingresar título de la nota",
+    "noteContentPlaceholder": "Ingresar contenido de la nota"
+  },
+  "dateFormats": {
+    "long": "EEEE, d 'de' MMMM 'de' yyyy",
+    "short": "d MMM yyyy",
+    "monthYear": "MMMM 'de' yyyy",
+    "dayMonth": "d 'de' MMMM",
+    "time": "H:mm",
+    "dateTime": "d MMM yyyy, H:mm"
+  },
+  "taskViews": {
+    "project": {
+      "withName": "Actualmente estás viendo todas las tareas asociadas con el proyecto \"{{projectName}}\". Puedes organizar tareas dentro de este proyecto, establecer su prioridad y seguir su finalización. Utiliza este espacio para centrarte en las tareas que pertenecen específicamente a este proyecto.",
+      "noName": "Estás viendo tareas para un proyecto específico. Utiliza este espacio para gestionar y seguir las tareas asociadas a este proyecto."
+    },
+    "today": "Estas son las tareas que vencen hoy o tareas que has programado para atención inmediata. Usa esta vista para concentrarte en lo que debe completarse hoy. Marca tareas como completadas, actualiza su estado o ajusta sus fechas de vencimiento si es necesario.",
+    "inbox": "La bandeja de entrada es donde viven todas las tareas sin categorizar. Las tareas que no han sido asignadas a un proyecto o no tienen una fecha de vencimiento aparecerán aquí. Esta es tu área para \"volcar ideas\" donde puedes anotar rápidamente tareas y organizarlas más tarde.",
+    "next": "Esta vista muestra todas las tareas que son accionables en un futuro cercano. Estas tareas están listas para ser trabajadas a continuación y no tienen plazos a largo plazo. Es un buen lugar para concentrarte cuando buscas hacer un progreso rápido en las tareas.",
+    "upcoming": "Esta vista destaca las tareas programadas para la próxima semana. Te ayuda a prepararte y adelantarte a los plazos, dándote una visión general del trabajo que necesitas abordar en el futuro cercano. Las tareas con fechas de vencimiento dentro de los próximos 7 días aparecerán aquí.",
+    "someday": "La vista \"Algún día\" es para tareas que no son urgentes y no tienen una fecha de vencimiento específica. Estas son tareas que tal vez quieras hacer en algún momento, pero no son una prioridad ahora mismo. Utiliza esta sección para realizar un seguimiento de ideas u objetivos a largo plazo.",
+    "completed": "Aquí puedes ver todas las tareas que has completado. Es una excelente manera de revisar tus logros y reflexionar sobre el trabajo que has terminado. También puedes encontrar tareas que pueden necesitar ser desarchivadas o referenciadas en el futuro.",
+    "allTasks": "Estás viendo todas las tareas. Esto incluye tareas de diferentes proyectos, tareas sin fechas de vencimiento específicas y tareas con diferentes niveles de prioridad. Utiliza esta vista para una mirada general a todo en tu lista de pendientes."
+  },
+  "success": {
+    "noteUpdated": "¡Nota actualizada con éxito!",
+    "noteCreated": "¡Nota creada con éxito!"
+  }
+}

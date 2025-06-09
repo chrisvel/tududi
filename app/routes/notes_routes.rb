@@ -60,7 +60,16 @@ class Sinatra::Application
     end
 
     if note.save
-      update_note_tags(note, note_data[:tags])
+      # Handle tags array whether it's an array of strings or an array of objects with name property
+      tag_names = if note_data[:tags].is_a?(Array) && note_data[:tags].all? { |t| t.is_a?(String) }
+                    note_data[:tags]
+                  elsif note_data[:tags].is_a?(Array) && note_data[:tags].all? { |t| t.is_a?(Hash) && t[:name] }
+                    note_data[:tags].map { |t| t[:name] }
+                  else
+                    []
+                  end
+
+      update_note_tags(note, tag_names)
       status 201
       note.to_json(include: :tags)
     else
@@ -91,7 +100,18 @@ class Sinatra::Application
     end
 
     if note.update(note_attributes)
-      update_note_tags(note, request_data['tags'])
+      # Handle tags array whether it's an array of strings or an array of objects with name property
+      tag_names = if request_data['tags'].is_a?(Array) && request_data['tags'].all? { |t| t.is_a?(String) }
+                    request_data['tags']
+                  elsif request_data['tags'].is_a?(Array) && request_data['tags'].all? do |t|
+                          t.is_a?(Hash) && t['name']
+                        end
+                    request_data['tags'].map { |t| t['name'] }
+                  else
+                    []
+                  end
+
+      update_note_tags(note, tag_names)
       note.to_json(include: :tags)
     else
       status 400

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import "./styles/tailwind.css";
@@ -6,8 +7,8 @@ import ProjectModal from "./components/Project/ProjectModal";
 import NoteModal from "./components/Note/NoteModal";
 import AreaModal from "./components/Area/AreaModal";
 import TagModal from "./components/Tag/TagModal";
+import SimplifiedTaskModal from "./components/Task/SimplifiedTaskModal";
 import TaskModal from "./components/Task/TaskModal";
-
 import { Note } from "./entities/Note";
 import { Area } from "./entities/Area";
 import { Tag } from "./entities/Tag";
@@ -36,11 +37,14 @@ const Layout: React.FC<LayoutProps> = ({
   toggleDarkMode,
   children,
 }) => {
+  const { t } = useTranslation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+  const [taskModalType, setTaskModalType] = useState<'simplified' | 'full'>('simplified');
 
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
@@ -90,9 +94,10 @@ const Layout: React.FC<LayoutProps> = ({
     },
   } = useStore();
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(
-    window.innerWidth >= 1024
-  );
+  const openTaskModal = (type: 'simplified' | 'full' = 'simplified') => {
+    setIsTaskModalOpen(true);
+    setTaskModalType(type);
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -141,10 +146,6 @@ const Layout: React.FC<LayoutProps> = ({
   const closeNoteModal = () => {
     setIsNoteModalOpen(false);
     setSelectedNote(null);
-  };
-
-  const openTaskModal = () => {
-    setIsTaskModalOpen(true);
   };
 
   const closeTaskModal = () => {
@@ -311,7 +312,7 @@ const Layout: React.FC<LayoutProps> = ({
           className={`flex-1 flex items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
         >
           <div className="text-xl text-gray-700 dark:text-gray-200">
-            Loading...
+            {t('common.loading')}
           </div>
         </div>
       </div>
@@ -347,7 +348,7 @@ const Layout: React.FC<LayoutProps> = ({
         <div
           className={`flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
         >
-          <div className="text-xl text-red-500">Error fetching data.</div>
+          <div className="text-xl text-red-500">{t('errors.somethingWentWrong')}</div>
         </div>
       </div>
     );
@@ -389,14 +390,13 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </div>
 
-      {/* Floating Action Button */}
       <button
-        onClick={openTaskModal}
-        className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg focus:outline-none transform transition-transform duration-200 hover:scale-110"
-        aria-label="Open Task Modal"
+        onClick={() => openTaskModal('simplified')}
+        className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg focus:outline-none transform transition-transform duration-200 hover:scale-110 z-50"
+        aria-label="Quick Capture"
+        title={t('inbox.captureThought')}
       >
         <svg
-          xmlns="http://www.w3.org/2000/svg"
           className="h-6 w-6"
           fill="none"
           viewBox="0 0 24 24"
@@ -411,25 +411,27 @@ const Layout: React.FC<LayoutProps> = ({
         </svg>
       </button>
 
-      {/* Modals */}
       {isTaskModalOpen && (
-        <TaskModal
-          isOpen={isTaskModalOpen}
-          onClose={closeTaskModal}
-          task={
-            newTask || {
-              id: undefined,
+        taskModalType === 'simplified' ? (
+          <SimplifiedTaskModal
+            isOpen={isTaskModalOpen}
+            onClose={closeTaskModal}
+            onSave={handleSaveTask}
+          />
+        ) : (
+          <TaskModal
+            isOpen={isTaskModalOpen}
+            onClose={closeTaskModal}
+            task={{
               name: "",
               status: "not_started",
-              project_id: undefined,
-              tags: [],
-            }
-          }
-          onSave={handleSaveTask}
-          onDelete={() => {}}
-          projects={projects}
-          onCreateProject={handleCreateProject}
-        />
+            }}
+            onSave={handleSaveTask}
+            onDelete={() => {}}
+            projects={projects}
+            onCreateProject={handleCreateProject}
+          />
+        )
       )}
 
       {isProjectModalOpen && (

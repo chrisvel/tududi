@@ -1,0 +1,63 @@
+{
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "submit": "Absenden",
+    "close": "Schließen",
+    "loading": "Wird geladen..."
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "projects": "Projekte",
+    "tasks": "Aufgaben",
+    "calendar": "Kalender",
+    "notes": "Notizen",
+    "settings": "Einstellungen",
+    "areas": "Bereiche",
+    "tags": "Tags",
+    "today": "Heute",
+    "upcoming": "Demnächst",
+    "nextActions": "Nächste Aktionen",
+    "inbox": "Eingang",
+    "completed": "Abgeschlossen",
+    "allTasks": "Alle Aufgaben"
+  },
+  "forms": {
+    "title": "Titel",
+    "description": "Beschreibung",
+    "tags": "Tags",
+    "required": "Dieses Feld ist erforderlich",
+    "optional": "Optional",
+    "noteTitle": "Notiz-Titel",
+    "noteContent": "Notiz-Inhalt",
+    "noteTitlePlaceholder": "Notiz-Titel eingeben",
+    "noteContentPlaceholder": "Notiz-Inhalt eingeben"
+  },
+  "modals": {
+    "updateNote": "Notiz aktualisieren",
+    "createNote": "Notiz erstellen",
+    "submitting": "Wird übermittelt...",
+    "noteCreation": "Neue Notiz erstellen",
+    "noteEdit": "Notiz bearbeiten"
+  },
+  "errors": {
+    "noteTitleRequired": "Notiz-Titel ist erforderlich.",
+    "failedToLoadTags": "Fehler beim Laden der verfügbaren Tags.",
+    "failedToSaveNote": "Fehler beim Speichern der Notiz."
+  },
+  "success": {
+    "noteUpdated": "Notiz erfolgreich aktualisiert!",
+    "noteCreated": "Notiz erfolgreich erstellt!"
+  },
+  "notes": {
+    "title": "Notizen",
+    "loading": "Notizen werden geladen...",
+    "error": "Fehler beim Laden der Notizen",
+    "noNotesFound": "Keine Notizen gefunden",
+    "searchPlaceholder": "Notizen durchsuchen..."
+  }
+}
+
