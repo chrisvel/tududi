@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["app/frontend/**/*"]
+  "include": ["frontend/**/*"]
 }

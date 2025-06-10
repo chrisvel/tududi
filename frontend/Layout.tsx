@@ -267,6 +267,23 @@ const Layout: React.FC<LayoutProps> = ({
     closeTagModal();
   };
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/logout', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      if (response.ok) {
+        setCurrentUser(null);
+      } else {
+        console.error('Logout failed:', await response.json());
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
   const mainContentMarginLeft = isSidebarOpen ? "ml-72" : "ml-0";
 
   const isLoading =

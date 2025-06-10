@@ -5,6 +5,7 @@ import {
   useNavigate,
   Navigate,
   useLocation,
+  Outlet
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Login from "./components/Login";
@@ -152,41 +153,52 @@ const App: React.FC = () => {
 
   return (
     <Suspense fallback={<LoadingComponent />}>
+      <Routes>
+        <Route path="/login" element={!currentUser ? <Login /> : <Navigate to="/today" replace />} />
+        
+        {/* Protected Routes */}
         {currentUser ? (
-          <Layout
-            currentUser={currentUser}
-            setCurrentUser={setCurrentUser}
-            isDarkMode={isDarkMode}
-            toggleDarkMode={toggleDarkMode}
-          >
-            <Routes>
-            <Route path="/" element={<Navigate to="/today" replace />} />
-            <Route path="/today" element={<TasksToday />} />
-            <Route path="/tasks" element={
-                <Suspense fallback={<div className="p-4">{i18n.t('common.loading', 'Loading...')}</div>}>
-                  <Tasks />
-                </Suspense>
-              } />
-            <Route path="/inbox" element={<InboxItems />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/project/:id" element={<ProjectDetails />} />
-            <Route path="/areas" element={<Areas />} />
-            <Route path="/area/:id" element={<AreaDetails />} />
-            <Route path="/tags" element={<Tags />} />
-            <Route path="/tag/:id" element={<TagDetails />} />
-            <Route path="/notes" element={<Notes />} />
-            <Route path="/note/:id" element={<NoteDetails />} />
+          <>
             <Route
-              path="/profile"
-              element={<ProfileSettings currentUser={currentUser} />}
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+              element={
+                <Layout
+                  currentUser={currentUser}
+                  setCurrentUser={setCurrentUser}
+                  isDarkMode={isDarkMode}
+                  toggleDarkMode={toggleDarkMode}
+                >
+                  <Outlet />
+                </Layout>
+              }
+            >
+              <Route index element={<Navigate to="/today" replace />} />
+              <Route path="/today" element={<TasksToday />} />
+              <Route
+                path="/tasks"
+                element={
+                  <Suspense fallback={<div className="p-4">{i18n.t('common.loading', 'Loading...')}</div>}>
+                    <Tasks />
+                  </Suspense>
+                }
+              />
+              <Route path="/inbox" element={<InboxItems />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/project/:id" element={<ProjectDetails />} />
+              <Route path="/areas" element={<Areas />} />
+              <Route path="/area/:id" element={<AreaDetails />} />
+              <Route path="/tags" element={<Tags />} />
+              <Route path="/tag/:id" element={<TagDetails />} />
+              <Route path="/notes" element={<Notes />} />
+              <Route path="/note/:id" element={<NoteDetails />} />
+              <Route path="/profile" element={<ProfileSettings currentUser={currentUser} />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </>
         ) : (
-          <Login />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         )}
-      </Suspense>
+      </Routes>
+    </Suspense>
   );
 };
 

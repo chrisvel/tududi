@@ -49,19 +49,19 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("/logout", {
-        method: "GET",
-        credentials: "include",
+      const response = await fetch('/api/logout', {
+        method: 'GET',
+        credentials: 'include',
       });
-
+      
       if (response.ok) {
-        setCurrentUser(null); 
-        navigate("/login"); 
+        setCurrentUser(null);
+        navigate('/login');
       } else {
-        console.error("Failed to log out");
+        console.error('Logout failed:', await response.json());
       }
     } catch (error) {
-      console.error("Error logging out:", error);
+      console.error('Error during logout:', error);
     }
   };
 
@@ -105,18 +105,25 @@ const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg py-1 z-50">
+              <div
+                ref={dropdownRef}
+                className="absolute right-4 top-16 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 border border-gray-200 dark:border-gray-700"
+              >
                 <Link
                   to="/profile"
-                  className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  onClick={() => setIsDropdownOpen(false)}
                 >
-                  {t('navigation.profile')}
+                  {t('nav.profile', 'Profile Settings')}
                 </Link>
                 <button
-                  onClick={handleLogout}
-                  className="w-full text-left block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
-                  {t('navigation.logout')}
+                  {t('nav.logout', 'Logout')}
                 </button>
               </div>
             )}
