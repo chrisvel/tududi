@@ -22,20 +22,21 @@ docker_tag="${version:1}"
 echo "Creating git tag: $version"
 # git tag "$version"
 
-# Build the docker image with the version tag
-echo "Building docker image: chrisvel/tududi:$docker_tag"
-docker build -t chrisvel/tududi:"$docker_tag" .
+# Ensure buildx is available and setup a new builder if needed
+echo "Setting up Docker buildx for multi-architecture builds"
+docker buildx ls | grep -q mybuilder || docker buildx create --name mybuilder --use
+docker buildx inspect --bootstrap
 
-# Build the docker image with the latest tag
-echo "Building docker image: chrisvel/tududi:latest"
-docker build -t chrisvel/tududi:latest .
+# Build and push multi-architecture images (ARM64 and AMD64) with the version tag
+echo "Building and pushing multi-architecture docker image: chrisvel/tududi:$docker_tag"
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t chrisvel/tududi:"$docker_tag" \
+  --push .
 
-# Push the docker image with the version tag
-echo "Pushing docker image: chrisvel/tududi:$docker_tag"
-docker push chrisvel/tududi:"$docker_tag"
-
-# Push the docker image with the latest tag
-echo "Pushing docker image: chrisvel/tududi:latest"
-docker push chrisvel/tududi:latest
+# Build and push multi-architecture images (ARM64 and AMD64) with the latest tag
+echo "Building and pushing multi-architecture docker image: chrisvel/tududi:latest"
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t chrisvel/tududi:latest \
+  --push .
 
 echo "Deployment complete!"
