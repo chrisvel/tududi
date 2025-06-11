@@ -15,6 +15,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { fetchTasks, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchProjects } from "../../utils/projectsService";
+import { loadInboxItemsToStore } from "../../utils/inboxService";
 import { Task } from "../../entities/Task";
 import { useStore } from "../../store/useStore";
 import TaskList from "./TaskList";
@@ -72,6 +73,13 @@ const TasksToday: React.FC = () => {
       
       setIsLoading(true);
       setIsError(false);
+      
+      try {
+        // Load inbox items to ensure the notification appears correctly
+        loadInboxItemsToStore();
+      } catch (error) {
+        console.error("Failed to load inbox items:", error);
+      }
       
       try {
         // Load projects first
