@@ -54,22 +54,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   useEffect(() => {
     const loadTags = async () => {
-      setTagsLoading(true);
-      try {
-        if (availableTags.length === 0) {
+      if (isOpen && availableTags.length === 0) {
+        setTagsLoading(true);
+        try {
           const fetchedTags = await fetchTags();
           setAvailableTags(fetchedTags);
+        } catch (error) {
+          setTagsError(true);
+          console.error("Error fetching tags:", error);
+        } finally {
+          setTagsLoading(false);
         }
-      } catch (error) {
-        setTagsError(true);
-        console.error("Error fetching tags:", error);
-      } finally {
-        setTagsLoading(false);
       }
     };
 
     loadTags();
-  }, [availableTags.length, setAvailableTags, setTagsError, setTagsLoading]);
+  }, [isOpen, availableTags.length]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
