@@ -20,21 +20,15 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Update internal tags state when initialTags prop changes
-  useEffect(() => {
-    console.log("TagInput received initialTags:", initialTags);
-    
+  useEffect(() => {    
     // Set the tags state with the initial tags
     if (initialTags && initialTags.length > 0) {
       // Simply set our internal state to match the initialTags
       setTags(initialTags);
-      console.log("Set tags to match initialTags:", initialTags);
     }
   }, [initialTags]);
   
-  // Clean up effect to notify parent when our tags state changes
   useEffect(() => {
-    // Notify parent of current state
-    console.log("TagInput internal tags state changed to:", tags);
     onTagsChange(tags);
   }, [tags, onTagsChange]);
 

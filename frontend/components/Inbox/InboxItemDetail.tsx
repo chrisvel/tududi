@@ -61,18 +61,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     // First close the dropdown
     setDropdownOpen(false);
     
-    // Use requestAnimationFrame for better timing than setTimeout
-    // This ensures the DOM has updated before we trigger the modal open
-    requestAnimationFrame(() => {
-      // To better prevent flicker, wait one extra frame
-      requestAnimationFrame(() => {
-        if (item.id !== undefined) {
-          openTaskModal(newTask, item.id);
-        } else {
-          openTaskModal(newTask);
-        }
-      });
-    });
+    // Use a simple timeout to ensure the dropdown closes before opening modal
+    setTimeout(() => {
+      if (item.id !== undefined) {
+        openTaskModal(newTask, item.id);
+      } else {
+        openTaskModal(newTask);
+      }
+    }, 50);
   };
   
   const handleConvertToProject = () => {
@@ -85,18 +81,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     // First close the dropdown
     setDropdownOpen(false);
     
-    // Use requestAnimationFrame for better timing than setTimeout
-    // This ensures the DOM has updated before we trigger the modal open
-    requestAnimationFrame(() => {
-      // To better prevent flicker, wait one extra frame
-      requestAnimationFrame(() => {
-        if (item.id !== undefined) {
-          openProjectModal(newProject, item.id);
-        } else {
-          openProjectModal(newProject);
-        }
-      });
-    });
+    // Use a simple timeout to ensure the dropdown closes before opening modal
+    setTimeout(() => {
+      if (item.id !== undefined) {
+        openProjectModal(newProject, item.id);
+      } else {
+        openProjectModal(newProject);
+      }
+    }, 50);
   };
   
   const handleConvertToNote = async () => {
@@ -136,18 +128,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     // First close the dropdown
     setDropdownOpen(false);
     
-    // Use requestAnimationFrame for better timing than setTimeout
-    // This ensures the DOM has updated before we trigger the modal open
-    requestAnimationFrame(() => {
-      // To better prevent flicker, wait one extra frame
-      requestAnimationFrame(() => {
-        if (item.id !== undefined) {
-          openNoteModal(newNote, item.id);
-        } else {
-          openNoteModal(newNote);
-        }
-      });
-    });
+    // Use a simple timeout to ensure the dropdown closes before opening modal
+    setTimeout(() => {
+      if (item.id !== undefined) {
+        openNoteModal(newNote, item.id);
+      } else {
+        openNoteModal(newNote);
+      }
+    }, 50);
   };
   
   const formattedDate = item.created_at 

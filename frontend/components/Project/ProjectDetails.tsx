@@ -16,6 +16,7 @@ import { PriorityType, Task } from "../../entities/Task";
 import { fetchProjectById, updateProject, deleteProject } from "../../utils/projectsService";
 import { createTask, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchAreas } from "../../utils/areasService";
+import { isAuthError } from "../../utils/authUtils";
 import { CalendarDaysIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
 
 type PriorityStyles = Record<PriorityType, string> & { default: string };
@@ -67,7 +68,7 @@ const ProjectDetails: React.FC = () => {
   const handleTaskCreate = async (taskName: string) => {
     if (!project) {
       console.error("Cannot create task: Project is missing");
-      return;
+      throw new Error("Cannot create task: Project is missing");
     }
 
     try {
@@ -77,8 +78,13 @@ const ProjectDetails: React.FC = () => {
         project_id: project.id,
       });
       setTasks((prevTasks) => [...prevTasks, newTask]);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error creating task:", err);
+      // Check if it's an authentication error
+      if (isAuthError(err)) {
+        return;
+      }
+      throw err; // Re-throw to allow proper error handling by NewTask component
     }
   };
 

@@ -1,8 +1,12 @@
 import { Note } from "../entities/Note";
+import { handleAuthResponse, getDefaultHeaders, getPostHeaders } from "./authUtils";
 
 export const fetchNotes = async (): Promise<Note[]> => {
-  const response = await fetch("/api/notes");
-  if (!response.ok) throw new Error('Failed to fetch notes.');
+  const response = await fetch("/api/notes", {
+    credentials: 'include',
+    headers: getDefaultHeaders(),
+  });
+  await handleAuthResponse(response, 'Failed to fetch notes.');
 
   return await response.json();
 };
@@ -12,16 +16,12 @@ export const createNote = async (noteData: Note): Promise<Note> => {
     console.log("Creating note with data:", JSON.stringify(noteData, null, 2));
     const response = await fetch('/api/note', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      headers: getPostHeaders(),
       body: JSON.stringify(noteData),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error creating note:", errorData);
-      throw new Error(`Failed to create note: ${JSON.stringify(errorData)}`);
-    }
-
+    await handleAuthResponse(response, 'Failed to create note.');
     return await response.json();
   } catch (error) {
     console.error("Exception in createNote:", error);
@@ -32,19 +32,21 @@ export const createNote = async (noteData: Note): Promise<Note> => {
 export const updateNote = async (noteId: number, noteData: Note): Promise<Note> => {
   const response = await fetch(`/api/note/${noteId}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    headers: getPostHeaders(),
     body: JSON.stringify(noteData),
   });
 
-  if (!response.ok) throw new Error('Failed to update note.');
-
+  await handleAuthResponse(response, 'Failed to update note.');
   return await response.json();
 };
 
 export const deleteNote = async (noteId: number): Promise<void> => {
   const response = await fetch(`/api/note/${noteId}`, {
     method: 'DELETE',
+    credentials: 'include',
+    headers: getDefaultHeaders(),
   });
 
-  if (!response.ok) throw new Error('Failed to delete note.');
+  await handleAuthResponse(response, 'Failed to delete note.');
 };

@@ -6,6 +6,8 @@ import { useToast } from '../Shared/ToastContext';
 
 interface ProfileSettingsProps {
   currentUser: { id: number; email: string };
+  isDarkMode?: boolean;
+  toggleDarkMode?: () => void;
 }
 
 interface Profile {
@@ -61,14 +63,14 @@ const formatFrequency = (frequency: string): string => {
  * Displays and manages user profile settings including appearance, language,
  * timezone, telegram integration, and task summary settings.
  */
-const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
+const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMode, toggleDarkMode }) => {
   const { t, i18n } = useTranslation();
   const { showSuccessToast, showErrorToast } = useToast();
   
   // State variables
   const [profile, setProfile] = useState<Profile | null>(null);
   const [formData, setFormData] = useState<Partial<Profile>>({
-    appearance: 'light',
+    appearance: isDarkMode ? 'dark' : 'light',
     language: 'en',
     timezone: 'UTC',
     avatar_image: '',
@@ -146,6 +148,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Handle appearance change immediately
+    if (name === 'appearance' && toggleDarkMode) {
+      const shouldBeDark = value === 'dark';
+      if (shouldBeDark !== isDarkMode) {
+        toggleDarkMode();
+      }
+    }
     
     // Handle language change immediately
     if (name === 'language' && value !== i18n.language) {
@@ -231,7 +241,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
         const data = await response.json();
         setProfile(data);
         setFormData({
-          appearance: data.appearance || 'light',
+          appearance: isDarkMode ? 'dark' : 'light', // Use current app state instead of saved preference
           language: data.language || 'en',
           timezone: data.timezone || 'UTC',
           avatar_image: data.avatar_image || '',
@@ -283,6 +293,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
   useEffect(() => {
     console.log(`Component refreshed with key: ${updateKey}, language: ${i18n.language}`);
   }, [updateKey, i18n.language]);
+
+  // Update appearance in form data when dark mode changes
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, appearance: isDarkMode ? 'dark' : 'light' }));
+  }, [isDarkMode]);
   
   useEffect(() => {
     const handleLanguageChanged = (lng: string) => {
@@ -314,15 +329,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser }) => {
     };
   }, []);
 
-  const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, avatar_image: reader.result as string }));
-      };
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
   
   const handleSetupTelegram = async () => {
     setTelegramSetupStatus('loading');

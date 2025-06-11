@@ -4,11 +4,12 @@ import { InboxItem } from "../../entities/InboxItem";
 import { useToast } from "../Shared/ToastContext";
 import { useTranslation } from "react-i18next";
 import { createInboxItemWithStore } from "../../utils/inboxService";
+import { isAuthError } from "../../utils/authUtils";
 
 interface SimplifiedTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (task: Task) => void;
+  onSave: (task: Task) => Promise<void>;
   initialText?: string;
   editMode?: boolean;
   onEdit?: (text: string) => Promise<void>;
@@ -63,12 +64,21 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
           status: "not_started",
         };
         
-        onSave(newTask);
-        showSuccessToast(t('task.createSuccess'));
-        setInputText('');
+        try {
+          await onSave(newTask);
+          showSuccessToast(t('task.createSuccess'));
+          setInputText('');
+          handleClose();
+        } catch (error: any) {
+          // If it's an auth error, don't show error toast (user will be redirected)
+          if (isAuthError(error)) {
+            return;
+          }
+          throw error;
+        }
       } else {
         try {
-          const newItem = await createInboxItemWithStore(inputText.trim());
+          await createInboxItemWithStore(inputText.trim());
           
           showSuccessToast(t('inbox.itemAdded'));
           
@@ -86,6 +96,7 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
       } else {
         showErrorToast(saveMode === 'task' ? t('task.createError') : t('inbox.addError'));
       }
+    } finally {
       setIsSaving(false);
     }
   }, [inputText, isSaving, editMode, onEdit, saveMode, onSave, showSuccessToast, showErrorToast, t, onClose]);

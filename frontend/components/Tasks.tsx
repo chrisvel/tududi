@@ -7,6 +7,7 @@ import { Task } from "../entities/Task";
 import { Project } from "../entities/Project";
 import { getTitleAndIcon } from "./Task/getTitleAndIcon";
 import { getDescription } from "./Task/getDescription";
+import { createTask } from "../utils/tasksService";
 import {
   TagIcon,
   XMarkIcon,
@@ -134,23 +135,13 @@ const Tasks: React.FC = () => {
 
   const handleTaskCreate = async (taskData: Partial<Task>) => {
     try {
-      const response = await fetch("/api/task", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(taskData),
-      });
-
-      if (response.ok) {
-        const newTask = await response.json();
-        setTasks((prevTasks) => [newTask, ...prevTasks]);
-      } else {
-        const errorData = await response.json();
-        console.error("Failed to create task:", errorData.error);
-        setError("Failed to create task.");
-      }
+      const newTask = await createTask(taskData as Task);
+      // Add the new task optimistically to avoid race conditions
+      setTasks((prevTasks) => [newTask, ...prevTasks]);
     } catch (error) {
       console.error("Error creating task:", error);
       setError("Error creating task.");
+      throw error; // Re-throw to allow proper error handling
     }
   };
 
@@ -314,8 +305,8 @@ const Tasks: React.FC = () => {
             {/* New Task Form */}
             {isNewTaskAllowed() && (
               <NewTask
-                onTaskCreate={(taskName: string) =>
-                  handleTaskCreate({ name: taskName, status: "not_started" })
+                onTaskCreate={async (taskName: string) =>
+                  await handleTaskCreate({ name: taskName, status: "not_started" })
                 }
               />
             )}

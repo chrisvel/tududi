@@ -1,11 +1,17 @@
 import { InboxItem } from "../entities/InboxItem";
 import { useStore } from "../store/useStore";
+import { handleAuthResponse } from "./authUtils";
 
 // API functions
 export const fetchInboxItems = async (): Promise<InboxItem[]> => {
-  const response = await fetch('/api/inbox');
+  const response = await fetch('/api/inbox', {
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
   
-  if (!response.ok) throw new Error('Failed to fetch inbox items.');
+  await handleAuthResponse(response, 'Failed to fetch inbox items.');
   
   const result = await response.json();
   
@@ -19,43 +25,56 @@ export const fetchInboxItems = async (): Promise<InboxItem[]> => {
 export const createInboxItem = async (content: string, source: string = 'tududi'): Promise<InboxItem> => {
   const response = await fetch('/api/inbox', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     body: JSON.stringify({ content, source }),
   });
 
-  if (!response.ok) throw new Error('Failed to create inbox item.');
-
+  await handleAuthResponse(response, 'Failed to create inbox item.');
   return await response.json();
 };
 
 export const updateInboxItem = async (itemId: number, content: string): Promise<InboxItem> => {
   const response = await fetch(`/api/inbox/${itemId}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     body: JSON.stringify({ content }),
   });
 
-  if (!response.ok) throw new Error('Failed to update inbox item.');
-
+  await handleAuthResponse(response, 'Failed to update inbox item.');
   return await response.json();
 };
 
 export const processInboxItem = async (itemId: number): Promise<InboxItem> => {
   const response = await fetch(`/api/inbox/${itemId}/process`, {
     method: 'PATCH',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
   });
 
-  if (!response.ok) throw new Error('Failed to process inbox item.');
-
+  await handleAuthResponse(response, 'Failed to process inbox item.');
   return await response.json();
 };
 
 export const deleteInboxItem = async (itemId: number): Promise<void> => {
   const response = await fetch(`/api/inbox/${itemId}`, {
     method: 'DELETE',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
   });
 
-  if (!response.ok) throw new Error('Failed to delete inbox item.');
+  await handleAuthResponse(response, 'Failed to delete inbox item.');
 };
 
 // Track last check time to detect new items

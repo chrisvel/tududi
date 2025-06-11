@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { InboxItem } from '../../entities/InboxItem';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
@@ -30,7 +29,7 @@ const InboxItems: React.FC = () => {
   const { showSuccessToast, showErrorToast } = useToast();
   
   // Access store data
-  const { inboxItems, isLoading, isError } = useStore(state => state.inboxStore);
+  const { inboxItems, isLoading } = useStore(state => state.inboxStore);
   
   // Modal states
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -51,7 +50,6 @@ const InboxItems: React.FC = () => {
   
   // Fetch projects for modals
   const [projects, setProjects] = useState<Project[]>([]);
-  const [areas, setAreas] = useState<any[]>([]);
   
   // Wrapped in useCallback to prevent dependency issues in useEffect
   const refreshInboxItems = useCallback(() => {
@@ -128,7 +126,7 @@ const InboxItems: React.FC = () => {
     }
   };
   
-  const handleUpdateItem = async (id: number, content: string): Promise<void> => {
+  const handleUpdateItem = async (id: number): Promise<void> => {
     // When edit button is clicked, we open the SimplifiedTaskModal instead of doing inline editing
     setItemToEdit(id);
     setIsEditModalOpen(true);
@@ -166,9 +164,7 @@ const InboxItems: React.FC = () => {
       setCurrentConversionItemId(inboxItemId);
     }
     
-    requestAnimationFrame(() => {
-      setIsTaskModalOpen(true);
-    });
+    setIsTaskModalOpen(true);
   };
   
   const handleOpenProjectModal = (project: Project | null, inboxItemId?: number) => {
@@ -178,9 +174,7 @@ const InboxItems: React.FC = () => {
       setCurrentConversionItemId(inboxItemId);
     }
     
-    requestAnimationFrame(() => {
-      setIsProjectModalOpen(true);
-    });
+    setIsProjectModalOpen(true);
   };
   
   const handleOpenNoteModal = (note: Note | null, inboxItemId?: number) => {
@@ -200,9 +194,7 @@ const InboxItems: React.FC = () => {
       setCurrentConversionItemId(inboxItemId);
     }
     
-    requestAnimationFrame(() => {
-      setIsNoteModalOpen(true);
-    });
+    setIsNoteModalOpen(true);
   };
   
   const handleSaveTask = async (task: Task) => {
@@ -331,16 +323,10 @@ const InboxItems: React.FC = () => {
       
       {/* Task Modal - Always render it but control visibility with isOpen */}
       <TaskModal
-        isOpen={isTaskModalOpen && taskToEdit !== null}
+        isOpen={isTaskModalOpen}
         onClose={() => {
-          // First set the modal to not open, then clear the task
           setIsTaskModalOpen(false);
-          // Clear task data after modal is closed
-          setTimeout(() => {
-            if (!isTaskModalOpen) {
-              setTaskToEdit(null);
-            }
-          }, 300); // Match the animation duration in TaskModal
+          setTaskToEdit(null);
         }}
         task={taskToEdit || { name: '', status: 'not_started', priority: 'medium' }}
         onSave={handleSaveTask}
@@ -351,34 +337,22 @@ const InboxItems: React.FC = () => {
       
       {/* Project Modal - Always render it but control visibility with isOpen */}
       <ProjectModal
-        isOpen={isProjectModalOpen && projectToEdit !== null}
+        isOpen={isProjectModalOpen}
         onClose={() => {
-          // First set the modal to not open, then clear the project
           setIsProjectModalOpen(false);
-          // Clear project data after modal is closed
-          setTimeout(() => {
-            if (!isProjectModalOpen) {
-              setProjectToEdit(null);
-            }
-          }, 300); // Match the animation duration
+          setProjectToEdit(null);
         }}
         onSave={handleSaveProject}
         project={projectToEdit || undefined}
-        areas={areas}
+        areas={[]}
       />
       
       {/* Note Modal - Always render it but control visibility with isOpen */}
       <NoteModal
-        isOpen={isNoteModalOpen && noteToEdit !== null}
+        isOpen={isNoteModalOpen}
         onClose={() => {
-          // First set the modal to not open, then clear the note
           setIsNoteModalOpen(false);
-          // Clear note data after modal is closed
-          setTimeout(() => {
-            if (!isNoteModalOpen) {
-              setNoteToEdit(null);
-            }
-          }, 300); // Match the animation duration
+          setNoteToEdit(null);
         }}
         onSave={handleSaveNote}
         note={noteToEdit || { title: '', content: '' }}
@@ -392,7 +366,7 @@ const InboxItems: React.FC = () => {
             setIsEditModalOpen(false);
             setItemToEdit(null);
           }}
-          onSave={() => {}} // Not used in edit mode
+          onSave={async () => {}} // Not used in edit mode
           initialText={inboxItems.find(item => item.id === itemToEdit)?.content || ""}
           editMode={true}
           onEdit={handleSaveEditedItem}

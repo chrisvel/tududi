@@ -1,10 +1,13 @@
 import { Metrics } from "../entities/Metrics";
 import { Task } from "../entities/Task";
+import { handleAuthResponse, getDefaultHeaders, getPostHeaders } from "./authUtils";
 
 export const fetchTasks = async (query = ''): Promise<{ tasks: Task[]; metrics: Metrics }> => {
-  const response = await fetch(`/api/tasks${query}`);
-  
-  if (!response.ok) throw new Error('Failed to fetch tasks.');
+  const response = await fetch(`/api/tasks${query}`, {
+    credentials: 'include',
+    headers: getDefaultHeaders(),
+  });
+  await handleAuthResponse(response, 'Failed to fetch tasks.');
 
   const result = await response.json();
   
@@ -22,31 +25,33 @@ export const fetchTasks = async (query = ''): Promise<{ tasks: Task[]; metrics: 
 export const createTask = async (taskData: Task): Promise<Task> => {
   const response = await fetch('/api/task', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    headers: getPostHeaders(),
     body: JSON.stringify(taskData),
   });
 
-  if (!response.ok) throw new Error('Failed to create task.');
-
+  await handleAuthResponse(response, 'Failed to create task.');
   return await response.json();
 };
 
 export const updateTask = async (taskId: number, taskData: Task): Promise<Task> => {
   const response = await fetch(`/api/task/${taskId}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    headers: getPostHeaders(),
     body: JSON.stringify(taskData),
   });
 
-  if (!response.ok) throw new Error('Failed to update task.');
-
+  await handleAuthResponse(response, 'Failed to update task.');
   return await response.json();
 };
 
 export const deleteTask = async (taskId: number): Promise<void> => {
   const response = await fetch(`/api/task/${taskId}`, {
     method: 'DELETE',
+    credentials: 'include',
+    headers: getDefaultHeaders(),
   });
 
-  if (!response.ok) throw new Error('Failed to delete task.');
+  await handleAuthResponse(response, 'Failed to delete task.');
 };

@@ -55,7 +55,7 @@ configure do
   set :session_secret, ENV.fetch('TUDUDI_SESSION_SECRET') { SecureRandom.hex(64) }
 
   # CORS configuration
-  set :allow_origin, ['http://localhost:8080', 'http://localhost:9292']
+  set :allow_origin, ['http://localhost:8080', 'http://localhost:9292', 'http://127.0.0.1:8080', 'http://127.0.0.1:9292']
   set :allow_methods, %i[get post patch delete options]
   set :allow_credentials, true
   set :max_age, '1728000'
@@ -78,10 +78,15 @@ configure do
   initialize_telegram_polling
 end
 
-# Rack Protection configuration
-use Rack::Protection,
-    except: %i[http_origin remote_token session_hijacking remote_referrer],
-    origin_whitelist: ['http://localhost:8080', 'http://localhost:9292']
+# Rack Protection configuration - completely disable for development
+if development?
+  # Disable Rack::Protection completely in development to avoid CSRF issues
+  set :protection, false
+else
+  use Rack::Protection,
+      except: %i[remote_token session_hijacking remote_referrer],
+      origin_whitelist: ['http://localhost:8080', 'http://localhost:9292', 'http://127.0.0.1:8080', 'http://127.0.0.1:9292']
+end
 
 before do
   # Handle CORS preflight requests

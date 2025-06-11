@@ -1,6 +1,7 @@
 /**
  * Service for URL-related operations like extracting titles from web pages
  */
+import { handleAuthResponse } from "./authUtils";
 
 export interface UrlTitleResult {
   url: string;
@@ -16,12 +17,14 @@ export interface UrlTitleResult {
  */
 export const extractUrlTitle = async (url: string): Promise<UrlTitleResult> => {
   try {
-    const response = await fetch(`/api/url/title?url=${encodeURIComponent(url)}`);
+    const response = await fetch(`/api/url/title?url=${encodeURIComponent(url)}`, {
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
     
-    if (!response.ok) {
-      throw new Error('Failed to extract URL title');
-    }
-    
+    await handleAuthResponse(response, 'Failed to extract URL title');
     return await response.json();
   } catch (error) {
     console.error('Error extracting URL title:', error);
@@ -38,14 +41,15 @@ export const extractTitleFromText = async (text: string): Promise<UrlTitleResult
   try {
     const response = await fetch('/api/url/extract-from-text', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
       body: JSON.stringify({ text }),
     });
     
-    if (!response.ok) {
-      throw new Error('Failed to extract title from text');
-    }
-    
+    await handleAuthResponse(response, 'Failed to extract title from text');
     const result = await response.json();
     
     if (result.found === false) {

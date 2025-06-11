@@ -40,26 +40,13 @@ const App: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log("App component - i18n initialized:", i18n.isInitialized);
-    console.log("App component - Current language:", i18n.language);
-    console.log("App component - Has translation loaded:", i18n.hasResourceBundle(i18n.language, 'translation'));
-    
-    // Force reload translations for the current language
     if (i18n.isInitialized) {
-      // Create a direct fetch to verify the translation file is accessible
       fetch(`/locales/${i18n.language}/translation.json`)
         .then(response => {
-          console.log(`Translation file fetch response: ${response.status} ${response.statusText}`);
-          if (!response.ok) {
-            console.error(`Failed to fetch translation file: ${response.status} ${response.statusText}`);
-          }
           return response.json();
         })
         .then(data => {
-          console.log("Translation file content retrieved manually:", Object.keys(data));
-          // Force add the resource bundle
           i18n.addResourceBundle(i18n.language, 'translation', data, true, true);
-          console.log("Resource bundle manually added for:", i18n.language);
         })
         .catch(error => {
           console.error("Error manually fetching translation file:", error);
@@ -74,20 +61,22 @@ const App: React.FC = () => {
             Accept: "application/json",
           },
         });
+        
+        if (!response.ok) {
+          if (response.status === 401) {
+            console.log("User not authenticated, redirecting to login");
+            navigate("/login");
+            return;
+          }
+          throw new Error(`Failed to fetch user: ${response.status}`);
+        }
+        
         const data = await response.json();
         if (data.user) {
           setCurrentUser(data.user);
           
-          // Set the language based on user's profile if available
           if (data.user.language) {
-            console.log("Setting language from user profile:", data.user.language);
             i18n.changeLanguage(data.user.language)
-              .then(() => {
-                console.log("Language changed to:", i18n.language);
-                // After changing language, verify resource bundle
-                console.log("Has resource bundle after change:", 
-                  i18n.hasResourceBundle(i18n.language, 'translation'));
-              })
               .catch(err => console.error("Error changing language:", err));
           }
         } else {
@@ -104,18 +93,18 @@ const App: React.FC = () => {
     fetchCurrentUser();
   }, [navigate]);
 
-  const toggleDarkMode = () => {
-    const newValue = !isDarkMode;
-    setIsDarkMode(newValue);
-    localStorage.setItem("isDarkMode", JSON.stringify(newValue));
-  };
-
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const storedPreference = localStorage.getItem("isDarkMode");
     return storedPreference !== null
       ? storedPreference === "true"
       : window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+
+  const toggleDarkMode = () => {
+    const newValue = !isDarkMode;
+    setIsDarkMode(newValue);
+    localStorage.setItem("isDarkMode", JSON.stringify(newValue));
+  };
 
   useEffect(() => {
     const updateTheme = () => {
@@ -190,7 +179,7 @@ const App: React.FC = () => {
               <Route path="/tag/:id" element={<TagDetails />} />
               <Route path="/notes" element={<Notes />} />
               <Route path="/note/:id" element={<NoteDetails />} />
-              <Route path="/profile" element={<ProfileSettings currentUser={currentUser} />} />
+              <Route path="/profile" element={<ProfileSettings currentUser={currentUser} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </>

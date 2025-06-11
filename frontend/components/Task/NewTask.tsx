@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 
 interface NewTaskProps {
-  onTaskCreate: (taskName: string) => void;
+  onTaskCreate: (taskName: string) => Promise<void>;
 }
 
 const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
@@ -18,12 +18,15 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
 
   const handleKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && taskName.trim()) {
+      const taskText = taskName.trim();
+      setTaskName('');
+      
       try {
-        await onTaskCreate(taskName.trim());
-        setTaskName('');
+        await onTaskCreate(taskText);
         showSuccessToast(t('success.taskCreated', 'Task created successfully!'));
       } catch (error) {
         console.error('Error creating task:', error);
+        setTaskName(taskText);
         showErrorToast(t('errors.taskCreate', 'Failed to create task.'));
       }
     }

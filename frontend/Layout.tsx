@@ -20,7 +20,8 @@ import { fetchNotes, createNote, updateNote } from "./utils/notesService";
 import { fetchAreas, createArea, updateArea } from "./utils/areasService";
 import { fetchTags, createTag, updateTag } from "./utils/tagsService";
 import { fetchProjects, createProject, updateProject } from "./utils/projectsService";
-import { fetchTasks, createTask, updateTask } from "./utils/tasksService";
+import { createTask, updateTask } from "./utils/tasksService";
+import { isAuthError } from "./utils/authUtils";
 
 interface LayoutProps {
   currentUser: User;
@@ -69,8 +70,6 @@ const Layout: React.FC<LayoutProps> = ({
       isError: isAreasError,
     },
     tasksStore: {
-      tasks,
-      setTasks,
       setLoading: setTasksLoading,
       setError: setTasksError,
       isLoading: isTasksLoading,
@@ -189,10 +188,15 @@ const Layout: React.FC<LayoutProps> = ({
         await createNote(noteData);
       }
       loadNotes();
-    } catch (error) {
+      closeNoteModal();
+    } catch (error: any) {
       console.error("Error saving note:", error);
+      // Don't close modal if there's an auth error (user will be redirected)
+      if (isAuthError(error)) {
+        return;
+      }
+      closeNoteModal();
     }
-    closeNoteModal();
   };
 
   const handleSaveTask = async (taskData: Task) => {
@@ -202,12 +206,19 @@ const Layout: React.FC<LayoutProps> = ({
       } else {
         await createTask(taskData);
       }
-      const { tasks } = await fetchTasks();
-      setTasks(tasks);
-    } catch (error) {
+      // Don't refetch all tasks here - let individual components handle their own state
+      // This prevents unnecessary re-renders and race conditions
+      closeTaskModal();
+    } catch (error: any) {
       console.error("Error saving task:", error);
+      // Don't close modal if there's an auth error (user will be redirected)
+      if (isAuthError(error)) {
+        return;
+      }
+      // For other errors, still close the modal but let the error bubble up
+      closeTaskModal();
+      throw error;
     }
-    closeTaskModal();
   };
 
   const handleCreateProject = async (name: string): Promise<Project> => {
@@ -232,10 +243,15 @@ const Layout: React.FC<LayoutProps> = ({
       }
       const projectsData = await fetchProjects();
       setProjects(projectsData);
-    } catch (error) {
+      closeProjectModal();
+    } catch (error: any) {
       console.error("Error saving project:", error);
+      // Don't close modal if there's an auth error (user will be redirected)
+      if (isAuthError(error)) {
+        return;
+      }
+      closeProjectModal();
     }
-    closeProjectModal();
   };
 
   const handleSaveArea = async (areaData: Partial<Area>) => {
@@ -246,10 +262,15 @@ const Layout: React.FC<LayoutProps> = ({
         await createArea(areaData);
       }
       loadAreas();
-    } catch (error) {
+      closeAreaModal();
+    } catch (error: any) {
       console.error("Error saving area:", error);
+      // Don't close modal if there's an auth error (user will be redirected)
+      if (isAuthError(error)) {
+        return;
+      }
+      closeAreaModal();
     }
-    closeAreaModal();
   };
 
   const handleSaveTag = async (tagData: Tag) => {
@@ -261,10 +282,15 @@ const Layout: React.FC<LayoutProps> = ({
       }
       const tagsData = await fetchTags();
       setTags(tagsData);
-    } catch (error) {
+      closeTagModal();
+    } catch (error: any) {
       console.error("Error saving tag:", error);
+      // Don't close modal if there's an auth error (user will be redirected)
+      if (isAuthError(error)) {
+        return;
+      }
+      closeTagModal();
     }
-    closeTagModal();
   };
 
   const handleLogout = async () => {
