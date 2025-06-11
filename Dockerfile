@@ -73,7 +73,7 @@ EXPOSE 9292
 ENV RACK_ENV=production \
     TUDUDI_INTERNAL_SSL_ENABLED=false \
     TUDUDI_SESSION_SECRET_LENGTH=64 \
-    TUDUDI_ALLOWED_ORIGINS="http://localhost:8080,http://localhost:9292" \
+    TUDUDI_ALLOWED_ORIGINS="http://localhost:8080,http://localhost:9292,http://127.0.0.1:8080,http://127.0.0.1:9292,http://0.0.0.0:8080,http://0.0.0.0:9292" \
     LANG=C.UTF-8 \
     TZ=UTC
 

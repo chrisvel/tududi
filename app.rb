@@ -54,8 +54,13 @@ configure do
                  same_site: secure_flag ? :none : :lax
   set :session_secret, ENV.fetch('TUDUDI_SESSION_SECRET') { SecureRandom.hex(64) }
 
-  # CORS configuration
-  set :allow_origin, ['http://localhost:8080', 'http://localhost:9292', 'http://127.0.0.1:8080', 'http://127.0.0.1:9292']
+  # CORS configuration - use environment variable in production, fallback to localhost for development
+  allowed_origins = if ENV['TUDUDI_ALLOWED_ORIGINS']
+                      ENV['TUDUDI_ALLOWED_ORIGINS'].split(',').map(&:strip)
+                    else
+                      ['http://localhost:8080', 'http://localhost:9292', 'http://127.0.0.1:8080', 'http://127.0.0.1:9292']
+                    end
+  set :allow_origin, allowed_origins
   set :allow_methods, %i[get post patch delete options]
   set :allow_credentials, true
   set :max_age, '1728000'
@@ -83,9 +88,10 @@ if development?
   # Disable Rack::Protection completely in development to avoid CSRF issues
   set :protection, false
 else
+  # Use the same allowed origins for Rack::Protection in production
   use Rack::Protection,
       except: %i[remote_token session_hijacking remote_referrer],
-      origin_whitelist: ['http://localhost:8080', 'http://localhost:9292', 'http://127.0.0.1:8080', 'http://127.0.0.1:9292']
+      origin_whitelist: settings.allow_origin
 end
 
 before do
@@ -105,7 +111,7 @@ before do
   end
 
   # Authentication check
-  require_login unless request.path_info == '/api/login'
+  require_login unless ['/api/login', '/api/health'].include?(request.path_info)
 end
 
 helpers do
@@ -159,6 +165,12 @@ end
 
 get '/' do
   erb :index
+end
+
+# Health check endpoint for Docker
+get '/api/health' do
+  content_type :json
+  { status: 'ok', timestamp: Time.now.iso8601 }.to_json
 end
 
 # Catch-all route for non-API routes to serve the SPA
