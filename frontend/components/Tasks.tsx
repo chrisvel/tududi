@@ -69,9 +69,9 @@ const Tasks: React.FC = () => {
       navigate({
         pathname: location.pathname,
         search: `?${params.toString()}`,
-      });
+      }, { replace: true });
     }
-  }, [location, navigate]);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -197,7 +197,7 @@ const Tasks: React.FC = () => {
     navigate({
       pathname: location.pathname,
       search: `?${params.toString()}`,
-    });
+    }, { replace: true });
     setDropdownOpen(false);
   };
 

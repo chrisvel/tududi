@@ -40,7 +40,7 @@ use Rack::MethodOverride
 
 set :database_file, './app/config/database.yml'
 set :views, proc { File.join(root, 'app/views') }
-set :public_folder, 'public'
+set :public_folder, production? ? 'dist' : 'public'
 
 configure do
   enable :cross_origin
@@ -110,8 +110,10 @@ before do
     response.headers['Access-Control-Expose-Headers'] = settings.expose_headers.join(', ')
   end
 
-  # Authentication check
-  require_login unless ['/api/login', '/api/health'].include?(request.path_info)
+  # Authentication check - only for API routes
+  if request.path_info.start_with?('/api/') && !['/api/login', '/api/health'].include?(request.path_info)
+    require_login
+  end
 end
 
 helpers do
@@ -164,7 +166,27 @@ helpers do
 end
 
 get '/' do
-  erb :index
+  if settings.production?
+    # In production, serve the built index.html directly
+    send_file File.join(settings.public_folder, 'index.html')
+  else
+    # In development, use ERB template
+    erb :index
+  end
+end
+
+# Catch-all route for SPA routing in production
+get '*' do
+  # Skip API routes and static assets
+  unless request.path_info.start_with?('/api/') || request.path_info.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg)$/)
+    if settings.production?
+      # In production, serve the built index.html for all SPA routes
+      send_file File.join(settings.public_folder, 'index.html')
+    else
+      # In development, use ERB template
+      erb :index
+    end
+  end
 end
 
 # Health check endpoint for Docker

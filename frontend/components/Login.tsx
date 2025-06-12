@@ -34,6 +34,9 @@ const Login: React.FC = () => {
           console.log('Language changed to:', i18n.language);
         }
         
+        // Trigger a custom event to notify App component
+        window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }));
+        
         navigate('/today');
       } else {
         setError(data.errors[0] || 'Login failed. Please try again.');

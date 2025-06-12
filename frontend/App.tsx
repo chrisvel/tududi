@@ -2,9 +2,7 @@ import React, { useEffect, useState, Suspense, lazy } from "react";
 import {
   Routes,
   Route,
-  useNavigate,
   Navigate,
-  useLocation,
   Outlet
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -36,8 +34,56 @@ const App: React.FC = () => {
   
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const location = useLocation();
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch("/api/current_user", {
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.log("User not authenticated, staying on current page");
+          setCurrentUser(null);
+          return;
+        }
+        throw new Error(`Failed to fetch user: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      if (data.user) {
+        setCurrentUser(data.user);
+      } else {
+        console.log("No user data received, staying on current page");
+        setCurrentUser(null);
+      }
+    } catch (err) {
+      console.error("Failed to fetch current user:", err);
+      setCurrentUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch user on mount
+    fetchCurrentUser();
+  }, []);
+
+  // Listen for login events to update user state
+  useEffect(() => {
+    const handleUserLoggedIn = (event: CustomEvent) => {
+      const user = event.detail;
+      console.log('User logged in event received:', user);
+      setCurrentUser(user);
+    };
+    
+    window.addEventListener('userLoggedIn', handleUserLoggedIn as EventListener);
+    return () => window.removeEventListener('userLoggedIn', handleUserLoggedIn as EventListener);
+  }, []);
 
   useEffect(() => {
     if (i18n.isInitialized) {
@@ -52,46 +98,7 @@ const App: React.FC = () => {
           console.error("Error manually fetching translation file:", error);
         });
     }
-    
-    const fetchCurrentUser = async () => {
-      try {
-        const response = await fetch("/api/current_user", {
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-        
-        if (!response.ok) {
-          if (response.status === 401) {
-            console.log("User not authenticated, redirecting to login");
-            navigate("/login");
-            return;
-          }
-          throw new Error(`Failed to fetch user: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        if (data.user) {
-          setCurrentUser(data.user);
-          
-          if (data.user.language) {
-            i18n.changeLanguage(data.user.language)
-              .catch(err => console.error("Error changing language:", err));
-          }
-        } else {
-          navigate("/login");
-        }
-      } catch (err) {
-        console.error("Failed to fetch current user:", err);
-        navigate("/login");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCurrentUser();
-  }, [navigate]);
+  }, [i18n.isInitialized]);
 
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const storedPreference = localStorage.getItem("isDarkMode");
@@ -122,11 +129,6 @@ const App: React.FC = () => {
     return () => mediaQuery.removeEventListener("change", mediaListener);
   }, [isDarkMode]);
 
-  useEffect(() => {
-    if (currentUser && location.pathname === "/") {
-      navigate("/today", { replace: true });
-    }
-  }, [currentUser, location.pathname, navigate]);
 
   const LoadingComponent = () => (
     <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
@@ -143,9 +145,6 @@ const App: React.FC = () => {
   return (
     <Suspense fallback={<LoadingComponent />}>
       <Routes>
-        <Route path="/login" element={!currentUser ? <Login /> : <Navigate to="/today" replace />} />
-        
-        {/* Protected Routes */}
         {currentUser ? (
           <>
             <Route
@@ -184,7 +183,11 @@ const App: React.FC = () => {
             </Route>
           </>
         ) : (
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </>
         )}
       </Routes>
     </Suspense>

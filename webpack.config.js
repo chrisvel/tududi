@@ -5,9 +5,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-// Force development mode for hot reloading
-process.env.NODE_ENV = 'development';
-
 module.exports = {
   entry: './frontend/index.tsx',
   output: {
@@ -23,9 +20,10 @@ module.exports = {
     static: {
       directory: path.join(__dirname, 'public'),
     },
-    hot: true,
-    watchFiles: ['frontend/**/*'],
+    hot: isDevelopment,
+    watchFiles: isDevelopment ? ['frontend/**/*'] : [],
     port: 8080,
+    host: '0.0.0.0',
     historyApiFallback: true,
     proxy: [{
       context: ['/api', '/locales'],
@@ -57,10 +55,11 @@ module.exports = {
   },
   plugins: [
     isDevelopment && new ReactRefreshWebpackPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
+    isDevelopment && new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
-      template: './app/views/index.erb',
-      filename: 'index.html'
+      title: 'Tududi',
+      filename: 'index.html',
+      template: 'public/index.html'
     }),
   ].filter(Boolean),
   module: {
