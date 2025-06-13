@@ -1,6 +1,46 @@
+# Database files
 db/*.sqlite3
 *.sqlite3
 *.sqlite3-shm
 *.sqlite3-wal
+tududi_db/
+
+# SSL certificates (generated at runtime)
 certs/
+
+# Development files
 .DS_Store
+.git/
+.github/
+*.log
+tmp/
+log/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ruby
+.bundle/
+vendor/bundle/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test files
+test/
+spec/
+coverage/
+
+# Documentation
+screenshots/
+*.md
+!README.md
+
+# Build artifacts (will be generated)
+dist/

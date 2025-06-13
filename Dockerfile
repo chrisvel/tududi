@@ -1,42 +1,88 @@
-# Use a base image that supports both Node.js and Ruby
-FROM ruby:3.2.2-slim
+# ================================
+# Build Stage - Node.js frontend
+# ================================
+FROM node:20-slim AS frontend-builder
 
-# Install Node.js and necessary packages
-RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends \
-    build-essential \
-    libsqlite3-dev \
-    openssl \
-    libffi-dev \
-    libpq-dev \
-    curl \
-    gnupg2 \
-    ca-certificates && \
-    # Install Node.js 20
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    rm -rf /var/lib/apt/lists/* && \
-    apt-get clean
+WORKDIR /app
 
-WORKDIR /usr/src/app
-
-# Install Ruby dependencies first
-COPY Gemfile* ./
-RUN bundle config set --local deployment 'true' && \
-    bundle config set --local without 'development test' && \
-    bundle install --jobs 4 --retry 3
-
-# Install Node.js dependencies
+# Copy Node.js dependency files
 COPY package*.json ./
 COPY webpack.config.js ./
 COPY babel.config.js ./
 COPY tsconfig.json ./
 COPY postcss.config.js ./
 COPY tailwind.config.js ./
+COPY eslint.config.mjs ./
+
+# Install Node.js dependencies (including dev dependencies for build)
 RUN npm ci
 
-# Remove any existing development databases
-RUN rm -f db/development*
+# Copy frontend source files
+COPY frontend/ frontend/
+COPY public/ public/
+COPY src/ src/
+COPY index.html ./
+
+# Build production frontend assets
+RUN npm run build
+
+# Copy translation files to dist folder for production serving
+RUN cp -r public/locales dist/
+
+# ================================
+# Build Stage - Ruby dependencies
+# ================================
+FROM ruby:3.2.2-slim AS ruby-builder
+
+# Install build dependencies
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    libsqlite3-dev \
+    libffi-dev \
+    libpq-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
+
+WORKDIR /app
+
+# Copy Ruby dependency files
+COPY Gemfile* ./
+
+# Install Ruby dependencies
+RUN bundle config set --local without 'development test' && \
+    bundle install --jobs 4 --retry 3
+
+# ================================
+# Production Stage
+# ================================
+FROM ruby:3.2.2-slim AS production
+
+# Install only runtime dependencies
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    libsqlite3-0 \
+    openssl \
+    libffi8 \
+    libpq5 \
+    curl \
+    ca-certificates && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
+
+WORKDIR /usr/src/app
+
+# Copy Ruby gems from builder stage
+COPY --from=ruby-builder /usr/local/bundle /usr/local/bundle
+
+# Copy Gemfile for bundle to work properly
+COPY Gemfile* ./
+
+# Configure bundle for production use - don't set path, use system gems
+RUN bundle config set --local without 'development test'
+
+# Copy built frontend assets from frontend builder
+COPY --from=frontend-builder /app/dist ./dist
 
 # Copy application files
 COPY app/ app/
@@ -46,20 +92,47 @@ COPY Rakefile ./
 COPY app.rb ./
 COPY db/migrate/ db/migrate/
 COPY db/schema.rb db/schema.rb
-COPY frontend/ frontend/
 COPY public/ public/
-COPY src/ src/
 
-# Create non-root user for security
-RUN useradd -m -U app && \
-    chown -R app:app /usr/src/app
+# Copy additional necessary files
+COPY console.rb ./
+COPY translation.json ./
 
-USER app
+# Copy and set permissions for entrypoint script
+COPY entrypoint.sh ./
+RUN chmod +x entrypoint.sh
 
-# Expose ports for both frontend (8080) and backend (9292)
-EXPOSE 8080 9292
+# Remove any existing development databases
+RUN rm -f db/development*
 
-# Set production environment variables
+# Create user for running the application (do this early)
+RUN groupadd -g 1000 appuser && \
+    useradd -r -u 1000 -g appuser appuser
+
+# Create directories that need write access and make them owned by appuser
+# This ensures the application user can write to them
+RUN mkdir -p /usr/src/app/tududi_db \
+             /usr/src/app/certs \
+             /usr/src/app/tmp \
+             /usr/src/app/log && \
+    # Set standard permissions for application files
+    chmod -R 755 /usr/src/app && \
+    # Change ownership of writable directories to appuser
+    chown -R appuser:appuser /usr/src/app/tududi_db \
+                             /usr/src/app/certs \
+                             /usr/src/app/tmp \
+                             /usr/src/app/log \
+                             /usr/src/app/db && \
+    # Make directories group-writable for Kubernetes fsGroup compatibility
+    chmod -R g+w /usr/src/app/tududi_db \
+                 /usr/src/app/certs \
+                 /usr/src/app/tmp \
+                 /usr/src/app/log \
+                 /usr/src/app/db && \
+    # Ensure specific files are executable
+    chmod +x /usr/src/app/config.ru
+
+# Set environment variables
 ENV RACK_ENV=production \
     NODE_ENV=production \
     TUDUDI_INTERNAL_SSL_ENABLED=false \
@@ -67,42 +140,15 @@ ENV RACK_ENV=production \
     LANG=C.UTF-8 \
     TZ=UTC
 
-# Generate SSL certificates if needed
-RUN mkdir -p certs && \
-    if [ "$TUDUDI_INTERNAL_SSL_ENABLED" = "true" ]; then \
-    openssl req -x509 -newkey rsa:4096 \
-    -keyout certs/server.key -out certs/server.crt \
-    -days 365 -nodes \
-    -subj '/CN=localhost' \
-    -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"; \
-    fi
+# Expose ports for both frontend (8080) and backend (9292)
+EXPOSE 8080 9292
 
 # Add healthcheck for backend
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:9292/api/health || exit 1
 
-# Build production frontend assets
-RUN npm run build
+# Use non-root user with UID 1000
+USER 1000:1000
 
-# Copy translation files to dist folder for production serving
-RUN cp -r public/locales dist/
-
-# Create startup script
-RUN echo '#!/bin/bash\n\
-set -e\n\
-\n\
-# Run database migrations\n\
-bundle exec rake db:migrate\n\
-\n\
-# Create user if it does not exist\n\
-if [ -n "$TUDUDI_USER_EMAIL" ] && [ -n "$TUDUDI_USER_PASSWORD" ]; then\n\
-  echo "Creating user if it does not exist..."\n\
-  echo "user = User.find_by(email: \"$TUDUDI_USER_EMAIL\") || User.create(email: \"$TUDUDI_USER_EMAIL\", password: \"$TUDUDI_USER_PASSWORD\"); puts \"User: #{user.email}\"" | bundle exec rake console\n\
-fi\n\
-\n\
-# Start backend with both API and static file serving\n\
-bundle exec puma -C app/config/puma.rb\n\
-' > start.sh && chmod +x start.sh
-
-# Run both services
-CMD ["./start.sh"]
+# Run the application
+CMD ["./entrypoint.sh"]
