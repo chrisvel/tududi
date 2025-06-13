@@ -50,16 +50,37 @@ COPY frontend/ frontend/
 COPY public/ public/
 COPY src/ src/
 
-# Create non-root user for security
-RUN useradd -m -U app && \
-    chown -R app:app /usr/src/app
+# Build production frontend assets (do this as root before setting permissions)
+RUN npm run build
 
-USER app
+# Copy translation files to dist folder for production serving
+RUN cp -r public/locales dist/
 
-# Expose ports for both frontend (8080) and backend (9292)
-EXPOSE 8080 9292
+# Create directories that need write access with world-writable permissions
+# This allows any UID/GID to write to these directories
+RUN mkdir -p /usr/src/app/tududi_db \
+             /usr/src/app/certs \
+             /usr/src/app/tmp \
+             /usr/src/app/log && \
+    # Set read permissions for application files FIRST
+    chmod -R 755 /usr/src/app && \
+    # THEN set world-writable permissions for specific directories (this overrides the 755)
+    chmod 777 /usr/src/app/tududi_db \
+              /usr/src/app/certs \
+              /usr/src/app/tmp \
+              /usr/src/app/log && \
+    # Make db directory writable for schema updates
+    chmod 777 /usr/src/app/db && \
+    # Make schema.rb writable for Rails schema updates
+    chmod 666 /usr/src/app/db/schema.rb && \
+    # Ensure specific files are executable
+    chmod +x /usr/src/app/config.ru
 
-# Set production environment variables
+# Copy and set permissions for entrypoint script
+COPY entrypoint.sh ./
+RUN chmod +x entrypoint.sh
+
+# Set environment variables
 ENV RACK_ENV=production \
     NODE_ENV=production \
     TUDUDI_INTERNAL_SSL_ENABLED=false \
@@ -67,42 +88,15 @@ ENV RACK_ENV=production \
     LANG=C.UTF-8 \
     TZ=UTC
 
-# Generate SSL certificates if needed
-RUN mkdir -p certs && \
-    if [ "$TUDUDI_INTERNAL_SSL_ENABLED" = "true" ]; then \
-    openssl req -x509 -newkey rsa:4096 \
-    -keyout certs/server.key -out certs/server.crt \
-    -days 365 -nodes \
-    -subj '/CN=localhost' \
-    -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"; \
-    fi
+# Expose ports for both frontend (8080) and backend (9292)
+EXPOSE 8080 9292
 
 # Add healthcheck for backend
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:9292/api/health || exit 1
 
-# Build production frontend assets
-RUN npm run build
+# Don't specify USER - let Kubernetes/OpenShift set it via securityContext
+# The application will run with whatever UID/GID is assigned by the platform
 
-# Copy translation files to dist folder for production serving
-RUN cp -r public/locales dist/
-
-# Create startup script
-RUN echo '#!/bin/bash\n\
-set -e\n\
-\n\
-# Run database migrations\n\
-bundle exec rake db:migrate\n\
-\n\
-# Create user if it does not exist\n\
-if [ -n "$TUDUDI_USER_EMAIL" ] && [ -n "$TUDUDI_USER_PASSWORD" ]; then\n\
-  echo "Creating user if it does not exist..."\n\
-  echo "user = User.find_by(email: \"$TUDUDI_USER_EMAIL\") || User.create(email: \"$TUDUDI_USER_EMAIL\", password: \"$TUDUDI_USER_PASSWORD\"); puts \"User: #{user.email}\"" | bundle exec rake console\n\
-fi\n\
-\n\
-# Start backend with both API and static file serving\n\
-bundle exec puma -C app/config/puma.rb\n\
-' > start.sh && chmod +x start.sh
-
-# Run both services
-CMD ["./start.sh"]
+# Run the application
+CMD ["./entrypoint.sh"]
