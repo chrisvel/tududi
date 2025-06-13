@@ -40,16 +40,32 @@ use Rack::MethodOverride
 
 set :database_file, './app/config/database.yml'
 set :views, proc { File.join(root, 'app/views') }
-set :public_folder, 'public'
+set :public_folder, production? ? 'dist' : 'public'
 
 configure do
+  enable :cross_origin
   enable :sessions
+
+  # Session configuration
   secure_flag = production? && ENV['TUDUDI_INTERNAL_SSL_ENABLED'] == 'true'
   set :sessions, httponly: true,
                  secure: secure_flag,
                  expire_after: 2_592_000,
                  same_site: secure_flag ? :none : :lax
   set :session_secret, ENV.fetch('TUDUDI_SESSION_SECRET') { SecureRandom.hex(64) }
+
+  # CORS configuration - use environment variable in production, fallback to localhost for development
+  allowed_origins = if ENV['TUDUDI_ALLOWED_ORIGINS']
+                      ENV['TUDUDI_ALLOWED_ORIGINS'].split(',').map(&:strip)
+                    else
+                      ['http://localhost:8080', 'http://localhost:9292', 'http://127.0.0.1:8080', 'http://127.0.0.1:9292']
+                    end
+  set :allow_origin, allowed_origins
+  set :allow_methods, %i[get post patch delete options]
+  set :allow_credentials, true
+  set :max_age, '1728000'
+  set :expose_headers, ['Content-Type']
+  set :allow_headers, %w[Authorization Content-Type Accept X-Requested-With]
 
   # Ensure ActiveRecord connection is established
   ActiveRecord::Base.establish_connection
@@ -67,38 +83,37 @@ configure do
   initialize_telegram_polling
 end
 
-use Rack::Protection, except: [:http_origin]
-
-before do
-  require_login
+# Rack Protection configuration - completely disable for development
+if development?
+  # Disable Rack::Protection completely in development to avoid CSRF issues
+  set :protection, false
+else
+  # Use the same allowed origins for Rack::Protection in production
+  use Rack::Protection,
+      except: %i[remote_token session_hijacking remote_referrer],
+      origin_whitelist: settings.allow_origin
 end
 
-configure do
-  enable :cross_origin
-end
-
 before do
-  allowed_origins = ['http://localhost:8080', 'http://localhost:9292']
-
-  if ENV['TUDUDI_ALLOWED_ORIGINS']
-    if ENV['TUDUDI_ALLOWED_ORIGINS'].strip.empty?
-      response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
-    else
-      allowed_origins.concat(ENV['TUDUDI_ALLOWED_ORIGINS'].split(',').map(&:strip))
-      if request.env['HTTP_ORIGIN'] && allowed_origins.include?(request.env['HTTP_ORIGIN'])
-        response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
-      end
-    end
+  # Handle CORS preflight requests
+  if request.request_method == 'OPTIONS'
+    response.headers['Access-Control-Allow-Methods'] = settings.allow_methods.map(&:to_s).join(', ')
+    response.headers['Access-Control-Allow-Headers'] = settings.allow_headers.join(', ')
+    response.headers['Access-Control-Max-Age'] = settings.max_age
+    halt 200
   end
 
-  response.headers['Access-Control-Allow-Credentials'] = 'true'
-  response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, Accept, X-Requested-With'
-end
+  # Set CORS headers for all requests
+  if request.env['HTTP_ORIGIN'] && settings.allow_origin.include?(request.env['HTTP_ORIGIN'])
+    response.headers['Access-Control-Allow-Origin'] = request.env['HTTP_ORIGIN']
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+    response.headers['Access-Control-Expose-Headers'] = settings.expose_headers.join(', ')
+  end
 
-options '*' do
-  response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-  response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type, Accept'
-  200
+  # Authentication check - only for API routes
+  if request.path_info.start_with?('/api/') && !['/api/login', '/api/health'].include?(request.path_info)
+    require_login
+  end
 end
 
 helpers do
@@ -150,7 +165,39 @@ helpers do
   end
 end
 
-get '/*' do
+get '/' do
+  if settings.production?
+    # In production, serve the built index.html directly
+    send_file File.join(settings.public_folder, 'index.html')
+  else
+    # In development, use ERB template
+    erb :index
+  end
+end
+
+# Catch-all route for SPA routing in production
+get '*' do
+  # Skip API routes and static assets
+  unless request.path_info.start_with?('/api/') || request.path_info.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg)$/)
+    if settings.production?
+      # In production, serve the built index.html for all SPA routes
+      send_file File.join(settings.public_folder, 'index.html')
+    else
+      # In development, use ERB template
+      erb :index
+    end
+  end
+end
+
+# Health check endpoint for Docker
+get '/api/health' do
+  content_type :json
+  { status: 'ok', timestamp: Time.now.iso8601 }.to_json
+end
+
+# Catch-all route for non-API routes to serve the SPA
+get '*' do
+  pass if request.path_info.start_with?('/api/')
   erb :index
 end
 

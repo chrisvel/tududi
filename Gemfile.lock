@@ -47,6 +47,8 @@ GEM
       ruby2_keywords (~> 0.0.1)
     mutex_m (0.2.0)
     nio4r (2.5.9)
+    nokogiri (1.18.8-aarch64-linux-gnu)
+      racc (~> 1.4)
     nokogiri (1.18.8-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-gnu)
@@ -107,6 +109,7 @@ GEM
     sinatra-cross_origin (0.4.0)
     sinatra-namespace (1.0)
       sinatra-contrib
+    sqlite3 (1.6.8-aarch64-linux)
     sqlite3 (1.6.8-arm64-darwin)
     sqlite3 (1.6.8-x86_64-linux)
     tilt (2.3.0)
@@ -116,6 +119,7 @@ GEM
     unicode-display_width (2.5.0)
 
 PLATFORMS
+  aarch64-linux
   arm64-darwin-22
   arm64-darwin-24
   x86_64-linux
