@@ -56,23 +56,14 @@ RUN npm run build
 # Copy translation files to dist folder for production serving
 RUN cp -r public/locales dist/
 
-# Create directories that need write access with world-writable permissions
-# This allows any UID/GID to write to these directories
+# Create directories that need write access without setting specific ownership
+# Let Kubernetes handle permissions via fsGroup
 RUN mkdir -p /usr/src/app/tududi_db \
              /usr/src/app/certs \
              /usr/src/app/tmp \
              /usr/src/app/log && \
-    # Set read permissions for application files FIRST
+    # Set standard permissions for application files
     chmod -R 755 /usr/src/app && \
-    # THEN set world-writable permissions for specific directories (this overrides the 755)
-    chmod 777 /usr/src/app/tududi_db \
-              /usr/src/app/certs \
-              /usr/src/app/tmp \
-              /usr/src/app/log && \
-    # Make db directory writable for schema updates
-    chmod 777 /usr/src/app/db && \
-    # Make schema.rb writable for Rails schema updates
-    chmod 666 /usr/src/app/db/schema.rb && \
     # Ensure specific files are executable
     chmod +x /usr/src/app/config.ru
 
@@ -95,8 +86,8 @@ EXPOSE 8080 9292
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:9292/api/health || exit 1
 
-# Don't specify USER - let Kubernetes/OpenShift set it via securityContext
-# The application will run with whatever UID/GID is assigned by the platform
+# Use non-root user with UID 1000
+USER 1000:1000
 
 # Run the application
 CMD ["./entrypoint.sh"]
