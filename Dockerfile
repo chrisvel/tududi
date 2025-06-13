@@ -84,6 +84,9 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
 # Build production frontend assets
 RUN npm run build
 
+# Copy translation files to dist folder for production serving
+RUN cp -r public/locales dist/
+
 # Create startup script
 RUN echo '#!/bin/bash\n\
 set -e\n\

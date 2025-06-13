@@ -39,9 +39,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const modalRef = useRef<HTMLDivElement>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [localAvailableTags, setLocalAvailableTags] = useState<Array<{name: string}>>([]);
+  const [tagsLoaded, setTagsLoaded] = useState(false);
+  const [tagsLoading, setTagsLoading] = useState(false);
   const { showSuccessToast, showErrorToast } = useToast();
-  const { tagsStore } = useStore();
-  const { tags: availableTags, setTags: setAvailableTags, setLoading: setTagsLoading, setError: setTagsError } = tagsStore;
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -54,22 +55,26 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   useEffect(() => {
     const loadTags = async () => {
-      if (isOpen && availableTags.length === 0) {
+      if (isOpen && !tagsLoaded) {
         setTagsLoading(true);
         try {
           const fetchedTags = await fetchTags();
-          setAvailableTags(fetchedTags);
-        } catch (error) {
-          setTagsError(true);
+          setLocalAvailableTags(fetchedTags);
+          setTagsLoaded(true);
+        } catch (error: any) {
           console.error("Error fetching tags:", error);
+          setTagsLoaded(true); // Mark as loaded even on error to prevent retry loop
         } finally {
           setTagsLoading(false);
         }
       }
     };
 
-    loadTags();
-  }, [isOpen, availableTags.length]);
+    // Only load tags if modal is open
+    if (isOpen) {
+      loadTags();
+    }
+  }, [isOpen, tagsLoaded]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -146,6 +151,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     setTimeout(() => {
       onClose();
       setIsClosing(false);
+      setTagsLoaded(false); // Reset tags loaded state for next modal open
     }, 300);
   };
 
@@ -220,7 +226,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     <TagInput
                       onTagsChange={handleTagsChange}
                       initialTags={formData.tags?.map((tag) => tag.name) || []}
-                      availableTags={availableTags}
+                      availableTags={localAvailableTags}
                     />
                   </div>
                 </div>

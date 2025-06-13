@@ -71,7 +71,7 @@ const CreateNewDropdownButton: React.FC<CreateNewDropdownButtonProps> = ({
               className="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400"
               aria-hidden="true"
             />
-            {t('dropdown.createNew')}
+            {t('dropdown.createNew', 'Create New')}
           </span>
           <ChevronDownIcon
             className="w-5 h-5 text-gray-500 dark:text-gray-400"
@@ -96,7 +96,7 @@ const CreateNewDropdownButton: React.FC<CreateNewDropdownButtonProps> = ({
                     role="menuitem"
                   >
                     {icon}
-                    {t(translationKey)}
+                    {t(translationKey, label)}
                   </li>
                 ))}
               </ul>
