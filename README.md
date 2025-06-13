@@ -192,6 +192,12 @@ This project is licensed for free personal use, with consent required for commer
 
 For questions or comments, please [open an issue](https://github.com/chrisvel/tududi/issues) or contact the developer directly.
 
+## 🌟 Please check my other projects!
+
+- **[Reconya AI](https://reconya-ai.com)** - Network reconnaissance and asset discovery tool
+- **[BreachHarbor](https://breachharbor.com)** - Cybersecurity suite for digital asset protection  
+- **[Hevetra](https://hevetra.com)** - Digital tracking for child health milestones
+
 ---
 
 README created by [Chris Veleris](https://github.com/chrisvel) for `tududi`.
