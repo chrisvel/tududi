@@ -38,7 +38,7 @@ bundle exec rake db:migrate
 # Create user if it does not exist
 if [ -n "$TUDUDI_USER_EMAIL" ] && [ -n "$TUDUDI_USER_PASSWORD" ]; then
   echo "Creating user if it does not exist..."
-  echo "user = User.find_by(email: \"$TUDUDI_USER_EMAIL\") || User.create(email: \"$TUDUDI_USER_EMAIL\", password: \"$TUDUDI_USER_PASSWORD\"); puts \"User: #{user.email}\"" | bundle exec rake console
+  echo "user = User.find_by(email: \"$TUDUDI_USER_EMAIL\") || User.create(email: \"$TUDUDI_USER_EMAIL\", password: ********); puts \"User: #{user.email}\"" | bundle exec rake console
 fi
 
 # Final verification
