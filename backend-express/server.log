@@ -1,0 +1,902 @@
+Initializing Telegram polling for configured users...
+Found 3 users with Telegram configuration
+Starting Telegram polling for user 1
+Starting Telegram polling...
+Starting Telegram polling for user 4
+Starting Telegram polling for user 5
+Telegram polling initialized successfully
+Server running on port 8888
+::1 - - [14/Jun/2025:07:03:36 +0000] "GET /api/telegram/polling-status HTTP/1.1" 401 35 "-" "curl/8.7.1"
+Error getting updates for user 1: read ECONNRESET
+Error getting updates for user 1: Request timeout
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Error getting updates for user 1: Request timeout
+Error getting updates for user 1: read ECONNRESET
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:17 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:17 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:17 +0000] "GET /api/current_user HTTP/1.1" 304 - "http://localhost:8080/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:17 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:19 +0000] "POST /api/login HTTP/1.1" 200 103 "http://localhost:8080/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:19 +0000] "GET /locales/en/translation.json?v=1 HTTP/1.1" 500 161 "http://localhost:8080/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:19 +0000] "GET /api/inbox HTTP/1.1" 200 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:19 +0000] "GET /api/areas?active=true HTTP/1.1" 200 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:19 +0000] "GET /api/projects HTTP/1.1" 200 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:19 +0000] "GET /api/notes HTTP/1.1" 200 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:08:59:19 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:19 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:19 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:08:59:19 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:19 +0000] "GET /locales/en/translation.json?v=1 HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:20 +0000] "GET /locales/en/translation.json?v=1 HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:08:59:21 +0000] "GET /api/tasks?type=upcoming HTTP/1.1" 500 33 "http://localhost:8080/tasks?type=upcoming&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:21 +0000] "GET /api/tasks?type=upcoming&order_by=due_date%3Aasc HTTP/1.1" 500 33 "http://localhost:8080/tasks?type=upcoming&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:21 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/tasks?type=upcoming&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:21 +0000] "GET /api/projects HTTP/1.1" 200 - "http://localhost:8080/tasks?type=upcoming&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:21 +0000] "GET /locales/en/translation.json?v=1 HTTP/1.1" 500 161 "http://localhost:8080/tasks?type=upcoming&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:08:59:22 +0000] "GET /api/tasks?type=next HTTP/1.1" 500 33 "http://localhost:8080/tasks?type=next" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:22 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/tasks?type=next" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:08:59:23 +0000] "GET /api/tasks?status=done HTTP/1.1" 500 33 "http://localhost:8080/tasks?status=done" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:23 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/tasks?status=done" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:08:59:24 +0000] "GET /api/tasks HTTP/1.1" 500 33 "http://localhost:8080/tasks" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:24 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/tasks" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:24 +0000] "GET /locales/en/translation.json?v=1 HTTP/1.1" 500 161 "http://localhost:8080/tasks" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:30 +0000] "GET /locales/en/translation.json?v=1 HTTP/1.1" 500 161 "http://localhost:8080/tasks" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:08:59:36 +0000] "GET /api/areas?active=true HTTP/1.1" 304 - "http://localhost:8080/projects?active=true" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:36 +0000] "GET /api/projects?active=true HTTP/1.1" 200 - "http://localhost:8080/projects?active=true" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:38 +0000] "GET /api/areas?active=true HTTP/1.1" 304 - "http://localhost:8080/project/3" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:38 +0000] "GET /api/project/3 HTTP/1.1" 200 699 "http://localhost:8080/project/3" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:38 +0000] "GET /api/tags HTTP/1.1" 200 729 "http://localhost:8080/project/3" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:39 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:39 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:08:59:39 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:45 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:45 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:45 +0000] "GET /api/current_user HTTP/1.1" 200 103 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:45 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:45 +0000] "GET /api/notes HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:45 +0000] "GET /api/areas?active=true HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:45 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:45 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:08:59:45 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /api/current_user HTTP/1.1" 200 103 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /api/notes HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /api/areas?active=true HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:08:59:46 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Error getting updates for user 1: Request timeout
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:01:49 +0000] "GET /api/current_user HTTP/1.1" 200 103 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:09:01:49 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:49 +0000] "GET /api/areas?active=true HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:49 +0000] "GET /api/projects HTTP/1.1" 200 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:49 +0000] "GET /api/inbox HTTP/1.1" 200 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:49 +0000] "GET /api/notes HTTP/1.1" 200 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:01:49 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:49 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:49 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:01:49 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /api/current_user HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /api/notes HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /api/areas?active=true HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:01:50 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /api/current_user HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error: ENOENT: no such file or directory, stat '/Users/chris/c0deLab/ProjectLand/tududi/backend-express/public/index.html'
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /locales/en/translation.json HTTP/1.1" 500 161 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /api/notes HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /api/areas?active=true HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:01:51 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:52 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:52 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:52 +0000] "GET /api/tags HTTP/1.1" 200 729 "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:54 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:54 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:01:54 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:01:55 +0000] "GET /api/tags HTTP/1.1" 200 729 "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:55 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:55 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:01:56 +0000] "GET /api/tasks?type=upcoming HTTP/1.1" 500 33 "http://localhost:8080/tasks?type=upcoming&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:01:56 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/tasks?type=upcoming&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:56 +0000] "GET /api/tasks?type=upcoming&order_by=due_date%3Aasc HTTP/1.1" 500 33 "http://localhost:8080/tasks?type=upcoming&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:56 +0000] "GET /api/projects HTTP/1.1" 200 - "http://localhost:8080/tasks?type=upcoming&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:58 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:58 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:01:58 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:59 +0000] "GET /api/tags HTTP/1.1" 200 729 "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:59 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:01:59 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:02:02 +0000] "GET /api/tasks?status=done HTTP/1.1" 500 33 "http://localhost:8080/tasks?status=done&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:02:02 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/tasks?status=done&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:02 +0000] "GET /api/tasks?status=done&order_by=due_date%3Aasc HTTP/1.1" 500 33 "http://localhost:8080/tasks?status=done&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:02 +0000] "GET /api/projects HTTP/1.1" 200 - "http://localhost:8080/tasks?status=done&order_by=due_date%3Aasc" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:03 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:03 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Error fetching tasks: TypeError: Cannot read properties of undefined (reading 'id')
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/routes/tasks.js:201:72
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/layer.js:95:5)
+    at /Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:346:12)
+    at next (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:175:3)
+    at router (/Users/chris/c0deLab/ProjectLand/tududi/backend-express/node_modules/express/lib/router/index.js:47:12)
+::1 - - [14/Jun/2025:09:02:03 +0000] "GET /api/tasks?type=today HTTP/1.1" 500 33 "http://localhost:8080/today" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:04 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:04 +0000] "GET /api/tags HTTP/1.1" 200 729 "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:04 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:02:09 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:02:10 +0000] "PATCH /api/inbox/111 HTTP/1.1" 200 200 "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:15 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:02:20 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:22 +0000] "GET /api/profile HTTP/1.1" 200 303 "http://localhost:8080/profile" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:22 +0000] "GET /api/telegram/polling-status HTTP/1.1" 200 93 "http://localhost:8080/profile" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:22 +0000] "GET /api/profile/task-summary/status HTTP/1.1" 200 124 "http://localhost:8080/profile" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:23 +0000] "POST /api/telegram/setup HTTP/1.1" 200 152 "http://localhost:8080/profile" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:02:29 +0000] "POST /api/profile/task-summary/send-now HTTP/1.1" 200 106 "http://localhost:8080/profile" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:02:36 +0000] "PATCH /api/profile HTTP/1.1" 200 245 "http://localhost:8080/profile" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:02:41 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:41 +0000] "GET /api/tags HTTP/1.1" 200 729 "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:02:41 +0000] "GET /api/projects HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:02:46 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:02:51 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:02:56 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:01 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:06 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:11 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:17 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:22 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:27 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:32 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:37 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:42 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:48 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:53 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:03:58 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:04:03 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:04:08 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:04:13 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:04:18 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:04:23 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:04:28 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+Telegram API error: {
+  ok: false,
+  error_code: 409,
+  description: 'Conflict: terminated by other getUpdates request; make sure that only one bot instance is running'
+}
+::1 - - [14/Jun/2025:09:04:33 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"
+::1 - - [14/Jun/2025:09:04:38 +0000] "GET /api/inbox HTTP/1.1" 304 - "http://localhost:8080/inbox" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:139.0) Gecko/20100101 Firefox/139.0"

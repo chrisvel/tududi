@@ -1,0 +1,66 @@
+
+> tududi@0.3 dev
+> webpack serve --config webpack.config.js --hot
+
+<w> [webpack-dev-server] "hot: true" automatically applies HMR plugin, you don't have to add it manually to your webpack configuration.
+<i> [webpack-dev-server] [HPM] Proxy created: /api,/locales  -> http://localhost:8888
+<i> [webpack-dev-server] Project is running at:
+<i> [webpack-dev-server] Loopback: http://localhost:8080/, http://[::1]:8080/
+<i> [webpack-dev-server] On Your Network (IPv4): http://192.168.1.18:8080/
+<i> [webpack-dev-server] Content not from webpack is served from '/Users/chris/c0deLab/ProjectLand/tududi/public' directory
+<i> [webpack-dev-server] 404s will fallback to '/index.html'
+asset main.91a43250e3d214ac13f2.js 3.61 MiB [emitted] [immutable] (name: main)
+asset frontend_components_Tasks_tsx.bcee0af8633c28243d32.js 59.2 KiB [emitted] [immutable]
+asset vendors-node_modules_cross-fetch_dist_browser-ponyfill_js.6451a0808e985bae004f.js 20.7 KiB [emitted] [immutable] (id hint: vendors)
+asset index.html 301 bytes [emitted]
+orphan modules 2.01 MiB [orphan] 1358 modules
+runtime modules 32.9 KiB 18 modules
+cacheable modules 3.02 MiB
+  modules by path ./node_modules/ 2.15 MiB 344 modules
+  modules by path ./frontend/ 889 KiB
+    modules by path ./frontend/components/ 637 KiB 49 modules
+    modules by path ./frontend/utils/*.ts 129 KiB 8 modules
+    modules by path ./frontend/*.tsx 61.4 KiB
+      ./frontend/index.tsx 2.69 KiB [built] [code generated]
+      + 2 modules
+    modules by path ./frontend/styles/*.css 44.3 KiB
+      ./frontend/styles/tailwind.css 2.4 KiB [built] [code generated]
+      ./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js!./frontend/styles/tailwind.css 41.9 KiB [built] [code generated]
+    ./frontend/i18n.ts 7.48 KiB [built] [code generated]
+    ./frontend/store/useStore.ts 10 KiB [built] [code generated]
+webpack 5.95.0 compiled successfully in 2662 ms
+assets by status 79.9 KiB [cached] 2 assets
+assets by status 3.61 MiB [emitted]
+  assets by path *.js 3.61 MiB
+    asset main.67085e245a23da3a98a4.js 3.61 MiB [emitted] [immutable] (name: main)
+    asset main.e021460b1ff69ce620bd.hot-update.js 849 bytes [emitted] [immutable] [hmr] (name: main)
+  asset index.html 301 bytes [emitted]
+  asset main.e021460b1ff69ce620bd.hot-update.json 28 bytes [emitted] [immutable] [hmr]
+Entrypoint main 3.61 MiB = main.67085e245a23da3a98a4.js 3.61 MiB main.e021460b1ff69ce620bd.hot-update.js 849 bytes
+cached modules 4.98 MiB [cached] 1765 modules
+runtime modules 32.9 KiB 18 modules
+./node_modules/css-loader/dist/cjs.js!./node_modules/postcss-loader/dist/cjs.js!./frontend/styles/tailwind.css 41.9 KiB [built]
+webpack 5.95.0 compiled successfully in 72 ms
+(node:61530) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
+Translation file requested: /locales/en/translation.json
