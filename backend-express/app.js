@@ -80,6 +80,7 @@ app.use('/api', requireAuth, require('./routes/users'));
 app.use('/api', requireAuth, require('./routes/inbox'));
 app.use('/api', requireAuth, require('./routes/url'));
 app.use('/api', requireAuth, require('./routes/telegram'));
+app.use('/api', requireAuth, require('./routes/quotes'));
 
 // Health check
 app.get('/api/health', (req, res) => {

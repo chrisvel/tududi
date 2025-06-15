@@ -1,6 +1,75 @@
+# Node modules (will be installed in container)
+node_modules/
+backend-express/node_modules/
+
+# Development files
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# Git files
+.git/
+.gitignore
+
+# Development databases
 db/*.sqlite3
 *.sqlite3
 *.sqlite3-shm
 *.sqlite3-wal
-certs/
+backend-express/db/development.sqlite3*
+
+# Development environment files
+.env.local
+.env.development
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Test files
+test/
+spec/
+*.test.js
+*.spec.js
+
+# Documentation
+README.md
+docs/
+
+# Build artifacts (frontend will be built in container)
+dist/
+build/
+
+# Temporary files
+tmp/
+temp/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Frontend development files
+frontend.log
+server.log
+cookies.txt
+
+# Screenshots
+screenshots/
+
+# Certificates
+certs/
+
+# Initialization script (not needed in production)
+backend-express/init-db.js

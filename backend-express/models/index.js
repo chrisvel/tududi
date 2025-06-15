@@ -2,9 +2,13 @@ const { Sequelize } = require('sequelize');
 const path = require('path');
 
 // Database configuration
+const dbPath = process.env.DATABASE_URL 
+  ? process.env.DATABASE_URL.replace('sqlite:///', '')
+  : path.join(__dirname, '../db', process.env.NODE_ENV === 'production' ? 'production.sqlite3' : 'development.sqlite3');
+
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: path.join(__dirname, '../../backend-sinatra/db/development.sqlite3'),
+  storage: dbPath,
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   define: {
     timestamps: true,

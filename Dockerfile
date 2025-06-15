@@ -1,32 +1,28 @@
-# Use a base image that supports both Node.js and Ruby
-FROM ruby:3.2.2-slim
+# Use Node.js 20 LTS as base image
+FROM node:20-slim
 
-# Install Node.js and necessary packages
+# Install system dependencies including SQLite
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
     build-essential \
     libsqlite3-dev \
+    sqlite3 \
     openssl \
-    libffi-dev \
-    libpq-dev \
     curl \
-    gnupg2 \
-    ca-certificates && \
-    # Install Node.js 20
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
+    ca-certificates \
+    python3 \
+    make \
+    g++ && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean
 
 WORKDIR /usr/src/app
 
-# Install Ruby dependencies first
-COPY Gemfile* ./
-RUN bundle config set --local deployment 'true' && \
-    bundle config set --local without 'development test' && \
-    bundle install --jobs 4 --retry 3
+# Install Node.js dependencies first (backend)
+COPY backend-express/package*.json ./backend-express/
+RUN cd backend-express && npm ci --only=production
 
-# Install Node.js dependencies
+# Install frontend dependencies
 COPY package*.json ./
 COPY webpack.config.js ./
 COPY babel.config.js ./
@@ -35,17 +31,8 @@ COPY postcss.config.js ./
 COPY tailwind.config.js ./
 RUN npm ci
 
-# Remove any existing development databases
-RUN rm -f db/development*
-
-# Copy application files
-COPY app/ app/
-COPY config/ config/
-COPY config.ru ./
-COPY Rakefile ./
-COPY app.rb ./
-COPY db/migrate/ db/migrate/
-COPY db/schema.rb db/schema.rb
+# Copy backend application files
+COPY backend-express/ backend-express/
 COPY frontend/ frontend/
 COPY public/ public/
 COPY src/ src/
@@ -56,30 +43,35 @@ RUN useradd -m -U app && \
 
 USER app
 
-# Expose ports for both frontend (8080) and backend (9292)
-EXPOSE 8080 9292
+# Expose ports for both frontend (8080) and backend (3002)
+EXPOSE 8080 3002
 
 # Set production environment variables
-ENV RACK_ENV=production \
-    NODE_ENV=production \
+ENV NODE_ENV=production \
+    PORT=3002 \
     TUDUDI_INTERNAL_SSL_ENABLED=false \
-    TUDUDI_ALLOWED_ORIGINS="http://localhost:8080,http://localhost:9292,http://127.0.0.1:8080,http://127.0.0.1:9292,http://0.0.0.0:8080,http://0.0.0.0:9292" \
+    TUDUDI_ALLOWED_ORIGINS="http://localhost:8080,http://localhost:3002,http://127.0.0.1:8080,http://127.0.0.1:3002,http://0.0.0.0:8080,http://0.0.0.0:3002" \
+    TUDUDI_SESSION_SECRET="" \
+    TUDUDI_USER_EMAIL="" \
+    TUDUDI_USER_PASSWORD="" \
+    DISABLE_TELEGRAM=false \
+    DISABLE_SCHEDULER=false \
     LANG=C.UTF-8 \
     TZ=UTC
 
 # Generate SSL certificates if needed
-RUN mkdir -p certs && \
+RUN mkdir -p backend-express/certs && \
     if [ "$TUDUDI_INTERNAL_SSL_ENABLED" = "true" ]; then \
     openssl req -x509 -newkey rsa:4096 \
-    -keyout certs/server.key -out certs/server.crt \
+    -keyout backend-express/certs/server.key -out backend-express/certs/server.crt \
     -days 365 -nodes \
     -subj '/CN=localhost' \
     -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"; \
     fi
 
-# Add healthcheck for backend
+# Add healthcheck for Express backend
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:9292/api/health || exit 1
+    CMD curl -f http://localhost:3002/api/health || exit 1
 
 # Build production frontend assets
 RUN npm run build
@@ -87,22 +79,71 @@ RUN npm run build
 # Copy translation files to dist folder for production serving
 RUN cp -r public/locales dist/
 
-# Create startup script
+# Create startup script for Express backend
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
-# Run database migrations\n\
-bundle exec rake db:migrate\n\
+# Navigate to backend directory\n\
+cd backend-express\n\
 \n\
-# Create user if it does not exist\n\
-if [ -n "$TUDUDI_USER_EMAIL" ] && [ -n "$TUDUDI_USER_PASSWORD" ]; then\n\
-  echo "Creating user if it does not exist..."\n\
-  echo "user = User.find_by(email: \"$TUDUDI_USER_EMAIL\") || User.create(email: \"$TUDUDI_USER_EMAIL\", password: \"$TUDUDI_USER_PASSWORD\"); puts \"User: #{user.email}\"" | bundle exec rake console\n\
+# Create database directory if it does not exist\n\
+mkdir -p db\n\
+\n\
+# Set database file based on environment\n\
+DB_FILE="db/production.sqlite3"\n\
+if [ "$NODE_ENV" = "development" ]; then\n\
+  DB_FILE="db/development.sqlite3"\n\
 fi\n\
 \n\
-# Start backend with both API and static file serving\n\
-bundle exec puma -C app/config/puma.rb\n\
+# Initialize database if it does not exist\n\
+if [ ! -f "$DB_FILE" ]; then\n\
+  echo "Initializing database: $DB_FILE"\n\
+  if ! node -e "require(\"./models\").sequelize.sync({ force: true }).then(() => { console.log(\"Database synchronized\"); process.exit(0); }).catch(err => { console.error(\"Database sync error:\", err); process.exit(1); })"; then\n\
+    echo "ERROR: Failed to initialize database"\n\
+    exit 1\n\
+  fi\n\
+else\n\
+  echo "Database already exists: $DB_FILE"\n\
+  # Test database connection\n\
+  if ! node -e "require(\"./models\").sequelize.authenticate().then(() => { console.log(\"Database connection verified\"); process.exit(0); }).catch(err => { console.error(\"Database connection failed:\", err); process.exit(1); })"; then\n\
+    echo "ERROR: Cannot connect to database"\n\
+    exit 1\n\
+  fi\n\
+fi\n\
+\n\
+# Create user if it does not exist and environment variables are set\n\
+if [ -n "$TUDUDI_USER_EMAIL" ] && [ -n "$TUDUDI_USER_PASSWORD" ]; then\n\
+  echo "Creating user if it does not exist..."\n\
+  if ! node -e "\n\
+    const { User } = require(\"./models\");\n\
+    const bcrypt = require(\"bcrypt\");\n\
+    (async () => {\n\
+      try {\n\
+        const [user, created] = await User.findOrCreate({\n\
+          where: { email: process.env.TUDUDI_USER_EMAIL },\n\
+          defaults: {\n\
+            email: process.env.TUDUDI_USER_EMAIL,\n\
+            password: await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD, 10)\n\
+          }\n\
+        });\n\
+        console.log(created ? \"User created:\" : \"User exists:\", user.email);\n\
+        process.exit(0);\n\
+      } catch (error) {\n\
+        console.error(\"Error creating user:\", error);\n\
+        process.exit(1);\n\
+      }\n\
+    })();\n\
+  "; then\n\
+    echo "ERROR: Failed to create user"\n\
+    exit 1\n\
+  fi\n\
+else\n\
+  echo "No user credentials provided, skipping user creation"\n\
+fi\n\
+\n\
+# Start Express backend\n\
+node app.js\n\
 ' > start.sh && chmod +x start.sh
 
-# Run both services
+# Run Express backend
 CMD ["./start.sh"]

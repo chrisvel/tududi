@@ -58,7 +58,7 @@ The following environment variables are used to configure tududi:
 - `TUDUDI_INTERNAL_SSL_ENABLED` - Set to 'true' if using HTTPS internally (default: false)
 - `TUDUDI_ALLOWED_ORIGINS` - Controls CORS access for different deployment scenarios:
   - Not set: Only allows localhost origins
-  - Specific domains: `https://tududi.com,http://localhost:9292`
+  - Specific domains: `https://tududi.com,http://localhost:3002`
   - Allow all (development only): Set to empty string `""`
 
 #### Common Configuration Examples:
@@ -89,23 +89,23 @@ docker run \
   -e TUDUDI_USER_PASSWORD=mysecurepassword \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
   -e TUDUDI_INTERNAL_SSL_ENABLED=false \
-  -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:9292 \
-  -v ~/tududi_db:/usr/src/app/tududi_db \
-  -p 9292:9292 \
+  -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:3002 \
+  -v ~/tududi_db:/usr/src/app/backend-express/db \
+  -p 3002:3002 \
   -d chrisvel/tududi:latest
 ```
 
-Navigate to [https://localhost:9292](https://localhost:9292) and login with your credentials.
+Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
 
 ## 🚧 Development
 
 ### Prerequisites
 
 Before you begin, ensure you have the following installed:
-- Ruby (version 3.2.2 or higher)
-- Sinatra
+- Node.js (version 20 or higher)
+- Express.js
 - SQLite3
-- Puma
+- npm
 - ReactJS
 
 ### 🏗 Installation
@@ -120,58 +120,145 @@ To install `tududi`, follow these steps:
    ```bash
    cd tududi
    ```
-3. Install the required gems:
+3. Install the required dependencies:
    ```bash
-   bundle install
+   # Install frontend dependencies
+   npm install
+   
+   # Install backend dependencies
+   cd backend-express
+   npm install
+   cd ..
    ```
 
 ### 🔒 SSL Setup
 
 1. Create and enter the directory:
    ```bash
-   mkdir certs
-   cd certs
+   mkdir backend-express/certs
+   cd backend-express/certs
    ```
 2. Create the key and cert:
    ```bash
    openssl genrsa -out server.key 2048
    openssl req -new -x509 -key server.key -out server.crt -days 365
+   cd ../..
    ```
 
 ### 📂 Database Setup
 
-Execute the migrations:
+The database will be automatically initialized when you start the Express backend. For manual database operations:
 
-```bash 
-rake db:migrate 
+```bash
+cd backend-express
+
+# Initialize database (creates tables, drops existing data)
+npm run db:init
+
+# Sync database (creates tables if they don't exist)
+npm run db:sync
+
+# Migrate database (alters existing tables to match models)
+npm run db:migrate
+
+# Reset database (drops and recreates all tables)
+npm run db:reset
+
+# Check database status and connection
+npm run db:status
+
+cd ..
+```
+
+### 🔄 Database Migrations
+
+For schema changes, use Sequelize migrations (similar to Rails/Ruby migrations):
+
+```bash
+cd backend-express
+
+# Create a new migration
+npm run migration:create add-description-to-tasks
+
+# Run pending migrations
+npm run migration:run
+
+# Check migration status
+npm run migration:status
+
+# Rollback last migration
+npm run migration:undo
+
+# Rollback all migrations
+npm run migration:undo:all
+
+cd ..
+```
+
+#### Creating a New Migration Example:
+```bash
+# 1. Create the migration file
+npm run migration:create add-priority-to-projects
+
+# 2. Edit the generated file in migrations/ folder:
+# - Add your schema changes in the 'up' function
+# - Add rollback logic in the 'down' function
+
+# 3. Run the migration
+npm run migration:run
 ```
 
 ### 👤 Create Your User
 
-1. Open the console:
+Users are automatically created when you set environment variables, or you can create them manually:
+
+1. Set environment variables (recommended):
    ```bash
-   rake console
+   export TUDUDI_USER_EMAIL=myemail@somewhere.com
+   export TUDUDI_USER_PASSWORD=awes0meHax0Rp4ssword
    ```
-2. Add the user:
-   ```ruby
-   User.create(email: "myemail@somewhere.com", password: "awes0meHax0Rp4ssword")
+
+2. Or create manually using npm script:
+   ```bash
+   cd backend-express
+   npm run user:create myemail@somewhere.com awes0meHax0Rp4ssword
+   cd ..
    ```
 
 ### 🚀 Usage
 
-To start the application, run:
+To start the application:
 
-```bash
-puma -C app/config/puma.rb
-```
+1. Start the Express backend:
+   ```bash
+   cd backend-express
+   npm start
+   # Or for development with auto-reload:
+   # npm run dev
+   ```
+
+2. In a separate terminal, start the frontend development server:
+   ```bash
+   npm run dev
+   ```
+
+The backend will run on `http://localhost:3002` and the frontend development server on `http://localhost:8080`.
 
 ### 🔍 Testing 
 
-To run tests, execute:
+To run tests:
 
 ```bash
-bundle exec ruby -Itest test/test_app.rb
+# Backend tests
+cd backend-express
+npm test
+
+# Frontend tests  
+cd ..
+npm test
 ```
+
+Note: Test suites are currently being migrated from the Ruby/Sinatra implementation.
 
 ## 🤝 Contributing
 

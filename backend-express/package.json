@@ -5,7 +5,18 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:init": "node scripts/db-init.js",
+    "db:sync": "node scripts/db-sync.js",
+    "db:migrate": "node scripts/db-migrate.js",
+    "db:reset": "node scripts/db-reset.js",
+    "db:status": "node scripts/db-status.js",
+    "user:create": "node scripts/user-create.js",
+    "migration:create": "node scripts/migration-create.js",
+    "migration:run": "npx sequelize-cli db:migrate",
+    "migration:undo": "npx sequelize-cli db:migrate:undo",
+    "migration:undo:all": "npx sequelize-cli db:migrate:undo:all",
+    "migration:status": "npx sequelize-cli db:migrate:status"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +31,7 @@
     "express": "^4.18.2",
     "express-session": "^1.18.1",
     "helmet": "^8.1.0",
+    "js-yaml": "^4.1.0",
     "morgan": "^1.10.0",
     "multer": "^2.0.1",
     "node-cron": "^4.1.0",
@@ -27,6 +39,7 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "sequelize-cli": "^6.6.2"
   }
 }
