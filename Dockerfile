@@ -19,7 +19,6 @@ RUN npm install --ignore-scripts --no-audit --no-fund && \
 # Copy frontend source code
 COPY frontend/ frontend/
 COPY public/ public/
-COPY src/ src/
 
 # Build frontend assets with optimizations
 RUN NODE_ENV=production npm run build && \
@@ -42,7 +41,7 @@ RUN apk add --no-cache --virtual .build-deps \
     sqlite-dev
 
 # Install only runtime dependencies for backend
-COPY backend-express/package*.json ./
+COPY backend/package*.json ./
 RUN npm install --production --no-audit --no-fund && \
     npm cache clean --force && \
     rm -rf ~/.npm /tmp/* && \
@@ -73,14 +72,14 @@ RUN apk add --no-cache --virtual .test-deps \
     sqlite-dev
 
 # Copy backend package files and install all dependencies (including dev)
-COPY backend-express/package*.json ./backend-express/
-RUN cd backend-express && npm install --no-audit --no-fund
+COPY backend/package*.json ./backend/
+RUN cd backend && npm install --no-audit --no-fund
 
 # Copy backend source code
-COPY backend-express/ ./backend-express/
+COPY backend/ ./backend/
 
 # Run tests
-RUN cd backend-express && npm test
+RUN cd backend && npm test
 
 # Stage 4: Final Production Image (minimal base)
 FROM node:20-alpine AS production
@@ -104,27 +103,27 @@ RUN apk add --no-cache --virtual .runtime-deps \
 WORKDIR /app
 
 # Copy backend dependencies from deps stage (optimized)
-COPY --from=backend-deps --chown=app:app /app/node_modules ./backend-express/node_modules
+COPY --from=backend-deps --chown=app:app /app/node_modules ./backend/node_modules
 
 # Copy backend application code (exclude unnecessary files)
-COPY --chown=app:app backend-express/app.js ./backend-express/
-COPY --chown=app:app backend-express/package*.json ./backend-express/
-COPY --chown=app:app backend-express/config/ ./backend-express/config/
-COPY --chown=app:app backend-express/models/ ./backend-express/models/
-COPY --chown=app:app backend-express/routes/ ./backend-express/routes/
-COPY --chown=app:app backend-express/middleware/ ./backend-express/middleware/
-COPY --chown=app:app backend-express/services/ ./backend-express/services/
+COPY --chown=app:app backend/app.js ./backend/
+COPY --chown=app:app backend/package*.json ./backend/
+COPY --chown=app:app backend/config/ ./backend/config/
+COPY --chown=app:app backend/models/ ./backend/models/
+COPY --chown=app:app backend/routes/ ./backend/routes/
+COPY --chown=app:app backend/middleware/ ./backend/middleware/
+COPY --chown=app:app backend/services/ ./backend/services/
 
 # Copy minimal built frontend assets from builder stage
-COPY --from=frontend-builder --chown=app:app /app/dist ./backend-express/dist
-COPY --from=frontend-builder --chown=app:app /app/public/locales ./backend-express/dist/locales
+COPY --from=frontend-builder --chown=app:app /app/dist ./backend/dist
+COPY --from=frontend-builder --chown=app:app /app/public/locales ./backend/dist/locales
 
 # Create ultra-minimal startup script (before switching to non-root user)
-RUN printf '#!/bin/sh\nset -e\ncd backend-express\nmkdir -p db certs\nDB_FILE="db/production.sqlite3"\n[ "$NODE_ENV" = "development" ] && DB_FILE="db/development.sqlite3"\nif [ ! -f "$DB_FILE" ]; then\n  node -e "require(\\"./models\\").sequelize.sync({force:true}).then(()=>{console.log(\\"✅ DB ready\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nelse\n  node -e "require(\\"./models\\").sequelize.authenticate().then(()=>{console.log(\\"✅ DB OK\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nfi\nif [ -n "$TUDUDI_USER_EMAIL" ]&&[ -n "$TUDUDI_USER_PASSWORD" ]; then\n  node -e "const{User}=require(\\"./models\\");const bcrypt=require(\\"bcrypt\\");(async()=>{try{const[u,c]=await User.findOrCreate({where:{email:process.env.TUDUDI_USER_EMAIL},defaults:{email:process.env.TUDUDI_USER_EMAIL,password:await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD,10)}});console.log(c?\\"✅ User created\\":\\"ℹ️ User exists\\");process.exit(0)}catch(e){console.error(\\"❌\\",e.message);process.exit(1)}})();"||exit 1\nfi\n[ "$TUDUDI_INTERNAL_SSL_ENABLED" = "true" ]&&[ ! -f "certs/server.crt" ]&&openssl req -x509 -newkey rsa:2048 -keyout certs/server.key -out certs/server.crt -days 365 -nodes -subj "/CN=localhost" 2>/dev/null||true\nexec node app.js\n' > start.sh && chmod +x start.sh
+RUN printf '#!/bin/sh\nset -e\ncd backend\nmkdir -p db certs\nDB_FILE="db/production.sqlite3"\n[ "$NODE_ENV" = "development" ] && DB_FILE="db/development.sqlite3"\nif [ ! -f "$DB_FILE" ]; then\n  node -e "require(\\"./models\\").sequelize.sync({force:true}).then(()=>{console.log(\\"✅ DB ready\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nelse\n  node -e "require(\\"./models\\").sequelize.authenticate().then(()=>{console.log(\\"✅ DB OK\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nfi\nif [ -n "$TUDUDI_USER_EMAIL" ]&&[ -n "$TUDUDI_USER_PASSWORD" ]; then\n  node -e "const{User}=require(\\"./models\\");const bcrypt=require(\\"bcrypt\\");(async()=>{try{const[u,c]=await User.findOrCreate({where:{email:process.env.TUDUDI_USER_EMAIL},defaults:{email:process.env.TUDUDI_USER_EMAIL,password_digest:await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD,10)}});console.log(c?\\"✅ User created\\":\\"ℹ️ User exists\\");process.exit(0)}catch(e){console.error(\\"❌\\",e.message);process.exit(1)}})();"||exit 1\nfi\n[ "$TUDUDI_INTERNAL_SSL_ENABLED" = "true" ]&&[ ! -f "certs/server.crt" ]&&openssl req -x509 -newkey rsa:2048 -keyout certs/server.key -out certs/server.crt -days 365 -nodes -subj "/CN=localhost" 2>/dev/null||true\nexec node app.js\n' > start.sh && chmod +x start.sh
 
 # Create necessary directories and final cleanup
-RUN mkdir -p ./backend-express/db ./backend-express/certs && \
-    chown -R app:app ./backend-express/db ./backend-express/certs ./start.sh && \
+RUN mkdir -p ./backend/db ./backend/certs && \
+    chown -R app:app ./backend/db ./backend/certs ./start.sh && \
     # Final size optimization - remove Node.js build tools and cache
     apk del --no-cache .runtime-deps sqlite openssl curl && \
     apk add --no-cache sqlite-libs openssl curl dumb-init && \

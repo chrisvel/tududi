@@ -90,7 +90,7 @@ docker run \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
   -e TUDUDI_INTERNAL_SSL_ENABLED=false \
   -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:3002 \
-  -v ~/tududi_db:/usr/src/app/backend-express/db \
+  -v ~/tududi_db:/usr/src/app/backend/db \
   -p 3002:3002 \
   -d chrisvel/tududi:latest
 ```
@@ -126,7 +126,7 @@ To install `tududi`, follow these steps:
    npm install
    
    # Install backend dependencies
-   cd backend-express
+   cd backend
    npm install
    cd ..
    ```
@@ -135,8 +135,8 @@ To install `tududi`, follow these steps:
 
 1. Create and enter the directory:
    ```bash
-   mkdir backend-express/certs
-   cd backend-express/certs
+   mkdir backend/certs
+   cd backend/certs
    ```
 2. Create the key and cert:
    ```bash
@@ -150,7 +150,7 @@ To install `tududi`, follow these steps:
 The database will be automatically initialized when you start the Express backend. For manual database operations:
 
 ```bash
-cd backend-express
+cd backend
 
 # Initialize database (creates tables, drops existing data)
 npm run db:init
@@ -175,7 +175,7 @@ cd ..
 For schema changes, use Sequelize migrations (similar to Rails/Ruby migrations):
 
 ```bash
-cd backend-express
+cd backend
 
 # Create a new migration
 npm run migration:create add-description-to-tasks
@@ -220,7 +220,7 @@ Users are automatically created when you set environment variables, or you can c
 
 2. Or create manually using npm script:
    ```bash
-   cd backend-express
+   cd backend
    npm run user:create myemail@somewhere.com awes0meHax0Rp4ssword
    cd ..
    ```
@@ -231,7 +231,7 @@ To start the application:
 
 1. Start the Express backend:
    ```bash
-   cd backend-express
+   cd backend
    npm start
    # Or for development with auto-reload:
    # npm run dev
@@ -250,7 +250,7 @@ To run tests:
 
 ```bash
 # Backend tests
-cd backend-express
+cd backend
 npm test
 
 # Frontend tests  

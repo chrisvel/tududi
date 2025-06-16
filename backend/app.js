@@ -58,13 +58,17 @@ app.use(session({
 
 // Static files
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('dist'));
+  app.use(express.static(path.join(__dirname, 'dist')));
 } else {
   app.use(express.static('public'));
 }
 
-// Serve locales from the main public directory
-app.use('/locales', express.static(path.join(__dirname, '../public/locales')));
+// Serve locales 
+if (process.env.NODE_ENV === 'production') {
+  app.use('/locales', express.static(path.join(__dirname, 'dist/locales')));
+} else {
+  app.use('/locales', express.static(path.join(__dirname, '../public/locales')));
+}
 
 // Authentication middleware
 const { requireAuth } = require('./middleware/auth');

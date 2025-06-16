@@ -12,7 +12,12 @@
     "next": "Siguiente",
     "completed": "Completado",
     "error": "Error",
-    "success": "Éxito"
+    "success": "Éxito",
+    "appLoading": "Cargando aplicación... Por favor espere.",
+    "area": "Área",
+    "status": "Estado",
+    "saving": "Guardando...",
+    "none": "Ninguno"
   },
   "sidebar": {
     "dashboard": "Tablero",
@@ -28,7 +33,11 @@
     "nextActions": "Próximas Acciones",
     "inbox": "Bandeja de Entrada",
     "completed": "Completadas",
-    "allTasks": "Todas las Tareas"
+    "allTasks": "Todas las Tareas",
+    "addAreaAriaLabel": "Agregar Área",
+    "addAreaTitle": "Agregar Área",
+    "addTagAriaLabel": "Agregar Etiqueta",
+    "addTagTitle": "Agregar Etiqueta"
   },
   "navigation": {
     "home": "Inicio",
@@ -44,7 +53,16 @@
     "email": "Correo Electrónico",
     "password": "Contraseña",
     "confirmPassword": "Confirmar Contraseña",
-    "username": "Nombre de Usuario"
+    "username": "Nombre de Usuario",
+    "signup": "Registrarse",
+    "signin": "Iniciar Sesión",
+    "signout": "Cerrar Sesión",
+    "resetPassword": "Restablecer Contraseña",
+    "newPassword": "Nueva Contraseña",
+    "rememberMe": "Recordarme",
+    "loginSuccess": "Inicio de Sesión Exitoso",
+    "loginFailed": "Error al Iniciar Sesión",
+    "logoutSuccess": "Cierre de Sesión Exitoso"
   },
   "profile": {
     "title": "Configuración de Perfil",
@@ -100,6 +118,9 @@
     "noProjectsFound": "No se encontraron proyectos",
     "cardViewAriaLabel": "Vista de Tarjetas",
     "listViewAriaLabel": "Vista de Lista",
+    "active": "Activos",
+    "inactive": "Inactivos",
+    "metrics": "Proyectos",
     "filters": {
       "active": "Activos",
       "inactive": "Inactivos",
@@ -146,7 +167,31 @@
     "noteTitle": "Título de la Nota",
     "noteContent": "Contenido de la Nota",
     "noteTitlePlaceholder": "Ingresar título de la nota",
-    "noteContentPlaceholder": "Ingresar contenido de la nota"
+    "noteContentPlaceholder": "Ingresar contenido de la nota",
+    "areaName": "Nombre del Área",
+    "areaDescription": "Descripción del Área",
+    "areaNamePlaceholder": "Ingrese nombre del área",
+    "areaDescriptionPlaceholder": "Ingrese descripción del área",
+    "tagName": "Nombre de Etiqueta",
+    "tagNamePlaceholder": "Ingrese nombre de etiqueta",
+    "tagInputPlaceholder": "Escriba para agregar etiqueta",
+    "createTagOption": "+ Crear \"{{tagName}}\"",
+    "removeTagAriaLabel": "Eliminar etiqueta {{tagName}}",
+    "task": {
+      "namePlaceholder": "Agregar nombre de tarea",
+      "labels": {
+        "tags": "Etiquetas",
+        "project": "Proyecto",
+        "status": "Estado",
+        "priority": "Prioridad",
+        "dueDate": "Fecha de Vencimiento",
+        "note": "Nota"
+      },
+      "projectSearchPlaceholder": "Buscar o crear un proyecto...",
+      "noMatchingProjects": "No hay proyectos coincidentes",
+      "creatingProject": "Creando...",
+      "createProject": "+ Crear"
+    }
   },
   "dateFormats": {
     "long": "EEEE, d 'de' MMMM 'de' yyyy",
@@ -169,8 +214,132 @@
     "completed": "Aquí puedes ver todas las tareas que has completado. Es una excelente manera de revisar tus logros y reflexionar sobre el trabajo que has terminado. También puedes encontrar tareas que pueden necesitar ser desarchivadas o referenciadas en el futuro.",
     "allTasks": "Estás viendo todas las tareas. Esto incluye tareas de diferentes proyectos, tareas sin fechas de vencimiento específicas y tareas con diferentes niveles de prioridad. Utiliza esta vista para una mirada general a todo en tu lista de pendientes."
   },
+  "priority": {
+    "low": "Baja",
+    "medium": "Media",
+    "high": "Alta"
+  },
+  "status": {
+    "notStarted": "No Iniciado",
+    "inProgress": "En Progreso",
+    "done": "Completado",
+    "archived": "Archivado",
+    "unknown": "Desconocido"
+  },
+  "project": {
+    "name": "Nombre del Proyecto"
+  },
+  "task": {
+    "labels": {
+      "tags": "Etiquetas",
+      "project": "Proyecto",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "dueDate": "Fecha de Vencimiento",
+      "note": "Nota"
+    },
+    "create": "Crear",
+    "addTaskName": "Agregar nombre de tarea",
+    "createSuccess": "Tarea creada exitosamente",
+    "createError": "Error al crear tarea",
+    "saveAsTask": "Guardar como Tarea"
+  },
+  "dateIndicators": {
+    "today": "HOY",
+    "tomorrow": "MAÑANA",
+    "yesterday": "AYER"
+  },
+  "inbox": {
+    "title": "Bandeja de Entrada",
+    "empty": "Su bandeja de entrada está vacía",
+    "emptyDescription": "Capture rápidamente pensamientos e ideas usando el botón + en la esquina inferior derecha",
+    "captureThought": "Capture su pensamiento...",
+    "saveToInbox": "Guardar en Bandeja de Entrada",
+    "itemAdded": "Elemento agregado a la bandeja de entrada",
+    "itemProcessed": "Elemento procesado",
+    "itemDeleted": "Elemento eliminado",
+    "itemUpdated": "Elemento actualizado",
+    "newTelegramItem": "Nuevo elemento de Telegram: {{content}}",
+    "newItem": "Nuevo elemento agregado a la bandeja de entrada: {{content}}",
+    "multipleNewItems": "{{count}} elementos más agregados",
+    "loadError": "Error al cargar elementos de la bandeja de entrada",
+    "addError": "Error al agregar elemento a la bandeja de entrada",
+    "processError": "Error al procesar elemento de la bandeja de entrada",
+    "deleteError": "Error al eliminar elemento de la bandeja de entrada",
+    "updateError": "Error al actualizar elemento de la bandeja de entrada",
+    "contentRequired": "El contenido no puede estar vacío",
+    "createTask": "Crear tarea",
+    "createProject": "Crear proyecto",
+    "createNote": "Crear nota",
+    "convertTo": "Convertir a",
+    "unprocessedItems": "Tiene {{count}} elemento(s) en su bandeja de entrada",
+    "processNow": "Procesar ahora",
+    "deleteConfirmTitle": "Eliminar Elemento",
+    "deleteConfirmMessage": "¿Está seguro de que desea eliminar este elemento de la bandeja de entrada? Esta acción no se puede deshacer."
+  },
+  "areas": {
+    "title": "Áreas",
+    "noAreasFound": "No se encontraron áreas",
+    "editAreaAriaLabel": "Editar área {{name}}",
+    "editAreaTitle": "Editar área {{name}}",
+    "deleteAreaAriaLabel": "Eliminar área {{name}}",
+    "deleteAreaTitle": "Eliminar área {{name}}",
+    "addArea": "Agregar Área",
+    "loading": "Cargando detalles del área...",
+    "error": "Error al cargar detalles del área.",
+    "notFound": "Área no encontrada.",
+    "details": "Detalles del Área",
+    "viewProjects": "Ver Proyectos en {{name}}"
+  },
+  "notes": {
+    "loading": "Cargando notas...",
+    "error": "Error al cargar notas",
+    "searchPlaceholder": "Buscar notas...",
+    "noNotesFound": "No se encontraron notas",
+    "title": "Notas",
+    "deleteNoteAriaLabel": "Eliminar nota {{noteTitle}}",
+    "deleteNoteTitle": "Eliminar nota {{noteTitle}}",
+    "editNoteAriaLabel": "Editar nota {{noteTitle}}",
+    "editNoteTitle": "Editar nota {{noteTitle}}"
+  },
+  "tags": {
+    "loading": "Cargando etiquetas...",
+    "searchPlaceholder": "Buscar etiquetas...",
+    "title": "Etiquetas",
+    "noTagsFound": "No se encontraron etiquetas",
+    "editTagAriaLabel": "Editar etiqueta {{tagName}}",
+    "editTagTitle": "Editar etiqueta {{tagName}}",
+    "deleteTagAriaLabel": "Eliminar etiqueta {{tagName}}",
+    "deleteTagTitle": "Eliminar etiqueta {{tagName}}",
+    "error": "Error al obtener etiqueta.",
+    "notFound": "Etiqueta no encontrada.",
+    "details": "Detalles de la Etiqueta",
+    "name": "Nombre",
+    "status": "Estado",
+    "active": "Activa",
+    "inactive": "Inactiva",
+    "viewTasksWithTag": "Ver tareas con esta etiqueta",
+    "typeToAdd": "Escriba para agregar una etiqueta"
+  },
+  "note": {
+    "title": "Título",
+    "content": "Contenido",
+    "titlePlaceholder": "Ingrese título de la nota",
+    "contentPlaceholder": "Ingrese contenido de la nota",
+    "project": "Proyecto Relacionado (Opcional)",
+    "createSuccess": "Nota creada exitosamente",
+    "createError": "Error al crear nota"
+  },
   "success": {
     "noteUpdated": "¡Nota actualizada con éxito!",
-    "noteCreated": "¡Nota creada con éxito!"
+    "noteCreated": "¡Nota creada con éxito!",
+    "areaUpdated": "¡Área actualizada con éxito!",
+    "areaCreated": "¡Área creada con éxito!",
+    "tagUpdated": "¡Etiqueta actualizada con éxito!",
+    "tagCreated": "¡Etiqueta creada con éxito!",
+    "projectCreated": "¡Proyecto creado con éxito!",
+    "taskCreated": "¡Tarea creada con éxito!",
+    "taskUpdated": "¡Tarea actualizada con éxito!",
+    "taskDeleted": "¡Tarea eliminada con éxito!"
   }
 }
