@@ -5,7 +5,11 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env NODE_ENV=test jest",
+    "test:watch": "cross-env NODE_ENV=test jest --watch",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage",
+    "test:unit": "cross-env NODE_ENV=test jest tests/unit",
+    "test:integration": "cross-env NODE_ENV=test jest tests/integration",
     "db:init": "node scripts/db-init.js",
     "db:sync": "node scripts/db-sync.js",
     "db:migrate": "node scripts/db-migrate.js",
@@ -39,7 +43,10 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
+    "jest": "^30.0.0",
     "nodemon": "^3.0.1",
-    "sequelize-cli": "^6.6.2"
+    "sequelize-cli": "^6.6.2",
+    "supertest": "^7.1.1"
   }
 }

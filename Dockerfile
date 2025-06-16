@@ -1,149 +1,135 @@
-# Use Node.js 20 LTS as base image
-FROM node:20-slim
+# ============================================================================
+# Ultra-optimized multi-stage build for minimal rootless Docker image
+# ============================================================================
 
-# Install system dependencies including SQLite
-RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends \
-    build-essential \
-    libsqlite3-dev \
-    sqlite3 \
-    openssl \
-    curl \
-    ca-certificates \
-    python3 \
-    make \
-    g++ && \
-    rm -rf /var/lib/apt/lists/* && \
-    apt-get clean
+# Stage 1: Frontend Build Environment (optimized)
+FROM node:20-alpine AS frontend-builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install Node.js dependencies first (backend)
-COPY backend-express/package*.json ./backend-express/
-RUN cd backend-express && npm ci --only=production
-
-# Install frontend dependencies
+# Copy frontend package files
 COPY package*.json ./
-COPY webpack.config.js ./
-COPY babel.config.js ./
-COPY tsconfig.json ./
-COPY postcss.config.js ./
-COPY tailwind.config.js ./
-RUN npm ci
+COPY webpack.config.js babel.config.js tsconfig.json postcss.config.js tailwind.config.js ./
 
-# Copy backend application files
-COPY backend-express/ backend-express/
+# Install frontend dependencies (including dev deps for build)
+RUN npm install --ignore-scripts --no-audit --no-fund && \
+    npm cache clean --force && \
+    rm -rf ~/.npm
+
+# Copy frontend source code
 COPY frontend/ frontend/
 COPY public/ public/
 COPY src/ src/
 
-# Create non-root user for security
-RUN useradd -m -U app && \
-    chown -R app:app /usr/src/app
+# Build frontend assets with optimizations
+RUN NODE_ENV=production npm run build && \
+    # Remove source maps and dev artifacts
+    find dist -name "*.map" -delete && \
+    find dist -name "*.dev.*" -delete && \
+    # Compress built assets
+    find dist -type f \( -name "*.js" -o -name "*.css" -o -name "*.html" \) -exec gzip -9 -k {} \;
 
+# Stage 2: Backend Dependencies (ultra-minimal)
+FROM node:20-alpine AS backend-deps
+
+WORKDIR /app
+
+# Install build dependencies temporarily for native modules
+RUN apk add --no-cache --virtual .build-deps \
+    python3 \
+    make \
+    g++ \
+    sqlite-dev
+
+# Install only runtime dependencies for backend
+COPY backend-express/package*.json ./
+RUN npm install --production --no-audit --no-fund && \
+    npm cache clean --force && \
+    rm -rf ~/.npm /tmp/* && \
+    # Remove build dependencies after install
+    apk del .build-deps && \
+    # Remove unnecessary files from node_modules
+    find node_modules -name "*.md" -delete && \
+    find node_modules -name "*.txt" -delete && \
+    find node_modules -name "LICENSE*" -delete && \
+    find node_modules -name "CHANGELOG*" -delete && \
+    find node_modules -name "README*" -delete && \
+    find node_modules -name ".github" -type d -exec rm -rf {} + 2>/dev/null || true && \
+    find node_modules -name "test" -type d -exec rm -rf {} + 2>/dev/null || true && \
+    find node_modules -name "tests" -type d -exec rm -rf {} + 2>/dev/null || true && \
+    find node_modules -name "docs" -type d -exec rm -rf {} + 2>/dev/null || true && \
+    find node_modules -name "examples" -type d -exec rm -rf {} + 2>/dev/null || true
+
+# Stage 3: Final Production Image (minimal base)
+FROM node:20-alpine AS production
+
+# Create non-root user first (before installing packages)
+RUN addgroup -g 1001 -S app && \
+    adduser -S app -u 1001 -G app
+
+# Install minimal runtime dependencies with size optimization
+RUN apk add --no-cache --virtual .runtime-deps \
+    sqlite \
+    openssl \
+    curl \
+    dumb-init && \
+    # Clean up package cache immediately
+    rm -rf /var/cache/apk/* /tmp/* && \
+    # Remove unnecessary files
+    rm -rf /usr/share/man /usr/share/doc /usr/share/info
+
+# Set working directory
+WORKDIR /app
+
+# Copy backend dependencies from deps stage (optimized)
+COPY --from=backend-deps --chown=app:app /app/node_modules ./backend-express/node_modules
+
+# Copy backend application code (exclude unnecessary files)
+COPY --chown=app:app backend-express/app.js ./backend-express/
+COPY --chown=app:app backend-express/package*.json ./backend-express/
+COPY --chown=app:app backend-express/config/ ./backend-express/config/
+COPY --chown=app:app backend-express/models/ ./backend-express/models/
+COPY --chown=app:app backend-express/routes/ ./backend-express/routes/
+COPY --chown=app:app backend-express/middleware/ ./backend-express/middleware/
+COPY --chown=app:app backend-express/services/ ./backend-express/services/
+
+# Copy minimal built frontend assets from builder stage
+COPY --from=frontend-builder --chown=app:app /app/dist ./backend-express/dist
+COPY --from=frontend-builder --chown=app:app /app/public/locales ./backend-express/dist/locales
+
+# Create ultra-minimal startup script (before switching to non-root user)
+RUN printf '#!/bin/sh\nset -e\ncd backend-express\nmkdir -p db certs\nDB_FILE="db/production.sqlite3"\n[ "$NODE_ENV" = "development" ] && DB_FILE="db/development.sqlite3"\nif [ ! -f "$DB_FILE" ]; then\n  node -e "require(\\"./models\\").sequelize.sync({force:true}).then(()=>{console.log(\\"✅ DB ready\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nelse\n  node -e "require(\\"./models\\").sequelize.authenticate().then(()=>{console.log(\\"✅ DB OK\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nfi\nif [ -n "$TUDUDI_USER_EMAIL" ]&&[ -n "$TUDUDI_USER_PASSWORD" ]; then\n  node -e "const{User}=require(\\"./models\\");const bcrypt=require(\\"bcrypt\\");(async()=>{try{const[u,c]=await User.findOrCreate({where:{email:process.env.TUDUDI_USER_EMAIL},defaults:{email:process.env.TUDUDI_USER_EMAIL,password:await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD,10)}});console.log(c?\\"✅ User created\\":\\"ℹ️ User exists\\");process.exit(0)}catch(e){console.error(\\"❌\\",e.message);process.exit(1)}})();"||exit 1\nfi\n[ "$TUDUDI_INTERNAL_SSL_ENABLED" = "true" ]&&[ ! -f "certs/server.crt" ]&&openssl req -x509 -newkey rsa:2048 -keyout certs/server.key -out certs/server.crt -days 365 -nodes -subj "/CN=localhost" 2>/dev/null||true\nexec node app.js\n' > start.sh && chmod +x start.sh
+
+# Create necessary directories and final cleanup
+RUN mkdir -p ./backend-express/db ./backend-express/certs && \
+    chown -R app:app ./backend-express/db ./backend-express/certs ./start.sh && \
+    # Final size optimization - remove Node.js build tools and cache
+    apk del --no-cache .runtime-deps sqlite openssl curl && \
+    apk add --no-cache sqlite-libs openssl curl dumb-init && \
+    rm -rf /usr/local/lib/node_modules/npm/docs /usr/local/lib/node_modules/npm/man && \
+    rm -rf /root/.npm /tmp/* /var/tmp/* /var/cache/apk/*
+
+# Switch to non-root user
 USER app
 
-# Expose ports for both frontend (8080) and backend (3002)
-EXPOSE 8080 3002
+# Expose port
+EXPOSE 3002
 
-# Set production environment variables
+# Set optimized production environment variables
 ENV NODE_ENV=production \
     PORT=3002 \
     TUDUDI_INTERNAL_SSL_ENABLED=false \
-    TUDUDI_ALLOWED_ORIGINS="http://localhost:8080,http://localhost:3002,http://127.0.0.1:8080,http://127.0.0.1:3002,http://0.0.0.0:8080,http://0.0.0.0:3002" \
+    TUDUDI_ALLOWED_ORIGINS="http://localhost:8080,http://localhost:3002,http://127.0.0.1:8080,http://127.0.0.1:3002" \
     TUDUDI_SESSION_SECRET="" \
     TUDUDI_USER_EMAIL="" \
     TUDUDI_USER_PASSWORD="" \
     DISABLE_TELEGRAM=false \
-    DISABLE_SCHEDULER=false \
-    LANG=C.UTF-8 \
-    TZ=UTC
+    DISABLE_SCHEDULER=false
 
-# Generate SSL certificates if needed
-RUN mkdir -p backend-express/certs && \
-    if [ "$TUDUDI_INTERNAL_SSL_ENABLED" = "true" ]; then \
-    openssl req -x509 -newkey rsa:4096 \
-    -keyout backend-express/certs/server.key -out backend-express/certs/server.crt \
-    -days 365 -nodes \
-    -subj '/CN=localhost' \
-    -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"; \
-    fi
+# Minimal healthcheck
+HEALTHCHECK --interval=60s --timeout=3s --start-period=10s --retries=2 \
+    CMD curl -sf http://localhost:3002/api/health || exit 1
 
-# Add healthcheck for Express backend
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3002/api/health || exit 1
-
-# Build production frontend assets
-RUN npm run build
-
-# Copy translation files to dist folder for production serving
-RUN cp -r public/locales dist/
-
-# Create startup script for Express backend
-RUN echo '#!/bin/bash\n\
-set -e\n\
-\n\
-# Navigate to backend directory\n\
-cd backend-express\n\
-\n\
-# Create database directory if it does not exist\n\
-mkdir -p db\n\
-\n\
-# Set database file based on environment\n\
-DB_FILE="db/production.sqlite3"\n\
-if [ "$NODE_ENV" = "development" ]; then\n\
-  DB_FILE="db/development.sqlite3"\n\
-fi\n\
-\n\
-# Initialize database if it does not exist\n\
-if [ ! -f "$DB_FILE" ]; then\n\
-  echo "Initializing database: $DB_FILE"\n\
-  if ! node -e "require(\"./models\").sequelize.sync({ force: true }).then(() => { console.log(\"Database synchronized\"); process.exit(0); }).catch(err => { console.error(\"Database sync error:\", err); process.exit(1); })"; then\n\
-    echo "ERROR: Failed to initialize database"\n\
-    exit 1\n\
-  fi\n\
-else\n\
-  echo "Database already exists: $DB_FILE"\n\
-  # Test database connection\n\
-  if ! node -e "require(\"./models\").sequelize.authenticate().then(() => { console.log(\"Database connection verified\"); process.exit(0); }).catch(err => { console.error(\"Database connection failed:\", err); process.exit(1); })"; then\n\
-    echo "ERROR: Cannot connect to database"\n\
-    exit 1\n\
-  fi\n\
-fi\n\
-\n\
-# Create user if it does not exist and environment variables are set\n\
-if [ -n "$TUDUDI_USER_EMAIL" ] && [ -n "$TUDUDI_USER_PASSWORD" ]; then\n\
-  echo "Creating user if it does not exist..."\n\
-  if ! node -e "\n\
-    const { User } = require(\"./models\");\n\
-    const bcrypt = require(\"bcrypt\");\n\
-    (async () => {\n\
-      try {\n\
-        const [user, created] = await User.findOrCreate({\n\
-          where: { email: process.env.TUDUDI_USER_EMAIL },\n\
-          defaults: {\n\
-            email: process.env.TUDUDI_USER_EMAIL,\n\
-            password: await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD, 10)\n\
-          }\n\
-        });\n\
-        console.log(created ? \"User created:\" : \"User exists:\", user.email);\n\
-        process.exit(0);\n\
-      } catch (error) {\n\
-        console.error(\"Error creating user:\", error);\n\
-        process.exit(1);\n\
-      }\n\
-    })();\n\
-  "; then\n\
-    echo "ERROR: Failed to create user"\n\
-    exit 1\n\
-  fi\n\
-else\n\
-  echo "No user credentials provided, skipping user creation"\n\
-fi\n\
-\n\
-# Start Express backend\n\
-node app.js\n\
-' > start.sh && chmod +x start.sh
-
-# Run Express backend
-CMD ["./start.sh"]
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["/app/start.sh"]

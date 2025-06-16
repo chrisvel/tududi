@@ -2,21 +2,40 @@ const { Sequelize } = require('sequelize');
 const path = require('path');
 
 // Database configuration
-const dbPath = process.env.DATABASE_URL 
-  ? process.env.DATABASE_URL.replace('sqlite:///', '')
-  : path.join(__dirname, '../db', process.env.NODE_ENV === 'production' ? 'production.sqlite3' : 'development.sqlite3');
+let dbConfig;
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: dbPath,
-  logging: process.env.NODE_ENV === 'development' ? console.log : false,
-  define: {
-    timestamps: true,
-    underscored: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
-  }
-});
+if (process.env.NODE_ENV === 'test') {
+  // Use in-memory database for tests
+  dbConfig = {
+    dialect: 'sqlite',
+    storage: ':memory:',
+    logging: false,
+    define: {
+      timestamps: true,
+      underscored: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
+    }
+  };
+} else {
+  const dbPath = process.env.DATABASE_URL 
+    ? process.env.DATABASE_URL.replace('sqlite:///', '')
+    : path.join(__dirname, '../db', process.env.NODE_ENV === 'production' ? 'production.sqlite3' : 'development.sqlite3');
+
+  dbConfig = {
+    dialect: 'sqlite',
+    storage: dbPath,
+    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    define: {
+      timestamps: true,
+      underscored: true,
+      createdAt: 'created_at',
+      updatedAt: 'updated_at'
+    }
+  };
+}
+
+const sequelize = new Sequelize(dbConfig);
 
 // Import models
 const User = require('./user')(sequelize);

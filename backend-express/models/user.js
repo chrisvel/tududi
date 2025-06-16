@@ -79,13 +79,8 @@ module.exports = (sequelize) => {
   }, {
     tableName: 'users',
     hooks: {
-      beforeCreate: async (user) => {
+      beforeValidate: async (user) => {
         if (user.password) {
-          user.password_digest = await bcrypt.hash(user.password, 10);
-        }
-      },
-      beforeUpdate: async (user) => {
-        if (user.changed('password') && user.password) {
           user.password_digest = await bcrypt.hash(user.password, 10);
         }
       }
