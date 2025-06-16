@@ -112,16 +112,38 @@ module.exports = (sequelize) => {
     WAITING: 4
   };
 
-  // Instance methods for priority and status
-  Task.prototype.getPriorityName = function() {
+  // priority and status
+  const getPriorityName = (priorityValue) => {
     const priorities = ['low', 'medium', 'high'];
-    return priorities[this.priority] || 'low';
+    return priorities[priorityValue] || 'low';
   };
 
-  Task.prototype.getStatusName = function() {
+  const getStatusName = (statusValue) => {
     const statuses = ['not_started', 'in_progress', 'done', 'archived', 'waiting'];
-    return statuses[this.status] || 'not_started';
+    return statuses[statusValue] || 'not_started';
   };
+
+  const getPriorityValue = (priorityName) => {
+    const priorities = { 'low': 0, 'medium': 1, 'high': 2 };
+    return priorities[priorityName] !== undefined ? priorities[priorityName] : 0;
+  };
+
+  const getStatusValue = (statusName) => {
+    const statuses = { 
+      'not_started': 0, 
+      'in_progress': 1, 
+      'done': 2, 
+      'archived': 3, 
+      'waiting': 4 
+    };
+    return statuses[statusName] !== undefined ? statuses[statusName] : 0;
+  };
+
+  // Attach utility functions to model
+  Task.getPriorityName = getPriorityName;
+  Task.getStatusName = getStatusName;
+  Task.getPriorityValue = getPriorityValue;
+  Task.getStatusValue = getStatusValue;
 
   return Task;
 };

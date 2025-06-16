@@ -2,180 +2,193 @@ const cron = require('node-cron');
 const { User } = require('../models');
 const TaskSummaryService = require('./taskSummaryService');
 
-class TaskScheduler {
-  constructor() {
-    this.jobs = new Map();
-    this.isInitialized = false;
-  }
+// Create scheduler state
+const createSchedulerState = () => ({
+  jobs: new Map(),
+  isInitialized: false
+});
 
-  static getInstance() {
-    if (!TaskScheduler.instance) {
-      TaskScheduler.instance = new TaskScheduler();
+// Global mutable state (will be managed functionally)
+let schedulerState = createSchedulerState();
+
+// Check if scheduler should be disabled
+const shouldDisableScheduler = () => 
+  process.env.NODE_ENV === 'test' || process.env.DISABLE_SCHEDULER === 'true';
+
+// Create job configuration
+const createJobConfig = () => ({
+  scheduled: false,
+  timezone: 'UTC'
+});
+
+// Create cron expressions
+const getCronExpression = (frequency) => {
+  const expressions = {
+    daily: '0 7 * * *',
+    weekdays: '0 7 * * 1-5', 
+    weekly: '0 7 * * 1',
+    '1h': '0 * * * *',
+    '2h': '0 */2 * * *',
+    '4h': '0 */4 * * *',
+    '8h': '0 */8 * * *',
+    '12h': '0 */12 * * *'
+  };
+  return expressions[frequency];
+};
+
+// Create job handler
+const createJobHandler = (frequency) => async () => {
+  console.log(`Running scheduled task: ${frequency} task summary`);
+  await processSummariesForFrequency(frequency);
+};
+
+// Create job entries
+const createJobEntries = () => {
+  const frequencies = ['daily', 'weekdays', 'weekly', '1h', '2h', '4h', '8h', '12h'];
+  
+  return frequencies.map(frequency => {
+    const cronExpression = getCronExpression(frequency);
+    const jobHandler = createJobHandler(frequency);
+    const jobConfig = createJobConfig();
+    const job = cron.schedule(cronExpression, jobHandler, jobConfig);
+    
+    return [frequency, job];
+  });
+};
+
+// Start all jobs
+const startJobs = (jobs) => {
+  jobs.forEach((job, frequency) => {
+    job.start();
+    console.log(`Started scheduler for frequency: ${frequency}`);
+  });
+};
+
+// Stop all jobs
+const stopJobs = (jobs) => {
+  jobs.forEach((job, frequency) => {
+    job.stop();
+    console.log(`Stopped scheduler for frequency: ${frequency}`);
+  });
+};
+
+// Side effect function to fetch users for frequency
+const fetchUsersForFrequency = async (frequency) => {
+  return await User.findAll({
+    where: {
+      telegram_bot_token: { [require('sequelize').Op.ne]: null },
+      telegram_chat_id: { [require('sequelize').Op.ne]: null },
+      task_summary_enabled: true,
+      task_summary_frequency: frequency
     }
-    return TaskScheduler.instance;
-  }
+  });
+};
 
-  async initialize() {
-    if (this.isInitialized) {
-      console.log('Task scheduler already initialized');
-      return;
+// Side effect function to send summary to user
+const sendSummaryToUser = async (userId, frequency) => {
+  try {
+    const success = await TaskSummaryService.sendSummaryToUser(userId);
+    if (success) {
+      console.log(`Sent ${frequency} summary to user ${userId}`);
+    } else {
+      console.log(`Failed to send ${frequency} summary to user ${userId}`);
     }
+    return success;
+  } catch (error) {
+    console.error(`Error sending ${frequency} summary to user ${userId}:`, error.message);
+    return false;
+  }
+};
 
-    // Don't schedule in test environment
-    if (process.env.NODE_ENV === 'test' || process.env.DISABLE_SCHEDULER === 'true') {
-      console.log('Task scheduler disabled for test environment');
-      return;
-    }
+// Function to process summaries for frequency (contains side effects)
+const processSummariesForFrequency = async (frequency) => {
+  try {
+    const users = await fetchUsersForFrequency(frequency);
+    console.log(`Processing ${users.length} users for frequency: ${frequency}`);
 
-    console.log('Initializing task scheduler...');
+    const results = await Promise.allSettled(
+      users.map(user => sendSummaryToUser(user.id, frequency))
+    );
 
-    // Daily schedule at 7 AM (for users with daily frequency)
-    const dailyJob = cron.schedule('0 7 * * *', async () => {
-      console.log('Running scheduled task: Daily task summary');
-      await this.processSummariesForFrequency('daily');
-    }, {
-      scheduled: false,
-      timezone: 'UTC'
-    });
+    return results;
+  } catch (error) {
+    console.error(`Error processing summaries for frequency ${frequency}:`, error);
+    throw error;
+  }
+};
 
-    // Weekdays schedule at 7 AM (Monday through Friday)
-    const weekdaysJob = cron.schedule('0 7 * * 1-5', async () => {
-      console.log('Running scheduled task: Weekday task summary');
-      await this.processSummariesForFrequency('weekdays');
-    }, {
-      scheduled: false,
-      timezone: 'UTC'
-    });
-
-    // Weekly schedule at 7 AM on Monday
-    const weeklyJob = cron.schedule('0 7 * * 1', async () => {
-      console.log('Running scheduled task: Weekly task summary');
-      await this.processSummariesForFrequency('weekly');
-    }, {
-      scheduled: false,
-      timezone: 'UTC'
-    });
-
-    // Hourly schedules
-    const hourlyJob = cron.schedule('0 * * * *', async () => {
-      console.log('Running scheduled task: Hourly (1h) task summary');
-      await this.processSummariesForFrequency('1h');
-    }, {
-      scheduled: false,
-      timezone: 'UTC'
-    });
-
-    const twoHourlyJob = cron.schedule('0 */2 * * *', async () => {
-      console.log('Running scheduled task: 2-hour task summary');
-      await this.processSummariesForFrequency('2h');
-    }, {
-      scheduled: false,
-      timezone: 'UTC'
-    });
-
-    const fourHourlyJob = cron.schedule('0 */4 * * *', async () => {
-      console.log('Running scheduled task: 4-hour task summary');
-      await this.processSummariesForFrequency('4h');
-    }, {
-      scheduled: false,
-      timezone: 'UTC'
-    });
-
-    const eightHourlyJob = cron.schedule('0 */8 * * *', async () => {
-      console.log('Running scheduled task: 8-hour task summary');
-      await this.processSummariesForFrequency('8h');
-    }, {
-      scheduled: false,
-      timezone: 'UTC'
-    });
-
-    const twelveHourlyJob = cron.schedule('0 */12 * * *', async () => {
-      console.log('Running scheduled task: 12-hour task summary');
-      await this.processSummariesForFrequency('12h');
-    }, {
-      scheduled: false,
-      timezone: 'UTC'
-    });
-
-    // Store jobs for later management
-    this.jobs.set('daily', dailyJob);
-    this.jobs.set('weekdays', weekdaysJob);
-    this.jobs.set('weekly', weeklyJob);
-    this.jobs.set('1h', hourlyJob);
-    this.jobs.set('2h', twoHourlyJob);
-    this.jobs.set('4h', fourHourlyJob);
-    this.jobs.set('8h', eightHourlyJob);
-    this.jobs.set('12h', twelveHourlyJob);
-
-    // Start all jobs
-    this.jobs.forEach((job, frequency) => {
-      job.start();
-      console.log(`Started scheduler for frequency: ${frequency}`);
-    });
-
-    this.isInitialized = true;
-    console.log('Task scheduler initialized successfully');
+// Function to initialize scheduler (contains side effects)
+const initialize = async () => {
+  if (schedulerState.isInitialized) {
+    console.log('Task scheduler already initialized');
+    return schedulerState;
   }
 
-  async processSummariesForFrequency(frequency) {
-    try {
-      const users = await User.findAll({
-        where: {
-          telegram_bot_token: { [require('sequelize').Op.ne]: null },
-          telegram_chat_id: { [require('sequelize').Op.ne]: null },
-          task_summary_enabled: true,
-          task_summary_frequency: frequency
-        }
-      });
-
-      console.log(`Processing ${users.length} users for frequency: ${frequency}`);
-
-      for (const user of users) {
-        try {
-          const success = await TaskSummaryService.sendSummaryToUser(user.id);
-          if (success) {
-            console.log(`Sent ${frequency} summary to user ${user.id}`);
-          } else {
-            console.log(`Failed to send ${frequency} summary to user ${user.id}`);
-          }
-        } catch (error) {
-          console.error(`Error sending ${frequency} summary to user ${user.id}:`, error.message);
-        }
-      }
-    } catch (error) {
-      console.error(`Error processing summaries for frequency ${frequency}:`, error);
-    }
+  if (shouldDisableScheduler()) {
+    console.log('Task scheduler disabled for test environment');
+    return schedulerState;
   }
 
-  async stop() {
-    if (!this.isInitialized) {
-      console.log('Task scheduler not initialized, nothing to stop');
-      return;
-    }
+  console.log('Initializing task scheduler...');
 
-    console.log('Stopping task scheduler...');
-    this.jobs.forEach((job, frequency) => {
-      job.stop();
-      console.log(`Stopped scheduler for frequency: ${frequency}`);
-    });
+  // Create job entries
+  const jobEntries = createJobEntries();
+  const jobs = new Map(jobEntries);
 
-    this.jobs.clear();
-    this.isInitialized = false;
-    console.log('Task scheduler stopped');
+  // Start all jobs
+  startJobs(jobs);
+
+  // Update state immutably
+  schedulerState = {
+    jobs,
+    isInitialized: true
+  };
+
+  console.log('Task scheduler initialized successfully');
+  return schedulerState;
+};
+
+// Function to stop scheduler (contains side effects)
+const stop = async () => {
+  if (!schedulerState.isInitialized) {
+    console.log('Task scheduler not initialized, nothing to stop');
+    return schedulerState;
   }
 
-  async restart() {
-    await this.stop();
-    await this.initialize();
-  }
+  console.log('Stopping task scheduler...');
+  
+  // Stop all jobs
+  stopJobs(schedulerState.jobs);
 
-  getStatus() {
-    return {
-      initialized: this.isInitialized,
-      jobCount: this.jobs.size,
-      jobs: Array.from(this.jobs.keys())
-    };
-  }
-}
+  // Reset state immutably
+  schedulerState = createSchedulerState();
+  
+  console.log('Task scheduler stopped');
+  return schedulerState;
+};
 
-module.exports = TaskScheduler;
+// Function to restart scheduler
+const restart = async () => {
+  await stop();
+  return await initialize();
+};
+
+// Get scheduler status
+const getStatus = () => ({
+  initialized: schedulerState.isInitialized,
+  jobCount: schedulerState.jobs.size,
+  jobs: Array.from(schedulerState.jobs.keys())
+});
+
+// Export functional interface
+module.exports = {
+  initialize,
+  stop,
+  restart,
+  getStatus,
+  processSummariesForFrequency,
+  // For testing
+  _createSchedulerState: createSchedulerState,
+  _shouldDisableScheduler: shouldDisableScheduler,
+  _getCronExpression: getCronExpression
+};

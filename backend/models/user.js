@@ -87,14 +87,18 @@ module.exports = (sequelize) => {
     }
   });
 
-  // Virtual field for password
-  User.prototype.setPassword = async function(password) {
-    this.password_digest = await bcrypt.hash(password, 10);
+  // password operations
+  const hashPassword = async (password) => {
+    return await bcrypt.hash(password, 10);
   };
 
-  User.prototype.checkPassword = async function(password) {
-    return await bcrypt.compare(password, this.password_digest);
+  const checkPassword = async (password, hashedPassword) => {
+    return await bcrypt.compare(password, hashedPassword);
   };
+
+  // Attach utility functions to model
+  User.hashPassword = hashPassword;
+  User.checkPassword = checkPassword;
 
   return User;
 };

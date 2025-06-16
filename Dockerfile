@@ -73,16 +73,27 @@ RUN apk add --no-cache --virtual .test-deps \
 
 # Copy backend package files and install all dependencies (including dev)
 COPY backend/package*.json ./backend/
-RUN cd backend && npm install --no-audit --no-fund
+RUN cd backend && \
+    # Retry npm install with exponential backoff for network issues
+    for i in 1 2 3; do \
+        npm install --no-audit --no-fund && break || \
+        (echo "npm install failed, attempt $i/3, retrying in $((i*5)) seconds..." && sleep $((i*5))); \
+    done
 
-# Copy backend source code
+# Copy backend source code including tests
 COPY backend/ ./backend/
 
 # Run tests
 RUN cd backend && npm test
 
+# Create test completion marker to ensure tests passed
+RUN echo "Tests passed successfully" > /app/test-success.marker
+
 # Stage 4: Final Production Image (minimal base)
 FROM node:20-alpine AS production
+
+# Copy test success marker to ensure tests passed before production build
+COPY --from=test /app/test-success.marker /tmp/test-success.marker
 
 # Create non-root user first (before installing packages)
 RUN addgroup -g 1001 -S app && \

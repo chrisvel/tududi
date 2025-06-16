@@ -42,13 +42,13 @@
 ehthumbs.db
 Thumbs.db
 
-# Test files
-test/
-spec/
-**/*.test.js
-**/*.spec.js
-**/jest.config.*
-**/vitest.config.*
+# Test files (removed to allow tests in Docker build)
+# test/
+# spec/
+# **/*.test.js
+# **/*.spec.js
+# **/jest.config.*
+# **/vitest.config.*
 
 # Documentation and assets
 README.md
