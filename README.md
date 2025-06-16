@@ -14,6 +14,7 @@
 
 This app allows users to manage their tasks, projects, areas, notes, and tags in an organized way. Users can create tasks, projects, areas (to group projects), notes, and tags. Each task can be associated with a project, and both tasks and notes can be tagged for better organization. Projects can belong to areas and can also have multiple notes and tags. This structure helps users categorize and track their work efficiently, whether they’re managing individual tasks, larger projects, or keeping detailed notes.
 
+
 ## ✨ Features
 
 - **Task Management**: Create, update, and delete tasks. Mark tasks as completed and view them by different filters (Today, Upcoming, Someday). Order them by Name, Due Date, Date Created, or Priority.
@@ -35,9 +36,9 @@ Check out our [GitHub Project](https://github.com/users/chrisvel/projects/2) for
 
 ## 🛠️ Getting Started
 
-**One simple command**, that's all it takes to run tududi with _docker_.
+### Quick Start with Docker
 
-### 🐋 Docker
+**One simple command**, that's all it takes to run tududi with Docker.
 
 First pull the latest image:
 
@@ -97,6 +98,14 @@ docker run \
 
 Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
 
+### 🔑 Authentication
+
+The application uses session-based authentication with secure cookies. For development:
+- Frontend runs on port 8080 with webpack dev server
+- Backend runs on port 3001 and handles authentication
+- CORS is configured to allow cross-origin requests during development
+- In production (Docker), both frontend and backend run on the same port (3002)
+
 ## 🚧 Development
 
 ### Prerequisites
@@ -131,7 +140,9 @@ To install `tududi`, follow these steps:
    cd ..
    ```
 
-### 🔒 SSL Setup
+### 🔒 SSL Setup (Optional)
+
+For HTTPS support, create SSL certificates:
 
 1. Create and enter the directory:
    ```bash
@@ -208,41 +219,58 @@ npm run migration:create add-priority-to-projects
 npm run migration:run
 ```
 
-### 👤 Create Your User
+### 👤 User Setup
 
-Users are automatically created when you set environment variables, or you can create them manually:
+#### For Development
 
-1. Set environment variables (recommended):
-   ```bash
-   export TUDUDI_USER_EMAIL=myemail@somewhere.com
-   export TUDUDI_USER_PASSWORD=awes0meHax0Rp4ssword
-   ```
+Set environment variables to automatically create the initial user:
 
-2. Or create manually using npm script:
-   ```bash
-   cd backend
-   npm run user:create myemail@somewhere.com awes0meHax0Rp4ssword
-   cd ..
-   ```
+```bash
+export TUDUDI_USER_EMAIL=dev@example.com
+export TUDUDI_USER_PASSWORD=password123
+export TUDUDI_SESSION_SECRET=$(openssl rand -hex 64)
+```
+
+Or create a user manually:
+```bash
+cd backend
+npm run user:create dev@example.com password123
+cd ..
+```
+
+#### Default Development Credentials
+
+If no environment variables are set, you can use the default development credentials:
+- Email: `dev@example.com`  
+- Password: `password123`
 
 ### 🚀 Usage
 
-To start the application:
+To start the application for development:
 
-1. Start the Express backend:
+1. **Start the Express backend** (in one terminal):
    ```bash
    cd backend
-   npm start
-   # Or for development with auto-reload:
-   # npm run dev
+   npm run dev    # Development mode with auto-reload
+   # Or: npm start  # Production mode
    ```
+   The backend will run on `http://localhost:3001`
 
-2. In a separate terminal, start the frontend development server:
+2. **Start the frontend development server** (in another terminal):
    ```bash
    npm run dev
    ```
+   The frontend will run on `http://localhost:8080`
 
-The backend will run on `http://localhost:3002` and the frontend development server on `http://localhost:8080`.
+3. **Access the application**: Open your browser to `http://localhost:8080`
+
+### Port Configuration
+
+- **Development Frontend**: `http://localhost:8080` (webpack dev server)
+- **Development Backend**: `http://localhost:3001` (Express API server)
+- **Docker/Production**: `http://localhost:3002` (combined frontend + backend)
+
+The webpack dev server automatically proxies API calls and locales to the backend server.
 
 ### 🔍 Testing 
 
