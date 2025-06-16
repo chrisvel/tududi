@@ -60,7 +60,29 @@ RUN npm install --production --no-audit --no-fund && \
     find node_modules -name "docs" -type d -exec rm -rf {} + 2>/dev/null || true && \
     find node_modules -name "examples" -type d -exec rm -rf {} + 2>/dev/null || true
 
-# Stage 3: Final Production Image (minimal base)
+# Stage 3: Test Stage (run tests before production)
+FROM node:20-alpine AS test
+
+WORKDIR /app
+
+# Install build dependencies for testing
+RUN apk add --no-cache --virtual .test-deps \
+    python3 \
+    make \
+    g++ \
+    sqlite-dev
+
+# Copy backend package files and install all dependencies (including dev)
+COPY backend-express/package*.json ./backend-express/
+RUN cd backend-express && npm install --no-audit --no-fund
+
+# Copy backend source code
+COPY backend-express/ ./backend-express/
+
+# Run tests
+RUN cd backend-express && npm test
+
+# Stage 4: Final Production Image (minimal base)
 FROM node:20-alpine AS production
 
 # Create non-root user first (before installing packages)

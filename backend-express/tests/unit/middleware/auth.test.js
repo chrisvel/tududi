@@ -104,6 +104,10 @@ describe('Auth Middleware', () => {
   });
 
   it('should handle database errors', async () => {
+    // Mock console.error to suppress expected error log in test output
+    const originalConsoleError = console.error;
+    console.error = jest.fn();
+    
     // Mock User.findByPk to throw an error
     const originalFindByPk = User.findByPk;
     User.findByPk = jest.fn().mockRejectedValue(new Error('Database connection error'));
@@ -119,7 +123,8 @@ describe('Auth Middleware', () => {
     expect(res.json).toHaveBeenCalledWith({ error: 'Authentication error' });
     expect(next).not.toHaveBeenCalled();
     
-    // Restore original method
+    // Restore original methods
     User.findByPk = originalFindByPk;
+    console.error = originalConsoleError;
   });
 });

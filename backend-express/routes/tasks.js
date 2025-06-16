@@ -238,8 +238,13 @@ router.post('/task', async (req, res) => {
   try {
     const { name, priority, due_date, status, note, project_id, tags } = req.body;
 
+    // Validate required fields
+    if (!name || name.trim() === '') {
+      return res.status(400).json({ error: 'Task name is required.' });
+    }
+
     const taskAttributes = {
-      name,
+      name: name.trim(),
       priority: priority || Task.PRIORITY.LOW,
       due_date: due_date || null,
       status: status || Task.STATUS.NOT_STARTED,

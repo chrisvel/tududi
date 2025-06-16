@@ -57,6 +57,10 @@ describe('Tasks Routes', () => {
     });
 
     it('should require task name', async () => {
+      // Mock console.error to suppress expected error log in test output
+      const originalConsoleError = console.error;
+      console.error = jest.fn();
+      
       const taskData = {
         description: 'Test Description'
       };
@@ -66,6 +70,9 @@ describe('Tasks Routes', () => {
         .send(taskData);
 
       expect(response.status).toBe(400);
+      
+      // Restore original console.error
+      console.error = originalConsoleError;
     });
   });
 
