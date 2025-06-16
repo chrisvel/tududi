@@ -14,6 +14,7 @@
 
 This app allows users to manage their tasks, projects, areas, notes, and tags in an organized way. Users can create tasks, projects, areas (to group projects), notes, and tags. Each task can be associated with a project, and both tasks and notes can be tagged for better organization. Projects can belong to areas and can also have multiple notes and tags. This structure helps users categorize and track their work efficiently, whether they’re managing individual tasks, larger projects, or keeping detailed notes.
 
+
 ## ✨ Features
 
 - **Task Management**: Create, update, and delete tasks. Mark tasks as completed and view them by different filters (Today, Upcoming, Someday). Order them by Name, Due Date, Date Created, or Priority.
@@ -35,9 +36,9 @@ Check out our [GitHub Project](https://github.com/users/chrisvel/projects/2) for
 
 ## 🛠️ Getting Started
 
-**One simple command**, that's all it takes to run tududi with _docker_.
+### Quick Start with Docker
 
-### 🐋 Docker
+**One simple command**, that's all it takes to run tududi with Docker.
 
 First pull the latest image:
 
@@ -58,7 +59,7 @@ The following environment variables are used to configure tududi:
 - `TUDUDI_INTERNAL_SSL_ENABLED` - Set to 'true' if using HTTPS internally (default: false)
 - `TUDUDI_ALLOWED_ORIGINS` - Controls CORS access for different deployment scenarios:
   - Not set: Only allows localhost origins
-  - Specific domains: `https://tududi.com,http://localhost:9292`
+  - Specific domains: `https://tududi.com,http://localhost:3002`
   - Allow all (development only): Set to empty string `""`
 
 #### Common Configuration Examples:
@@ -89,23 +90,31 @@ docker run \
   -e TUDUDI_USER_PASSWORD=mysecurepassword \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
   -e TUDUDI_INTERNAL_SSL_ENABLED=false \
-  -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:9292 \
-  -v ~/tududi_db:/usr/src/app/tududi_db \
-  -p 9292:9292 \
+  -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:3002 \
+  -v ~/tududi_db:/usr/src/app/backend/db \
+  -p 3002:3002 \
   -d chrisvel/tududi:latest
 ```
 
-Navigate to [https://localhost:9292](https://localhost:9292) and login with your credentials.
+Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
+
+### 🔑 Authentication
+
+The application uses session-based authentication with secure cookies. For development:
+- Frontend runs on port 8080 with webpack dev server
+- Backend runs on port 3001 and handles authentication
+- CORS is configured to allow cross-origin requests during development
+- In production (Docker), both frontend and backend run on the same port (3002)
 
 ## 🚧 Development
 
 ### Prerequisites
 
 Before you begin, ensure you have the following installed:
-- Ruby (version 3.2.2 or higher)
-- Sinatra
+- Node.js (version 20 or higher)
+- Express.js
 - SQLite3
-- Puma
+- npm
 - ReactJS
 
 ### 🏗 Installation
@@ -120,58 +129,164 @@ To install `tududi`, follow these steps:
    ```bash
    cd tududi
    ```
-3. Install the required gems:
+3. Install the required dependencies:
    ```bash
-   bundle install
+   # Install frontend dependencies
+   npm install
+   
+   # Install backend dependencies
+   cd backend
+   npm install
+   cd ..
    ```
 
-### 🔒 SSL Setup
+### 🔒 SSL Setup (Optional)
+
+For HTTPS support, create SSL certificates:
 
 1. Create and enter the directory:
    ```bash
-   mkdir certs
-   cd certs
+   mkdir backend/certs
+   cd backend/certs
    ```
 2. Create the key and cert:
    ```bash
    openssl genrsa -out server.key 2048
    openssl req -new -x509 -key server.key -out server.crt -days 365
+   cd ../..
    ```
 
 ### 📂 Database Setup
 
-Execute the migrations:
+The database will be automatically initialized when you start the Express backend. For manual database operations:
 
-```bash 
-rake db:migrate 
+```bash
+cd backend
+
+# Initialize database (creates tables, drops existing data)
+npm run db:init
+
+# Sync database (creates tables if they don't exist)
+npm run db:sync
+
+# Migrate database (alters existing tables to match models)
+npm run db:migrate
+
+# Reset database (drops and recreates all tables)
+npm run db:reset
+
+# Check database status and connection
+npm run db:status
+
+cd ..
 ```
 
-### 👤 Create Your User
+### 🔄 Database Migrations
 
-1. Open the console:
-   ```bash
-   rake console
-   ```
-2. Add the user:
-   ```ruby
-   User.create(email: "myemail@somewhere.com", password: "awes0meHax0Rp4ssword")
-   ```
+For schema changes, use Sequelize migrations (similar to Rails/Ruby migrations):
+
+```bash
+cd backend
+
+# Create a new migration
+npm run migration:create add-description-to-tasks
+
+# Run pending migrations
+npm run migration:run
+
+# Check migration status
+npm run migration:status
+
+# Rollback last migration
+npm run migration:undo
+
+# Rollback all migrations
+npm run migration:undo:all
+
+cd ..
+```
+
+#### Creating a New Migration Example:
+```bash
+# 1. Create the migration file
+npm run migration:create add-priority-to-projects
+
+# 2. Edit the generated file in migrations/ folder:
+# - Add your schema changes in the 'up' function
+# - Add rollback logic in the 'down' function
+
+# 3. Run the migration
+npm run migration:run
+```
+
+### 👤 User Setup
+
+#### For Development
+
+Set environment variables to automatically create the initial user:
+
+```bash
+export TUDUDI_USER_EMAIL=dev@example.com
+export TUDUDI_USER_PASSWORD=password123
+export TUDUDI_SESSION_SECRET=$(openssl rand -hex 64)
+```
+
+Or create a user manually:
+```bash
+cd backend
+npm run user:create dev@example.com password123
+cd ..
+```
+
+#### Default Development Credentials
+
+If no environment variables are set, you can use the default development credentials:
+- Email: `dev@example.com`  
+- Password: `password123`
 
 ### 🚀 Usage
 
-To start the application, run:
+To start the application for development:
 
-```bash
-puma -C app/config/puma.rb
-```
+1. **Start the Express backend** (in one terminal):
+   ```bash
+   cd backend
+   npm run dev    # Development mode with auto-reload
+   # Or: npm start  # Production mode
+   ```
+   The backend will run on `http://localhost:3001`
+
+2. **Start the frontend development server** (in another terminal):
+   ```bash
+   npm run dev
+   ```
+   The frontend will run on `http://localhost:8080`
+
+3. **Access the application**: Open your browser to `http://localhost:8080`
+
+### Port Configuration
+
+- **Development Frontend**: `http://localhost:8080` (webpack dev server)
+- **Development Backend**: `http://localhost:3001` (Express API server)
+- **Docker/Production**: `http://localhost:3002` (combined frontend + backend)
+
+The webpack dev server automatically proxies API calls and locales to the backend server.
 
 ### 🔍 Testing 
 
-To run tests, execute:
+To run tests:
 
 ```bash
-bundle exec ruby -Itest test/test_app.rb
+# Backend tests
+cd backend
+npm test
+
+# Frontend tests  
+cd ..
+npm test
 ```
+
+Note: Test suites are currently being migrated from the Ruby/Sinatra implementation.
 
 ## 🤝 Contributing
 

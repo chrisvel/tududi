@@ -10,3 +10,5 @@ node_modules
 
 public/js/bundle.js
 .aider*
+
+backend/coverage/

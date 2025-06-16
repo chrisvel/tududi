@@ -1,6 +1,110 @@
-db/*.sqlite3
-*.sqlite3
-*.sqlite3-shm
-*.sqlite3-wal
-certs/
+# ============================================================================
+# Optimized .dockerignore for multi-stage build
+# ============================================================================
+
+# Node modules (installed in container)
+**/node_modules/
+**/.npm
+
+# Development files
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+**/.env.local
+**/.env.development
+**/.env.test
+
+# Git and version control
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# Development databases
+**/db/*.sqlite3*
+**/*.sqlite3*
+**/db/*.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-*
+**/.editorconfig
+
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Test files
+test/
+spec/
+**/*.test.js
+**/*.spec.js
+**/jest.config.*
+**/vitest.config.*
+
+# Documentation and assets
+README.md
+LICENSE
+docs/
+screenshots/
+**/*.md
+
+# Build artifacts (built in container)
+dist/
+build/
+.next/
+.nuxt/
+coverage/
+.nyc_output/
+
+# Temporary and cache files
+tmp/
+temp/
+.cache/
+**/.cache
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# Development only
+frontend.log
+server.log
+cookies.txt
+**/.eslintcache
+
+# Certificates (generated in container)
+**/certs/
+
+# Docker related (avoid recursion)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Development scripts not needed in production
+backend-express/scripts/
+backend-express/migrations/
+backend-express/seeders/
+
+# Additional exclusions for minimal image
+backend-express/test/
+backend-express/tests/
+**/node_modules/.cache/
+**/.git/
+**/.gitignore
+**/yarn.lock
+**/*.log
+**/*.tmp
+**/coverage/
+
+# Backup files
+**/*.bak
+**/*.backup
+**/*.orig

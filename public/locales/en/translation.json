@@ -14,6 +14,8 @@
     "completed": "Completed",
     "error": "Error",
     "success": "Success",
+    "area": "Area",
+    "status": "Status",
     "saving": "Saving...",
     "none": "None"
   },
@@ -75,6 +77,9 @@
     "successMessage": "Profile updated successfully!",
     "languageChangedNote": "Language changes are applied immediately",
     "languageChanging": "Changing language...",
+    "languagePreference": "Language Preference",
+    "personalInfo": "Personal Information",
+    "errorMessage": "Failed to update profile",
     "telegramIntegration": "Telegram Integration",
     "telegramDescription": "Connect your Tududi account to a Telegram bot to add items to your inbox via Telegram messages.",
     "telegramBotToken": "Telegram Bot Token",
@@ -103,7 +108,23 @@
     "testTelegramMessage": "Test Telegram",
     "testMessageSent": "Test message sent successfully!",
     "testMessageFailed": "Failed to send test message.",
-    "testMessageError": "Error sending test message."
+    "testMessageError": "Error sending test message.",
+    "taskSummaryNotifications": "Task Summary Notifications",
+    "taskSummaryDescription": "Receive regular summaries of your tasks via Telegram. This feature requires Telegram integration to be set up.",
+    "enableTaskSummaries": "Enable Task Summaries",
+    "summaryFrequency": "Summary frequency",
+    "summaryFrequencyDescription": "Choose how often you want to receive task summaries",
+    "sendTestSummary": "Send test summary",
+    "frequency": {
+      "1h": "1 hour",
+      "2h": "2 hours",
+      "4h": "4 hours",
+      "8h": "8 hours",
+      "12h": "12 hours",
+      "daily": "1 day",
+      "weekly": "1 week"
+    },
+    "frequencyHelp": "Choose how often you want to receive task summaries"
   },
   "modals": {
     "confirmDelete": "Are you sure you want to delete?",
@@ -273,7 +294,11 @@
     "createTask": "Create task",
     "createProject": "Create project",
     "createNote": "Create note",
-    "convertTo": "Convert to"
+    "convertTo": "Convert to",
+    "unprocessedItems": "You have {{count}} item(s) in your inbox",
+    "processNow": "Process now",
+    "deleteConfirmTitle": "Delete Item",
+    "deleteConfirmMessage": "Are you sure you want to delete this item from your inbox? This action cannot be undone."
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -345,6 +370,9 @@
     "noProjectsFound": "No projects found",
     "cardViewAriaLabel": "Card View",
     "listViewAriaLabel": "List View",
+    "active": "Active",
+    "inactive": "Inactive",
+    "metrics": "Projects",
     "filters": {
       "active": "Active",
       "inactive": "Inactive",
@@ -401,6 +429,7 @@
     "status": "Status",
     "active": "Active",
     "inactive": "Inactive",
-    "viewTasksWithTag": "View tasks with this tag"
+    "viewTasksWithTag": "View tasks with this tag",
+    "typeToAdd": "Type to add a tag"
   }
 }
