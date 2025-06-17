@@ -1,7 +1,7 @@
 {
   "name": "tududi",
   "version": "0.3",
-  "description": "`tududi` is a task and project management web application built with Sinatra. It allows users to efficiently manage their tasks and projects, categorize them into different areas, and track due dates. `tududi` is designed to be intuitive and easy to use, providing a seamless experience for personal productivity.",
+  "description": "Self-hosted task management with hierarchical organization (Areas > Projects > Tasks), multi-language support, and Telegram integration. Built with React/TypeScript frontend and functional programming Express.js backend.",
   "main": "index.js",
   "directories": {
     "test": "test"

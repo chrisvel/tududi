@@ -1,6 +1,6 @@
 # 📝 tududi
 
-`tududi` is a task and project management web application that allows users to efficiently manage their tasks and projects, categorize them into different areas, and track due dates. It is designed to be intuitive and easy to use, providing a seamless experience for personal productivity.
+`tududi` is a self-hosted task and project management web application with hierarchical organization (Areas > Projects > Tasks), multi-language support, and Telegram integration. Built with React/TypeScript frontend and functional programming Express.js backend, it provides an intuitive experience for personal productivity.
 
 ![Light Mode Screenshot](screenshots/all-light.png)
 
@@ -286,7 +286,7 @@ cd ..
 npm test
 ```
 
-Note: Test suites are currently being migrated from the Ruby/Sinatra implementation.
+Note: The application has been fully migrated from Ruby/Sinatra to a functional programming Express.js implementation with comprehensive test coverage.
 
 ## 🤝 Contributing
 

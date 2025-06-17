@@ -1,6 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "description": "Functional programming Express.js backend for tududi task management application",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
