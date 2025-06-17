@@ -1,4 +1,4 @@
-const TelegramPoller = require('./telegramPoller');
+const telegramPoller = require('./telegramPoller');
 const { User } = require('../models');
 
 async function initializeTelegramPolling() {
@@ -9,8 +9,7 @@ async function initializeTelegramPolling() {
   console.log('Initializing Telegram polling for configured users...');
 
   try {
-    // Get singleton instance of the poller
-    const poller = TelegramPoller.getInstance();
+    // Use functional telegram poller
 
     // Find users with configured Telegram tokens
     const usersWithTelegram = await User.findAll({
@@ -27,7 +26,7 @@ async function initializeTelegramPolling() {
       // Add each user to the polling list
       for (const user of usersWithTelegram) {
         console.log(`Starting Telegram polling for user ${user.id}`);
-        await poller.addUser(user);
+        await telegramPoller.addUser(user);
       }
 
       console.log('Telegram polling initialized successfully');

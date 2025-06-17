@@ -9,7 +9,7 @@ const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { sequelize } = require('./models');
 const { initializeTelegramPolling } = require('./services/telegramInitializer');
-const TaskScheduler = require('./services/taskScheduler');
+const taskScheduler = require('./services/taskScheduler');
 
 const app = express();
 
@@ -143,8 +143,7 @@ async function startServer() {
     await initializeTelegramPolling();
     
     // Initialize task scheduler
-    const scheduler = TaskScheduler.getInstance();
-    await scheduler.initialize();
+    await taskScheduler.initialize();
     
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running on port ${PORT}`);

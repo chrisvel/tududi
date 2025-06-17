@@ -95,30 +95,30 @@ describe('Task Model', () => {
 
     it('should return correct priority name', async () => {
       task.priority = Task.PRIORITY.LOW;
-      expect(task.getPriorityName()).toBe('low');
+      expect(Task.getPriorityName(task.priority)).toBe('low');
 
       task.priority = Task.PRIORITY.MEDIUM;
-      expect(task.getPriorityName()).toBe('medium');
+      expect(Task.getPriorityName(task.priority)).toBe('medium');
 
       task.priority = Task.PRIORITY.HIGH;
-      expect(task.getPriorityName()).toBe('high');
+      expect(Task.getPriorityName(task.priority)).toBe('high');
     });
 
     it('should return correct status name', async () => {
       task.status = Task.STATUS.NOT_STARTED;
-      expect(task.getStatusName()).toBe('not_started');
+      expect(Task.getStatusName(task.status)).toBe('not_started');
 
       task.status = Task.STATUS.IN_PROGRESS;
-      expect(task.getStatusName()).toBe('in_progress');
+      expect(Task.getStatusName(task.status)).toBe('in_progress');
 
       task.status = Task.STATUS.DONE;
-      expect(task.getStatusName()).toBe('done');
+      expect(Task.getStatusName(task.status)).toBe('done');
 
       task.status = Task.STATUS.ARCHIVED;
-      expect(task.getStatusName()).toBe('archived');
+      expect(Task.getStatusName(task.status)).toBe('archived');
 
       task.status = Task.STATUS.WAITING;
-      expect(task.getStatusName()).toBe('waiting');
+      expect(Task.getStatusName(task.status)).toBe('waiting');
     });
   });
 

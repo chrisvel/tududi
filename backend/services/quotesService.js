@@ -34,7 +34,7 @@ const parseYamlContent = (content) => {
 
 // validate quotes data structure
 const validateQuotesData = (data) => 
-  data && data.quotes && Array.isArray(data.quotes);
+  !!(data && data.quotes && Array.isArray(data.quotes));
 
 // extract quotes from data
 const extractQuotes = (data) => {

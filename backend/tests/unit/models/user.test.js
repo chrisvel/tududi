@@ -85,23 +85,25 @@ describe('User Model', () => {
     });
 
     it('should check password correctly', async () => {
-      const isValid = await user.checkPassword('password123');
+      const isValid = await User.checkPassword('password123', user.password_digest);
       expect(isValid).toBe(true);
 
-      const isInvalid = await user.checkPassword('wrongpassword');
+      const isInvalid = await User.checkPassword('wrongpassword', user.password_digest);
       expect(isInvalid).toBe(false);
     });
 
     it('should set new password using setPassword method', async () => {
       const oldPasswordDigest = user.password_digest;
-      await user.setPassword('newpassword');
+      const newPasswordDigest = await User.hashPassword('newpassword');
+      user.password_digest = newPasswordDigest;
+      await user.save();
       
       expect(user.password_digest).not.toBe(oldPasswordDigest);
       
-      const isValidNew = await user.checkPassword('newpassword');
+      const isValidNew = await User.checkPassword('newpassword', user.password_digest);
       expect(isValidNew).toBe(true);
       
-      const isValidOld = await user.checkPassword('password123');
+      const isValidOld = await User.checkPassword('password123', user.password_digest);
       expect(isValidOld).toBe(false);
     });
 
@@ -112,7 +114,7 @@ describe('User Model', () => {
       
       expect(user.password_digest).not.toBe(oldPasswordDigest);
       
-      const isValidNew = await user.checkPassword('newpassword');
+      const isValidNew = await User.checkPassword('newpassword', user.password_digest);
       expect(isValidNew).toBe(true);
     });
   });

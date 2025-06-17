@@ -1,6 +1,6 @@
 const express = require('express');
 const { User } = require('../models');
-const TelegramPoller = require('../services/telegramPoller');
+const telegramPoller = require('../services/telegramPoller');
 const router = express.Router();
 
 // POST /api/telegram/start-polling
@@ -15,14 +15,13 @@ router.post('/telegram/start-polling', async (req, res) => {
       return res.status(400).json({ error: 'Telegram bot token not set.' });
     }
 
-    const poller = TelegramPoller.getInstance();
-    const success = await poller.addUser(user);
+    const success = await telegramPoller.addUser(user);
 
     if (success) {
       res.json({
         success: true,
         message: 'Telegram polling started',
-        status: poller.getStatus()
+        status: telegramPoller.getStatus()
       });
     } else {
       res.status(500).json({ error: 'Failed to start Telegram polling.' });
@@ -40,13 +39,12 @@ router.post('/telegram/stop-polling', async (req, res) => {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const poller = TelegramPoller.getInstance();
-    const success = poller.removeUser(req.session.userId);
+    const success = telegramPoller.removeUser(req.session.userId);
 
     res.json({
       success: true,
       message: 'Telegram polling stopped',
-      status: poller.getStatus()
+      status: telegramPoller.getStatus()
     });
   } catch (error) {
     console.error('Error stopping Telegram polling:', error);
@@ -61,11 +59,9 @@ router.get('/telegram/polling-status', async (req, res) => {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const poller = TelegramPoller.getInstance();
-    
     res.json({
       success: true,
-      status: poller.getStatus()
+      status: telegramPoller.getStatus()
     });
   } catch (error) {
     console.error('Error getting Telegram polling status:', error);

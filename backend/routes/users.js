@@ -1,6 +1,6 @@
 const express = require('express');
 const { User } = require('../models');
-const TaskSummaryService = require('../services/taskSummaryService');
+const taskSummaryService = require('../services/taskSummaryService');
 const router = express.Router();
 
 const VALID_FREQUENCIES = ['daily', 'weekdays', 'weekly', '1h', '2h', '4h', '8h', '12h'];
@@ -159,7 +159,7 @@ router.post('/profile/task-summary/send-now', async (req, res) => {
     }
 
     // Send the task summary
-    const success = await TaskSummaryService.sendSummaryToUser(user.id);
+    const success = await taskSummaryService.sendSummaryToUser(user.id);
     
     if (success) {
       res.json({
