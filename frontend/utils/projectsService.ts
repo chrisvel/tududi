@@ -17,7 +17,30 @@ export const fetchProjects = async (activeFilter = "all", areaFilter = ""): Prom
   await handleAuthResponse(response, 'Failed to fetch projects.');
 
   const data = await response.json();
-  return data.projects || data;
+  return data;
+};
+
+export const fetchGroupedProjects = async (activeFilter = "all", areaFilter = ""): Promise<Record<string, Project[]>> => {
+  let url = `/api/projects`;
+  const params = new URLSearchParams();
+
+  params.append("grouped", "true");
+  if (activeFilter !== "all") params.append("active", activeFilter);
+  if (areaFilter) params.append("area_id", areaFilter);
+  if (params.toString()) url += `?${params.toString()}`;
+
+  console.log("Fetching grouped projects from URL:", url);
+
+  const response = await fetch(url, {
+    credentials: 'include',
+    headers: { Accept: 'application/json' },
+  });
+
+  await handleAuthResponse(response, 'Failed to fetch projects.');
+
+  const data = await response.json();
+  console.log("Received data type:", typeof data, "Data:", data);
+  return data;
 };
 
 export const fetchProjectById = async (projectId: string): Promise<Project> => {

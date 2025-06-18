@@ -8,16 +8,15 @@ import {
 import ConfirmDialog from "./Shared/ConfirmDialog";
 import ProjectModal from "./Project/ProjectModal";
 import { useStore } from "../store/useStore";
-import { fetchProjects, createProject, updateProject, deleteProject } from "../utils/projectsService";
+import { fetchGroupedProjects, createProject, updateProject, deleteProject } from "../utils/projectsService";
 import { fetchAreas } from "../utils/areasService";
 import { useTranslation } from "react-i18next";
 
 import { Project } from "../entities/Project";
-import { PriorityType, StatusType } from "../entities/Task";
+import { PriorityType } from "../entities/Task";
 import { useSearchParams } from "react-router-dom";
 import ProjectItem from "./Project/ProjectItem";
 
-type ProjectTaskCounts = Record<StatusType, number>;
 
 const getPriorityStyles = (priority: PriorityType) => {
   switch (priority) {
@@ -35,10 +34,10 @@ const getPriorityStyles = (priority: PriorityType) => {
 const Projects: React.FC = () => {
   const { t } = useTranslation();
   const { areas, setAreas, setLoading: setAreasLoading, setError: setAreasError } = useStore((state) => state.areasStore);
-  const { projects, setProjects, setLoading: setProjectsLoading, setError: setProjectsError } = useStore((state) => state.projectsStore);
+  const { setLoading: setProjectsLoading, setError: setProjectsError } = useStore((state) => state.projectsStore);
   const { isLoading, isError } = useStore((state) => state.projectsStore);
 
-  const [taskStatusCounts, setTaskStatusCounts] = useState<Record<number, ProjectTaskCounts>>({});
+  const [groupedProjects, setGroupedProjects] = useState<Record<string, Project[]>>({});
   const [isProjectModalOpen, setIsProjectModalOpen] = useState<boolean>(false);
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
@@ -68,8 +67,9 @@ useEffect(() => {
 useEffect(() => {
   const loadProjects = async () => {
     try {
-      const projectsData = await fetchProjects(activeFilter, areaFilter);
-      setProjects(projectsData);
+      const groupedProjectsData = await fetchGroupedProjects(activeFilter, areaFilter);
+      console.log("Received grouped projects data:", groupedProjectsData);
+      setGroupedProjects(groupedProjectsData);
     } catch (error) {
       console.error("Failed to fetch projects:", error);
       setProjectsError(true);
@@ -87,8 +87,8 @@ useEffect(() => {
       } else {
         await createProject(project);
       }
-      const updatedProjects = await fetchProjects(activeFilter, areaFilter);
-      setProjects(updatedProjects);
+      const groupedProjectsData = await fetchGroupedProjects(activeFilter, areaFilter);
+      setGroupedProjects(groupedProjectsData);
     } catch (error) {
       console.error("Error saving project:", error);
       setProjectsError(true);
@@ -110,8 +110,8 @@ useEffect(() => {
       if (projectToDelete.id !== undefined) {
         setProjectsLoading(true);
         await deleteProject(projectToDelete.id);
-        const updatedProjects = await fetchProjects(activeFilter, areaFilter);
-        setProjects(updatedProjects);
+        const groupedProjectsData = await fetchGroupedProjects(activeFilter, areaFilter);
+        setGroupedProjects(groupedProjectsData);
       } else {
         console.error("Cannot delete project: ID is undefined.");
       }
@@ -125,17 +125,9 @@ useEffect(() => {
     }
   };
 
-  const getCompletionPercentage = (projectId: number | undefined) => {
-    if (!projectId) return 0;
-    const taskStatus = taskStatusCounts[projectId] || {
-      not_started: 0,
-      in_progress: 0,
-      done: 0,
-      archived: 0,
-    };
-    const totalTasks = taskStatus.done + taskStatus.not_started + taskStatus.in_progress;
-    if (totalTasks === 0) return 0;
-    return Math.round((taskStatus.done / totalTasks) * 100);
+  const getCompletionPercentage = (project: Project) => {
+    // Now the completion percentage comes directly from the backend
+    return (project as any).completion_percentage || 0;
   };
 
   const handleActiveFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -163,15 +155,23 @@ useEffect(() => {
     setSearchParams(params);
   };
 
-  const filteredProjects = projects.filter((project) =>
-    project.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const groupedProjects = filteredProjects.reduce<Record<string, Project[]>>(
-    (acc, project) => {
-      const areaName = project.area ? project.area.name : "Uncategorized";
-      if (!acc[areaName]) acc[areaName] = [];
-      acc[areaName].push(project);
+  // Apply search filter to the grouped projects from backend
+  const searchFilteredGroupedProjects = Object.keys(groupedProjects).reduce<Record<string, Project[]>>(
+    (acc, areaName) => {
+      const projectsInArea = groupedProjects[areaName];
+      
+      // Defensive check: ensure projectsInArea is an array
+      if (!Array.isArray(projectsInArea)) {
+        console.warn(`Projects for area "${areaName}" is not an array:`, projectsInArea);
+        return acc;
+      }
+      
+      const filteredProjects = projectsInArea.filter((project) =>
+        project.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      if (filteredProjects.length > 0) {
+        acc[areaName] = filteredProjects;
+      }
       return acc;
     },
     {}
@@ -299,19 +299,21 @@ useEffect(() => {
               : "flex flex-col space-y-1"
           }`}
         >
-          {Object.keys(groupedProjects).length === 0 ? (
+          {Object.keys(searchFilteredGroupedProjects).length === 0 ? (
             <div className="text-gray-700 dark:text-gray-300">
               {t('projects.noProjectsFound')}
             </div>
           ) : (
-            Object.keys(groupedProjects).map((areaName) => (
+            Object.keys(searchFilteredGroupedProjects).map((areaName) => (
               <React.Fragment key={areaName}>
-                {viewMode === "cards" && (
-                  <h3 className="col-span-full text-md uppercase font-light text-gray-800 dark:text-gray-200 mb-2 mt-6">
-                    {areaName}
-                  </h3>
-                )}
-                {groupedProjects[areaName].map((project) => {
+                <h3 className={`${
+                  viewMode === "cards" 
+                    ? "col-span-full text-md uppercase font-light text-gray-800 dark:text-gray-200 mb-2 mt-6"
+                    : "text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3 mt-6 border-b border-gray-300 dark:border-gray-600 pb-2"
+                }`}>
+                  {areaName}
+                </h3>
+                {searchFilteredGroupedProjects[areaName].map((project) => {
                   const { color } = getPriorityStyles(project.priority || "low");
                   return (
                     <ProjectItem
@@ -319,7 +321,7 @@ useEffect(() => {
                       project={project}
                       viewMode={viewMode}
                       color={color}
-                      getCompletionPercentage={getCompletionPercentage}
+                      getCompletionPercentage={() => getCompletionPercentage(project)}
                       activeDropdown={activeDropdown}
                       setActiveDropdown={setActiveDropdown}
                       handleEditProject={handleEditProject}

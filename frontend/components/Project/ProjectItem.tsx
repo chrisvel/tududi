@@ -8,7 +8,7 @@ interface ProjectItemProps {
   project: Project;
   viewMode: "cards" | "list";
   color: string;
-  getCompletionPercentage: (projectId: number | undefined) => number;
+  getCompletionPercentage: () => number;
   activeDropdown: number | null;
   setActiveDropdown: React.Dispatch<React.SetStateAction<number | null>>;
   handleEditProject: (project: Project) => void;
@@ -126,12 +126,12 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
               <div
                 className="bg-blue-500 h-2 rounded-full"
                 style={{
-                  width: `${getCompletionPercentage(project?.id)}%`,
+                  width: `${getCompletionPercentage()}%`,
                 }}
               ></div>
             </div>
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              {t("projectItem.completionPercentage", { percentage: getCompletionPercentage(project?.id) })}
+              {t("projectItem.completionPercentage", { percentage: getCompletionPercentage() })}
             </span>
           </div>
         </div>

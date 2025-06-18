@@ -87,36 +87,46 @@ router.get('/projects', async (req, res) => {
       order: [['name', 'ASC']]
     });
 
+    const { grouped } = req.query;
+    
     // Calculate task status counts for each project
     const taskStatusCounts = {};
-    projects.forEach(project => {
+    const enhancedProjects = projects.map(project => {
       const tasks = project.Tasks || [];
-      taskStatusCounts[project.id] = {
+      const taskStatus = {
         total: tasks.length,
         done: tasks.filter(t => t.status === 2).length,
         in_progress: tasks.filter(t => t.status === 1).length,
         not_started: tasks.filter(t => t.status === 0).length
       };
-    });
-
-    // Group projects by area
-    const groupedProjects = {};
-    projects.forEach(project => {
-      const areaName = project.Area ? project.Area.name : 'No Area';
-      if (!groupedProjects[areaName]) {
-        groupedProjects[areaName] = [];
-      }
-      groupedProjects[areaName].push(project);
-    });
-
-    res.json({
-      projects: projects.map(project => ({
+      
+      taskStatusCounts[project.id] = taskStatus;
+      
+      return {
         ...project.toJSON(),
-        due_date_at: project.due_date_at ? project.due_date_at.toISOString() : null
-      })),
-      task_status_counts: taskStatusCounts,
-      grouped_projects: groupedProjects
+        due_date_at: project.due_date_at ? project.due_date_at.toISOString() : null,
+        task_status: taskStatus,
+        completion_percentage: taskStatus.total > 0 ? Math.round((taskStatus.done / taskStatus.total) * 100) : 0
+      };
     });
+
+    // If grouped=true, return grouped format
+    if (grouped === 'true') {
+      console.log('Returning grouped format');
+      const groupedProjects = {};
+      enhancedProjects.forEach(project => {
+        const areaName = project.Area ? project.Area.name : 'No Area';
+        if (!groupedProjects[areaName]) {
+          groupedProjects[areaName] = [];
+        }
+        groupedProjects[areaName].push(project);
+      });
+      console.log('Grouped projects structure:', Object.keys(groupedProjects).map(key => `${key}: ${groupedProjects[key].length} projects`));
+      res.json(groupedProjects);
+    } else {
+      console.log('Returning flat array format');
+      res.json(enhancedProjects);
+    }
   } catch (error) {
     console.error('Error fetching projects:', error);
     res.status(500).json({ error: 'Internal server error' });
