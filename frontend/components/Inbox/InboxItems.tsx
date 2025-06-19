@@ -70,9 +70,7 @@ const InboxItems: React.FC = () => {
     };
     
     // Handler for the inboxItemsUpdated custom event
-    const handleInboxItemsUpdated = (event: CustomEvent<{count: number, firstItemContent: string}>) => {
-      console.log(`Received inboxItemsUpdated event: ${event.detail.count} new items`);
-      
+    const handleInboxItemsUpdated = (event: CustomEvent<{count: number, firstItemContent: string}>) => {      
       // Show toast notifications for new items
       if (event.detail.count > 0) {
         // Show notification for the first new item
@@ -185,7 +183,6 @@ const InboxItems: React.FC = () => {
       } else if (!note.tags.some(tag => tag.name === 'bookmark')) {
         note.tags.push({ name: 'bookmark' });
       }
-      console.log("Opening NoteModal with URL content and tags:", note.tags);
     }
     
     setNoteToEdit(note);
@@ -249,9 +246,7 @@ const InboxItems: React.FC = () => {
         // Use spread operator to create a new array with the bookmark tag added
         note.tags = [...note.tags, { name: 'bookmark' }];
       }
-      
-      console.log('Creating note with tags:', JSON.stringify(note.tags));
-      
+            
       // Create the note with proper tags
       await createNote(note);
       showSuccessToast(t('note.createSuccess', 'Note created successfully'));

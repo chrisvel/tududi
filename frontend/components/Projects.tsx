@@ -68,7 +68,6 @@ useEffect(() => {
   const loadProjects = async () => {
     try {
       const groupedProjectsData = await fetchGroupedProjects(activeFilter, areaFilter);
-      console.log("Received grouped projects data:", groupedProjectsData);
       setGroupedProjects(groupedProjectsData);
     } catch (error) {
       console.error("Failed to fetch projects:", error);

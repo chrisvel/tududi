@@ -31,6 +31,19 @@
     "tags": "Tags",
     "required": "Dieses Feld ist erforderlich",
     "optional": "Optional",
+    "task": {
+      "labels": {
+        "recurrenceType": "Wiederholen",
+        "recurrenceInterval": "Alle",
+        "weekday": "Am Tag",
+        "monthDay": "Tag des Monats",
+        "weekOfMonth": "Woche des Monats",
+        "recurrenceEndDate": "Enddatum (optional)",
+        "completionBased": "Nach Abschluss wiederholen"
+      },
+      "recurrenceSettings": "Wiederholungseinstellungen",
+      "completionBasedHelp": "Falls aktiviert, wird die nächste Aufgabe basierend auf dem Abschlussdatum statt dem Fälligkeitsdatum erstellt"
+    },
     "noteTitle": "Notiz-Titel",
     "noteContent": "Notiz-Inhalt",
     "noteTitlePlaceholder": "Notiz-Titel eingeben",
@@ -58,6 +71,28 @@
     "error": "Fehler beim Laden der Notizen",
     "noNotesFound": "Keine Notizen gefunden",
     "searchPlaceholder": "Notizen durchsuchen..."
+  },
+  "recurrence": {
+    "none": "Keine",
+    "daily": "Täglich",
+    "weekly": "Wöchentlich",
+    "monthly": "Monatlich",
+    "monthlyWeekday": "Monatlich am Wochentag",
+    "monthlyLastDay": "Monatlich am letzten Tag",
+    "firstWeek": "Erste Woche",
+    "secondWeek": "Zweite Woche",
+    "thirdWeek": "Dritte Woche",
+    "fourthWeek": "Vierte Woche",
+    "lastWeek": "Letzte Woche"
+  },
+  "weekdays": {
+    "sunday": "Sonntag",
+    "monday": "Montag",
+    "tuesday": "Dienstag",
+    "wednesday": "Mittwoch",
+    "thursday": "Donnerstag",
+    "friday": "Freitag",
+    "saturday": "Samstag"
   }
 }
 

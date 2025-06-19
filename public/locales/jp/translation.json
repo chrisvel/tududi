@@ -99,7 +99,20 @@
     "noteTitle": "ノートタイトル",
     "noteContent": "ノート内容",
     "noteTitlePlaceholder": "ノートのタイトルを入力",
-    "noteContentPlaceholder": "ノートの内容を入力"
+    "noteContentPlaceholder": "ノートの内容を入力",
+    "task": {
+      "labels": {
+        "recurrenceType": "繰り返し",
+        "recurrenceInterval": "間隔",
+        "weekday": "曜日",
+        "monthDay": "月の日",
+        "weekOfMonth": "月の週",
+        "recurrenceEndDate": "終了日 (オプション)",
+        "completionBased": "完了後に繰り返し"
+      },
+      "recurrenceSettings": "繰り返し設定",
+      "completionBasedHelp": "チェックすると、次のタスクは期限日ではなく完了日に基づいて作成されます"
+    }
   },
   "auth": {
     "login": "ログイン",
@@ -225,5 +238,27 @@
     "editTagTitle": "タグ {{tagName}} の編集",
     "deleteTagAriaLabel": "タグ {{tagName}} を削除",
     "deleteTagTitle": "タグ {{tagName}} の削除"
+  },
+  "recurrence": {
+    "none": "なし",
+    "daily": "毎日",
+    "weekly": "毎週",
+    "monthly": "毎月",
+    "monthlyWeekday": "毎月の曜日",
+    "monthlyLastDay": "毎月の最終日",
+    "firstWeek": "第1週",
+    "secondWeek": "第2週",
+    "thirdWeek": "第3週",
+    "fourthWeek": "第4週",
+    "lastWeek": "最終週"
+  },
+  "weekdays": {
+    "sunday": "日曜日",
+    "monday": "月曜日",
+    "tuesday": "火曜日",
+    "wednesday": "水曜日",
+    "thursday": "木曜日",
+    "friday": "金曜日",
+    "saturday": "土曜日"
   }
 }

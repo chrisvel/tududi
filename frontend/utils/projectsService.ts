@@ -29,7 +29,6 @@ export const fetchGroupedProjects = async (activeFilter = "all", areaFilter = ""
   if (areaFilter) params.append("area_id", areaFilter);
   if (params.toString()) url += `?${params.toString()}`;
 
-  console.log("Fetching grouped projects from URL:", url);
 
   const response = await fetch(url, {
     credentials: 'include',
@@ -39,7 +38,6 @@ export const fetchGroupedProjects = async (activeFilter = "all", areaFilter = ""
   await handleAuthResponse(response, 'Failed to fetch projects.');
 
   const data = await response.json();
-  console.log("Received data type:", typeof data, "Data:", data);
   return data;
 };
 

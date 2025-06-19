@@ -46,7 +46,6 @@ const App: React.FC = () => {
       
       if (!response.ok) {
         if (response.status === 401) {
-          console.log("User not authenticated, staying on current page");
           setCurrentUser(null);
           return;
         }
@@ -57,11 +56,9 @@ const App: React.FC = () => {
       if (data.user) {
         setCurrentUser(data.user);
       } else {
-        console.log("No user data received, staying on current page");
         setCurrentUser(null);
       }
     } catch (err) {
-      console.error("Failed to fetch current user:", err);
       setCurrentUser(null);
     } finally {
       setLoading(false);
@@ -77,7 +74,6 @@ const App: React.FC = () => {
   useEffect(() => {
     const handleUserLoggedIn = (event: CustomEvent) => {
       const user = event.detail;
-      console.log('User logged in event received:', user);
       setCurrentUser(user);
     };
     
