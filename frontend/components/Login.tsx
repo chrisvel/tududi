@@ -25,16 +25,11 @@ const Login: React.FC = () => {
 
       const data = await response.json();
 
-      if (response.ok) {
-        console.log('Login successful:', data);
-        
+      if (response.ok) {        
         if (data.user && data.user.language) {
-          console.log('Setting language from login response:', data.user.language);
           await i18n.changeLanguage(data.user.language);
-          console.log('Language changed to:', i18n.language);
         }
         
-        // Trigger a custom event to notify App component
         window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }));
         
         navigate('/today');

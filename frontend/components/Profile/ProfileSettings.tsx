@@ -37,13 +37,11 @@ interface TelegramBotInfo {
   chat_url: string;
 }
 
-// Helper functions
 const capitalize = (str: string): string => {
   if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-// Format frequency for display
 const formatFrequency = (frequency: string): string => {
   if (frequency.endsWith('h')) {
     const value = frequency.replace('h', '');
@@ -58,16 +56,10 @@ const formatFrequency = (frequency: string): string => {
   return frequency;
 };
 
-/**
- * ProfileSettings Component
- * Displays and manages user profile settings including appearance, language,
- * timezone, telegram integration, and task summary settings.
- */
 const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMode, toggleDarkMode }) => {
   const { t, i18n } = useTranslation();
   const { showSuccessToast, showErrorToast } = useToast();
   
-  // State variables
   const [profile, setProfile] = useState<Profile | null>(null);
   const [formData, setFormData] = useState<Partial<Profile>>({
     appearance: isDarkMode ? 'dark' : 'light',
@@ -92,12 +84,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
   const [telegramError, setTelegramError] = useState<string | null>(null);
   const [telegramBotInfo, setTelegramBotInfo] = useState<TelegramBotInfo | null>(null);
   
-  // Force update function for language changes
   const forceUpdate = useCallback(() => {
     setUpdateKey(prevKey => prevKey + 1);
   }, []);
   
-  // Fetch scheduler status data
   const fetchSchedulerStatus = async () => {
     try {
       setLoadingStatus(true);
@@ -116,7 +106,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
     }
   };
   
-  // Send task summary now
   const handleSendTaskSummaryNow = async () => {
     try {
       setIsSendingSummary(true);
@@ -133,7 +122,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       const data = await response.json();
       showSuccessToast(data.message);
       
-      // Fetch the updated scheduler status if enabled
       if (data.enabled) {
         fetchSchedulerStatus();
       }
@@ -144,12 +132,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
     }
   };
   
-  // Handle form field changes
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Handle appearance change immediately
     if (name === 'appearance' && toggleDarkMode) {
       const shouldBeDark = value === 'dark';
       if (shouldBeDark !== isDarkMode) {
@@ -157,7 +143,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       }
     }
     
-    // Handle language change immediately
     if (name === 'language' && value !== i18n.language) {
       handleLanguageChange(value);
     }
@@ -166,68 +151,50 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
   const handleLanguageChange = async (value: string) => {
     try {
       setIsChangingLanguage(true);
-      console.log(`Changing language to: ${value}`);
       
-      // Change the i18n language
       await i18n.changeLanguage(value);
       
-      // Explicitly force the document's lang attribute to match
       document.documentElement.lang = value;
       
-      // Verify translations are loaded
       const resources = i18n.getResourceBundle(value, 'translation');
-      console.log('Resources loaded for language:', value, resources ? 'Yes' : 'No');
       
-      if (!resources || Object.keys(resources).length === 0) {
-        console.warn('Translations might not be fully loaded for:', value);
+      if (!resources || Object.keys(resources).length === 0) {        
         
-        
-        // Try to load translations manually if needed
         const loadPath = `/locales/${value}/translation.json`;
         try {
           const response = await fetch(loadPath);
           if (response.ok) {
             const data = await response.json();
             i18n.addResourceBundle(value, 'translation', data, true, true);
-            console.log('Manually loaded translations for:', value);
             
-            // Force app to recognize new translations
             if (window.forceLanguageReload) {
               window.forceLanguageReload(value);
             }
           }
-        } catch (err) {
-          console.error('Failed to manually load translations:', err);
-        }
+        } catch (err) {}
       }
       
-      // Force another update to ensure UI reflects new language
       setTimeout(() => {
         forceUpdate();
         
-        // Try to load translations again if they still aren't available
         const checkAndLoadResources = i18n.getResourceBundle(value, 'translation');
         if (!checkAndLoadResources || Object.keys(checkAndLoadResources).length === 0) {
-          console.warn('Still no translations after initial load, forcing reload');
           if (window.forceLanguageReload) {
             window.forceLanguageReload(value);
           }
         }
         
-        // If change event wasn't fired, mark as complete after a delay
         setTimeout(() => {
           if (isChangingLanguage) {
             setIsChangingLanguage(false);
           }
-        }, 800); // Longer timeout to ensure translations load
+        }, 800);
       }, 200);
     } catch (error) {
-      console.error('Error changing language:', error);
       setIsChangingLanguage(false);
     }
   };
   
-  // Fetch profile data when component mounts
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -250,12 +217,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         setTelegramBotToken(data.telegram_bot_token || '');
         setTelegramChatId(data.telegram_chat_id || '');
         
-        // Fetch scheduler status if task summaries are enabled
         if (data.task_summary_enabled) {
           fetchSchedulerStatus();
         }
         
-        // If user has a token, check polling status
         if (data.telegram_bot_token) {
           fetchPollingStatus();
         }
@@ -277,52 +242,36 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         const data = await response.json();
         setIsPolling(data.running);
         
-        // If bot token exists but polling is not active, start polling automatically
         if (data.token_exists && !data.running) {
-          console.log('Telegram bot token exists but polling not active. Starting polling automatically...');
           handleStartPolling();
         }
-      } catch (error) {
-        console.error('Error fetching polling status:', error);
-      }
+      } catch (error) {}
     };
     fetchProfile();
   }, []);
 
-  // Add an effect to monitor language changes
   useEffect(() => {
-    console.log(`Component refreshed with key: ${updateKey}, language: ${i18n.language}`);
   }, [updateKey, i18n.language]);
 
-  // Update appearance in form data when dark mode changes
   useEffect(() => {
     setFormData(prev => ({ ...prev, appearance: isDarkMode ? 'dark' : 'light' }));
   }, [isDarkMode]);
   
   useEffect(() => {
     const handleLanguageChanged = (lng: string) => {
-      console.log(`Language changed to ${lng}`);
-      // Force component to re-render when language changes
       forceUpdate();
     };
     
-    // Handler for the custom app-language-changed event
     const handleAppLanguageChanged = (event: CustomEvent<{ language: string }>) => {
-      console.log('Custom language change event received:', event.detail.language);
-      // Force an update to re-render with new translations
       forceUpdate();
-      // Mark language change as complete after a short delay
-      // This ensures the UI has time to update with new translations
       setTimeout(() => {
         setIsChangingLanguage(false);
       }, 300);
     };
 
-    // Add language change listeners
     i18n.on('languageChanged', handleLanguageChanged);
     window.addEventListener('app-language-changed', handleAppLanguageChanged as EventListener);
 
-    // Clean up listeners on unmount
     return () => {
       i18n.off('languageChanged', handleLanguageChanged);
       window.removeEventListener('app-language-changed', handleAppLanguageChanged as EventListener);
@@ -336,12 +285,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
     setTelegramBotInfo(null);
     
     try {
-      // Validate the token format
       if (!formData.telegram_bot_token || !formData.telegram_bot_token.includes(':')) {
         throw new Error(t('profile.invalidTelegramToken'));
       }
       
-      // Send setup request to the server
       const response = await fetch('/api/telegram/setup', {
         method: 'POST',
         headers: {
@@ -359,29 +306,22 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       setTelegramSetupStatus('success');
       setSuccess(t('profile.telegramSetupSuccess'));
       
-      // Save bot info for display
       if (data.bot) {
         setTelegramBotInfo(data.bot);
         setIsPolling(true);
         
-        // Explicitly verify polling is started
         if (!data.bot.polling_status?.running) {
-          console.log('Polling not started automatically during setup. Starting manually...');
-          // Small delay to ensure the server has registered the token
           setTimeout(() => {
             handleStartPolling();
           }, 1000);
         }
       }
       
-      // Format the URL to start the bot chat
       const botUsername = data.bot?.username || formData.telegram_bot_token.split(':')[0];
       
-      // Open the Telegram bot chat in a new window
       window.open(`https://t.me/${botUsername}`, '_blank');
       
     } catch (error) {
-      console.error('Telegram setup error:', error);
       setTelegramSetupStatus('error');
       setTelegramError((error as Error).message);
     }
@@ -405,7 +345,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       setIsPolling(true);
       showSuccessToast(t('profile.pollingStarted'));
       
-      // Update bot info if available
       if (telegramBotInfo) {
         setTelegramBotInfo({
           ...telegramBotInfo,
@@ -413,7 +352,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         });
       }
     } catch (error) {
-      console.error('Start polling error:', error);
       showErrorToast(t('profile.pollingError'));
     }
   };
@@ -436,7 +374,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       setIsPolling(false);
       showSuccessToast(t('profile.pollingStopped', 'Polling stopped successfully.'));
       
-      // Update bot info if available
       if (telegramBotInfo) {
         setTelegramBotInfo({
           ...telegramBotInfo,
@@ -444,7 +381,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         });
       }
     } catch (error) {
-      console.error('Stop polling error:', error);
       showErrorToast(t('profile.pollingError'));
     }
   };
@@ -473,9 +409,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       const updatedProfile: Profile = await response.json();
       setProfile(updatedProfile);
       
-      // Make sure to update language if it was changed
       if (updatedProfile.language !== i18n.language) {
-        console.log('Updating language after form submission:', updatedProfile.language);
         await i18n.changeLanguage(updatedProfile.language);
       }
       
@@ -682,7 +616,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
                             }
                           }
                         } catch (error) {
-                          console.error('Test message error:', error);
                           showErrorToast(t('profile.testMessageError', 'Error sending test message.'));
                         }
                       }}
@@ -786,7 +719,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
                       }
                       
                       const data = await response.json();
-                      // Update the profile with the new frequency
+                      
                       setProfile(prev => prev ? ({...prev, task_summary_frequency: frequency}) : null);
                       showSuccessToast(data.message);
                     } catch (error) {

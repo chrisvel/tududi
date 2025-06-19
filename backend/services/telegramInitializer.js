@@ -6,11 +6,7 @@ async function initializeTelegramPolling() {
     return;
   }
 
-  console.log('Initializing Telegram polling for configured users...');
-
   try {
-    // Use functional telegram poller
-
     // Find users with configured Telegram tokens
     const usersWithTelegram = await User.findAll({
       where: {
@@ -21,21 +17,13 @@ async function initializeTelegramPolling() {
     });
 
     if (usersWithTelegram.length > 0) {
-      console.log(`Found ${usersWithTelegram.length} users with Telegram configuration`);
-
       // Add each user to the polling list
       for (const user of usersWithTelegram) {
-        console.log(`Starting Telegram polling for user ${user.id}`);
         await telegramPoller.addUser(user);
       }
-
-      console.log('Telegram polling initialized successfully');
-    } else {
-      console.log('No users with Telegram configuration found');
     }
   } catch (error) {
-    console.error('Error initializing Telegram polling:', error.message);
-    console.error('Telegram polling will be initialized later when the database is available.');
+    // Telegram polling will be initialized later when the database is available
   }
 }
 

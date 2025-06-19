@@ -41,10 +41,8 @@ const getCronExpression = (frequency) => {
 // Create job handler
 const createJobHandler = (frequency) => async () => {
   if (frequency === 'recurring_tasks') {
-    console.log('Running scheduled task: recurring task generation');
     await processRecurringTasks();
   } else {
-    console.log(`Running scheduled task: ${frequency} task summary`);
     await processSummariesForFrequency(frequency);
   }
 };
@@ -67,7 +65,6 @@ const createJobEntries = () => {
 const startJobs = (jobs) => {
   jobs.forEach((job, frequency) => {
     job.start();
-    console.log(`Started scheduler for frequency: ${frequency}`);
   });
 };
 
@@ -75,7 +72,6 @@ const startJobs = (jobs) => {
 const stopJobs = (jobs) => {
   jobs.forEach((job, frequency) => {
     job.stop();
-    console.log(`Stopped scheduler for frequency: ${frequency}`);
   });
 };
 
@@ -95,14 +91,8 @@ const fetchUsersForFrequency = async (frequency) => {
 const sendSummaryToUser = async (userId, frequency) => {
   try {
     const success = await TaskSummaryService.sendSummaryToUser(userId);
-    if (success) {
-      console.log(`Sent ${frequency} summary to user ${userId}`);
-    } else {
-      console.log(`Failed to send ${frequency} summary to user ${userId}`);
-    }
     return success;
   } catch (error) {
-    console.error(`Error sending ${frequency} summary to user ${userId}:`, error.message);
     return false;
   }
 };
@@ -111,7 +101,6 @@ const sendSummaryToUser = async (userId, frequency) => {
 const processSummariesForFrequency = async (frequency) => {
   try {
     const users = await fetchUsersForFrequency(frequency);
-    console.log(`Processing ${users.length} users for frequency: ${frequency}`);
 
     const results = await Promise.allSettled(
       users.map(user => sendSummaryToUser(user.id, frequency))
@@ -119,7 +108,6 @@ const processSummariesForFrequency = async (frequency) => {
 
     return results;
   } catch (error) {
-    console.error(`Error processing summaries for frequency ${frequency}:`, error);
     throw error;
   }
 };
@@ -127,12 +115,9 @@ const processSummariesForFrequency = async (frequency) => {
 // Function to process recurring tasks (contains side effects)
 const processRecurringTasks = async () => {
   try {
-    console.log('Processing recurring tasks...');
     const newTasks = await RecurringTaskService.generateRecurringTasks();
-    console.log(`Generated ${newTasks.length} recurring tasks`);
     return newTasks;
   } catch (error) {
-    console.error('Error processing recurring tasks:', error);
     throw error;
   }
 };
@@ -140,16 +125,12 @@ const processRecurringTasks = async () => {
 // Function to initialize scheduler (contains side effects)
 const initialize = async () => {
   if (schedulerState.isInitialized) {
-    console.log('Task scheduler already initialized');
     return schedulerState;
   }
 
   if (shouldDisableScheduler()) {
-    console.log('Task scheduler disabled for test environment');
     return schedulerState;
   }
-
-  console.log('Initializing task scheduler...');
 
   // Create job entries
   const jobEntries = createJobEntries();
@@ -164,18 +145,14 @@ const initialize = async () => {
     isInitialized: true
   };
 
-  console.log('Task scheduler initialized successfully');
   return schedulerState;
 };
 
 // Function to stop scheduler (contains side effects)
 const stop = async () => {
   if (!schedulerState.isInitialized) {
-    console.log('Task scheduler not initialized, nothing to stop');
     return schedulerState;
   }
-
-  console.log('Stopping task scheduler...');
   
   // Stop all jobs
   stopJobs(schedulerState.jobs);
@@ -183,7 +160,6 @@ const stop = async () => {
   // Reset state immutably
   schedulerState = createSchedulerState();
   
-  console.log('Task scheduler stopped');
   return schedulerState;
 };
 

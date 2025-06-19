@@ -13,7 +13,6 @@ export const fetchNotes = async (): Promise<Note[]> => {
 
 export const createNote = async (noteData: Note): Promise<Note> => {
   try {
-    console.log("Creating note with data:", JSON.stringify(noteData, null, 2));
     const response = await fetch('/api/note', {
       method: 'POST',
       credentials: 'include',
@@ -24,7 +23,6 @@ export const createNote = async (noteData: Note): Promise<Note> => {
     await handleAuthResponse(response, 'Failed to create note.');
     return await response.json();
   } catch (error) {
-    console.error("Exception in createNote:", error);
     throw error;
   }
 };

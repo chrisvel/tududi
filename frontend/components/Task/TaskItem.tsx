@@ -39,13 +39,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
   const handleToggleCompletion = async () => {
     if (task.id) {
       try {
-        console.log('🖱️ Frontend: Toggling completion for task:', task.id, 'current status:', task.status);
         const updatedTask = await toggleTaskCompletion(task.id);
-        console.log('✅ Frontend: Received updated task:', updatedTask);
         onTaskUpdate(updatedTask);
-        console.log('🔄 Frontend: Called onTaskUpdate');
       } catch (error) {
-        console.error('❌ Frontend: Error toggling task completion:', error);
       }
     }
   };
@@ -68,7 +64,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
       setProjectList((prevProjects) => [...prevProjects, newProject]);
       return newProject;
     } catch (error) {
-      console.error('Error creating project:', error);
       throw error;
     }
   };

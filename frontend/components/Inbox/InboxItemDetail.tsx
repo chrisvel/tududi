@@ -116,9 +116,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
     // Simple array of tag objects for the note
     const tagObjects = isBookmark ? [{ name: "bookmark" }] : [];
-    
-    console.log("Creating note with bookmark tag:", isBookmark);
-    
+        
     const newNote: Note = {
       title: title,
       content: content,

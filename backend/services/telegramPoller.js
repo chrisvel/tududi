@@ -129,7 +129,6 @@ const getTelegramUpdates = async (token, offset) => {
     if (response.ok && Array.isArray(response.result)) {
       return response.result;
     } else {
-      console.error('Telegram API error:', response);
       return [];
     }
   } catch (error) {
@@ -182,11 +181,8 @@ const processMessage = async (user, update) => {
   const chatId = message.chat.id.toString();
   const messageId = message.message_id;
 
-  console.log(`Processing message from user ${user.id}: ${text}`);
-
   // Update chat ID if needed
   if (!user.telegram_chat_id) {
-    console.log(`Updating user's telegram_chat_id to ${chatId}`);
     await updateUserChatId(user.id, chatId);
     user.telegram_chat_id = chatId; // Update local object
   }
@@ -194,7 +190,6 @@ const processMessage = async (user, update) => {
   try {
     // Create inbox item
     const inboxItem = await createInboxItem(text, user.id);
-    console.log(`Created inbox item ${inboxItem.id} from Telegram message`);
 
     // Send confirmation
     await sendTelegramMessage(
@@ -204,8 +199,6 @@ const processMessage = async (user, update) => {
       messageId
     );
   } catch (error) {
-    console.error('Failed to create inbox item:', error.message);
-
     // Send error message
     await sendTelegramMessage(
       user.telegram_bot_token,
@@ -238,7 +231,7 @@ const processUpdates = async (user, updates) => {
         await processMessage(user, update);
       }
     } catch (error) {
-      console.error(`Error processing update ${update.update_id}:`, error.message);
+      // Error processing update
     }
   }
 };
@@ -257,7 +250,7 @@ const pollUpdates = async () => {
         await processUpdates(user, updates);
       }
     } catch (error) {
-      console.error(`Error getting updates for user ${user.id}:`, error.message);
+      // Error getting updates for user
     }
   }
 };
@@ -265,14 +258,12 @@ const pollUpdates = async () => {
 // Function to start polling (contains side effects)
 const startPolling = () => {
   if (pollerState.running) return;
-
-  console.log('Starting Telegram polling...');
   
   const interval = setInterval(async () => {
     try {
       await pollUpdates();
     } catch (error) {
-      console.error('Error polling Telegram:', error.message);
+      // Error polling Telegram
     }
   }, pollerState.pollInterval);
 
@@ -286,8 +277,6 @@ const startPolling = () => {
 // Function to stop polling (contains side effects)
 const stopPolling = () => {
   if (!pollerState.running) return;
-
-  console.log('Stopping Telegram polling...');
   
   if (pollerState.interval) {
     clearInterval(pollerState.interval);

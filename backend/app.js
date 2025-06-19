@@ -73,6 +73,11 @@ if (process.env.NODE_ENV === 'production') {
 // Authentication middleware
 const { requireAuth } = require('./middleware/auth');
 
+// Health check (before auth middleware)
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Routes
 app.use('/api', require('./routes/auth'));
 app.use('/api', requireAuth, require('./routes/tasks'));
@@ -85,11 +90,6 @@ app.use('/api', requireAuth, require('./routes/inbox'));
 app.use('/api', requireAuth, require('./routes/url'));
 app.use('/api', requireAuth, require('./routes/telegram'));
 app.use('/api', requireAuth, require('./routes/quotes'));
-
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
 
 // SPA fallback
 app.get('*', (req, res) => {

@@ -49,8 +49,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
     if (isOpen) {
       // Extract tag names for display
       const tagNames = note?.tags?.map((tag) => tag.name) || [];
-      console.log("NoteModal received note with tags:", note?.tags);
-      console.log("Converted tag names:", tagNames);
       
       setFormData({
         id: note?.id || 0,
@@ -107,7 +105,6 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
   };
 
   const handleTagsChange = useCallback((newTags: string[]) => {
-    console.log("NoteModal tags changed to:", newTags);
     setTags(newTags);
     setFormData((prev) => ({
       ...prev,
@@ -128,12 +125,8 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
       // Convert string tags to tag objects
       const noteTags: Tag[] = tags.map(tagName => ({ name: tagName }));
       
-      console.log("Submitting note with tags array:", tags);
-      console.log("Converting to note tags:", noteTags);
-      
       // Create final form data with the tags
       const finalFormData = { ...formData, tags: noteTags };
-      console.log("Final note data being saved:", finalFormData);
       
       await onSave(finalFormData);
       showSuccessToast(formData.id && formData.id !== 0 ? t('success.noteUpdated') : t('success.noteCreated'));

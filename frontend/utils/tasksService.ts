@@ -47,17 +47,14 @@ export const updateTask = async (taskId: number, taskData: Task): Promise<Task> 
 };
 
 export const toggleTaskCompletion = async (taskId: number): Promise<Task> => {
-  console.log('🌐 API: Sending toggle completion request for task:', taskId);
   const response = await fetch(`/api/task/${taskId}/toggle_completion`, {
     method: 'PATCH',
     credentials: 'include',
     headers: getPostHeaders(),
   });
 
-  console.log('📡 API: Response status:', response.status);
   await handleAuthResponse(response, 'Failed to toggle task completion.');
   const result = await response.json();
-  console.log('📦 API: Response data:', result);
   return result;
 };
 

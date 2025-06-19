@@ -125,7 +125,9 @@ router.get('/projects', async (req, res) => {
       res.json(groupedProjects);
     } else {
       console.log('Returning flat array format');
-      res.json(enhancedProjects);
+      res.json({
+        projects: enhancedProjects
+      });
     }
   } catch (error) {
     console.error('Error fetching projects:', error);
