@@ -68,7 +68,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
     }
   };
 
-  const project = projectList.find((p) => p.id === task.project_id);
+  // Use the project from the task's included data if available, otherwise find from projectList
+  const project = task.Project || projectList.find((p) => p.id === task.project_id);
 
   return (
     <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1">

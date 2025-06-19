@@ -93,6 +93,13 @@
     "thursday": "Donnerstag",
     "friday": "Freitag",
     "saturday": "Samstag"
+  },
+  "inbox": {
+    "empty": "Ihr Posteingang ist leer",
+    "emptyDescription": "Erfassen Sie schnell Gedanken und Ideen mit dem + Button in der unteren rechten Ecke"
+  },
+  "profile": {
+    "japanese": "Japanisch"
   }
 }
 

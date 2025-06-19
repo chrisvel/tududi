@@ -1,14 +1,16 @@
 import { Tag } from "./Tag";
+import { Project } from "./Project";
 
 export interface Task {
   id?: number;
   name: string;
   status: StatusType;
-  priority?: PriorityType;
+  priority?: PriorityType | number;
   due_date?: string;
   note?: string;
   tags?: Tag[];
   project_id?: number;
+  Project?: Project;
   created_at?: string;
   recurrence_type?: RecurrenceType;
   recurrence_interval?: number;

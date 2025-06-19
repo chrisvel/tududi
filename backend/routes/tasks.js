@@ -138,8 +138,17 @@ async function computeTaskMetrics(userId) {
       status: Task.STATUS.IN_PROGRESS
     },
     include: [
-      { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
-      { model: Project, attributes: ['name'], required: false }
+      { 
+        model: Tag, 
+        attributes: ['id', 'name'], 
+        through: { attributes: [] },
+        required: false 
+      },
+      { 
+        model: Project, 
+        attributes: ['id', 'name', 'active'], 
+        required: false 
+      }
     ],
     order: [['priority', 'DESC']]
   });
@@ -161,30 +170,55 @@ async function computeTaskMetrics(userId) {
       ]
     },
     include: [
-      { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
-      { model: Project, attributes: ['name'], required: false }
+      { 
+        model: Tag, 
+        attributes: ['id', 'name'], 
+        through: { attributes: [] },
+        required: false 
+      },
+      { 
+        model: Project, 
+        attributes: ['id', 'name', 'active'], 
+        required: false 
+      }
     ]
   });
 
-  // Get suggested tasks (simplified version)
-  const excludedTaskIds = [
-    ...tasksInProgress.map(t => t.id),
-    ...tasksDueToday.map(t => t.id)
-  ];
+  // Get suggested tasks only if user has a meaningful task base
+  let suggestedTasks = [];
+  
+  // Only show suggested tasks if:
+  // 1. User has at least 3 total tasks, OR
+  // 2. User has at least 1 project with tasks
+  if (totalOpenTasks >= 3 || (tasksInProgress.length > 0 || tasksDueToday.length > 0)) {
+    const excludedTaskIds = [
+      ...tasksInProgress.map(t => t.id),
+      ...tasksDueToday.map(t => t.id)
+    ];
 
-  const suggestedTasks = await Task.findAll({
-    where: {
-      user_id: userId,
-      status: Task.STATUS.NOT_STARTED,
-      id: { [Op.notIn]: excludedTaskIds }
-    },
-    include: [
-      { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
-      { model: Project, attributes: ['name'], required: false }
-    ],
-    order: [['priority', 'DESC']],
-    limit: 10
-  });
+    suggestedTasks = await Task.findAll({
+      where: {
+        user_id: userId,
+        status: Task.STATUS.NOT_STARTED,
+        id: { [Op.notIn]: excludedTaskIds }
+      },
+      include: [
+        { 
+          model: Tag, 
+          attributes: ['id', 'name'], 
+          through: { attributes: [] },
+          required: false 
+        },
+        { 
+          model: Project, 
+          attributes: ['id', 'name', 'active'], 
+          required: false 
+        }
+      ],
+      order: [['priority', 'DESC']],
+      limit: 10
+    });
+  }
 
   return {
     total_open_tasks: totalOpenTasks,

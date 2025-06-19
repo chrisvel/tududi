@@ -57,7 +57,7 @@
     "english": "英語",
     "spanish": "スペイン語",
     "greek": "ギリシャ語",
-    "Japanese": "日本語"
+    "japanese": "日本語"
   },
   "modals": {
     "confirmDelete": "本当に削除してよろしいですか？",
@@ -260,5 +260,9 @@
     "thursday": "木曜日",
     "friday": "金曜日",
     "saturday": "土曜日"
+  },
+  "inbox": {
+    "empty": "受信箱は空です",
+    "emptyDescription": "右下の + ボタンを使用して、思考やアイデアを素早く記録できます"
   }
 }

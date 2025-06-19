@@ -3,7 +3,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 
 interface TaskPriorityIconProps {
-  priority: string | undefined;
+  priority: string | number | undefined;
   status: string | number;
   onToggleCompletion?: () => void;
 }
@@ -12,11 +12,23 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({ priority, status, o
   const { t } = useTranslation();
   const getIconColor = () => {
     if (status === 'done' || status === 2) return 'text-green-500';
-    switch (priority) {
+    
+    // Handle both string and numeric priority values
+    let priorityStr = priority;
+    if (typeof priority === 'number') {
+      const priorityNames = ['low', 'medium', 'high'];
+      priorityStr = priorityNames[priority] || 'low';
+    }
+    
+    switch (priorityStr) {
       case 'high':
+      case 2:
         return 'text-red-500';
       case 'medium':
+      case 1:
         return 'text-yellow-500';
+      case 'low':
+      case 0:
       default:
         return 'text-gray-300';
     }

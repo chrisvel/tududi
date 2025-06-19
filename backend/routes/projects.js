@@ -145,7 +145,18 @@ router.get('/project/:id', async (req, res) => {
     const project = await Project.findOne({
       where: { id: req.params.id, user_id: req.session.userId },
       include: [
-        { model: Task, required: false },
+        { 
+          model: Task, 
+          required: false,
+          include: [
+            { 
+              model: Tag, 
+              attributes: ['id', 'name'], 
+              through: { attributes: [] },
+              required: false 
+            }
+          ]
+        },
         { model: Area, required: false, attributes: ['id', 'name'] },
         { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } }
       ]
@@ -155,10 +166,15 @@ router.get('/project/:id', async (req, res) => {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    res.json({
+    const result = {
       ...project.toJSON(),
       due_date_at: project.due_date_at ? project.due_date_at.toISOString() : null
-    });
+    };
+    
+    console.log("Project API result:", JSON.stringify(result, null, 2));
+    console.log("Tasks found:", result.Tasks ? result.Tasks.length : 'No Tasks property');
+    
+    res.json(result);
   } catch (error) {
     console.error('Error fetching project:', error);
     res.status(500).json({ error: 'Internal server error' });

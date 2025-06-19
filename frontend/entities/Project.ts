@@ -13,5 +13,6 @@ export interface Project {
   tags?: Tag[];  
   priority?: PriorityType;
   tasks?: Task[];
+  Tasks?: Task[]; // Sequelize association naming (capitalized)
   due_date_at?: string;
 }

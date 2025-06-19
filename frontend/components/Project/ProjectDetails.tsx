@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   PencilSquareIcon,
   TrashIcon,
@@ -31,6 +32,7 @@ const priorityStyles: PriorityStyles = {
 const ProjectDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   
   const areas = useStore((state) => state.areasStore.areas);
 
@@ -53,8 +55,13 @@ const ProjectDetails: React.FC = () => {
       try {
         fetchAreas();
         const projectData = await fetchProjectById(id);
+        console.log("Project data received:", projectData);
+        console.log("Tasks in project:", projectData.tasks);
+        console.log("Tasks (capital T):", projectData.Tasks);
         setProject(projectData);
-        setTasks(projectData.tasks || []);
+        // Handle both 'tasks' and 'Tasks' property names
+        const projectTasks = projectData.tasks || projectData.Tasks || [];
+        setTasks(projectTasks);
       } catch (error) {
         console.error("Error fetching project data:", error);
       } finally {
@@ -177,11 +184,25 @@ const ProjectDetails: React.FC = () => {
     );
   }
 
-  const activeTasks = tasks?.filter((task) => task.status !== 'done') || []; //TODO: Also add archived
-  const completedTasks = tasks?.filter((task) => task.status === 'done');
+  const activeTasks = tasks?.filter((task) => task.status !== 2) || []; //TODO: Also add archived
+  const completedTasks = tasks?.filter((task) => task.status === 2);
   
   const toggleCompleted = () => {
     setIsCompletedOpen(!isCompletedOpen);
+  };
+
+  const formatProjectDueDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const currentLang = i18n.language;
+    
+    // Format based on language
+    const formatOptions: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    };
+
+    return date.toLocaleDateString(currentLang, formatOptions);
   };
 
   return (
@@ -235,7 +256,7 @@ const ProjectDetails: React.FC = () => {
         {project.due_date_at && ( 
           <div className="flex items-center mb-2">
             <CalendarDaysIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-            {project.due_date_at}
+            {formatProjectDueDate(project.due_date_at)}
           </div>
         )}
 
