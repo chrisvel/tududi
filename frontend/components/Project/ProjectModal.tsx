@@ -36,18 +36,23 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
       active: true,
       tags: [],
       priority: "low",
-      due_date_at: "", 
+      due_date_at: "",
+      image_url: "",
     }
   );
 
   const [tags, setTags] = useState<string[]>(
     project?.tags?.map((tag) => tag.name) || []
   );
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>(project?.image_url || "");
+  const [isUploading, setIsUploading] = useState(false);
 
   const { tagsStore } = useStore();
   const { tags: availableTags } = tagsStore;
 
   const modalRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
@@ -60,8 +65,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         ...project,
         tags: project.tags || [],
         due_date_at: project.due_date_at || "",
+        image_url: project.image_url || "",
       });
       setTags(project.tags?.map((tag) => tag.name) || []);
+      setImagePreview(project.image_url || "");
     } else {
       setFormData({
         name: "",
@@ -71,9 +78,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         tags: [],
         priority: "low",
         due_date_at: "",
+        image_url: "",
       });
       setTags([]);
+      setImagePreview("");
     }
+    setImageFile(null);
   }, [project]);
 
   useEffect(() => {
@@ -146,14 +156,88 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     }));
   }, []);
 
-  const handleSubmit = () => {
-    onSave({ ...formData, tags: tags.map((name) => ({ name })) });
-    showSuccessToast(
-      project
-        ? "Project updated successfully!"
-        : "Project created successfully!"
-    );
-    handleClose();
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageUpload = async (): Promise<string | null> => {
+    if (!imageFile) return null;
+    
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      
+      const response = await fetch('/api/upload/project-image', {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+      
+      const result = await response.json();
+      return result.imageUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview("");
+    setFormData((prev) => ({
+      ...prev,
+      image_url: "",
+    }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      let imageUrl = formData.image_url;
+      
+      // Upload image if a new one was selected
+      if (imageFile) {
+        const uploadedImageUrl = await handleImageUpload();
+        if (uploadedImageUrl) {
+          imageUrl = uploadedImageUrl;
+        }
+      }
+      
+      const projectData = {
+        ...formData,
+        image_url: imageUrl,
+        tags: tags.map((name) => ({ name }))
+      };
+      
+      onSave(projectData);
+      showSuccessToast(
+        project
+          ? "Project updated successfully!"
+          : "Project created successfully!"
+      );
+      handleClose();
+    } catch (error) {
+      console.error('Error saving project:', error);
+    }
   };
 
   const handleDeleteClick = () => {
@@ -197,14 +281,15 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
           ref={modalRef}
           className={`bg-white dark:bg-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-2xl overflow-hidden transform transition-transform duration-300 ${
             isClosing ? "scale-95" : "scale-100"
-          } h-screen sm:h-auto flex flex-col`}
+          } flex flex-col`}
           style={{
-            maxHeight: "calc(100vh - 4rem)",
+            height: "calc(100vh - 4rem)",
+            maxHeight: "90vh",
           }}
         >
-          <form className="flex flex-col flex-1">
-            <fieldset className="flex flex-col flex-1">
-              <div className="p-4 space-y-3 flex-1 text-sm overflow-y-auto">
+          <form className="flex flex-col h-full">
+            <fieldset className="flex flex-col h-full">
+              <div className="p-4 space-y-3 flex-1 text-sm overflow-y-auto min-h-0">
                 <div className="py-4">
                   <input
                     type="text"
@@ -231,6 +316,42 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     className="block w-full rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
                     placeholder={t('forms.areaDescriptionPlaceholder', 'Enter project description (optional)')}
                   ></textarea>
+                </div>
+
+                <div className="pb-3">
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Project Image
+                  </label>
+                  
+                  {imagePreview ? (
+                    <div className="mb-3">
+                      <div className="relative inline-block">
+                        <img
+                          src={imagePreview}
+                          alt="Project preview"
+                          className="w-32 h-20 object-cover rounded-md border border-gray-300 dark:border-gray-600"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleRemoveImage}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+                  
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-200"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Upload an image for your project (max 5MB)
+                  </p>
                 </div>
 
                 <div className="pb-3">
@@ -325,9 +446,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out"
+                  disabled={isUploading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {project ? t('modals.updateProject', 'Update Project') : t('modals.createProject', 'Create Project')}
+                  {isUploading ? 'Uploading...' : (project ? t('modals.updateProject', 'Update Project') : t('modals.createProject', 'Create Project'))}
                 </button>
               </div>
             </fieldset>

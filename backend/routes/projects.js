@@ -1,7 +1,55 @@
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const { Project, Task, Tag, Area, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const router = express.Router();
+
+// Helper function to safely format dates
+const formatDate = (date) => {
+  if (!date) return null;
+  try {
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) return null;
+    return dateObj.toISOString();
+  } catch (error) {
+    return null;
+  }
+};
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../uploads/projects');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'project-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: function (req, file, cb) {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'));
+    }
+  }
+});
 
 // Helper function to update project tags
 async function updateProjectTags(project, tagsData, userId) {
@@ -34,6 +82,26 @@ async function updateProjectTags(project, tagsData, userId) {
   const allTags = [...existingTags, ...createdTags];
   await project.setTags(allTags);
 }
+
+// POST /api/upload/project-image
+router.post('/upload/project-image', upload.single('image'), (req, res) => {
+  try {
+    if (!req.session || !req.session.userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+
+    // Return the relative URL that can be accessed from the frontend
+    const imageUrl = `/api/uploads/projects/${req.file.filename}`;
+    res.json({ imageUrl });
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({ error: 'Failed to upload image' });
+  }
+});
 
 // GET /api/projects
 router.get('/projects', async (req, res) => {
@@ -104,7 +172,7 @@ router.get('/projects', async (req, res) => {
       
       return {
         ...project.toJSON(),
-        due_date_at: project.due_date_at ? project.due_date_at.toISOString() : null,
+        due_date_at: formatDate(project.due_date_at),
         task_status: taskStatus,
         completion_percentage: taskStatus.total > 0 ? Math.round((taskStatus.done / taskStatus.total) * 100) : 0
       };
@@ -168,7 +236,7 @@ router.get('/project/:id', async (req, res) => {
 
     const result = {
       ...project.toJSON(),
-      due_date_at: project.due_date_at ? project.due_date_at.toISOString() : null
+      due_date_at: formatDate(project.due_date_at)
     };
     
     console.log("Project API result:", JSON.stringify(result, null, 2));
@@ -188,7 +256,7 @@ router.post('/project', async (req, res) => {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const { name, description, area_id, priority, due_date_at, tags } = req.body;
+    const { name, description, area_id, priority, due_date_at, image_url, tags } = req.body;
 
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Project name is required' });
@@ -202,6 +270,7 @@ router.post('/project', async (req, res) => {
       pin_to_sidebar: false,
       priority: priority || null,
       due_date_at: due_date_at || null,
+      image_url: image_url || null,
       user_id: req.session.userId
     };
 
@@ -217,7 +286,7 @@ router.post('/project', async (req, res) => {
 
     res.status(201).json({
       ...projectWithAssociations.toJSON(),
-      due_date_at: projectWithAssociations.due_date_at ? projectWithAssociations.due_date_at.toISOString() : null
+      due_date_at: formatDate(projectWithAssociations.due_date_at)
     });
   } catch (error) {
     console.error('Error creating project:', error);
@@ -243,7 +312,7 @@ router.patch('/project/:id', async (req, res) => {
       return res.status(404).json({ error: 'Project not found.' });
     }
 
-    const { name, description, area_id, active, pin_to_sidebar, priority, due_date_at, tags } = req.body;
+    const { name, description, area_id, active, pin_to_sidebar, priority, due_date_at, image_url, tags } = req.body;
 
     const updateData = {};
     if (name !== undefined) updateData.name = name;
@@ -253,6 +322,7 @@ router.patch('/project/:id', async (req, res) => {
     if (pin_to_sidebar !== undefined) updateData.pin_to_sidebar = pin_to_sidebar;
     if (priority !== undefined) updateData.priority = priority;
     if (due_date_at !== undefined) updateData.due_date_at = due_date_at;
+    if (image_url !== undefined) updateData.image_url = image_url;
 
     await project.update(updateData);
     await updateProjectTags(project, tags, req.session.userId);
@@ -266,7 +336,7 @@ router.patch('/project/:id', async (req, res) => {
 
     res.json({
       ...projectWithAssociations.toJSON(),
-      due_date_at: projectWithAssociations.due_date_at ? projectWithAssociations.due_date_at.toISOString() : null
+      due_date_at: formatDate(projectWithAssociations.due_date_at)
     });
   } catch (error) {
     console.error('Error updating project:', error);

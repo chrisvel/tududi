@@ -70,6 +70,9 @@ if (process.env.NODE_ENV === 'production') {
   app.use('/locales', express.static(path.join(__dirname, '../public/locales')));
 }
 
+// Serve uploaded files
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Authentication middleware
 const { requireAuth } = require('./middleware/auth');
 

@@ -53,18 +53,36 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     >
       {viewMode === "cards" && (
         <div
-          className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg"
+          className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg relative"
           style={{ height: "140px" }}
         >
-          <span 
-            className="text-2xl font-extrabold text-gray-500 dark:text-gray-400 opacity-20"
-            aria-label={t("projectItem.projectInitials")}
-          >
-            {getProjectInitials(project.name)}
-          </span>
+          {project.image_url ? (
+            <img
+              src={project.image_url}
+              alt={project.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span 
+              className="text-2xl font-extrabold text-gray-500 dark:text-gray-400 opacity-20"
+              aria-label={t("projectItem.projectInitials")}
+            >
+              {getProjectInitials(project.name)}
+            </span>
+          )}
           <div
             className={`absolute top-2 left-2 w-3 h-3 rounded-full ${color}`}
           ></div>
+        </div>
+      )}
+
+      {viewMode === "list" && project.image_url && (
+        <div className="w-16 h-16 mr-4 flex-shrink-0">
+          <img
+            src={project.image_url}
+            alt={project.name}
+            className="w-full h-full object-cover rounded-md"
+          />
         </div>
       )}
 
@@ -73,16 +91,21 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
           viewMode === "cards" ? "p-4 flex-1" : "flex-1"
         }`}
       >
-        <Link
-          to={`/project/${project.id}`}
-          className={`${
-            viewMode === "cards"
-              ? "text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline line-clamp-2"
-              : "text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
-          }`}
-        >
-          {project.name}
-        </Link>
+        <div className="flex items-center">
+          {viewMode === "list" && !project.image_url && (
+            <div className={`w-3 h-3 rounded-full ${color} mr-3 flex-shrink-0`}></div>
+          )}
+          <Link
+            to={`/project/${project.id}`}
+            className={`${
+              viewMode === "cards"
+                ? "text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline line-clamp-2"
+                : "text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
+            }`}
+          >
+            {project.name}
+          </Link>
+        </div>
         <div className="relative">
           <button
             className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none"

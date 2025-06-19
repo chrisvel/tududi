@@ -4,7 +4,7 @@ import { Project } from "./Project";
 export interface Task {
   id?: number;
   name: string;
-  status: StatusType;
+  status: StatusType | number;
   priority?: PriorityType | number;
   due_date?: string;
   note?: string;

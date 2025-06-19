@@ -15,4 +15,5 @@ export interface Project {
   tasks?: Task[];
   Tasks?: Task[]; // Sequelize association naming (capitalized)
   due_date_at?: string;
+  image_url?: string;
 }

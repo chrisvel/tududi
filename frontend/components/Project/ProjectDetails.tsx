@@ -184,8 +184,12 @@ const ProjectDetails: React.FC = () => {
     );
   }
 
-  const activeTasks = tasks?.filter((task) => task.status !== 2) || []; //TODO: Also add archived
-  const completedTasks = tasks?.filter((task) => task.status === 2);
+  const activeTasks = tasks?.filter((task) => {
+    return typeof task.status === 'number' ? task.status !== 2 : task.status !== 'done';
+  }) || []; //TODO: Also add archived
+  const completedTasks = tasks?.filter((task) => {
+    return typeof task.status === 'number' ? task.status === 2 : task.status === 'done';
+  });
   
   const displayTasks = showCompleted ? [...activeTasks, ...completedTasks] : activeTasks;
 
@@ -206,6 +210,17 @@ const ProjectDetails: React.FC = () => {
   return (
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
+        {/* Project Banner Image */}
+        {project.image_url && (
+          <div className="mb-6 rounded-lg overflow-hidden">
+            <img
+              src={project.image_url}
+              alt={project.name}
+              className="w-full h-48 object-cover"
+            />
+          </div>
+        )}
+        
         {/* Project Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">

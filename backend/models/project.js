@@ -52,6 +52,10 @@ module.exports = (sequelize) => {
         model: 'areas',
         key: 'id'
       }
+    },
+    image_url: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     tableName: 'projects',

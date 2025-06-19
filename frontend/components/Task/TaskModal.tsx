@@ -119,6 +119,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }
   }, [isOpen, tagsLoaded]);
 
+  const getPriorityString = (priority: PriorityType | number | undefined): PriorityType => {
+    if (typeof priority === 'number') {
+      const priorityNames: PriorityType[] = ['low', 'medium', 'high'];
+      return priorityNames[priority] || 'medium';
+    }
+    return priority || 'medium';
+  };
+
+  const getStatusString = (status: StatusType | number): StatusType => {
+    if (typeof status === 'number') {
+      const statusNames: StatusType[] = ['not_started', 'in_progress', 'done', 'archived'];
+      return statusNames[status] || 'not_started';
+    }
+    return status;
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -327,7 +343,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                         {t('forms.task.labels.status', 'Status')}
                       </label>
                       <StatusDropdown
-                        value={formData.status}
+                        value={getStatusString(formData.status)}
                         onChange={(value: StatusType) =>
                           setFormData({ ...formData, status: value })
                         }
@@ -338,7 +354,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                         {t('forms.task.labels.priority', 'Priority')}
                       </label>
                       <PriorityDropdown
-                        value={formData.priority || "medium"}
+                        value={getPriorityString(formData.priority)}
                         onChange={(value: PriorityType) =>
                           setFormData({ ...formData, priority: value })
                         }
