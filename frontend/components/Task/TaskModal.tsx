@@ -36,7 +36,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<Task>(task);
   const [tags, setTags] = useState<string[]>(task.tags?.map((tag) => tag.name) || []);
-  const [filteredProjects, setFilteredProjects] = useState<Project[]>(projects);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>(projects || []);
   const [newProjectName, setNewProjectName] = useState<string>("");
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -55,7 +55,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     setFormData(task);
     setTags(task.tags?.map((tag) => tag.name) || []);
     
-    const currentProject = projects.find((project) => project.id === task.project_id);
+    // Safely find the current project, handling the case where projects might be undefined
+    const currentProject = projects?.find((project) => project.id === task.project_id);
     setNewProjectName(currentProject ? currentProject.name : '');
     
     // Fetch parent task if this is a child task
@@ -202,7 +203,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   };
 
   useEffect(() => {
-    setFilteredProjects(projects);
+    setFilteredProjects(projects || []);
   }, [projects]);
 
   useEffect(() => {

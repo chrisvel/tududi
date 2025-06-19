@@ -55,11 +55,10 @@ const InboxItems: React.FC = () => {
   const refreshInboxItems = useCallback(() => {
     loadInboxItemsToStore();
   }, []);
-  
+
   useEffect(() => {
     // Initial data loading
     refreshInboxItems();
-    loadProjects();
     
     // Set up an event listener for force reload
     const handleForceReload = () => {
@@ -104,16 +103,6 @@ const InboxItems: React.FC = () => {
     };
   }, [refreshInboxItems, showSuccessToast, t]);
   
-  // Load projects for the modals
-  const loadProjects = async () => {
-    try {
-      const projectData = await fetchProjects();
-      setProjects(projectData);
-    } catch (error) {
-      console.error('Failed to load projects:', error);
-    }
-  };
-  
   const handleProcessItem = async (id: number) => {
     try {
       await processInboxItemWithStore(id);
@@ -155,7 +144,18 @@ const InboxItems: React.FC = () => {
   };
   
   // Modal handlers
-  const handleOpenTaskModal = (task: Task, inboxItemId?: number) => {
+  const handleOpenTaskModal = async (task: Task, inboxItemId?: number) => {
+    // Load projects first before opening the modal
+    try {
+      const projectData = await fetchProjects();
+      // Make sure we always set an array
+      setProjects(Array.isArray(projectData) ? projectData : []);
+    } catch (error) {
+      console.error('Failed to load projects:', error);
+      showErrorToast(t('project.loadError', 'Failed to load projects'));
+      setProjects([]); // Ensure we have an empty array even on error
+    }
+    
     setTaskToEdit(task);
     
     if (inboxItemId) {
@@ -326,7 +326,7 @@ const InboxItems: React.FC = () => {
         task={taskToEdit || { name: '', status: 'not_started', priority: 'medium' }}
         onSave={handleSaveTask}
         onDelete={() => {}} // No need to delete since it's a new task
-        projects={projects}
+        projects={Array.isArray(projects) ? projects : []}
         onCreateProject={handleCreateProject}
       />
       
