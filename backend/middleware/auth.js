@@ -3,7 +3,8 @@ const { User } = require('../models');
 const requireAuth = async (req, res, next) => {
   try {
     // Skip authentication for health check, login routes, and current_user
-    if (req.path === '/api/health' || req.path === '/api/login' || req.path === '/api/current_user') {
+    const skipPaths = ['/api/health', '/api/login', '/api/current_user'];
+    if (skipPaths.includes(req.path) || req.originalUrl === '/api/health') {
       return next();
     }
 

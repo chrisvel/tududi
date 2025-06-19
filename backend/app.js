@@ -73,9 +73,14 @@ if (process.env.NODE_ENV === 'production') {
 // Authentication middleware
 const { requireAuth } = require('./middleware/auth');
 
-// Health check (before auth middleware)
+// Health check (before auth middleware) - ensure it's completely bypassed
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 // Routes
