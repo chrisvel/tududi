@@ -42,7 +42,7 @@ const ProjectDetails: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [isCompletedOpen, setIsCompletedOpen] = useState(false);
+  const [showCompleted, setShowCompleted] = useState(false);
 
   useEffect(() => {
     const loadProjectData = async () => {
@@ -187,9 +187,7 @@ const ProjectDetails: React.FC = () => {
   const activeTasks = tasks?.filter((task) => task.status !== 2) || []; //TODO: Also add archived
   const completedTasks = tasks?.filter((task) => task.status === 2);
   
-  const toggleCompleted = () => {
-    setIsCompletedOpen(!isCompletedOpen);
-  };
+  const displayTasks = showCompleted ? [...activeTasks, ...completedTasks] : activeTasks;
 
   const formatProjectDueDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -267,59 +265,43 @@ const ProjectDetails: React.FC = () => {
           </p>
         )}
 
-        <NewTask onTaskCreate={handleTaskCreate} />
-
-        <div className="mt-2">
-          {activeTasks.length > 0 ? (
-            <TaskList
-              tasks={activeTasks}
-              onTaskUpdate={handleTaskUpdate}
-              onTaskDelete={handleTaskDelete}
-              projects={project ? [project] : []}
-            />
-          ) : (
-            <p className="text-gray-500 dark:text-gray-400">No active tasks.</p>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Tasks</h3>
+          {completedTasks.length > 0 && (
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <span className="text-sm text-gray-600 dark:text-gray-400">Show completed</span>
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  checked={showCompleted}
+                  onChange={(e) => setShowCompleted(e.target.checked)}
+                  className="sr-only"
+                />
+                <div className={`w-10 h-5 rounded-full transition-colors ${
+                  showCompleted ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}>
+                  <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                    showCompleted ? 'translate-x-5' : 'translate-x-0.5'
+                  } translate-y-0.5`}></div>
+                </div>
+              </div>
+            </label>
           )}
         </div>
 
-        <div className="mt-6">
-          <button
-            onClick={toggleCompleted}
-            className="flex items-center justify-between w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md focus:outline-none"
-          >
-            <span className="text-sm uppercase font-medium">Completed Tasks</span>
-            <svg
-              className={`w-6 h-6 transform transition-transform duration-200 ${
-                isCompletedOpen ? "rotate-180" : "rotate-0"
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
+        <NewTask onTaskCreate={handleTaskCreate} />
 
-          {isCompletedOpen && (
-            <div className="mt-4">
-              {completedTasks && completedTasks.length > 0 ? (
-                <TaskList
-                  tasks={completedTasks}
-                  onTaskUpdate={handleTaskUpdate}
-                  onTaskDelete={handleTaskDelete}
-                  projects={project ? [project] : []}
-                />
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400">
-                  No completed tasks.
-                </p>
-              )}
-            </div>
+        <div className="mt-2">
+          {displayTasks.length > 0 ? (
+            <TaskList
+              tasks={displayTasks}
+              onTaskUpdate={handleTaskUpdate}
+              onTaskDelete={handleTaskDelete}
+              projects={project ? [project] : []}
+              hideProjectName={true}
+            />
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400">No tasks.</p>
           )}
         </div>
 

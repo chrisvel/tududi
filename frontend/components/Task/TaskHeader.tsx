@@ -12,6 +12,7 @@ interface TaskHeaderProps {
   project?: Project;
   onTaskClick: (e: React.MouseEvent) => void;
   onToggleCompletion?: () => void;
+  hideProjectName?: boolean;
 }
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
@@ -19,6 +20,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
   project,
   onTaskClick,
   onToggleCompletion,
+  hideProjectName = false,
 }) => {
   const capitalizeFirstLetter = (string: string | undefined) => {
     if (!string) {
@@ -37,7 +39,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             <span className="text-md text-gray-900 dark:text-gray-100">
               {task.name}
             </span>
-            {project && (
+            {project && !hideProjectName && (
               <div className="text-xs text-gray-500 dark:text-gray-400">
                 {project.name}
               </div>
@@ -66,7 +68,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             <span>{task.name}</span>
 
             {/* Project Name */}
-            {project && (
+            {project && !hideProjectName && (
               <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 {project.name}
               </div>

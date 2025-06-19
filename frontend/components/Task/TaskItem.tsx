@@ -10,6 +10,7 @@ interface TaskItemProps {
   onTaskUpdate: (task: Task) => void;
   onTaskDelete: (taskId: number) => void;
   projects: Project[];
+  hideProjectName?: boolean;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -17,6 +18,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onTaskUpdate,
   onTaskDelete,
   projects,
+  hideProjectName = false,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projectList, setProjectList] = useState<Project[]>(projects);
@@ -73,7 +75,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
   return (
     <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1">
-      <TaskHeader task={task} project={project} onTaskClick={handleTaskClick} onToggleCompletion={handleToggleCompletion} />
+      <TaskHeader task={task} project={project} onTaskClick={handleTaskClick} onToggleCompletion={handleToggleCompletion} hideProjectName={hideProjectName} />
 
       <TaskModal
         isOpen={isModalOpen}

@@ -9,6 +9,7 @@ interface TaskListProps {
   onTaskCreate?: (task: Task) => void;
   onTaskDelete: (taskId: number) => void;
   projects: Project[];
+  hideProjectName?: boolean;
 }
 
 const TaskList: React.FC<TaskListProps> = ({
@@ -16,6 +17,7 @@ const TaskList: React.FC<TaskListProps> = ({
   onTaskUpdate,
   onTaskDelete,
   projects,
+  hideProjectName = false,
 }) => {
   return (
     <div>
@@ -27,6 +29,7 @@ const TaskList: React.FC<TaskListProps> = ({
             onTaskUpdate={onTaskUpdate}
             onTaskDelete={onTaskDelete}
             projects={projects}
+            hideProjectName={hideProjectName}
           />
         ))
       ) : (
