@@ -55,7 +55,8 @@
     "suggested": "Suggested",
     "noTasksAvailable": "No tasks available for today.",
     "searchPlaceholder": "Search tasks...",
-    "addNewTask": "Add New Task"
+    "addNewTask": "Add New Task",
+    "metrics": "Metrics"
   },
   "profile": {
     "settings": "Profile Settings",
@@ -181,12 +182,21 @@
         "status": "Status",
         "priority": "Priority",
         "dueDate": "Due Date",
-        "note": "Note"
+        "note": "Note",
+        "recurrenceType": "Repeat",
+        "recurrenceInterval": "Every",
+        "weekday": "On day",
+        "monthDay": "Day of month",
+        "weekOfMonth": "Week of month",
+        "recurrenceEndDate": "End date (optional)",
+        "completionBased": "Repeat after completion"
       },
       "projectSearchPlaceholder": "Search or create a project...",
       "noMatchingProjects": "No matching projects",
       "creatingProject": "Creating...",
-      "createProject": "+ Create"
+      "createProject": "+ Create",
+      "recurrenceSettings": "Recurrence Settings",
+      "completionBasedHelp": "If checked, the next task will be created based on completion date instead of due date"
     },
     "noteTitle": "Note Title",
     "noteContent": "Note Content",
@@ -431,5 +441,27 @@
     "inactive": "Inactive",
     "viewTasksWithTag": "View tasks with this tag",
     "typeToAdd": "Type to add a tag"
+  },
+  "recurrence": {
+    "none": "None",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "monthlyWeekday": "Monthly on weekday",
+    "monthlyLastDay": "Monthly on last day",
+    "firstWeek": "First week",
+    "secondWeek": "Second week",
+    "thirdWeek": "Third week",
+    "fourthWeek": "Fourth week",
+    "lastWeek": "Last week"
+  },
+  "weekdays": {
+    "sunday": "Sunday",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday"
   }
 }

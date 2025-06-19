@@ -12,7 +12,7 @@ const TaskActions: React.FC<TaskActionsProps> = ({ taskId, onDelete, onSave, onC
   const { t } = useTranslation();
 
   return (
-    <div className="p-3 border-t dark:border-gray-700 flex-shrink-0 flex justify-end space-x-2">
+    <div className="p-3 flex-shrink-0 flex justify-end space-x-2">
       {taskId && (
         <button
           type="button"

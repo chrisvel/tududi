@@ -63,6 +63,35 @@ module.exports = (sequelize) => {
       type: DataTypes.DATE,
       allowNull: true
     },
+    recurrence_weekday: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: {
+        min: 0,
+        max: 6
+      }
+    },
+    recurrence_month_day: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: {
+        min: -1,
+        max: 31
+      }
+    },
+    recurrence_week_of_month: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      validate: {
+        min: 1,
+        max: 5
+      }
+    },
+    completion_based: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -76,6 +105,14 @@ module.exports = (sequelize) => {
       allowNull: true,
       references: {
         model: 'projects',
+        key: 'id'
+      }
+    },
+    recurring_parent_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'tasks',
         key: 'id'
       }
     }
@@ -97,6 +134,20 @@ module.exports = (sequelize) => {
     ]
   });
 
+  // Define associations
+  Task.associate = function(models) {
+    // Self-referencing association for recurring tasks
+    Task.belongsTo(models.Task, {
+      as: 'RecurringParent',
+      foreignKey: 'recurring_parent_id'
+    });
+    
+    Task.hasMany(models.Task, {
+      as: 'RecurringChildren',
+      foreignKey: 'recurring_parent_id'
+    });
+  };
+
   // Define enum constants
   Task.PRIORITY = {
     LOW: 0,
@@ -110,6 +161,15 @@ module.exports = (sequelize) => {
     DONE: 2,
     ARCHIVED: 3,
     WAITING: 4
+  };
+
+  Task.RECURRENCE_TYPE = {
+    NONE: 'none',
+    DAILY: 'daily',
+    WEEKLY: 'weekly',
+    MONTHLY: 'monthly',
+    MONTHLY_WEEKDAY: 'monthly_weekday',
+    MONTHLY_LAST_DAY: 'monthly_last_day'
   };
 
   // priority and status

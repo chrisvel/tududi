@@ -1,6 +1,7 @@
 const express = require('express');
 const { Task, Tag, Project, sequelize } = require('../models');
 const { Op } = require('sequelize');
+const RecurringTaskService = require('../services/recurringTaskService');
 const router = express.Router();
 
 // Helper function to update task tags
@@ -46,38 +47,38 @@ async function filterTasksByParams(params, userId) {
   // Filter by type
   switch (params.type) {
     case 'today':
-      // Just user tasks, no additional filtering
+      whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED, 'done', 'archived'] }; // Exclude completed and archived tasks (both integer and string values)
       break;
     case 'upcoming':
       whereClause.due_date = {
         [Op.between]: [new Date(), new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)]
       };
-      whereClause.status = { [Op.ne]: Task.STATUS.DONE };
+      whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
       break;
     case 'next':
       whereClause.due_date = null;
       whereClause.project_id = null;
-      whereClause.status = { [Op.ne]: Task.STATUS.DONE };
+      whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
       break;
     case 'inbox':
       whereClause[Op.or] = [
         { due_date: null },
         { project_id: null }
       ];
-      whereClause.status = { [Op.ne]: Task.STATUS.DONE };
+      whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
       break;
     case 'someday':
       whereClause.due_date = null;
-      whereClause.status = { [Op.ne]: Task.STATUS.DONE };
+      whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
       break;
     case 'waiting':
       whereClause.status = Task.STATUS.WAITING;
       break;
     default:
       if (params.status === 'done') {
-        whereClause.status = Task.STATUS.DONE;
+        whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
       } else {
-        whereClause.status = { [Op.ne]: Task.STATUS.DONE };
+        whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
       }
   }
 
@@ -149,7 +150,7 @@ async function computeTaskMetrics(userId) {
   const tasksDueToday = await Task.findAll({
     where: {
       user_id: userId,
-      status: { [Op.ne]: Task.STATUS.DONE },
+      status: { [Op.notIn]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED, 'done', 'archived'] },
       [Op.or]: [
         { due_date: { [Op.lte]: today } },
         sequelize.literal(`EXISTS (
@@ -233,10 +234,50 @@ router.get('/tasks', async (req, res) => {
   }
 });
 
+// GET /api/task/:id
+router.get('/task/:id', async (req, res) => {
+  try {
+    const task = await Task.findOne({
+      where: { id: req.params.id, user_id: req.currentUser.id },
+      include: [
+        { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
+        { model: Project, attributes: ['name'], required: false }
+      ]
+    });
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found.' });
+    }
+
+    res.json({
+      ...task.toJSON(),
+      due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
+    });
+  } catch (error) {
+    console.error('Error fetching task:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // POST /api/task
 router.post('/task', async (req, res) => {
   try {
-    const { name, priority, due_date, status, note, project_id, tags } = req.body;
+    const { 
+      name, 
+      priority, 
+      due_date, 
+      status, 
+      note, 
+      project_id, 
+      tags,
+      recurrence_type,
+      recurrence_interval,
+      recurrence_end_date,
+      recurrence_weekday,
+      recurrence_month_day,
+      recurrence_week_of_month,
+      completion_based
+    } = req.body;
 
     // Validate required fields
     if (!name || name.trim() === '') {
@@ -249,7 +290,14 @@ router.post('/task', async (req, res) => {
       due_date: due_date || null,
       status: status || Task.STATUS.NOT_STARTED,
       note,
-      user_id: req.currentUser.id
+      user_id: req.currentUser.id,
+      recurrence_type: recurrence_type || 'none',
+      recurrence_interval: recurrence_interval || null,
+      recurrence_end_date: recurrence_end_date || null,
+      recurrence_weekday: recurrence_weekday !== undefined ? recurrence_weekday : null,
+      recurrence_month_day: recurrence_month_day !== undefined ? recurrence_month_day : null,
+      recurrence_week_of_month: recurrence_week_of_month !== undefined ? recurrence_week_of_month : null,
+      completion_based: completion_based || false
     };
 
     // Handle project assignment
@@ -290,7 +338,23 @@ router.post('/task', async (req, res) => {
 // PATCH /api/task/:id
 router.patch('/task/:id', async (req, res) => {
   try {
-    const { name, priority, status, note, due_date, project_id, tags } = req.body;
+    const { 
+      name, 
+      priority, 
+      status, 
+      note, 
+      due_date, 
+      project_id, 
+      tags,
+      recurrence_type,
+      recurrence_interval,
+      recurrence_end_date,
+      recurrence_weekday,
+      recurrence_month_day,
+      recurrence_week_of_month,
+      completion_based,
+      update_parent_recurrence
+    } = req.body;
 
     const task = await Task.findOne({
       where: { id: req.params.id, user_id: req.currentUser.id }
@@ -300,12 +364,39 @@ router.patch('/task/:id', async (req, res) => {
       return res.status(404).json({ error: 'Task not found.' });
     }
 
+    // Handle updating parent recurrence settings if this is a child task
+    if (update_parent_recurrence && task.recurring_parent_id) {
+      const parentTask = await Task.findOne({
+        where: { id: task.recurring_parent_id, user_id: req.currentUser.id }
+      });
+      
+      if (parentTask) {
+        await parentTask.update({
+          recurrence_type: recurrence_type !== undefined ? recurrence_type : parentTask.recurrence_type,
+          recurrence_interval: recurrence_interval !== undefined ? recurrence_interval : parentTask.recurrence_interval,
+          recurrence_end_date: recurrence_end_date !== undefined ? recurrence_end_date : parentTask.recurrence_end_date,
+          recurrence_weekday: recurrence_weekday !== undefined ? recurrence_weekday : parentTask.recurrence_weekday,
+          recurrence_month_day: recurrence_month_day !== undefined ? recurrence_month_day : parentTask.recurrence_month_day,
+          recurrence_week_of_month: recurrence_week_of_month !== undefined ? recurrence_week_of_month : parentTask.recurrence_week_of_month,
+          completion_based: completion_based !== undefined ? completion_based : parentTask.completion_based
+        });
+        console.log(`Updated parent task ${parentTask.id} recurrence settings from child task ${task.id}`);
+      }
+    }
+
     const taskAttributes = {
       name,
       priority,
       status: status || Task.STATUS.NOT_STARTED,
       note,
-      due_date: due_date || null
+      due_date: due_date || null,
+      recurrence_type: recurrence_type !== undefined ? recurrence_type : task.recurrence_type,
+      recurrence_interval: recurrence_interval !== undefined ? recurrence_interval : task.recurrence_interval,
+      recurrence_end_date: recurrence_end_date !== undefined ? recurrence_end_date : task.recurrence_end_date,
+      recurrence_weekday: recurrence_weekday !== undefined ? recurrence_weekday : task.recurrence_weekday,
+      recurrence_month_day: recurrence_month_day !== undefined ? recurrence_month_day : task.recurrence_month_day,
+      recurrence_week_of_month: recurrence_week_of_month !== undefined ? recurrence_week_of_month : task.recurrence_week_of_month,
+      completion_based: completion_based !== undefined ? completion_based : task.completion_based
     };
 
     // Handle project assignment
@@ -356,16 +447,44 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
       return res.status(404).json({ error: 'Task not found.' });
     }
 
-    const newStatus = task.status === Task.STATUS.DONE
+    console.log('🎯 Toggle completion called for task:', {
+      id: task.id,
+      name: task.name,
+      currentStatus: task.status,
+      recurrence_type: task.recurrence_type,
+      completion_based: task.completion_based
+    });
+
+    const newStatus = (task.status === Task.STATUS.DONE || task.status === 'done')
       ? (task.note ? Task.STATUS.IN_PROGRESS : Task.STATUS.NOT_STARTED)
       : Task.STATUS.DONE;
 
+    console.log('📝 Status changing from', task.status, 'to', newStatus);
+
     await task.update({ status: newStatus });
 
-    res.json({
+    // Handle recurring task completion
+    let nextTask = null;
+    if (newStatus === Task.STATUS.DONE || newStatus === 'done') {
+      console.log('✅ Task marked as done, calling RecurringTaskService...');
+      nextTask = await RecurringTaskService.handleTaskCompletion(task);
+    } else {
+      console.log('❌ Task not marked as done, skipping RecurringTaskService');
+    }
+
+    const response = {
       ...task.toJSON(),
       due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-    });
+    };
+
+    if (nextTask) {
+      response.next_task = {
+        ...nextTask.toJSON(),
+        due_date: nextTask.due_date ? nextTask.due_date.toISOString().split('T')[0] : null
+      };
+    }
+
+    res.json(response);
   } catch (error) {
     console.error('Error toggling task completion:', error);
     res.status(422).json({ error: 'Unable to update task' });
@@ -388,6 +507,24 @@ router.delete('/task/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting task:', error);
     res.status(400).json({ error: 'There was a problem deleting the task.' });
+  }
+});
+
+// POST /api/tasks/generate-recurring
+router.post('/tasks/generate-recurring', async (req, res) => {
+  try {
+    const newTasks = await RecurringTaskService.generateRecurringTasks(req.currentUser.id);
+    
+    res.json({
+      message: `Generated ${newTasks.length} recurring tasks`,
+      tasks: newTasks.map(task => ({
+        ...task.toJSON(),
+        due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
+      }))
+    });
+  } catch (error) {
+    console.error('Error generating recurring tasks:', error);
+    res.status(500).json({ error: 'Failed to generate recurring tasks' });
   }
 });
 

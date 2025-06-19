@@ -75,7 +75,20 @@
     "noteContentPlaceholder": "Введіть вміст нотатки",
     "tags": "Теги",
     "required": "Це поле обов'язкове",
-    "optional": "Необов'язково"
+    "optional": "Необов'язково",
+    "task": {
+      "labels": {
+        "recurrenceType": "Повторення",
+        "recurrenceInterval": "Кожні",
+        "weekday": "По днях",
+        "monthDay": "День місяця",
+        "weekOfMonth": "Тиждень місяця",
+        "recurrenceEndDate": "Дата закінчення (опціонально)",
+        "completionBased": "Повторювати після завершення"
+      },
+      "recurrenceSettings": "Налаштування повторення",
+      "completionBasedHelp": "Якщо відмічено, наступне завдання буде створене на основі дати завершення замість дати виконання"
+    }
   },
 
   "modals": {
@@ -107,5 +120,29 @@
     "deleteNoteTitle": "Видалити нотатку {{noteTitle}}",
     "editNoteAriaLabel": "Редагувати нотатку {{noteTitle}}",
     "editNoteTitle": "Редагувати нотатку {{noteTitle}}"
+  },
+
+  "recurrence": {
+    "none": "Немає",
+    "daily": "Щоденно",
+    "weekly": "Щотижня",
+    "monthly": "Щомісяця",
+    "monthlyWeekday": "Щомісяця по днях тижня",
+    "monthlyLastDay": "Щомісяця в останній день",
+    "firstWeek": "Перший тиждень",
+    "secondWeek": "Другий тиждень",
+    "thirdWeek": "Третій тиждень",
+    "fourthWeek": "Четвертий тиждень",
+    "lastWeek": "Останній тиждень"
+  },
+
+  "weekdays": {
+    "sunday": "Неділя",
+    "monday": "Понеділок",
+    "tuesday": "Вівторок",
+    "wednesday": "Середа",
+    "thursday": "Четвер",
+    "friday": "П'ятниця",
+    "saturday": "Субота"
   }
 }

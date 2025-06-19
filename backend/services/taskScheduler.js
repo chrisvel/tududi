@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const { User } = require('../models');
 const TaskSummaryService = require('./taskSummaryService');
+const RecurringTaskService = require('./recurringTaskService');
 
 // Create scheduler state
 const createSchedulerState = () => ({
@@ -31,20 +32,26 @@ const getCronExpression = (frequency) => {
     '2h': '0 */2 * * *',
     '4h': '0 */4 * * *',
     '8h': '0 */8 * * *',
-    '12h': '0 */12 * * *'
+    '12h': '0 */12 * * *',
+    recurring_tasks: '0 6 * * *' // Daily at 6 AM for recurring task generation
   };
   return expressions[frequency];
 };
 
 // Create job handler
 const createJobHandler = (frequency) => async () => {
-  console.log(`Running scheduled task: ${frequency} task summary`);
-  await processSummariesForFrequency(frequency);
+  if (frequency === 'recurring_tasks') {
+    console.log('Running scheduled task: recurring task generation');
+    await processRecurringTasks();
+  } else {
+    console.log(`Running scheduled task: ${frequency} task summary`);
+    await processSummariesForFrequency(frequency);
+  }
 };
 
 // Create job entries
 const createJobEntries = () => {
-  const frequencies = ['daily', 'weekdays', 'weekly', '1h', '2h', '4h', '8h', '12h'];
+  const frequencies = ['daily', 'weekdays', 'weekly', '1h', '2h', '4h', '8h', '12h', 'recurring_tasks'];
   
   return frequencies.map(frequency => {
     const cronExpression = getCronExpression(frequency);
@@ -113,6 +120,19 @@ const processSummariesForFrequency = async (frequency) => {
     return results;
   } catch (error) {
     console.error(`Error processing summaries for frequency ${frequency}:`, error);
+    throw error;
+  }
+};
+
+// Function to process recurring tasks (contains side effects)
+const processRecurringTasks = async () => {
+  try {
+    console.log('Processing recurring tasks...');
+    const newTasks = await RecurringTaskService.generateRecurringTasks();
+    console.log(`Generated ${newTasks.length} recurring tasks`);
+    return newTasks;
+  } catch (error) {
+    console.error('Error processing recurring tasks:', error);
     throw error;
   }
 };
@@ -187,6 +207,7 @@ module.exports = {
   restart,
   getStatus,
   processSummariesForFrequency,
+  processRecurringTasks,
   // For testing
   _createSchedulerState: createSchedulerState,
   _shouldDisableScheduler: shouldDisableScheduler,

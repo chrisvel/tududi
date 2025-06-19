@@ -3,6 +3,7 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
 import TaskModal from './TaskModal';
+import { toggleTaskCompletion } from '../../utils/tasksService';
 
 interface TaskItemProps {
   task: Task;
@@ -35,6 +36,20 @@ const TaskItem: React.FC<TaskItemProps> = ({
     }
   };
 
+  const handleToggleCompletion = async () => {
+    if (task.id) {
+      try {
+        console.log('🖱️ Frontend: Toggling completion for task:', task.id, 'current status:', task.status);
+        const updatedTask = await toggleTaskCompletion(task.id);
+        console.log('✅ Frontend: Received updated task:', updatedTask);
+        onTaskUpdate(updatedTask);
+        console.log('🔄 Frontend: Called onTaskUpdate');
+      } catch (error) {
+        console.error('❌ Frontend: Error toggling task completion:', error);
+      }
+    }
+  };
+
   const handleCreateProject = async (name: string): Promise<Project> => {
     try {
       const response = await fetch('/api/project', {
@@ -62,7 +77,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
   return (
     <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1">
-      <TaskHeader task={task} project={project} onTaskClick={handleTaskClick} />
+      <TaskHeader task={task} project={project} onTaskClick={handleTaskClick} onToggleCompletion={handleToggleCompletion} />
 
       <TaskModal
         isOpen={isModalOpen}

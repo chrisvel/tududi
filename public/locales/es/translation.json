@@ -185,12 +185,21 @@
         "status": "Estado",
         "priority": "Prioridad",
         "dueDate": "Fecha de Vencimiento",
-        "note": "Nota"
+        "note": "Nota",
+        "recurrenceType": "Repetir",
+        "recurrenceInterval": "Cada",
+        "weekday": "En día",
+        "monthDay": "Día del mes",
+        "weekOfMonth": "Semana del mes",
+        "recurrenceEndDate": "Fecha de fin (opcional)",
+        "completionBased": "Repetir después de completar"
       },
       "projectSearchPlaceholder": "Buscar o crear un proyecto...",
       "noMatchingProjects": "No hay proyectos coincidentes",
       "creatingProject": "Creando...",
-      "createProject": "+ Crear"
+      "createProject": "+ Crear",
+      "recurrenceSettings": "Configuración de Recurrencia",
+      "completionBasedHelp": "Si está marcado, la siguiente tarea se creará basándose en la fecha de finalización en lugar de la fecha de vencimiento"
     }
   },
   "dateFormats": {
@@ -341,5 +350,27 @@
     "taskCreated": "¡Tarea creada con éxito!",
     "taskUpdated": "¡Tarea actualizada con éxito!",
     "taskDeleted": "¡Tarea eliminada con éxito!"
+  },
+  "recurrence": {
+    "none": "Ninguna",
+    "daily": "Diariamente",
+    "weekly": "Semanalmente",
+    "monthly": "Mensualmente",
+    "monthlyWeekday": "Mensualmente en día de semana",
+    "monthlyLastDay": "Mensualmente el último día",
+    "firstWeek": "Primera semana",
+    "secondWeek": "Segunda semana",
+    "thirdWeek": "Tercera semana",
+    "fourthWeek": "Cuarta semana",
+    "lastWeek": "Última semana"
+  },
+  "weekdays": {
+    "sunday": "Domingo",
+    "monday": "Lunes",
+    "tuesday": "Martes",
+    "wednesday": "Miércoles",
+    "thursday": "Jueves",
+    "friday": "Viernes",
+    "saturday": "Sábado"
   }
 }
