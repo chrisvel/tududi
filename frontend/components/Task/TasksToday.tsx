@@ -85,13 +85,13 @@ const TasksToday: React.FC = () => {
         // Load projects first
         const projectsData = await fetchProjects();
         if (isMounted.current) {
-          setLocalProjects(projectsData);
-          // Also update the store
-          store.projectsStore.setProjects(projectsData);
+          const safeProjectsData = Array.isArray(projectsData) ? projectsData : [];
+          setLocalProjects(safeProjectsData);
+          store.projectsStore.setProjects(safeProjectsData);
         }
       } catch (error) {
-        console.error("Failed to fetch projects:", error);
         if (isMounted.current) {
+          setLocalProjects([]);
           setIsError(true);
         }
       }
@@ -276,7 +276,7 @@ const TasksToday: React.FC = () => {
                   <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.active')}</p>
                 </div>
                 <p className="text-xl font-semibold">
-                  {localProjects.filter(project => project.active).length}
+                  {Array.isArray(localProjects) ? localProjects.filter(project => project.active).length : 0}
                 </p>
               </div>
               
@@ -286,7 +286,7 @@ const TasksToday: React.FC = () => {
                   <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.inactive')}</p>
                 </div>
                 <p className="text-xl font-semibold">
-                  {localProjects.filter(project => !project.active).length}
+                  {Array.isArray(localProjects) ? localProjects.filter(project => !project.active).length : 0}
                 </p>
               </div>
             </div>
