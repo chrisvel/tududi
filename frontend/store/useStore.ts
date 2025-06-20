@@ -40,6 +40,7 @@ interface TagsStore {
   setTags: (tags: Tag[]) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (isError: boolean) => void;
+  loadTags: () => Promise<void>;
 }
 
 interface TasksStore {
@@ -104,6 +105,19 @@ export const useStore = create<StoreState>((set) => ({
     setTags: (tags) => set((state) => ({ tagsStore: { ...state.tagsStore, tags } })),
     setLoading: (isLoading) => set((state) => ({ tagsStore: { ...state.tagsStore, isLoading } })),
     setError: (isError) => set((state) => ({ tagsStore: { ...state.tagsStore, isError } })),
+    loadTags: async () => {
+      const { fetchTags } = require("../utils/tagsService");
+      console.log("loadTags: Starting to load tags...");
+      set((state) => ({ tagsStore: { ...state.tagsStore, isLoading: true, isError: false } }));
+      try {
+        const tags = await fetchTags();
+        console.log("loadTags: Successfully loaded tags:", tags);
+        set((state) => ({ tagsStore: { ...state.tagsStore, tags, isLoading: false } }));
+      } catch (error) {
+        console.error("loadTags: Failed to load tags:", error);
+        set((state) => ({ tagsStore: { ...state.tagsStore, isError: true, isLoading: false } }));
+      }
+    },
   },
   tasksStore: {
     tasks: [],

@@ -7,7 +7,8 @@ const createPollerState = () => ({
   interval: null,
   pollInterval: 5000, // 5 seconds
   usersToPool: [],
-  userStatus: {}
+  userStatus: {},
+  processedUpdates: new Set() // Track processed update IDs to prevent duplicates
 });
 
 // Global mutable state (managed functionally)
@@ -166,11 +167,32 @@ const updateUserChatId = async (userId, chatId) => {
 };
 
 // Side effect function to create inbox item
-const createInboxItem = async (content, userId) => {
+const createInboxItem = async (content, userId, messageId) => {
+  // Check if a similar item was created recently (within last 30 seconds)
+  // to prevent duplicates from network issues or multiple processing
+  const recentCutoff = new Date(Date.now() - 30000); // 30 seconds ago
+  
+  const existingItem = await InboxItem.findOne({
+    where: {
+      content: content,
+      user_id: userId,
+      source: 'telegram',
+      created_at: {
+        [require('sequelize').Op.gte]: recentCutoff
+      }
+    }
+  });
+  
+  if (existingItem) {
+    console.log(`Duplicate inbox item detected for user ${userId}, content: "${content}". Skipping creation.`);
+    return existingItem;
+  }
+  
   return await InboxItem.create({
     content: content,
     source: 'telegram',
-    user_id: userId
+    user_id: userId,
+    metadata: { telegram_message_id: messageId } // Store message ID for reference
   });
 };
 
@@ -188,8 +210,8 @@ const processMessage = async (user, update) => {
   }
 
   try {
-    // Create inbox item
-    const inboxItem = await createInboxItem(text, user.id);
+    // Create inbox item (with duplicate check)
+    const inboxItem = await createInboxItem(text, user.id, messageId);
 
     // Send confirmation
     await sendTelegramMessage(
@@ -198,6 +220,8 @@ const processMessage = async (user, update) => {
       `✅ Added to Tududi inbox: "${text}"`,
       messageId
     );
+    
+    console.log(`Successfully processed message ${messageId} for user ${user.id}: "${text}"`);
   } catch (error) {
     // Send error message
     await sendTelegramMessage(
@@ -213,8 +237,16 @@ const processMessage = async (user, update) => {
 const processUpdates = async (user, updates) => {
   if (!updates.length) return;
 
-  // Get highest update ID
-  const highestUpdateId = getHighestUpdateId(updates);
+  // Filter out already processed updates
+  const newUpdates = updates.filter(update => {
+    const updateKey = `${user.id}-${update.update_id}`;
+    return !pollerState.processedUpdates.has(updateKey);
+  });
+
+  if (!newUpdates.length) return;
+
+  // Get highest update ID from new updates
+  const highestUpdateId = getHighestUpdateId(newUpdates);
   
   // Update user status
   pollerState = {
@@ -224,14 +256,25 @@ const processUpdates = async (user, updates) => {
     })
   };
 
-  // Process each update
-  for (const update of updates) {
+  // Process each new update
+  for (const update of newUpdates) {
     try {
+      const updateKey = `${user.id}-${update.update_id}`;
+      
       if (update.message && update.message.text) {
         await processMessage(user, update);
+        
+        // Mark update as processed
+        pollerState.processedUpdates.add(updateKey);
+        
+        // Clean up old processed updates (keep only last 1000 to prevent memory leak)
+        if (pollerState.processedUpdates.size > 1000) {
+          const oldestEntries = Array.from(pollerState.processedUpdates).slice(0, 100);
+          oldestEntries.forEach(entry => pollerState.processedUpdates.delete(entry));
+        }
       }
     } catch (error) {
-      // Error processing update
+      console.error(`Error processing update ${update.update_id} for user ${user.id}:`, error);
     }
   }
 };
@@ -247,10 +290,11 @@ const pollUpdates = async () => {
       const updates = await getTelegramUpdates(token, lastUpdateId + 1);
       
       if (updates && updates.length > 0) {
+        console.log(`Processing ${updates.length} updates for user ${user.id}, starting from update ID ${lastUpdateId + 1}`);
         await processUpdates(user, updates);
       }
     } catch (error) {
-      // Error getting updates for user
+      console.error(`Error getting updates for user ${user.id}:`, error);
     }
   }
 };

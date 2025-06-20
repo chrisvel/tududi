@@ -32,7 +32,10 @@ const Notes: React.FC = () => {
     const loadNotes = async () => {
       setIsLoading(true);
       try {
+        console.log('Attempting to fetch notes...');
         const fetchedNotes = await fetchNotes();
+        console.log('Fetched notes:', fetchedNotes);
+        console.log('Number of notes:', fetchedNotes.length);
         setNotes(fetchedNotes);
       } catch (error) {
         console.error('Error loading notes:', error);
@@ -87,6 +90,10 @@ const Notes: React.FC = () => {
       note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       note.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  
+  console.log('All notes:', notes);
+  console.log('Search query:', searchQuery);
+  console.log('Filtered notes:', filteredNotes);
 
   if (isLoading) {
     return (

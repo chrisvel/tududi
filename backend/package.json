@@ -11,6 +11,7 @@
     "test:coverage": "cross-env NODE_ENV=test jest --coverage",
     "test:unit": "cross-env NODE_ENV=test jest tests/unit",
     "test:integration": "cross-env NODE_ENV=test jest tests/integration",
+    "test:telegram-duplicates": "node scripts/test-telegram-duplicates.js",
     "db:init": "node scripts/db-init.js",
     "db:sync": "node scripts/db-sync.js",
     "db:migrate": "node scripts/db-migrate.js",

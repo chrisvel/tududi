@@ -16,6 +16,11 @@ const TaskTags: React.FC<TaskTagsProps> = ({ tags = [], onTagRemove, className }
     navigate(`/tasks?tag=${tagName}`);
   };
 
+  // Don't render anything if there are no tags
+  if (!tags || tags.length === 0) {
+    return null;
+  }
+
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>
       {tags.map((tag, index) => (

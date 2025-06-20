@@ -288,19 +288,71 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
         {t('forms.task.recurrenceSettings', 'Recurrence Settings')}
       </h3>
       
-      {renderRecurrenceTypeSelect()}
+      {/* Main recurrence settings in one row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {t('forms.task.labels.recurrenceType', 'Repeat')}
+          </label>
+          <select
+            value={recurrenceType}
+            onChange={(e) => onChange('recurrence_type', e.target.value as RecurrenceType)}
+            className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+            disabled={disabled}
+          >
+            <option value="none">{t('recurrence.none', 'No repeat')}</option>
+            <option value="daily">{t('recurrence.daily', 'Daily')}</option>
+            <option value="weekly">{t('recurrence.weekly', 'Weekly')}</option>
+            <option value="monthly">{t('recurrence.monthly', 'Monthly')}</option>
+            <option value="monthly_weekday">{t('recurrence.monthlyWeekday', 'Monthly on weekday')}</option>
+            <option value="monthly_last_day">{t('recurrence.monthlyLastDay', 'Monthly on last day')}</option>
+          </select>
+        </div>
+
+        {(recurrenceType === 'daily' || recurrenceType === 'weekly' || recurrenceType === 'monthly' || recurrenceType === 'monthly_weekday' || recurrenceType === 'monthly_last_day') && (
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('forms.task.labels.recurrenceInterval', 'Every')}
+            </label>
+            <div className="flex items-center space-x-2">
+              <input
+                type="number"
+                min="1"
+                max="999"
+                value={recurrenceInterval || 1}
+                onChange={(e) => onChange('recurrence_interval', parseInt(e.target.value))}
+                className="block w-20 border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                disabled={disabled}
+              />
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {recurrenceType === 'daily' && t('recurrence.days', 'days')}
+                {recurrenceType === 'weekly' && t('recurrence.weeks', 'weeks')}
+                {(recurrenceType === 'monthly' || recurrenceType === 'monthly_weekday' || recurrenceType === 'monthly_last_day') && t('recurrence.months', 'months')}
+              </span>
+            </div>
+          </div>
+        )}
+
+        <div>
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {t('forms.task.labels.recurrenceEndDate', 'End date (optional)')}
+          </label>
+          <input
+            type="date"
+            value={recurrenceEndDate || ''}
+            onChange={(e) => onChange('recurrence_end_date', e.target.value || null)}
+            className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+            disabled={disabled}
+          />
+        </div>
+      </div>
       
-      {(recurrenceType === 'daily' || recurrenceType === 'weekly' || recurrenceType === 'monthly' || recurrenceType === 'monthly_weekday' || recurrenceType === 'monthly_last_day') && (
-        renderIntervalInput()
-      )}
-      
+      {/* Additional settings for specific recurrence types */}
       {recurrenceType === 'weekly' && renderWeekdaySelect()}
       
       {recurrenceType === 'monthly' && renderMonthDayInput()}
       
       {recurrenceType === 'monthly_weekday' && renderMonthlyWeekdayInputs()}
-      
-      {renderEndDateInput()}
       
       {renderCompletionBasedToggle()}
     </div>

@@ -237,26 +237,42 @@ router.get('/tasks', async (req, res) => {
     const metrics = await computeTaskMetrics(req.currentUser.id);
 
     res.json({
-      tasks: tasks.map(task => ({
-        ...task.toJSON(),
-        due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-      })),
+      tasks: tasks.map(task => {
+        const taskJson = task.toJSON();
+        return {
+          ...taskJson,
+          tags: taskJson.Tags || [],
+          due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
+        };
+      }),
       metrics: {
         total_open_tasks: metrics.total_open_tasks,
         tasks_pending_over_month: metrics.tasks_pending_over_month,
         tasks_in_progress_count: metrics.tasks_in_progress_count,
-        tasks_in_progress: metrics.tasks_in_progress.map(task => ({
-          ...task.toJSON(),
-          due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-        })),
-        tasks_due_today: metrics.tasks_due_today.map(task => ({
-          ...task.toJSON(),
-          due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-        })),
-        suggested_tasks: metrics.suggested_tasks.map(task => ({
-          ...task.toJSON(),
-          due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-        }))
+        tasks_in_progress: metrics.tasks_in_progress.map(task => {
+          const taskJson = task.toJSON();
+          return {
+            ...taskJson,
+            tags: taskJson.Tags || [],
+            due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
+          };
+        }),
+        tasks_due_today: metrics.tasks_due_today.map(task => {
+          const taskJson = task.toJSON();
+          return {
+            ...taskJson,
+            tags: taskJson.Tags || [],
+            due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
+          };
+        }),
+        suggested_tasks: metrics.suggested_tasks.map(task => {
+          const taskJson = task.toJSON();
+          return {
+            ...taskJson,
+            tags: taskJson.Tags || [],
+            due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
+          };
+        })
       }
     });
   } catch (error) {
@@ -283,8 +299,11 @@ router.get('/task/:id', async (req, res) => {
       return res.status(404).json({ error: 'Task not found.' });
     }
 
+    const taskJson = task.toJSON();
+    
     res.json({
-      ...task.toJSON(),
+      ...taskJson,
+      tags: taskJson.Tags || [],
       due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
     });
   } catch (error) {
@@ -304,6 +323,7 @@ router.post('/task', async (req, res) => {
       note, 
       project_id, 
       tags,
+      Tags,
       recurrence_type,
       recurrence_interval,
       recurrence_end_date,
@@ -312,6 +332,9 @@ router.post('/task', async (req, res) => {
       recurrence_week_of_month,
       completion_based
     } = req.body;
+
+    // Handle both tags and Tags (Sequelize association format)
+    const tagsData = tags || Tags;
 
     // Validate required fields
     if (!name || name.trim() === '') {
@@ -346,7 +369,7 @@ router.post('/task', async (req, res) => {
     }
 
     const task = await Task.create(taskAttributes);
-    await updateTaskTags(task, tags, req.currentUser.id);
+    await updateTaskTags(task, tagsData, req.currentUser.id);
 
     // Reload task with associations
     const taskWithAssociations = await Task.findByPk(task.id, {
@@ -356,8 +379,11 @@ router.post('/task', async (req, res) => {
       ]
     });
 
+    const taskJson = taskWithAssociations.toJSON();
+    
     res.status(201).json({
-      ...taskWithAssociations.toJSON(),
+      ...taskJson,
+      tags: taskJson.Tags || [],
       due_date: taskWithAssociations.due_date ? taskWithAssociations.due_date.toISOString().split('T')[0] : null
     });
   } catch (error) {
@@ -380,6 +406,7 @@ router.patch('/task/:id', async (req, res) => {
       due_date, 
       project_id, 
       tags,
+      Tags,
       recurrence_type,
       recurrence_interval,
       recurrence_end_date,
@@ -389,6 +416,9 @@ router.patch('/task/:id', async (req, res) => {
       completion_based,
       update_parent_recurrence
     } = req.body;
+
+    // Handle both tags and Tags (Sequelize association format)
+    const tagsData = tags || Tags;
 
     const task = await Task.findOne({
       where: { id: req.params.id, user_id: req.currentUser.id }
@@ -447,18 +477,21 @@ router.patch('/task/:id', async (req, res) => {
     }
 
     await task.update(taskAttributes);
-    await updateTaskTags(task, tags, req.currentUser.id);
+    await updateTaskTags(task, tagsData, req.currentUser.id);
 
     // Reload task with associations
     const taskWithAssociations = await Task.findByPk(task.id, {
       include: [
-        { model: Tag, attributes: ['name'], through: { attributes: [] } },
+        { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
         { model: Project, attributes: ['name'], required: false }
       ]
     });
 
+    const taskJson = taskWithAssociations.toJSON();
+    
     res.json({
-      ...taskWithAssociations.toJSON(),
+      ...taskJson,
+      tags: taskJson.Tags || [], // Normalize Tags to tags
       due_date: taskWithAssociations.due_date ? taskWithAssociations.due_date.toISOString().split('T')[0] : null
     });
   } catch (error) {

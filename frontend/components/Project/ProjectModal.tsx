@@ -8,7 +8,6 @@ import PriorityDropdown from "../Shared/PriorityDropdown";
 import { PriorityType } from "../../entities/Task";
 import Switch from "../Shared/Switch";
 import { useStore } from "../../store/useStore";
-import { fetchTags } from "../../utils/tagsService";
 import { useTranslation } from "react-i18next";
 
 interface ProjectModalProps {
@@ -49,7 +48,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   const [isUploading, setIsUploading] = useState(false);
 
   const { tagsStore } = useStore();
-  const { tags: availableTags } = tagsStore;
+  const { tags: availableTags, loadTags } = tagsStore;
 
   const modalRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -88,9 +87,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
   useEffect(() => {
     if (availableTags.length === 0) {
-      fetchTags();
+      console.log('Loading tags...');
+      loadTags().then(() => {
+        console.log('Tags loaded successfully');
+      }).catch(error => {
+        console.error('Error loading tags:', error);
+      });
+    } else {
+      console.log('Available tags:', availableTags);
     }
-  }, [availableTags.length]);
+  }, [availableTags.length, loadTags]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -149,11 +155,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   };
 
   const handleTagsChange = useCallback((newTags: string[]) => {
+    console.log('Tags changed:', newTags);
     setTags(newTags);
     setFormData((prev) => ({
       ...prev,
       tags: newTags.map((name) => ({ name })),
     }));
+    console.log('Form data updated with tags:', newTags.map((name) => ({ name })));
   }, []);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

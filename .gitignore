@@ -12,3 +12,6 @@ public/js/bundle.js
 .aider*
 
 backend/coverage/
+
+# User uploaded files
+backend/uploads/

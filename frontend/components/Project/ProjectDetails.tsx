@@ -212,72 +212,144 @@ const ProjectDetails: React.FC = () => {
       <div className="w-full max-w-5xl">
         {/* Project Banner Image */}
         {project.image_url && (
-          <div className="mb-6 rounded-lg overflow-hidden">
+          <div className="mb-6 rounded-lg overflow-hidden relative">
             <img
               src={project.image_url}
               alt={project.name}
               className="w-full h-48 object-cover"
             />
+            {/* Title Overlay */}
+            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+              <h1 className="text-4xl md:text-5xl font-bold text-white text-center px-4 drop-shadow-lg">
+                {project.name}
+              </h1>
+            </div>
+            {/* Priority Indicator on Image */}
+            {project.priority && (
+              <div className="absolute top-3 left-3">
+                <div
+                  className={`w-4 h-4 rounded-full border-2 border-white shadow-lg ${
+                    priorityStyles[project.priority] || priorityStyles.default
+                  }`}
+                  title={`Priority: ${priorityLabel(project.priority)}`}
+                  aria-label={`Priority: ${priorityLabel(project.priority)}`}
+                ></div>
+              </div>
+            )}
+            {/* Edit/Delete Buttons on Image */}
+            <div className="absolute bottom-4 right-4 flex space-x-2">
+              <button
+                onClick={handleEditProject}
+                className="p-2 bg-black bg-opacity-50 text-white hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+              >
+                <PencilSquareIcon className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => setIsConfirmDialogOpen(true)}
+                className="p-2 bg-black bg-opacity-50 text-white hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+              >
+                <TrashIcon className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         )}
         
-        {/* Project Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center">
-            <FolderIcon className="h-6 w-6 text-gray-500 mr-3" />
-            <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100 mr-2">
-              {project.name}
-            </h2>
-            {project.priority && (
-              <div
-                className={`w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${
-                  priorityStyles[project.priority] || priorityStyles.default
-                }`}
-                title={`Priority: ${priorityLabel(project.priority)}`}
-                aria-label={`Priority: ${priorityLabel(project.priority)}`}
-              ></div>
-            )}
-          </div>
-          <div className="flex space-x-2">
-            <button
-              onClick={handleEditProject}
-              className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
-            >
-              <PencilSquareIcon className="h-5 w-5" />
-            </button>
-            <button
-              onClick={() => setIsConfirmDialogOpen(true)}
-              className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
-            >
-              <TrashIcon className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-
-        {project.area && (
-          <div className="flex items-center mb-2">
-            <Squares2X2Icon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-            <Link
-              to={`/projects/?area_id=${project.area.id}`}
-              className="text-gray-600 dark:text-gray-400 hover:underline"
-            >
-              {project.area.name.toUpperCase()}
-            </Link>
+        {/* Project Metadata Box */}
+        {(project.description || project.area || project.due_date_at || (project.tags && project.tags.length > 0)) && (
+          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg">
+            <div className="grid gap-3">
+              {project.description && (
+                <div className="flex items-start">
+                  <InformationCircleIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">Description:</span>
+                    <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed mt-1">
+                      {project.description}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {project.area && (
+                <div className="flex items-center">
+                  <Squares2X2Icon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3" />
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">Area:</span>
+                  <span className="text-sm text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                    {project.area.name}
+                  </span>
+                </div>
+              )}
+              
+              {project.due_date_at && (
+                <div className="flex items-center">
+                  <CalendarDaysIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3" />
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">Due Date:</span>
+                  <span className="text-sm text-gray-900 dark:text-gray-100">
+                    {formatProjectDueDate(project.due_date_at)}
+                  </span>
+                </div>
+              )}
+              
+              {project.tags && project.tags.length > 0 && (
+                <div className="flex items-start">
+                  <div className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3 mt-0.5">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">Tags:</span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {project.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="inline-block px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full"
+                        >
+                          {tag.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
-
-        {project.due_date_at && ( 
-          <div className="flex items-center mb-2">
-            <CalendarDaysIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-            {formatProjectDueDate(project.due_date_at)}
+        
+        {/* Project Header - Only show when no image */}
+        {!project.image_url && (
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center">
+              <FolderIcon className="h-6 w-6 text-gray-500 mr-3" />
+              <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100 mr-2">
+                {project.name}
+              </h2>
+              {/* Show priority indicator only when no image */}
+              {project.priority && (
+                <div
+                  className={`w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${
+                    priorityStyles[project.priority] || priorityStyles.default
+                  }`}
+                  title={`Priority: ${priorityLabel(project.priority)}`}
+                  aria-label={`Priority: ${priorityLabel(project.priority)}`}
+                ></div>
+              )}
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={handleEditProject}
+                className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
+              >
+                <PencilSquareIcon className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => setIsConfirmDialogOpen(true)}
+                className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
+              >
+                <TrashIcon className="h-5 w-5" />
+              </button>
+            </div>
           </div>
-        )}
-
-        {project.description && (
-          <p className="flex items-center text-gray-700 dark:text-gray-300 mb-6">
-            <InformationCircleIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-            {project.description}
-          </p>
         )}
 
         <div className="flex items-center justify-between mb-4">

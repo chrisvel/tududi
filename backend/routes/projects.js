@@ -170,8 +170,10 @@ router.get('/projects', async (req, res) => {
       
       taskStatusCounts[project.id] = taskStatus;
       
+      const projectJson = project.toJSON();
       return {
-        ...project.toJSON(),
+        ...projectJson,
+        tags: projectJson.Tags || [], // Normalize Tags to tags
         due_date_at: formatDate(project.due_date_at),
         task_status: taskStatus,
         completion_percentage: taskStatus.total > 0 ? Math.round((taskStatus.done / taskStatus.total) * 100) : 0
@@ -234,8 +236,10 @@ router.get('/project/:id', async (req, res) => {
       return res.status(404).json({ error: 'Project not found' });
     }
 
+    const projectJson = project.toJSON();
     const result = {
-      ...project.toJSON(),
+      ...projectJson,
+      tags: projectJson.Tags || [], // Normalize Tags to tags
       due_date_at: formatDate(project.due_date_at)
     };
     
@@ -256,7 +260,10 @@ router.post('/project', async (req, res) => {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const { name, description, area_id, priority, due_date_at, image_url, tags } = req.body;
+    const { name, description, area_id, priority, due_date_at, image_url, tags, Tags } = req.body;
+
+    // Handle both tags and Tags (Sequelize association format)
+    const tagsData = tags || Tags;
 
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Project name is required' });
@@ -275,7 +282,7 @@ router.post('/project', async (req, res) => {
     };
 
     const project = await Project.create(projectData);
-    await updateProjectTags(project, tags, req.session.userId);
+    await updateProjectTags(project, tagsData, req.session.userId);
 
     // Reload project with associations
     const projectWithAssociations = await Project.findByPk(project.id, {
@@ -284,8 +291,11 @@ router.post('/project', async (req, res) => {
       ]
     });
 
+    const projectJson = projectWithAssociations.toJSON();
+    
     res.status(201).json({
-      ...projectWithAssociations.toJSON(),
+      ...projectJson,
+      tags: projectJson.Tags || [], // Normalize Tags to tags
       due_date_at: formatDate(projectWithAssociations.due_date_at)
     });
   } catch (error) {
@@ -312,7 +322,10 @@ router.patch('/project/:id', async (req, res) => {
       return res.status(404).json({ error: 'Project not found.' });
     }
 
-    const { name, description, area_id, active, pin_to_sidebar, priority, due_date_at, image_url, tags } = req.body;
+    const { name, description, area_id, active, pin_to_sidebar, priority, due_date_at, image_url, tags, Tags } = req.body;
+
+    // Handle both tags and Tags (Sequelize association format)
+    const tagsData = tags || Tags;
 
     const updateData = {};
     if (name !== undefined) updateData.name = name;
@@ -325,7 +338,7 @@ router.patch('/project/:id', async (req, res) => {
     if (image_url !== undefined) updateData.image_url = image_url;
 
     await project.update(updateData);
-    await updateProjectTags(project, tags, req.session.userId);
+    await updateProjectTags(project, tagsData, req.session.userId);
 
     // Reload project with associations
     const projectWithAssociations = await Project.findByPk(project.id, {
@@ -334,8 +347,11 @@ router.patch('/project/:id', async (req, res) => {
       ]
     });
 
+    const projectJson = projectWithAssociations.toJSON();
+    
     res.json({
-      ...projectWithAssociations.toJSON(),
+      ...projectJson,
+      tags: projectJson.Tags || [], // Normalize Tags to tags
       due_date_at: formatDate(projectWithAssociations.due_date_at)
     });
   } catch (error) {
