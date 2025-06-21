@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   AcademicCapIcon,
   ExclamationTriangleIcon,
@@ -11,6 +11,10 @@ import {
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
+import TaskModal from '../Task/TaskModal';
+import { fetchTaskById, updateTask, deleteTask } from '../../utils/tasksService';
+import { fetchProjects, createProject } from '../../utils/projectsService';
+import { useToast } from '../Shared/ToastContext';
 
 interface ProductivityInsight {
   type: 'stalled_projects' | 'completed_no_next' | 'tasks_are_projects' | 'vague_tasks' | 'overdue_tasks' | 'stuck_projects';
@@ -28,9 +32,18 @@ interface ProductivityAssistantProps {
 
 const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({ tasks, projects }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { showSuccessToast, showErrorToast } = useToast();
+  
   const [isExpanded, setIsExpanded] = useState(false);
   const [insights, setInsights] = useState<ProductivityInsight[]>([]);
   const [expandedInsights, setExpandedInsights] = useState<Set<number>>(new Set());
+  
+  // Modal states
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [allProjects, setAllProjects] = useState<Project[]>(projects);
+  const [loading, setLoading] = useState(false);
 
   const PROJECT_VERBS = ['plan', 'organize', 'set up', 'setup', 'fix', 'review', 'implement', 'create', 'build', 'develop'];
   const OVERDUE_THRESHOLD_DAYS = 30;
@@ -251,6 +264,87 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({ tasks, pr
     setExpandedInsights(newExpanded);
   };
 
+  const handleItemClick = async (item: Task | Project) => {
+    const isTask = 'status' in item;
+    
+    if (isTask) {
+      // Handle task click - open task modal
+      try {
+        setLoading(true);
+        const fullTask = await fetchTaskById(item.id!);
+        setSelectedTask(fullTask);
+        setIsTaskModalOpen(true);
+      } catch (error) {
+        console.error('Failed to fetch task:', error);
+        showErrorToast(t('errors.failedToLoadTask', 'Failed to load task'));
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Handle project click - navigate to project page
+      navigate(`/project/${item.id}`);
+    }
+  };
+
+  const handleTaskSave = async (updatedTask: Task) => {
+    try {
+      if (updatedTask.id) {
+        await updateTask(updatedTask.id, updatedTask);
+        setIsTaskModalOpen(false);
+        setSelectedTask(null);
+        showSuccessToast(t('task.updateSuccess', 'Task updated successfully'));
+        // Optionally refresh the parent component data
+      }
+    } catch (error) {
+      console.error('Failed to update task:', error);
+      showErrorToast(t('task.updateError', 'Failed to update task'));
+    }
+  };
+
+  const handleTaskDelete = async () => {
+    try {
+      if (selectedTask?.id) {
+        await deleteTask(selectedTask.id);
+        setIsTaskModalOpen(false);
+        setSelectedTask(null);
+        showSuccessToast(t('task.deleteSuccess', 'Task deleted successfully'));
+        // Optionally refresh the parent component data
+      }
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+      showErrorToast(t('task.deleteError', 'Failed to delete task'));
+    }
+  };
+
+  const handleCreateProject = async (name: string): Promise<Project> => {
+    try {
+      const project = await createProject({ name, active: true });
+      setAllProjects(prev => [...prev, project]);
+      return project;
+    } catch (error) {
+      console.error('Failed to create project:', error);
+      throw error;
+    }
+  };
+
+  // Load projects when component mounts
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const projectsData = await fetchProjects();
+        setAllProjects(Array.isArray(projectsData) ? projectsData : []);
+      } catch (error) {
+        console.error('Failed to load projects:', error);
+      }
+    };
+    
+    if (projects.length === 0) {
+      loadProjects();
+    } else {
+      setAllProjects(projects);
+    }
+  }, [projects]);
+
   if (totalIssues === 0) {
     return null;
   }
@@ -293,17 +387,15 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({ tasks, pr
                     </p>
                     <div className="space-y-1">
                       {(expandedInsights.has(index) ? insight.items : insight.items.slice(0, 3)).map((item, itemIndex) => {
-                        const isTask = 'status' in item;
-                        const linkPath = isTask ? `/tasks/${item.id}` : `/projects/${item.id}`;
-                        
                         return (
                           <div key={itemIndex} className="text-sm">
-                            <Link 
-                              to={linkPath}
-                              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
+                            <button 
+                              onClick={() => handleItemClick(item)}
+                              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline text-left"
+                              disabled={loading}
                             >
                               • {item.name}
-                            </Link>
+                            </button>
                           </div>
                         );
                       })}
@@ -331,6 +423,22 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({ tasks, pr
             </p>
           </div>
         </div>
+      )}
+      
+      {/* Task Modal */}
+      {selectedTask && (
+        <TaskModal
+          isOpen={isTaskModalOpen}
+          onClose={() => {
+            setIsTaskModalOpen(false);
+            setSelectedTask(null);
+          }}
+          task={selectedTask}
+          onSave={handleTaskSave}
+          onDelete={handleTaskDelete}
+          projects={allProjects}
+          onCreateProject={handleCreateProject}
+        />
       )}
     </div>
   );
