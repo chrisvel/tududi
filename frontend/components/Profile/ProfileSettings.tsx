@@ -24,6 +24,7 @@ interface Profile {
   task_intelligence_enabled: boolean;
   auto_suggest_next_actions_enabled: boolean;
   productivity_assistant_enabled: boolean;
+  next_task_suggestion_enabled: boolean;
 }
 
 interface SchedulerStatus {
@@ -77,6 +78,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
     task_summary_frequency: 'daily',
     auto_suggest_next_actions_enabled: true,
     productivity_assistant_enabled: true,
+    next_task_suggestion_enabled: true,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -217,6 +219,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
           task_summary_frequency: data.task_summary_frequency || 'daily',
           auto_suggest_next_actions_enabled: data.auto_suggest_next_actions_enabled !== undefined ? data.auto_suggest_next_actions_enabled : true,
           productivity_assistant_enabled: data.productivity_assistant_enabled !== undefined ? data.productivity_assistant_enabled : true,
+          next_task_suggestion_enabled: data.next_task_suggestion_enabled !== undefined ? data.next_task_suggestion_enabled : true,
         });
         setTelegramBotToken(data.telegram_bot_token || '');
         setTelegramChatId(data.telegram_chat_id || '');
@@ -426,6 +429,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         task_summary_frequency: updatedProfile.task_summary_frequency || prev.task_summary_frequency || 'daily',
         auto_suggest_next_actions_enabled: updatedProfile.auto_suggest_next_actions_enabled !== undefined ? updatedProfile.auto_suggest_next_actions_enabled : prev.auto_suggest_next_actions_enabled !== undefined ? prev.auto_suggest_next_actions_enabled : true,
         productivity_assistant_enabled: updatedProfile.productivity_assistant_enabled !== undefined ? updatedProfile.productivity_assistant_enabled : prev.productivity_assistant_enabled !== undefined ? prev.productivity_assistant_enabled : true,
+        next_task_suggestion_enabled: updatedProfile.next_task_suggestion_enabled !== undefined ? updatedProfile.next_task_suggestion_enabled : prev.next_task_suggestion_enabled !== undefined ? prev.next_task_suggestion_enabled : true,
       }));
       
       // Apply appearance change after save
@@ -973,6 +977,46 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
                 <span 
                   className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
                     formData.productivity_assistant_enabled ? 'translate-x-6' : 'translate-x-0'
+                  }`}
+                ></span>
+              </div>
+            </div>
+          </div>
+
+          {/* Next Task Suggestion Subsection */}
+          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
+            <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
+              <svg className="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m2 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {t('profile.nextTaskSuggestion', 'Next Task Suggestion')}
+            </h4>
+            
+            <div className="mb-4 text-sm text-gray-600 dark:text-gray-300 flex items-start">
+              <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
+              <p>
+                {t('profile.nextTaskSuggestionDescription', 'Automatically suggest the next best task to work on when you have nothing in progress, prioritizing due today tasks, then suggested tasks, then next actions.')}
+              </p>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('profile.enableNextTaskSuggestion', 'Enable Next Task Suggestions')}
+              </label>
+              <div 
+                className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
+                  formData.next_task_suggestion_enabled ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}
+                onClick={() => {
+                  setFormData(prev => ({
+                    ...prev,
+                    next_task_suggestion_enabled: !prev.next_task_suggestion_enabled
+                  }));
+                }}
+              >
+                <span 
+                  className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
+                    formData.next_task_suggestion_enabled ? 'translate-x-6' : 'translate-x-0'
                   }`}
                 ></span>
               </div>

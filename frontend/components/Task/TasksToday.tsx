@@ -21,7 +21,8 @@ import { useStore } from "../../store/useStore";
 import TaskList from "./TaskList";
 import { Metrics } from "../../entities/Metrics";
 import ProductivityAssistant from "../Productivity/ProductivityAssistant";
-import { getProductivityAssistantEnabled } from "../../utils/profileService";
+import NextTaskSuggestion from "./NextTaskSuggestion";
+import { getProductivityAssistantEnabled, getNextTaskSuggestionEnabled } from "../../utils/profileService";
 
 const getLocale = (language: string) => {
   switch (language) {
@@ -52,6 +53,11 @@ const TasksToday: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [productivityAssistantEnabled, setProductivityAssistantEnabled] = useState(true);
+  const [nextTaskSuggestionEnabled, setNextTaskSuggestionEnabled] = useState(true);
+  const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(() => {
+    const stored = sessionStorage.getItem('hideNextTaskSuggestion');
+    return stored !== 'true';
+  });
   
   // Metrics from the API
   const [metrics, setMetrics] = useState<Metrics>({
@@ -65,6 +71,12 @@ const TasksToday: React.FC = () => {
 
   // Track mounting state to prevent state updates after unmount
   const isMounted = React.useRef(false);
+
+  // Function to handle next task suggestion dismissal
+  const handleCloseNextTaskSuggestion = () => {
+    setShowNextTaskSuggestion(false);
+    sessionStorage.setItem('hideNextTaskSuggestion', 'true');
+  };
   
   // Load data once on component mount
   useEffect(() => {
@@ -95,6 +107,16 @@ const TasksToday: React.FC = () => {
       }
       
       try {
+        // Load next task suggestion setting
+        const isNextTaskEnabled = await getNextTaskSuggestionEnabled();
+        if (isMounted.current) {
+          setNextTaskSuggestionEnabled(isNextTaskEnabled);
+        }
+      } catch (error) {
+        console.error("Failed to load next task suggestion setting:", error);
+      }
+      
+      try {
         // Load projects first
         const projectsData = await fetchProjects();
         if (isMounted.current) {
@@ -103,6 +125,7 @@ const TasksToday: React.FC = () => {
           store.projectsStore.setProjects(safeProjectsData);
         }
       } catch (error) {
+        console.error('Projects loading error:', error);
         if (isMounted.current) {
           setLocalProjects([]);
           setIsError(true);
@@ -328,16 +351,17 @@ const TasksToday: React.FC = () => {
           <ProductivityAssistant tasks={localTasks} projects={localProjects} />
         )}
 
-        {metrics.tasks_due_today.length > 0 && (
-          <>
-            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.dueToday')}</h3>
-            <TaskList
-              tasks={metrics.tasks_due_today}
-              onTaskUpdate={handleTaskUpdate}
-              onTaskDelete={handleTaskDelete}
-              projects={localProjects}
-            />
-          </>
+        {/* Next Task Suggestion */}
+        {nextTaskSuggestionEnabled && showNextTaskSuggestion && (
+          <NextTaskSuggestion 
+            metrics={{
+              tasks_due_today: metrics.tasks_due_today,
+              suggested_tasks: metrics.suggested_tasks,
+              tasks_in_progress: metrics.tasks_in_progress
+            }}
+            onTaskUpdate={handleTaskUpdate}
+            onClose={handleCloseNextTaskSuggestion}
+          />
         )}
 
         {metrics.tasks_in_progress.length > 0 && (
@@ -345,6 +369,18 @@ const TasksToday: React.FC = () => {
             <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.inProgress')}</h3>
             <TaskList
               tasks={metrics.tasks_in_progress}
+              onTaskUpdate={handleTaskUpdate}
+              onTaskDelete={handleTaskDelete}
+              projects={localProjects}
+            />
+          </>
+        )}
+
+        {metrics.tasks_due_today.length > 0 && (
+          <>
+            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.dueToday')}</h3>
+            <TaskList
+              tasks={metrics.tasks_due_today}
               onTaskUpdate={handleTaskUpdate}
               onTaskDelete={handleTaskDelete}
               projects={localProjects}

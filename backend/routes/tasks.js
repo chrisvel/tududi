@@ -135,7 +135,7 @@ async function computeTaskMetrics(userId) {
   const tasksInProgress = await Task.findAll({
     where: {
       user_id: userId,
-      status: Task.STATUS.IN_PROGRESS
+      status: { [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'] }
     },
     include: [
       { 
@@ -196,11 +196,16 @@ async function computeTaskMetrics(userId) {
       ...tasksDueToday.map(t => t.id)
     ];
 
-    suggestedTasks = await Task.findAll({
+    // Get 3 tasks without projects
+    const nonProjectTasks = await Task.findAll({
       where: {
         user_id: userId,
         status: Task.STATUS.NOT_STARTED,
-        id: { [Op.notIn]: excludedTaskIds }
+        id: { [Op.notIn]: excludedTaskIds },
+        [Op.or]: [
+          { project_id: null },
+          { project_id: '' }
+        ]
       },
       include: [
         { 
@@ -216,8 +221,36 @@ async function computeTaskMetrics(userId) {
         }
       ],
       order: [['priority', 'DESC']],
-      limit: 10
+      limit: 3
     });
+
+    // Get 3 tasks with projects
+    const projectTasks = await Task.findAll({
+      where: {
+        user_id: userId,
+        status: Task.STATUS.NOT_STARTED,
+        id: { [Op.notIn]: excludedTaskIds },
+        project_id: { [Op.not]: null, [Op.ne]: '' }
+      },
+      include: [
+        { 
+          model: Tag, 
+          attributes: ['id', 'name'], 
+          through: { attributes: [] },
+          required: false 
+        },
+        { 
+          model: Project, 
+          attributes: ['id', 'name', 'active'], 
+          required: false 
+        }
+      ],
+      order: [['priority', 'DESC']],
+      limit: 3
+    });
+
+    // Combine both arrays: 3 non-project + 3 project tasks
+    suggestedTasks = [...nonProjectTasks, ...projectTasks];
   }
 
   return {

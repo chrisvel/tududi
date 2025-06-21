@@ -17,7 +17,7 @@ export const fetchProjects = async (activeFilter = "all", areaFilter = ""): Prom
   await handleAuthResponse(response, 'Failed to fetch projects.');
 
   const data = await response.json();
-  return data;
+  return data.projects || data;
 };
 
 export const fetchGroupedProjects = async (activeFilter = "all", areaFilter = ""): Promise<Record<string, Project[]>> => {

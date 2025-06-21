@@ -87,14 +87,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
   useEffect(() => {
     if (availableTags.length === 0) {
-      console.log('Loading tags...');
-      loadTags().then(() => {
-        console.log('Tags loaded successfully');
-      }).catch(error => {
+      loadTags().catch(error => {
         console.error('Error loading tags:', error);
       });
-    } else {
-      console.log('Available tags:', availableTags);
     }
   }, [availableTags.length, loadTags]);
 
@@ -155,13 +150,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   };
 
   const handleTagsChange = useCallback((newTags: string[]) => {
-    console.log('Tags changed:', newTags);
     setTags(newTags);
     setFormData((prev) => ({
       ...prev,
       tags: newTags.map((name) => ({ name })),
     }));
-    console.log('Form data updated with tags:', newTags.map((name) => ({ name })));
   }, []);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

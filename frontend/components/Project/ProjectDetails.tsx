@@ -58,9 +58,6 @@ const ProjectDetails: React.FC = () => {
       try {
         fetchAreas();
         const projectData = await fetchProjectById(id);
-        console.log("Project data received:", projectData);
-        console.log("Tasks in project:", projectData.tasks);
-        console.log("Tasks (capital T):", projectData.Tasks);
         setProject(projectData);
         // Handle both 'tasks' and 'Tasks' property names
         const projectTasks = projectData.tasks || projectData.Tasks || [];
