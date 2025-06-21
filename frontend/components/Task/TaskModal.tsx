@@ -12,6 +12,7 @@ import { useStore } from "../../store/useStore";
 import { fetchTags } from '../../utils/tagsService';
 import { fetchTaskById } from '../../utils/tasksService';
 import { getTaskIntelligenceEnabled } from '../../utils/profileService';
+import { analyzeTaskName, TaskAnalysis } from '../../utils/taskIntelligenceService';
 import { useTranslation } from "react-i18next";
 
 interface TaskModalProps {
@@ -49,7 +50,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const [tagsLoading, setTagsLoading] = useState(false);
   const [parentTask, setParentTask] = useState<Task | null>(null);
   const [parentTaskLoading, setParentTaskLoading] = useState(false);
-  const [showNameLengthHelper, setShowNameLengthHelper] = useState(false);
+  const [taskAnalysis, setTaskAnalysis] = useState<TaskAnalysis | null>(null);
   const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] = useState(true);
   const { showSuccessToast, showErrorToast } = useToast();
   const { t } = useTranslation();
@@ -58,10 +59,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
     setFormData(task);
     setTags(task.tags?.map((tag) => tag.name) || []);
     
-    // Check if task name is short and show helper when modal opens (only if intelligence is enabled)
+    // Analyze task name and show helper when modal opens (only if intelligence is enabled)
     if (isOpen && task.name && taskIntelligenceEnabled) {
-      const trimmedName = task.name.trim();
-      setShowNameLengthHelper(trimmedName.length > 0 && trimmedName.length < 10);
+      const analysis = analyzeTaskName(task.name);
+      setTaskAnalysis(analysis);
+    } else {
+      setTaskAnalysis(null);
     }
     
     // Safely find the current project, handling the case where projects might be undefined
@@ -167,10 +170,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     
-    // Show helper message for task name if it's too short (only if intelligence is enabled)
+    // Analyze task name in real-time (only if intelligence is enabled)
     if (name === 'name' && taskIntelligenceEnabled) {
-      const trimmedValue = value.trim();
-      setShowNameLengthHelper(trimmedValue.length > 0 && trimmedValue.length < 10);
+      const analysis = analyzeTaskName(value);
+      setTaskAnalysis(analysis);
     }
   };
 
@@ -312,21 +315,51 @@ const TaskModal: React.FC<TaskModalProps> = ({
                       className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
                       placeholder={t('forms.task.namePlaceholder', 'Add Task Name')}
                     />
-                    {showNameLengthHelper && taskIntelligenceEnabled && (
-                      <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-md">
+                    {taskAnalysis && taskAnalysis.isVague && taskIntelligenceEnabled && (
+                      <div className={`mt-2 p-3 rounded-md border ${
+                        taskAnalysis.severity === 'high' 
+                          ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700'
+                          : taskAnalysis.severity === 'medium'
+                            ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700'
+                            : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700'
+                      }`}>
                         <div className="flex items-start">
                           <div className="flex-shrink-0">
-                            <svg className="h-4 w-4 text-blue-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className={`h-4 w-4 mt-0.5 ${
+                              taskAnalysis.severity === 'high' 
+                                ? 'text-red-400'
+                                : taskAnalysis.severity === 'medium'
+                                  ? 'text-yellow-400'
+                                  : 'text-blue-400'
+                            }`} fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                             </svg>
                           </div>
                           <div className="ml-2">
-                            <p className="text-sm text-blue-800 dark:text-blue-200">
-                              <strong>{t('task.nameHelper.title', 'Make it more descriptive!')}</strong>
+                            <p className={`text-sm ${
+                              taskAnalysis.severity === 'high' 
+                                ? 'text-red-800 dark:text-red-200'
+                                : taskAnalysis.severity === 'medium'
+                                  ? 'text-yellow-800 dark:text-yellow-200'
+                                  : 'text-blue-800 dark:text-blue-200'
+                            }`}>
+                              <strong>
+                                {taskAnalysis.reason === 'short' && t('task.nameHelper.short', 'Make it more descriptive!')}
+                                {taskAnalysis.reason === 'no_verb' && t('task.nameHelper.noVerb', 'Add an action verb!')}
+                                {taskAnalysis.reason === 'vague_pattern' && t('task.nameHelper.vague', 'Be more specific!')}
+                              </strong>
                             </p>
-                            <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                              {t('task.nameHelper.suggestion', 'Try adding more details like "Call dentist to schedule cleaning appointment" instead of just "Call dentist"')}
-                            </p>
+                            {taskAnalysis.suggestion && (
+                              <p className={`text-xs mt-1 ${
+                                taskAnalysis.severity === 'high' 
+                                  ? 'text-red-700 dark:text-red-300'
+                                  : taskAnalysis.severity === 'medium'
+                                    ? 'text-yellow-700 dark:text-yellow-300'
+                                    : 'text-blue-700 dark:text-blue-300'
+                              }`}>
+                                {taskAnalysis.suggestion}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>

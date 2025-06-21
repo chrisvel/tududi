@@ -15,6 +15,7 @@ import TaskModal from '../Task/TaskModal';
 import { fetchTaskById, updateTask, deleteTask } from '../../utils/tasksService';
 import { fetchProjects, createProject } from '../../utils/projectsService';
 import { useToast } from '../Shared/ToastContext';
+import { getVagueTasks } from '../../utils/taskIntelligenceService';
 
 interface ProductivityInsight {
   type: 'stalled_projects' | 'completed_no_next' | 'tasks_are_projects' | 'vague_tasks' | 'overdue_tasks' | 'stuck_projects';
@@ -53,7 +54,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({ tasks, pr
       const newInsights: ProductivityInsight[] = [];
 
       // Filter to only include non-completed tasks
-      const activeTasks = tasks.filter(task => task.status !== 'done' && task.status !== 'completed');
+      const activeTasks = tasks.filter(task => task.status !== 'done' && task.status !== 'archived');
 
       // 1. Stalled Projects (no tasks/actions)
       const stalledProjects = projects.filter(project => 
@@ -74,7 +75,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({ tasks, pr
       // 2. Projects with completed tasks but no next action
       const projectsNeedingNextAction = projects.filter(project => {
         const projectTasks = tasks.filter(task => task.project_id === project.id);
-        const hasCompletedTasks = projectTasks.some(task => task.status === 'done' || task.status === 'completed');
+        const hasCompletedTasks = projectTasks.some(task => task.status === 'done' || task.status === 'archived');
         const hasNextAction = activeTasks.some(task => 
           task.project_id === project.id && (task.status === 'not_started' || task.status === 'in_progress')
         );
@@ -111,86 +112,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({ tasks, pr
       }
 
       // 4. Tasks without clear verbs
-      const vagueTasks = activeTasks.filter(task => {
-        const taskName = task.name.toLowerCase().trim();
-        
-        // Skip if it's already a next action (contains →)
-        if (taskName.includes('→')) return false;
-        
-        // More comprehensive action verb patterns
-        const actionVerbPatterns = [
-          // Direct action verbs at start
-          /^(call|email|text|message|phone|contact)/,
-          /^(write|draft|compose|type|create|make)/,
-          /^(read|review|check|examine|study|analyze)/,
-          /^(buy|purchase|order|get|obtain|acquire)/,
-          /^(schedule|book|arrange|plan|set up|setup)/,
-          /^(meet|discuss|talk|speak|chat)/,
-          /^(send|deliver|ship|mail|forward)/,
-          /^(update|edit|modify|change|fix|correct)/,
-          /^(finish|complete|finalize|wrap up)/,
-          /^(submit|file|upload|post|publish)/,
-          /^(organize|sort|clean|tidy|arrange)/,
-          /^(research|find|search|look up|investigate)/,
-          /^(prepare|gather|collect|assemble)/,
-          /^(install|download|set up|configure)/,
-          /^(test|try|experiment|validate)/,
-          /^(backup|save|export|archive)/,
-          /^(delete|remove|uninstall|cancel)/,
-          
-          // Gerund forms (-ing verbs) which are often good actions
-          /^(calling|emailing|writing|reading|buying|scheduling|meeting|sending|updating|finishing|submitting|organizing|researching|preparing|installing|testing|backing)/,
-          
-          // Question patterns (usually clear next actions)
-          /^(what|how|when|where|why|which)/,
-          /\?$/,
-          
-          // Imperative patterns with objects
-          /^(add|remove|insert|attach|include|exclude)/,
-          /^(start|begin|initiate|launch|kick off)/,
-          /^(stop|end|terminate|close|shut)/,
-          
-          // Common task patterns
-          /^(follow up|followup)/,
-          /^(sign up|signup)/,
-          /^(log in|login)/,
-          /^(pick up|pickup)/,
-          /^(drop off|dropoff)/,
-          /^(set up|setup)/,
-          /^(clean up|cleanup)/,
-          /^(wrap up|wrapup)/
-        ];
-        
-        // Check if task starts with any action verb pattern
-        const hasActionVerb = actionVerbPatterns.some(pattern => pattern.test(taskName));
-        if (hasActionVerb) return false;
-        
-        // Check for common non-actionable patterns (these are vague)
-        const vaguePatterns = [
-          // Single words without context
-          /^[a-zA-Z]+$/,
-          // Just names without action
-          /^[A-Z][a-z]+ [A-Z][a-z]+$/,
-          // Just project/area names
-          /^(project|website|app|system|process|issue|problem|bug|feature)$/i,
-          // Very short tasks without clear action (less than 3 words)
-          /^(\w+\s+\w+|^\w+)$/
-        ];
-        
-        // Only flag as vague if it matches vague patterns AND is not clearly actionable
-        const isVague = vaguePatterns.some(pattern => pattern.test(taskName));
-        
-        // Additional checks for good tasks that shouldn't be flagged
-        const hasGoodStructure = (
-          taskName.length > 15 || // Longer tasks are usually more specific
-          taskName.split(' ').length > 3 || // More than 3 words usually means more specific
-          /\b(for|with|to|from|about|regarding|re:|fwd:)\b/.test(taskName) || // Prepositions indicate context
-          /\b(tomorrow|today|monday|tuesday|wednesday|thursday|friday|saturday|sunday|next week|this week)\b/.test(taskName) || // Time references
-          /\b(project|meeting|appointment|deadline|due|urgent|important)\b/.test(taskName) // Context indicators
-        );
-        
-        return isVague && !hasGoodStructure;
-      });
+      const vagueTasks = getVagueTasks(activeTasks);
 
       if (vagueTasks.length > 0) {
         newInsights.push({
@@ -208,8 +130,8 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({ tasks, pr
       const thresholdDate = new Date(now.getTime() - (OVERDUE_THRESHOLD_DAYS * 24 * 60 * 60 * 1000));
       
       const staleTasks = activeTasks.filter(task => {
-        const taskDate = task.updated_at ? new Date(task.updated_at) : 
-                        task.created_at ? new Date(task.created_at) : null;
+        // Only use created_at since updated_at doesn't exist in the interface
+        const taskDate = task.created_at ? new Date(task.created_at) : null;
         
         return taskDate && taskDate < thresholdDate;
       });
@@ -229,10 +151,19 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({ tasks, pr
       const stuckProjects = projects.filter(project => {
         if (!project.active) return false;
         
-        const projectDate = project.updated_at ? new Date(project.updated_at) : 
-                           project.created_at ? new Date(project.created_at) : null;
+        // Projects don't have date fields in the interface, so we'll check if they have recent tasks
+        const projectTasks = activeTasks.filter(task => task.project_id === project.id);
         
-        return projectDate && projectDate < thresholdDate;
+        if (projectTasks.length === 0) return false; // Empty projects are handled by "stalled projects"
+        
+        // Find the most recent task date for this project
+        const mostRecentTaskDate = projectTasks.reduce((latest, task) => {
+          const taskDate = task.created_at ? new Date(task.created_at) : null;
+          if (!taskDate) return latest;
+          return !latest || taskDate > latest ? taskDate : latest;
+        }, null as Date | null);
+        
+        return mostRecentTaskDate && mostRecentTaskDate < thresholdDate;
       });
 
       if (stuckProjects.length > 0) {

@@ -258,7 +258,10 @@
     "task": {
       "nameHelper": {
         "title": "Make it more descriptive!",
-        "suggestion": "Try adding more details like \"Call dentist to schedule cleaning appointment\" instead of just \"Call dentist\""
+        "suggestion": "Try adding more details like \"Call dentist to schedule cleaning appointment\" instead of just \"Call dentist\"",
+        "short": "Make it more descriptive!",
+        "noVerb": "Add an action verb!",
+        "vague": "Be more specific!"
       }
     }
   },
