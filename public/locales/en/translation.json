@@ -134,6 +134,9 @@
     "autoSuggestNextActions": "Auto-Suggest Next Actions",
     "autoSuggestNextActionsDescription": "When creating a project, automatically prompt for the very next physical action to take.",
     "enableAutoSuggestNextActions": "Enable Next Action Prompts",
+    "productivityAssistant": "Productivity Assistant",
+    "productivityAssistantDescription": "Show productivity insights that help identify stalled projects, vague tasks, and workflow improvements on your Today page.",
+    "enableProductivityAssistant": "Enable Productivity Insights",
     "nextActionPrompt": "What's the very next physical action for this project?",
     "nextActionPlaceholder": "e.g., Call client to schedule meeting, Research competitors online, Create project folder...",
     "addNextAction": "Add Next Action",
@@ -148,6 +151,23 @@
     "aiProductivityFeatures": "AI & Productivity Features",
     "botSetup": "Bot Setup",
     "successMessage": "Profile updated successfully!"
+  },
+  "productivity": {
+    "stalledProjects": "Stalled Projects",
+    "stalledProjectsDesc": "These projects have no tasks or actions",
+    "needsNextAction": "Projects Need Next Action",
+    "needsNextActionDesc": "These projects have completed tasks but no next action",
+    "tasksAreProjects": "Tasks That Look Like Projects",
+    "tasksAreProjectsDesc": "These tasks might need to be broken down",
+    "vagueTasks": "Tasks Without Clear Action",
+    "vagueTasksDesc": "These tasks need clearer action verbs",
+    "staleTasks": "Stale Tasks",
+    "staleTasksDesc": "Tasks not updated in {{days}} days",
+    "stuckProjects": "Stuck Projects",
+    "stuckProjectsDesc": "Projects not updated recently",
+    "issuesFound": "Found {{count}} productivity issue(s) that need attention",
+    "reviewItems": "Click to review and improve your workflow",
+    "suggestion": "Click on any item above to open it and make improvements."
   },
   "modals": {
     "confirmDelete": "Are you sure you want to delete?",

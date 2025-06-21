@@ -23,6 +23,7 @@ interface Profile {
   task_summary_frequency: string;
   task_intelligence_enabled: boolean;
   auto_suggest_next_actions_enabled: boolean;
+  productivity_assistant_enabled: boolean;
 }
 
 interface SchedulerStatus {
@@ -75,6 +76,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
     task_summary_enabled: false,
     task_summary_frequency: 'daily',
     auto_suggest_next_actions_enabled: true,
+    productivity_assistant_enabled: true,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -214,6 +216,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
           task_summary_enabled: data.task_summary_enabled !== undefined ? data.task_summary_enabled : false,
           task_summary_frequency: data.task_summary_frequency || 'daily',
           auto_suggest_next_actions_enabled: data.auto_suggest_next_actions_enabled !== undefined ? data.auto_suggest_next_actions_enabled : true,
+          productivity_assistant_enabled: data.productivity_assistant_enabled !== undefined ? data.productivity_assistant_enabled : true,
         });
         setTelegramBotToken(data.telegram_bot_token || '');
         setTelegramChatId(data.telegram_chat_id || '');
@@ -422,6 +425,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         task_summary_enabled: updatedProfile.task_summary_enabled !== undefined ? updatedProfile.task_summary_enabled : prev.task_summary_enabled !== undefined ? prev.task_summary_enabled : false,
         task_summary_frequency: updatedProfile.task_summary_frequency || prev.task_summary_frequency || 'daily',
         auto_suggest_next_actions_enabled: updatedProfile.auto_suggest_next_actions_enabled !== undefined ? updatedProfile.auto_suggest_next_actions_enabled : prev.auto_suggest_next_actions_enabled !== undefined ? prev.auto_suggest_next_actions_enabled : true,
+        productivity_assistant_enabled: updatedProfile.productivity_assistant_enabled !== undefined ? updatedProfile.productivity_assistant_enabled : prev.productivity_assistant_enabled !== undefined ? prev.productivity_assistant_enabled : true,
       }));
       
       // Apply appearance change after save
@@ -929,6 +933,46 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
                 <span 
                   className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
                     formData.auto_suggest_next_actions_enabled ? 'translate-x-6' : 'translate-x-0'
+                  }`}
+                ></span>
+              </div>
+            </div>
+          </div>
+
+          {/* Productivity Assistant Subsection */}
+          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
+            <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
+              <svg className="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              {t('profile.productivityAssistant', 'Productivity Assistant')}
+            </h4>
+            
+            <div className="mb-4 text-sm text-gray-600 dark:text-gray-300 flex items-start">
+              <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
+              <p>
+                {t('profile.productivityAssistantDescription', 'Show productivity insights that help identify stalled projects, vague tasks, and workflow improvements on your Today page.')}
+              </p>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('profile.enableProductivityAssistant', 'Enable Productivity Insights')}
+              </label>
+              <div 
+                className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
+                  formData.productivity_assistant_enabled ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}
+                onClick={() => {
+                  setFormData(prev => ({
+                    ...prev,
+                    productivity_assistant_enabled: !prev.productivity_assistant_enabled
+                  }));
+                }}
+              >
+                <span 
+                  className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
+                    formData.productivity_assistant_enabled ? 'translate-x-6' : 'translate-x-0'
                   }`}
                 ></span>
               </div>

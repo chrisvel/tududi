@@ -13,6 +13,7 @@ interface Profile {
   task_summary_frequency: string;
   task_intelligence_enabled: boolean;
   auto_suggest_next_actions_enabled: boolean;
+  productivity_assistant_enabled: boolean;
 }
 
 interface SchedulerStatus {
@@ -191,6 +192,16 @@ export const getAutoSuggestNextActionsEnabled = async (): Promise<boolean> => {
     return profile.auto_suggest_next_actions_enabled !== undefined ? profile.auto_suggest_next_actions_enabled : true;
   } catch (error) {
     console.error('Error fetching auto-suggest next actions setting:', error);
+    return true; // Default to enabled if we can't fetch the setting
+  }
+};
+
+export const getProductivityAssistantEnabled = async (): Promise<boolean> => {
+  try {
+    const profile = await fetchProfile();
+    return profile.productivity_assistant_enabled !== undefined ? profile.productivity_assistant_enabled : true;
+  } catch (error) {
+    console.error('Error fetching productivity assistant setting:', error);
     return true; // Default to enabled if we can't fetch the setting
   }
 };

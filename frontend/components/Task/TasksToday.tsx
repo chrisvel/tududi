@@ -20,6 +20,8 @@ import { Task } from "../../entities/Task";
 import { useStore } from "../../store/useStore";
 import TaskList from "./TaskList";
 import { Metrics } from "../../entities/Metrics";
+import ProductivityAssistant from "../Productivity/ProductivityAssistant";
+import { getProductivityAssistantEnabled } from "../../utils/profileService";
 
 const getLocale = (language: string) => {
   switch (language) {
@@ -49,6 +51,7 @@ const TasksToday: React.FC = () => {
   const [localProjects, setLocalProjects] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [productivityAssistantEnabled, setProductivityAssistantEnabled] = useState(true);
   
   // Metrics from the API
   const [metrics, setMetrics] = useState<Metrics>({
@@ -79,6 +82,16 @@ const TasksToday: React.FC = () => {
         loadInboxItemsToStore();
       } catch (error) {
         console.error("Failed to load inbox items:", error);
+      }
+      
+      try {
+        // Load productivity assistant setting
+        const isEnabled = await getProductivityAssistantEnabled();
+        if (isMounted.current) {
+          setProductivityAssistantEnabled(isEnabled);
+        }
+      } catch (error) {
+        console.error("Failed to load productivity assistant setting:", error);
       }
       
       try {
@@ -204,7 +217,7 @@ const TasksToday: React.FC = () => {
   return (
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
-        <div className="flex items-center mb-4">
+        <div className="flex items-center mb-8">
           <h2 className="text-2xl font-light flex items-center">
             <CalendarDaysIcon className="h-5 w-5 mr-2" /> {t('tasks.today')}
           </h2>
@@ -295,7 +308,7 @@ const TasksToday: React.FC = () => {
 
         {/* Inbox Notification */}
         {inboxItemsCount > 0 && (
-          <div className="mb-6 p-4 bg-white dark:bg-gray-900 border-l-4 border-blue-500 rounded-lg shadow">
+          <div className="mb-2 p-4 bg-white dark:bg-gray-900 border-l-4 border-blue-500 rounded-lg shadow">
             <Link to="/inbox" className="flex items-center">
               <InboxIcon className="h-6 w-6 text-blue-500 dark:text-blue-400 mr-3" />
               <div>
@@ -308,6 +321,11 @@ const TasksToday: React.FC = () => {
               </div>
             </Link>
           </div>
+        )}
+
+        {/* Productivity Assistant */}
+        {productivityAssistantEnabled && (
+          <ProductivityAssistant tasks={localTasks} projects={localProjects} />
         )}
 
         {metrics.tasks_due_today.length > 0 && (
