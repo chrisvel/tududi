@@ -75,6 +75,16 @@ module.exports = (sequelize) => {
     task_summary_next_run: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    task_intelligence_enabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
+    },
+    auto_suggest_next_actions_enabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   }, {
     tableName: 'users',

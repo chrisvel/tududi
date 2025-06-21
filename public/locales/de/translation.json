@@ -25,6 +25,14 @@
     "completed": "Abgeschlossen",
     "allTasks": "Alle Aufgaben"
   },
+  "navigation": {
+    "home": "Startseite",
+    "dashboard": "Dashboard",
+    "profile": "Profil",
+    "profileSettings": "Profil-Einstellungen",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
   "forms": {
     "title": "Titel",
     "description": "Beschreibung",
@@ -54,7 +62,9 @@
     "createNote": "Notiz erstellen",
     "submitting": "Wird übermittelt...",
     "noteCreation": "Neue Notiz erstellen",
-    "noteEdit": "Notiz bearbeiten"
+    "noteEdit": "Notiz bearbeiten",
+    "createProject": "Projekt erstellen",
+    "updateProject": "Projekt aktualisieren"
   },
   "errors": {
     "noteTitleRequired": "Notiz-Titel ist erforderlich.",
@@ -99,7 +109,39 @@
     "emptyDescription": "Erfassen Sie schnell Gedanken und Ideen mit dem + Button in der unteren rechten Ecke"
   },
   "profile": {
-    "japanese": "Japanisch"
+    "japanese": "Japanisch",
+    "taskIntelligence": "Aufgaben-Intelligenz",
+    "taskIntelligenceDescription": "Erhalten Sie hilfreiche Vorschläge, um Ihre Aufgabennamen beschreibender und umsetzbarer zu machen.",
+    "enableTaskIntelligence": "Aufgaben-Intelligenz-Assistent aktivieren",
+    "enableTaskSummary": "Aufgaben-Zusammenfassungen aktivieren",
+    "autoSuggestNextActions": "Auto-Vorschlag für nächste Aktionen",
+    "autoSuggestNextActionsDescription": "Beim Erstellen eines Projekts automatisch nach der nächsten physischen Aktion fragen.",
+    "enableAutoSuggestNextActions": "Nächste-Aktion-Aufforderungen aktivieren",
+    "nextActionPrompt": "Was ist die nächste konkrete Aktion für dieses Projekt?",
+    "nextActionPlaceholder": "z.B., Kunden anrufen um Termin zu vereinbaren, Konkurrenten online recherchieren, Projektordner erstellen...",
+    "addNextAction": "Nächste Aktion hinzufügen",
+    "skipNextAction": "Vorerst überspringen",
+    "nextActionHint": "Denken Sie an den kleinsten, konkretesten Schritt, den Sie jetzt unternehmen können, um dieses Projekt voranzubringen.",
+    "tabs": {
+      "general": "Allgemein",
+      "telegram": "Telegram",
+      "ai": "KI-Funktionen"
+    },
+    "accountSettings": "Konto & Einstellungen",
+    "aiProductivityFeatures": "KI & Produktivitätsfunktionen",
+    "botSetup": "Bot-Einrichtung",
+    "successMessage": "Profil erfolgreich aktualisiert!"
+  },
+  "task": {
+    "nameHelper": {
+      "title": "Machen Sie es beschreibender!",
+      "suggestion": "Versuchen Sie, mehr Details hinzuzufügen wie \"Zahnarzt anrufen um Reinigungstermin zu vereinbaren\" anstatt nur \"Zahnarzt anrufen\""
+    }
+  },
+  "project": {
+    "projectImage": "Projektbild",
+    "uploadImageHint": "Laden Sie ein Bild für Ihr Projekt hoch (max. 5MB)",
+    "browseImage": "Bild durchsuchen"
   }
 }
 

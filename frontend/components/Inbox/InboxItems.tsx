@@ -229,6 +229,7 @@ const InboxItems: React.FC = () => {
       showErrorToast(t('project.createError'));
     }
   };
+
   
   const handleSaveNote = async (note: Note) => {
     try {

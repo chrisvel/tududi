@@ -254,6 +254,7 @@ const Layout: React.FC<LayoutProps> = ({
     }
   };
 
+
   const handleSaveArea = async (areaData: Partial<Area>) => {
     try {
       if (areaData.id) {

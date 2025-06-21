@@ -11,6 +11,8 @@ interface Profile {
   telegram_chat_id: string | null;
   task_summary_enabled: boolean;
   task_summary_frequency: string;
+  task_intelligence_enabled: boolean;
+  auto_suggest_next_actions_enabled: boolean;
 }
 
 interface SchedulerStatus {
@@ -169,4 +171,26 @@ export const updateTaskSummaryFrequency = async (frequency: string): Promise<any
   });
   await handleAuthResponse(response, 'Failed to update task summary frequency.');
   return await response.json();
+};
+
+export type { Profile };
+
+export const getTaskIntelligenceEnabled = async (): Promise<boolean> => {
+  try {
+    const profile = await fetchProfile();
+    return profile.task_intelligence_enabled !== undefined ? profile.task_intelligence_enabled : true;
+  } catch (error) {
+    console.error('Error fetching task intelligence setting:', error);
+    return true; // Default to enabled if we can't fetch the setting
+  }
+};
+
+export const getAutoSuggestNextActionsEnabled = async (): Promise<boolean> => {
+  try {
+    const profile = await fetchProfile();
+    return profile.auto_suggest_next_actions_enabled !== undefined ? profile.auto_suggest_next_actions_enabled : true;
+  } catch (error) {
+    console.error('Error fetching auto-suggest next actions setting:', error);
+    return true; // Default to enabled if we can't fetch the setting
+  }
 };

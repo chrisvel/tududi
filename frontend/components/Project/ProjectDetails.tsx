@@ -19,6 +19,8 @@ import { createTask, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchAreas } from "../../utils/areasService";
 import { isAuthError } from "../../utils/authUtils";
 import { CalendarDaysIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
+import { getAutoSuggestNextActionsEnabled } from "../../utils/profileService";
+import AutoSuggestNextActionBox from "./AutoSuggestNextActionBox";
 
 type PriorityStyles = Record<PriorityType, string> & { default: string };
 
@@ -43,6 +45,7 @@ const ProjectDetails: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [showCompleted, setShowCompleted] = useState(false);
+  const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
 
   useEffect(() => {
     const loadProjectData = async () => {
@@ -71,6 +74,20 @@ const ProjectDetails: React.FC = () => {
     
     loadProjectData();
   }, [id, fetchAreas]);
+
+  // Check if we should show auto-suggest form for projects with no tasks
+  useEffect(() => {
+    const checkAutoSuggest = async () => {
+      if (project && tasks.length === 0 && !loading) {
+        const autoSuggestEnabled = await getAutoSuggestNextActionsEnabled();
+        if (autoSuggestEnabled) {
+          setShowAutoSuggestForm(true);
+        }
+      }
+    };
+    
+    checkAutoSuggest();
+  }, [project, tasks, loading]);
 
   const handleTaskCreate = async (taskName: string) => {
     if (!project) {
@@ -142,6 +159,28 @@ const ProjectDetails: React.FC = () => {
     } catch (err) {
       console.error("Error saving project:", err);
     }
+  };
+
+  const handleCreateNextAction = async (projectId: number, actionDescription: string) => {
+    try {
+      const newTask = await createTask({
+        name: actionDescription,
+        status: "not_started",
+        project_id: projectId,
+        priority: "medium"
+      });
+      
+      // Update the tasks list to include the new task
+      setTasks(prevTasks => [...prevTasks, newTask]);
+      setShowAutoSuggestForm(false);
+    } catch (error) {
+      console.error("Error creating next action:", error);
+    }
+  };
+
+
+  const handleSkipNextAction = () => {
+    setShowAutoSuggestForm(false);
   };
 
   const handleDeleteProject = async () => {
@@ -352,31 +391,35 @@ const ProjectDetails: React.FC = () => {
           </div>
         )}
 
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Tasks</h3>
-          {completedTasks.length > 0 && (
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Show completed</span>
-              <div className="relative flex items-center">
-                <input
-                  type="checkbox"
-                  checked={showCompleted}
-                  onChange={(e) => setShowCompleted(e.target.checked)}
-                  className="sr-only"
-                />
-                <div className={`w-10 h-5 rounded-full transition-colors ${
-                  showCompleted ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
-                }`}>
-                  <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
-                    showCompleted ? 'translate-x-5' : 'translate-x-0.5'
-                  } translate-y-0.5`}></div>
+        {!showAutoSuggestForm && (
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('sidebar.tasks', 'Tasks')}</h3>
+            {completedTasks.length > 0 && (
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Show completed</span>
+                <div className="relative flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={showCompleted}
+                    onChange={(e) => setShowCompleted(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <div className={`w-10 h-5 rounded-full transition-colors ${
+                    showCompleted ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                  }`}>
+                    <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                      showCompleted ? 'translate-x-5' : 'translate-x-0.5'
+                    } translate-y-0.5`}></div>
+                  </div>
                 </div>
-              </div>
-            </label>
-          )}
-        </div>
+              </label>
+            )}
+          </div>
+        )}
 
-        <NewTask onTaskCreate={handleTaskCreate} />
+        {!showAutoSuggestForm && (
+          <NewTask onTaskCreate={handleTaskCreate} />
+        )}
 
         <div className="mt-2">
           {displayTasks.length > 0 ? (
@@ -386,6 +429,16 @@ const ProjectDetails: React.FC = () => {
               onTaskDelete={handleTaskDelete}
               projects={project ? [project] : []}
               hideProjectName={true}
+            />
+          ) : showAutoSuggestForm ? (
+            <AutoSuggestNextActionBox
+              onAddAction={(actionDescription) => {
+                if (project?.id) {
+                  handleCreateNextAction(project.id, actionDescription);
+                }
+              }}
+              onDismiss={handleSkipNextAction}
+              projectName={project?.name || ""}
             />
           ) : (
             <p className="text-gray-500 dark:text-gray-400">No tasks.</p>
@@ -408,6 +461,7 @@ const ProjectDetails: React.FC = () => {
             onCancel={() => setIsConfirmDialogOpen(false)}
           />
         )}
+
       </div>
     </div>
   );

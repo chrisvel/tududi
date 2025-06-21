@@ -97,6 +97,7 @@ useEffect(() => {
     }
   };
 
+
   const handleEditProject = (project: Project) => {
     setProjectToEdit(project);
     setIsProjectModalOpen(true);

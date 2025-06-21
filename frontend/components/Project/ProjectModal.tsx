@@ -236,12 +236,15 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         tags: tags.map((name) => ({ name }))
       };
       
+      // Save the project
       onSave(projectData);
+      
       showSuccessToast(
         project
           ? "Project updated successfully!"
           : "Project created successfully!"
       );
+      
       handleClose();
     } catch (error) {
       console.error('Error saving project:', error);
@@ -275,6 +278,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
       active: !prev.active,
     }));
   };
+
 
   if (!isOpen) return null;
 
@@ -328,7 +332,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
                 <div className="pb-3">
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Project Image
+                    {t('project.projectImage', 'Project Image')}
                   </label>
                   
                   {imagePreview ? (
@@ -355,10 +359,20 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     type="file"
                     accept="image/*"
                     onChange={handleImageSelect}
-                    className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-200"
+                    className="hidden"
                   />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    {t('project.browseImage', 'Browse Image')}
+                  </button>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Upload an image for your project (max 5MB)
+                    {t('project.uploadImageHint', 'Upload an image for your project (max 5MB)')}
                   </p>
                 </div>
 
@@ -473,6 +487,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
           onCancel={() => setShowConfirmDialog(false)}
         />
       )}
+
     </>
   );
 };

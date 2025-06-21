@@ -43,6 +43,7 @@
     "home": "Home",
     "dashboard": "Dashboard",
     "profile": "Profile",
+    "profileSettings": "Profile Settings",
     "settings": "Settings",
     "logout": "Logout"
   },
@@ -113,6 +114,7 @@
     "taskSummaryNotifications": "Task Summary Notifications",
     "taskSummaryDescription": "Receive regular summaries of your tasks via Telegram. This feature requires Telegram integration to be set up.",
     "enableTaskSummaries": "Enable Task Summaries",
+    "enableTaskSummary": "Enable Task Summaries",
     "summaryFrequency": "Summary frequency",
     "summaryFrequencyDescription": "Choose how often you want to receive task summaries",
     "sendTestSummary": "Send test summary",
@@ -125,7 +127,27 @@
       "daily": "1 day",
       "weekly": "1 week"
     },
-    "frequencyHelp": "Choose how often you want to receive task summaries"
+    "frequencyHelp": "Choose how often you want to receive task summaries",
+    "taskIntelligence": "Task Intelligence",
+    "taskIntelligenceDescription": "Get helpful suggestions to make your task names more descriptive and actionable.",
+    "enableTaskIntelligence": "Enable Task Intelligence Assistant",
+    "autoSuggestNextActions": "Auto-Suggest Next Actions",
+    "autoSuggestNextActionsDescription": "When creating a project, automatically prompt for the very next physical action to take.",
+    "enableAutoSuggestNextActions": "Enable Next Action Prompts",
+    "nextActionPrompt": "What's the very next physical action for this project?",
+    "nextActionPlaceholder": "e.g., Call client to schedule meeting, Research competitors online, Create project folder...",
+    "addNextAction": "Add Next Action",
+    "skipNextAction": "Skip for now",
+    "nextActionHint": "Think of the smallest, most concrete step you can take right now to move this project forward.",
+    "tabs": {
+      "general": "General",
+      "telegram": "Telegram",
+      "ai": "AI Features"
+    },
+    "accountSettings": "Account & Preferences",
+    "aiProductivityFeatures": "AI & Productivity Features",
+    "botSetup": "Bot Setup",
+    "successMessage": "Profile updated successfully!"
   },
   "modals": {
     "confirmDelete": "Are you sure you want to delete?",
@@ -146,6 +168,8 @@
     "createArea": "Create Area",
     "updateTag": "Update Tag",
     "createTag": "Create Tag",
+    "createProject": "Create Project",
+    "updateProject": "Update Project",
     "deleteTag": {
       "title": "Delete Tag",
       "message": "Are you sure you want to delete the tag \"{{tagName}}\"?"
@@ -210,7 +234,13 @@
     "tagNamePlaceholder": "Enter tag name",
     "tagInputPlaceholder": "Type to add a tag",
     "createTagOption": "+ Create \"{{tagName}}\"",
-    "removeTagAriaLabel": "Remove tag {{tagName}}"
+    "removeTagAriaLabel": "Remove tag {{tagName}}",
+    "task": {
+      "nameHelper": {
+        "title": "Make it more descriptive!",
+        "suggestion": "Try adding more details like \"Call dentist to schedule cleaning appointment\" instead of just \"Call dentist\""
+      }
+    }
   },
   "auth": {
     "login": "Login",
@@ -257,7 +287,10 @@
     "unknown": "Unknown"
   },
   "project": {
-    "name": "Project Name"
+    "name": "Project Name",
+    "projectImage": "Project Image",
+    "uploadImageHint": "Upload an image for your project (max 5MB)",
+    "browseImage": "Browse Image"
   },
   "errors": {
     "required": "This field is required",
@@ -370,7 +403,11 @@
     "addTaskName": "Add task name",
     "createSuccess": "Task created successfully",
     "createError": "Failed to create task",
-    "saveAsTask": "Save as Task"
+    "saveAsTask": "Save as Task",
+    "nameHelper": {
+      "title": "Make it more descriptive!",
+      "suggestion": "Try adding more details like \"Call dentist to schedule cleaning appointment\" instead of just \"Call dentist\""
+    }
   },
   "projects": {
     "loading": "Loading projects...",

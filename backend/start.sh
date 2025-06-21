@@ -8,4 +8,4 @@ echo "  TUDUDI_USER_EMAIL=your_email@example.com"
 echo "  TUDUDI_USER_PASSWORD=your_password"
 echo ""
 
-PORT=3001 npm start
+PORT=3002 npm start

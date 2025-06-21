@@ -16,7 +16,8 @@ router.get('/profile', async (req, res) => {
       attributes: [
         'id', 'email', 'appearance', 'language', 'timezone', 
         'avatar_image', 'telegram_bot_token', 'telegram_chat_id',
-        'task_summary_enabled', 'task_summary_frequency'
+        'task_summary_enabled', 'task_summary_frequency', 'task_intelligence_enabled',
+        'auto_suggest_next_actions_enabled'
       ]
     });
 
@@ -43,7 +44,7 @@ router.patch('/profile', async (req, res) => {
       return res.status(404).json({ error: 'Profile not found.' });
     }
 
-    const { appearance, language, timezone, avatar_image, telegram_bot_token } = req.body;
+    const { appearance, language, timezone, avatar_image, telegram_bot_token, task_intelligence_enabled, task_summary_enabled, task_summary_frequency, auto_suggest_next_actions_enabled } = req.body;
     
     const allowedUpdates = {};
     if (appearance !== undefined) allowedUpdates.appearance = appearance;
@@ -51,12 +52,16 @@ router.patch('/profile', async (req, res) => {
     if (timezone !== undefined) allowedUpdates.timezone = timezone;
     if (avatar_image !== undefined) allowedUpdates.avatar_image = avatar_image;
     if (telegram_bot_token !== undefined) allowedUpdates.telegram_bot_token = telegram_bot_token;
+    if (task_intelligence_enabled !== undefined) allowedUpdates.task_intelligence_enabled = task_intelligence_enabled;
+    if (task_summary_enabled !== undefined) allowedUpdates.task_summary_enabled = task_summary_enabled;
+    if (task_summary_frequency !== undefined) allowedUpdates.task_summary_frequency = task_summary_frequency;
+    if (auto_suggest_next_actions_enabled !== undefined) allowedUpdates.auto_suggest_next_actions_enabled = auto_suggest_next_actions_enabled;
 
     await user.update(allowedUpdates);
 
     // Return updated user with limited fields
     const updatedUser = await User.findByPk(user.id, {
-      attributes: ['id', 'email', 'appearance', 'language', 'timezone', 'avatar_image', 'telegram_bot_token', 'telegram_chat_id']
+      attributes: ['id', 'email', 'appearance', 'language', 'timezone', 'avatar_image', 'telegram_bot_token', 'telegram_chat_id', 'task_intelligence_enabled', 'task_summary_enabled', 'task_summary_frequency', 'auto_suggest_next_actions_enabled']
     });
 
     res.json(updatedUser);

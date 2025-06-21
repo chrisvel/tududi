@@ -114,7 +114,7 @@ const Navbar: React.FC<NavbarProps> = ({
                   className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => setIsDropdownOpen(false)}
                 >
-                  {t('nav.profile', 'Profile Settings')}
+                  {t('navigation.profileSettings', 'Profile Settings')}
                 </Link>
                 <button
                   onClick={() => {
@@ -123,7 +123,7 @@ const Navbar: React.FC<NavbarProps> = ({
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
-                  {t('nav.logout', 'Logout')}
+                  {t('navigation.logout', 'Logout')}
                 </button>
               </div>
             )}

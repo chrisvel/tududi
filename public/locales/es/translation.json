@@ -43,6 +43,7 @@
     "home": "Inicio",
     "dashboard": "Tablero",
     "profile": "Perfil",
+    "profileSettings": "Configuración de Perfil",
     "settings": "Ajustes",
     "logout": "Cerrar Sesión"
   },
@@ -77,7 +78,28 @@
     "notifications": "Notificaciones",
     "saveChanges": "Guardar Cambios",
     "successMessage": "¡Perfil actualizado con éxito!",
-    "errorMessage": "Error al actualizar el perfil"
+    "errorMessage": "Error al actualizar el perfil",
+    "taskIntelligence": "Inteligencia de Tareas",
+    "taskIntelligenceDescription": "Recibe sugerencias útiles para hacer los nombres de tus tareas más descriptivos y accionables.",
+    "enableTaskIntelligence": "Habilitar Asistente de Inteligencia de Tareas",
+    "enableTaskSummary": "Habilitar Resúmenes de Tareas",
+    "autoSuggestNextActions": "Auto-Sugerir Próximas Acciones",
+    "autoSuggestNextActionsDescription": "Al crear un proyecto, solicitar automáticamente la próxima acción física a realizar.",
+    "enableAutoSuggestNextActions": "Habilitar Avisos de Próximas Acciones",
+    "nextActionPrompt": "¿Cuál es la próxima acción física para este proyecto?",
+    "nextActionPlaceholder": "ej., Llamar al cliente para programar reunión, Investigar competidores en línea, Crear carpeta del proyecto...",
+    "addNextAction": "Agregar Próxima Acción",
+    "skipNextAction": "Omitir por ahora",
+    "nextActionHint": "Piensa en el paso más pequeño y concreto que puedes tomar ahora mismo para hacer avanzar este proyecto.",
+    "tabs": {
+      "general": "General",
+      "telegram": "Telegram",
+      "ai": "Funciones IA"
+    },
+    "accountSettings": "Cuenta y Preferencias",
+    "aiProductivityFeatures": "Funciones de IA y Productividad",
+    "botSetup": "Configuración del Bot",
+    "successMessage": "¡Perfil actualizado con éxito!"
   },
   "errors": {
     "required": "Este campo es obligatorio",
@@ -152,7 +174,9 @@
     "noteEdit": "Editar Nota",
     "updateNote": "Actualizar Nota",
     "createNote": "Crear Nota",
-    "submitting": "Enviando..."
+    "submitting": "Enviando...",
+    "createProject": "Crear Proyecto",
+    "updateProject": "Actualizar Proyecto"
   },
   "forms": {
     "title": "Título",
@@ -252,7 +276,11 @@
     "addTaskName": "Agregar nombre de tarea",
     "createSuccess": "Tarea creada exitosamente",
     "createError": "Error al crear tarea",
-    "saveAsTask": "Guardar como Tarea"
+    "saveAsTask": "Guardar como Tarea",
+    "nameHelper": {
+      "title": "¡Hazlo más descriptivo!",
+      "suggestion": "Intenta agregar más detalles como \"Llamar al dentista para programar cita de limpieza\" en lugar de solo \"Llamar dentista\""
+    }
   },
   "dateIndicators": {
     "today": "HOY",
@@ -373,5 +401,10 @@
     "thursday": "Jueves",
     "friday": "Viernes",
     "saturday": "Sábado"
+  },
+  "project": {
+    "projectImage": "Imagen del Proyecto",
+    "uploadImageHint": "Sube una imagen para tu proyecto (máx. 5MB)",
+    "browseImage": "Examinar Imagen"
   }
 }
