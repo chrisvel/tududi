@@ -262,6 +262,11 @@
         "short": "Make it more descriptive!",
         "noVerb": "Add an action verb!",
         "vague": "Be more specific!"
+      },
+      "suggestions": {
+        "short": "Try to be more specific about what needs to be done",
+        "noVerb": "What specific action do you need to take? Try starting with a verb.",
+        "vague": "Try starting with an action verb like \"Call\", \"Write\", \"Schedule\", or \"Research\""
       }
     }
   },

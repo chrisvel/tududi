@@ -19,7 +19,7 @@ export const analyzeTaskName = (taskName: string): TaskAnalysis => {
     return {
       isVague: true,
       reason: 'short',
-      suggestion: 'Try to be more specific about what needs to be done',
+      suggestion: 'task.suggestions.short',
       severity: 'medium'
     };
   }
@@ -115,7 +115,7 @@ export const analyzeTaskName = (taskName: string): TaskAnalysis => {
     return {
       isVague: true,
       reason: 'vague_pattern',
-      suggestion: 'Try starting with an action verb like "Call", "Write", "Schedule", or "Research"',
+      suggestion: 'task.suggestions.vague',
       severity: 'high'
     };
   }
@@ -125,7 +125,7 @@ export const analyzeTaskName = (taskName: string): TaskAnalysis => {
     return {
       isVague: true,
       reason: 'no_verb',
-      suggestion: 'What specific action do you need to take? Try starting with a verb.',
+      suggestion: 'task.suggestions.noVerb',
       severity: 'medium'
     };
   }

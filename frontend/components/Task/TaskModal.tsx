@@ -357,7 +357,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                     ? 'text-yellow-700 dark:text-yellow-300'
                                     : 'text-blue-700 dark:text-blue-300'
                               }`}>
-                                {taskAnalysis.suggestion}
+                                {t(taskAnalysis.suggestion, taskAnalysis.suggestion)}
                               </p>
                             )}
                           </div>
