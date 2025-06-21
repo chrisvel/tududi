@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Functional programming Express.js backend for tududi task management application",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
@@ -27,7 +27,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "compression": "^1.8.0",
@@ -41,6 +40,7 @@
     "morgan": "^1.10.0",
     "multer": "^2.0.1",
     "node-cron": "^4.1.0",
+    "recharts": "^2.15.4",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7"
   },

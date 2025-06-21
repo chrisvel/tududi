@@ -47,6 +47,9 @@
     "settings": "Settings",
     "logout": "Logout"
   },
+  "dashboard": {
+    "overview": "Overview"
+  },
   "tasks": {
     "today": "Today",
     "backlog": "Backlog",
@@ -54,6 +57,10 @@
     "dueToday": "Due Today",
     "stale": "Stale",
     "suggested": "Suggested",
+    "completedToday": "Completed Today",
+    "weeklyCompletions": "Weekly Progress",
+    "taskCompleted": "task completed",
+    "tasksCompleted": "tasks completed",
     "noTasksAvailable": "No tasks available for today.",
     "searchPlaceholder": "Search tasks...",
     "addNewTask": "Add New Task",
@@ -544,5 +551,14 @@
     "thursday": "Thursday",
     "friday": "Friday",
     "saturday": "Saturday"
+  },
+  "pomodoro": {
+    "play": "Play",
+    "pause": "Pause",
+    "reset": "Reset",
+    "close": "Close",
+    "complete": "Pomodoro Complete!",
+    "completeMessage": "Great work! Time for a break.",
+    "done": "Done"
   }
 }

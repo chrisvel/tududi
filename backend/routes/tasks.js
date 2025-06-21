@@ -253,13 +253,82 @@ async function computeTaskMetrics(userId) {
     suggestedTasks = [...nonProjectTasks, ...projectTasks];
   }
 
+  // Get tasks completed today
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const tasksCompletedToday = await Task.findAll({
+    where: {
+      user_id: userId,
+      status: Task.STATUS.DONE,
+      completed_at: {
+        [Op.between]: [todayStart, todayEnd]
+      }
+    },
+    include: [
+      { 
+        model: Tag, 
+        attributes: ['id', 'name'], 
+        through: { attributes: [] },
+        required: false 
+      },
+      { 
+        model: Project, 
+        attributes: ['id', 'name', 'active'], 
+        required: false 
+      }
+    ],
+    order: [['completed_at', 'DESC']]
+  });
+
+  // Get weekly completion data (last 7 days)
+  const weekStart = new Date();
+  weekStart.setDate(weekStart.getDate() - 6); // 6 days ago + today = 7 days
+  weekStart.setHours(0, 0, 0, 0);
+
+  const weeklyCompletions = await Task.findAll({
+    where: {
+      user_id: userId,
+      status: Task.STATUS.DONE,
+      completed_at: {
+        [Op.between]: [weekStart, todayEnd]
+      }
+    },
+    attributes: [
+      [sequelize.fn('DATE', sequelize.col('completed_at')), 'date'],
+      [sequelize.fn('COUNT', '*'), 'count']
+    ],
+    group: [sequelize.fn('DATE', sequelize.col('completed_at'))],
+    order: [[sequelize.fn('DATE', sequelize.col('completed_at')), 'ASC']],
+    raw: true
+  });
+
+  // Process weekly completion data to ensure all 7 days are represented
+  const weeklyData = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const dateString = date.toISOString().split('T')[0];
+    
+    const found = weeklyCompletions.find(item => item.date === dateString);
+    weeklyData.push({
+      date: dateString,
+      count: found ? parseInt(found.count) : 0,
+      dayName: date.toLocaleDateString('en-US', { weekday: 'short' })
+    });
+  }
+
   return {
     total_open_tasks: totalOpenTasks,
     tasks_pending_over_month: tasksPendingOverMonth,
     tasks_in_progress_count: tasksInProgress.length,
     tasks_in_progress: tasksInProgress,
     tasks_due_today: tasksDueToday,
-    suggested_tasks: suggestedTasks
+    suggested_tasks: suggestedTasks,
+    tasks_completed_today: tasksCompletedToday,
+    weekly_completions: weeklyData
   };
 }
 
@@ -305,7 +374,17 @@ router.get('/tasks', async (req, res) => {
             tags: taskJson.Tags || [],
             due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
           };
-        })
+        }),
+        tasks_completed_today: metrics.tasks_completed_today.map(task => {
+          const taskJson = task.toJSON();
+          return {
+            ...taskJson,
+            tags: taskJson.Tags || [],
+            due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null,
+            completed_at: task.completed_at ? task.completed_at.toISOString() : null
+          };
+        }),
+        weekly_completions: metrics.weekly_completions
       }
     });
   } catch (error) {
@@ -496,6 +575,20 @@ router.patch('/task/:id', async (req, res) => {
       completion_based: completion_based !== undefined ? completion_based : task.completion_based
     };
 
+    // Set completed_at when task is marked as done
+    if (status !== undefined) {
+      const newStatus = typeof status === 'string' ? Task.getStatusValue(status) : status;
+      const oldStatus = typeof task.status === 'string' ? Task.getStatusValue(task.status) : task.status;
+      
+      if (newStatus === Task.STATUS.DONE && oldStatus !== Task.STATUS.DONE) {
+        // Task is being completed
+        taskAttributes.completed_at = new Date();
+      } else if (newStatus !== Task.STATUS.DONE && oldStatus === Task.STATUS.DONE) {
+        // Task is being uncompleted
+        taskAttributes.completed_at = null;
+      }
+    }
+
     // Handle project assignment
     if (project_id && project_id.toString().trim()) {
       const project = await Project.findOne({
@@ -561,7 +654,15 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
 
     console.log('📝 Status changing from', task.status, 'to', newStatus);
 
-    await task.update({ status: newStatus });
+    // Set completed_at when task is completed/uncompleted
+    const updateData = { status: newStatus };
+    if (newStatus === Task.STATUS.DONE) {
+      updateData.completed_at = new Date();
+    } else if (task.status === Task.STATUS.DONE || task.status === 'done') {
+      updateData.completed_at = null;
+    }
+
+    await task.update(updateData);
 
     // Handle recurring task completion
     let nextTask = null;

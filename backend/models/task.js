@@ -115,6 +115,10 @@ module.exports = (sequelize) => {
         model: 'tasks',
         key: 'id'
       }
+    },
+    completed_at: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'tasks',

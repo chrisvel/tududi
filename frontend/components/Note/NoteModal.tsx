@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Note } from '../../entities/Note';
 import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
+import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import { Tag } from '../../entities/Tag';
 import { fetchTags } from '../../utils/tagsService'; 
 import { useTranslation } from 'react-i18next';
+import { EyeIcon, PencilIcon } from '@heroicons/react/24/outline';
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -26,6 +28,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
   const modalRef = useRef<HTMLDivElement>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
 
   const { showSuccessToast, showErrorToast } = useToast();
 
@@ -194,18 +197,59 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave }) 
               </div>
 
               <div className="pb-3 flex-1">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('forms.noteContent')}
-                </label>
-                <textarea
-                  id="noteContent"
-                  name="content"
-                  value={formData.content}
-                  onChange={handleChange}
-                  rows={20}
-                  className="block w-full h-full rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-                  placeholder={t('forms.noteContentPlaceholder')}
-                ></textarea>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300">
+                    {t('forms.noteContent')} <span className="text-gray-500">(Markdown supported)</span>
+                  </label>
+                  <div className="flex space-x-1">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('edit')}
+                      className={`px-3 py-1 text-xs rounded-md flex items-center space-x-1 transition-colors ${
+                        activeTab === 'edit'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      <PencilIcon className="h-3 w-3" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('preview')}
+                      className={`px-3 py-1 text-xs rounded-md flex items-center space-x-1 transition-colors ${
+                        activeTab === 'preview'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      <EyeIcon className="h-3 w-3" />
+                      <span>Preview</span>
+                    </button>
+                  </div>
+                </div>
+                
+                {activeTab === 'edit' ? (
+                  <textarea
+                    id="noteContent"
+                    name="content"
+                    value={formData.content}
+                    onChange={handleChange}
+                    rows={20}
+                    className="block w-full h-full rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+                    placeholder="Write your content using Markdown formatting...&#10;&#10;Examples:&#10;# Heading&#10;**Bold text**&#10;*Italic text*&#10;- List item&#10;```code```"
+                  />
+                ) : (
+                  <div className="block w-full h-full rounded-md shadow-sm p-3 text-sm bg-gray-50 dark:bg-gray-800 overflow-y-auto">
+                    {formData.content ? (
+                      <MarkdownRenderer content={formData.content} />
+                    ) : (
+                      <p className="text-gray-500 dark:text-gray-400 italic">
+                        No content to preview. Switch to Edit tab to add content.
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
 
               {error && <div className="text-red-500">{error}</div>}

@@ -47,6 +47,9 @@
     "settings": "Ρυθμίσεις",
     "logout": "Αποσύνδεση"
   },
+  "dashboard": {
+    "overview": "Επισκόπηση"
+  },
   "auth": {
     "login": "Σύνδεση",
     "register": "Εγγραφή",
@@ -169,6 +172,10 @@
     "dueToday": "Λήγουν Σήμερα",
     "stale": "Σε αναμομή",
     "suggested": "Προτεινόμενα",
+    "completedToday": "Ολοκληρώθηκαν Σήμερα",
+    "weeklyCompletions": "Εβδομαδιαία Πρόοδος",
+    "taskCompleted": "εργασία ολοκληρώθηκε",
+    "tasksCompleted": "εργασίες ολοκληρώθηκαν",
     "noTasksAvailable": "Δεν υπάρχουν διαθέσιμες εργασίες.",
     "searchPlaceholder": "Αναζήτηση εργασιών...",
     "addNewTask": "Προσθήκη Νέας Εργασίας",
@@ -493,5 +500,14 @@
     "projectImage": "Εικόνα Έργου",
     "uploadImageHint": "Μεταφορτώστε μια εικόνα για το έργο σας (μέγ. 5MB)",
     "browseImage": "Περιήγηση Εικόνας"
+  },
+  "pomodoro": {
+    "play": "Αναπαραγωγή",
+    "pause": "Παύση",
+    "reset": "Επαναφορά",
+    "close": "Κλείσιμο",
+    "complete": "Pomodoro Ολοκληρώθηκε!",
+    "completeMessage": "Εξαιρετική δουλειά! Ώρα για διάλειμμα.",
+    "done": "Τέλος"
   }
 }

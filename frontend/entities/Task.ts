@@ -20,6 +20,7 @@ export interface Task {
   recurrence_week_of_month?: number;
   completion_based?: boolean;
   recurring_parent_id?: number;
+  completed_at?: string;
 }
 
 export type StatusType = 'not_started' | 'in_progress' | 'done' | 'archived';

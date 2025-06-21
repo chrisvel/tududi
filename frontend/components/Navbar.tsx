@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserIcon, Bars3Icon } from "@heroicons/react/24/solid";
 import { useTranslation } from "react-i18next";
+import PomodoroTimer from "./Shared/PomodoroTimer";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -86,6 +87,8 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         <div className="flex items-center space-x-4">
+          <PomodoroTimer />
+          
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={toggleDropdown}

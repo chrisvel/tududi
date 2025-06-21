@@ -8,10 +8,8 @@ import {
   ClipboardDocumentListIcon,
   ArrowPathIcon,
   CalendarDaysIcon,
-  ClockIcon,
   InboxIcon,
   FolderIcon,
-  ArchiveBoxIcon,
 } from "@heroicons/react/24/outline";
 import { fetchTasks, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchProjects } from "../../utils/projectsService";
@@ -22,6 +20,7 @@ import TaskList from "./TaskList";
 import { Metrics } from "../../entities/Metrics";
 import ProductivityAssistant from "../Productivity/ProductivityAssistant";
 import NextTaskSuggestion from "./NextTaskSuggestion";
+import WeeklyCompletionChart from "./WeeklyCompletionChart";
 import { getProductivityAssistantEnabled, getNextTaskSuggestionEnabled } from "../../utils/profileService";
 
 const getLocale = (language: string) => {
@@ -67,6 +66,8 @@ const TasksToday: React.FC = () => {
     tasks_in_progress: [],
     tasks_due_today: [],
     suggested_tasks: [],
+    tasks_completed_today: [],
+    weekly_completions: [],
   });
 
   // Track mounting state to prevent state updates after unmount
@@ -249,83 +250,56 @@ const TasksToday: React.FC = () => {
           </span>
         </div>
 
-        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Task Metrics */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-            <h3 className="text-lg font-medium mb-3 text-gray-700 dark:text-gray-300">{t('tasks.metrics', 'Tasks')}</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {/* Left column */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <ClipboardDocumentListIcon className="h-6 w-6 text-blue-500 mr-3" />
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.backlog')}</p>
-                  </div>
-                  <p className="text-xl font-semibold">
-                    {metrics.total_open_tasks}
-                  </p>
+        <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Combined Task & Project Metrics */}
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-3">
+            <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{t('dashboard.overview')}</h3>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <ClipboardDocumentListIcon className="h-4 w-4 text-blue-500 mr-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('tasks.backlog')}</p>
                 </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <ArrowPathIcon className="h-6 w-6 text-green-500 mr-3" />
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.inProgress')}</p>
-                  </div>
-                  <p className="text-xl font-semibold">
-                    {metrics.tasks_in_progress_count}
-                  </p>
-                </div>
+                <p className="text-sm font-semibold">
+                  {metrics.total_open_tasks}
+                </p>
               </div>
               
-              {/* Right column */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <CalendarDaysIcon className="h-6 w-6 text-red-500 mr-3" />
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.dueToday')}</p>
-                  </div>
-                  <p className="text-xl font-semibold">
-                    {metrics.tasks_due_today.length}
-                  </p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <ArrowPathIcon className="h-4 w-4 text-green-500 mr-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('tasks.inProgress')}</p>
                 </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <ClockIcon className="h-6 w-6 text-yellow-500 mr-3" />
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('tasks.stale')}</p>
-                  </div>
-                  <p className="text-xl font-semibold">
-                    {metrics.tasks_pending_over_month}
-                  </p>
+                <p className="text-sm font-semibold">
+                  {metrics.tasks_in_progress_count}
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <CalendarDaysIcon className="h-4 w-4 text-red-500 mr-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('tasks.dueToday')}</p>
                 </div>
+                <p className="text-sm font-semibold">
+                  {metrics.tasks_due_today.length}
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <FolderIcon className="h-4 w-4 text-purple-500 mr-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('projects.active')}</p>
+                </div>
+                <p className="text-sm font-semibold">
+                  {Array.isArray(localProjects) ? localProjects.filter(project => project.active).length : 0}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Project Metrics */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
-            <h3 className="text-lg font-medium mb-3 text-gray-700 dark:text-gray-300">{t('projects.metrics', 'Projects')}</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <FolderIcon className="h-6 w-6 text-blue-500 mr-3" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.active')}</p>
-                </div>
-                <p className="text-xl font-semibold">
-                  {Array.isArray(localProjects) ? localProjects.filter(project => project.active).length : 0}
-                </p>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <ArchiveBoxIcon className="h-6 w-6 text-gray-500 mr-3" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('projects.inactive')}</p>
-                </div>
-                <p className="text-xl font-semibold">
-                  {Array.isArray(localProjects) ? localProjects.filter(project => !project.active).length : 0}
-                </p>
-              </div>
-            </div>
+          {/* Weekly Completion Chart */}
+          <div className="lg:col-span-2">
+            <WeeklyCompletionChart data={metrics.weekly_completions} />
           </div>
         </div>
 
@@ -393,6 +367,18 @@ const TasksToday: React.FC = () => {
             <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.suggested')}</h3>
             <TaskList
               tasks={metrics.suggested_tasks}
+              onTaskUpdate={handleTaskUpdate}
+              onTaskDelete={handleTaskDelete}
+              projects={localProjects}
+            />
+          </>
+        )}
+
+        {metrics.tasks_completed_today.length > 0 && (
+          <>
+            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.completedToday')}</h3>
+            <TaskList
+              tasks={metrics.tasks_completed_today}
               onTaskUpdate={handleTaskUpdate}
               onTaskDelete={handleTaskDelete}
               projects={localProjects}

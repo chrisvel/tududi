@@ -406,5 +406,14 @@
     "projectImage": "Imagen del Proyecto",
     "uploadImageHint": "Sube una imagen para tu proyecto (máx. 5MB)",
     "browseImage": "Examinar Imagen"
+  },
+  "pomodoro": {
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "reset": "Reiniciar",
+    "close": "Cerrar",
+    "complete": "¡Pomodoro Completado!",
+    "completeMessage": "¡Excelente trabajo! Hora de tomar un descanso.",
+    "done": "Hecho"
   }
 }
