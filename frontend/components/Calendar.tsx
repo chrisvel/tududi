@@ -213,7 +213,6 @@ const Calendar: React.FC = () => {
           // Demo mode - simulate connection
           setGoogleStatus({ connected: true, email: 'demo@example.com' });
           setIsDemoMode(true);
-          console.log('Demo mode:', result.message);
         } else {
           // Real Google OAuth - redirect to auth URL
           window.location.href = result.authUrl;
@@ -235,7 +234,6 @@ const Calendar: React.FC = () => {
         // Demo mode - just update local state
         setGoogleStatus({ connected: false });
         setIsDemoMode(false);
-        console.log('Demo mode: Google Calendar disconnected');
         return;
       }
 
@@ -277,12 +275,11 @@ const Calendar: React.FC = () => {
     setCurrentDate(new Date());
   };
 
-  const handleDateClick = (date: Date) => {
-    console.log('Date clicked:', date);
+  const handleDateClick = () => {
+    // Date click handler - can be used for future functionality
   };
 
   const handleEventClick = (event: CalendarEvent) => {
-    console.log('Event clicked:', event);
     
     // Handle task events
     if (event.type === 'task') {
@@ -308,17 +305,12 @@ const Calendar: React.FC = () => {
         
         setSelectedTask(taskEntity);
         setIsEventDetailModalOpen(true);
-      } else {
-        console.error('Task not found for event:', event);
       }
-    } else {
-      // Handle other event types (Google Calendar, etc.)
-      console.log('Non-task event clicked:', event);
     }
   };
 
-  const handleTimeSlotClick = (date: Date, hour: number) => {
-    console.log('Time slot clicked:', date, hour);
+  const handleTimeSlotClick = () => {
+    // Time slot click handler - can be used for future functionality
   };
 
   const handleEditTask = () => {
