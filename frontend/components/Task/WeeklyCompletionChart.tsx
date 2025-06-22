@@ -34,7 +34,7 @@ const WeeklyCompletionChart: React.FC<WeeklyCompletionChartProps> = ({ data }) =
       </h3>
       <div className="h-32">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
+          <BarChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
             <XAxis 
               dataKey="dayName" 
               axisLine={false}
@@ -54,14 +54,15 @@ const WeeklyCompletionChart: React.FC<WeeklyCompletionChartProps> = ({ data }) =
                 className: 'text-gray-600 dark:text-gray-400'
               }}
               allowDecimals={false}
-              width={20}
+              width={25}
+              domain={[0, 'dataMax']}
             />
             <Tooltip content={<CustomTooltip />} />
             <Bar 
               dataKey="count" 
-              fill="currentColor"
-              className="text-blue-500 dark:text-blue-400"
+              fill="#3b82f6"
               radius={[2, 2, 0, 0]}
+              minPointSize={2}
             />
           </BarChart>
         </ResponsiveContainer>

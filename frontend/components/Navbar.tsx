@@ -26,6 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [pomodoroEnabled, setPomodoroEnabled] = useState(true); // Default to true
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate(); 
 
@@ -41,6 +42,37 @@ const Navbar: React.FC<NavbarProps> = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Fetch user's pomodoro setting
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/profile', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const profile = await response.json();
+          setPomodoroEnabled(profile.pomodoro_enabled !== undefined ? profile.pomodoro_enabled : true);
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        // Keep default value (true) if fetch fails
+      }
+    };
+
+    fetchProfile();
+
+    // Listen for Pomodoro setting changes from ProfileSettings
+    const handlePomodoroSettingChange = (event: CustomEvent) => {
+      setPomodoroEnabled(event.detail.enabled);
+    };
+
+    window.addEventListener('pomodoroSettingChanged', handlePomodoroSettingChange as EventListener);
+
+    return () => {
+      window.removeEventListener('pomodoroSettingChanged', handlePomodoroSettingChange as EventListener);
     };
   }, []);
 
@@ -87,7 +119,7 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         <div className="flex items-center space-x-4">
-          <PomodoroTimer />
+          {pomodoroEnabled && <PomodoroTimer />}
           
           <div className="relative" ref={dropdownRef}>
             <button

@@ -8,6 +8,7 @@ import {
   InboxIcon,
   CheckCircleIcon,
   ListBulletIcon,
+  ClockIcon,
 } from '@heroicons/react/24/solid';
 
 interface SidebarNavProps {
@@ -22,7 +23,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
   const navLinks = [
     { path: '/inbox', title: t('sidebar.inbox', 'Inbox'), icon: <InboxIcon className="h-5 w-5" /> },
     { path: '/today', title: t('sidebar.today', 'Today'), icon: <CalendarDaysIcon className="h-5 w-5" />, query: 'type=today' },
-    { path: '/tasks?type=upcoming', title: t('sidebar.upcoming', 'Upcoming'), icon: <CalendarIcon className="h-5 w-5" />, query: 'type=upcoming' },
+    { path: '/calendar', title: t('sidebar.calendar', 'Calendar'), icon: <CalendarIcon className="h-5 w-5" /> },
+    { path: '/tasks?type=upcoming', title: t('sidebar.upcoming', 'Upcoming'), icon: <ClockIcon className="h-5 w-5" />, query: 'type=upcoming' },
     { path: '/tasks?type=next', title: t('sidebar.nextActions', 'Next Actions'), icon: <ArrowRightCircleIcon className="h-5 w-5" />, query: 'type=next' },
     // { path: '/tasks?type=someday', title: t('sidebar.someday', 'Someday'), icon: <ClockIcon className="h-5 w-5" />, query: 'type=someday' },
     // { path: '/tasks?type=waiting', title: t('sidebar.waitingFor', 'Waiting for'), icon: <PauseCircleIcon className="h-5 w-5" />, query: 'type=waiting' },
@@ -32,7 +34,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
 
   const isActive = (path: string, query?: string) => {
     // Handle special case for paths without query parameters
-    if (path === '/inbox' || path === '/today') {
+    if (path === '/inbox' || path === '/today' || path === '/calendar') {
       const isPathMatch = location.pathname === path;
       return isPathMatch
         ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'

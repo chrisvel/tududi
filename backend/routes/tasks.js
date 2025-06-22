@@ -2,6 +2,7 @@ const express = require('express');
 const { Task, Tag, Project, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const RecurringTaskService = require('../services/recurringTaskService');
+const moment = require('moment-timezone');
 const router = express.Router();
 
 // Helper function to update task tags
@@ -118,7 +119,8 @@ async function filterTasksByParams(params, userId) {
 }
 
 // Compute task metrics
-async function computeTaskMetrics(userId) {
+async function computeTaskMetrics(userId, userTimezone = 'UTC') {
+  console.log('Computing metrics for user', userId, 'with timezone:', userTimezone);
   const totalOpenTasks = await Task.count({
     where: { user_id: userId, status: { [Op.ne]: Task.STATUS.DONE } }
   });
@@ -253,11 +255,10 @@ async function computeTaskMetrics(userId) {
     suggestedTasks = [...nonProjectTasks, ...projectTasks];
   }
 
-  // Get tasks completed today
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const todayEnd = new Date();
-  todayEnd.setHours(23, 59, 59, 999);
+  // Get tasks completed today - use user's timezone
+  const todayInUserTz = moment.tz(userTimezone);
+  const todayStart = todayInUserTz.clone().startOf('day').utc().toDate();
+  const todayEnd = todayInUserTz.clone().endOf('day').utc().toDate();
 
   const tasksCompletedToday = await Task.findAll({
     where: {
@@ -283,41 +284,50 @@ async function computeTaskMetrics(userId) {
     order: [['completed_at', 'DESC']]
   });
 
-  // Get weekly completion data (last 7 days)
-  const weekStart = new Date();
-  weekStart.setDate(weekStart.getDate() - 6); // 6 days ago + today = 7 days
-  weekStart.setHours(0, 0, 0, 0);
+  // Get weekly completion data (last 7 days) - use user's timezone
+  const weekStartInUserTz = moment.tz(userTimezone).subtract(6, 'days');
+  const weekStart = weekStartInUserTz.clone().startOf('day').utc().toDate();
+  const weekEnd = todayInUserTz.clone().endOf('day').utc().toDate();
 
-  const weeklyCompletions = await Task.findAll({
+  // For SQLite, we'll fetch the raw data and process it in JavaScript
+  const weeklyCompletionsRaw = await Task.findAll({
     where: {
       user_id: userId,
       status: Task.STATUS.DONE,
       completed_at: {
-        [Op.between]: [weekStart, todayEnd]
+        [Op.between]: [weekStart, weekEnd]
       }
     },
-    attributes: [
-      [sequelize.fn('DATE', sequelize.col('completed_at')), 'date'],
-      [sequelize.fn('COUNT', '*'), 'count']
-    ],
-    group: [sequelize.fn('DATE', sequelize.col('completed_at'))],
-    order: [[sequelize.fn('DATE', sequelize.col('completed_at')), 'ASC']],
+    attributes: ['completed_at'],
     raw: true
   });
+
+  // Process the data in JavaScript to group by date in user's timezone
+  const dateCountMap = {};
+  weeklyCompletionsRaw.forEach(task => {
+    const dateInUserTz = moment.utc(task.completed_at).tz(userTimezone).format('YYYY-MM-DD');
+    dateCountMap[dateInUserTz] = (dateCountMap[dateInUserTz] || 0) + 1;
+  });
+
+  // Convert to the format expected by the rest of the code
+  const weeklyCompletions = Object.entries(dateCountMap).map(([date, count]) => ({
+    date,
+    count: count.toString()
+  }));
 
   // Process weekly completion data to ensure all 7 days are represented
   const weeklyData = [];
   for (let i = 6; i >= 0; i--) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-    const dateString = date.toISOString().split('T')[0];
+    const dateInUserTz = moment.tz(userTimezone).subtract(i, 'days');
+    const dateString = dateInUserTz.format('YYYY-MM-DD');
     
     const found = weeklyCompletions.find(item => item.date === dateString);
-    weeklyData.push({
+    const dayData = {
       date: dateString,
       count: found ? parseInt(found.count) : 0,
-      dayName: date.toLocaleDateString('en-US', { weekday: 'short' })
-    });
+      dayName: dateInUserTz.format('ddd') // Short day name
+    };
+    weeklyData.push(dayData);
   }
 
   return {
@@ -336,7 +346,7 @@ async function computeTaskMetrics(userId) {
 router.get('/tasks', async (req, res) => {
   try {
     const tasks = await filterTasksByParams(req.query, req.currentUser.id);
-    const metrics = await computeTaskMetrics(req.currentUser.id);
+    const metrics = await computeTaskMetrics(req.currentUser.id, req.currentUser.timezone);
 
     res.json({
       tasks: tasks.map(task => {

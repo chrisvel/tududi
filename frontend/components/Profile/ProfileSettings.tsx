@@ -25,6 +25,7 @@ interface Profile {
   auto_suggest_next_actions_enabled: boolean;
   productivity_assistant_enabled: boolean;
   next_task_suggestion_enabled: boolean;
+  pomodoro_enabled: boolean;
 }
 
 interface SchedulerStatus {
@@ -79,6 +80,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
     auto_suggest_next_actions_enabled: true,
     productivity_assistant_enabled: true,
     next_task_suggestion_enabled: true,
+    pomodoro_enabled: true,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -220,6 +222,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
           auto_suggest_next_actions_enabled: data.auto_suggest_next_actions_enabled !== undefined ? data.auto_suggest_next_actions_enabled : true,
           productivity_assistant_enabled: data.productivity_assistant_enabled !== undefined ? data.productivity_assistant_enabled : true,
           next_task_suggestion_enabled: data.next_task_suggestion_enabled !== undefined ? data.next_task_suggestion_enabled : true,
+          pomodoro_enabled: data.pomodoro_enabled !== undefined ? data.pomodoro_enabled : true,
         });
         setTelegramBotToken(data.telegram_bot_token || '');
         setTelegramChatId(data.telegram_chat_id || '');
@@ -430,6 +433,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         auto_suggest_next_actions_enabled: updatedProfile.auto_suggest_next_actions_enabled !== undefined ? updatedProfile.auto_suggest_next_actions_enabled : prev.auto_suggest_next_actions_enabled !== undefined ? prev.auto_suggest_next_actions_enabled : true,
         productivity_assistant_enabled: updatedProfile.productivity_assistant_enabled !== undefined ? updatedProfile.productivity_assistant_enabled : prev.productivity_assistant_enabled !== undefined ? prev.productivity_assistant_enabled : true,
         next_task_suggestion_enabled: updatedProfile.next_task_suggestion_enabled !== undefined ? updatedProfile.next_task_suggestion_enabled : prev.next_task_suggestion_enabled !== undefined ? prev.next_task_suggestion_enabled : true,
+        pomodoro_enabled: updatedProfile.pomodoro_enabled !== undefined ? updatedProfile.pomodoro_enabled : prev.pomodoro_enabled !== undefined ? prev.pomodoro_enabled : true,
       }));
       
       // Apply appearance change after save
@@ -440,6 +444,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       // Apply language change after save
       if (updatedProfile.language !== i18n.language) {
         await handleLanguageChange(updatedProfile.language);
+      }
+
+      // Notify other components about Pomodoro setting change
+      if (updatedProfile.pomodoro_enabled !== undefined) {
+        window.dispatchEvent(new CustomEvent('pomodoroSettingChanged', {
+          detail: { enabled: updatedProfile.pomodoro_enabled }
+        }));
       }
       
       setSuccess(t('profile.successMessage'));
@@ -468,6 +479,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
 
   const tabs = [
     { id: 'general', name: t('profile.tabs.general', 'General'), icon: 'user' },
+    { id: 'productivity', name: t('profile.tabs.productivity', 'Productivity'), icon: 'clock' },
     { id: 'telegram', name: t('profile.tabs.telegram', 'Telegram'), icon: 'chat' },
     { id: 'ai', name: t('profile.tabs.ai', 'AI Features'), icon: 'sparkles' },
   ];
@@ -478,6 +490,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        );
+      case 'clock':
+        return (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         );
       case 'chat':
@@ -593,7 +611,51 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
               </select>
             </div>
           </div>
+
         </div>
+        )}
+
+        {/* Productivity Tab */}
+        {activeTab === 'productivity' && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+              <svg className="w-6 h-6 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {t('profile.productivityFeatures', 'Productivity Features')}
+            </h3>
+            
+            <div className="space-y-6">
+              {/* Pomodoro Timer */}
+              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t('profile.enablePomodoro', 'Enable Pomodoro Timer')}
+                  </label>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {t('profile.pomodoroDescription', 'Enable the Pomodoro timer in the navigation bar for focused work sessions.')}
+                  </p>
+                </div>
+                <div 
+                  className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
+                    formData.pomodoro_enabled ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                  }`}
+                  onClick={() => {
+                    setFormData(prev => ({
+                      ...prev,
+                      pomodoro_enabled: !prev.pomodoro_enabled
+                    }));
+                  }}
+                >
+                  <span 
+                    className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
+                      formData.pomodoro_enabled ? 'translate-x-6' : 'translate-x-0'
+                    }`}
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
         
         {/* Telegram Tab */}
