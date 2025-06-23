@@ -40,7 +40,15 @@
     "settings": "Налаштування",
     "logout": "Вийти"
   },
-
+  "dashboard": {
+    "overview": "Огляд",
+    "sameAsYesterday": "Так само, як вчора",
+    "betterThanYesterday": "{{percentage}}% більше, ніж вчора",
+    "worseThanYesterday": "{{percentage}}% менше, ніж вчора",
+    "sameAsAverage": "Так само, як середнє",
+    "betterThanAverage": "{{percentage}}% більше, ніж середнє",
+    "worseThanAverage": "{{percentage}}% менше, ніж середнє"
+  },
   "tasks": {
     "today": "Сьогодні",
     "backlog": "Відкладені",
@@ -48,6 +56,7 @@
     "dueToday": "Термін сьогодні",
     "stale": "Прострочені",
     "suggested": "Запропоновані",
+    "completedToday": "Завершено сьогодні",
     "noTasksAvailable": "Немає доступних завдань.",
     "searchPlaceholder": "Пошук завдань...",
     "addNewTask": "Додати нове завдання"
@@ -99,7 +108,15 @@
       "completionBasedHelp": "Якщо відмічено, наступне завдання буде створене на основі дати завершення замість дати виконання"
     }
   },
-
+  "nextTask": {
+    "suggestion": "Оскільки нічого не виконується, як щодо початку з",
+    "suggestionDueToday": "Оскільки нічого не виконується, як щодо початку з цього завдання, яке закінчується сьогодні",
+    "suggestionSuggested": "Оскільки нічого не виконується, як щодо початку з цього запропонованого завдання",
+    "letsDoIt": "Так, давайте це зробимо!",
+    "starting": "Запуск...",
+    "startedSuccessfully": "Завдання успішно розпочато!",
+    "giveMeSomethingElse": "Дайте мені щось інше"
+  },
   "modals": {
     "updateNote": "Оновити нотатку",
     "createNote": "Створити нотатку",
@@ -185,10 +202,26 @@
     "nextActionHint": "Подумайте про найменший, найконкретніший крок, який ви можете зробити прямо зараз, щоб просунути цей проект вперед.",
     "tabs": {
       "general": "Загальні",
+      "security": "Безпека",
       "productivity": "Продуктивність",
       "telegram": "Telegram",
       "ai": "ШІ Функції"
     },
+    "security": "Налаштування безпеки",
+    "changePassword": "Змінити пароль",
+    "currentPassword": "Поточний пароль",
+    "newPassword": "Новий пароль",
+    "confirmPassword": "Підтвердити новий пароль",
+    "enterCurrentPassword": "Введіть поточний пароль",
+    "enterNewPassword": "Введіть новий пароль",
+    "confirmNewPassword": "Підтвердіть новий пароль",
+    "currentPasswordRequired": "Поточний пароль обов’язковий",
+    "newPasswordRequired": "Новий пароль обов’язковий",
+    "passwordTooShort": "Пароль повинен містити принаймні 6 символів",
+    "passwordMismatch": "Паролі не співпадають",
+    "passwordChangeError": "Не вдалося змінити пароль",
+    "passwordChangeSuccess": "Пароль успішно змінено!",
+    "changingPassword": "Зміна паролю...",
     "accountSettings": "Обліковий запис та налаштування",
     "aiProductivityFeatures": "ШІ та функції продуктивності",
     "botSetup": "Налаштування бота",

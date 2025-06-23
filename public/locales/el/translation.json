@@ -48,7 +48,13 @@
     "logout": "Αποσύνδεση"
   },
   "dashboard": {
-    "overview": "Επισκόπηση"
+    "overview": "Επισκόπηση",
+    "sameAsYesterday": "Ίδια με χθες",
+    "betterThanYesterday": "{{percentage}}% περισσότερα από χθες",
+    "worseThanYesterday": "{{percentage}}% λιγότερα από χθες",
+    "sameAsAverage": "Ίδια με τον μέσο όρο",
+    "betterThanAverage": "{{percentage}}% περισσότερα από τον μέσο όρο",
+    "worseThanAverage": "{{percentage}}% λιγότερα από τον μέσο όρο"
   },
   "auth": {
     "login": "Σύνδεση",
@@ -141,10 +147,26 @@
     "nextActionHint": "Σκεφτείτε το μικρότερο, πιο συγκεκριμένο βήμα που μπορείτε να κάνετε τώρα για να προωθήσετε αυτό το έργο.",
     "tabs": {
       "general": "Γενικά",
+      "security": "Ασφάλεια",
       "productivity": "Παραγωγικότητα",
       "telegram": "Telegram",
       "ai": "Χαρακτηριστικά A.I."
     },
+    "security": "Ρυθμίσεις Ασφάλειας",
+    "changePassword": "Αλλαγή Κωδικού",
+    "currentPassword": "Τρέχων Κωδικός",
+    "newPassword": "Νέος Κωδικός",
+    "confirmPassword": "Επιβεβαίωση Νέου Κωδικού",
+    "enterCurrentPassword": "Εισάγετε τον τρέχοντα κωδικό σας",
+    "enterNewPassword": "Εισάγετε τον νέο σας κωδικό",
+    "confirmNewPassword": "Επιβεβαιώστε τον νέο σας κωδικό",
+    "currentPasswordRequired": "Ο τρέχων κωδικός είναι υποχρεωτικός",
+    "newPasswordRequired": "Ο νέος κωδικός είναι υποχρεωτικός",
+    "passwordTooShort": "Ο κωδικός πρέπει να έχει τουλάχιστον 6 χαρακτήρες",
+    "passwordMismatch": "Οι κωδικοί δεν ταιριάζουν",
+    "passwordChangeError": "Αποτυχία αλλαγής κωδικού",
+    "passwordChangeSuccess": "Ο κωδικός αλλάχτηκε επιτυχώς!",
+    "changingPassword": "Αλλαγή κωδικού...",
     "accountSettings": "Λογαριασμός & Προτιμήσεις",
     "aiProductivityFeatures": "Χαρακτηριστικά A.I. & Παραγωγικότητας",
     "botSetup": "Ρύθμιση Bot"
@@ -258,7 +280,8 @@
     "suggestionSuggested": "Αφού δεν υπάρχει τίποτα σε εξέλιξη, τι θα λέγατε να ξεκινήσετε με αυτή την προτεινόμενη εργασία",
     "letsDoIt": "Ναι, ας το κάνουμε!",
     "starting": "Ξεκινάμε...",
-    "startedSuccessfully": "Η εργασία ξεκίνησε με επιτυχία!"
+    "startedSuccessfully": "Η εργασία ξεκίνησε με επιτυχία!",
+    "giveMeSomethingElse": "Δώστε μου κάτι άλλο"
   },
   "modals": {
     "confirmDelete": "Είστε βέβαιοι ότι θέλετε να διαγράψετε;",

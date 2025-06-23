@@ -39,6 +39,15 @@
     "settings": "設定",
     "logout": "ログアウト"
   },
+  "dashboard": {
+    "overview": "概要",
+    "sameAsYesterday": "昨日と同じ",
+    "betterThanYesterday": "昨日より{{percentage}}%多い",
+    "worseThanYesterday": "昨日より{{percentage}}%少ない",
+    "sameAsAverage": "平均と同じ",
+    "betterThanAverage": "平均より{{percentage}}%多い",
+    "worseThanAverage": "平均より{{percentage}}%少ない"
+  },
   "tasks": {
     "today": "今日",
     "backlog": "バックログ",
@@ -46,6 +55,7 @@
     "dueToday": "本日の期限",
     "stale": "古い",
     "suggested": "おすすめ",
+    "completedToday": "今日完了",
     "noTasksAvailable": "今日のタスクはありません。",
     "searchPlaceholder": "タスクを検索...",
     "addNewTask": "新しいタスクを追加"
@@ -59,6 +69,15 @@
     "spanish": "スペイン語",
     "greek": "ギリシャ語",
     "japanese": "日本語"
+  },
+  "nextTask": {
+    "suggestion": "進行中のものがないので、こちらから始めてみませんか",
+    "suggestionDueToday": "進行中のものがないので、今日期限のこのタスクから始めてみませんか",
+    "suggestionSuggested": "進行中のものがないので、この推奨タスクから始めてみませんか",
+    "letsDoIt": "はい、やりましょう！",
+    "starting": "開始中...",
+    "startedSuccessfully": "タスクが正常に開始されました！",
+    "giveMeSomethingElse": "他のものをください"
   },
   "modals": {
     "confirmDelete": "本当に削除してよろしいですか？",
@@ -292,10 +311,26 @@
     "nextActionHint": "このプロジェクトを前進させるために、今すぐ取ることができる最も小さく具体的なステップを考えてみてください。",
     "tabs": {
       "general": "一般",
+      "security": "セキュリティ",
       "productivity": "生産性",
       "telegram": "Telegram",
       "ai": "AI機能"
     },
+    "security": "セキュリティ設定",
+    "changePassword": "パスワード変更",
+    "currentPassword": "現在のパスワード",
+    "newPassword": "新しいパスワード",
+    "confirmPassword": "新しいパスワードの確認",
+    "enterCurrentPassword": "現在のパスワードを入力してください",
+    "enterNewPassword": "新しいパスワードを入力してください",
+    "confirmNewPassword": "新しいパスワードを確認してください",
+    "currentPasswordRequired": "現在のパスワードが必要です",
+    "newPasswordRequired": "新しいパスワードが必要です",
+    "passwordTooShort": "パスワードは6文字以上で入力してください",
+    "passwordMismatch": "パスワードが一致しません",
+    "passwordChangeError": "パスワードの変更に失敗しました",
+    "passwordChangeSuccess": "パスワードが正常に変更されました！",
+    "changingPassword": "パスワードを変更中...",
     "accountSettings": "アカウント設定",
     "aiProductivityFeatures": "AI & 生産性機能",
     "botSetup": "ボット設定",

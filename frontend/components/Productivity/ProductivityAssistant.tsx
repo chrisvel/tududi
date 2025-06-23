@@ -281,7 +281,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({ tasks, pr
   }
 
   return (
-    <div className="mb-6 p-4 bg-white dark:bg-gray-900 border-l-4 border-yellow-500 rounded-lg shadow">
+    <div className="mb-2 p-4 bg-white dark:bg-gray-900 border-l-4 border-yellow-500 rounded-lg shadow">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="flex items-center w-full"

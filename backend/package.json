@@ -22,7 +22,8 @@
     "migration:run": "npx sequelize-cli db:migrate",
     "migration:undo": "npx sequelize-cli db:migrate:undo",
     "migration:undo:all": "npx sequelize-cli db:migrate:undo:all",
-    "migration:status": "npx sequelize-cli db:migrate:status"
+    "migration:status": "npx sequelize-cli db:migrate:status",
+    "seed:dev": "node scripts/seed-dev-data.js"
   },
   "keywords": [],
   "author": "",

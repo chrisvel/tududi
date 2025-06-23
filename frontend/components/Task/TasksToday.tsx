@@ -10,6 +10,9 @@ import {
   CalendarDaysIcon,
   InboxIcon,
   FolderIcon,
+  CheckCircleIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
 } from "@heroicons/react/24/outline";
 import { fetchTasks, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchProjects } from "../../utils/projectsService";
@@ -69,6 +72,64 @@ const TasksToday: React.FC = () => {
     tasks_completed_today: [],
     weekly_completions: [],
   });
+
+  // Helper function to get completion trend vs average
+  const getCompletionTrend = () => {
+    const todayCount = metrics.tasks_completed_today.length;
+    
+    // Calculate average: sum of all completed tasks divided by 7 days
+    // The average represents the daily average across the week
+    if (metrics.weekly_completions.length === 0) {
+      return { 
+        direction: 'same', 
+        difference: 0,
+        percentage: 0,
+        todayCount,
+        averageCount: 0
+      };
+    }
+    
+    // Sum all completed tasks from the weekly data
+    const totalCompletedTasks = metrics.weekly_completions.reduce((sum, completion) => sum + completion.count, 0);
+    
+    // Average is total completed tasks divided by 7 days
+    const averageCount = totalCompletedTasks / 7;
+    
+    // Calculate percentage change vs average
+    let percentage = 0;
+    if (averageCount > 0) {
+      percentage = Math.round(((todayCount - averageCount) / averageCount) * 100);
+    } else if (todayCount > 0) {
+      // If average was 0 but today has completions, it's a 100%+ increase
+      percentage = 100;
+    }
+    
+    if (todayCount > averageCount) {
+      return { 
+        direction: 'up', 
+        difference: Math.round((todayCount - averageCount) * 10) / 10, // Round to 1 decimal
+        percentage: Math.abs(percentage),
+        todayCount,
+        averageCount: Math.round(averageCount * 10) / 10 // Round to 1 decimal
+      };
+    } else if (todayCount < averageCount) {
+      return { 
+        direction: 'down', 
+        difference: Math.round((averageCount - todayCount) * 10) / 10, // Round to 1 decimal
+        percentage: Math.abs(percentage),
+        todayCount,
+        averageCount: Math.round(averageCount * 10) / 10 // Round to 1 decimal
+      };
+    } else {
+      return { 
+        direction: 'same', 
+        difference: 0,
+        percentage: 0,
+        todayCount,
+        averageCount: Math.round(averageCount * 10) / 10 // Round to 1 decimal
+      };
+    }
+  };
 
   // Track mounting state to prevent state updates after unmount
   const isMounted = React.useRef(false);
@@ -250,9 +311,9 @@ const TasksToday: React.FC = () => {
           </span>
         </div>
 
-        <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="mb-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Combined Task & Project Metrics */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-3">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
             <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{t('dashboard.overview')}</h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -283,6 +344,48 @@ const TasksToday: React.FC = () => {
                 <p className="text-sm font-semibold">
                   {metrics.tasks_due_today.length}
                 </p>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('tasks.completedToday', 'Completed Today')}</p>
+                </div>
+                <div className="flex items-center space-x-1">
+                  {(() => {
+                    const trend = getCompletionTrend();
+                    const getTooltipText = () => {
+                      if (trend.direction === 'same') {
+                        return t('dashboard.sameAsAverage', 'Same as average');
+                      } else if (trend.direction === 'up') {
+                        return t('dashboard.betterThanAverage', '{{percentage}}% more than average', { percentage: trend.percentage });
+                      } else {
+                        return t('dashboard.worseThanAverage', '{{percentage}}% less than average', { percentage: trend.percentage });
+                      }
+                    };
+                    
+                    return (
+                      <>
+                        {(trend.direction === 'up' || trend.direction === 'down') && (
+                          <div className="relative group">
+                            {trend.direction === 'up' && (
+                              <ArrowUpIcon className="h-3 w-3 text-green-500" />
+                            )}
+                            {trend.direction === 'down' && (
+                              <ArrowDownIcon className="h-3 w-3 text-red-500" />
+                            )}
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                              {getTooltipText()}
+                            </div>
+                          </div>
+                        )}
+                        <p className="text-sm font-semibold">
+                          {metrics.tasks_completed_today.length}
+                        </p>
+                      </>
+                    );
+                  })()}
+                </div>
               </div>
               
               <div className="flex items-center justify-between">

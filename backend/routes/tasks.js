@@ -2,6 +2,7 @@ const express = require('express');
 const { Task, Tag, Project, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const RecurringTaskService = require('../services/recurringTaskService');
+const TaskEventService = require('../services/taskEventService');
 const moment = require('moment-timezone');
 const router = express.Router();
 
@@ -198,11 +199,12 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
       ...tasksDueToday.map(t => t.id)
     ];
 
-    // Get 3 tasks without projects
+
+    // Get tasks without projects
     const nonProjectTasks = await Task.findAll({
       where: {
         user_id: userId,
-        status: Task.STATUS.NOT_STARTED,
+        status: { [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING] },
         id: { [Op.notIn]: excludedTaskIds },
         [Op.or]: [
           { project_id: null },
@@ -222,15 +224,15 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
           required: false 
         }
       ],
-      order: [['priority', 'DESC']],
+      order: [['priority', 'DESC'], ['created_at', 'ASC']],
       limit: 3
     });
 
-    // Get 3 tasks with projects
+    // Get tasks with projects (increased limit to show more suggestions)
     const projectTasks = await Task.findAll({
       where: {
         user_id: userId,
-        status: Task.STATUS.NOT_STARTED,
+        status: { [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING] },
         id: { [Op.notIn]: excludedTaskIds },
         project_id: { [Op.not]: null, [Op.ne]: '' }
       },
@@ -247,12 +249,13 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
           required: false 
         }
       ],
-      order: [['priority', 'DESC']],
+      order: [['priority', 'DESC'], ['created_at', 'ASC']],
       limit: 3
     });
 
     // Combine both arrays: 3 non-project + 3 project tasks
     suggestedTasks = [...nonProjectTasks, ...projectTasks];
+    
   }
 
   // Get tasks completed today - use user's timezone
@@ -305,7 +308,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
   // Process the data in JavaScript to group by date in user's timezone
   const dateCountMap = {};
   weeklyCompletionsRaw.forEach(task => {
-    const dateInUserTz = moment.utc(task.completed_at).tz(userTimezone).format('YYYY-MM-DD');
+    const dateInUserTz = moment(task.completed_at).tz(userTimezone).format('YYYY-MM-DD');
     dateCountMap[dateInUserTz] = (dateCountMap[dateInUserTz] || 0) + 1;
   });
 
@@ -465,9 +468,9 @@ router.post('/task', async (req, res) => {
 
     const taskAttributes = {
       name: name.trim(),
-      priority: priority || Task.PRIORITY.LOW,
+      priority: priority !== undefined ? (typeof priority === 'string' ? Task.getPriorityValue(priority) : priority) : Task.PRIORITY.LOW,
       due_date: due_date || null,
-      status: status || Task.STATUS.NOT_STARTED,
+      status: status !== undefined ? (typeof status === 'string' ? Task.getStatusValue(status) : status) : Task.STATUS.NOT_STARTED,
       note,
       user_id: req.currentUser.id,
       recurrence_type: recurrence_type || 'none',
@@ -492,6 +495,20 @@ router.post('/task', async (req, res) => {
 
     const task = await Task.create(taskAttributes);
     await updateTaskTags(task, tagsData, req.currentUser.id);
+
+    // Log task creation event
+    try {
+      await TaskEventService.logTaskCreated(task.id, req.currentUser.id, {
+        name: task.name,
+        status: task.status,
+        priority: task.priority,
+        due_date: task.due_date,
+        project_id: task.project_id
+      }, { source: 'web' });
+    } catch (eventError) {
+      console.error('Error logging task creation event:', eventError);
+      // Don't fail the request if event logging fails
+    }
 
     // Reload task with associations
     const taskWithAssociations = await Task.findByPk(task.id, {
@@ -543,12 +560,33 @@ router.patch('/task/:id', async (req, res) => {
     const tagsData = tags || Tags;
 
     const task = await Task.findOne({
-      where: { id: req.params.id, user_id: req.currentUser.id }
+      where: { id: req.params.id, user_id: req.currentUser.id },
+      include: [
+        { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } }
+      ]
     });
 
     if (!task) {
       return res.status(404).json({ error: 'Task not found.' });
     }
+
+    // Capture old values for event logging
+    const oldValues = {
+      name: task.name,
+      status: task.status,
+      priority: task.priority,
+      due_date: task.due_date,
+      project_id: task.project_id,
+      note: task.note,
+      recurrence_type: task.recurrence_type,
+      recurrence_interval: task.recurrence_interval,
+      recurrence_end_date: task.recurrence_end_date,
+      recurrence_weekday: task.recurrence_weekday,
+      recurrence_month_day: task.recurrence_month_day,
+      recurrence_week_of_month: task.recurrence_week_of_month,
+      completion_based: task.completion_based,
+      tags: task.Tags ? task.Tags.map(tag => ({ id: tag.id, name: tag.name })) : []
+    };
 
     // Handle updating parent recurrence settings if this is a child task
     if (update_parent_recurrence && task.recurring_parent_id) {
@@ -572,8 +610,8 @@ router.patch('/task/:id', async (req, res) => {
 
     const taskAttributes = {
       name,
-      priority,
-      status: status || Task.STATUS.NOT_STARTED,
+      priority: priority !== undefined ? (typeof priority === 'string' ? Task.getPriorityValue(priority) : priority) : undefined,
+      status: status !== undefined ? (typeof status === 'string' ? Task.getStatusValue(status) : status) : Task.STATUS.NOT_STARTED,
       note,
       due_date: due_date || null,
       recurrence_type: recurrence_type !== undefined ? recurrence_type : task.recurrence_type,
@@ -614,6 +652,87 @@ router.patch('/task/:id', async (req, res) => {
 
     await task.update(taskAttributes);
     await updateTaskTags(task, tagsData, req.currentUser.id);
+
+    // Log task update events
+    try {
+      const changes = {};
+      
+      // Check for changes in each field
+      if (name !== undefined && name !== oldValues.name) {
+        changes.name = { oldValue: oldValues.name, newValue: name };
+      }
+      if (status !== undefined && status !== oldValues.status) {
+        changes.status = { oldValue: oldValues.status, newValue: status };
+      }
+      if (priority !== undefined && priority !== oldValues.priority) {
+        changes.priority = { oldValue: oldValues.priority, newValue: priority };
+      }
+      if (due_date !== undefined) {
+        // Normalize dates for comparison (convert to YYYY-MM-DD format)
+        const oldDateStr = oldValues.due_date ? oldValues.due_date.toISOString().split('T')[0] : null;
+        const newDateStr = due_date || null;
+        
+        if (oldDateStr !== newDateStr) {
+          changes.due_date = { oldValue: oldValues.due_date, newValue: due_date };
+        }
+      }
+      if (project_id !== undefined && project_id !== oldValues.project_id) {
+        changes.project_id = { oldValue: oldValues.project_id, newValue: project_id };
+      }
+      if (note !== undefined && note !== oldValues.note) {
+        changes.note = { oldValue: oldValues.note, newValue: note };
+      }
+      
+      // Check recurrence field changes
+      if (recurrence_type !== undefined && recurrence_type !== oldValues.recurrence_type) {
+        changes.recurrence_type = { oldValue: oldValues.recurrence_type, newValue: recurrence_type };
+      }
+      if (recurrence_interval !== undefined && recurrence_interval !== oldValues.recurrence_interval) {
+        changes.recurrence_interval = { oldValue: oldValues.recurrence_interval, newValue: recurrence_interval };
+      }
+      if (recurrence_end_date !== undefined && recurrence_end_date !== oldValues.recurrence_end_date) {
+        changes.recurrence_end_date = { oldValue: oldValues.recurrence_end_date, newValue: recurrence_end_date };
+      }
+      if (recurrence_weekday !== undefined && recurrence_weekday !== oldValues.recurrence_weekday) {
+        changes.recurrence_weekday = { oldValue: oldValues.recurrence_weekday, newValue: recurrence_weekday };
+      }
+      if (recurrence_month_day !== undefined && recurrence_month_day !== oldValues.recurrence_month_day) {
+        changes.recurrence_month_day = { oldValue: oldValues.recurrence_month_day, newValue: recurrence_month_day };
+      }
+      if (recurrence_week_of_month !== undefined && recurrence_week_of_month !== oldValues.recurrence_week_of_month) {
+        changes.recurrence_week_of_month = { oldValue: oldValues.recurrence_week_of_month, newValue: recurrence_week_of_month };
+      }
+      if (completion_based !== undefined && completion_based !== oldValues.completion_based) {
+        changes.completion_based = { oldValue: oldValues.completion_based, newValue: completion_based };
+      }
+
+      // Log all changes
+      if (Object.keys(changes).length > 0) {
+        await TaskEventService.logTaskUpdate(task.id, req.currentUser.id, changes, { source: 'web' });
+      }
+
+      // Check for tag changes (this is more complex due to the array comparison)
+      if (tagsData) {
+        const newTags = tagsData.map(tag => ({ id: tag.id, name: tag.name }));
+        const oldTagNames = oldValues.tags.map(tag => tag.name).sort();
+        const newTagNames = newTags.map(tag => tag.name).sort();
+        
+        if (JSON.stringify(oldTagNames) !== JSON.stringify(newTagNames)) {
+          await TaskEventService.logEvent({
+            taskId: task.id,
+            userId: req.currentUser.id,
+            eventType: 'tags_changed',
+            fieldName: 'tags',
+            oldValue: oldValues.tags,
+            newValue: newTags,
+            metadata: { source: 'web', action: 'tags_update' }
+          });
+        }
+      }
+    } catch (eventError) {
+      console.error('Error logging task update events:', eventError);
+      // Don't fail the request if event logging fails
+    }
 
     // Reload task with associations
     const taskWithAssociations = await Task.findByPk(task.id, {

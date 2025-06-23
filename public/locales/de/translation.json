@@ -33,6 +33,21 @@
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },
+  "dashboard": {
+    "overview": "Übersicht",
+    "sameAsYesterday": "Gleich wie gestern",
+    "betterThanYesterday": "{{percentage}}% mehr als gestern",
+    "worseThanYesterday": "{{percentage}}% weniger als gestern",
+    "sameAsAverage": "Gleich wie der Durchschnitt",
+    "betterThanAverage": "{{percentage}}% mehr als der Durchschnitt",
+    "worseThanAverage": "{{percentage}}% weniger als der Durchschnitt"
+  },
+  "tasks": {
+    "backlog": "Backlog",
+    "inProgress": "In Bearbeitung",
+    "dueToday": "Heute fällig",
+    "completedToday": "Heute abgeschlossen"
+  },
   "forms": {
     "title": "Titel",
     "description": "Beschreibung",
@@ -133,14 +148,39 @@
     "nextActionHint": "Denken Sie an den kleinsten, konkretesten Schritt, den Sie jetzt unternehmen können, um dieses Projekt voranzubringen.",
     "tabs": {
       "general": "Allgemein",
+      "security": "Sicherheit",
       "productivity": "Produktivität",
       "telegram": "Telegram",
       "ai": "KI-Funktionen"
     },
+    "security": "Sicherheitseinstellungen",
+    "changePassword": "Passwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Neues Passwort bestätigen",
+    "enterCurrentPassword": "Geben Sie Ihr aktuelles Passwort ein",
+    "enterNewPassword": "Geben Sie Ihr neues Passwort ein",
+    "confirmNewPassword": "Bestätigen Sie Ihr neues Passwort",
+    "currentPasswordRequired": "Aktuelles Passwort ist erforderlich",
+    "newPasswordRequired": "Neues Passwort ist erforderlich",
+    "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "passwordChangeError": "Passwort konnte nicht geändert werden",
+    "passwordChangeSuccess": "Passwort erfolgreich geändert!",
+    "changingPassword": "Passwort wird geändert...",
     "accountSettings": "Konto & Einstellungen",
     "aiProductivityFeatures": "KI & Produktivitätsfunktionen",
     "botSetup": "Bot-Einrichtung",
     "successMessage": "Profil erfolgreich aktualisiert!"
+  },
+  "nextTask": {
+    "suggestion": "Da nichts in Bearbeitung ist, wie wäre es, mit diesem zu beginnen",
+    "suggestionDueToday": "Da nichts in Bearbeitung ist, wie wäre es, mit dieser heute fälligen Aufgabe zu beginnen",
+    "suggestionSuggested": "Da nichts in Bearbeitung ist, wie wäre es, mit dieser vorgeschlagenen Aufgabe zu beginnen",
+    "letsDoIt": "Ja, lass uns das machen!",
+    "starting": "Wird gestartet...",
+    "startedSuccessfully": "Aufgabe erfolgreich gestartet!",
+    "giveMeSomethingElse": "Gib mir etwas anderes"
   },
   "task": {
     "nameHelper": {

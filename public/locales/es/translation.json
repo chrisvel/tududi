@@ -47,6 +47,15 @@
     "settings": "Ajustes",
     "logout": "Cerrar Sesión"
   },
+  "dashboard": {
+    "overview": "Resumen",
+    "sameAsYesterday": "Igual que ayer",
+    "betterThanYesterday": "{{percentage}}% más que ayer",
+    "worseThanYesterday": "{{percentage}}% menos que ayer",
+    "sameAsAverage": "Igual que el promedio",
+    "betterThanAverage": "{{percentage}}% más que el promedio",
+    "worseThanAverage": "{{percentage}}% menos que el promedio"
+  },
   "auth": {
     "login": "Iniciar Sesión",
     "register": "Registrarse",
@@ -102,10 +111,26 @@
     "nextActionHint": "Piensa en el paso más pequeño y concreto que puedes tomar ahora mismo para hacer avanzar este proyecto.",
     "tabs": {
       "general": "General",
+      "security": "Seguridad",
       "productivity": "Productividad",
       "telegram": "Telegram",
       "ai": "Funciones IA"
     },
+    "security": "Configuración de Seguridad",
+    "changePassword": "Cambiar Contraseña",
+    "currentPassword": "Contraseña Actual",
+    "newPassword": "Nueva Contraseña",
+    "confirmPassword": "Confirmar Nueva Contraseña",
+    "enterCurrentPassword": "Ingrese su contraseña actual",
+    "enterNewPassword": "Ingrese su nueva contraseña",
+    "confirmNewPassword": "Confirme su nueva contraseña",
+    "currentPasswordRequired": "La contraseña actual es obligatoria",
+    "newPasswordRequired": "La nueva contraseña es obligatoria",
+    "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "passwordChangeError": "Error al cambiar la contraseña",
+    "passwordChangeSuccess": "¡Contraseña cambiada exitosamente!",
+    "changingPassword": "Cambiando contraseña...",
     "accountSettings": "Cuenta y Preferencias",
     "aiProductivityFeatures": "Funciones de IA y Productividad",
     "botSetup": "Configuración del Bot",
@@ -139,6 +164,7 @@
     "dueToday": "Vence Hoy",
     "stale": "Atrasados",
     "suggested": "Sugeridos",
+    "completedToday": "Completadas Hoy",
     "noTasksAvailable": "No hay tareas disponibles para hoy.",
     "searchPlaceholder": "Buscar tareas...",
     "addNewTask": "Añadir Nueva Tarea"
@@ -175,6 +201,15 @@
     "priority": "Prioridad",
     "status": "Estado",
     "created_at": "Fecha de Creación"
+  },
+  "nextTask": {
+    "suggestion": "Como no hay nada en progreso, ¿qué tal empezar con",
+    "suggestionDueToday": "Como no hay nada en progreso, ¿qué tal empezar con esta tarea que vence hoy",
+    "suggestionSuggested": "Como no hay nada en progreso, ¿qué tal empezar con esta tarea sugerida",
+    "letsDoIt": "¡Sí, hagámoslo!",
+    "starting": "Iniciando...",
+    "startedSuccessfully": "¡Tarea iniciada exitosamente!",
+    "giveMeSomethingElse": "Dame algo más"
   },
   "modals": {
     "confirmDelete": "¿Estás seguro que deseas eliminar?",

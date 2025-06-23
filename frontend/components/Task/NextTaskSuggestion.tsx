@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   PlayIcon,
   XMarkIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { useToast } from '../Shared/ToastContext';
@@ -25,6 +26,7 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
   const { t } = useTranslation();
   const { showSuccessToast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
 
   // Check if there are any tasks in progress
   // If there are tasks in progress, don't show the suggestion
@@ -33,38 +35,31 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
   }
 
 
-  // Find the next suggested task following priority order:
-  // 1. Due today tasks (not in progress)
-  // 2. Suggested tasks from today page (not in progress)
-  
-  let suggestedTask: Task | null = null;
-  let suggestionSource = '';
-
   // Helper function to check if task is not started
   const isNotStarted = (task: Task) => {
     return task.status === 'not_started' || task.status === 0;
   };
 
-
-  // 1. First check due today tasks
+  // Get all available tasks in priority order:
+  // 1. Due today tasks (not in progress)
+  // 2. Suggested tasks from today page (not in progress)
   const dueTodayAvailable = metrics.tasks_due_today.filter(isNotStarted);
+  const suggestedAvailable = metrics.suggested_tasks.filter(isNotStarted);
   
-  if (dueTodayAvailable.length > 0) {
-    suggestedTask = dueTodayAvailable[0]; // Take the first due today
-    suggestionSource = 'due_today';
-  } else {
-    // 2. Then check suggested tasks from today page
-    const suggestedAvailable = metrics.suggested_tasks.filter(isNotStarted);
-    
-    if (suggestedAvailable.length > 0) {
-      suggestedTask = suggestedAvailable[0]; // Take the first suggested
-      suggestionSource = 'suggested';
-    }
-  }
+  // Combine all available tasks with priority
+  const allAvailableTasks = [
+    ...dueTodayAvailable.map(task => ({ task, source: 'due_today' })),
+    ...suggestedAvailable.map(task => ({ task, source: 'suggested' }))
+  ];
 
-  if (!suggestedTask) {
+  if (allAvailableTasks.length === 0) {
     return null;
   }
+
+  // Get current task based on index, wrap around if needed
+  const currentTaskData = allAvailableTasks[currentTaskIndex % allAvailableTasks.length];
+  const suggestedTask = currentTaskData.task;
+  const suggestionSource = currentTaskData.source;
 
   const handleStartTask = async () => {
     if (!suggestedTask || !suggestedTask.id) return;
@@ -79,6 +74,10 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
     } finally {
       setIsUpdating(false);
     }
+  };
+
+  const handleGiveMeSomethingElse = () => {
+    setCurrentTaskIndex(prev => prev + 1);
   };
 
   return (
@@ -110,17 +109,29 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
               </p>
             )}
           </div>
-          <button
-            onClick={handleStartTask}
-            disabled={isUpdating}
-            className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-sm font-medium rounded-md transition-colors"
-          >
-            <PlayIcon className="h-4 w-4 mr-2" />
-            {isUpdating 
-              ? t('nextTask.starting', 'Starting...') 
-              : t('nextTask.letsDoIt', "Yes, let's do it!")
-            }
-          </button>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={handleStartTask}
+              disabled={isUpdating}
+              className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-sm font-medium rounded-md transition-colors"
+            >
+              <PlayIcon className="h-4 w-4 mr-2" />
+              {isUpdating 
+                ? t('nextTask.starting', 'Starting...') 
+                : t('nextTask.letsDoIt', "Yes, let's do it!")
+              }
+            </button>
+            {allAvailableTasks.length > 1 && (
+              <button
+                onClick={handleGiveMeSomethingElse}
+                disabled={isUpdating}
+                className="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-md transition-colors"
+              >
+                <ArrowPathIcon className="h-4 w-4 mr-2" />
+                {t('nextTask.giveMeSomethingElse', 'Give me something else')}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

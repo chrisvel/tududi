@@ -1,7 +1,6 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import i18n from 'i18next';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { InformationCircleIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 
 interface ProfileSettingsProps {
@@ -9,6 +8,7 @@ interface ProfileSettingsProps {
   isDarkMode?: boolean;
   toggleDarkMode?: () => void;
 }
+
 
 interface Profile {
   id: number;
@@ -28,24 +28,12 @@ interface Profile {
   pomodoro_enabled: boolean;
 }
 
-interface SchedulerStatus {
-  success: boolean;
-  enabled: boolean;
-  frequency: string;
-  last_run: string | null;
-  next_run: string | null;
-}
 
 interface TelegramBotInfo {
   username: string;
   polling_status: any;
   chat_url: string;
 }
-
-const capitalize = (str: string): string => {
-  if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
 
 const formatFrequency = (frequency: string): string => {
   if (frequency.endsWith('h')) {
@@ -61,14 +49,19 @@ const formatFrequency = (frequency: string): string => {
   return frequency;
 };
 
-const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMode, toggleDarkMode }) => {
+const ProfileSettings: React.FC<ProfileSettingsProps> = ({ isDarkMode, toggleDarkMode }) => {
   const { t, i18n } = useTranslation();
   const { showSuccessToast, showErrorToast } = useToast();
   
   const [activeTab, setActiveTab] = useState('general');
   
+  // Password visibility state
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [formData, setFormData] = useState<Partial<Profile>>({
+  const [formData, setFormData] = useState<Partial<Profile & {currentPassword: string, newPassword: string, confirmPassword: string}>>({
     appearance: isDarkMode ? 'dark' : 'light',
     language: 'en',
     timezone: 'UTC',
@@ -81,70 +74,46 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
     productivity_assistant_enabled: true,
     next_task_suggestion_enabled: true,
     pomodoro_enabled: true,
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [updateKey, setUpdateKey] = useState(0);
   const [isChangingLanguage, setIsChangingLanguage] = useState(false);
-  const [telegramBotToken, setTelegramBotToken] = useState('');
-  const [telegramChatId, setTelegramChatId] = useState('');
-  const [isTesting, setIsTesting] = useState(false);
-  const [isSendingSummary, setIsSendingSummary] = useState(false);
-  const [schedulerStatus, setSchedulerStatus] = useState<SchedulerStatus | null>(null);
-  const [loadingStatus, setLoadingStatus] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
   const [telegramSetupStatus, setTelegramSetupStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [telegramError, setTelegramError] = useState<string | null>(null);
   const [telegramBotInfo, setTelegramBotInfo] = useState<TelegramBotInfo | null>(null);
   
   const forceUpdate = useCallback(() => {
     setUpdateKey(prevKey => prevKey + 1);
   }, []);
+
   
-  const fetchSchedulerStatus = async () => {
-    try {
-      setLoadingStatus(true);
-      const response = await fetch('/api/profile/task-summary/status');
-      
-      if (!response.ok) {
-        throw new Error(t('profile.statusFetchError', 'Failed to fetch scheduler status.'));
+  // Password validation
+  const validatePasswordForm = (): {valid: boolean, errors: {[key: string]: string}} => {
+    const errors: {[key: string]: string} = {};
+    
+    // Only validate if user is trying to change password
+    if (formData.currentPassword || formData.newPassword || formData.confirmPassword) {
+      if (!formData.currentPassword) {
+        errors.currentPassword = t('profile.currentPasswordRequired', 'Current password is required');
       }
       
-      const data = await response.json();
-      setSchedulerStatus(data);
-    } catch (error) {
-      showErrorToast((error as Error).message);
-    } finally {
-      setLoadingStatus(false);
+      if (!formData.newPassword) {
+        errors.newPassword = t('profile.newPasswordRequired', 'New password is required');
+      } else if (formData.newPassword.length < 6) {
+        errors.newPassword = t('profile.passwordTooShort', 'Password must be at least 6 characters');
+      }
+      
+      if (formData.newPassword !== formData.confirmPassword) {
+        errors.confirmPassword = t('profile.passwordMismatch', 'Passwords do not match');
+      }
     }
+    
+    return { valid: Object.keys(errors).length === 0, errors };
   };
   
-  const handleSendTaskSummaryNow = async () => {
-    try {
-      setIsSendingSummary(true);
-      const response = await fetch('/api/profile/task-summary/send-now', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || t('profile.sendSummaryFailed', 'Failed to send summary.'));
-      }
-      
-      const data = await response.json();
-      showSuccessToast(data.message);
-      
-      if (data.enabled) {
-        fetchSchedulerStatus();
-      }
-    } catch (error) {
-      showErrorToast((error as Error).message);
-    } finally {
-      setIsSendingSummary(false);
-    }
-  };
   
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -224,12 +193,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
           next_task_suggestion_enabled: data.next_task_suggestion_enabled !== undefined ? data.next_task_suggestion_enabled : true,
           pomodoro_enabled: data.pomodoro_enabled !== undefined ? data.pomodoro_enabled : true,
         });
-        setTelegramBotToken(data.telegram_bot_token || '');
-        setTelegramChatId(data.telegram_chat_id || '');
         
-        if (data.task_summary_enabled) {
-          fetchSchedulerStatus();
-        }
+        // Note: Task summary status checking functionality removed for now
         
         if (data.telegram_bot_token) {
           fetchPollingStatus();
@@ -268,11 +233,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
   }, [isDarkMode]);
   
   useEffect(() => {
-    const handleLanguageChanged = (lng: string) => {
+    const handleLanguageChanged = () => {
       forceUpdate();
     };
     
-    const handleAppLanguageChanged = (event: CustomEvent<{ language: string }>) => {
+    const handleAppLanguageChanged = () => {
       forceUpdate();
       setTimeout(() => {
         setIsChangingLanguage(false);
@@ -291,7 +256,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
   
   const handleSetupTelegram = async () => {
     setTelegramSetupStatus('loading');
-    setTelegramError(null);
     setTelegramBotInfo(null);
     
     try {
@@ -314,7 +278,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       
       const data = await response.json();
       setTelegramSetupStatus('success');
-      setSuccess(t('profile.telegramSetupSuccess'));
+      showSuccessToast(t('profile.telegramSetupSuccess', 'Telegram bot configured successfully!'));
       
       if (data.bot) {
         setTelegramBotInfo(data.bot);
@@ -333,7 +297,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       
     } catch (error) {
       setTelegramSetupStatus('error');
-      setTelegramError((error as Error).message);
+      showErrorToast((error as Error).message);
     }
   };
   
@@ -397,10 +361,28 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
+
+    // Check if user is trying to change password
+    const isPasswordChange = formData.currentPassword || formData.newPassword || formData.confirmPassword;
+    
+    // Only validate password if user is trying to change password
+    if (isPasswordChange) {
+      const passwordValidation = validatePasswordForm();
+      if (!passwordValidation.valid) {
+        showErrorToast(Object.values(passwordValidation.errors)[0]);
+        return;
+      }
+    }
 
     try {
+      // Prepare data to send - exclude password fields if not changing password
+      const dataToSend = { ...formData };
+      if (!isPasswordChange) {
+        delete dataToSend.currentPassword;
+        delete dataToSend.newPassword;
+        delete dataToSend.confirmPassword;
+      }
+
       const response = await fetch('/api/profile', {
         method: 'PATCH',
         credentials: 'include',
@@ -408,7 +390,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
@@ -453,9 +435,22 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         }));
       }
       
-      setSuccess(t('profile.successMessage'));
+      // Clear password fields on successful save
+      if (isPasswordChange) {
+        setFormData(prev => ({
+          ...prev,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        }));
+      }
+      
+      const successMessage = isPasswordChange 
+        ? t('profile.passwordChangeSuccess', 'Password changed successfully!')
+        : t('profile.successMessage', 'Profile updated successfully!');
+      showSuccessToast(successMessage);
     } catch (err) {
-      setError((err as Error).message);
+      showErrorToast((err as Error).message);
     }
   };
 
@@ -469,16 +464,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-red-500 text-lg">{error}</div>
-      </div>
-    );
-  }
 
   const tabs = [
     { id: 'general', name: t('profile.tabs.general', 'General'), icon: 'user' },
+    { id: 'security', name: t('profile.tabs.security', 'Security'), icon: 'shield' },
     { id: 'productivity', name: t('profile.tabs.productivity', 'Productivity'), icon: 'clock' },
     { id: 'telegram', name: t('profile.tabs.telegram', 'Telegram'), icon: 'chat' },
     { id: 'ai', name: t('profile.tabs.ai', 'AI Features'), icon: 'sparkles' },
@@ -502,6 +491,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         return (
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        );
+      case 'shield':
+        return (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
           </svg>
         );
       case 'sparkles':
@@ -544,8 +539,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         </div>
       </div>
 
-      {success && <div className="mb-4 text-green-500">{success}</div>}
-      {error && <div className="mb-4 text-red-500">{error}</div>}
 
       <form onSubmit={handleSubmit} className="space-y-8">
         
@@ -704,6 +697,124 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         </div>
         )}
 
+        {/* Security Tab */}
+        {activeTab === 'security' && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+              <svg className="w-6 h-6 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              {t('profile.security', 'Security Settings')}
+            </h3>
+            
+            {/* Password Change Section */}
+            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
+                <svg className="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                {t('profile.changePassword', 'Change Password')}
+              </h4>
+              
+              <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded text-blue-800 dark:text-blue-200">
+                <p className="text-sm">
+                  <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {t('profile.passwordChangeOptional', 'Leave password fields empty to update other settings without changing your password.')}
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('profile.currentPassword', 'Current Password')}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showCurrentPassword ? 'text' : 'password'}
+                      name="currentPassword"
+                      value={formData.currentPassword || ''}
+                      onChange={handleChange}
+                      className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder={t('profile.enterCurrentPassword', 'Enter your current password')}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    >
+                      {showCurrentPassword ? (
+                        <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('profile.newPassword', 'New Password')}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      name="newPassword"
+                      value={formData.newPassword || ''}
+                      onChange={handleChange}
+                      className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder={t('profile.enterNewPassword', 'Enter your new password')}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                    >
+                      {showNewPassword ? (
+                        <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('profile.confirmPassword', 'Confirm New Password')}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      name="confirmPassword"
+                      value={formData.confirmPassword || ''}
+                      onChange={handleChange}
+                      className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder={t('profile.confirmNewPassword', 'Confirm your new password')}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  {t('profile.passwordChangeNote', 'Password changes will be saved when you click "Save Changes" at the bottom of the form.')}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Productivity Tab */}
         {activeTab === 'productivity' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
@@ -798,11 +909,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
                 </div>
               )}
 
-              {telegramError && (
-                <div className="p-2 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-800 rounded text-red-800 dark:text-red-200">
-                  <p className="text-sm">{telegramError}</p>
-                </div>
-              )}
 
               {telegramBotInfo && (
                 <div className="p-2 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded text-blue-800 dark:text-blue-200">

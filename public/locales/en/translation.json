@@ -48,7 +48,13 @@
     "logout": "Logout"
   },
   "dashboard": {
-    "overview": "Overview"
+    "overview": "Overview",
+    "sameAsYesterday": "Same as yesterday",
+    "betterThanYesterday": "{{percentage}}% more than yesterday",
+    "worseThanYesterday": "{{percentage}}% less than yesterday",
+    "sameAsAverage": "Same as average",
+    "betterThanAverage": "{{percentage}}% more than average",
+    "worseThanAverage": "{{percentage}}% less than average"
   },
   "tasks": {
     "today": "Today",
@@ -157,14 +163,32 @@
     "nextActionHint": "Think of the smallest, most concrete step you can take right now to move this project forward.",
     "tabs": {
       "general": "General",
+      "security": "Security",
       "productivity": "Productivity",
       "telegram": "Telegram",
       "ai": "AI Features"
     },
+    "security": "Security Settings",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "enterCurrentPassword": "Enter your current password",
+    "enterNewPassword": "Enter your new password",
+    "confirmNewPassword": "Confirm your new password",
+    "currentPasswordRequired": "Current password is required",
+    "newPasswordRequired": "New password is required",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "passwordMismatch": "Passwords do not match",
+    "passwordChangeError": "Failed to change password",
+    "passwordChangeSuccess": "Password changed successfully!",
+    "changingPassword": "Changing password...",
     "accountSettings": "Account & Preferences",
     "aiProductivityFeatures": "AI & Productivity Features",
     "botSetup": "Bot Setup",
-    "successMessage": "Profile updated successfully!"
+    "successMessage": "Profile updated successfully!",
+    "passwordChangeNote": "Password changes will be saved when you click \"Save Changes\" at the bottom of the form.",
+    "passwordChangeOptional": "Leave password fields empty to update other settings without changing your password."
   },
   "productivity": {
     "stalledProjects": "Stalled Projects",
@@ -189,7 +213,8 @@
     "suggestionSuggested": "Since there is nothing in progress, what about starting with this suggested task",
     "letsDoIt": "Yes, let's do it!",
     "starting": "Starting...",
-    "startedSuccessfully": "Task started successfully!"
+    "startedSuccessfully": "Task started successfully!",
+    "giveMeSomethingElse": "Give me something else"
   },
   "modals": {
     "confirmDelete": "Are you sure you want to delete?",

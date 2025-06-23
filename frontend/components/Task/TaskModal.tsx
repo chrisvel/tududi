@@ -7,6 +7,7 @@ import ConfirmDialog from "../Shared/ConfirmDialog";
 import { useToast } from "../Shared/ToastContext";
 import TagInput from "../Tag/TagInput";
 import RecurrenceInput from "./RecurrenceInput";
+import TaskTimeline from "./TaskTimeline";
 import { Project } from "../../entities/Project";
 import { useStore } from "../../store/useStore";
 import { fetchTags } from '../../utils/tagsService';
@@ -297,13 +298,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
         <div className="min-h-full flex items-start justify-center px-4 py-4">
           <div
             ref={modalRef}
-            className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-3xl transform transition-transform duration-300 ${
+            className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-6xl transform transition-transform duration-300 ${
               isClosing ? "scale-95" : "scale-100"
             } my-4`}
           >
-            <div className="p-4 space-y-3 text-sm">
-              <form>
-                <fieldset>
+            <div className="flex flex-col lg:flex-row h-[calc(100vh-8rem)] max-h-[630px]">
+              {/* Main Form Section */}
+              <div className="flex-1 p-4 space-y-3 text-sm overflow-y-auto">
+                <form>
+                  <fieldset>
                   <div className="py-4">
                     <input
                       type="text"
@@ -489,14 +492,30 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   />
                 </fieldset>
               </form>
+              <div className="p-3 border-t border-gray-200 dark:border-gray-700">
+                <TaskActions
+                  taskId={task.id}
+                  onDelete={handleDeleteClick}
+                  onSave={handleSubmit}
+                  onCancel={handleClose}
+                />
+              </div>
             </div>
-            <div className="p-3 border-t border-gray-200 dark:border-gray-700">
-              <TaskActions
-                taskId={task.id}
-                onDelete={handleDeleteClick}
-                onSave={handleSubmit}
-                onCancel={handleClose}
-              />
+            
+            {/* Timeline Section */}
+            <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex flex-col">
+              <div className="p-3 lg:p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center">
+                  <svg className="h-4 w-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {t('Activity Timeline', 'Activity Timeline')}
+                </h3>
+              </div>
+              <div className="p-3 lg:p-4 flex-1 overflow-hidden">
+                <TaskTimeline taskId={task.id} />
+              </div>
+            </div>
             </div>
           </div>
         </div>

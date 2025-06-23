@@ -44,7 +44,7 @@ router.patch('/profile', async (req, res) => {
       return res.status(404).json({ error: 'Profile not found.' });
     }
 
-    const { appearance, language, timezone, avatar_image, telegram_bot_token, task_intelligence_enabled, task_summary_enabled, task_summary_frequency, auto_suggest_next_actions_enabled, pomodoro_enabled } = req.body;
+    const { appearance, language, timezone, avatar_image, telegram_bot_token, task_intelligence_enabled, task_summary_enabled, task_summary_frequency, auto_suggest_next_actions_enabled, pomodoro_enabled, currentPassword, newPassword } = req.body;
     
     const allowedUpdates = {};
     if (appearance !== undefined) allowedUpdates.appearance = appearance;
@@ -57,6 +57,29 @@ router.patch('/profile', async (req, res) => {
     if (task_summary_frequency !== undefined) allowedUpdates.task_summary_frequency = task_summary_frequency;
     if (auto_suggest_next_actions_enabled !== undefined) allowedUpdates.auto_suggest_next_actions_enabled = auto_suggest_next_actions_enabled;
     if (pomodoro_enabled !== undefined) allowedUpdates.pomodoro_enabled = pomodoro_enabled;
+
+    // Handle password change if provided
+    if (currentPassword && newPassword) {
+      if (newPassword.length < 6) {
+        return res.status(400).json({ 
+          field: 'newPassword', 
+          error: 'Password must be at least 6 characters' 
+        });
+      }
+
+      // Verify current password
+      const isValidPassword = await User.checkPassword(currentPassword, user.password_digest);
+      if (!isValidPassword) {
+        return res.status(400).json({ 
+          field: 'currentPassword', 
+          error: 'Current password is incorrect' 
+        });
+      }
+
+      // Hash and include new password in updates
+      const hashedNewPassword = await User.hashPassword(newPassword);
+      allowedUpdates.password_digest = hashedNewPassword;
+    }
 
     await user.update(allowedUpdates);
 
@@ -72,6 +95,51 @@ router.patch('/profile', async (req, res) => {
       error: 'Failed to update profile.', 
       details: error.errors ? error.errors.map(e => e.message) : [error.message]
     });
+  }
+});
+
+// POST /api/profile/change-password
+router.post('/profile/change-password', async (req, res) => {
+  try {
+    if (!req.session || !req.session.userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current password and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ 
+        field: 'newPassword', 
+        error: 'Password must be at least 6 characters' 
+      });
+    }
+
+    const user = await User.findByPk(req.session.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Verify current password
+    const isValidPassword = await User.checkPassword(currentPassword, user.password_digest);
+    if (!isValidPassword) {
+      return res.status(400).json({ 
+        field: 'currentPassword', 
+        error: 'Current password is incorrect' 
+      });
+    }
+
+    // Hash and update new password
+    const hashedNewPassword = await User.hashPassword(newPassword);
+    await user.update({ password_digest: hashedNewPassword });
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

@@ -28,11 +28,11 @@ const WeeklyCompletionChart: React.FC<WeeklyCompletionChartProps> = ({ data }) =
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-3">
+    <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
       <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
         {t('tasks.weeklyCompletions')}
       </h3>
-      <div className="h-32">
+      <div className="h-40">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
             <XAxis 
