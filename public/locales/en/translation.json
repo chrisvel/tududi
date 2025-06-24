@@ -54,7 +54,19 @@
     "worseThanYesterday": "{{percentage}}% less than yesterday",
     "sameAsAverage": "Same as average",
     "betterThanAverage": "{{percentage}}% more than average",
-    "worseThanAverage": "{{percentage}}% less than average"
+    "worseThanAverage": "{{percentage}}% less than average",
+    "metrics": "Metrics",
+    "showMetrics": "Show Metrics",
+    "hideMetrics": "Hide Metrics",
+    "insights": "Insights",
+    "showInsights": "Show Insights",
+    "hideInsights": "Hide Insights",
+    "intelligence": "Intelligence",
+    "showIntelligence": "Show Intelligence Suggestions",
+    "hideIntelligence": "Hide Intelligence Suggestions",
+    "completed": "Completed",
+    "showCompleted": "Show Completed Tasks",
+    "hideCompleted": "Hide Completed Tasks"
   },
   "tasks": {
     "title": "Tasks",
@@ -71,7 +83,37 @@
     "noTasksAvailable": "No tasks available for today.",
     "searchPlaceholder": "Search tasks...",
     "addNewTask": "Add New Task",
-    "metrics": "Metrics"
+    "metrics": "Metrics",
+    "myPlanToday": "My Plan for Today",
+    "noPlanToday": "No tasks planned for today yet",
+    "addToPlanHint": "Use the + icons next to suggested tasks to add them to your today plan",
+    "addToToday": "Add to today plan",
+    "removeFromToday": "Remove from today plan",
+    "setInProgress": "Set in progress",
+    "setNotStarted": "Set to not started"
+  },
+  "timeline": {
+    "activityTimeline": "Activity Timeline",
+    "showActivityTimeline": "Show Activity Timeline",
+    "hideActivityTimeline": "Hide Activity Timeline",
+    "hideTimeline": "Hide Timeline",
+    "failedToLoad": "Failed to load timeline",
+    "events": {
+      "taskCreated": "Task created",
+      "statusChanged": "Status changed",
+      "priorityChanged": "Priority changed",
+      "dueDateChanged": "Due date changed",
+      "nameUpdated": "Name updated",
+      "descriptionUpdated": "Description updated",
+      "noteUpdated": "Note updated",
+      "projectChanged": "Project changed",
+      "tagsUpdated": "Tags updated",
+      "taskArchived": "Task archived",
+      "status": "Status",
+      "priority": "Priority",
+      "dueDate": "Due date",
+      "none": "None"
+    }
   },
   "profile": {
     "settings": "Profile Settings",
@@ -210,6 +252,7 @@
   },
   "nextTask": {
     "suggestion": "Since there is nothing in progress, what about starting with",
+    "suggestionTodayPlan": "Since there is nothing in progress, what about starting with this task from your today plan",
     "suggestionDueToday": "Since there is nothing in progress, what about starting with this task due today",
     "suggestionSuggested": "Since there is nothing in progress, what about starting with this suggested task",
     "letsDoIt": "Yes, let's do it!",
@@ -268,6 +311,8 @@
     "optional": "Optional",
     "task": {
       "namePlaceholder": "Add Task Name",
+      "statusAndOptions": "Status & Options",
+      "recurrence": "Recurrence",
       "labels": {
         "tags": "Tags",
         "project": "Project",

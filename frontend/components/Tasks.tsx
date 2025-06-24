@@ -7,7 +7,7 @@ import { Task } from "../entities/Task";
 import { Project } from "../entities/Project";
 import { getTitleAndIcon } from "./Task/getTitleAndIcon";
 import { getDescription } from "./Task/getDescription";
-import { createTask } from "../utils/tasksService";
+import { createTask, toggleTaskToday } from "../utils/tasksService";
 import { useToast } from "./Shared/ToastContext";
 import {
   TagIcon,
@@ -199,6 +199,20 @@ const Tasks: React.FC = () => {
     }
   };
 
+  const handleToggleToday = async (taskId: number): Promise<void> => {
+    try {
+      const updatedTask = await toggleTaskToday(taskId);
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === taskId ? updatedTask : task
+        )
+      );
+    } catch (error) {
+      console.error("Error toggling task today status:", error);
+      setError("Error toggling task today status.");
+    }
+  };
+
   const handleSortChange = (order: string) => {
     setOrderBy(order);
     localStorage.setItem("order_by", order);
@@ -328,6 +342,8 @@ const Tasks: React.FC = () => {
                 onTaskUpdate={handleTaskUpdate}
                 onTaskDelete={handleTaskDelete}
                 projects={projects}
+                showTodayPlanControls={true}
+                onToggleToday={handleToggleToday}
               />
             ) : (
               <p className="text-gray-500 text-center mt-4">

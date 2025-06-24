@@ -12,6 +12,7 @@ export interface Metrics {
   tasks_in_progress_count: number;
   tasks_in_progress: Task[];
   tasks_due_today: Task[];
+  today_plan_tasks?: Task[];
   suggested_tasks: Task[];
   tasks_completed_today: Task[];
   weekly_completions: WeeklyCompletion[];

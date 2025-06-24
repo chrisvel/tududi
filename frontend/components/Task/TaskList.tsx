@@ -5,11 +5,13 @@ import { Task } from '../../entities/Task';
 
 interface TaskListProps {
   tasks: Task[];
-  onTaskUpdate: (task: Task) => void;
+  onTaskUpdate: (task: Task) => Promise<void>;
   onTaskCreate?: (task: Task) => void;
   onTaskDelete: (taskId: number) => void;
   projects: Project[];
   hideProjectName?: boolean;
+  showTodayPlanControls?: boolean;
+  onToggleToday?: (taskId: number) => Promise<void>;
 }
 
 const TaskList: React.FC<TaskListProps> = ({
@@ -18,6 +20,8 @@ const TaskList: React.FC<TaskListProps> = ({
   onTaskDelete,
   projects,
   hideProjectName = false,
+  showTodayPlanControls = false,
+  onToggleToday,
 }) => {
   return (
     <div>
@@ -30,6 +34,8 @@ const TaskList: React.FC<TaskListProps> = ({
             onTaskDelete={onTaskDelete}
             projects={projects}
             hideProjectName={hideProjectName}
+            showTodayPlanControls={showTodayPlanControls}
+            onToggleToday={onToggleToday}
           />
         ))
       ) : (

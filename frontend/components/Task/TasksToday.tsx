@@ -8,13 +8,17 @@ import {
   ClipboardDocumentListIcon,
   ArrowPathIcon,
   CalendarDaysIcon,
-  InboxIcon,
   FolderIcon,
   CheckCircleIcon,
   ArrowUpIcon,
   ArrowDownIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  ChartBarIcon,
+  BellIcon,
+  LightBulbIcon,
+  SparklesIcon,
+  TrophyIcon,
 } from "@heroicons/react/24/outline";
 import { fetchTasks, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchProjects } from "../../utils/projectsService";
@@ -22,11 +26,14 @@ import { loadInboxItemsToStore } from "../../utils/inboxService";
 import { Task } from "../../entities/Task";
 import { useStore } from "../../store/useStore";
 import TaskList from "./TaskList";
+import TodayPlan from "./TodayPlan";
 import { Metrics } from "../../entities/Metrics";
 import ProductivityAssistant from "../Productivity/ProductivityAssistant";
 import NextTaskSuggestion from "./NextTaskSuggestion";
 import WeeklyCompletionChart from "./WeeklyCompletionChart";
 import { getProductivityAssistantEnabled, getNextTaskSuggestionEnabled } from "../../utils/profileService";
+import { toggleTaskToday } from "../../utils/tasksService";
+import { getVagueTasks } from "../../utils/taskIntelligenceService";
 
 const getLocale = (language: string) => {
   switch (language) {
@@ -70,6 +77,22 @@ const TasksToday: React.FC = () => {
     const stored = localStorage.getItem('completedTasksCollapsed');
     return stored === 'true';
   });
+  const [isMetricsExpanded, setIsMetricsExpanded] = useState(() => {
+    const stored = localStorage.getItem('metricsExpanded');
+    return stored === 'true';
+  });
+  const [isProductivityExpanded, setIsProductivityExpanded] = useState(() => {
+    const stored = localStorage.getItem('productivityExpanded');
+    return stored === 'true';
+  });
+  const [isAiSuggestionExpanded, setIsAiSuggestionExpanded] = useState(() => {
+    const stored = localStorage.getItem('aiSuggestionExpanded');
+    return stored === 'true';
+  });
+  const [isCompletedExpanded, setIsCompletedExpanded] = useState(() => {
+    const stored = localStorage.getItem('completedExpanded');
+    return stored !== 'false'; // Default to true (expanded)
+  });
   
   // Metrics from the API
   const [metrics, setMetrics] = useState<Metrics>({
@@ -102,7 +125,7 @@ const TasksToday: React.FC = () => {
     // Sum all completed tasks from the weekly data
     const totalCompletedTasks = metrics.weekly_completions.reduce((sum, completion) => sum + completion.count, 0);
     
-    // Average is total completed tasks divided by 7 days
+    // Average is total completed tasks divided by 7
     const averageCount = totalCompletedTasks / 7;
     
     // Calculate percentage change vs average
@@ -161,6 +184,30 @@ const TasksToday: React.FC = () => {
     const newState = !isCompletedCollapsed;
     setIsCompletedCollapsed(newState);
     localStorage.setItem('completedTasksCollapsed', newState.toString());
+  };
+
+  const toggleMetricsExpanded = () => {
+    const newState = !isMetricsExpanded;
+    setIsMetricsExpanded(newState);
+    localStorage.setItem('metricsExpanded', newState.toString());
+  };
+
+  const toggleProductivityExpanded = () => {
+    const newState = !isProductivityExpanded;
+    setIsProductivityExpanded(newState);
+    localStorage.setItem('productivityExpanded', newState.toString());
+  };
+
+  const toggleAiSuggestionExpanded = () => {
+    const newState = !isAiSuggestionExpanded;
+    setIsAiSuggestionExpanded(newState);
+    localStorage.setItem('aiSuggestionExpanded', newState.toString());
+  };
+
+  const toggleCompletedExpanded = () => {
+    const newState = !isCompletedExpanded;
+    setIsCompletedExpanded(newState);
+    localStorage.setItem('completedExpanded', newState.toString());
   };
   
   // Load data once on component mount
@@ -301,8 +348,100 @@ const TasksToday: React.FC = () => {
     }
   }, [store.tasksStore]);
 
+  const handleToggleToday = useCallback(async (taskId: number): Promise<void> => {
+    if (!isMounted.current) return;
+    
+    try {
+      await toggleTaskToday(taskId);
+      // Refetch data to ensure consistency
+      const { tasks: updatedTasks, metrics } = await fetchTasks("?type=today");
+      
+      if (isMounted.current) {
+        setLocalTasks(updatedTasks);
+        setMetrics(metrics);
+        // Update store
+        store.tasksStore.setTasks(updatedTasks);
+      }
+    } catch (error) {
+      console.error("Error toggling task today status:", error);
+      if (isMounted.current) {
+        setIsError(true);
+      }
+    }
+  }, [store.tasksStore]);
+
   // Get inbox items count from store for the notification
   const inboxItemsCount = store.inboxStore.inboxItems.length;
+  
+  // Count productivity issues for badge (matching ProductivityAssistant logic)
+  const getProductivityIssuesCount = () => {
+    if (!productivityAssistantEnabled || !localTasks || !localProjects) return 0;
+    
+    let issueCount = 0;
+    const activeTasks = localTasks.filter(task => task.status !== 'done' && task.status !== 'archived');
+    
+    // 1. Stalled Projects (no active tasks)
+    const stalledProjects = localProjects.filter(project => 
+      project.active && !activeTasks.some(task => task.project_id === project.id)
+    );
+    issueCount += stalledProjects.length;
+    
+    // 2. Projects with completed tasks but no next action
+    const projectsNeedingNextAction = localProjects.filter(project => {
+      const projectTasks = localTasks.filter(task => task.project_id === project.id);
+      const hasCompletedTasks = projectTasks.some(task => task.status === 'done' || task.status === 'archived');
+      const hasNextAction = activeTasks.some(task => 
+        task.project_id === project.id && (task.status === 'not_started' || task.status === 'in_progress')
+      );
+      return project.active && hasCompletedTasks && !hasNextAction;
+    });
+    issueCount += projectsNeedingNextAction.length;
+    
+    // 3. Tasks that are actually projects
+    const PROJECT_VERBS = ['plan', 'organize', 'set up', 'setup', 'fix', 'review', 'implement', 'create', 'build', 'develop'];
+    const tasksAreProjects = activeTasks.filter(task => {
+      const taskName = task.name.toLowerCase();
+      return PROJECT_VERBS.some(verb => taskName.includes(verb)) && taskName.length > 30;
+    });
+    issueCount += tasksAreProjects.length;
+    
+    // 4. Vague tasks (using the same utility function as ProductivityAssistant)
+    const vagueTasks = getVagueTasks(activeTasks);
+    issueCount += vagueTasks.length;
+    
+    // 5. Stale tasks (created more than 30 days ago)
+    const now = new Date();
+    const thresholdDate = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+    const staleTasks = activeTasks.filter(task => {
+      const taskDate = task.created_at ? new Date(task.created_at) : null;
+      return taskDate && taskDate < thresholdDate;
+    });
+    issueCount += staleTasks.length;
+    
+    // 6. Stuck projects (projects with tasks but not updated recently)
+    const stuckProjects = localProjects.filter(project => {
+      if (!project.active) return false;
+      
+      // Projects don't have date fields, so check if they have recent tasks
+      const projectTasks = activeTasks.filter(task => task.project_id === project.id);
+      
+      if (projectTasks.length === 0) return false; // Empty projects are handled by "stalled projects"
+      
+      // Find the most recent task date for this project
+      const mostRecentTaskDate = projectTasks.reduce((latest, task) => {
+        const taskDate = task.created_at ? new Date(task.created_at) : null;
+        if (!taskDate) return latest;
+        return !latest || taskDate > latest ? taskDate : latest;
+      }, null as Date | null);
+      
+      return mostRecentTaskDate && mostRecentTaskDate < thresholdDate;
+    });
+    issueCount += stuckProjects.length;
+    
+    return issueCount;
+  };
+  
+  const productivityIssuesCount = getProductivityIssuesCount();
 
   // Show loading state
   if (isLoading && localTasks.length === 0) {
@@ -325,16 +464,93 @@ const TasksToday: React.FC = () => {
   return (
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
-        <div className="flex items-center mb-8">
-          <h2 className="text-2xl font-light flex items-center">
-            <CalendarDaysIcon className="h-5 w-5 mr-2" /> {t('tasks.today')}
-          </h2>
-          <span className="ml-4 text-gray-500">
-            {format(new Date(), "PPP", { locale: getLocale(i18n.language) })}
-          </span>
+        <div className="flex flex-col mb-4">
+          <div className="flex items-center mb-4">
+            <h2 className="text-2xl font-light flex items-center">
+              <CalendarDaysIcon className="h-5 w-5 mr-2" /> {t('tasks.today')}
+            </h2>
+            <span className="ml-4 mr-4 text-gray-500">
+              {format(new Date(), "PPP", { locale: getLocale(i18n.language) })}
+            </span>
+          </div>
+
+          {/* Today Navigation Bar */}
+          <div className="flex items-center space-x-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <button
+              onClick={toggleMetricsExpanded}
+              className="flex flex-row items-center p-3 group focus:outline-none"
+              title={isMetricsExpanded ? t('dashboard.hideMetrics', 'Hide Metrics') : t('dashboard.showMetrics', 'Show Metrics')}
+            >
+              <ChartBarIcon className="h-6 w-6 mr-2" />
+              <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100">
+                {t('dashboard.metrics', 'Metrics')}
+              </span>
+            </button>
+
+            <div className="relative">
+              <button
+                onClick={toggleProductivityExpanded}
+                className="flex flex-row items-center p-3 group focus:outline-none"
+                title={isProductivityExpanded ? t('dashboard.hideInsights', 'Hide Insights') : t('dashboard.showInsights', 'Show Insights')}
+              >
+                <LightBulbIcon className="h-6 w-6 mr-2" />
+                <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100">
+                  {t('dashboard.insights', 'Insights')}
+                </span>
+              </button>
+              {productivityIssuesCount > 0 && (
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500"></span>
+              )}
+            </div>
+
+            <button
+              onClick={toggleAiSuggestionExpanded}
+              className="flex flex-row items-center p-3 group focus:outline-none"
+              title={isAiSuggestionExpanded ? t('dashboard.hideIntelligence', 'Hide Intelligence') : t('dashboard.showIntelligence', 'Show Intelligence')}
+            >
+              <SparklesIcon className="h-6 w-6 mr-2" />
+              <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100">
+                {t('dashboard.intelligence', 'Intelligence')}
+              </span>
+            </button>
+
+            {metrics.tasks_completed_today.length > 0 && (
+              <div className="relative">
+                <button
+                  onClick={toggleCompletedExpanded}
+                  className="flex flex-row items-center p-3 group focus:outline-none"
+                  title={isCompletedExpanded ? t('dashboard.hideCompleted', 'Hide Completed') : t('dashboard.showCompleted', 'Show Completed')}
+                >
+                  <TrophyIcon className="h-6 w-6 mr-2" />
+                  <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100">
+                    {t('dashboard.completed', 'Completed')}
+                  </span>
+                </button>
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-green-500"></span>
+              </div>
+            )}
+
+            {inboxItemsCount > 0 && (
+              <div className="relative">
+                <Link
+                  to="/inbox"
+                  className="flex flex-row items-center p-3 group focus:outline-none"
+                  title={t('sidebar.inbox', 'Inbox')}
+                >
+                  <BellIcon className="h-6 w-6 mr-2" />
+                  <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100">
+                    {t('sidebar.inbox', 'Inbox')}
+                  </span>
+                </Link>
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500"></span>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="mb-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Metrics Section - Conditionally Rendered */}
+        {isMetricsExpanded && (
+          <div className="mb-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Combined Task & Project Metrics */}
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
             <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">{t('dashboard.overview')}</h3>
@@ -427,96 +643,75 @@ const TasksToday: React.FC = () => {
           <div className="lg:col-span-2">
             <WeeklyCompletionChart data={metrics.weekly_completions} />
           </div>
-        </div>
-
-        {/* Inbox Notification */}
-        {inboxItemsCount > 0 && (
-          <div className="mb-2 p-4 bg-white dark:bg-gray-900 border-l-4 border-blue-500 rounded-lg shadow">
-            <Link to="/inbox" className="flex items-center">
-              <InboxIcon className="h-6 w-6 text-blue-500 dark:text-blue-400 mr-3" />
-              <div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium">
-                  {t('inbox.unprocessedItems', { count: inboxItemsCount, defaultValue: `You have ${inboxItemsCount} item(s) in your inbox.` })}
-                </p>
-                <p className="text-blue-600 dark:text-blue-400 text-sm">
-                  {t('inbox.processNow', 'Process them now')}
-                </p>
-              </div>
-            </Link>
           </div>
         )}
 
-        {/* Productivity Assistant */}
-        {productivityAssistantEnabled && (
+        {/* Productivity Assistant - Conditionally Rendered */}
+        {productivityAssistantEnabled && isProductivityExpanded && (
           <ProductivityAssistant tasks={localTasks} projects={localProjects} />
         )}
 
-        {/* Next Task Suggestion */}
-        {nextTaskSuggestionEnabled && showNextTaskSuggestion && (
-          <NextTaskSuggestion 
-            metrics={{
-              tasks_due_today: metrics.tasks_due_today,
-              suggested_tasks: metrics.suggested_tasks,
-              tasks_in_progress: metrics.tasks_in_progress
-            }}
-            onTaskUpdate={handleTaskUpdate}
-            onClose={handleCloseNextTaskSuggestion}
-          />
-        )}
-
-        {metrics.tasks_in_progress.length > 0 && (
+        {/* Intelligence - Conditionally Rendered */}
+        {isAiSuggestionExpanded && (
           <>
-            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.inProgress')}</h3>
-            <TaskList
-              tasks={metrics.tasks_in_progress}
-              onTaskUpdate={handleTaskUpdate}
-              onTaskDelete={handleTaskDelete}
-              projects={localProjects}
-            />
-          </>
-        )}
+            {/* Next Task Suggestion */}
+            {nextTaskSuggestionEnabled && showNextTaskSuggestion && (
+              <NextTaskSuggestion 
+                metrics={{
+                  tasks_due_today: metrics.tasks_due_today,
+                  suggested_tasks: metrics.suggested_tasks,
+                  tasks_in_progress: metrics.tasks_in_progress,
+                  today_plan_tasks: metrics.today_plan_tasks
+                }}
+                onTaskUpdate={handleTaskUpdate}
+                onClose={handleCloseNextTaskSuggestion}
+              />
+            )}
 
-        {metrics.tasks_due_today.length > 0 && (
-          <>
-            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.dueToday')}</h3>
-            <TaskList
-              tasks={metrics.tasks_due_today}
-              onTaskUpdate={handleTaskUpdate}
-              onTaskDelete={handleTaskDelete}
-              projects={localProjects}
-            />
-          </>
-        )}
-
-        {metrics.suggested_tasks.length > 0 && (
-          <>
-            <div 
-              className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
-              onClick={toggleSuggestedCollapsed}
-            >
-              <h3 className="text-xl font-medium">{t('tasks.suggested')}</h3>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-500 mr-2">{metrics.suggested_tasks.length}</span>
-                {isSuggestedCollapsed ? (
-                  <ChevronRightIcon className="h-5 w-5 text-gray-500" />
-                ) : (
-                  <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+            {/* Suggested Tasks */}
+            {metrics.suggested_tasks.length > 0 && (
+              <div className="mb-6">
+                <div 
+                  className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                  onClick={toggleSuggestedCollapsed}
+                >
+                  <h3 className="text-xl font-medium">{t('tasks.suggested')}</h3>
+                  <div className="flex items-center">
+                    <span className="text-sm text-gray-500 mr-2">{metrics.suggested_tasks.length}</span>
+                    {isSuggestedCollapsed ? (
+                      <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                    ) : (
+                      <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                    )}
+                  </div>
+                </div>
+                {!isSuggestedCollapsed && (
+                  <TaskList
+                    tasks={metrics.suggested_tasks}
+                    onTaskUpdate={handleTaskUpdate}
+                    onTaskDelete={handleTaskDelete}
+                    projects={localProjects}
+                    showTodayPlanControls={true}
+                    onToggleToday={handleToggleToday}
+                  />
                 )}
               </div>
-            </div>
-            {!isSuggestedCollapsed && (
-              <TaskList
-                tasks={metrics.suggested_tasks}
-                onTaskUpdate={handleTaskUpdate}
-                onTaskDelete={handleTaskDelete}
-                projects={localProjects}
-              />
             )}
           </>
         )}
 
-        {metrics.tasks_completed_today.length > 0 && (
-          <>
+        {/* Today Plan */}
+        <TodayPlan
+          todayPlanTasks={metrics.today_plan_tasks || []}
+          projects={localProjects}
+          onTaskUpdate={handleTaskUpdate}
+          onTaskDelete={handleTaskDelete}
+          onToggleToday={handleToggleToday}
+        />
+
+        {/* Completed Tasks - Conditionally Rendered */}
+        {isCompletedExpanded && metrics.tasks_completed_today.length > 0 && (
+          <div className="mb-6">
             <div 
               className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
               onClick={toggleCompletedCollapsed}
@@ -537,8 +732,24 @@ const TasksToday: React.FC = () => {
                 onTaskUpdate={handleTaskUpdate}
                 onTaskDelete={handleTaskDelete}
                 projects={localProjects}
+                showTodayPlanControls={true}
+                onToggleToday={handleToggleToday}
               />
             )}
+          </div>
+        )}
+
+        {metrics.tasks_due_today.length > 0 && (
+          <>
+            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.dueToday')}</h3>
+            <TaskList
+              tasks={metrics.tasks_due_today}
+              onTaskUpdate={handleTaskUpdate}
+              onTaskDelete={handleTaskDelete}
+              projects={localProjects}
+              showTodayPlanControls={true}
+              onToggleToday={handleToggleToday}
+            />
           </>
         )}
 

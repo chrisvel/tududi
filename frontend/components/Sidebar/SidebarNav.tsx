@@ -23,13 +23,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
   const navLinks = [
     { path: '/inbox', title: t('sidebar.inbox', 'Inbox'), icon: <InboxIcon className="h-5 w-5" /> },
     { path: '/today', title: t('sidebar.today', 'Today'), icon: <CalendarDaysIcon className="h-5 w-5" />, query: 'type=today' },
-    { path: '/calendar', title: t('sidebar.calendar', 'Calendar'), icon: <CalendarIcon className="h-5 w-5" /> },
     { path: '/tasks?type=upcoming', title: t('sidebar.upcoming', 'Upcoming'), icon: <ClockIcon className="h-5 w-5" />, query: 'type=upcoming' },
-    { path: '/tasks?type=next', title: t('sidebar.nextActions', 'Next Actions'), icon: <ArrowRightCircleIcon className="h-5 w-5" />, query: 'type=next' },
-    // { path: '/tasks?type=someday', title: t('sidebar.someday', 'Someday'), icon: <ClockIcon className="h-5 w-5" />, query: 'type=someday' },
-    // { path: '/tasks?type=waiting', title: t('sidebar.waitingFor', 'Waiting for'), icon: <PauseCircleIcon className="h-5 w-5" />, query: 'type=waiting' },
-    { path: '/tasks?status=done', title: t('sidebar.completed', 'Completed'), icon: <CheckCircleIcon className="h-5 w-5" />, query: 'status=done' },
     { path: '/tasks', title: t('sidebar.allTasks', 'All Tasks'), icon: <ListBulletIcon className="h-5 w-5" /> },
+    { path: '/calendar', title: t('sidebar.calendar', 'Calendar'), icon: <CalendarIcon className="h-5 w-5" /> },
   ];
 
   const isActive = (path: string, query?: string) => {

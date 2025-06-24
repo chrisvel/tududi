@@ -47,7 +47,35 @@
     "backlog": "Backlog",
     "inProgress": "In Bearbeitung",
     "dueToday": "Heute fällig",
-    "completedToday": "Heute abgeschlossen"
+    "completedToday": "Heute abgeschlossen",
+    "myPlanToday": "Mein Plan für Heute",
+    "noPlanToday": "Noch keine Aufgaben für heute geplant",
+    "addToPlanHint": "Verwende die Kalendersymbole neben den Aufgaben, um sie zu deinem heutigen Plan hinzuzufügen",
+    "addToToday": "Zu heutigem Plan hinzufügen",
+    "removeFromToday": "Aus heutigem Plan entfernen"
+  },
+  "timeline": {
+    "activityTimeline": "Aktivitätsverlauf",
+    "showActivityTimeline": "Aktivitätsverlauf anzeigen",
+    "hideActivityTimeline": "Aktivitätsverlauf ausblenden",
+    "hideTimeline": "Zeitlinie ausblenden",
+    "failedToLoad": "Zeitlinie konnte nicht geladen werden",
+    "events": {
+      "taskCreated": "Aufgabe erstellt",
+      "statusChanged": "Status geändert",
+      "priorityChanged": "Priorität geändert",
+      "dueDateChanged": "Fälligkeitsdatum geändert",
+      "nameUpdated": "Name aktualisiert",
+      "descriptionUpdated": "Beschreibung aktualisiert",
+      "noteUpdated": "Notiz aktualisiert",
+      "projectChanged": "Projekt geändert",
+      "tagsUpdated": "Tags aktualisiert",
+      "taskArchived": "Aufgabe archiviert",
+      "status": "Status",
+      "priority": "Priorität",
+      "dueDate": "Fälligkeitsdatum",
+      "none": "Keine"
+    }
   },
   "forms": {
     "title": "Titel",
@@ -56,6 +84,8 @@
     "required": "Dieses Feld ist erforderlich",
     "optional": "Optional",
     "task": {
+      "statusAndOptions": "Status & Optionen",
+      "recurrence": "Wiederholung",
       "labels": {
         "recurrenceType": "Wiederholen",
         "recurrenceInterval": "Alle",
@@ -180,6 +210,7 @@
   },
   "nextTask": {
     "suggestion": "Da nichts in Bearbeitung ist, wie wäre es, mit diesem zu beginnen",
+    "suggestionTodayPlan": "Da nichts in Bearbeitung ist, wie wäre es, mit dieser Aufgabe aus deinem Tagesplan zu beginnen",
     "suggestionDueToday": "Da nichts in Bearbeitung ist, wie wäre es, mit dieser heute fälligen Aufgabe zu beginnen",
     "suggestionSuggested": "Da nichts in Bearbeitung ist, wie wäre es, mit dieser vorgeschlagenen Aufgabe zu beginnen",
     "letsDoIt": "Ja, lass uns das machen!",

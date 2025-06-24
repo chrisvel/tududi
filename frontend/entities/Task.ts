@@ -9,6 +9,7 @@ export interface Task {
   priority?: PriorityType | number;
   due_date?: string;
   note?: string;
+  today?: boolean;
   tags?: Tag[];
   project_id?: number;
   Project?: Project;

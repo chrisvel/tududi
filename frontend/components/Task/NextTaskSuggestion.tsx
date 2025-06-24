@@ -13,6 +13,7 @@ interface NextTaskSuggestionProps {
     tasks_due_today: Task[];
     suggested_tasks: Task[];
     tasks_in_progress: Task[];
+    today_plan_tasks?: Task[];
   };
   onTaskUpdate: (task: Task) => Promise<void>;
   onClose?: () => void;
@@ -41,13 +42,16 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
   };
 
   // Get all available tasks in priority order:
-  // 1. Due today tasks (not in progress)
-  // 2. Suggested tasks from today page (not in progress)
+  // 1. Today plan tasks (user's intentional selection for today)
+  // 2. Due today tasks (time-based urgency)
+  // 3. Suggested tasks from today page (algorithm recommendations)
+  const todayPlanAvailable = (metrics.today_plan_tasks || []).filter(isNotStarted);
   const dueTodayAvailable = metrics.tasks_due_today.filter(isNotStarted);
   const suggestedAvailable = metrics.suggested_tasks.filter(isNotStarted);
   
-  // Combine all available tasks with priority
+  // Combine all available tasks with priority (intelligent selection)
   const allAvailableTasks = [
+    ...todayPlanAvailable.map(task => ({ task, source: 'today_plan' })),
     ...dueTodayAvailable.map(task => ({ task, source: 'due_today' })),
     ...suggestedAvailable.map(task => ({ task, source: 'suggested' }))
   ];
@@ -66,7 +70,12 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
 
     setIsUpdating(true);
     try {
-      const updatedTask = { ...suggestedTask, status: 'in_progress' as const };
+      // Universal rule: when setting status to in_progress, also add to today
+      const updatedTask = { 
+        ...suggestedTask, 
+        status: 'in_progress' as const,
+        today: true
+      };
       await onTaskUpdate(updatedTask);
       showSuccessToast(t('task.startedSuccessfully', 'Task started successfully!'));
     } catch (error) {
@@ -96,6 +105,7 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
         <PlayIcon className="h-6 w-6 text-green-500 dark:text-green-400 mr-3 flex-shrink-0 mt-0.5" />
         <div className="flex-1 pr-8">
           <p className="text-gray-700 dark:text-gray-300 font-medium mb-2 break-words">
+            {suggestionSource === 'today_plan' && t('nextTask.suggestionTodayPlan', 'Since there is nothing in progress, what about starting with this task from your today plan')}
             {suggestionSource === 'due_today' && t('nextTask.suggestionDueToday', 'Since there is nothing in progress, what about starting with this task due today')}
             {suggestionSource === 'suggested' && t('nextTask.suggestionSuggested', 'Since there is nothing in progress, what about starting with this suggested task')}
           </p>

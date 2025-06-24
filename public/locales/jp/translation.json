@@ -59,7 +59,35 @@
     "completedToday": "今日完了",
     "noTasksAvailable": "今日のタスクはありません。",
     "searchPlaceholder": "タスクを検索...",
-    "addNewTask": "新しいタスクを追加"
+    "addNewTask": "新しいタスクを追加",
+    "myPlanToday": "今日の私の計画",
+    "noPlanToday": "今日はまだ予定されたタスクがありません",
+    "addToPlanHint": "タスクの横にあるカレンダーアイコンを使用して、今日の計画に追加します",
+    "addToToday": "今日の計画に追加",
+    "removeFromToday": "今日の計画から削除"
+  },
+  "timeline": {
+    "activityTimeline": "アクティビティタイムライン",
+    "showActivityTimeline": "アクティビティタイムラインを表示",
+    "hideActivityTimeline": "アクティビティタイムラインを非表示",
+    "hideTimeline": "タイムラインを非表示",
+    "failedToLoad": "タイムラインの読み込みに失敗しました",
+    "events": {
+      "taskCreated": "タスクが作成されました",
+      "statusChanged": "ステータスが変更されました",
+      "priorityChanged": "優先度が変更されました",
+      "dueDateChanged": "期限が変更されました",
+      "nameUpdated": "名前が更新されました",
+      "descriptionUpdated": "説明が更新されました",
+      "noteUpdated": "メモが更新されました",
+      "projectChanged": "プロジェクトが変更されました",
+      "tagsUpdated": "タグが更新されました",
+      "taskArchived": "タスクがアーカイブされました",
+      "status": "ステータス",
+      "priority": "優先度",
+      "dueDate": "期限",
+      "none": "なし"
+    }
   },
   "profile": {
     "settings": "プロフィール設定",
@@ -73,6 +101,7 @@
   },
   "nextTask": {
     "suggestion": "進行中のものがないので、こちらから始めてみませんか",
+    "suggestionTodayPlan": "進行中のものがないので、今日の予定からこのタスクを始めてみませんか",
     "suggestionDueToday": "進行中のものがないので、今日期限のこのタスクから始めてみませんか",
     "suggestionSuggested": "進行中のものがないので、この推奨タスクから始めてみませんか",
     "letsDoIt": "はい、やりましょう！",
@@ -124,6 +153,8 @@
     "noteTitlePlaceholder": "ノートのタイトルを入力",
     "noteContentPlaceholder": "ノートの内容を入力",
     "task": {
+      "statusAndOptions": "ステータスとオプション",
+      "recurrence": "繰り返し",
       "labels": {
         "recurrenceType": "繰り返し",
         "recurrenceInterval": "間隔",

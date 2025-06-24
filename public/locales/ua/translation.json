@@ -60,7 +60,35 @@
     "completedToday": "Завершено сьогодні",
     "noTasksAvailable": "Немає доступних завдань.",
     "searchPlaceholder": "Пошук завдань...",
-    "addNewTask": "Додати нове завдання"
+    "addNewTask": "Додати нове завдання",
+    "myPlanToday": "Мій План на Сьогодні",
+    "noPlanToday": "Поки що немає завдань, запланованих на сьогодні",
+    "addToPlanHint": "Використовуйте іконки календаря поруч із завданнями, щоб додати їх до сьогоднішнього плану",
+    "addToToday": "Додати до сьогоднішнього плану",
+    "removeFromToday": "Видалити з сьогоднішнього плану"
+  },
+  "timeline": {
+    "activityTimeline": "Хронологія Активності",
+    "showActivityTimeline": "Показати Хронологію Активності",
+    "hideActivityTimeline": "Приховати Хронологію Активності",
+    "hideTimeline": "Приховати Хронологію",
+    "failedToLoad": "Не вдалося завантажити хронологію",
+    "events": {
+      "taskCreated": "Завдання створено",
+      "statusChanged": "Статус змінено",
+      "priorityChanged": "Пріоритет змінено",
+      "dueDateChanged": "Термін змінено",
+      "nameUpdated": "Назва оновлена",
+      "descriptionUpdated": "Опис оновлено",
+      "noteUpdated": "Нотатка оновлена",
+      "projectChanged": "Проєкт змінено",
+      "tagsUpdated": "Теги оновлені",
+      "taskArchived": "Завдання архівовано",
+      "status": "Статус",
+      "priority": "Пріоритет",
+      "dueDate": "Термін",
+      "none": "Немає"
+    }
   },
 
   "projects": {
@@ -96,6 +124,8 @@
     "required": "Це поле обов'язкове",
     "optional": "Необов'язково",
     "task": {
+      "statusAndOptions": "Статус і Опції",
+      "recurrence": "Повторення",
       "labels": {
         "recurrenceType": "Повторення",
         "recurrenceInterval": "Кожні",
@@ -111,6 +141,7 @@
   },
   "nextTask": {
     "suggestion": "Оскільки нічого не виконується, як щодо початку з",
+    "suggestionTodayPlan": "Оскільки нічого не виконується, як щодо початку з цього завдання з вашого плану на сьогодні",
     "suggestionDueToday": "Оскільки нічого не виконується, як щодо початку з цього завдання, яке закінчується сьогодні",
     "suggestionSuggested": "Оскільки нічого не виконується, як щодо початку з цього запропонованого завдання",
     "letsDoIt": "Так, давайте це зробимо!",

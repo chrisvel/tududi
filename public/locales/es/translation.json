@@ -169,8 +169,36 @@
     "completedToday": "Completadas Hoy",
     "noTasksAvailable": "No hay tareas disponibles para hoy.",
     "searchPlaceholder": "Buscar tareas...",
-    "addNewTask": "Añadir Nueva Tarea"
-    },
+    "addNewTask": "Añadir Nueva Tarea",
+    "myPlanToday": "Mi Plan para Hoy",
+    "noPlanToday": "Aún no hay tareas planificadas para hoy",
+    "addToPlanHint": "Usa los iconos + junto a las tareas sugeridas para añadirlas a tu plan de hoy",
+    "addToToday": "Añadir al plan de hoy",
+    "removeFromToday": "Eliminar del plan de hoy"
+  },
+  "timeline": {
+    "activityTimeline": "Línea de Tiempo de Actividad",
+    "showActivityTimeline": "Mostrar Línea de Tiempo de Actividad",
+    "hideActivityTimeline": "Ocultar Línea de Tiempo de Actividad",
+    "hideTimeline": "Ocultar Línea de Tiempo",
+    "failedToLoad": "Error al cargar la línea de tiempo",
+    "events": {
+      "taskCreated": "Tarea creada",
+      "statusChanged": "Estado cambiado",
+      "priorityChanged": "Prioridad cambiada",
+      "dueDateChanged": "Fecha de vencimiento cambiada",
+      "nameUpdated": "Nombre actualizado",
+      "descriptionUpdated": "Descripción actualizada",
+      "noteUpdated": "Nota actualizada",
+      "projectChanged": "Proyecto cambiado",
+      "tagsUpdated": "Etiquetas actualizadas",
+      "taskArchived": "Tarea archivada",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "dueDate": "Fecha de vencimiento",
+      "none": "Ninguno"
+    }
+  },
   "projects": {
     "loading": "Cargando proyectos...",
     "error": "Error al cargar proyectos",
@@ -206,6 +234,7 @@
   },
   "nextTask": {
     "suggestion": "Como no hay nada en progreso, ¿qué tal empezar con",
+    "suggestionTodayPlan": "Como no hay nada en progreso, ¿qué tal empezar con esta tarea de tu plan de hoy",
     "suggestionDueToday": "Como no hay nada en progreso, ¿qué tal empezar con esta tarea que vence hoy",
     "suggestionSuggested": "Como no hay nada en progreso, ¿qué tal empezar con esta tarea sugerida",
     "letsDoIt": "¡Sí, hagámoslo!",
@@ -251,6 +280,8 @@
     "removeTagAriaLabel": "Eliminar etiqueta {{tagName}}",
     "task": {
       "namePlaceholder": "Agregar nombre de tarea",
+      "statusAndOptions": "Estado y Opciones",
+      "recurrence": "Recurrencia",
       "labels": {
         "tags": "Etiquetas",
         "project": "Proyecto",

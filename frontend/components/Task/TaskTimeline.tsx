@@ -43,7 +43,7 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
         setEvents(timeline);
       } catch (err) {
         console.error('Error fetching task timeline:', err);
-        setError('Failed to load timeline');
+        setError(t('timeline.failedToLoad', 'Failed to load timeline'));
       } finally {
         setLoading(false);
       }
@@ -89,41 +89,41 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
     
     switch (event_type) {
       case 'created':
-        return 'Task created';
+        return t('timeline.events.taskCreated');
       case 'status_changed':
       case 'completed':
         const oldStatus = old_value?.status;
         const newStatus = new_value?.status;
         if (oldStatus !== undefined && newStatus !== undefined) {
-          return `Status: ${getStatusLabel(oldStatus)} → ${getStatusLabel(newStatus)}`;
+          return `${t('timeline.events.status')}: ${getStatusLabel(oldStatus)} → ${getStatusLabel(newStatus)}`;
         }
-        return 'Status changed';
+        return t('timeline.events.statusChanged');
       case 'priority_changed':
         const oldPriority = old_value?.priority;
         const newPriority = new_value?.priority;
         if (oldPriority !== undefined && newPriority !== undefined) {
-          return `Priority: ${getPriorityLabel(oldPriority)} → ${getPriorityLabel(newPriority)}`;
+          return `${t('timeline.events.priority')}: ${getPriorityLabel(oldPriority)} → ${getPriorityLabel(newPriority)}`;
         }
-        return 'Priority changed';
+        return t('timeline.events.priorityChanged');
       case 'due_date_changed':
         const oldDate = old_value?.due_date;
         const newDate = new_value?.due_date;
         if (oldDate || newDate) {
-          return `Due date: ${oldDate || 'None'} → ${newDate || 'None'}`;
+          return `${t('timeline.events.dueDate')}: ${oldDate || t('timeline.events.none')} → ${newDate || t('timeline.events.none')}`;
         }
-        return 'Due date changed';
+        return t('timeline.events.dueDateChanged');
       case 'name_changed':
-        return 'Name updated';
+        return t('timeline.events.nameUpdated');
       case 'description_changed':
-        return 'Description updated';
+        return t('timeline.events.descriptionUpdated');
       case 'note_changed':
-        return 'Note updated';
+        return t('timeline.events.noteUpdated');
       case 'project_changed':
-        return 'Project changed';
+        return t('timeline.events.projectChanged');
       case 'tags_changed':
-        return 'Tags updated';
+        return t('timeline.events.tagsUpdated');
       case 'archived':
-        return 'Task archived';
+        return t('timeline.events.taskArchived');
       default:
         return getEventTypeLabel(event_type);
     }

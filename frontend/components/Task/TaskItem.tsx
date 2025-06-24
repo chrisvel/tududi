@@ -7,10 +7,12 @@ import { toggleTaskCompletion } from '../../utils/tasksService';
 
 interface TaskItemProps {
   task: Task;
-  onTaskUpdate: (task: Task) => void;
+  onTaskUpdate: (task: Task) => Promise<void>;
   onTaskDelete: (taskId: number) => void;
   projects: Project[];
   hideProjectName?: boolean;
+  showTodayPlanControls?: boolean;
+  onToggleToday?: (taskId: number) => Promise<void>;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -19,6 +21,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onTaskDelete,
   projects,
   hideProjectName = false,
+  showTodayPlanControls = false,
+  onToggleToday,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projectList, setProjectList] = useState<Project[]>(projects);
@@ -27,8 +31,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
     setIsModalOpen(true);
   };
 
-  const handleSave = (updatedTask: Task) => {
-    onTaskUpdate(updatedTask);
+  const handleSave = async (updatedTask: Task) => {
+    await onTaskUpdate(updatedTask);
     setIsModalOpen(false);
   };
   
@@ -42,7 +46,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     if (task.id) {
       try {
         const updatedTask = await toggleTaskCompletion(task.id);
-        onTaskUpdate(updatedTask);
+        await onTaskUpdate(updatedTask);
       } catch (error) {
       }
     }
@@ -75,7 +79,16 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
   return (
     <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1">
-      <TaskHeader task={task} project={project} onTaskClick={handleTaskClick} onToggleCompletion={handleToggleCompletion} hideProjectName={hideProjectName} />
+      <TaskHeader 
+        task={task} 
+        project={project} 
+        onTaskClick={handleTaskClick} 
+        onToggleCompletion={handleToggleCompletion} 
+        hideProjectName={hideProjectName}
+        showTodayPlanControls={showTodayPlanControls}
+        onToggleToday={onToggleToday}
+        onTaskUpdate={onTaskUpdate}
+      />
 
       <TaskModal
         isOpen={isModalOpen}

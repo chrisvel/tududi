@@ -156,6 +156,29 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
     order: [['priority', 'DESC']]
   });
 
+  // Get tasks in today plan
+  const todayPlanTasks = await Task.findAll({
+    where: {
+      user_id: userId,
+      today: true,
+      status: { [Op.notIn]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED, 'done', 'archived'] }
+    },
+    include: [
+      { 
+        model: Tag, 
+        attributes: ['id', 'name'], 
+        through: { attributes: [] },
+        required: false 
+      },
+      { 
+        model: Project, 
+        attributes: ['id', 'name', 'active'], 
+        required: false 
+      }
+    ],
+    order: [['priority', 'DESC'], ['created_at', 'ASC']]
+  });
+
   const today = new Date();
   today.setHours(23, 59, 59, 999);
 
@@ -199,13 +222,23 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
       ...tasksDueToday.map(t => t.id)
     ];
 
+    // Get task IDs that have "someday" tag
+    const somedayTaskIds = await sequelize.query(
+      `SELECT DISTINCT task_id FROM tasks_tags 
+       JOIN tags ON tasks_tags.tag_id = tags.id 
+       WHERE tags.name = 'someday' AND tags.user_id = ?`,
+      { 
+        replacements: [userId], 
+        type: sequelize.QueryTypes.SELECT 
+      }
+    ).then(results => results.map(r => r.task_id));
 
-    // Get tasks without projects
+    // Get tasks without projects (excluding someday tagged tasks)
     const nonProjectTasks = await Task.findAll({
       where: {
         user_id: userId,
         status: { [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING] },
-        id: { [Op.notIn]: excludedTaskIds },
+        id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
         [Op.or]: [
           { project_id: null },
           { project_id: '' }
@@ -225,15 +258,15 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         }
       ],
       order: [['priority', 'DESC'], ['created_at', 'ASC']],
-      limit: 3
+      limit: 6
     });
 
-    // Get tasks with projects (increased limit to show more suggestions)
+    // Get tasks with projects (excluding someday tagged tasks)
     const projectTasks = await Task.findAll({
       where: {
         user_id: userId,
         status: { [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING] },
-        id: { [Op.notIn]: excludedTaskIds },
+        id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
         project_id: { [Op.not]: null, [Op.ne]: '' }
       },
       include: [
@@ -250,11 +283,46 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         }
       ],
       order: [['priority', 'DESC'], ['created_at', 'ASC']],
-      limit: 3
+      limit: 6
     });
 
-    // Combine both arrays: 3 non-project + 3 project tasks
-    suggestedTasks = [...nonProjectTasks, ...projectTasks];
+    // Check if we have enough suggestions (at least 6 total)
+    let combinedTasks = [...nonProjectTasks, ...projectTasks];
+    
+    // If we don't have enough suggestions, include someday tasks as fallback
+    if (combinedTasks.length < 6) {
+      const usedTaskIds = [...excludedTaskIds, ...combinedTasks.map(t => t.id)];
+      
+      const somedayFallbackTasks = await Task.findAll({
+        where: {
+          user_id: userId,
+          status: { [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING] },
+          id: { 
+            [Op.notIn]: usedTaskIds,
+            [Op.in]: somedayTaskIds
+          }
+        },
+        include: [
+          { 
+            model: Tag, 
+            attributes: ['id', 'name'], 
+            through: { attributes: [] },
+            required: false 
+          },
+          { 
+            model: Project, 
+            attributes: ['id', 'name', 'active'], 
+            required: false 
+          }
+        ],
+        order: [['priority', 'DESC'], ['created_at', 'ASC']],
+        limit: 12 - combinedTasks.length
+      });
+
+      combinedTasks = [...combinedTasks, ...somedayFallbackTasks];
+    }
+
+    suggestedTasks = combinedTasks;
     
   }
 
@@ -339,6 +407,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
     tasks_in_progress_count: tasksInProgress.length,
     tasks_in_progress: tasksInProgress,
     tasks_due_today: tasksDueToday,
+    today_plan_tasks: todayPlanTasks,
     suggested_tasks: suggestedTasks,
     tasks_completed_today: tasksCompletedToday,
     weekly_completions: weeklyData
@@ -373,6 +442,14 @@ router.get('/tasks', async (req, res) => {
           };
         }),
         tasks_due_today: metrics.tasks_due_today.map(task => {
+          const taskJson = task.toJSON();
+          return {
+            ...taskJson,
+            tags: taskJson.Tags || [],
+            due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
+          };
+        }),
+        today_plan_tasks: metrics.today_plan_tasks.map(task => {
           const taskJson = task.toJSON();
           return {
             ...taskJson,
@@ -477,6 +554,7 @@ router.post('/task', async (req, res) => {
       project_id, 
       tags,
       Tags,
+      today,
       recurrence_type,
       recurrence_interval,
       recurrence_end_date,
@@ -500,6 +578,7 @@ router.post('/task', async (req, res) => {
       due_date: due_date || null,
       status: status !== undefined ? (typeof status === 'string' ? Task.getStatusValue(status) : status) : Task.STATUS.NOT_STARTED,
       note,
+      today: today !== undefined ? today : false,
       user_id: req.currentUser.id,
       recurrence_type: recurrence_type || 'none',
       recurrence_interval: recurrence_interval || null,
@@ -574,6 +653,7 @@ router.patch('/task/:id', async (req, res) => {
       project_id, 
       tags,
       Tags,
+      today,
       recurrence_type,
       recurrence_interval,
       recurrence_end_date,
@@ -642,6 +722,7 @@ router.patch('/task/:id', async (req, res) => {
       status: status !== undefined ? (typeof status === 'string' ? Task.getStatusValue(status) : status) : Task.STATUS.NOT_STARTED,
       note,
       due_date: due_date || null,
+      today: today !== undefined ? today : task.today,
       recurrence_type: recurrence_type !== undefined ? recurrence_type : task.recurrence_type,
       recurrence_interval: recurrence_interval !== undefined ? recurrence_interval : task.recurrence_interval,
       recurrence_end_date: recurrence_end_date !== undefined ? recurrence_end_date : task.recurrence_end_date,
@@ -968,6 +1049,47 @@ router.post('/tasks/generate-recurring', async (req, res) => {
   } catch (error) {
     console.error('Error generating recurring tasks:', error);
     res.status(500).json({ error: 'Failed to generate recurring tasks' });
+  }
+});
+
+// PATCH /api/task/:id/toggle-today
+router.patch('/task/:id/toggle-today', async (req, res) => {
+  try {
+    const task = await Task.findOne({
+      where: { id: req.params.id, user_id: req.currentUser.id }
+    });
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found.' });
+    }
+
+    // Toggle the today flag
+    const newTodayValue = !task.today;
+    await task.update({ today: newTodayValue });
+
+    // Log the change
+    try {
+      await TaskEventService.logEvent({
+        taskId: task.id,
+        userId: req.currentUser.id,
+        eventType: 'today_changed',
+        fieldName: 'today',
+        oldValue: !newTodayValue,
+        newValue: newTodayValue,
+        metadata: { source: 'web', action: 'toggle_today' }
+      });
+    } catch (eventError) {
+      console.error('Error logging today toggle event:', eventError);
+      // Don't fail the request if event logging fails
+    }
+
+    res.json({
+      ...task.toJSON(),
+      due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
+    });
+  } catch (error) {
+    console.error('Error toggling task today flag:', error);
+    res.status(500).json({ error: 'Failed to update task today flag' });
   }
 });
 

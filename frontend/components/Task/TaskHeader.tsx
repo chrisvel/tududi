@@ -1,11 +1,13 @@
 import React from "react";
+import { CalendarDaysIcon, CalendarIcon, PlayIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 import TaskPriorityIcon from "./TaskPriorityIcon";
 import TaskTags from "./TaskTags";
 import TaskStatusBadge from "./TaskStatusBadge";
 import TaskDueDate from "./TaskDueDate";
 import TaskRecurrenceBadge from "./TaskRecurrenceBadge";
 import { Project } from "../../entities/Project";
-import { Task } from "../../entities/Task";
+import { Task, StatusType } from "../../entities/Task";
 
 interface TaskHeaderProps {
   task: Task;
@@ -13,6 +15,9 @@ interface TaskHeaderProps {
   onTaskClick: (e: React.MouseEvent) => void;
   onToggleCompletion?: () => void;
   hideProjectName?: boolean;
+  showTodayPlanControls?: boolean;
+  onToggleToday?: (taskId: number) => Promise<void>;
+  onTaskUpdate?: (task: Task) => Promise<void>;
 }
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
@@ -21,16 +26,43 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
   onTaskClick,
   onToggleCompletion,
   hideProjectName = false,
+  showTodayPlanControls = false,
+  onToggleToday,
+  onTaskUpdate,
 }) => {
-  const capitalizeFirstLetter = (string: string | undefined) => {
-    if (!string) {
-      return "";
+  const { t } = useTranslation();
+
+  const handleTodayToggle = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent opening task modal
+    if (onToggleToday && task.id) {
+      try {
+        await onToggleToday(task.id);
+      } catch (error) {
+        console.error('Failed to toggle today status:', error);
+      }
     }
-    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  const handlePlayToggle = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent opening task modal
+    if (task.id && (task.status === 'not_started' || task.status === 'in_progress' || task.status === 0 || task.status === 1) && onTaskUpdate) {
+      try {
+        const isCurrentlyInProgress = task.status === 'in_progress' || task.status === 1;
+        const updatedTask = {
+          ...task,
+          status: (isCurrentlyInProgress ? 'not_started' : 'in_progress') as StatusType,
+          // Automatically add to today plan when setting to in_progress
+          today: isCurrentlyInProgress ? task.today : true
+        };
+        await onTaskUpdate(updatedTask);
+      } catch (error) {
+        console.error('Failed to toggle in progress status:', error);
+      }
+    }
   };
 
   return (
-    <div className="py-2 px-4 cursor-pointer" onClick={onTaskClick}>
+    <div className="py-2 px-4 cursor-pointer group" onClick={onTaskClick}>
       {/* Full view (md and larger) */}
       <div className="hidden md:flex flex-col md:flex-row md:items-center md:justify-between">
         <div className="flex items-center space-x-4 mb-2 md:mb-0">
@@ -51,7 +83,40 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
           <TaskTags tags={task.tags || []} />
           {task.due_date && <TaskDueDate dueDate={task.due_date} />}
           <TaskRecurrenceBadge recurrenceType={task.recurrence_type || 'none'} />
-          <TaskStatusBadge status={task.status} />
+
+          {/* Today Plan Controls */}
+          {onToggleToday && (
+            <button
+              onClick={handleTodayToggle}
+              className={`items-center justify-center w-6 h-6 rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 ${
+                task.today 
+                  ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 flex'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hidden group-hover:flex'
+              }`}
+              title={task.today ? t('tasks.removeFromToday', 'Remove from today plan') : t('tasks.addToToday', 'Add to today plan')}
+            >
+              {task.today ? (
+                <CalendarDaysIcon className="h-3 w-3" />
+              ) : (
+                <CalendarIcon className="h-3 w-3" />
+              )}
+            </button>
+          )}
+          
+          {/* Play/In Progress Controls */}
+          {(task.status === 'not_started' || task.status === 'in_progress' || task.status === 0 || task.status === 1) && (
+            <button
+              onClick={handlePlayToggle}
+              className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                (task.status === 'in_progress' || task.status === 1)
+                  ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
+              }`}
+              title={(task.status === 'in_progress' || task.status === 1) ? t('tasks.setNotStarted', 'Set to not started') : t('tasks.setInProgress', 'Set in progress')}
+            >
+              <PlayIcon className="h-3 w-3" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -82,6 +147,40 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
           {task.due_date && <TaskDueDate dueDate={task.due_date} />}
           <TaskRecurrenceBadge recurrenceType={task.recurrence_type || 'none'} />
           <TaskStatusBadge status={task.status} />
+          
+          {/* Play/In Progress Controls - Mobile */}
+          {(task.status === 'not_started' || task.status === 'in_progress' || task.status === 0 || task.status === 1) && (
+            <button
+              onClick={handlePlayToggle}
+              className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                (task.status === 'in_progress' || task.status === 1)
+                  ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
+              }`}
+              title={(task.status === 'in_progress' || task.status === 1) ? t('tasks.setNotStarted', 'Set to not started') : t('tasks.setInProgress', 'Set in progress')}
+            >
+              <PlayIcon className="h-3 w-3" />
+            </button>
+          )}
+
+          {/* Today Plan Controls - Mobile */}
+          {onToggleToday && (
+            <button
+              onClick={handleTodayToggle}
+              className={`items-center justify-center w-6 h-6 rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 ${
+                task.today 
+                  ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 flex'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hidden group-hover:flex'
+              }`}
+              title={task.today ? t('tasks.removeFromToday', 'Remove from today plan') : t('tasks.addToToday', 'Add to today plan')}
+            >
+              {task.today ? (
+                <CalendarDaysIcon className="h-3 w-3" />
+              ) : (
+                <CalendarIcon className="h-3 w-3" />
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>
