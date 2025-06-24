@@ -43,6 +43,7 @@
     "worseThanAverage": "{{percentage}}% weniger als der Durchschnitt"
   },
   "tasks": {
+    "title": "Aufgaben",
     "backlog": "Backlog",
     "inProgress": "In Bearbeitung",
     "dueToday": "Heute fällig",
@@ -84,11 +85,15 @@
   "errors": {
     "noteTitleRequired": "Notiz-Titel ist erforderlich.",
     "failedToLoadTags": "Fehler beim Laden der verfügbaren Tags.",
-    "failedToSaveNote": "Fehler beim Speichern der Notiz."
+    "failedToSaveNote": "Fehler beim Speichern der Notiz.",
+    "projectCreationFailed": "Projekt konnte nicht erstellt werden."
   },
   "success": {
     "noteUpdated": "Notiz erfolgreich aktualisiert!",
-    "noteCreated": "Notiz erfolgreich erstellt!"
+    "noteCreated": "Notiz erfolgreich erstellt!",
+    "projectCreated": "Projekt erfolgreich erstellt!",
+    "projectDeleted": "Projekt erfolgreich gelöscht!",
+    "nextActionAdded": "Nächste Aktion erfolgreich hinzugefügt!"
   },
   "notes": {
     "title": "Notizen",

@@ -3,6 +3,7 @@ import { Project } from "./Project";
 
 export interface Task {
   id?: number;
+  uuid?: string;
   name: string;
   status: StatusType | number;
   priority?: PriorityType | number;

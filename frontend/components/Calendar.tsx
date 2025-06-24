@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import TaskModal from './Task/TaskModal';
 import { Task } from '../entities/Task';
 import { Project } from '../entities/Project';
+import { deleteTask } from '../utils/tasksService';
 import { 
   ChevronLeftIcon, 
   ChevronRightIcon,
@@ -328,14 +329,19 @@ const Calendar: React.FC = () => {
     setSelectedTask(null);
   };
 
-  const handleTaskDelete = (taskId: number) => {
-    // Remove task from allTasks
-    setAllTasks(prev => prev.filter(t => t.id !== taskId));
-    // Refresh calendar
-    loadTasks();
-    // Close modal
-    setIsTaskModalOpen(false);
-    setSelectedTask(null);
+  const handleTaskDelete = async (taskId: number) => {
+    try {
+      await deleteTask(taskId);
+      // Remove task from allTasks
+      setAllTasks(prev => prev.filter(t => t.id !== taskId));
+      // Refresh calendar
+      loadTasks();
+      // Close modal
+      setIsTaskModalOpen(false);
+      setSelectedTask(null);
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+    }
   };
 
   const handleCreateProject = async (name: string): Promise<Project> => {

@@ -21,6 +21,7 @@ import ProfileSettings from "./components/Profile/ProfileSettings";
 import Layout from "./Layout";
 import { User } from "./entities/User";
 import TasksToday from "./components/Task/TasksToday"; 
+import TaskView from "./components/Task/TaskView";
 import LoadingScreen from "./components/Shared/LoadingScreen";
 import InboxItems from "./components/Inbox/InboxItems";
 // Lazy load Tasks component to prevent issues with tags loading
@@ -158,6 +159,7 @@ const App: React.FC = () => {
             >
               <Route index element={<Navigate to="/today" replace />} />
               <Route path="/today" element={<TasksToday />} />
+              <Route path="/task/:uuid" element={<TaskView />} />
               <Route
                 path="/tasks"
                 element={

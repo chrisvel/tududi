@@ -32,9 +32,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
     setIsModalOpen(false);
   };
   
-  const handleDelete = () => {
+  const handleDelete = async (taskId: number) => {
     if (task.id) {
-      onTaskDelete(task.id);
+      await onTaskDelete(task.id);
     }
   };
 

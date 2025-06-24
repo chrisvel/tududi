@@ -1,5 +1,5 @@
 const express = require('express');
-const { Task, Tag, Project, sequelize } = require('../models');
+const { Task, Tag, Project, TaskEvent, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const RecurringTaskService = require('../services/recurringTaskService');
 const TaskEventService = require('../services/taskEventService');
@@ -405,6 +405,34 @@ router.get('/tasks', async (req, res) => {
     if (error.message === 'Invalid order column specified.') {
       return res.status(400).json({ error: error.message });
     }
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/task/uuid/:uuid
+router.get('/task/uuid/:uuid', async (req, res) => {
+  try {
+    const task = await Task.findOne({
+      where: { uuid: req.params.uuid, user_id: req.currentUser.id },
+      include: [
+        { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
+        { model: Project, attributes: ['name'], required: false }
+      ]
+    });
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found.' });
+    }
+
+    const taskJson = task.toJSON();
+    
+    res.json({
+      ...taskJson,
+      tags: taskJson.Tags || [],
+      due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
+    });
+  } catch (error) {
+    console.error('Error fetching task by UUID:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -832,7 +860,92 @@ router.delete('/task/:id', async (req, res) => {
       return res.status(404).json({ error: 'Task not found.' });
     }
 
-    await task.destroy();
+    console.log(`Attempting to delete task ${req.params.id}`);
+
+    // Check all possible foreign key references
+    const childTasks = await Task.findAll({
+      where: { recurring_parent_id: req.params.id }
+    });
+    console.log(`Found ${childTasks.length} child tasks`);
+
+    const taskEvents = await TaskEvent.findAll({
+      where: { task_id: req.params.id }
+    });
+    console.log(`Found ${taskEvents.length} task events`);
+
+    const tagAssociations = await sequelize.query(
+      'SELECT COUNT(*) as count FROM tasks_tags WHERE task_id = ?',
+      { replacements: [req.params.id], type: sequelize.QueryTypes.SELECT }
+    );
+    console.log(`Found ${tagAssociations[0].count} tag associations`);
+
+    // Check SQLite foreign key list for tasks table
+    const foreignKeys = await sequelize.query(
+      'PRAGMA foreign_key_list(tasks)',
+      { type: sequelize.QueryTypes.SELECT }
+    );
+    console.log('Foreign keys in tasks table:', foreignKeys);
+
+    // Find all tables that reference tasks
+    const allTables = await sequelize.query(
+      "SELECT name FROM sqlite_master WHERE type='table'",
+      { type: sequelize.QueryTypes.SELECT }
+    );
+    
+    for (const table of allTables) {
+      if (table.name !== 'tasks') {
+        try {
+          const fks = await sequelize.query(
+            `PRAGMA foreign_key_list(${table.name})`,
+            { type: sequelize.QueryTypes.SELECT }
+          );
+          const taskRefs = fks.filter(fk => fk.table === 'tasks');
+          if (taskRefs.length > 0) {
+            console.log(`Table ${table.name} references tasks:`, taskRefs);
+            // Check if this table has any records referencing our task
+            for (const fk of taskRefs) {
+              const count = await sequelize.query(
+                `SELECT COUNT(*) as count FROM ${table.name} WHERE ${fk.from} = ?`,
+                { replacements: [req.params.id], type: sequelize.QueryTypes.SELECT }
+              );
+              console.log(`  ${table.name}.${fk.from} -> tasks.${fk.to}: ${count[0].count} references`);
+            }
+          }
+        } catch (error) {
+          // Skip tables that might not exist or have issues
+        }
+      }
+    }
+
+    // Temporarily disable foreign key constraints for this operation
+    await sequelize.query('PRAGMA foreign_keys = OFF');
+    
+    try {
+      // Use force delete to bypass foreign key constraints
+      await TaskEvent.destroy({
+        where: { task_id: req.params.id },
+        force: true
+      });
+
+      await sequelize.query(
+        'DELETE FROM tasks_tags WHERE task_id = ?',
+        { replacements: [req.params.id] }
+      );
+
+      await Task.update(
+        { recurring_parent_id: null },
+        { where: { recurring_parent_id: req.params.id } }
+      );
+
+      // Delete the task itself
+      await task.destroy({ force: true });
+      
+    } finally {
+      // Re-enable foreign key constraints
+      await sequelize.query('PRAGMA foreign_keys = ON');
+    }
+    
+    console.log(`Successfully deleted task ${req.params.id}`);
     res.json({ message: 'Task successfully deleted' });
   } catch (error) {
     console.error('Error deleting task:', error);

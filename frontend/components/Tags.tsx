@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PencilSquareIcon, TrashIcon, TagIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { PencilSquareIcon, TrashIcon, TagIcon, MagnifyingGlassIcon, CheckIcon, BookOpenIcon, FolderIcon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import TagModal from './Tag/TagModal';
 import { Tag } from '../entities/Tag';
@@ -15,6 +15,8 @@ const Tags: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
+  const [hoveredTagId, setHoveredTagId] = useState<number | null>(null);
+  const [tagMetrics, setTagMetrics] = useState<Record<string, {tasks: number, notes: number, projects: number}>>({});
 
   useEffect(() => {
     const loadTags = async () => {
@@ -22,6 +24,53 @@ const Tags: React.FC = () => {
       try {
         const fetchedTags = await fetchTags();
         setTags(fetchedTags);
+        
+        // Fetch metrics for each tag
+        const metrics: Record<string, {tasks: number, notes: number, projects: number}> = {};
+        
+        await Promise.all(fetchedTags.map(async (tag) => {
+          try {
+            const [tasksResponse, notesResponse, projectsResponse] = await Promise.all([
+              fetch(`/api/tasks?tag=${encodeURIComponent(tag.name)}`),
+              fetch(`/api/notes?tag=${encodeURIComponent(tag.name)}`),
+              fetch(`/api/projects`)
+            ]);
+
+            let tasksCount = 0;
+            let notesCount = 0;
+            let projectsCount = 0;
+
+            if (tasksResponse.ok) {
+              const tasksData = await tasksResponse.json();
+              tasksCount = tasksData.tasks?.length || 0;
+            }
+
+            if (notesResponse.ok) {
+              const notesData = await notesResponse.json();
+              notesCount = notesData?.length || 0;
+            }
+
+            if (projectsResponse.ok) {
+              const projectsData = await projectsResponse.json();
+              const allProjects = projectsData.projects || projectsData || [];
+              const filteredProjects = allProjects.filter((project: any) => 
+                project.tags && project.tags.some((projectTag: any) => projectTag.name === tag.name)
+              );
+              projectsCount = filteredProjects.length;
+            }
+
+            metrics[tag.name] = {
+              tasks: tasksCount,
+              notes: notesCount,
+              projects: projectsCount
+            };
+          } catch (error) {
+            console.error(`Failed to fetch metrics for tag ${tag.name}:`, error);
+            metrics[tag.name] = { tasks: 0, notes: 0, projects: 0 };
+          }
+        }));
+        
+        setTagMetrics(metrics);
       } catch (error) {
         console.error('Failed to fetch tags:', error);
         setIsError(true);
@@ -38,6 +87,12 @@ const Tags: React.FC = () => {
     try {
       await apiDeleteTag(tagToDelete.id!);
       setTags((prev) => prev.filter((tag) => tag.id !== tagToDelete.id));
+      // Remove the deleted tag from metrics as well
+      setTagMetrics((prev) => {
+        const newMetrics = { ...prev };
+        delete newMetrics[tagToDelete.name];
+        return newMetrics;
+      });
       setIsConfirmDialogOpen(false);
       setTagToDelete(null);
     } catch (err) {
@@ -56,9 +111,27 @@ const Tags: React.FC = () => {
       if (tagData.id) {
         await updateTag(tagData.id, tagData);
         updatedTags = tags.map((tag) => (tag.id === tagData.id ? tagData : tag));
+        
+        // If tag name changed, update metrics key
+        const oldTag = tags.find(t => t.id === tagData.id);
+        if (oldTag && oldTag.name !== tagData.name) {
+          setTagMetrics((prev) => {
+            const newMetrics = { ...prev };
+            if (newMetrics[oldTag.name]) {
+              newMetrics[tagData.name] = newMetrics[oldTag.name];
+              delete newMetrics[oldTag.name];
+            }
+            return newMetrics;
+          });
+        }
       } else {
         const newTag = await createTag(tagData);
         updatedTags = [...tags, newTag];
+        // Initialize metrics for new tag
+        setTagMetrics((prev) => ({
+          ...prev,
+          [newTag.name]: { tasks: 0, notes: 0, projects: 0 }
+        }));
       }
       setTags(updatedTags);
       setIsTagModalOpen(false);
@@ -81,6 +154,22 @@ const Tags: React.FC = () => {
   const filteredTags = tags.filter((tag) =>
     tag.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Group tags alphabetically by first letter
+  const groupedTags = filteredTags.reduce((groups, tag) => {
+    const firstLetter = tag.name.charAt(0).toUpperCase();
+    if (!groups[firstLetter]) {
+      groups[firstLetter] = [];
+    }
+    groups[firstLetter].push(tag);
+    return groups;
+  }, {} as Record<string, typeof tags>);
+
+  // Sort the groups by letter and sort tags within each group
+  const sortedGroupKeys = Object.keys(groupedTags).sort();
+  sortedGroupKeys.forEach(letter => {
+    groupedTags[letter].sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+  });
 
   if (isLoading) {
     return (
@@ -125,42 +214,92 @@ const Tags: React.FC = () => {
         {filteredTags.length === 0 ? (
           <p className="text-gray-700 dark:text-gray-300">No tags found.</p>
         ) : (
-          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredTags.map((tag) => (
-              <li
-                key={tag.id}
-                className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center"
-              >
-                <div className="flex-grow overflow-hidden pr-4">
-                  <Link
-                    to={`/tag/${tag.id}`}
-                    className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline block"
-                  >
-                    {tag.name}
-                  </Link>
+          <div className="space-y-8">
+            {sortedGroupKeys.map((letter) => (
+              <div key={letter}>
+                {/* Alphabetical Group Header */}
+                <div className="mb-4">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    {letter}
+                  </h3>
+                  <hr className="border-gray-300 dark:border-gray-600" />
                 </div>
-
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEditTag(tag)}
-                    className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
-                    aria-label={`Edit ${tag.name}`}
-                    title={`Edit ${tag.name}`}
-                  >
-                    <PencilSquareIcon className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={() => openConfirmDialog(tag)}
-                    className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
-                    aria-label={`Delete ${tag.name}`}
-                    title={`Delete ${tag.name}`}
-                  >
-                    <TrashIcon className="h-5 w-5" />
-                  </button>
-                </div>
-              </li>
+                
+                {/* Tags in this group */}
+                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {groupedTags[letter].map((tag) => {
+                    const metrics = tagMetrics[tag.name] || { tasks: 0, notes: 0, projects: 0 };
+                    const hasItems = metrics.tasks > 0 || metrics.notes > 0 || metrics.projects > 0;
+                    
+                    return (
+                      <li
+                        key={tag.id}
+                        className="bg-white dark:bg-gray-900 shadow rounded-lg p-4"
+                        onMouseEnter={() => setHoveredTagId(tag.id || null)}
+                        onMouseLeave={() => setHoveredTagId(null)}
+                      >
+                        <div className="flex items-center justify-between">
+                          {/* Tag Name and Metrics - inline */}
+                          <div className="flex items-center space-x-3 flex-grow">
+                            <Link
+                              to={`/tag/${tag.id}`}
+                              className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
+                            >
+                              {tag.name}
+                            </Link>
+                            
+                            {/* Metrics - inline with tag name */}
+                            {hasItems && (
+                              <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
+                                {metrics.projects > 0 && (
+                                  <div className="flex items-center space-x-1">
+                                    <FolderIcon className="h-4 w-4 text-purple-500" />
+                                    <span>{metrics.projects}</span>
+                                  </div>
+                                )}
+                                {metrics.tasks > 0 && (
+                                  <div className="flex items-center space-x-1">
+                                    <CheckIcon className="h-4 w-4 text-blue-500" />
+                                    <span>{metrics.tasks}</span>
+                                  </div>
+                                )}
+                                {metrics.notes > 0 && (
+                                  <div className="flex items-center space-x-1">
+                                    <BookOpenIcon className="h-4 w-4 text-green-500" />
+                                    <span>{metrics.notes}</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Edit/Delete buttons */}
+                          <div className="flex space-x-2 ml-2">
+                            <button
+                              onClick={() => handleEditTag(tag)}
+                              className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredTagId === tag.id ? 'opacity-100' : 'opacity-0'}`}
+                              aria-label={`Edit ${tag.name}`}
+                              title={`Edit ${tag.name}`}
+                            >
+                              <PencilSquareIcon className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => openConfirmDialog(tag)}
+                              className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredTagId === tag.id ? 'opacity-100' : 'opacity-0'}`}
+                              aria-label={`Delete ${tag.name}`}
+                              title={`Delete ${tag.name}`}
+                            >
+                              <TrashIcon className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
 
         {/* TagModal */}

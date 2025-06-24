@@ -58,8 +58,8 @@ const TaskWorkflowWrapper: React.FC<{
     setSelectedTask(null);
   };
 
-  const handleModalDelete = (taskId: number) => {
-    onTaskDelete(taskId);
+  const handleModalDelete = async (taskId: number) => {
+    await onTaskDelete(taskId);
     setIsModalOpen(false);
     setSelectedTask(null);
   };

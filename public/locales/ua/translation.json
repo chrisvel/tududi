@@ -50,6 +50,7 @@
     "worseThanAverage": "{{percentage}}% менше, ніж середнє"
   },
   "tasks": {
+    "title": "Завдання",
     "today": "Сьогодні",
     "backlog": "Відкладені",
     "inProgress": "В процесі",
@@ -130,12 +131,15 @@
   "errors": {
     "noteTitleRequired": "Заголовок нотатки обов'язковий.",
     "failedToLoadTags": "Не вдалося завантажити доступні теги.",
-    "failedToSaveNote": "Не вдалося зберегти нотатку."
+    "failedToSaveNote": "Не вдалося зберегти нотатку.",
+    "projectCreationFailed": "Не вдалося створити проект."
   },
 
   "success": {
     "noteUpdated": "Нотатку успішно оновлено!",
-    "noteCreated": "Нотатку успішно створено!"
+    "noteCreated": "Нотатку успішно створено!",
+    "projectDeleted": "Проект успішно видалено!",
+    "nextActionAdded": "Наступну дію успішно додано!"
   },
 
   "notes": {

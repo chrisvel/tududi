@@ -1,5 +1,5 @@
 const express = require('express');
-const { Tag } = require('../models');
+const { Tag, Task, Note, Project, sequelize } = require('../models');
 const router = express.Router();
 
 // GET /api/tags
@@ -108,6 +108,8 @@ router.patch('/tag/:id', async (req, res) => {
 
 // DELETE /api/tag/:id
 router.delete('/tag/:id', async (req, res) => {
+  const transaction = await sequelize.transaction();
+  
   try {
     if (!req.session || !req.session.userId) {
       return res.status(401).json({ error: 'Authentication required' });
@@ -118,12 +120,44 @@ router.delete('/tag/:id', async (req, res) => {
     });
 
     if (!tag) {
+      await transaction.rollback();
       return res.status(404).json({ error: 'Tag not found' });
     }
 
-    await tag.destroy();
+    // Use transaction to ensure all deletions happen atomically
+    // Remove all associations before deleting the tag by manually deleting from junction tables
+    // Handle both old and new task-tag junction tables
+    await sequelize.query('DELETE FROM tasks_tags WHERE tag_id = ?', {
+      replacements: [tag.id],
+      type: sequelize.QueryTypes.DELETE,
+      transaction
+    });
+    
+    await sequelize.query('DELETE FROM tags_tasks WHERE tag_id = ?', {
+      replacements: [tag.id],
+      type: sequelize.QueryTypes.DELETE,
+      transaction
+    });
+    
+    await sequelize.query('DELETE FROM notes_tags WHERE tag_id = ?', {
+      replacements: [tag.id],
+      type: sequelize.QueryTypes.DELETE,
+      transaction
+    });
+    
+    await sequelize.query('DELETE FROM projects_tags WHERE tag_id = ?', {
+      replacements: [tag.id],
+      type: sequelize.QueryTypes.DELETE,
+      transaction
+    });
+
+    // Now safely delete the tag
+    await tag.destroy({ transaction });
+    
+    await transaction.commit();
     res.json({ message: 'Tag successfully deleted' });
   } catch (error) {
+    await transaction.rollback();
     console.error('Error deleting tag:', error);
     res.status(400).json({ error: 'There was a problem deleting the tag.' });
   }

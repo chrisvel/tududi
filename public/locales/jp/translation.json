@@ -49,6 +49,7 @@
     "worseThanAverage": "平均より{{percentage}}%少ない"
   },
   "tasks": {
+    "title": "タスク",
     "today": "今日",
     "backlog": "バックログ",
     "inProgress": "進行中",
@@ -184,11 +185,14 @@
     "taskDelete": "タスクの削除に失敗しました。",
     "noteTitleRequired": "ノートのタイトルは必須です。",
     "failedToLoadTags": "利用可能なタグの読み込みに失敗しました。",
-    "failedToSaveNote": "ノートの保存に失敗しました。"
+    "failedToSaveNote": "ノートの保存に失敗しました。",
+    "projectCreationFailed": "プロジェクトの作成に失敗しました。"
   },
   "success": {
     "noteUpdated": "ノートが正常に更新されました！",
-    "noteCreated": "ノートが正常に作成されました！"
+    "noteCreated": "ノートが正常に作成されました！",
+    "projectDeleted": "プロジェクトが正常に削除されました！",
+    "nextActionAdded": "次のアクションが正常に追加されました！"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -259,7 +263,17 @@
     "editTagAriaLabel": "タグ {{tagName}} を編集",
     "editTagTitle": "タグ {{tagName}} の編集",
     "deleteTagAriaLabel": "タグ {{tagName}} を削除",
-    "deleteTagTitle": "タグ {{tagName}} の削除"
+    "deleteTagTitle": "タグ {{tagName}} の削除",
+    "error": "タグの取得エラー。",
+    "notFound": "タグが見つかりませんでした。",
+    "details": "タグの詳細",
+    "name": "名前",
+    "status": "ステータス",
+    "active": "アクティブ",
+    "inactive": "非アクティブ",
+    "viewTasksWithTag": "このタグでタスクを表示",
+    "typeToAdd": "タグを追加するために入力",
+    "noItemsWithTag": "このタグのアイテムが見つかりませんでした"
   },
   "recurrence": {
     "none": "なし",

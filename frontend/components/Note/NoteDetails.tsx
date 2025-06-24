@@ -50,8 +50,8 @@ const NoteDetails: React.FC = () => {
   const handleSaveNote = async (updatedNote: Note) => {
     try {
       if (updatedNote.id !== undefined) {
-        await apiUpdateNote(updatedNote.id, updatedNote);
-        setNote(updatedNote);
+        const savedNote = await apiUpdateNote(updatedNote.id, updatedNote);
+        setNote(savedNote);
       } else {
         console.error("Error: Note ID is undefined.");
       }
@@ -122,38 +122,46 @@ const NoteDetails: React.FC = () => {
           </div>
         </div>
         {/* Tags and Project */}
-        {(note.tags && note.tags.length > 0) || note.project ? (
+        {((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0)) || note.project || note.Project ? (
           <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-4 mb-6">
             {/* Note Tags */}
-            {note.tags && note.tags.length > 0 && (
+            {((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0)) && (
               <div className="mb-4">
-                <div className="mt-2 flex flex-wrap space-x-2">
-                  {note.tags.map((tag) => (
-                    <button
-                      key={tag.id}
-                      onClick={() => navigate(`/tasks?tag=${tag.name}`)}
-                      className="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
-                    >
-                      <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-300" />
-                      <span className="text-xs text-gray-700 dark:text-gray-300">
-                        {tag.name}
-                      </span>
-                    </button>
-                  ))}
+                <div className="flex items-start">
+                  <div className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3 mt-0.5">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">Tags:</span>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {(note.tags || note.Tags || []).map((tag) => (
+                        <button
+                          key={tag.id}
+                          onClick={() => navigate(`/tag/${tag.id}`)}
+                          className="flex items-center space-x-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-xs"
+                        >
+                          <TagIcon className="h-3 w-3" />
+                          <span>{tag.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
             {/* Note Project */}
-            {note.project && (
-              <div className={note.tags && note.tags.length > 0 ? "mt-4" : ""}>
+            {(note.project || note.Project) && (
+              <div className={((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0)) ? "mt-4" : ""}>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   Project
                 </h3>
                 <Link
-                  to={`/project/${note.project.id}`}
+                  to={`/project/${(note.project || note.Project)?.id}`}
                   className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                  {note.project.name}
+                  {(note.project || note.Project)?.name}
                 </Link>
               </div>
             )}

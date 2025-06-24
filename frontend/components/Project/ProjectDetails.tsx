@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useToast } from "../Shared/ToastContext";
 import {
   PencilSquareIcon,
   TrashIcon,
@@ -35,6 +36,7 @@ const ProjectDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const { showSuccessToast } = useToast();
   
   const areas = useStore((state) => state.areasStore.areas);
 
@@ -99,6 +101,14 @@ const ProjectDetails: React.FC = () => {
         project_id: project.id,
       });
       setTasks((prevTasks) => [...prevTasks, newTask]);
+      
+      // Show success toast with task link
+      const taskLink = (
+        <span>
+          {t('task.created', 'Task')} <a href={`/task/${newTask.uuid}`} className="text-green-200 underline hover:text-green-100">{newTask.name}</a> {t('task.createdSuccessfully', 'created successfully!')}
+        </span>
+      );
+      showSuccessToast(taskLink);
     } catch (err: any) {
       console.error("Error creating task:", err);
       // Check if it's an authentication error
@@ -170,6 +180,14 @@ const ProjectDetails: React.FC = () => {
       // Update the tasks list to include the new task
       setTasks(prevTasks => [...prevTasks, newTask]);
       setShowAutoSuggestForm(false);
+      
+      // Show success toast with task link
+      const taskLink = (
+        <span>
+          {t('task.created', 'Task')} <a href={`/task/${newTask.uuid}`} className="text-green-200 underline hover:text-green-100">{newTask.name}</a> {t('task.createdSuccessfully', 'created successfully!')}
+        </span>
+      );
+      showSuccessToast(taskLink);
     } catch (error) {
       console.error("Error creating next action:", error);
     }
@@ -261,11 +279,11 @@ const ProjectDetails: React.FC = () => {
               </h1>
             </div>
             {/* Priority Indicator on Image */}
-            {project.priority && (
+            {project.priority !== undefined && project.priority !== null && (
               <div className="absolute top-3 left-3">
                 <div
                   className={`w-4 h-4 rounded-full border-2 border-white shadow-lg ${
-                    priorityStyles[project.priority] || priorityStyles.default
+                    getPriorityStyle(project.priority)
                   }`}
                   title={`Priority: ${priorityLabel(project.priority)}`}
                   aria-label={`Priority: ${priorityLabel(project.priority)}`}
@@ -337,12 +355,13 @@ const ProjectDetails: React.FC = () => {
                     <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">Tags:</span>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {project.tags.map((tag, index) => (
-                        <span
+                        <button
                           key={index}
-                          className="inline-block px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full"
+                          onClick={() => navigate(`/tag/${tag.id}`)}
+                          className="inline-block px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
                         >
                           {tag.name}
-                        </span>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -361,10 +380,10 @@ const ProjectDetails: React.FC = () => {
                 {project.name}
               </h2>
               {/* Show priority indicator only when no image */}
-              {project.priority && (
+              {project.priority !== undefined && project.priority !== null && (
                 <div
                   className={`w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${
-                    priorityStyles[project.priority] || priorityStyles.default
+                    getPriorityStyle(project.priority)
                   }`}
                   title={`Priority: ${priorityLabel(project.priority)}`}
                   aria-label={`Priority: ${priorityLabel(project.priority)}`}
@@ -464,8 +483,13 @@ const ProjectDetails: React.FC = () => {
   );
 };
 
-const priorityLabel = (priority: PriorityType) => {
-  switch (priority) {
+const priorityLabel = (priority: PriorityType | number) => {
+  // Handle both string and numeric priorities
+  const normalizedPriority = typeof priority === 'number' 
+    ? (['low', 'medium', 'high'][priority] as PriorityType)
+    : priority;
+    
+  switch (normalizedPriority) {
     case 'high':
       return 'High';
     case 'medium':
@@ -475,6 +499,15 @@ const priorityLabel = (priority: PriorityType) => {
     default:
       return '';
   }
+};
+
+const getPriorityStyle = (priority: PriorityType | number) => {
+  // Handle both string and numeric priorities
+  const normalizedPriority = typeof priority === 'number' 
+    ? (['low', 'medium', 'high'][priority] as PriorityType)
+    : priority;
+    
+  return priorityStyles[normalizedPriority] || priorityStyles.default;
 };
 
 export default ProjectDetails;

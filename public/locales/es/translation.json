@@ -148,7 +148,8 @@
     "taskDelete": "Error al eliminar la tarea.",
     "noteTitleRequired": "El título de la nota es obligatorio.",
     "failedToLoadTags": "Error al cargar las etiquetas disponibles.",
-    "failedToSaveNote": "Error al guardar la nota."
+    "failedToSaveNote": "Error al guardar la nota.",
+    "projectCreationFailed": "Error al crear el proyecto."
   },
   "dropdown": {
     "createNew": "Crear Nuevo",
@@ -158,6 +159,7 @@
     "area": "Área"
   },
   "tasks": {
+    "title": "Tareas",
     "today": "Hoy",
     "backlog": "Pendientes",
     "inProgress": "En Progreso",
@@ -402,7 +404,8 @@
     "active": "Activa",
     "inactive": "Inactiva",
     "viewTasksWithTag": "Ver tareas con esta etiqueta",
-    "typeToAdd": "Escriba para agregar una etiqueta"
+    "typeToAdd": "Escriba para agregar una etiqueta",
+    "noItemsWithTag": "No se encontraron elementos con esta etiqueta"
   },
   "note": {
     "title": "Título",
@@ -421,9 +424,11 @@
     "tagUpdated": "¡Etiqueta actualizada con éxito!",
     "tagCreated": "¡Etiqueta creada con éxito!",
     "projectCreated": "¡Proyecto creado con éxito!",
+    "projectDeleted": "¡Proyecto eliminado con éxito!",
     "taskCreated": "¡Tarea creada con éxito!",
     "taskUpdated": "¡Tarea actualizada con éxito!",
-    "taskDeleted": "¡Tarea eliminada con éxito!"
+    "taskDeleted": "¡Tarea eliminada con éxito!",
+    "nextActionAdded": "¡Próxima acción agregada con éxito!"
   },
   "recurrence": {
     "none": "Ninguna",

@@ -12,8 +12,8 @@ interface TaskTagsProps {
 const TaskTags: React.FC<TaskTagsProps> = ({ tags = [], onTagRemove, className }) => {
   const navigate = useNavigate();
 
-  const handleTagClick = (tagName: string) => {
-    navigate(`/tasks?tag=${tagName}`);
+  const handleTagClick = (tag: Tag) => {
+    navigate(`/tag/${tag.id}`);
   };
 
   // Don't render anything if there are no tags
@@ -30,7 +30,7 @@ const TaskTags: React.FC<TaskTagsProps> = ({ tags = [], onTagRemove, className }
         >
           <button
             type="button"
-            onClick={() => handleTagClick(tag.name)}
+            onClick={() => handleTagClick(tag)}
             className="flex items-center"
           >
             <TagIcon className="hidden md:block h-4 w-4 text-gray-500 dark:text-gray-300 mr-2" />

@@ -21,7 +21,7 @@ interface TaskModalProps {
   onClose: () => void;
   task: Task;
   onSave: (task: Task) => void;
-  onDelete: (taskId: number) => void;
+  onDelete: (taskId: number) => Promise<void>;
   projects: Project[];
   onCreateProject: (name: string) => Promise<Project>;
   onEditParentTask?: (parentTask: Task) => void;
@@ -53,6 +53,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const [parentTaskLoading, setParentTaskLoading] = useState(false);
   const [taskAnalysis, setTaskAnalysis] = useState<TaskAnalysis | null>(null);
   const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] = useState(true);
+  const [isTimelineExpanded, setIsTimelineExpanded] = useState(false);
   const { showSuccessToast, showErrorToast } = useToast();
   const { t } = useTranslation();
 
@@ -216,9 +217,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
         setFilteredProjects([...filteredProjects, newProject]);
         setNewProjectName(newProject.name);
         setDropdownOpen(false);
-        showSuccessToast("Project created successfully!");
+        showSuccessToast(t('success.projectCreated'));
       } catch (error) {
-        showErrorToast("Failed to create project.");
+        showErrorToast(t('errors.projectCreationFailed'));
         console.error("Error creating project:", error);
       } finally {
         setIsCreatingProject(false);
@@ -228,7 +229,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   const handleSubmit = () => {
     onSave({ ...formData, tags: tags.map((tag) => ({ name: tag })) });
-    showSuccessToast("Task updated successfully!");
+    const taskLink = (
+      <span>
+        {t('task.updated', 'Task')} <a href={`/task/${formData.uuid}`} className="text-green-200 underline hover:text-green-100">{formData.name}</a> {t('task.updatedSuccessfully', 'updated successfully!')}
+      </span>
+    );
+    showSuccessToast(taskLink);
     handleClose();
   };
 
@@ -236,12 +242,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
     setShowConfirmDialog(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (formData.id) {
-      onDelete(formData.id);
-      showSuccessToast("Task deleted successfully!");
-      setShowConfirmDialog(false);
-      handleClose();
+      try {
+        await onDelete(formData.id);
+        const taskLink = (
+          <span>
+            {t('task.deleted', 'Task')} <a href={`/task/${formData.uuid}`} className="text-green-200 underline hover:text-green-100">{formData.name}</a> {t('task.deletedSuccessfully', 'deleted successfully!')}
+          </span>
+        );
+        showSuccessToast(taskLink);
+        setShowConfirmDialog(false);
+        handleClose();
+      } catch (error) {
+        console.error('Failed to delete task:', error);
+        showErrorToast(t('task.deleteError', 'Failed to delete task'));
+      }
     }
   };
 
@@ -302,9 +318,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
               isClosing ? "scale-95" : "scale-100"
             } my-4`}
           >
-            <div className="flex flex-col lg:flex-row h-[calc(100vh-8rem)] max-h-[630px]">
+            <div className="flex flex-col lg:flex-row h-[calc(100vh-8rem)] max-h-[660px]">
               {/* Main Form Section */}
-              <div className="flex-1 p-4 space-y-3 text-sm overflow-y-auto">
+              <div className={`flex-1 p-4 space-y-3 text-sm overflow-y-auto transition-all duration-300 ${
+                isTimelineExpanded ? 'lg:pr-2' : ''
+              }`}>
                 <form>
                   <fieldset>
                   <div className="py-4">
@@ -492,29 +510,84 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   />
                 </fieldset>
               </form>
-              <div className="p-3 border-t border-gray-200 dark:border-gray-700">
+              <div className="p-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
                 <TaskActions
                   taskId={task.id}
                   onDelete={handleDeleteClick}
                   onSave={handleSubmit}
                   onCancel={handleClose}
                 />
+                
+                {/* Timeline Toggle Button */}
+                <button
+                  onClick={() => setIsTimelineExpanded(!isTimelineExpanded)}
+                  className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                  title={isTimelineExpanded ? t('Hide Activity Timeline') : t('Show Activity Timeline')}
+                >
+                  <svg 
+                    className={`h-5 w-5 transition-transform duration-200 ${isTimelineExpanded ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </button>
               </div>
             </div>
             
-            {/* Timeline Section */}
-            <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex flex-col">
-              <div className="p-3 lg:p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center">
-                  <svg className="h-4 w-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {t('Activity Timeline', 'Activity Timeline')}
-                </h3>
-              </div>
-              <div className="p-3 lg:p-4 flex-1 overflow-hidden">
-                <TaskTimeline taskId={task.id} />
-              </div>
+            {/* Timeline Section - Collapsible */}
+            <div className={`${
+              isTimelineExpanded 
+                ? 'w-full lg:w-80 opacity-100' 
+                : 'w-0 lg:w-12 opacity-0 lg:opacity-100'
+            } border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex flex-col transition-all duration-300 overflow-hidden`}>
+              
+              {/* Collapsed state - envelope icon */}
+              {!isTimelineExpanded && (
+                <div className="hidden lg:flex flex-col items-center justify-center h-full p-2">
+                  <button
+                    onClick={() => setIsTimelineExpanded(true)}
+                    className="p-2 mb-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                    title={t('Show Activity Timeline')}
+                  >
+                    <svg className="h-5 w-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 mt-2 transform rotate-90 whitespace-nowrap">
+                    Timeline
+                  </span>
+                </div>
+              )}
+              
+              {/* Expanded state - full timeline */}
+              {isTimelineExpanded && (
+                <>
+                  <div className="p-3 lg:p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 flex items-center">
+                        <svg className="h-4 w-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {t('Activity Timeline', 'Activity Timeline')}
+                      </h3>
+                      <button
+                        onClick={() => setIsTimelineExpanded(false)}
+                        className="lg:hidden p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                        title={t('Hide Timeline')}
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-3 lg:p-4 flex-1 overflow-hidden">
+                    <TaskTimeline taskId={task.id} />
+                  </div>
+                </>
+              )}
             </div>
             </div>
           </div>

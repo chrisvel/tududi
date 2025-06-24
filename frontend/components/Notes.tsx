@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   BookOpenIcon,
   PencilSquareIcon,
   TrashIcon,
   MagnifyingGlassIcon,
+  TagIcon,
 } from '@heroicons/react/24/solid';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
@@ -19,6 +20,7 @@ import {
 
 const Notes: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [notes, setNotes] = useState<Note[]>([]);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -27,6 +29,7 @@ const Notes: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [hoveredNoteId, setHoveredNoteId] = useState<number | null>(null);
 
   useEffect(() => {
     const loadNotes = async () => {
@@ -66,9 +69,9 @@ const Notes: React.FC = () => {
     try {
       let updatedNotes;
       if (noteData.id) {
-        await updateNote(noteData.id, noteData);
+        const savedNote = await updateNote(noteData.id, noteData);
         updatedNotes = notes.map((note) =>
-          note.id === noteData.id ? noteData : note
+          note.id === noteData.id ? savedNote : note
         );
       } else {
         const newNote = await createNote(noteData);
@@ -142,20 +145,44 @@ const Notes: React.FC = () => {
             {filteredNotes.map((note) => (
               <li
                 key={note.id}
-                className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-2 flex justify-between items-center"
+                className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 flex justify-between items-center"
+                onMouseEnter={() => setHoveredNoteId(note.id || null)}
+                onMouseLeave={() => setHoveredNoteId(null)}
               >
                 <div className="flex-grow overflow-hidden pr-4">
-                  <Link
-                    to={`/note/${note.id}`}
-                    className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline block"
-                  >
-                    {note.title}
-                  </Link>
+                  <div className="flex items-center flex-wrap gap-2">
+                    <Link
+                      to={`/note/${note.id}`}
+                      className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
+                    >
+                      {note.title}
+                    </Link>
+                    {/* Tags */}
+                    {((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0)) && (
+                      <>
+                        {(note.tags || note.Tags || []).map((tag) => (
+                          <button
+                            key={tag.id}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              navigate(`/tag/${tag.id}`);
+                            }}
+                            className="flex items-center space-x-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                          >
+                            <TagIcon className="h-3 w-3 text-gray-500 dark:text-gray-300" />
+                            <span className="text-gray-700 dark:text-gray-300">
+                              {tag.name}
+                            </span>
+                          </button>
+                        ))}
+                      </>
+                    )}
+                  </div>
                 </div>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEditNote(note)}
-                    className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
+                    className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
                     aria-label={t('notes.editNoteAriaLabel', { noteTitle: note.title })}
                     title={t('notes.editNoteTitle', { noteTitle: note.title })}
                   >
@@ -166,6 +193,7 @@ const Notes: React.FC = () => {
                       setNoteToDelete(note);
                       setIsConfirmDialogOpen(true);
                     }}
+                    className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
                     aria-label={t('notes.deleteNoteAriaLabel', { noteTitle: note.title })}
                     title={t('notes.deleteNoteTitle', { noteTitle: note.title })}
                   >

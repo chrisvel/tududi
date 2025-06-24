@@ -26,68 +26,90 @@ function isUrl(text) {
   return urlRegex.test(text.trim());
 }
 
-// Helper function to fetch URL title
-async function fetchUrlTitle(url) {
+// Helper function to fetch URL title with redirect handling
+async function fetchUrlTitle(url, maxRedirects = 5) {
   return new Promise((resolve) => {
     // Add protocol if missing
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       url = 'http://' + url;
     }
 
-    try {
-      const urlObj = new URL(url);
-      const isHttps = urlObj.protocol === 'https:';
-      const client = isHttps ? https : http;
+    function makeRequest(currentUrl, redirectCount = 0) {
+      if (redirectCount > maxRedirects) {
+        resolve(null);
+        return;
+      }
 
-      const options = {
-        hostname: urlObj.hostname,
-        port: urlObj.port || (isHttps ? 443 : 80),
-        path: urlObj.pathname + urlObj.search,
-        method: 'GET',
-        timeout: 5000,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-      };
+      try {
+        const urlObj = new URL(currentUrl);
+        const isHttps = urlObj.protocol === 'https:';
+        const client = isHttps ? https : http;
 
-      const req = client.request(options, (res) => {
-        let data = '';
-        let totalBytes = 0;
-        const maxBytes = 50000;
+        const options = {
+          hostname: urlObj.hostname,
+          port: urlObj.port || (isHttps ? 443 : 80),
+          path: urlObj.pathname + urlObj.search,
+          method: 'GET',
+          timeout: 5000,
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+          }
+        };
 
-        res.on('data', (chunk) => {
-          totalBytes += chunk.length;
-          if (totalBytes > maxBytes) {
-            req.destroy();
+        const req = client.request(options, (res) => {
+          // Handle redirects (301, 302, 303, 307, 308)
+          if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location) {
+            const redirectUrl = new URL(res.headers.location, currentUrl).href;
+            makeRequest(redirectUrl, redirectCount + 1);
             return;
           }
-          data += chunk;
-          
-          // Stop if we find the title tag
-          if (data.includes('</title>')) {
-            req.destroy();
+
+          // If not a successful response, resolve with null
+          if (res.statusCode < 200 || res.statusCode >= 400) {
+            resolve(null);
+            return;
           }
+
+          let data = '';
+          let totalBytes = 0;
+          const maxBytes = 50000;
+
+          res.on('data', (chunk) => {
+            totalBytes += chunk.length;
+            if (totalBytes > maxBytes) {
+              req.destroy();
+              return;
+            }
+            data += chunk;
+            
+            // Stop if we find the title tag
+            if (data.includes('</title>')) {
+              req.destroy();
+            }
+          });
+
+          res.on('end', () => {
+            const title = extractTitleFromHtml(data);
+            resolve(title);
+          });
         });
 
-        res.on('end', () => {
-          const title = extractTitleFromHtml(data);
-          resolve(title);
+        req.on('error', () => {
+          resolve(null);
         });
-      });
 
-      req.on('error', () => {
+        req.on('timeout', () => {
+          req.destroy();
+          resolve(null);
+        });
+
+        req.end();
+      } catch (error) {
         resolve(null);
-      });
-
-      req.on('timeout', () => {
-        req.destroy();
-        resolve(null);
-      });
-
-      req.end();
-    } catch (error) {
-      resolve(null);
+      }
     }
+
+    makeRequest(url);
   });
 }
 

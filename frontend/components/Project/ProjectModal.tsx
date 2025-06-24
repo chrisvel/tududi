@@ -251,7 +251,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   const handleDeleteConfirm = () => {
     if (project && project.id && onDelete) {
       onDelete(project.id);
-      showSuccessToast("Project deleted successfully!");
+      showSuccessToast(t('success.projectDeleted'));
       setShowConfirmDialog(false);
       handleClose();
     }

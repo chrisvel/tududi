@@ -196,8 +196,13 @@ const InboxItems: React.FC = () => {
   
   const handleSaveTask = async (task: Task) => {
     try {
-      await createTask(task);
-      showSuccessToast(t('task.createSuccess'));
+      const createdTask = await createTask(task);
+      const taskLink = (
+        <span>
+          {t('task.created', 'Task')} <a href={`/task/${createdTask.uuid}`} className="text-green-200 underline hover:text-green-100">{createdTask.name}</a> {t('task.createdSuccessfully', 'created successfully!')}
+        </span>
+      );
+      showSuccessToast(taskLink);
       
       // Process the inbox item after successful task creation
       if (currentConversionItemId !== null) {
@@ -326,7 +331,7 @@ const InboxItems: React.FC = () => {
         }}
         task={taskToEdit || { name: '', status: 'not_started', priority: 'medium' }}
         onSave={handleSaveTask}
-        onDelete={() => {}} // No need to delete since it's a new task
+        onDelete={async () => {}} // No need to delete since it's a new task
         projects={Array.isArray(projects) ? projects : []}
         onCreateProject={handleCreateProject}
       />

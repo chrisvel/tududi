@@ -2,8 +2,11 @@
 process.env.NODE_ENV = 'test';
 
 const { sequelize } = require('../../models');
+const fs = require('fs');
+const path = require('path');
 
 beforeAll(async () => {
+  // Ensure test database is clean and created
   await sequelize.sync({ force: true });
 }, 30000);
 

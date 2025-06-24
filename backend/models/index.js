@@ -5,10 +5,11 @@ const path = require('path');
 let dbConfig;
 
 if (process.env.NODE_ENV === 'test') {
-  // Use in-memory database for tests
+  // Use temporary file database for tests to allow external script access
+  const testDbPath = path.join(__dirname, '../db', 'test.sqlite3');
   dbConfig = {
     dialect: 'sqlite',
-    storage: ':memory:',
+    storage: testDbPath,
     logging: false,
     define: {
       timestamps: true,

@@ -45,7 +45,8 @@
     "node-cron": "^4.1.0",
     "recharts": "^2.15.4",
     "sequelize": "^6.37.7",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",

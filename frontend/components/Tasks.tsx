@@ -8,6 +8,7 @@ import { Project } from "../entities/Project";
 import { getTitleAndIcon } from "./Task/getTitleAndIcon";
 import { getDescription } from "./Task/getDescription";
 import { createTask } from "../utils/tasksService";
+import { useToast } from "./Shared/ToastContext";
 import {
   TagIcon,
   XMarkIcon,
@@ -34,6 +35,7 @@ const getSearchPlaceholder = (language: string): string => {
 
 const Tasks: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { showSuccessToast } = useToast();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -138,6 +140,14 @@ const Tasks: React.FC = () => {
       const newTask = await createTask(taskData as Task);
       // Add the new task optimistically to avoid race conditions
       setTasks((prevTasks) => [newTask, ...prevTasks]);
+      
+      // Show success toast with task link
+      const taskLink = (
+        <span>
+          {t('task.created', 'Task')} <a href={`/task/${newTask.uuid}`} className="text-green-200 underline hover:text-green-100">{newTask.name}</a> {t('task.createdSuccessfully', 'created successfully!')}
+        </span>
+      );
+      showSuccessToast(taskLink);
     } catch (error) {
       console.error("Error creating task:", error);
       setError("Error creating task.");

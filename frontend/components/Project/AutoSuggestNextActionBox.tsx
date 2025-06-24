@@ -31,7 +31,7 @@ const AutoSuggestNextActionBox: React.FC<AutoSuggestNextActionBoxProps> = ({
     e.preventDefault();
     if (actionDescription.trim()) {
       onAddAction(actionDescription.trim());
-      showSuccessToast("Next action added successfully!");
+      showSuccessToast(t('success.nextActionAdded'));
       setActionDescription("");
     }
   };

@@ -13,6 +13,8 @@ import {
   CheckCircleIcon,
   ArrowUpIcon,
   ArrowDownIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import { fetchTasks, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchProjects } from "../../utils/projectsService";
@@ -59,6 +61,14 @@ const TasksToday: React.FC = () => {
   const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(() => {
     const stored = sessionStorage.getItem('hideNextTaskSuggestion');
     return stored !== 'true';
+  });
+  const [isSuggestedCollapsed, setIsSuggestedCollapsed] = useState(() => {
+    const stored = localStorage.getItem('suggestedTasksCollapsed');
+    return stored === 'true';
+  });
+  const [isCompletedCollapsed, setIsCompletedCollapsed] = useState(() => {
+    const stored = localStorage.getItem('completedTasksCollapsed');
+    return stored === 'true';
   });
   
   // Metrics from the API
@@ -138,6 +148,19 @@ const TasksToday: React.FC = () => {
   const handleCloseNextTaskSuggestion = () => {
     setShowNextTaskSuggestion(false);
     sessionStorage.setItem('hideNextTaskSuggestion', 'true');
+  };
+
+  // Toggle functions for collapsible sections
+  const toggleSuggestedCollapsed = () => {
+    const newState = !isSuggestedCollapsed;
+    setIsSuggestedCollapsed(newState);
+    localStorage.setItem('suggestedTasksCollapsed', newState.toString());
+  };
+
+  const toggleCompletedCollapsed = () => {
+    const newState = !isCompletedCollapsed;
+    setIsCompletedCollapsed(newState);
+    localStorage.setItem('completedTasksCollapsed', newState.toString());
   };
   
   // Load data once on component mount
@@ -467,25 +490,55 @@ const TasksToday: React.FC = () => {
 
         {metrics.suggested_tasks.length > 0 && (
           <>
-            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.suggested')}</h3>
-            <TaskList
-              tasks={metrics.suggested_tasks}
-              onTaskUpdate={handleTaskUpdate}
-              onTaskDelete={handleTaskDelete}
-              projects={localProjects}
-            />
+            <div 
+              className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+              onClick={toggleSuggestedCollapsed}
+            >
+              <h3 className="text-xl font-medium">{t('tasks.suggested')}</h3>
+              <div className="flex items-center">
+                <span className="text-sm text-gray-500 mr-2">{metrics.suggested_tasks.length}</span>
+                {isSuggestedCollapsed ? (
+                  <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                )}
+              </div>
+            </div>
+            {!isSuggestedCollapsed && (
+              <TaskList
+                tasks={metrics.suggested_tasks}
+                onTaskUpdate={handleTaskUpdate}
+                onTaskDelete={handleTaskDelete}
+                projects={localProjects}
+              />
+            )}
           </>
         )}
 
         {metrics.tasks_completed_today.length > 0 && (
           <>
-            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.completedToday')}</h3>
-            <TaskList
-              tasks={metrics.tasks_completed_today}
-              onTaskUpdate={handleTaskUpdate}
-              onTaskDelete={handleTaskDelete}
-              projects={localProjects}
-            />
+            <div 
+              className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+              onClick={toggleCompletedCollapsed}
+            >
+              <h3 className="text-xl font-medium">{t('tasks.completedToday')}</h3>
+              <div className="flex items-center">
+                <span className="text-sm text-gray-500 mr-2">{metrics.tasks_completed_today.length}</span>
+                {isCompletedCollapsed ? (
+                  <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                )}
+              </div>
+            </div>
+            {!isCompletedCollapsed && (
+              <TaskList
+                tasks={metrics.tasks_completed_today}
+                onTaskUpdate={handleTaskUpdate}
+                onTaskDelete={handleTaskDelete}
+                projects={localProjects}
+              />
+            )}
           </>
         )}
 

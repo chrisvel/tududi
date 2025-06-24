@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useToast } from "./components/Shared/ToastContext";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import "./styles/tailwind.css";
@@ -39,6 +40,7 @@ const Layout: React.FC<LayoutProps> = ({
   children,
 }) => {
   const { t } = useTranslation();
+  const { showSuccessToast } = useToast();
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -203,8 +205,20 @@ const Layout: React.FC<LayoutProps> = ({
     try {
       if (taskData.id) {
         await updateTask(taskData.id, taskData);
+        const taskLink = (
+          <span>
+            {t('task.updated', 'Task')} <a href="/tasks" className="text-green-200 underline hover:text-green-100">{taskData.name}</a> {t('task.updatedSuccessfully', 'updated successfully!')}
+          </span>
+        );
+        showSuccessToast(taskLink);
       } else {
-        await createTask(taskData);
+        const createdTask = await createTask(taskData);
+        const taskLink = (
+          <span>
+            {t('task.created', 'Task')} <a href="/tasks" className="text-green-200 underline hover:text-green-100">{createdTask.name}</a> {t('task.createdSuccessfully', 'created successfully!')}
+          </span>
+        );
+        showSuccessToast(taskLink);
       }
       // Don't refetch all tasks here - let individual components handle their own state
       // This prevents unnecessary re-renders and race conditions
@@ -471,7 +485,7 @@ const Layout: React.FC<LayoutProps> = ({
               status: "not_started",
             }}
             onSave={handleSaveTask}
-            onDelete={() => {}}
+            onDelete={async () => {}}
             projects={projects}
             onCreateProject={handleCreateProject}
           />
