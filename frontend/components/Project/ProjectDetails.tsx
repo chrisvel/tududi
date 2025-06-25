@@ -16,7 +16,7 @@ import NewTask from "../Task/NewTask";
 import { Project } from "../../entities/Project";
 import { PriorityType, Task } from "../../entities/Task";
 import { fetchProjectById, updateProject, deleteProject } from "../../utils/projectsService";
-import { createTask, updateTask, deleteTask } from "../../utils/tasksService";
+import { createTask, updateTask, deleteTask, toggleTaskToday } from "../../utils/tasksService";
 import { fetchAreas } from "../../utils/areasService";
 import { isAuthError } from "../../utils/authUtils";
 import { CalendarDaysIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
@@ -146,6 +146,20 @@ const ProjectDetails: React.FC = () => {
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
     } catch (err) {
       console.error("Error deleting task:", err);
+    }
+  };
+
+  const handleToggleToday = async (taskId: number): Promise<void> => {
+    try {
+      await toggleTaskToday(taskId);
+      // Refetch project data to get updated task information
+      if (id) {
+        const updatedProject = await fetchProjectById(id);
+        setProject(updatedProject);
+        setTasks(updatedProject.tasks || []);
+      }
+    } catch (error) {
+      console.error("Error toggling task today status:", error);
     }
   };
 
@@ -445,6 +459,8 @@ const ProjectDetails: React.FC = () => {
               onTaskDelete={handleTaskDelete}
               projects={project ? [project] : []}
               hideProjectName={true}
+              showTodayPlanControls={true}
+              onToggleToday={handleToggleToday}
             />
           ) : showAutoSuggestForm ? (
             <AutoSuggestNextActionBox

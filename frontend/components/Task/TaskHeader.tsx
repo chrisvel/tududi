@@ -1,5 +1,6 @@
 import React from "react";
 import { CalendarDaysIcon, CalendarIcon, PlayIcon } from "@heroicons/react/24/outline";
+import { TagIcon, FolderIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "react-i18next";
 import TaskPriorityIcon from "./TaskPriorityIcon";
 import TaskTags from "./TaskTags";
@@ -71,16 +72,27 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             <span className="text-md text-gray-900 dark:text-gray-100">
               {task.name}
             </span>
-            {project && !hideProjectName && (
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                {project.name}
-              </div>
-            )}
+            {/* Project and tags in same row, with spacing when both exist */}
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+              {project && !hideProjectName && (
+                <div className="flex items-center">
+                  <FolderIcon className="h-3 w-3 mr-1" />
+                  <span>{project.name}</span>
+                </div>
+              )}
+              {project && !hideProjectName && task.tags && task.tags.length > 0 && (
+                <span className="mx-2">•</span>
+              )}
+              {task.tags && task.tags.length > 0 && (
+                <div className="flex items-center">
+                  <TagIcon className="h-3 w-3 mr-1" />
+                  <span>{task.tags.map(tag => tag.name).join(', ')}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex items-center flex-wrap justify-start md:justify-end space-x-2">
-          {/* Tags without onTagRemove prop */}
-          <TaskTags tags={task.tags || []} />
           {task.due_date && <TaskDueDate dueDate={task.due_date} />}
           <TaskRecurrenceBadge recurrenceType={task.recurrence_type || 'none'} />
 
@@ -137,18 +149,29 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             {/* Task Title */}
             <span>{task.name}</span>
 
-            {/* Project Name */}
-            {project && !hideProjectName && (
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {project.name}
-              </div>
-            )}
+            {/* Project and tags in same row, with spacing when both exist */}
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {project && !hideProjectName && (
+                <div className="flex items-center">
+                  <FolderIcon className="h-3 w-3 mr-1" />
+                  <span>{project.name}</span>
+                </div>
+              )}
+              {project && !hideProjectName && task.tags && task.tags.length > 0 && (
+                <span className="mx-2">•</span>
+              )}
+              {task.tags && task.tags.length > 0 && (
+                <div className="flex items-center">
+                  <TagIcon className="h-3 w-3 mr-1" />
+                  <span>{task.tags.map(tag => tag.name).join(', ')}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Mobile badges row */}
         <div className="flex items-center flex-wrap justify-start space-x-2 mt-2 ml-8">
-          <TaskTags tags={task.tags || []} />
           {task.due_date && <TaskDueDate dueDate={task.due_date} />}
           <TaskRecurrenceBadge recurrenceType={task.recurrence_type || 'none'} />
           <TaskStatusBadge status={task.status} />
