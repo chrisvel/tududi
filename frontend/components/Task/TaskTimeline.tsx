@@ -79,6 +79,8 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
         return <TagIcon className={`${iconClass} text-pink-500`} />;
       case 'archived':
         return <ArchiveBoxIcon className={`${iconClass} text-gray-500`} />;
+      case 'today_changed':
+        return <CalendarIcon className={`${iconClass} text-blue-600`} />;
       default:
         return <ClockIcon className={`${iconClass} text-gray-400`} />;
     }
@@ -124,6 +126,8 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
         return t('timeline.events.tagsUpdated');
       case 'archived':
         return t('timeline.events.taskArchived');
+      case 'today_changed':
+        return t('timeline.events.todayFlagChanged');
       default:
         return getEventTypeLabel(event_type);
     }

@@ -305,6 +305,25 @@ class TaskEventService {
 
     return events;
   }
+
+  /**
+   * Get count of how many times a task has been moved to today
+   */
+  static async getTaskTodayMoveCount(taskId) {
+    const { Op } = require('sequelize');
+    
+    const count = await TaskEvent.count({
+      where: {
+        task_id: taskId,
+        event_type: 'today_changed',
+        new_value: {
+          [Op.like]: '%"today":true%'
+        }
+      }
+    });
+
+    return count;
+  }
 }
 
 module.exports = TaskEventService;

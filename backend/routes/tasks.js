@@ -6,6 +6,19 @@ const TaskEventService = require('../services/taskEventService');
 const moment = require('moment-timezone');
 const router = express.Router();
 
+// Helper function to serialize task with today move count
+async function serializeTask(task) {
+  const taskJson = task.toJSON();
+  const todayMoveCount = await TaskEventService.getTaskTodayMoveCount(task.id);
+  
+  return {
+    ...taskJson,
+    tags: taskJson.Tags || [],
+    due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null,
+    today_move_count: todayMoveCount
+  };
+}
+
 // Helper function to update task tags
 async function updateTaskTags(task, tagsData, userId) {
   if (!tagsData) return;
@@ -421,59 +434,22 @@ router.get('/tasks', async (req, res) => {
     const metrics = await computeTaskMetrics(req.currentUser.id, req.currentUser.timezone);
 
     res.json({
-      tasks: tasks.map(task => {
-        const taskJson = task.toJSON();
-        return {
-          ...taskJson,
-          tags: taskJson.Tags || [],
-          due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-        };
-      }),
+      tasks: await Promise.all(tasks.map(task => serializeTask(task))),
       metrics: {
         total_open_tasks: metrics.total_open_tasks,
         tasks_pending_over_month: metrics.tasks_pending_over_month,
         tasks_in_progress_count: metrics.tasks_in_progress_count,
-        tasks_in_progress: metrics.tasks_in_progress.map(task => {
-          const taskJson = task.toJSON();
+        tasks_in_progress: await Promise.all(metrics.tasks_in_progress.map(task => serializeTask(task))),
+        tasks_due_today: await Promise.all(metrics.tasks_due_today.map(task => serializeTask(task))),
+        today_plan_tasks: await Promise.all(metrics.today_plan_tasks.map(task => serializeTask(task))),
+        suggested_tasks: await Promise.all(metrics.suggested_tasks.map(task => serializeTask(task))),
+        tasks_completed_today: await Promise.all(metrics.tasks_completed_today.map(async task => {
+          const serialized = await serializeTask(task);
           return {
-            ...taskJson,
-            tags: taskJson.Tags || [],
-            due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-          };
-        }),
-        tasks_due_today: metrics.tasks_due_today.map(task => {
-          const taskJson = task.toJSON();
-          return {
-            ...taskJson,
-            tags: taskJson.Tags || [],
-            due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-          };
-        }),
-        today_plan_tasks: metrics.today_plan_tasks.map(task => {
-          const taskJson = task.toJSON();
-          return {
-            ...taskJson,
-            tags: taskJson.Tags || [],
-            due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-          };
-        }),
-        suggested_tasks: metrics.suggested_tasks.map(task => {
-          const taskJson = task.toJSON();
-          return {
-            ...taskJson,
-            tags: taskJson.Tags || [],
-            due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-          };
-        }),
-        tasks_completed_today: metrics.tasks_completed_today.map(task => {
-          const taskJson = task.toJSON();
-          return {
-            ...taskJson,
-            tags: taskJson.Tags || [],
-            due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null,
+            ...serialized,
             completed_at: task.completed_at ? task.completed_at.toISOString() : null
           };
-        }),
+        })),
         weekly_completions: metrics.weekly_completions
       }
     });
@@ -501,13 +477,9 @@ router.get('/task/uuid/:uuid', async (req, res) => {
       return res.status(404).json({ error: 'Task not found.' });
     }
 
-    const taskJson = task.toJSON();
+    const serializedTask = await serializeTask(task);
     
-    res.json({
-      ...taskJson,
-      tags: taskJson.Tags || [],
-      due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-    });
+    res.json(serializedTask);
   } catch (error) {
     console.error('Error fetching task by UUID:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -529,13 +501,9 @@ router.get('/task/:id', async (req, res) => {
       return res.status(404).json({ error: 'Task not found.' });
     }
 
-    const taskJson = task.toJSON();
+    const serializedTask = await serializeTask(task);
     
-    res.json({
-      ...taskJson,
-      tags: taskJson.Tags || [],
-      due_date: task.due_date ? task.due_date.toISOString().split('T')[0] : null
-    });
+    res.json(serializedTask);
   } catch (error) {
     console.error('Error fetching task:', error);
     res.status(500).json({ error: 'Internal server error' });

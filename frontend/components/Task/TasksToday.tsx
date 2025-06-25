@@ -465,11 +465,12 @@ const TasksToday: React.FC = () => {
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
         <div className="flex flex-col mb-4">
-          <div className="flex items-center mb-4">
-            <h2 className="text-2xl font-light flex items-center">
-              <CalendarDaysIcon className="h-5 w-5 mr-2" /> {t('tasks.today')}
+          <div className="flex items-end mb-4">
+            <CalendarDaysIcon className="h-5 w-5 mr-2 mb-1" />
+            <h2 className="text-2xl font-light mr-4">
+              {t('tasks.today')}
             </h2>
-            <span className="ml-4 mr-4 text-gray-500">
+            <span className="text-gray-500">
               {format(new Date(), "PPP", { locale: getLocale(i18n.language) })}
             </span>
           </div>
@@ -478,63 +479,79 @@ const TasksToday: React.FC = () => {
           <div className="flex items-center space-x-4 pb-4 border-b border-gray-200 dark:border-gray-700">
             <button
               onClick={toggleMetricsExpanded}
-              className="flex flex-row items-center p-3 group focus:outline-none"
+              className={`flex flex-row items-center p-3 group focus:outline-none rounded-lg transition-all duration-200 ${
+                isMetricsExpanded 
+                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm' 
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
               title={isMetricsExpanded ? t('dashboard.hideMetrics', 'Hide Metrics') : t('dashboard.showMetrics', 'Show Metrics')}
             >
-              <ChartBarIcon className="h-6 w-6 mr-2" />
-              <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100">
+              <ChartBarIcon className="h-6 w-6" />
+              <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
                 {t('dashboard.metrics', 'Metrics')}
               </span>
             </button>
 
-            <div className="relative">
+            <div className="relative group">
               <button
                 onClick={toggleProductivityExpanded}
-                className="flex flex-row items-center p-3 group focus:outline-none"
+                className={`flex flex-row items-center p-3 focus:outline-none rounded-lg transition-all duration-200 ${
+                  isProductivityExpanded 
+                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
                 title={isProductivityExpanded ? t('dashboard.hideInsights', 'Hide Insights') : t('dashboard.showInsights', 'Show Insights')}
               >
-                <LightBulbIcon className="h-6 w-6 mr-2" />
-                <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100">
+                <LightBulbIcon className="h-6 w-6" />
+                <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
                   {t('dashboard.insights', 'Insights')}
                 </span>
               </button>
               {productivityIssuesCount > 0 && (
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500"></span>
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 transition-transform duration-200 group-hover:translate-x-3 group-focus:translate-x-3"></span>
               )}
             </div>
 
             <button
               onClick={toggleAiSuggestionExpanded}
-              className="flex flex-row items-center p-3 group focus:outline-none"
+              className={`flex flex-row items-center p-3 group focus:outline-none rounded-lg transition-all duration-200 ${
+                isAiSuggestionExpanded 
+                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm' 
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
               title={isAiSuggestionExpanded ? t('dashboard.hideIntelligence', 'Hide Intelligence') : t('dashboard.showIntelligence', 'Show Intelligence')}
             >
-              <SparklesIcon className="h-6 w-6 mr-2" />
-              <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100">
+              <SparklesIcon className="h-6 w-6" />
+              <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
                 {t('dashboard.intelligence', 'Intelligence')}
               </span>
             </button>
 
             {metrics.tasks_completed_today.length > 0 && (
-              <div className="relative">
+              <div className="relative group">
                 <button
                   onClick={toggleCompletedExpanded}
-                  className="flex flex-row items-center p-3 group focus:outline-none"
+                  className={`flex flex-row items-center p-3 focus:outline-none rounded-lg transition-all duration-200 ${
+                    isCompletedExpanded 
+                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm' 
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  }`}
                   title={isCompletedExpanded ? t('dashboard.hideCompleted', 'Hide Completed') : t('dashboard.showCompleted', 'Show Completed')}
                 >
-                  <TrophyIcon className="h-6 w-6 mr-2" />
-                  <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100">
+                  <TrophyIcon className="h-6 w-6" />
+                  <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
                     {t('dashboard.completed', 'Completed')}
                   </span>
                 </button>
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-green-500"></span>
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-green-500 transition-transform duration-200 group-hover:translate-x-3 group-focus:translate-x-3"></span>
               </div>
             )}
 
             {inboxItemsCount > 0 && (
-              <div className="relative">
+              <div className="relative group">
                 <Link
                   to="/inbox"
-                  className="flex flex-row items-center p-3 group focus:outline-none"
+                  className="flex flex-row items-center p-3 focus:outline-none"
                   title={t('sidebar.inbox', 'Inbox')}
                 >
                   <BellIcon className="h-6 w-6 mr-2" />
@@ -542,7 +559,7 @@ const TasksToday: React.FC = () => {
                     {t('sidebar.inbox', 'Inbox')}
                   </span>
                 </Link>
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500"></span>
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 transition-transform duration-200 group-hover:translate-x-3 group-focus:translate-x-3"></span>
               </div>
             )}
           </div>

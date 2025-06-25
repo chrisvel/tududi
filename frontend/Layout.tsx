@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { PlusIcon } from '@heroicons/react/24/outline';
 import { useToast } from "./components/Shared/ToastContext";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
@@ -454,19 +455,7 @@ const Layout: React.FC<LayoutProps> = ({
         aria-label="Quick Capture"
         title={t('inbox.captureThought')}
       >
-        <svg
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 4v16m8-8H4"
-          />
-        </svg>
+        <PlusIcon className="h-6 w-6" />
       </button>
 
       {isTaskModalOpen && (

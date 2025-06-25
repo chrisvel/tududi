@@ -128,11 +128,7 @@ const NoteDetails: React.FC = () => {
             {((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0)) && (
               <div className="mb-4">
                 <div className="flex items-start">
-                  <div className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3 mt-0.5">
-                    <svg fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                    </svg>
-                  </div>
+                  <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3 mt-0.5" />
                   <div className="flex-1">
                     <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">Tags:</span>
                     <div className="flex flex-wrap gap-2 mt-1">

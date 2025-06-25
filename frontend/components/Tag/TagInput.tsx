@@ -28,9 +28,8 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
     }
   }, [initialTags]);
   
-  useEffect(() => {
-    onTagsChange(tags);
-  }, [tags, onTagsChange]);
+  // Remove this effect to prevent infinite loops
+  // onTagsChange is called directly in addNewTag, selectTag, and removeTag
 
   useEffect(() => {
     const handler = setTimeout(() => {

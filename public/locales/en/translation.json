@@ -109,6 +109,7 @@
       "projectChanged": "Project changed",
       "tagsUpdated": "Tags updated",
       "taskArchived": "Task archived",
+      "todayFlagChanged": "Today Flag Changed",
       "status": "Status",
       "priority": "Priority",
       "dueDate": "Due date",

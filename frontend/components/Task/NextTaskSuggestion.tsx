@@ -4,6 +4,7 @@ import {
   PlayIcon,
   XMarkIcon,
   ArrowPathIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { useToast } from '../Shared/ToastContext';
@@ -90,7 +91,7 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
   };
 
   return (
-    <div className="mb-6 p-4 bg-white dark:bg-gray-900 border-l-4 border-green-500 rounded-lg shadow relative">
+    <div className="mb-6 p-4 bg-white dark:bg-gray-900 border-l-4 border-purple-500 rounded-lg shadow relative">
       {onClose && (
         <button
           onClick={onClose}
@@ -102,7 +103,7 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
       )}
       
       <div className="flex items-start">
-        <PlayIcon className="h-6 w-6 text-green-500 dark:text-green-400 mr-3 flex-shrink-0 mt-0.5" />
+        <SparklesIcon className="h-6 w-6 text-purple-500 dark:text-purple-400 mr-3 flex-shrink-0 mt-0.5" />
         <div className="flex-1 pr-8">
           <p className="text-gray-700 dark:text-gray-300 font-medium mb-2 break-words">
             {suggestionSource === 'today_plan' && t('nextTask.suggestionTodayPlan', 'Since there is nothing in progress, what about starting with this task from your today plan')}
