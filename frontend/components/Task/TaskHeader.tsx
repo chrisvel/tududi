@@ -1,12 +1,9 @@
 import React from "react";
-import { CalendarDaysIcon, CalendarIcon, PlayIcon } from "@heroicons/react/24/outline";
+import { CalendarDaysIcon, CalendarIcon, PlayIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import { TagIcon, FolderIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "react-i18next";
 import TaskPriorityIcon from "./TaskPriorityIcon";
 import TaskTags from "./TaskTags";
-import TaskStatusBadge from "./TaskStatusBadge";
-import TaskDueDate from "./TaskDueDate";
-import TaskRecurrenceBadge from "./TaskRecurrenceBadge";
 import { Project } from "../../entities/Project";
 import { Task, StatusType } from "../../entities/Task";
 
@@ -16,7 +13,6 @@ interface TaskHeaderProps {
   onTaskClick: (e: React.MouseEvent) => void;
   onToggleCompletion?: () => void;
   hideProjectName?: boolean;
-  showTodayPlanControls?: boolean;
   onToggleToday?: (taskId: number) => Promise<void>;
   onTaskUpdate?: (task: Task) => Promise<void>;
 }
@@ -27,11 +23,43 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
   onTaskClick,
   onToggleCompletion,
   hideProjectName = false,
-  showTodayPlanControls = false,
   onToggleToday,
   onTaskUpdate,
 }) => {
   const { t } = useTranslation();
+
+  const formatDueDate = (dueDate: string) => {
+    const today = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    if (dueDate === today) return t('dateIndicators.today', 'TODAY');
+    if (dueDate === tomorrow) return t('dateIndicators.tomorrow', 'TOMORROW');
+    if (dueDate === yesterday) return t('dateIndicators.yesterday', 'YESTERDAY');
+
+    return new Date(dueDate).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  const formatRecurrence = (recurrenceType: string) => {
+    switch (recurrenceType) {
+      case 'daily':
+        return t('recurrence.daily', 'Daily');
+      case 'weekly':
+        return t('recurrence.weekly', 'Weekly');
+      case 'monthly':
+        return t('recurrence.monthly', 'Monthly');
+      case 'monthly_weekday':
+        return t('recurrence.monthlyWeekday', 'Monthly');
+      case 'monthly_last_day':
+        return t('recurrence.monthlyLastDay', 'Monthly');
+      default:
+        return t('recurrence.recurring', 'Recurring');
+    }
+  };
 
   const handleTodayToggle = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent opening task modal
@@ -72,7 +100,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             <span className="text-md text-gray-900 dark:text-gray-100">
               {task.name}
             </span>
-            {/* Project and tags in same row, with spacing when both exist */}
+            {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
             <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
               {project && !hideProjectName && (
                 <div className="flex items-center">
@@ -89,12 +117,28 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                   <span>{task.tags.map(tag => tag.name).join(', ')}</span>
                 </div>
               )}
+              {((project && !hideProjectName) || (task.tags && task.tags.length > 0)) && task.due_date && (
+                <span className="mx-2">•</span>
+              )}
+              {task.due_date && (
+                <div className="flex items-center">
+                  <CalendarIcon className="h-3 w-3 mr-1" />
+                  <span>{formatDueDate(task.due_date)}</span>
+                </div>
+              )}
+              {((project && !hideProjectName) || (task.tags && task.tags.length > 0) || task.due_date) && task.recurrence_type && task.recurrence_type !== 'none' && (
+                <span className="mx-2">•</span>
+              )}
+              {task.recurrence_type && task.recurrence_type !== 'none' && (
+                <div className="flex items-center">
+                  <ArrowPathIcon className="h-3 w-3 mr-1" />
+                  <span>{formatRecurrence(task.recurrence_type)}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
         <div className="flex items-center flex-wrap justify-start md:justify-end space-x-2">
-          {task.due_date && <TaskDueDate dueDate={task.due_date} />}
-          <TaskRecurrenceBadge recurrenceType={task.recurrence_type || 'none'} />
 
           {/* Today Plan Controls */}
           {onToggleToday && (
@@ -151,21 +195,30 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
             {/* Task Title */}
             <span>{task.name}</span>
 
-            {/* Project and tags in same row, with spacing when both exist */}
-            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {/* Project, tags, due date, and recurrence - each on separate lines */}
+            <div className="flex flex-col text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-1">
               {project && !hideProjectName && (
                 <div className="flex items-center">
                   <FolderIcon className="h-3 w-3 mr-1" />
                   <span>{project.name}</span>
                 </div>
               )}
-              {project && !hideProjectName && task.tags && task.tags.length > 0 && (
-                <span className="mx-2">•</span>
-              )}
               {task.tags && task.tags.length > 0 && (
                 <div className="flex items-center">
                   <TagIcon className="h-3 w-3 mr-1" />
                   <span>{task.tags.map(tag => tag.name).join(', ')}</span>
+                </div>
+              )}
+              {task.due_date && (
+                <div className="flex items-center">
+                  <CalendarIcon className="h-3 w-3 mr-1" />
+                  <span>{formatDueDate(task.due_date)}</span>
+                </div>
+              )}
+              {task.recurrence_type && task.recurrence_type !== 'none' && (
+                <div className="flex items-center">
+                  <ArrowPathIcon className="h-3 w-3 mr-1" />
+                  <span>{formatRecurrence(task.recurrence_type)}</span>
                 </div>
               )}
             </div>
@@ -174,9 +227,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
         {/* Mobile badges row */}
         <div className="flex items-center flex-wrap justify-start space-x-2 mt-2 ml-8">
-          {task.due_date && <TaskDueDate dueDate={task.due_date} />}
-          <TaskRecurrenceBadge recurrenceType={task.recurrence_type || 'none'} />
-          <TaskStatusBadge status={task.status} />
           
           {/* Play/In Progress Controls - Mobile */}
           {(task.status === 'not_started' || task.status === 'in_progress' || task.status === 0 || task.status === 1) && (
