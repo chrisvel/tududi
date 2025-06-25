@@ -401,7 +401,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                         onToggle={() => toggleSection('metadata')}
                       >
                         <TaskMetadataSection
-                          status={getStatusString(formData.status)}
                           priority={getPriorityString(formData.priority)}
                           dueDate={formData.due_date || ""}
                           taskId={task.id}

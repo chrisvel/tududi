@@ -151,15 +151,25 @@ const ProjectDetails: React.FC = () => {
 
   const handleToggleToday = async (taskId: number): Promise<void> => {
     try {
-      await toggleTaskToday(taskId);
-      // Refetch project data to get updated task information
-      if (id) {
-        const updatedProject = await fetchProjectById(id);
-        setProject(updatedProject);
-        setTasks(updatedProject.tasks || []);
-      }
+      const updatedTask = await toggleTaskToday(taskId);
+      // Update the task in the local state immediately to avoid UI flashing
+      setTasks(prevTasks => 
+        prevTasks.map(task => 
+          task.id === taskId ? { ...task, today: updatedTask.today, today_move_count: updatedTask.today_move_count } : task
+        )
+      );
     } catch (error) {
       console.error("Error toggling task today status:", error);
+      // Optionally refetch data on error to ensure consistency
+      if (id) {
+        try {
+          const updatedProject = await fetchProjectById(id);
+          setProject(updatedProject);
+          setTasks(updatedProject.tasks || []);
+        } catch (refetchError) {
+          console.error("Error refetching project data:", refetchError);
+        }
+      }
     }
   };
 

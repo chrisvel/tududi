@@ -19,6 +19,7 @@ import {
   LightBulbIcon,
   SparklesIcon,
   TrophyIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
 import { fetchTasks, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchProjects } from "../../utils/projectsService";
@@ -91,6 +92,10 @@ const TasksToday: React.FC = () => {
   });
   const [isCompletedExpanded, setIsCompletedExpanded] = useState(() => {
     const stored = localStorage.getItem('completedExpanded');
+    return stored !== 'false'; // Default to true (expanded)
+  });
+  const [isDueTodayExpanded, setIsDueTodayExpanded] = useState(() => {
+    const stored = localStorage.getItem('dueTodayExpanded');
     return stored !== 'false'; // Default to true (expanded)
   });
   
@@ -208,6 +213,12 @@ const TasksToday: React.FC = () => {
     const newState = !isCompletedExpanded;
     setIsCompletedExpanded(newState);
     localStorage.setItem('completedExpanded', newState.toString());
+  };
+
+  const toggleDueTodayExpanded = () => {
+    const newState = !isDueTodayExpanded;
+    setIsDueTodayExpanded(newState);
+    localStorage.setItem('dueTodayExpanded', newState.toString());
   };
   
   // Load data once on component mount
@@ -508,7 +519,7 @@ const TasksToday: React.FC = () => {
                 </span>
               </button>
               {productivityIssuesCount > 0 && (
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 transition-transform duration-200 group-hover:translate-x-3 group-focus:translate-x-3"></span>
+                <span className="absolute top-2 right-1 w-2 h-2 rounded-full bg-red-500"></span>
               )}
             </div>
 
@@ -527,6 +538,26 @@ const TasksToday: React.FC = () => {
               </span>
             </button>
 
+            {metrics.tasks_due_today.length > 0 && (
+              <div className="relative group">
+                <button
+                  onClick={toggleDueTodayExpanded}
+                  className={`flex flex-row items-center p-3 focus:outline-none rounded-lg transition-all duration-200 min-h-[48px] ${
+                    isDueTodayExpanded 
+                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm' 
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  }`}
+                  title={isDueTodayExpanded ? t('dashboard.hideDueToday', 'Hide Due Today') : t('dashboard.showDueToday', 'Show Due Today')}
+                >
+                  <ClockIcon className="h-6 w-6 flex-shrink-0" />
+                  <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2 whitespace-nowrap">
+                    {t('dashboard.dueToday', 'Due Today')}
+                  </span>
+                </button>
+                <span className="absolute top-2 right-1 w-2 h-2 rounded-full bg-orange-500"></span>
+              </div>
+            )}
+
             {metrics.tasks_completed_today.length > 0 && (
               <div className="relative group">
                 <button
@@ -543,7 +574,7 @@ const TasksToday: React.FC = () => {
                     {t('dashboard.completed', 'Completed')}
                   </span>
                 </button>
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-green-500 transition-transform duration-200 group-hover:translate-x-3 group-focus:translate-x-3"></span>
+                <span className="absolute top-2 right-1 w-2 h-2 rounded-full bg-green-500"></span>
               </div>
             )}
 
@@ -554,12 +585,12 @@ const TasksToday: React.FC = () => {
                   className="flex flex-row items-center p-3 focus:outline-none"
                   title={t('sidebar.inbox', 'Inbox')}
                 >
-                  <BellIcon className="h-6 w-6 mr-2" />
-                  <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100">
+                  <BellIcon className="h-6 w-6" />
+                  <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
                     {t('sidebar.inbox', 'Inbox')}
                   </span>
                 </Link>
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 transition-transform duration-200 group-hover:translate-x-3 group-focus:translate-x-3"></span>
+                <span className="absolute top-2 right-1 w-2 h-2 rounded-full bg-red-500"></span>
               </div>
             )}
           </div>
@@ -726,6 +757,21 @@ const TasksToday: React.FC = () => {
           onToggleToday={handleToggleToday}
         />
 
+        {/* Due Today Tasks - Conditionally Rendered */}
+        {isDueTodayExpanded && metrics.tasks_due_today.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.dueToday')}</h3>
+            <TaskList
+              tasks={metrics.tasks_due_today}
+              onTaskUpdate={handleTaskUpdate}
+              onTaskDelete={handleTaskDelete}
+              projects={localProjects}
+              showTodayPlanControls={true}
+              onToggleToday={handleToggleToday}
+            />
+          </div>
+        )}
+
         {/* Completed Tasks - Conditionally Rendered */}
         {isCompletedExpanded && metrics.tasks_completed_today.length > 0 && (
           <div className="mb-6">
@@ -754,20 +800,6 @@ const TasksToday: React.FC = () => {
               />
             )}
           </div>
-        )}
-
-        {metrics.tasks_due_today.length > 0 && (
-          <>
-            <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.dueToday')}</h3>
-            <TaskList
-              tasks={metrics.tasks_due_today}
-              onTaskUpdate={handleTaskUpdate}
-              onTaskDelete={handleTaskDelete}
-              projects={localProjects}
-              showTodayPlanControls={true}
-              onToggleToday={handleToggleToday}
-            />
-          </>
         )}
 
         {metrics.tasks_due_today.length === 0 && 

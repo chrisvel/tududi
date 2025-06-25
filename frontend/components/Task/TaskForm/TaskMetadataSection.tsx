@@ -5,7 +5,6 @@ import StatusDropdown from '../../Shared/StatusDropdown';
 import PriorityDropdown from '../../Shared/PriorityDropdown';
 
 interface TaskMetadataSectionProps {
-  status: StatusType;
   priority: PriorityType;
   dueDate: string;
   taskId: number | undefined;
@@ -15,7 +14,6 @@ interface TaskMetadataSectionProps {
 }
 
 const TaskMetadataSection: React.FC<TaskMetadataSectionProps> = ({
-  status,
   priority,
   dueDate,
   taskId,
@@ -27,15 +25,6 @@ const TaskMetadataSection: React.FC<TaskMetadataSectionProps> = ({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div>
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-          {t('forms.task.labels.status', 'Status')}
-        </label>
-        <StatusDropdown
-          value={status}
-          onChange={onStatusChange}
-        />
-      </div>
       <div>
         <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
           {t('forms.task.labels.priority', 'Priority')}

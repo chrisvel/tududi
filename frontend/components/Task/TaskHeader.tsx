@@ -100,22 +100,24 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
           {onToggleToday && (
             <button
               onClick={handleTodayToggle}
-              className={`items-center justify-center ${task.today_move_count && task.today_move_count > 1 ? 'px-2 h-6' : 'w-6 h-6'} rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 ${
-                task.today 
-                  ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 flex'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hidden group-hover:flex'
+              className={`items-center justify-center ${
+              Number(task.today_move_count) > 1 ? 'px-2 h-6' : 'w-6 h-6'
+              } rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 ${
+              task.today 
+                ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 flex'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hidden group-hover:flex'
               }`}
               title={task.today ? t('tasks.removeFromToday', 'Remove from today plan') : t('tasks.addToToday', 'Add to today plan')}
             >
               {task.today ? (
-                <CalendarDaysIcon className="h-3 w-3" />
+              <CalendarDaysIcon className="h-3 w-3" />
               ) : (
-                <CalendarIcon className="h-3 w-3" />
+              <CalendarIcon className="h-3 w-3" />
               )}
-              {task.today_move_count && task.today_move_count > 1 && (
-                <span className="ml-1 text-xs font-medium">
-                  {task.today_move_count}
-                </span>
+              {Number(task.today_move_count) > 1 && (
+              <span className="ml-1 text-xs font-medium">
+                {Number(task.today_move_count)}
+              </span>
               )}
             </button>
           )}
