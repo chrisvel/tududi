@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,6 +11,7 @@ import {
   ClockIcon,
 } from '@heroicons/react/24/solid';
 import { useStore } from '../../store/useStore';
+import { loadInboxItemsToStore } from '../../utils/inboxService';
 
 interface SidebarNavProps {
   handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -24,6 +25,11 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
   
   // Get inbox items count for badge
   const inboxItemsCount = store.inboxStore.inboxItems.length;
+
+  // Load inbox items when component mounts to ensure badge shows correct count
+  useEffect(() => {
+    loadInboxItemsToStore().catch(console.error);
+  }, []);
   
   const navLinks = [
     { path: '/inbox', title: t('sidebar.inbox', 'Inbox'), icon: <InboxIcon className="h-5 w-5" /> },

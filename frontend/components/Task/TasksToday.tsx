@@ -23,7 +23,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { fetchTasks, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchProjects } from "../../utils/projectsService";
-import { loadInboxItemsToStore } from "../../utils/inboxService";
 import { Task } from "../../entities/Task";
 import { useStore } from "../../store/useStore";
 import TaskList from "./TaskList";
@@ -233,13 +232,6 @@ const TasksToday: React.FC = () => {
       setIsError(false);
       
       try {
-        // Load inbox items to ensure the notification appears correctly
-        loadInboxItemsToStore();
-      } catch (error) {
-        console.error("Failed to load inbox items:", error);
-      }
-      
-      try {
         // Load productivity assistant setting
         const isEnabled = await getProductivityAssistantEnabled();
         if (isMounted.current) {
@@ -380,9 +372,6 @@ const TasksToday: React.FC = () => {
       }
     }
   }, [store.tasksStore]);
-
-  // Get inbox items count from store for the notification
-  const inboxItemsCount = store.inboxStore.inboxItems.length;
   
   // Count productivity issues for badge (matching ProductivityAssistant logic)
   const getProductivityIssuesCount = () => {
@@ -577,22 +566,6 @@ const TasksToday: React.FC = () => {
                     </span>
                   </button>
                   <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-green-500"></span>
-                </div>
-              )}
-
-              {inboxItemsCount > 0 && (
-                <div className="relative group">
-                  <Link
-                    to="/inbox"
-                    className="flex flex-row items-center p-2 focus:outline-none rounded-md transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    title={t('sidebar.inbox', 'Inbox')}
-                  >
-                    <BellIcon className="h-4 w-4" />
-                    <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
-                      {t('sidebar.inbox', 'Inbox')}
-                    </span>
-                  </Link>
-                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>
                 </div>
               )}
             </div>
