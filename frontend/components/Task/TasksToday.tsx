@@ -63,6 +63,7 @@ const TasksToday: React.FC = () => {
   const [localProjects, setLocalProjects] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [dailyQuote, setDailyQuote] = useState<string>('');
   const [productivityAssistantEnabled, setProductivityAssistantEnabled] = useState(true);
   const [nextTaskSuggestionEnabled, setNextTaskSuggestionEnabled] = useState(true);
   const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(() => {
@@ -286,6 +287,21 @@ const TasksToday: React.FC = () => {
           setIsLoading(false);
         }
       }
+
+      // Load daily quote
+      try {
+        const response = await fetch('/api/quotes/random', {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (isMounted.current) {
+            setDailyQuote(data.quote);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load daily quote:", error);
+      }
     };
 
     loadData();
@@ -443,6 +459,21 @@ const TasksToday: React.FC = () => {
   
   const productivityIssuesCount = getProductivityIssuesCount();
 
+  // Calculate today's progress for the progress bar
+  const getTodayProgress = () => {
+    const todayTasks = metrics.today_plan_tasks || [];
+    const completedToday = metrics.tasks_completed_today.length;
+    const totalTodayTasks = todayTasks.length + completedToday;
+    
+    return {
+      completed: completedToday,
+      total: totalTodayTasks,
+      percentage: totalTodayTasks === 0 ? 0 : Math.round((completedToday / totalTodayTasks) * 100)
+    };
+  };
+
+  const todayProgress = getTodayProgress();
+
   // Show loading state
   if (isLoading && localTasks.length === 0) {
     return (
@@ -464,7 +495,7 @@ const TasksToday: React.FC = () => {
   return (
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
-        <div className="flex flex-col mb-4">
+        <div className="flex flex-col">
           {/* Today Header with Icons on the Right */}
           <div className="flex items-end justify-between mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-end">
@@ -570,6 +601,30 @@ const TasksToday: React.FC = () => {
               )}
             </div>
           </div>
+
+          {/* Today Progress Bar */}
+          {todayProgress.total > 0 && (
+            <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-4 mb-6">
+              <div className="text-sm text-gray-700 dark:text-gray-300 mb-3 font-medium">
+                {todayProgress.completed} out of {todayProgress.total} tasks completed
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
+                <div 
+                  className="bg-green-500 h-1 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${todayProgress.percentage}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
+
+          {/* Daily Quote */}
+          {dailyQuote && (
+            <div className="mb-6 text-center py-6">
+              <p className="text-base text-gray-400 dark:text-gray-500 font-light italic leading-relaxed">
+                "{dailyQuote}"
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Metrics Section - Conditionally Rendered */}
