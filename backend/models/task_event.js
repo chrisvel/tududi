@@ -30,7 +30,8 @@ module.exports = (sequelize) => {
         isIn: [['created', 'status_changed', 'priority_changed', 'due_date_changed', 
                 'project_changed', 'name_changed', 'description_changed', 'note_changed',
                 'completed', 'archived', 'deleted', 'restored', 'today_changed',
-                'tags_changed', 'recurrence_changed']]
+                'tags_changed', 'recurrence_changed', 'recurrence_type_changed', 
+                'completion_based_changed', 'recurrence_end_date_changed']]
       }
     },
     old_value: {

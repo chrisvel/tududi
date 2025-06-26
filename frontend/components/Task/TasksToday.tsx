@@ -619,7 +619,7 @@ const TasksToday: React.FC = () => {
 
         {/* Intelligence - Conditionally Rendered - Appears after Today Plan */}
         {todaySettings.showIntelligence && (
-          <div className="mt-8">
+          <div className="mt-2">
             {/* Next Task Suggestion */}
             {nextTaskSuggestionEnabled && showNextTaskSuggestion && (
               <NextTaskSuggestion 

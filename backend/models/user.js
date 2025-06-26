@@ -20,6 +20,10 @@ module.exports = (sequelize) => {
         isEmail: true
       }
     },
+    password: {
+      type: DataTypes.VIRTUAL,
+      allowNull: true
+    },
     password_digest: {
       type: DataTypes.STRING,
       allowNull: false,

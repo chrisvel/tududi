@@ -13,22 +13,33 @@ const bcrypt = require('bcrypt');
 async function createUser() {
   const [email, password] = process.argv.slice(2);
   
-  if (!email || !password) {
+  if (!email || password === undefined) {
     console.error('❌ Usage: npm run user:create <email> <password>');
     console.error('Example: npm run user:create admin@example.com mypassword123');
     process.exit(1);
   }
 
-  // Basic email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    console.error('❌ Invalid email format');
+  // Basic password validation (check for empty or short passwords)
+  if (!password || password.length < 6) {
+    console.error('❌ Password must be at least 6 characters long');
     process.exit(1);
   }
 
-  // Basic password validation
-  if (password.length < 6) {
-    console.error('❌ Password must be at least 6 characters long');
+  // Enhanced email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  
+  // Check for common invalid patterns
+  if (!email.includes('@') || 
+      !email.includes('.') ||
+      email.includes('@@') ||
+      email.includes(' ') ||
+      email.startsWith('@') ||
+      email.endsWith('@') ||
+      email.endsWith('.') ||
+      email.includes('@.') ||
+      email.includes('.@') ||
+      !emailRegex.test(email)) {
+    console.error('❌ Invalid email format');
     process.exit(1);
   }
 
@@ -42,13 +53,13 @@ async function createUser() {
       process.exit(1);
     }
     
-    // Hash the password
+    // Hash the password manually since the hook might not be working in this context
     const hashedPassword = await bcrypt.hash(password, 10);
     
     // Create the user
     const user = await User.create({
       email,
-      password: hashedPassword
+      password_digest: hashedPassword
     });
     
     console.log('✅ User created successfully');

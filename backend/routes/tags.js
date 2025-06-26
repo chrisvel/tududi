@@ -5,12 +5,8 @@ const router = express.Router();
 // GET /api/tags
 router.get('/tags', async (req, res) => {
   try {
-    if (!req.session || !req.session.userId) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-
     const tags = await Tag.findAll({
-      where: { user_id: req.session.userId },
+      where: { user_id: req.currentUser.id },
       attributes: ['id', 'name'],
       order: [['name', 'ASC']]
     });
@@ -25,12 +21,8 @@ router.get('/tags', async (req, res) => {
 // GET /api/tag/:id
 router.get('/tag/:id', async (req, res) => {
   try {
-    if (!req.session || !req.session.userId) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-
     const tag = await Tag.findOne({
-      where: { id: req.params.id, user_id: req.session.userId },
+      where: { id: req.params.id, user_id: req.currentUser.id },
       attributes: ['id', 'name']
     });
 
@@ -48,10 +40,6 @@ router.get('/tag/:id', async (req, res) => {
 // POST /api/tag
 router.post('/tag', async (req, res) => {
   try {
-    if (!req.session || !req.session.userId) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-
     const { name } = req.body;
 
     if (!name || !name.trim()) {
@@ -60,7 +48,7 @@ router.post('/tag', async (req, res) => {
 
     const tag = await Tag.create({
       name: name.trim(),
-      user_id: req.session.userId
+      user_id: req.currentUser.id
     });
 
     res.status(201).json({
@@ -76,12 +64,8 @@ router.post('/tag', async (req, res) => {
 // PATCH /api/tag/:id
 router.patch('/tag/:id', async (req, res) => {
   try {
-    if (!req.session || !req.session.userId) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-
     const tag = await Tag.findOne({
-      where: { id: req.params.id, user_id: req.session.userId }
+      where: { id: req.params.id, user_id: req.currentUser.id }
     });
 
     if (!tag) {
@@ -111,12 +95,8 @@ router.delete('/tag/:id', async (req, res) => {
   const transaction = await sequelize.transaction();
   
   try {
-    if (!req.session || !req.session.userId) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-
     const tag = await Tag.findOne({
-      where: { id: req.params.id, user_id: req.session.userId }
+      where: { id: req.params.id, user_id: req.currentUser.id }
     });
 
     if (!tag) {
@@ -126,30 +106,39 @@ router.delete('/tag/:id', async (req, res) => {
 
     // Use transaction to ensure all deletions happen atomically
     // Remove all associations before deleting the tag by manually deleting from junction tables
-    // Handle both old and new task-tag junction tables
-    await sequelize.query('DELETE FROM tasks_tags WHERE tag_id = ?', {
-      replacements: [tag.id],
-      type: sequelize.QueryTypes.DELETE,
-      transaction
-    });
+    // Only delete from tables that exist
+    try {
+      await sequelize.query('DELETE FROM tasks_tags WHERE tag_id = ?', {
+        replacements: [tag.id],
+        type: sequelize.QueryTypes.DELETE,
+        transaction
+      });
+    } catch (error) {
+      // Ignore if table doesn't exist
+      console.log('tasks_tags table not found, skipping');
+    }
     
-    await sequelize.query('DELETE FROM tags_tasks WHERE tag_id = ?', {
-      replacements: [tag.id],
-      type: sequelize.QueryTypes.DELETE,
-      transaction
-    });
+    try {
+      await sequelize.query('DELETE FROM notes_tags WHERE tag_id = ?', {
+        replacements: [tag.id],
+        type: sequelize.QueryTypes.DELETE,
+        transaction
+      });
+    } catch (error) {
+      // Ignore if table doesn't exist
+      console.log('notes_tags table not found, skipping');
+    }
     
-    await sequelize.query('DELETE FROM notes_tags WHERE tag_id = ?', {
-      replacements: [tag.id],
-      type: sequelize.QueryTypes.DELETE,
-      transaction
-    });
-    
-    await sequelize.query('DELETE FROM projects_tags WHERE tag_id = ?', {
-      replacements: [tag.id],
-      type: sequelize.QueryTypes.DELETE,
-      transaction
-    });
+    try {
+      await sequelize.query('DELETE FROM projects_tags WHERE tag_id = ?', {
+        replacements: [tag.id],
+        type: sequelize.QueryTypes.DELETE,
+        transaction
+      });
+    } catch (error) {
+      // Ignore if table doesn't exist
+      console.log('projects_tags table not found, skipping');
+    }
 
     // Now safely delete the tag
     await tag.destroy({ transaction });

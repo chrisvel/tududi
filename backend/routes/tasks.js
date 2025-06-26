@@ -913,11 +913,17 @@ router.delete('/task/:id', async (req, res) => {
 
     console.log(`Attempting to delete task ${req.params.id}`);
 
-    // Check all possible foreign key references
+    // Check for child tasks - prevent deletion of parent tasks with children
     const childTasks = await Task.findAll({
       where: { recurring_parent_id: req.params.id }
     });
     console.log(`Found ${childTasks.length} child tasks`);
+
+    // If this is a recurring parent task with children, prevent deletion
+    if (childTasks.length > 0) {
+      console.log(`Cannot delete task ${req.params.id} - has ${childTasks.length} child tasks`);
+      return res.status(400).json({ error: 'There was a problem deleting the task.' });
+    }
 
     const taskEvents = await TaskEvent.findAll({
       where: { task_id: req.params.id }
