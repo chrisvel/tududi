@@ -6,6 +6,8 @@ import { handleAuthResponse } from "./authUtils";
 export interface UrlTitleResult {
   url: string;
   title: string | null;
+  image?: string | null;
+  description?: string | null;
   found?: boolean;
   error?: string;
 }

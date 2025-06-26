@@ -389,7 +389,9 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
   // Process the data in JavaScript to group by date in user's timezone
   const dateCountMap = {};
   weeklyCompletionsRaw.forEach(task => {
-    const dateInUserTz = moment(task.completed_at).tz(userTimezone).format('YYYY-MM-DD');
+    // Parse the completed_at field more reliably - convert to Date first, then to moment
+    const completedDate = new Date(task.completed_at);
+    const dateInUserTz = moment(completedDate).tz(userTimezone).format('YYYY-MM-DD');
     dateCountMap[dateInUserTz] = (dateCountMap[dateInUserTz] || 0) + 1;
   });
 

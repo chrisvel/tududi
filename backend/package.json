@@ -30,6 +30,7 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cheerio": "^1.1.0",
     "compression": "^1.8.0",
     "connect-session-sequelize": "^7.1.7",
     "cors": "^2.8.5",

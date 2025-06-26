@@ -702,9 +702,18 @@ const TasksToday: React.FC = () => {
           <ProductivityAssistant tasks={localTasks} projects={localProjects} />
         )}
 
-        {/* Intelligence - Conditionally Rendered */}
+        {/* Today Plan */}
+        <TodayPlan
+          todayPlanTasks={metrics.today_plan_tasks || []}
+          projects={localProjects}
+          onTaskUpdate={handleTaskUpdate}
+          onTaskDelete={handleTaskDelete}
+          onToggleToday={handleToggleToday}
+        />
+
+        {/* Intelligence - Conditionally Rendered - Appears after Today Plan */}
         {isAiSuggestionExpanded && (
-          <>
+          <div className="mt-8">
             {/* Next Task Suggestion */}
             {nextTaskSuggestionEnabled && showNextTaskSuggestion && (
               <NextTaskSuggestion 
@@ -747,17 +756,8 @@ const TasksToday: React.FC = () => {
                 )}
               </div>
             )}
-          </>
+          </div>
         )}
-
-        {/* Today Plan */}
-        <TodayPlan
-          todayPlanTasks={metrics.today_plan_tasks || []}
-          projects={localProjects}
-          onTaskUpdate={handleTaskUpdate}
-          onTaskDelete={handleTaskDelete}
-          onToggleToday={handleToggleToday}
-        />
 
         {/* Due Today Tasks - Conditionally Rendered */}
         {isDueTodayExpanded && metrics.tasks_due_today.length > 0 && (

@@ -10,6 +10,7 @@ import {
   ListBulletIcon,
   ClockIcon,
 } from '@heroicons/react/24/solid';
+import { useStore } from '../../store/useStore';
 
 interface SidebarNavProps {
   handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -19,6 +20,10 @@ interface SidebarNavProps {
 
 const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => {
   const { t } = useTranslation();
+  const store = useStore();
+  
+  // Get inbox items count for badge
+  const inboxItemsCount = store.inboxStore.inboxItems.length;
   
   const navLinks = [
     { path: '/inbox', title: t('sidebar.inbox', 'Inbox'), icon: <InboxIcon className="h-5 w-5" /> },
@@ -52,13 +57,20 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
           <li>
             <button
               onClick={() => handleNavClick(link.path, link.title, link.icon)}
-              className={`w-full text-left px-4 py-1 flex items-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
+              className={`w-full text-left px-4 py-1 flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
                 link.path,
                 link.query
               )}`}
             >
-              {link.icon}
-              <span className="ml-2">{link.title}</span>
+              <div className="flex items-center">
+                {link.icon}
+                <span className="ml-2">{link.title}</span>
+              </div>
+              {link.path === '/inbox' && inboxItemsCount > 0 && (
+                <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-blue-500 rounded-full">
+                  {inboxItemsCount > 99 ? '99+' : inboxItemsCount}
+                </span>
+              )}
             </button>
           </li>
           {link.path === '/inbox' && (

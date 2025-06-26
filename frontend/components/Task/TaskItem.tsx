@@ -80,10 +80,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
   return (
     <div 
-      className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1 border-2 ${
+      className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1 ${
         isInProgress 
-          ? 'border-green-400/60 dark:border-green-500/60' 
-          : 'border-gray-50 dark:border-gray-800'
+          ? 'border-2 border-green-400/60 dark:border-green-500/60' 
+          : 'border-2 border-gray-50 dark:border-gray-800'
       }`}
     >
       <TaskHeader 

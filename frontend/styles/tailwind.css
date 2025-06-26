@@ -43,6 +43,67 @@
   animation: border-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Rotating border animation for in-progress tasks */
+@keyframes border-spin {
+  0% {
+    border-color: rgba(74, 222, 128, 0.8);
+    box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.8);
+  }
+  25% {
+    border-color: rgba(74, 222, 128, 0.2);
+    box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.2);
+  }
+  50% {
+    border-color: rgba(74, 222, 128, 0.8);
+    box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.8);
+  }
+  75% {
+    border-color: rgba(74, 222, 128, 0.2);
+    box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.2);
+  }
+  100% {
+    border-color: rgba(74, 222, 128, 0.8);
+    box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.8);
+  }
+}
+
+.task-border-rotate {
+  border: 2px solid rgba(74, 222, 128, 0.8);
+  border-radius: 0.5rem;
+  animation: border-spin 1.5s ease-in-out infinite;
+}
+
+.dark .task-border-rotate {
+  border-color: rgba(34, 197, 94, 0.8);
+}
+
+@keyframes border-spin-dark {
+  0% {
+    border-color: rgba(34, 197, 94, 0.8);
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.8);
+  }
+  25% {
+    border-color: rgba(34, 197, 94, 0.2);
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.2);
+  }
+  50% {
+    border-color: rgba(34, 197, 94, 0.8);
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.8);
+  }
+  75% {
+    border-color: rgba(34, 197, 94, 0.2);
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.2);
+  }
+  100% {
+    border-color: rgba(34, 197, 94, 0.8);
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.8);
+  }
+}
+
+.dark .task-border-rotate {
+  animation: border-spin-dark 1.5s ease-in-out infinite;
+}
+
 input:focus, select:focus, textarea:focus {
   outline: none;
   box-shadow: none;

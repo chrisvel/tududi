@@ -137,14 +137,16 @@ describe('URL Routes', () => {
       expect(response.body).toHaveProperty('title');
     }, 10000);
 
-    it('should return found false for URL without protocol', async () => {
+    it('should detect URLs without protocol', async () => {
       const testText = 'Visit httpbin.org/html for testing';
       const response = await agent
         .post('/api/url/extract-from-text')
         .send({ text: testText });
 
       expect(response.status).toBe(200);
-      expect(response.body.found).toBe(false);
+      expect(response.body.found).toBe(true);
+      expect(response.body.url).toBe('httpbin.org/html');
+      expect(response.body.originalText).toBe(testText);
     });
 
     it('should return found false when no URL in text', async () => {
