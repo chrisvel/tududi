@@ -3,7 +3,6 @@ import { format } from "date-fns";
 import { el, enUS, es, ja, uk, de } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
-import { Link } from "react-router-dom";
 import {
   ClipboardDocumentListIcon,
   ArrowPathIcon,
@@ -14,12 +13,7 @@ import {
   ArrowDownIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-  ChartBarIcon,
-  BellIcon,
-  LightBulbIcon,
-  SparklesIcon,
-  TrophyIcon,
-  ClockIcon,
+  CogIcon,
 } from "@heroicons/react/24/outline";
 import { fetchTasks, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchProjects } from "../../utils/projectsService";
@@ -31,9 +25,9 @@ import { Metrics } from "../../entities/Metrics";
 import ProductivityAssistant from "../Productivity/ProductivityAssistant";
 import NextTaskSuggestion from "./NextTaskSuggestion";
 import WeeklyCompletionChart from "./WeeklyCompletionChart";
+import TodaySettingsDropdown from "./TodaySettingsDropdown";
 import { getProductivityAssistantEnabled, getNextTaskSuggestionEnabled } from "../../utils/profileService";
 import { toggleTaskToday } from "../../utils/tasksService";
-import { getVagueTasks } from "../../utils/taskIntelligenceService";
 
 const getLocale = (language: string) => {
   switch (language) {
@@ -65,6 +59,16 @@ const TasksToday: React.FC = () => {
   const [isError, setIsError] = useState(false);
   const [dailyQuote, setDailyQuote] = useState<string>('');
   const [productivityAssistantEnabled, setProductivityAssistantEnabled] = useState(true);
+  const [isSettingsDropdownOpen, setIsSettingsDropdownOpen] = useState(false);
+  const [todaySettings, setTodaySettings] = useState({
+    showMetrics: false,
+    showProductivity: false,
+    showIntelligence: false,
+    showDueToday: true,
+    showCompleted: true,
+    showProgressBar: true, // Always enabled
+    showDailyQuote: true,
+  });
   const [nextTaskSuggestionEnabled, setNextTaskSuggestionEnabled] = useState(true);
   const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(() => {
     const stored = sessionStorage.getItem('hideNextTaskSuggestion');
@@ -77,26 +81,6 @@ const TasksToday: React.FC = () => {
   const [isCompletedCollapsed, setIsCompletedCollapsed] = useState(() => {
     const stored = localStorage.getItem('completedTasksCollapsed');
     return stored === 'true';
-  });
-  const [isMetricsExpanded, setIsMetricsExpanded] = useState(() => {
-    const stored = localStorage.getItem('metricsExpanded');
-    return stored === 'true';
-  });
-  const [isProductivityExpanded, setIsProductivityExpanded] = useState(() => {
-    const stored = localStorage.getItem('productivityExpanded');
-    return stored === 'true';
-  });
-  const [isAiSuggestionExpanded, setIsAiSuggestionExpanded] = useState(() => {
-    const stored = localStorage.getItem('aiSuggestionExpanded');
-    return stored === 'true';
-  });
-  const [isCompletedExpanded, setIsCompletedExpanded] = useState(() => {
-    const stored = localStorage.getItem('completedExpanded');
-    return stored !== 'false'; // Default to true (expanded)
-  });
-  const [isDueTodayExpanded, setIsDueTodayExpanded] = useState(() => {
-    const stored = localStorage.getItem('dueTodayExpanded');
-    return stored !== 'false'; // Default to true (expanded)
   });
   
   // Metrics from the API
@@ -191,35 +175,6 @@ const TasksToday: React.FC = () => {
     localStorage.setItem('completedTasksCollapsed', newState.toString());
   };
 
-  const toggleMetricsExpanded = () => {
-    const newState = !isMetricsExpanded;
-    setIsMetricsExpanded(newState);
-    localStorage.setItem('metricsExpanded', newState.toString());
-  };
-
-  const toggleProductivityExpanded = () => {
-    const newState = !isProductivityExpanded;
-    setIsProductivityExpanded(newState);
-    localStorage.setItem('productivityExpanded', newState.toString());
-  };
-
-  const toggleAiSuggestionExpanded = () => {
-    const newState = !isAiSuggestionExpanded;
-    setIsAiSuggestionExpanded(newState);
-    localStorage.setItem('aiSuggestionExpanded', newState.toString());
-  };
-
-  const toggleCompletedExpanded = () => {
-    const newState = !isCompletedExpanded;
-    setIsCompletedExpanded(newState);
-    localStorage.setItem('completedExpanded', newState.toString());
-  };
-
-  const toggleDueTodayExpanded = () => {
-    const newState = !isDueTodayExpanded;
-    setIsDueTodayExpanded(newState);
-    localStorage.setItem('dueTodayExpanded', newState.toString());
-  };
   
   // Load data once on component mount
   useEffect(() => {
@@ -288,19 +243,77 @@ const TasksToday: React.FC = () => {
         }
       }
 
-      // Load daily quote
+      // Load daily quote from translations
       try {
-        const response = await fetch('/api/quotes/random', {
-          credentials: 'include',
-        });
+        const response = await fetch(`/locales/${i18n.language}/quotes.json`);
         if (response.ok) {
           const data = await response.json();
-          if (isMounted.current) {
-            setDailyQuote(data.quote);
+          if (isMounted.current && data.quotes && data.quotes.length > 0) {
+            // Get a random quote from the translated quotes
+            const randomIndex = Math.floor(Math.random() * data.quotes.length);
+            setDailyQuote(data.quotes[randomIndex]);
+          }
+        } else {
+          // Fallback to English if language file doesn't exist
+          const fallbackResponse = await fetch('/locales/en/quotes.json');
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json();
+            if (isMounted.current && fallbackData.quotes && fallbackData.quotes.length > 0) {
+              const randomIndex = Math.floor(Math.random() * fallbackData.quotes.length);
+              setDailyQuote(fallbackData.quotes[randomIndex]);
+            }
           }
         }
       } catch (error) {
         console.error("Failed to load daily quote:", error);
+        // Ultimate fallback
+        if (isMounted.current) {
+          setDailyQuote("Focus on progress, not perfection.");
+        }
+      }
+
+      // Load user settings
+      try {
+        const response = await fetch('/api/profile', {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          if (isMounted.current) {
+            // Parse today_settings if it's a string, or use the object directly
+            let settings;
+            if (userData.today_settings) {
+              if (typeof userData.today_settings === 'string') {
+                try {
+                  settings = JSON.parse(userData.today_settings);
+                } catch (error) {
+                  console.error('Error parsing today_settings:', error);
+                  settings = null;
+                }
+              } else {
+                settings = userData.today_settings;
+              }
+            }
+            
+            // Use parsed settings or fall back to defaults
+            settings = settings || {
+              showMetrics: false,
+              showProductivity: false,
+              showIntelligence: false,
+              showDueToday: true,
+              showCompleted: true,
+              showProgressBar: true, // Always enabled
+              showDailyQuote: true,
+            };
+            
+            // Ensure progress bar is always enabled
+            settings.showProgressBar = true;
+            
+            setTodaySettings(settings);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load user settings:", error);
       }
     };
 
@@ -389,75 +402,7 @@ const TasksToday: React.FC = () => {
     }
   }, [store.tasksStore]);
   
-  // Count productivity issues for badge (matching ProductivityAssistant logic)
-  const getProductivityIssuesCount = () => {
-    if (!productivityAssistantEnabled || !localTasks || !localProjects) return 0;
-    
-    let issueCount = 0;
-    const activeTasks = localTasks.filter(task => task.status !== 'done' && task.status !== 'archived');
-    
-    // 1. Stalled Projects (no active tasks)
-    const stalledProjects = localProjects.filter(project => 
-      project.active && !activeTasks.some(task => task.project_id === project.id)
-    );
-    issueCount += stalledProjects.length;
-    
-    // 2. Projects with completed tasks but no next action
-    const projectsNeedingNextAction = localProjects.filter(project => {
-      const projectTasks = localTasks.filter(task => task.project_id === project.id);
-      const hasCompletedTasks = projectTasks.some(task => task.status === 'done' || task.status === 'archived');
-      const hasNextAction = activeTasks.some(task => 
-        task.project_id === project.id && (task.status === 'not_started' || task.status === 'in_progress')
-      );
-      return project.active && hasCompletedTasks && !hasNextAction;
-    });
-    issueCount += projectsNeedingNextAction.length;
-    
-    // 3. Tasks that are actually projects
-    const PROJECT_VERBS = ['plan', 'organize', 'set up', 'setup', 'fix', 'review', 'implement', 'create', 'build', 'develop'];
-    const tasksAreProjects = activeTasks.filter(task => {
-      const taskName = task.name.toLowerCase();
-      return PROJECT_VERBS.some(verb => taskName.includes(verb)) && taskName.length > 30;
-    });
-    issueCount += tasksAreProjects.length;
-    
-    // 4. Vague tasks (using the same utility function as ProductivityAssistant)
-    const vagueTasks = getVagueTasks(activeTasks);
-    issueCount += vagueTasks.length;
-    
-    // 5. Stale tasks (created more than 30 days ago)
-    const now = new Date();
-    const thresholdDate = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
-    const staleTasks = activeTasks.filter(task => {
-      const taskDate = task.created_at ? new Date(task.created_at) : null;
-      return taskDate && taskDate < thresholdDate;
-    });
-    issueCount += staleTasks.length;
-    
-    // 6. Stuck projects (projects with tasks but not updated recently)
-    const stuckProjects = localProjects.filter(project => {
-      if (!project.active) return false;
-      
-      // Projects don't have date fields, so check if they have recent tasks
-      const projectTasks = activeTasks.filter(task => task.project_id === project.id);
-      
-      if (projectTasks.length === 0) return false; // Empty projects are handled by "stalled projects"
-      
-      // Find the most recent task date for this project
-      const mostRecentTaskDate = projectTasks.reduce((latest, task) => {
-        const taskDate = task.created_at ? new Date(task.created_at) : null;
-        if (!taskDate) return latest;
-        return !latest || taskDate > latest ? taskDate : latest;
-      }, null as Date | null);
-      
-      return mostRecentTaskDate && mostRecentTaskDate < thresholdDate;
-    });
-    issueCount += stuckProjects.length;
-    
-    return issueCount;
-  };
   
-  const productivityIssuesCount = getProductivityIssuesCount();
 
   // Calculate today's progress for the progress bar
   const getTodayProgress = () => {
@@ -473,6 +418,11 @@ const TasksToday: React.FC = () => {
   };
 
   const todayProgress = getTodayProgress();
+
+  // Handle settings change
+  const handleSettingsChange = (newSettings: typeof todaySettings) => {
+    setTodaySettings(newSettings);
+  };
 
   // Show loading state
   if (isLoading && localTasks.length === 0) {
@@ -497,138 +447,66 @@ const TasksToday: React.FC = () => {
       <div className="w-full max-w-5xl">
         <div className="flex flex-col">
           {/* Today Header with Icons on the Right */}
-          <div className="flex items-end justify-between mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-end">
-              <CalendarDaysIcon className="h-5 w-5 mr-2 mb-1" />
-              <h2 className="text-2xl font-light mr-4">
-                {t('tasks.today')}
-              </h2>
-              <span className="text-gray-500">
-                {format(new Date(), "PPP", { locale: getLocale(i18n.language) })}
-              </span>
+          <div className="mb-4">
+            <div className="flex items-end justify-between mb-4">
+              <div className="flex items-end">
+                <CalendarDaysIcon className="h-5 w-5 mr-2 mb-1" />
+                <h2 className="text-2xl font-light mr-4">
+                  {t('tasks.today')}
+                </h2>
+                <span className="text-gray-500">
+                  {format(new Date(), "PPP", { locale: getLocale(i18n.language) })}
+                </span>
+              </div>
+              
+              {/* Today Navigation Icons */}
+              <div className="flex items-end space-x-2">
+                <div className="relative">
+                  <button
+                    onClick={() => setIsSettingsDropdownOpen(!isSettingsDropdownOpen)}
+                    className="flex flex-row items-center p-2 group focus:outline-none rounded-md transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    title={t('settings.todayPageSettings', 'Today Page Settings')}
+                  >
+                    <CogIcon className="h-5 w-5" />
+                    <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
+                      {t('common.settings', 'Settings')}
+                    </span>
+                  </button>
+                  
+                  <TodaySettingsDropdown
+                    isOpen={isSettingsDropdownOpen}
+                    onClose={() => setIsSettingsDropdownOpen(false)}
+                    settings={todaySettings}
+                    onSettingsChange={handleSettingsChange}
+                  />
+                </div>
+              </div>
             </div>
             
-            {/* Today Navigation Icons */}
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={toggleMetricsExpanded}
-                className={`flex flex-row items-center p-2 group focus:outline-none rounded-md transition-all duration-200 ${
-                  isMetricsExpanded 
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm' 
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-                title={isMetricsExpanded ? t('dashboard.hideMetrics', 'Hide Metrics') : t('dashboard.showMetrics', 'Show Metrics')}
-              >
-                <ChartBarIcon className="h-4 w-4" />
-                <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
-                  {t('dashboard.metrics', 'Metrics')}
-                </span>
-              </button>
-
-              <div className="relative group">
-                <button
-                  onClick={toggleProductivityExpanded}
-                  className={`flex flex-row items-center p-2 focus:outline-none rounded-md transition-all duration-200 ${
-                    isProductivityExpanded 
-                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm' 
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }`}
-                  title={isProductivityExpanded ? t('dashboard.hideInsights', 'Hide Insights') : t('dashboard.showInsights', 'Show Insights')}
-                >
-                  <LightBulbIcon className="h-4 w-4" />
-                  <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
-                    {t('dashboard.insights', 'Insights')}
-                  </span>
-                </button>
-                {productivityIssuesCount > 0 && (
-                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>
+            {/* Today Progress Bar - integrated with header */}
+            {todaySettings.showProgressBar && todayProgress.total > 0 && (
+              <div className="mb-1">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
+                  <div 
+                    className="h-1 rounded-full transition-all duration-500 ease-out bg-gradient-to-r from-blue-400 via-blue-500 to-blue-700"
+                    style={{ width: `${todayProgress.percentage}%` }}
+                  ></div>
+                </div>
+                {/* Daily Quote */}
+                {todaySettings.showDailyQuote && dailyQuote && (
+                  <div className="mt-2">
+                    <p className="text-s text-gray-400 dark:text-gray-500 font-light text-left">
+                      {dailyQuote}
+                    </p>
+                  </div>
                 )}
               </div>
-
-              <button
-                onClick={toggleAiSuggestionExpanded}
-                className={`flex flex-row items-center p-2 group focus:outline-none rounded-md transition-all duration-200 ${
-                  isAiSuggestionExpanded 
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm' 
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-                title={isAiSuggestionExpanded ? t('dashboard.hideIntelligence', 'Hide Intelligence') : t('dashboard.showIntelligence', 'Show Intelligence')}
-              >
-                <SparklesIcon className="h-4 w-4" />
-                <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
-                  {t('dashboard.intelligence', 'Intelligence')}
-                </span>
-              </button>
-
-              {metrics.tasks_due_today.length > 0 && (
-                <div className="relative group">
-                  <button
-                    onClick={toggleDueTodayExpanded}
-                    className={`flex flex-row items-center p-2 focus:outline-none rounded-md transition-all duration-200 ${
-                      isDueTodayExpanded 
-                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm' 
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                    title={isDueTodayExpanded ? t('dashboard.hideDueToday', 'Hide Due Today') : t('dashboard.showDueToday', 'Show Due Today')}
-                  >
-                    <ClockIcon className="h-4 w-4 flex-shrink-0" />
-                    <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2 whitespace-nowrap">
-                      {t('dashboard.dueToday', 'Due Today')}
-                    </span>
-                  </button>
-                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-orange-500"></span>
-                </div>
-              )}
-
-              {metrics.tasks_completed_today.length > 0 && (
-                <div className="relative group">
-                  <button
-                    onClick={toggleCompletedExpanded}
-                    className={`flex flex-row items-center p-2 focus:outline-none rounded-md transition-all duration-200 ${
-                      isCompletedExpanded 
-                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm' 
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                    title={isCompletedExpanded ? t('dashboard.hideCompleted', 'Hide Completed') : t('dashboard.showCompleted', 'Show Completed')}
-                  >
-                    <TrophyIcon className="h-4 w-4" />
-                    <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
-                      {t('dashboard.completed', 'Completed')}
-                    </span>
-                  </button>
-                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-green-500"></span>
-                </div>
-              )}
-            </div>
+            )}
           </div>
-
-          {/* Today Progress Bar */}
-          {todayProgress.total > 0 && (
-            <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-4 mb-6">
-              <div className="text-sm text-gray-700 dark:text-gray-300 mb-3 font-medium">
-                {todayProgress.completed} out of {todayProgress.total} tasks completed
-              </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
-                <div 
-                  className="bg-green-500 h-1 rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${todayProgress.percentage}%` }}
-                ></div>
-              </div>
-            </div>
-          )}
-
-          {/* Daily Quote */}
-          {dailyQuote && (
-            <div className="mb-6 text-center py-6">
-              <p className="text-base text-gray-400 dark:text-gray-500 font-light italic leading-relaxed">
-                "{dailyQuote}"
-              </p>
-            </div>
-          )}
         </div>
 
         {/* Metrics Section - Conditionally Rendered */}
-        {isMetricsExpanded && (
+        {todaySettings.showMetrics && (
           <div className="mb-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Combined Task & Project Metrics */}
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
@@ -726,7 +604,7 @@ const TasksToday: React.FC = () => {
         )}
 
         {/* Productivity Assistant - Conditionally Rendered */}
-        {productivityAssistantEnabled && isProductivityExpanded && (
+        {todaySettings.showProductivity && productivityAssistantEnabled && (
           <ProductivityAssistant tasks={localTasks} projects={localProjects} />
         )}
 
@@ -740,7 +618,7 @@ const TasksToday: React.FC = () => {
         />
 
         {/* Intelligence - Conditionally Rendered - Appears after Today Plan */}
-        {isAiSuggestionExpanded && (
+        {todaySettings.showIntelligence && (
           <div className="mt-8">
             {/* Next Task Suggestion */}
             {nextTaskSuggestionEnabled && showNextTaskSuggestion && (
@@ -788,7 +666,7 @@ const TasksToday: React.FC = () => {
         )}
 
         {/* Due Today Tasks - Conditionally Rendered */}
-        {isDueTodayExpanded && metrics.tasks_due_today.length > 0 && (
+        {todaySettings.showDueToday && metrics.tasks_due_today.length > 0 && (
           <div className="mb-6">
             <h3 className="text-xl font-medium mt-6 mb-2">{t('tasks.dueToday')}</h3>
             <TaskList
@@ -802,7 +680,7 @@ const TasksToday: React.FC = () => {
         )}
 
         {/* Completed Tasks - Conditionally Rendered */}
-        {isCompletedExpanded && metrics.tasks_completed_today.length > 0 && (
+        {todaySettings.showCompleted && metrics.tasks_completed_today.length > 0 && (
           <div className="mb-6">
             <div 
               className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
@@ -837,6 +715,7 @@ const TasksToday: React.FC = () => {
             {t('tasks.noTasksAvailable')}
           </p>
         )}
+
       </div>
     </div>
   );

@@ -47,6 +47,15 @@
     "settings": "Settings",
     "logout": "Logout"
   },
+  "settings": {
+    "todayPageSettings": "Today Page Settings",
+    "showDailyQuote": "Show Daily Quote",
+    "showMetrics": "Show Metrics",
+    "showProductivity": "Show Productivity Insights",
+    "showIntelligence": "Show Intelligence Suggestions",
+    "showDueToday": "Show Due Today Tasks",
+    "showCompleted": "Show Completed Tasks"
+  },
   "dashboard": {
     "overview": "Overview",
     "sameAsYesterday": "Same as yesterday",

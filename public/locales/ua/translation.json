@@ -40,6 +40,15 @@
     "settings": "Налаштування",
     "logout": "Вийти"
   },
+  "settings": {
+    "todayPageSettings": "Налаштування сторінки Сьогодні",
+    "showDailyQuote": "Показувати щоденну цитату",
+    "showMetrics": "Показувати метрики",
+    "showProductivity": "Показувати поради з продуктивності",
+    "showIntelligence": "Показувати розумні пропозиції",
+    "showDueToday": "Показувати завдання на сьогодні",
+    "showCompleted": "Показувати виконані завдання"
+  },
   "dashboard": {
     "overview": "Огляд",
     "sameAsYesterday": "Так само, як вчора",

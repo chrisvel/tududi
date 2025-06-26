@@ -33,6 +33,15 @@
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },
+  "settings": {
+    "todayPageSettings": "Heute-Seite Einstellungen",
+    "showDailyQuote": "Tägliches Zitat anzeigen",
+    "showMetrics": "Metriken anzeigen",
+    "showProductivity": "Produktivitäts-Einblicke anzeigen",
+    "showIntelligence": "Intelligente Vorschläge anzeigen",
+    "showDueToday": "Heute fällige Aufgaben anzeigen",
+    "showCompleted": "Erledigte Aufgaben anzeigen"
+  },
   "dashboard": {
     "overview": "Übersicht",
     "sameAsYesterday": "Gleich wie gestern",

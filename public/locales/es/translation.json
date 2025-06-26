@@ -47,6 +47,15 @@
     "settings": "Ajustes",
     "logout": "Cerrar Sesión"
   },
+  "settings": {
+    "todayPageSettings": "Configuración de Página Hoy",
+    "showDailyQuote": "Mostrar Cita Diaria",
+    "showMetrics": "Mostrar Métricas",
+    "showProductivity": "Mostrar Información de Productividad",
+    "showIntelligence": "Mostrar Sugerencias Inteligentes",
+    "showDueToday": "Mostrar Tareas que Vencen Hoy",
+    "showCompleted": "Mostrar Tareas Completadas"
+  },
   "dashboard": {
     "overview": "Resumen",
     "sameAsYesterday": "Igual que ayer",

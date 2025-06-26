@@ -39,6 +39,15 @@
     "settings": "設定",
     "logout": "ログアウト"
   },
+  "settings": {
+    "todayPageSettings": "今日のページ設定",
+    "showDailyQuote": "毎日の名言を表示",
+    "showMetrics": "メトリクスを表示",
+    "showProductivity": "生産性の洞察を表示",
+    "showIntelligence": "インテリジェンス提案を表示",
+    "showDueToday": "今日期限のタスクを表示",
+    "showCompleted": "完了したタスクを表示"
+  },
   "dashboard": {
     "overview": "概要",
     "sameAsYesterday": "昨日と同じ",

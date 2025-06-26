@@ -47,6 +47,15 @@
     "settings": "Ρυθμίσεις",
     "logout": "Αποσύνδεση"
   },
+  "settings": {
+    "todayPageSettings": "Ρυθμίσεις Σελίδας Σήμερα",
+    "showDailyQuote": "Εμφάνιση Ημερήσιου Αποφθέγματος",
+    "showMetrics": "Εμφάνιση Μετρικών",
+    "showProductivity": "Εμφάνιση Στοιχείων Παραγωγικότητας",
+    "showIntelligence": "Εμφάνιση Προτάσεων Ευφυίας",
+    "showDueToday": "Εμφάνιση Εργασιών που Λήγουν Σήμερα",
+    "showCompleted": "Εμφάνιση Ολοκληρωμένων Εργασιών"
+  },
   "dashboard": {
     "overview": "Επισκόπηση",
     "sameAsYesterday": "Ίδια με χθες",

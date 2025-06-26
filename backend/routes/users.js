@@ -17,12 +17,22 @@ router.get('/profile', async (req, res) => {
         'id', 'email', 'appearance', 'language', 'timezone', 
         'avatar_image', 'telegram_bot_token', 'telegram_chat_id',
         'task_summary_enabled', 'task_summary_frequency', 'task_intelligence_enabled',
-        'auto_suggest_next_actions_enabled', 'pomodoro_enabled'
+        'auto_suggest_next_actions_enabled', 'pomodoro_enabled', 'today_settings'
       ]
     });
 
     if (!user) {
       return res.status(404).json({ error: 'Profile not found.' });
+    }
+
+    // Parse today_settings if it's a string
+    if (user.today_settings && typeof user.today_settings === 'string') {
+      try {
+        user.today_settings = JSON.parse(user.today_settings);
+      } catch (error) {
+        console.error('Error parsing today_settings:', error);
+        user.today_settings = null;
+      }
     }
 
     res.json(user);
@@ -273,6 +283,50 @@ router.get('/profile/task-summary/status', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching task summary status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PUT /api/profile/today-settings
+router.put('/profile/today-settings', async (req, res) => {
+  try {
+    if (!req.session || !req.session.userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    const user = await User.findByPk(req.session.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const {
+      showMetrics,
+      showProductivity,
+      showIntelligence,
+      showDueToday,
+      showCompleted,
+      showProgressBar,
+      showDailyQuote
+    } = req.body;
+
+    const todaySettings = {
+      showMetrics: showMetrics !== undefined ? showMetrics : user.today_settings?.showMetrics || false,
+      showProductivity: showProductivity !== undefined ? showProductivity : user.today_settings?.showProductivity || false,
+      showIntelligence: showIntelligence !== undefined ? showIntelligence : user.today_settings?.showIntelligence || false,
+      showDueToday: showDueToday !== undefined ? showDueToday : user.today_settings?.showDueToday || true,
+      showCompleted: showCompleted !== undefined ? showCompleted : user.today_settings?.showCompleted || true,
+      showProgressBar: true, // Always enabled - ignore any attempts to disable it
+      showDailyQuote: showDailyQuote !== undefined ? showDailyQuote : user.today_settings?.showDailyQuote || true
+    };
+
+    await user.update({ today_settings: todaySettings });
+
+    res.json({
+      success: true,
+      today_settings: todaySettings
+    });
+  } catch (error) {
+    console.error('Error updating today settings:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

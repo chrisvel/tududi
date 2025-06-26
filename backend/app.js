@@ -31,7 +31,7 @@ const allowedOrigins = process.env.TUDUDI_ALLOWED_ORIGINS
 app.use(cors({
   origin: allowedOrigins,
   credentials: true,
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Authorization', 'Content-Type', 'Accept', 'X-Requested-With'],
   exposedHeaders: ['Content-Type'],
   maxAge: 1728000

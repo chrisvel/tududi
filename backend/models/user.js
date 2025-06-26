@@ -90,6 +90,19 @@ module.exports = (sequelize) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true
+    },
+    today_settings: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: {
+        showMetrics: false,
+        showProductivity: false,
+        showIntelligence: false,
+        showDueToday: true,
+        showCompleted: true,
+        showProgressBar: true,
+        showDailyQuote: true
+      }
     }
   }, {
     tableName: 'users',
