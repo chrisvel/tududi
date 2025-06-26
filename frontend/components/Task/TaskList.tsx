@@ -10,7 +10,6 @@ interface TaskListProps {
   onTaskDelete: (taskId: number) => void;
   projects: Project[];
   hideProjectName?: boolean;
-  showTodayPlanControls?: boolean;
   onToggleToday?: (taskId: number) => Promise<void>;
 }
 
@@ -20,7 +19,6 @@ const TaskList: React.FC<TaskListProps> = ({
   onTaskDelete,
   projects,
   hideProjectName = false,
-  showTodayPlanControls = false,
   onToggleToday,
 }) => {
   return (
@@ -34,7 +32,6 @@ const TaskList: React.FC<TaskListProps> = ({
             onTaskDelete={onTaskDelete}
             projects={projects}
             hideProjectName={hideProjectName}
-            showTodayPlanControls={showTodayPlanControls}
             onToggleToday={onToggleToday}
           />
         ))

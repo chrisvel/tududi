@@ -469,7 +469,6 @@ const ProjectDetails: React.FC = () => {
               onTaskDelete={handleTaskDelete}
               projects={project ? [project] : []}
               hideProjectName={true}
-              showTodayPlanControls={true}
               onToggleToday={handleToggleToday}
             />
           ) : showAutoSuggestForm ? (

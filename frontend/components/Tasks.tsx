@@ -342,7 +342,6 @@ const Tasks: React.FC = () => {
                 onTaskUpdate={handleTaskUpdate}
                 onTaskDelete={handleTaskDelete}
                 projects={projects}
-                showTodayPlanControls={true}
                 onToggleToday={handleToggleToday}
               />
             ) : (

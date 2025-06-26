@@ -11,7 +11,6 @@ interface TaskItemProps {
   onTaskDelete: (taskId: number) => void;
   projects: Project[];
   hideProjectName?: boolean;
-  showTodayPlanControls?: boolean;
   onToggleToday?: (taskId: number) => Promise<void>;
 }
 
@@ -21,7 +20,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onTaskDelete,
   projects,
   hideProjectName = false,
-  showTodayPlanControls = false,
   onToggleToday,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -77,15 +75,23 @@ const TaskItem: React.FC<TaskItemProps> = ({
   // Use the project from the task's included data if available, otherwise find from projectList
   const project = task.Project || projectList.find((p) => p.id === task.project_id);
 
+  // Check if task is in progress to apply pulsing border animation
+  const isInProgress = task.status === 'in_progress' || task.status === 1;
+
   return (
-    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1">
+    <div 
+      className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1 border-2 ${
+        isInProgress 
+          ? 'border-green-400/60 dark:border-green-500/60' 
+          : 'border-gray-50 dark:border-gray-800'
+      }`}
+    >
       <TaskHeader 
         task={task} 
         project={project} 
         onTaskClick={handleTaskClick} 
         onToggleCompletion={handleToggleCompletion} 
         hideProjectName={hideProjectName}
-        showTodayPlanControls={showTodayPlanControls}
         onToggleToday={onToggleToday}
         onTaskUpdate={onTaskUpdate}
       />
