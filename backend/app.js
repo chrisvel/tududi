@@ -19,7 +19,12 @@ const sessionStore = new SequelizeStore({
 });
 
 // Middlewares
-app.use(helmet());
+const sslEnabled = process.env.NODE_ENV === 'production' && process.env.TUDUDI_INTERNAL_SSL_ENABLED === 'true';
+app.use(helmet({
+  hsts: sslEnabled, // Only enable HSTS when SSL is enabled
+  forceHTTPS: sslEnabled, // Only force HTTPS when SSL is enabled
+  contentSecurityPolicy: false // Disable CSP for now to avoid conflicts
+}));
 app.use(compression());
 app.use(morgan('combined'));
 
