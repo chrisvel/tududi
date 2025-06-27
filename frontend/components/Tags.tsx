@@ -17,8 +17,7 @@ const Tags: React.FC = () => {
   const [isError, setIsError] = useState<boolean>(false);
   const [hoveredTagId, setHoveredTagId] = useState<number | null>(null);
   const [tagMetrics, setTagMetrics] = useState<Record<string, {tasks: number, notes: number, projects: number}>>({});
-  const [loadingMetrics, setLoadingMetrics] = useState<Set<string>>(new Set());
-  const [loadedMetrics, setLoadedMetrics] = useState<Set<string>>(new Set());
+  const [metricsLoaded, setMetricsLoaded] = useState<boolean>(false);
   const [cachedProjects, setCachedProjects] = useState<any[]>([]);
 
   useEffect(() => {
@@ -28,24 +27,59 @@ const Tags: React.FC = () => {
         const fetchedTags = await fetchTags();
         setTags(fetchedTags);
         
-        // Load projects once and cache them
-        try {
-          const projectsResponse = await fetch('/api/projects');
-          if (projectsResponse.ok) {
-            const projectsData = await projectsResponse.json();
-            setCachedProjects(projectsData.projects || projectsData || []);
-          }
-        } catch (error) {
-          console.error('Failed to fetch projects for tag metrics:', error);
+        // Load all data at once for better performance
+        const [projectsResponse, tasksResponse, notesResponse] = await Promise.all([
+          fetch('/api/projects'),
+          fetch('/api/tasks'),
+          fetch('/api/notes')
+        ]);
+
+        let allProjects: any[] = [];
+        let allTasks: any[] = [];
+        let allNotes: any[] = [];
+
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json();
+          allProjects = projectsData.projects || projectsData || [];
+          setCachedProjects(allProjects);
         }
 
-        // Skip fetching metrics initially to avoid excessive API calls
-        // Metrics will be loaded on demand when user interacts with tags
-        const initialMetrics: Record<string, {tasks: number, notes: number, projects: number}> = {};
+        if (tasksResponse.ok) {
+          const tasksData = await tasksResponse.json();
+          allTasks = tasksData.tasks || tasksData || [];
+        }
+
+        if (notesResponse.ok) {
+          const notesData = await notesResponse.json();
+          allNotes = notesData || [];
+        }
+
+        // Calculate metrics for all tags at once
+        const metricsMap: Record<string, {tasks: number, notes: number, projects: number}> = {};
+        
         fetchedTags.forEach(tag => {
-          initialMetrics[tag.name] = { tasks: 0, notes: 0, projects: 0 };
+          const tasksCount = allTasks.filter((task: any) => 
+            task.tags && task.tags.some((taskTag: any) => taskTag.name === tag.name)
+          ).length;
+          
+          const notesCount = allNotes.filter((note: any) => 
+            note.tags && note.tags.some((noteTag: any) => noteTag.name === tag.name)
+          ).length;
+          
+          const projectsCount = allProjects.filter((project: any) => 
+            project.tags && project.tags.some((projectTag: any) => projectTag.name === tag.name)
+          ).length;
+
+          metricsMap[tag.name] = {
+            tasks: tasksCount,
+            notes: notesCount,
+            projects: projectsCount
+          };
         });
-        setTagMetrics(initialMetrics);
+
+        setTagMetrics(metricsMap);
+        setMetricsLoaded(true);
+        
       } catch (error) {
         console.error('Failed to fetch tags:', error);
         setIsError(true);
@@ -57,58 +91,6 @@ const Tags: React.FC = () => {
     loadTags();
   }, []);
 
-  // Load metrics for a specific tag on demand
-  const loadTagMetrics = async (tagName: string) => {
-    if (loadedMetrics.has(tagName) || loadingMetrics.has(tagName)) {
-      return; // Already loaded or loading
-    }
-
-    setLoadingMetrics(prev => new Set(prev).add(tagName));
-
-    try {
-      const [tasksResponse, notesResponse] = await Promise.all([
-        fetch(`/api/tasks?tag=${encodeURIComponent(tagName)}`),
-        fetch(`/api/notes?tag=${encodeURIComponent(tagName)}`)
-      ]);
-
-      let tasksCount = 0;
-      let notesCount = 0;
-
-      if (tasksResponse.ok) {
-        const tasksData = await tasksResponse.json();
-        tasksCount = tasksData.tasks?.length || 0;
-      }
-
-      if (notesResponse.ok) {
-        const notesData = await notesResponse.json();
-        notesCount = notesData?.length || 0;
-      }
-
-      // Use cached projects data
-      const projectsCount = cachedProjects.filter((project: any) => 
-        project.tags && project.tags.some((projectTag: any) => projectTag.name === tagName)
-      ).length;
-
-      setTagMetrics(prev => ({
-        ...prev,
-        [tagName]: {
-          tasks: tasksCount,
-          notes: notesCount,
-          projects: projectsCount
-        }
-      }));
-
-      setLoadedMetrics(prev => new Set(prev).add(tagName));
-    } catch (error) {
-      console.error(`Failed to fetch metrics for tag ${tagName}:`, error);
-    } finally {
-      setLoadingMetrics(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(tagName);
-        return newSet;
-      });
-    }
-  };
 
   const handleDeleteTag = async () => {
     if (!tagToDelete) return;
@@ -258,19 +240,12 @@ const Tags: React.FC = () => {
                   {groupedTags[letter].map((tag) => {
                     const metrics = tagMetrics[tag.name] || { tasks: 0, notes: 0, projects: 0 };
                     const hasItems = metrics.tasks > 0 || metrics.notes > 0 || metrics.projects > 0;
-                    const isMetricsLoaded = loadedMetrics.has(tag.name);
-                    const isMetricsLoading = loadingMetrics.has(tag.name);
                     
                     return (
                       <li
                         key={tag.id}
                         className="bg-white dark:bg-gray-900 shadow rounded-lg p-4"
-                        onMouseEnter={() => {
-                          setHoveredTagId(tag.id || null);
-                          if (!isMetricsLoaded && !isMetricsLoading) {
-                            loadTagMetrics(tag.name);
-                          }
-                        }}
+                        onMouseEnter={() => setHoveredTagId(tag.id || null)}
                         onMouseLeave={() => setHoveredTagId(null)}
                       >
                         <div className="flex items-center justify-between">
@@ -284,12 +259,12 @@ const Tags: React.FC = () => {
                             </Link>
                             
                             {/* Metrics - inline with tag name */}
-                            {isMetricsLoading && (
+                            {!metricsLoaded && (
                               <div className="flex items-center text-sm text-gray-400 dark:text-gray-500">
                                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-blue-500"></div>
                               </div>
                             )}
-                            {isMetricsLoaded && hasItems && (
+                            {metricsLoaded && hasItems && (
                               <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
                                 {metrics.projects > 0 && (
                                   <div className="flex items-center space-x-1">
