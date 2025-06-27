@@ -16,15 +16,3 @@ backend/coverage/
 
 # User uploaded files
 backend/uploads/
-
-# Log files
-*.log
-server.log
-backend/server.log
-
-# Build output
-dist/
-build/
-
-# Webpack output
-public/assets/
