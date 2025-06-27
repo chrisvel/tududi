@@ -134,7 +134,7 @@ docker run \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
   -e TUDUDI_INTERNAL_SSL_ENABLED=false \
   -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:3002 \
-  -v ~/tududi_db:/usr/src/app/backend/db \
+  -v ~/tududi_db:/app/backend/db \
   -p 3002:3002 \
   -d chrisvel/tududi:latest
 ```
