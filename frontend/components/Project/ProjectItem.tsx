@@ -145,7 +145,10 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
       {viewMode === "cards" && (
         <div className="absolute bottom-4 left-0 right-0 px-4">
           <div className="flex items-center space-x-2">
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div 
+              className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"
+              title={t("projectItem.completionPercentage", { percentage: getCompletionPercentage() })}
+            >
               <div
                 className="bg-blue-500 h-2 rounded-full"
                 style={{
@@ -153,9 +156,6 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 }}
               ></div>
             </div>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {t("projectItem.completionPercentage", { percentage: getCompletionPercentage() })}
-            </span>
           </div>
         </div>
       )}

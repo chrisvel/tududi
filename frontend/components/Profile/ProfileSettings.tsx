@@ -1,7 +1,22 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import i18n from 'i18next';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { 
+  InformationCircleIcon, 
+  EyeIcon, 
+  EyeSlashIcon,
+  UserIcon,
+  ClockIcon,
+  ChatBubbleLeftRightIcon,
+  ShieldCheckIcon,
+  LightBulbIcon,
+  CogIcon,
+  ClipboardDocumentListIcon,
+  BoltIcon,
+  ChevronRightIcon,
+  ExclamationTriangleIcon,
+  FaceSmileIcon,
+  CheckIcon
+} from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 
 interface ProfileSettingsProps {
@@ -9,6 +24,7 @@ interface ProfileSettingsProps {
   isDarkMode?: boolean;
   toggleDarkMode?: () => void;
 }
+
 
 interface Profile {
   id: number;
@@ -24,26 +40,16 @@ interface Profile {
   task_intelligence_enabled: boolean;
   auto_suggest_next_actions_enabled: boolean;
   productivity_assistant_enabled: boolean;
+  next_task_suggestion_enabled: boolean;
+  pomodoro_enabled: boolean;
 }
 
-interface SchedulerStatus {
-  success: boolean;
-  enabled: boolean;
-  frequency: string;
-  last_run: string | null;
-  next_run: string | null;
-}
 
 interface TelegramBotInfo {
   username: string;
   polling_status: any;
   chat_url: string;
 }
-
-const capitalize = (str: string): string => {
-  if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
 
 const formatFrequency = (frequency: string): string => {
   if (frequency.endsWith('h')) {
@@ -59,14 +65,19 @@ const formatFrequency = (frequency: string): string => {
   return frequency;
 };
 
-const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMode, toggleDarkMode }) => {
+const ProfileSettings: React.FC<ProfileSettingsProps> = ({ isDarkMode, toggleDarkMode }) => {
   const { t, i18n } = useTranslation();
   const { showSuccessToast, showErrorToast } = useToast();
   
   const [activeTab, setActiveTab] = useState('general');
   
+  // Password visibility state
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [formData, setFormData] = useState<Partial<Profile>>({
+  const [formData, setFormData] = useState<Partial<Profile & {currentPassword: string, newPassword: string, confirmPassword: string}>>({
     appearance: isDarkMode ? 'dark' : 'light',
     language: 'en',
     timezone: 'UTC',
@@ -77,70 +88,48 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
     task_summary_frequency: 'daily',
     auto_suggest_next_actions_enabled: true,
     productivity_assistant_enabled: true,
+    next_task_suggestion_enabled: true,
+    pomodoro_enabled: true,
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [updateKey, setUpdateKey] = useState(0);
   const [isChangingLanguage, setIsChangingLanguage] = useState(false);
-  const [telegramBotToken, setTelegramBotToken] = useState('');
-  const [telegramChatId, setTelegramChatId] = useState('');
-  const [isTesting, setIsTesting] = useState(false);
-  const [isSendingSummary, setIsSendingSummary] = useState(false);
-  const [schedulerStatus, setSchedulerStatus] = useState<SchedulerStatus | null>(null);
-  const [loadingStatus, setLoadingStatus] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
   const [telegramSetupStatus, setTelegramSetupStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [telegramError, setTelegramError] = useState<string | null>(null);
   const [telegramBotInfo, setTelegramBotInfo] = useState<TelegramBotInfo | null>(null);
   
   const forceUpdate = useCallback(() => {
     setUpdateKey(prevKey => prevKey + 1);
   }, []);
+
   
-  const fetchSchedulerStatus = async () => {
-    try {
-      setLoadingStatus(true);
-      const response = await fetch('/api/profile/task-summary/status');
-      
-      if (!response.ok) {
-        throw new Error(t('profile.statusFetchError', 'Failed to fetch scheduler status.'));
+  // Password validation
+  const validatePasswordForm = (): {valid: boolean, errors: {[key: string]: string}} => {
+    const errors: {[key: string]: string} = {};
+    
+    // Only validate if user is trying to change password
+    if (formData.currentPassword || formData.newPassword || formData.confirmPassword) {
+      if (!formData.currentPassword) {
+        errors.currentPassword = t('profile.currentPasswordRequired', 'Current password is required');
       }
       
-      const data = await response.json();
-      setSchedulerStatus(data);
-    } catch (error) {
-      showErrorToast((error as Error).message);
-    } finally {
-      setLoadingStatus(false);
+      if (!formData.newPassword) {
+        errors.newPassword = t('profile.newPasswordRequired', 'New password is required');
+      } else if (formData.newPassword.length < 6) {
+        errors.newPassword = t('profile.passwordTooShort', 'Password must be at least 6 characters');
+      }
+      
+      if (formData.newPassword !== formData.confirmPassword) {
+        errors.confirmPassword = t('profile.passwordMismatch', 'Passwords do not match');
+      }
     }
+    
+    return { valid: Object.keys(errors).length === 0, errors };
   };
   
-  const handleSendTaskSummaryNow = async () => {
-    try {
-      setIsSendingSummary(true);
-      const response = await fetch('/api/profile/task-summary/send-now', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || t('profile.sendSummaryFailed', 'Failed to send summary.'));
-      }
-      
-      const data = await response.json();
-      showSuccessToast(data.message);
-      
-      if (data.enabled) {
-        fetchSchedulerStatus();
-      }
-    } catch (error) {
-      showErrorToast((error as Error).message);
-    } finally {
-      setIsSendingSummary(false);
-    }
-  };
   
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -217,13 +206,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
           task_summary_frequency: data.task_summary_frequency || 'daily',
           auto_suggest_next_actions_enabled: data.auto_suggest_next_actions_enabled !== undefined ? data.auto_suggest_next_actions_enabled : true,
           productivity_assistant_enabled: data.productivity_assistant_enabled !== undefined ? data.productivity_assistant_enabled : true,
+          next_task_suggestion_enabled: data.next_task_suggestion_enabled !== undefined ? data.next_task_suggestion_enabled : true,
+          pomodoro_enabled: data.pomodoro_enabled !== undefined ? data.pomodoro_enabled : true,
         });
-        setTelegramBotToken(data.telegram_bot_token || '');
-        setTelegramChatId(data.telegram_chat_id || '');
         
-        if (data.task_summary_enabled) {
-          fetchSchedulerStatus();
-        }
+        // Note: Task summary status checking functionality removed for now
         
         if (data.telegram_bot_token) {
           fetchPollingStatus();
@@ -262,11 +249,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
   }, [isDarkMode]);
   
   useEffect(() => {
-    const handleLanguageChanged = (lng: string) => {
+    const handleLanguageChanged = () => {
       forceUpdate();
     };
     
-    const handleAppLanguageChanged = (event: CustomEvent<{ language: string }>) => {
+    const handleAppLanguageChanged = () => {
       forceUpdate();
       setTimeout(() => {
         setIsChangingLanguage(false);
@@ -285,7 +272,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
   
   const handleSetupTelegram = async () => {
     setTelegramSetupStatus('loading');
-    setTelegramError(null);
     setTelegramBotInfo(null);
     
     try {
@@ -308,7 +294,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       
       const data = await response.json();
       setTelegramSetupStatus('success');
-      setSuccess(t('profile.telegramSetupSuccess'));
+      showSuccessToast(t('profile.telegramSetupSuccess', 'Telegram bot configured successfully!'));
       
       if (data.bot) {
         setTelegramBotInfo(data.bot);
@@ -327,7 +313,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       
     } catch (error) {
       setTelegramSetupStatus('error');
-      setTelegramError((error as Error).message);
+      showErrorToast((error as Error).message);
     }
   };
   
@@ -391,10 +377,28 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
+
+    // Check if user is trying to change password
+    const isPasswordChange = formData.currentPassword || formData.newPassword || formData.confirmPassword;
+    
+    // Only validate password if user is trying to change password
+    if (isPasswordChange) {
+      const passwordValidation = validatePasswordForm();
+      if (!passwordValidation.valid) {
+        showErrorToast(Object.values(passwordValidation.errors)[0]);
+        return;
+      }
+    }
 
     try {
+      // Prepare data to send - exclude password fields if not changing password
+      const dataToSend = { ...formData };
+      if (!isPasswordChange) {
+        delete dataToSend.currentPassword;
+        delete dataToSend.newPassword;
+        delete dataToSend.confirmPassword;
+      }
+
       const response = await fetch('/api/profile', {
         method: 'PATCH',
         credentials: 'include',
@@ -402,7 +406,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
@@ -426,6 +430,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         task_summary_frequency: updatedProfile.task_summary_frequency || prev.task_summary_frequency || 'daily',
         auto_suggest_next_actions_enabled: updatedProfile.auto_suggest_next_actions_enabled !== undefined ? updatedProfile.auto_suggest_next_actions_enabled : prev.auto_suggest_next_actions_enabled !== undefined ? prev.auto_suggest_next_actions_enabled : true,
         productivity_assistant_enabled: updatedProfile.productivity_assistant_enabled !== undefined ? updatedProfile.productivity_assistant_enabled : prev.productivity_assistant_enabled !== undefined ? prev.productivity_assistant_enabled : true,
+        next_task_suggestion_enabled: updatedProfile.next_task_suggestion_enabled !== undefined ? updatedProfile.next_task_suggestion_enabled : prev.next_task_suggestion_enabled !== undefined ? prev.next_task_suggestion_enabled : true,
+        pomodoro_enabled: updatedProfile.pomodoro_enabled !== undefined ? updatedProfile.pomodoro_enabled : prev.pomodoro_enabled !== undefined ? prev.pomodoro_enabled : true,
       }));
       
       // Apply appearance change after save
@@ -437,10 +443,30 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
       if (updatedProfile.language !== i18n.language) {
         await handleLanguageChange(updatedProfile.language);
       }
+
+      // Notify other components about Pomodoro setting change
+      if (updatedProfile.pomodoro_enabled !== undefined) {
+        window.dispatchEvent(new CustomEvent('pomodoroSettingChanged', {
+          detail: { enabled: updatedProfile.pomodoro_enabled }
+        }));
+      }
       
-      setSuccess(t('profile.successMessage'));
+      // Clear password fields on successful save
+      if (isPasswordChange) {
+        setFormData(prev => ({
+          ...prev,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        }));
+      }
+      
+      const successMessage = isPasswordChange 
+        ? t('profile.passwordChangeSuccess', 'Password changed successfully!')
+        : t('profile.successMessage', 'Profile updated successfully!');
+      showSuccessToast(successMessage);
     } catch (err) {
-      setError((err as Error).message);
+      showErrorToast((err as Error).message);
     }
   };
 
@@ -454,16 +480,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="text-red-500 text-lg">{error}</div>
-      </div>
-    );
-  }
 
   const tabs = [
     { id: 'general', name: t('profile.tabs.general', 'General'), icon: 'user' },
+    { id: 'security', name: t('profile.tabs.security', 'Security'), icon: 'shield' },
+    { id: 'productivity', name: t('profile.tabs.productivity', 'Productivity'), icon: 'clock' },
     { id: 'telegram', name: t('profile.tabs.telegram', 'Telegram'), icon: 'chat' },
     { id: 'ai', name: t('profile.tabs.ai', 'AI Features'), icon: 'sparkles' },
   ];
@@ -471,23 +492,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
   const renderTabIcon = (iconType: string) => {
     switch (iconType) {
       case 'user':
-        return (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-        );
+        return <UserIcon className="w-5 h-5" />;
+      case 'clock':
+        return <ClockIcon className="w-5 h-5" />;
       case 'chat':
-        return (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
-        );
+        return <ChatBubbleLeftRightIcon className="w-5 h-5" />;
+      case 'shield':
+        return <ShieldCheckIcon className="w-5 h-5" />;
       case 'sparkles':
-        return (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-          </svg>
-        );
+        return <LightBulbIcon className="w-5 h-5" />;
       default:
         return null;
     }
@@ -522,8 +535,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         </div>
       </div>
 
-      {success && <div className="mb-4 text-green-500">{success}</div>}
-      {error && <div className="mb-4 text-red-500">{error}</div>}
 
       <form onSubmit={handleSubmit} className="space-y-8">
         
@@ -531,9 +542,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         {activeTab === 'general' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-            <svg className="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+            <UserIcon className="w-6 h-6 mr-3 text-blue-500" />
             {t('profile.accountSettings', 'Account & Preferences')}
           </h3>
           
@@ -583,32 +592,270 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
                 className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="UTC">UTC</option>
-                <option value="America/New_York">America/New_York</option>
-                <option value="Europe/London">Europe/London</option>
-                <option value="Asia/Tokyo">Asia/Tokyo</option>
+                
+                {/* Americas */}
+                <optgroup label="Americas">
+                  <option value="America/New_York">Eastern Time (New York)</option>
+                  <option value="America/Chicago">Central Time (Chicago)</option>
+                  <option value="America/Denver">Mountain Time (Denver)</option>
+                  <option value="America/Los_Angeles">Pacific Time (Los Angeles)</option>
+                  <option value="America/Anchorage">Alaska Time (Anchorage)</option>
+                  <option value="Pacific/Honolulu">Hawaii Time (Honolulu)</option>
+                  <option value="America/Toronto">Eastern Time (Toronto)</option>
+                  <option value="America/Vancouver">Pacific Time (Vancouver)</option>
+                  <option value="America/Mexico_City">Central Time (Mexico City)</option>
+                  <option value="America/Sao_Paulo">Brasília Time (São Paulo)</option>
+                  <option value="America/Argentina/Buenos_Aires">Argentina Time (Buenos Aires)</option>
+                  <option value="America/Lima">Peru Time (Lima)</option>
+                  <option value="America/Bogota">Colombia Time (Bogotá)</option>
+                  <option value="America/Caracas">Venezuela Time (Caracas)</option>
+                  <option value="America/Santiago">Chile Time (Santiago)</option>
+                </optgroup>
+
+                {/* Europe */}
+                <optgroup label="Europe">
+                  <option value="Europe/London">Greenwich Mean Time (London)</option>
+                  <option value="Europe/Dublin">Greenwich Mean Time (Dublin)</option>
+                  <option value="Europe/Lisbon">Western European Time (Lisbon)</option>
+                  <option value="Europe/Paris">Central European Time (Paris)</option>
+                  <option value="Europe/Berlin">Central European Time (Berlin)</option>
+                  <option value="Europe/Madrid">Central European Time (Madrid)</option>
+                  <option value="Europe/Rome">Central European Time (Rome)</option>
+                  <option value="Europe/Amsterdam">Central European Time (Amsterdam)</option>
+                  <option value="Europe/Brussels">Central European Time (Brussels)</option>
+                  <option value="Europe/Vienna">Central European Time (Vienna)</option>
+                  <option value="Europe/Zurich">Central European Time (Zurich)</option>
+                  <option value="Europe/Prague">Central European Time (Prague)</option>
+                  <option value="Europe/Warsaw">Central European Time (Warsaw)</option>
+                  <option value="Europe/Stockholm">Central European Time (Stockholm)</option>
+                  <option value="Europe/Oslo">Central European Time (Oslo)</option>
+                  <option value="Europe/Copenhagen">Central European Time (Copenhagen)</option>
+                  <option value="Europe/Helsinki">Eastern European Time (Helsinki)</option>
+                  <option value="Europe/Athens">Eastern European Time (Athens)</option>
+                  <option value="Europe/Kiev">Eastern European Time (Kiev)</option>
+                  <option value="Europe/Moscow">Moscow Time (Moscow)</option>
+                  <option value="Europe/Istanbul">Turkey Time (Istanbul)</option>
+                </optgroup>
+
+                {/* Asia */}
+                <optgroup label="Asia">
+                  <option value="Asia/Dubai">Gulf Standard Time (Dubai)</option>
+                  <option value="Asia/Tehran">Iran Standard Time (Tehran)</option>
+                  <option value="Asia/Yerevan">Armenia Time (Yerevan)</option>
+                  <option value="Asia/Baku">Azerbaijan Time (Baku)</option>
+                  <option value="Asia/Karachi">Pakistan Standard Time (Karachi)</option>
+                  <option value="Asia/Kolkata">India Standard Time (Mumbai/Delhi)</option>
+                  <option value="Asia/Kathmandu">Nepal Time (Kathmandu)</option>
+                  <option value="Asia/Dhaka">Bangladesh Standard Time (Dhaka)</option>
+                  <option value="Asia/Yangon">Myanmar Time (Yangon)</option>
+                  <option value="Asia/Bangkok">Indochina Time (Bangkok)</option>
+                  <option value="Asia/Ho_Chi_Minh">Indochina Time (Ho Chi Minh)</option>
+                  <option value="Asia/Jakarta">Western Indonesia Time (Jakarta)</option>
+                  <option value="Asia/Kuala_Lumpur">Malaysia Time (Kuala Lumpur)</option>
+                  <option value="Asia/Singapore">Singapore Standard Time (Singapore)</option>
+                  <option value="Asia/Manila">Philippines Time (Manila)</option>
+                  <option value="Asia/Hong_Kong">Hong Kong Time (Hong Kong)</option>
+                  <option value="Asia/Shanghai">China Standard Time (Beijing/Shanghai)</option>
+                  <option value="Asia/Taipei">China Standard Time (Taipei)</option>
+                  <option value="Asia/Tokyo">Japan Standard Time (Tokyo)</option>
+                  <option value="Asia/Seoul">Korea Standard Time (Seoul)</option>
+                  <option value="Asia/Vladivostok">Vladivostok Time (Vladivostok)</option>
+                </optgroup>
+
+                {/* Africa */}
+                <optgroup label="Africa">
+                  <option value="Africa/Casablanca">Western European Time (Casablanca)</option>
+                  <option value="Africa/Lagos">West Africa Time (Lagos)</option>
+                  <option value="Africa/Cairo">Eastern European Time (Cairo)</option>
+                  <option value="Africa/Johannesburg">South Africa Standard Time (Johannesburg)</option>
+                  <option value="Africa/Nairobi">East Africa Time (Nairobi)</option>
+                  <option value="Africa/Addis_Ababa">East Africa Time (Addis Ababa)</option>
+                </optgroup>
+
+                {/* Oceania */}
+                <optgroup label="Oceania">
+                  <option value="Australia/Perth">Australian Western Standard Time (Perth)</option>
+                  <option value="Australia/Adelaide">Australian Central Standard Time (Adelaide)</option>
+                  <option value="Australia/Darwin">Australian Central Standard Time (Darwin)</option>
+                  <option value="Australia/Brisbane">Australian Eastern Standard Time (Brisbane)</option>
+                  <option value="Australia/Sydney">Australian Eastern Standard Time (Sydney)</option>
+                  <option value="Australia/Melbourne">Australian Eastern Standard Time (Melbourne)</option>
+                  <option value="Pacific/Auckland">New Zealand Standard Time (Auckland)</option>
+                  <option value="Pacific/Fiji">Fiji Time (Suva)</option>
+                  <option value="Pacific/Guam">Chamorro Standard Time (Guam)</option>
+                </optgroup>
               </select>
             </div>
           </div>
+
         </div>
+        )}
+
+        {/* Security Tab */}
+        {activeTab === 'security' && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+              <ShieldCheckIcon className="w-6 h-6 mr-3 text-red-500" />
+              {t('profile.security', 'Security Settings')}
+            </h3>
+            
+            {/* Password Change Section */}
+            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
+                <UserIcon className="w-5 h-5 mr-2 text-blue-500" />
+                {t('profile.changePassword', 'Change Password')}
+              </h4>
+              
+              <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded text-blue-800 dark:text-blue-200">
+                <p className="text-sm">
+                  <InformationCircleIcon className="w-4 h-4 inline mr-1" />
+                  {t('profile.passwordChangeOptional', 'Leave password fields empty to update other settings without changing your password.')}
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('profile.currentPassword', 'Current Password')}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showCurrentPassword ? 'text' : 'password'}
+                      name="currentPassword"
+                      value={formData.currentPassword || ''}
+                      onChange={handleChange}
+                      className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder={t('profile.enterCurrentPassword', 'Enter your current password')}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    >
+                      {showCurrentPassword ? (
+                        <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('profile.newPassword', 'New Password')}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      name="newPassword"
+                      value={formData.newPassword || ''}
+                      onChange={handleChange}
+                      className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder={t('profile.enterNewPassword', 'Enter your new password')}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                    >
+                      {showNewPassword ? (
+                        <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('profile.confirmPassword', 'Confirm New Password')}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      name="confirmPassword"
+                      value={formData.confirmPassword || ''}
+                      onChange={handleChange}
+                      className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder={t('profile.confirmNewPassword', 'Confirm your new password')}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  {t('profile.passwordChangeNote', 'Password changes will be saved when you click "Save Changes" at the bottom of the form.')}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Productivity Tab */}
+        {activeTab === 'productivity' && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+              <ClockIcon className="w-6 h-6 mr-3 text-green-500" />
+              {t('profile.productivityFeatures', 'Productivity Features')}
+            </h3>
+            
+            <div className="space-y-6">
+              {/* Pomodoro Timer */}
+              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t('profile.enablePomodoro', 'Enable Pomodoro Timer')}
+                  </label>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {t('profile.pomodoroDescription', 'Enable the Pomodoro timer in the navigation bar for focused work sessions.')}
+                  </p>
+                </div>
+                <div 
+                  className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
+                    formData.pomodoro_enabled ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                  }`}
+                  onClick={() => {
+                    setFormData(prev => ({
+                      ...prev,
+                      pomodoro_enabled: !prev.pomodoro_enabled
+                    }));
+                  }}
+                >
+                  <span 
+                    className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
+                      formData.pomodoro_enabled ? 'translate-x-6' : 'translate-x-0'
+                    }`}
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
         
         {/* Telegram Tab */}
         {activeTab === 'telegram' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-blue-300 dark:border-blue-700 mb-8">
           <h3 className="text-xl font-semibold text-blue-700 dark:text-blue-300 mb-6 flex items-center">
-            <svg className="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+            <ChatBubbleLeftRightIcon className="w-6 h-6 mr-3 text-blue-500" />
             {t('profile.telegramIntegration', 'Telegram Integration')}
           </h3>
 
           {/* Bot Setup Subsection */}
           <div className="mb-8 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
+              <CogIcon className="w-5 h-5 mr-2 text-blue-500" />
               {t('profile.botSetup', 'Bot Setup')}
             </h4>
 
@@ -643,11 +890,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
                 </div>
               )}
 
-              {telegramError && (
-                <div className="p-2 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-800 rounded text-red-800 dark:text-red-200">
-                  <p className="text-sm">{telegramError}</p>
-                </div>
-              )}
 
               {telegramBotInfo && (
                 <div className="p-2 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded text-blue-800 dark:text-blue-200">
@@ -743,9 +985,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
           {/* Task Summary Notifications Subsection */}
           <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM4 19h6v-1a1 1 0 011-1h4a1 1 0 011 1v1h2a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
+              <ClipboardDocumentListIcon className="w-5 h-5 mr-2 text-green-500" />
               {t('profile.taskSummaryNotifications', 'Task Summary Notifications')}
             </h4>
           
@@ -853,18 +1093,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
         {activeTab === 'ai' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-            <svg className="w-6 h-6 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
+            <LightBulbIcon className="w-6 h-6 mr-3 text-blue-500" />
             {t('profile.aiProductivityFeatures', 'AI & Productivity Features')}
           </h3>
           
           {/* Task Intelligence Subsection */}
           <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+              <BoltIcon className="w-5 h-5 mr-2 text-purple-500" />
               {t('profile.taskIntelligence', 'Task Intelligence')}
             </h4>
             
@@ -902,9 +1138,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
           {/* Auto-Suggest Next Actions Subsection */}
           <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
             <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+              <ChevronRightIcon className="w-5 h-5 mr-2 text-green-500" />
               {t('profile.autoSuggestNextActions', 'Auto-Suggest Next Actions')}
             </h4>
             
@@ -942,9 +1176,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
           {/* Productivity Assistant Subsection */}
           <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
             <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
+              <ExclamationTriangleIcon className="w-5 h-5 mr-2 text-yellow-500" />
               {t('profile.productivityAssistant', 'Productivity Assistant')}
             </h4>
             
@@ -978,6 +1210,44 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
               </div>
             </div>
           </div>
+
+          {/* Next Task Suggestion Subsection */}
+          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
+            <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
+              <FaceSmileIcon className="w-5 h-5 mr-2 text-green-500" />
+              {t('profile.nextTaskSuggestion', 'Next Task Suggestion')}
+            </h4>
+            
+            <div className="mb-4 text-sm text-gray-600 dark:text-gray-300 flex items-start">
+              <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
+              <p>
+                {t('profile.nextTaskSuggestionDescription', 'Automatically suggest the next best task to work on when you have nothing in progress, prioritizing due today tasks, then suggested tasks, then next actions.')}
+              </p>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('profile.enableNextTaskSuggestion', 'Enable Next Task Suggestions')}
+              </label>
+              <div 
+                className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
+                  formData.next_task_suggestion_enabled ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}
+                onClick={() => {
+                  setFormData(prev => ({
+                    ...prev,
+                    next_task_suggestion_enabled: !prev.next_task_suggestion_enabled
+                  }));
+                }}
+              >
+                <span 
+                  className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
+                    formData.next_task_suggestion_enabled ? 'translate-x-6' : 'translate-x-0'
+                  }`}
+                ></span>
+              </div>
+            </div>
+          </div>
         </div>
         )}
       
@@ -987,9 +1257,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ currentUser, isDarkMo
           type="submit"
           className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors duration-200 flex items-center space-x-2"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+          <CheckIcon className="w-5 h-5" />
           <span>{t('profile.saveChanges', 'Save Changes')}</span>
         </button>
       </div>

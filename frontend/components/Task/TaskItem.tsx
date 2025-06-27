@@ -4,13 +4,15 @@ import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
 import TaskModal from './TaskModal';
 import { toggleTaskCompletion } from '../../utils/tasksService';
+import { isTaskOverdue } from '../../utils/dateUtils';
 
 interface TaskItemProps {
   task: Task;
-  onTaskUpdate: (task: Task) => void;
+  onTaskUpdate: (task: Task) => Promise<void>;
   onTaskDelete: (taskId: number) => void;
   projects: Project[];
   hideProjectName?: boolean;
+  onToggleToday?: (taskId: number) => Promise<void>;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -19,6 +21,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
   onTaskDelete,
   projects,
   hideProjectName = false,
+  onToggleToday,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projectList, setProjectList] = useState<Project[]>(projects);
@@ -27,14 +30,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
     setIsModalOpen(true);
   };
 
-  const handleSave = (updatedTask: Task) => {
-    onTaskUpdate(updatedTask);
+  const handleSave = async (updatedTask: Task) => {
+    await onTaskUpdate(updatedTask);
     setIsModalOpen(false);
   };
   
-  const handleDelete = () => {
+  const handleDelete = async (taskId: number) => {
     if (task.id) {
-      onTaskDelete(task.id);
+      await onTaskDelete(task.id);
     }
   };
 
@@ -42,7 +45,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     if (task.id) {
       try {
         const updatedTask = await toggleTaskCompletion(task.id);
-        onTaskUpdate(updatedTask);
+        await onTaskUpdate(updatedTask);
       } catch (error) {
       }
     }
@@ -73,9 +76,30 @@ const TaskItem: React.FC<TaskItemProps> = ({
   // Use the project from the task's included data if available, otherwise find from projectList
   const project = task.Project || projectList.find((p) => p.id === task.project_id);
 
+  // Check if task is in progress to apply pulsing border animation
+  const isInProgress = task.status === 'in_progress' || task.status === 1;
+  
+  // Check if task is overdue (created yesterday or earlier and not completed)
+  const isOverdue = isTaskOverdue(task);
+
   return (
-    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1">
-      <TaskHeader task={task} project={project} onTaskClick={handleTaskClick} onToggleCompletion={handleToggleCompletion} hideProjectName={hideProjectName} />
+    <div 
+      className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1 ${
+        isInProgress 
+          ? 'border-2 border-green-400/60 dark:border-green-500/60' 
+          : 'border-2 border-gray-50 dark:border-gray-800'
+      }`}
+    >
+      <TaskHeader 
+        task={task} 
+        project={project} 
+        onTaskClick={handleTaskClick} 
+        onToggleCompletion={handleToggleCompletion} 
+        hideProjectName={hideProjectName}
+        onToggleToday={onToggleToday}
+        onTaskUpdate={onTaskUpdate}
+        isOverdue={isOverdue}
+      />
 
       <TaskModal
         isOpen={isModalOpen}

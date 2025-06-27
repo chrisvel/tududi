@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { TrashIcon, PencilIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, PencilIcon, DocumentTextIcon, FolderIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
@@ -30,26 +30,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 }) => {
   const { t } = useTranslation();
   const { showSuccessToast, showErrorToast } = useToast();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
-  
-  // Handle click outside of dropdown
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
-      }
-    };
-    
-    if (dropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [dropdownOpen]);
+  const [isHovered, setIsHovered] = useState(false);
   
   const handleConvertToTask = () => {
     const newTask: Task = {
@@ -58,17 +41,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       priority: 'medium'
     };
 
-    // First close the dropdown
-    setDropdownOpen(false);
-    
-    // Use a simple timeout to ensure the dropdown closes before opening modal
-    setTimeout(() => {
-      if (item.id !== undefined) {
-        openTaskModal(newTask, item.id);
-      } else {
-        openTaskModal(newTask);
-      }
-    }, 50);
+    if (item.id !== undefined) {
+      openTaskModal(newTask, item.id);
+    } else {
+      openTaskModal(newTask);
+    }
   };
   
   const handleConvertToProject = () => {
@@ -78,17 +55,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       active: true
     };
 
-    // First close the dropdown
-    setDropdownOpen(false);
-    
-    // Use a simple timeout to ensure the dropdown closes before opening modal
-    setTimeout(() => {
-      if (item.id !== undefined) {
-        openProjectModal(newProject, item.id);
-      } else {
-        openProjectModal(newProject);
-      }
-    }, 50);
+    if (item.id !== undefined) {
+      openProjectModal(newProject, item.id);
+    } else {
+      openProjectModal(newProject);
+    }
   };
   
   const handleConvertToNote = async () => {
@@ -101,17 +72,34 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       
       if (isUrl(item.content.trim())) {
         setLoading(true);
-        const result = await extractUrlTitle(item.content.trim());
-        setLoading(false);
-        
-        if (result && result.title) {
-          title = result.title;
-          content = item.content;
+        try {
+          // Add a timeout to prevent infinite loading
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout')), 10000) // 10 second timeout
+          );
+          
+          const result = await Promise.race([
+            extractUrlTitle(item.content.trim()),
+            timeoutPromise
+          ]) as any;
+          
+          if (result && result.title) {
+            title = result.title;
+            content = item.content;
+            isBookmark = true;
+          }
+        } catch (titleError) {
+          console.error("Error extracting URL title:", titleError);
+          // Continue with default title if URL title extraction fails
+          // Still mark as bookmark if it's a URL
           isBookmark = true;
+        } finally {
+          setLoading(false);
         }
       }
     } catch (error) {
       console.error("Error checking URL or extracting title:", error);
+      setLoading(false);
     }
 
     // Simple array of tag objects for the note
@@ -123,17 +111,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       tags: tagObjects
     };
 
-    // First close the dropdown
-    setDropdownOpen(false);
-    
-    // Use a simple timeout to ensure the dropdown closes before opening modal
-    setTimeout(() => {
-      if (item.id !== undefined) {
-        openNoteModal(newNote, item.id);
-      } else {
-        openNoteModal(newNote);
-      }
-    }, 50);
+    if (item.id !== undefined) {
+      openNoteModal(newNote, item.id);
+    } else {
+      openNoteModal(newNote);
+    }
   };
   
   const formattedDate = item.created_at 
@@ -152,7 +134,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
   };
     
   return (
-    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1">
+    <div 
+      className="rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="flex items-center justify-between px-4 py-2">
         <div className="flex-1 mr-4">
           <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
@@ -166,64 +152,56 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center space-x-0">
+        <div className="flex items-center space-x-1">
           {loading && <div className="spinner" />}
+          
+          {/* Edit Button */}
           <button
             onClick={() => {
               if (onUpdate && item.id !== undefined) {
                 onUpdate(item.id, item.content);
               }
             }}
-            className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+            className={`p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('common.edit')}
           >
-            <PencilIcon className="h-5 w-5" />
+            <PencilIcon className="h-4 w-4" />
           </button>
           
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-full"
-              title={t('inbox.convertTo', 'Convert to')}
-            >
-              <EllipsisVerticalIcon className="h-5 w-5" />
-            </button>
-            
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 shadow-md rounded-md z-10">
-                <ul className="py-1" role="menu" aria-orientation="vertical">
-                  <li
-                    className="px-4 py-1 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
-                    onClick={handleConvertToTask}
-                    role="menuitem"
-                  >
-                    {t('inbox.createTask')}
-                  </li>
-                  <li
-                    className="px-4 py-1 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
-                    onClick={handleConvertToProject}
-                    role="menuitem"
-                  >
-                    {t('inbox.createProject')}
-                  </li>
-                  <li
-                    className="px-4 py-1 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
-                    onClick={handleConvertToNote}
-                    role="menuitem"
-                  >
-                    {t('inbox.createNote', 'Create Note')}
-                  </li>
-                </ul>
-              </div>
-            )}
-          </div>
+          {/* Convert to Task Button */}
+          <button
+            onClick={handleConvertToTask}
+            className={`p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            title={t('inbox.createTask')}
+          >
+            <ClipboardDocumentListIcon className="h-4 w-4" />
+          </button>
+          
+          {/* Convert to Project Button */}
+          <button
+            onClick={handleConvertToProject}
+            className={`p-2 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            title={t('inbox.createProject')}
+          >
+            <FolderIcon className="h-4 w-4" />
+          </button>
+          
+          {/* Convert to Note Button */}
+          <button
+            onClick={handleConvertToNote}
+            className={`p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            title={t('inbox.createNote', 'Create Note')}
+          >
+            <DocumentTextIcon className="h-4 w-4" />
+          </button>
 
+          {/* Delete Button */}
           <button
             onClick={handleDelete}
-            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900 rounded-full"
+            className={`p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('common.delete')}
           >
-            <TrashIcon className="h-5 w-5" />
+            <TrashIcon className="h-4 w-4" />
           </button>
         </div>
       </div>

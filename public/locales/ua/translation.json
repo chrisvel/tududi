@@ -40,17 +40,65 @@
     "settings": "Налаштування",
     "logout": "Вийти"
   },
-
+  "settings": {
+    "todayPageSettings": "Налаштування сторінки Сьогодні",
+    "showDailyQuote": "Показувати щоденну цитату",
+    "showMetrics": "Показувати метрики",
+    "showProductivity": "Показувати поради з продуктивності",
+    "showIntelligence": "Показувати розумні пропозиції",
+    "showDueToday": "Показувати завдання на сьогодні",
+    "showCompleted": "Показувати виконані завдання"
+  },
+  "dashboard": {
+    "overview": "Огляд",
+    "sameAsYesterday": "Так само, як вчора",
+    "betterThanYesterday": "{{percentage}}% більше, ніж вчора",
+    "worseThanYesterday": "{{percentage}}% менше, ніж вчора",
+    "sameAsAverage": "Так само, як середнє",
+    "betterThanAverage": "{{percentage}}% більше, ніж середнє",
+    "worseThanAverage": "{{percentage}}% менше, ніж середнє"
+  },
   "tasks": {
+    "title": "Завдання",
     "today": "Сьогодні",
     "backlog": "Відкладені",
     "inProgress": "В процесі",
     "dueToday": "Термін сьогодні",
     "stale": "Прострочені",
     "suggested": "Запропоновані",
+    "completedToday": "Завершено сьогодні",
     "noTasksAvailable": "Немає доступних завдань.",
     "searchPlaceholder": "Пошук завдань...",
-    "addNewTask": "Додати нове завдання"
+    "addNewTask": "Додати нове завдання",
+    "myPlanToday": "Мій План на Сьогодні",
+    "noPlanToday": "Поки що немає завдань, запланованих на сьогодні",
+    "addToPlanHint": "Використовуйте іконки календаря поруч із завданнями, щоб додати їх до сьогоднішнього плану",
+    "addToToday": "Додати до сьогоднішнього плану",
+    "removeFromToday": "Видалити з сьогоднішнього плану"
+  },
+  "timeline": {
+    "activityTimeline": "Хронологія Активності",
+    "showActivityTimeline": "Показати Хронологію Активності",
+    "hideActivityTimeline": "Приховати Хронологію Активності",
+    "hideTimeline": "Приховати Хронологію",
+    "failedToLoad": "Не вдалося завантажити хронологію",
+    "events": {
+      "taskCreated": "Завдання створено",
+      "statusChanged": "Статус змінено",
+      "priorityChanged": "Пріоритет змінено",
+      "dueDateChanged": "Термін змінено",
+      "nameUpdated": "Назва оновлена",
+      "descriptionUpdated": "Опис оновлено",
+      "noteUpdated": "Нотатка оновлена",
+      "projectChanged": "Проєкт змінено",
+      "tagsUpdated": "Теги оновлені",
+      "taskArchived": "Завдання архівовано",
+      "todayFlagChanged": "Прапорець Сьогодні Змінився",
+      "status": "Статус",
+      "priority": "Пріоритет",
+      "dueDate": "Термін",
+      "none": "Немає"
+    }
   },
 
   "projects": {
@@ -86,6 +134,8 @@
     "required": "Це поле обов'язкове",
     "optional": "Необов'язково",
     "task": {
+      "statusAndOptions": "Статус і Опції",
+      "recurrence": "Повторення",
       "labels": {
         "recurrenceType": "Повторення",
         "recurrenceInterval": "Кожні",
@@ -99,7 +149,16 @@
       "completionBasedHelp": "Якщо відмічено, наступне завдання буде створене на основі дати завершення замість дати виконання"
     }
   },
-
+  "nextTask": {
+    "suggestion": "Оскільки нічого не виконується, як щодо початку з",
+    "suggestionTodayPlan": "Оскільки нічого не виконується, як щодо початку з цього завдання з вашого плану на сьогодні",
+    "suggestionDueToday": "Оскільки нічого не виконується, як щодо початку з цього завдання, яке закінчується сьогодні",
+    "suggestionSuggested": "Оскільки нічого не виконується, як щодо початку з цього запропонованого завдання",
+    "letsDoIt": "Так, давайте це зробимо!",
+    "starting": "Запуск...",
+    "startedSuccessfully": "Завдання успішно розпочато!",
+    "giveMeSomethingElse": "Дайте мені щось інше"
+  },
   "modals": {
     "updateNote": "Оновити нотатку",
     "createNote": "Створити нотатку",
@@ -113,12 +172,15 @@
   "errors": {
     "noteTitleRequired": "Заголовок нотатки обов'язковий.",
     "failedToLoadTags": "Не вдалося завантажити доступні теги.",
-    "failedToSaveNote": "Не вдалося зберегти нотатку."
+    "failedToSaveNote": "Не вдалося зберегти нотатку.",
+    "projectCreationFailed": "Не вдалося створити проект."
   },
 
   "success": {
     "noteUpdated": "Нотатку успішно оновлено!",
-    "noteCreated": "Нотатку успішно створено!"
+    "noteCreated": "Нотатку успішно створено!",
+    "projectDeleted": "Проект успішно видалено!",
+    "nextActionAdded": "Наступну дію успішно додано!"
   },
 
   "notes": {
@@ -169,6 +231,15 @@
     "autoSuggestNextActions": "Авто-пропозиція наступних дій",
     "autoSuggestNextActionsDescription": "При створенні проекту автоматично запитувати про наступну фізичну дію для виконання.",
     "enableAutoSuggestNextActions": "Увімкнути підказки наступних дій",
+    "productivityFeatures": "Функції продуктивності",
+    "pomodoroDescription": "Увімкніть таймер Pomodoro в панелі навігації для зосереджених робочих сесій.",
+    "enablePomodoro": "Увімкнути таймер Pomodoro",
+    "productivityAssistant": "Асистент продуктивності",
+    "productivityAssistantDescription": "Показувати інсайти продуктивності, які допомагають виявляти застряглі проекти, нечіткі завдання та поліпшення робочого процесу на вашій сторінці Сьогодні.",
+    "enableProductivityAssistant": "Увімкнути інсайти продуктивності",
+    "nextTaskSuggestion": "Пропозиція наступного завдання",
+    "nextTaskSuggestionDescription": "Автоматично пропонувати найкраще наступне завдання для роботи, коли нічого не в процесі, надаючи пріоритет завданням, які закінчуються сьогодні, потім запропонованим завданням з вашої сторінки Сьогодні.",
+    "enableNextTaskSuggestion": "Увімкнути пропозиції наступного завдання",
     "nextActionPrompt": "Яка наступна конкретна дія для цього проекту?",
     "nextActionPlaceholder": "напр., Подзвонити клієнту щоб домовитися про зустріч, Дослідити конкурентів онлайн, Створити папку проекту...",
     "addNextAction": "Додати наступну дію",
@@ -176,9 +247,26 @@
     "nextActionHint": "Подумайте про найменший, найконкретніший крок, який ви можете зробити прямо зараз, щоб просунути цей проект вперед.",
     "tabs": {
       "general": "Загальні",
+      "security": "Безпека",
+      "productivity": "Продуктивність",
       "telegram": "Telegram",
       "ai": "ШІ Функції"
     },
+    "security": "Налаштування безпеки",
+    "changePassword": "Змінити пароль",
+    "currentPassword": "Поточний пароль",
+    "newPassword": "Новий пароль",
+    "confirmPassword": "Підтвердити новий пароль",
+    "enterCurrentPassword": "Введіть поточний пароль",
+    "enterNewPassword": "Введіть новий пароль",
+    "confirmNewPassword": "Підтвердіть новий пароль",
+    "currentPasswordRequired": "Поточний пароль обов’язковий",
+    "newPasswordRequired": "Новий пароль обов’язковий",
+    "passwordTooShort": "Пароль повинен містити принаймні 6 символів",
+    "passwordMismatch": "Паролі не співпадають",
+    "passwordChangeError": "Не вдалося змінити пароль",
+    "passwordChangeSuccess": "Пароль успішно змінено!",
+    "changingPassword": "Зміна паролю...",
     "accountSettings": "Обліковий запис та налаштування",
     "aiProductivityFeatures": "ШІ та функції продуктивності",
     "botSetup": "Налаштування бота",
@@ -194,5 +282,55 @@
     "projectImage": "Зображення проекту",
     "uploadImageHint": "Завантажте зображення для вашого проекту (макс. 5МБ)",
     "browseImage": "Обрати зображення"
+  },
+  "calendar": {
+    "month": "Місяць",
+    "week": "Тиждень",
+    "day": "День",
+    "today": "Сьогодні",
+    "addEvent": "Додати подію",
+    "weekView": "Тижневий вигляд",
+    "dayView": "Денний вигляд",
+    "loadingTasks": "Завантаження завдань...",
+    "noEvents": "Немає подій на цей день",
+    "moreEvents": "більше",
+    "googleIntegration": "Інтеграція Google Calendar",
+    "googleDescription": "Підключіть свій Google Calendar для синхронізації подій та перегляду їх разом із завданнями.",
+    "googleStatus": "Статус",
+    "notConnected": "Не підключено",
+    "connected": "Підключено",
+    "connectGoogle": "Підключити Google Calendar",
+    "disconnectGoogle": "Відключити Google Calendar",
+    "connecting": "Підключення...",
+    "connectionError": "Помилка підключення до Google Calendar. Спробуйте ще раз.",
+    "disconnectionError": "Помилка відключення від Google Calendar. Спробуйте ще раз.",
+    "taskDetails": "Деталі завдання",
+    "editTask": "Редагувати завдання",
+    "goToTasks": "Перейти до завдань",
+    "close": "Закрити",
+    "title": "Назва",
+    "status": "Статус",
+    "dueDate": "Термін виконання",
+    "priority": "Пріоритет",
+    "project": "Проект",
+    "area": "Область",
+    "description": "Опис",
+    "created": "Створено",
+    "completed": "Завершено",
+    "pending": "В очікуванні",
+    "high": "Високий",
+    "medium": "Середній",
+    "low": "Низький",
+    "time": "Час",
+    "allDay": "Весь день"
+  },
+  "weekdays": {
+    "monday": "Пн",
+    "tuesday": "Вт",
+    "wednesday": "Ср",
+    "thursday": "Чт",
+    "friday": "Пт",
+    "saturday": "Сб",
+    "sunday": "Нд"
   }
 }

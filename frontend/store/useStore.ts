@@ -107,11 +107,9 @@ export const useStore = create<StoreState>((set) => ({
     setError: (isError) => set((state) => ({ tagsStore: { ...state.tagsStore, isError } })),
     loadTags: async () => {
       const { fetchTags } = require("../utils/tagsService");
-      console.log("loadTags: Starting to load tags...");
       set((state) => ({ tagsStore: { ...state.tagsStore, isLoading: true, isError: false } }));
       try {
         const tags = await fetchTags();
-        console.log("loadTags: Successfully loaded tags:", tags);
         set((state) => ({ tagsStore: { ...state.tagsStore, tags, isLoading: false } }));
       } catch (error) {
         console.error("loadTags: Failed to load tags:", error);

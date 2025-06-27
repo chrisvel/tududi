@@ -5,10 +5,11 @@ const path = require('path');
 let dbConfig;
 
 if (process.env.NODE_ENV === 'test') {
-  // Use in-memory database for tests
+  // Use temporary file database for tests to allow external script access
+  const testDbPath = path.join(__dirname, '../db', 'test.sqlite3');
   dbConfig = {
     dialect: 'sqlite',
-    storage: ':memory:',
+    storage: testDbPath,
     logging: false,
     define: {
       timestamps: true,
@@ -45,6 +46,7 @@ const Task = require('./task')(sequelize);
 const Tag = require('./tag')(sequelize);
 const Note = require('./note')(sequelize);
 const InboxItem = require('./inbox_item')(sequelize);
+const TaskEvent = require('./task_event')(sequelize);
 
 // Define associations
 User.hasMany(Area, { foreignKey: 'user_id' });
@@ -71,6 +73,12 @@ Project.hasMany(Note, { foreignKey: 'project_id' });
 User.hasMany(InboxItem, { foreignKey: 'user_id' });
 InboxItem.belongsTo(User, { foreignKey: 'user_id' });
 
+// TaskEvent associations
+User.hasMany(TaskEvent, { foreignKey: 'user_id', as: 'TaskEvents' });
+TaskEvent.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+Task.hasMany(TaskEvent, { foreignKey: 'task_id', as: 'TaskEvents' });
+TaskEvent.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
+
 // Many-to-many associations
 Task.belongsToMany(Tag, { through: 'tasks_tags', foreignKey: 'task_id', otherKey: 'tag_id' });
 Tag.belongsToMany(Task, { through: 'tasks_tags', foreignKey: 'tag_id', otherKey: 'task_id' });
@@ -89,5 +97,6 @@ module.exports = {
   Task,
   Tag,
   Note,
-  InboxItem
+  InboxItem,
+  TaskEvent
 };

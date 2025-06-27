@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PencilSquareIcon, TrashIcon, TagIcon, DocumentTextIcon } from '@heroicons/react/24/solid';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
+import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import { Note } from '../../entities/Note';
 import { fetchNotes, deleteNote as apiDeleteNote, updateNote as apiUpdateNote } from '../../utils/notesService';
 
@@ -49,8 +50,8 @@ const NoteDetails: React.FC = () => {
   const handleSaveNote = async (updatedNote: Note) => {
     try {
       if (updatedNote.id !== undefined) {
-        await apiUpdateNote(updatedNote.id, updatedNote);
-        setNote(updatedNote);
+        const savedNote = await apiUpdateNote(updatedNote.id, updatedNote);
+        setNote(savedNote);
       } else {
         console.error("Error: Note ID is undefined.");
       }
@@ -120,52 +121,51 @@ const NoteDetails: React.FC = () => {
             </button>
           </div>
         </div>
-        {/* Card with Tags and Metadata */}
-        <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-4 mb-6">
-          {/* Note Tags */}
-          {note.tags && note.tags.length > 0 && (
-            <div className="mb-4">
-              <div className="mt-2 flex flex-wrap space-x-2">
-                {note.tags.map((tag) => (
-                  <button
-                    key={tag.id}
-                    onClick={() => navigate(`/tasks?tag=${tag.name}`)}
-                    className="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
-                  >
-                    <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-300" />
-                    <span className="text-xs text-gray-700 dark:text-gray-300">
-                      {tag.name}
-                    </span>
-                  </button>
-                ))}
+        {/* Tags and Project */}
+        {((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0)) || note.project || note.Project ? (
+          <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-4 mb-6">
+            {/* Note Tags */}
+            {((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0)) && (
+              <div className="mb-4">
+                <div className="flex items-start">
+                  <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3 mt-0.5" />
+                  <div className="flex-1">
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">Tags:</span>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {(note.tags || note.Tags || []).map((tag) => (
+                        <button
+                          key={tag.id}
+                          onClick={() => navigate(`/tag/${tag.id}`)}
+                          className="flex items-center space-x-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-xs"
+                        >
+                          <TagIcon className="h-3 w-3" />
+                          <span>{tag.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
-          {/* Note Metadata */}
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            <p>Created on: {new Date(note.created_at || '').toLocaleDateString()}</p>
-            <p>Last updated: {new Date(note.updated_at || '').toLocaleDateString()}</p>
+            )}
+            {/* Note Project */}
+            {(note.project || note.Project) && (
+              <div className={((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0)) ? "mt-4" : ""}>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Project
+                </h3>
+                <Link
+                  to={`/project/${(note.project || note.Project)?.id}`}
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {(note.project || note.Project)?.name}
+                </Link>
+              </div>
+            )}
           </div>
-          {/* Note Project */}
-          {note.project && (
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Project
-              </h3>
-              <Link
-                to={`/project/${note.project.id}`}
-                className="text-blue-600 dark:text-blue-400 hover:underline"
-              >
-                {note.project.name}
-              </Link>
-            </div>
-          )}
-        </div>
+        ) : null}
         {/* Note Content */}
-        <div className="mb-6">
-          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
-            {note.content}
-          </p>
+        <div className="mb-6 bg-white dark:bg-gray-900 shadow-md rounded-lg p-6">
+          <MarkdownRenderer content={note.content} />
         </div>
         {/* NoteModal for editing */}
         {isNoteModalOpen && (

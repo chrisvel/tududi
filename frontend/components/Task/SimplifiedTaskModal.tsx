@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Task } from "../../entities/Task";
-import { InboxItem } from "../../entities/InboxItem";
 import { useToast } from "../Shared/ToastContext";
 import { useTranslation } from "react-i18next";
 import { createInboxItemWithStore } from "../../utils/inboxService";
 import { isAuthError } from "../../utils/authUtils";
+// import UrlPreview from "../Shared/UrlPreview";
+// import { UrlTitleResult } from "../../utils/urlService";
 
 interface SimplifiedTaskModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
   const { showSuccessToast, showErrorToast } = useToast();
   const nameInputRef = useRef<HTMLInputElement>(null);
   const [saveMode, setSaveMode] = useState<'task' | 'inbox'>('inbox');
+  // const [urlPreview, setUrlPreview] = useState<UrlTitleResult | null>(null);
 
   useEffect(() => {
     if (isOpen && nameInputRef.current) {
@@ -155,35 +157,42 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
           isClosing ? "scale-95" : "scale-100"
         } flex flex-col`}
       >
-        <div className="p-6 px-8 flex items-center">
-          <input
-            ref={nameInputRef}
-            type="text"
-            name="text"
-            value={inputText}
-            onChange={handleChange}
-            required
-            className="flex-1 text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
-            placeholder={t('inbox.captureThought')}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey && !isSaving) {
-                e.preventDefault();
-                handleSubmit();
-              }
-            }}
-          />
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={!inputText.trim() || isSaving}
-            className={`ml-4 inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none ${
-              inputText.trim() && !isSaving
-                ? "bg-blue-600 hover:bg-blue-700"
-                : "bg-blue-400 cursor-not-allowed"
-            }`}
-          >
-            {isSaving ? t('common.saving') : t('common.save')}
-          </button>
+        <div className="p-6 px-8">
+          <div className="flex items-center">
+            <input
+              ref={nameInputRef}
+              type="text"
+              name="text"
+              value={inputText}
+              onChange={handleChange}
+              required
+              className="flex-1 text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
+              placeholder={t('inbox.captureThought')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey && !isSaving) {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={!inputText.trim() || isSaving}
+              className={`ml-4 inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none ${
+                inputText.trim() && !isSaving
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-blue-400 cursor-not-allowed"
+              }`}
+            >
+              {isSaving ? t('common.saving') : t('common.save')}
+            </button>
+          </div>
+          {/* URL Preview disabled */}
+          {/* <UrlPreview 
+            text={inputText} 
+            onPreviewChange={setUrlPreview}
+          /> */}
         </div>
       </div>
     </div>

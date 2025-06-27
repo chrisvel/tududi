@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Functional programming Express.js backend for tududi task management application",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
@@ -22,27 +22,32 @@
     "migration:run": "npx sequelize-cli db:migrate",
     "migration:undo": "npx sequelize-cli db:migrate:undo",
     "migration:undo:all": "npx sequelize-cli db:migrate:undo:all",
-    "migration:status": "npx sequelize-cli db:migrate:status"
+    "migration:status": "npx sequelize-cli db:migrate:status",
+    "seed:dev": "node scripts/seed-dev-data.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cheerio": "^1.1.0",
     "compression": "^1.8.0",
     "connect-session-sequelize": "^7.1.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.18.2",
     "express-session": "^1.18.1",
+    "googleapis": "^144.0.0",
     "helmet": "^8.1.0",
     "js-yaml": "^4.1.0",
+    "moment-timezone": "^0.6.0",
     "morgan": "^1.10.0",
     "multer": "^2.0.1",
     "node-cron": "^4.1.0",
+    "recharts": "^2.15.4",
     "sequelize": "^6.37.7",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",

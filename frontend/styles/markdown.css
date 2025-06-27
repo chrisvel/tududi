@@ -1,0 +1,289 @@
+/* Light mode syntax highlighting - only for code blocks */
+.markdown-content pre code,
+.markdown-content pre code.hljs,
+.hljs {
+  background: #f6f8fa !important;
+  color: #24292e !important;
+  display: block;
+  overflow-x: auto;
+  padding: 1.25rem !important;
+  border-radius: 0.5rem;
+  font-size: 0.875rem !important;
+  line-height: 1.5;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #6a737d !important;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-addition {
+  color: #d73a49 !important;
+}
+
+.hljs-number,
+.hljs-string,
+.hljs-meta .hljs-string,
+.hljs-literal,
+.hljs-doctag,
+.hljs-regexp {
+  color: #032f62 !important;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: #6f42c1 !important;
+}
+
+.hljs-attribute,
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-class .hljs-title,
+.hljs-type {
+  color: #e36209 !important;
+}
+
+.hljs-symbol,
+.hljs-bullet,
+.hljs-subst,
+.hljs-meta,
+.hljs-meta .hljs-keyword,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-link {
+  color: #005cc5 !important;
+}
+
+.hljs-built_in {
+  color: #e36209;
+}
+
+.hljs-deletion {
+  color: #b31d28;
+  background-color: #ffeef0;
+}
+
+.hljs-formula {
+  background-color: #eee;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* Dark mode syntax highlighting */
+.dark .hljs,
+.dark .markdown-content pre code,
+.dark .markdown-content pre code.hljs {
+  background: #0d1117 !important;
+  color: #e6edf3 !important;
+}
+
+.dark .hljs-comment,
+.dark .hljs-quote {
+  color: #8b949e !important;
+  font-style: italic;
+}
+
+.dark .hljs-keyword,
+.dark .hljs-selector-tag,
+.dark .hljs-addition {
+  color: #ff7b72 !important;
+}
+
+.dark .hljs-number,
+.dark .hljs-string,
+.dark .hljs-meta .hljs-string,
+.dark .hljs-literal,
+.dark .hljs-doctag,
+.dark .hljs-regexp {
+  color: #a5d6ff !important;
+}
+
+.dark .hljs-title,
+.dark .hljs-section,
+.dark .hljs-name,
+.dark .hljs-selector-id,
+.dark .hljs-selector-class {
+  color: #d2a8ff;
+}
+
+.dark .hljs-attribute,
+.dark .hljs-attr,
+.dark .hljs-variable,
+.dark .hljs-template-variable,
+.dark .hljs-class .hljs-title,
+.dark .hljs-type {
+  color: #ffa657;
+}
+
+.dark .hljs-symbol,
+.dark .hljs-bullet,
+.dark .hljs-subst,
+.dark .hljs-meta,
+.dark .hljs-meta .hljs-keyword,
+.dark .hljs-selector-attr,
+.dark .hljs-selector-pseudo,
+.dark .hljs-link {
+  color: #79c0ff;
+}
+
+.dark .hljs-built_in {
+  color: #ffa657;
+}
+
+.dark .hljs-deletion {
+  color: #ffa198;
+  background-color: #490202;
+}
+
+.dark .hljs-formula {
+  background-color: #21262d;
+}
+
+.dark .hljs-emphasis {
+  font-style: italic;
+}
+
+.dark .hljs-strong {
+  font-weight: bold;
+}
+
+/* Custom markdown styles */
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-content pre {
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.markdown-content pre code {
+  background: transparent !important;
+  padding: 1.25rem !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.875rem !important;
+}
+
+.markdown-content code {
+  font-size: 0.875rem;
+}
+
+/* Force padding only on code elements, not pre */
+.markdown-content pre > code {
+  padding: 1.25rem !important;
+  margin: 0 !important;
+}
+
+/* Pre elements should not have padding */
+.markdown-content pre {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 1rem 0 !important;
+}
+
+.markdown-content table {
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.markdown-content blockquote {
+  border-radius: 0.25rem;
+  background-color: rgba(243, 244, 246, 0.5);
+}
+
+.dark .markdown-content blockquote {
+  background-color: rgba(31, 41, 55, 0.5);
+}
+
+/* Task list styles */
+.markdown-content ul li:has(input[type="checkbox"]) {
+  list-style: none;
+  margin-left: -1rem;
+}
+
+.markdown-content input[type="checkbox"] {
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+/* Improved spacing for nested lists */
+.markdown-content ul ul,
+.markdown-content ol ol,
+.markdown-content ul ol,
+.markdown-content ol ul {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Enhanced pre/code block styling */
+.markdown-content pre {
+  position: relative;
+  border: none;
+  margin: 1rem 0;
+}
+
+.dark .markdown-content pre {
+  border: none;
+}
+
+/* Copy button styling for code blocks */
+.markdown-content pre:hover::after {
+  content: "Copy";
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.dark .markdown-content pre:hover::after {
+  background: rgba(255, 255, 255, 0.8);
+  color: black;
+}
+
+/* Better table responsiveness */
+.markdown-content table {
+  max-width: 100%;
+  overflow-x: auto;
+  display: block;
+  white-space: nowrap;
+}
+
+.markdown-content tbody {
+  display: table;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .markdown-content table {
+    font-size: 0.875rem;
+  }
+  
+  .markdown-content th,
+  .markdown-content td {
+    padding: 0.5rem;
+  }
+}

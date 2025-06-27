@@ -20,6 +20,10 @@ module.exports = (sequelize) => {
         isEmail: true
       }
     },
+    password: {
+      type: DataTypes.VIRTUAL,
+      allowNull: true
+    },
     password_digest: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -85,6 +89,24 @@ module.exports = (sequelize) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    pomodoro_enabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
+    },
+    today_settings: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: {
+        showMetrics: false,
+        showProductivity: false,
+        showIntelligence: false,
+        showDueToday: true,
+        showCompleted: true,
+        showProgressBar: true,
+        showDailyQuote: true
+      }
     }
   }, {
     tableName: 'users',

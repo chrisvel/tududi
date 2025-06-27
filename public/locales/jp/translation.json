@@ -39,16 +39,65 @@
     "settings": "設定",
     "logout": "ログアウト"
   },
+  "settings": {
+    "todayPageSettings": "今日のページ設定",
+    "showDailyQuote": "毎日の名言を表示",
+    "showMetrics": "メトリクスを表示",
+    "showProductivity": "生産性の洞察を表示",
+    "showIntelligence": "インテリジェンス提案を表示",
+    "showDueToday": "今日期限のタスクを表示",
+    "showCompleted": "完了したタスクを表示"
+  },
+  "dashboard": {
+    "overview": "概要",
+    "sameAsYesterday": "昨日と同じ",
+    "betterThanYesterday": "昨日より{{percentage}}%多い",
+    "worseThanYesterday": "昨日より{{percentage}}%少ない",
+    "sameAsAverage": "平均と同じ",
+    "betterThanAverage": "平均より{{percentage}}%多い",
+    "worseThanAverage": "平均より{{percentage}}%少ない"
+  },
   "tasks": {
+    "title": "タスク",
     "today": "今日",
     "backlog": "バックログ",
     "inProgress": "進行中",
     "dueToday": "本日の期限",
     "stale": "古い",
     "suggested": "おすすめ",
+    "completedToday": "今日完了",
     "noTasksAvailable": "今日のタスクはありません。",
     "searchPlaceholder": "タスクを検索...",
-    "addNewTask": "新しいタスクを追加"
+    "addNewTask": "新しいタスクを追加",
+    "myPlanToday": "今日の私の計画",
+    "noPlanToday": "今日はまだ予定されたタスクがありません",
+    "addToPlanHint": "タスクの横にあるカレンダーアイコンを使用して、今日の計画に追加します",
+    "addToToday": "今日の計画に追加",
+    "removeFromToday": "今日の計画から削除"
+  },
+  "timeline": {
+    "activityTimeline": "アクティビティタイムライン",
+    "showActivityTimeline": "アクティビティタイムラインを表示",
+    "hideActivityTimeline": "アクティビティタイムラインを非表示",
+    "hideTimeline": "タイムラインを非表示",
+    "failedToLoad": "タイムラインの読み込みに失敗しました",
+    "events": {
+      "taskCreated": "タスクが作成されました",
+      "statusChanged": "ステータスが変更されました",
+      "priorityChanged": "優先度が変更されました",
+      "dueDateChanged": "期限が変更されました",
+      "nameUpdated": "名前が更新されました",
+      "descriptionUpdated": "説明が更新されました",
+      "noteUpdated": "メモが更新されました",
+      "projectChanged": "プロジェクトが変更されました",
+      "tagsUpdated": "タグが更新されました",
+      "taskArchived": "タスクがアーカイブされました",
+      "todayFlagChanged": "今日フラグが変更されました",
+      "status": "ステータス",
+      "priority": "優先度",
+      "dueDate": "期限",
+      "none": "なし"
+    }
   },
   "profile": {
     "settings": "プロフィール設定",
@@ -59,6 +108,16 @@
     "spanish": "スペイン語",
     "greek": "ギリシャ語",
     "japanese": "日本語"
+  },
+  "nextTask": {
+    "suggestion": "進行中のものがないので、こちらから始めてみませんか",
+    "suggestionTodayPlan": "進行中のものがないので、今日の予定からこのタスクを始めてみませんか",
+    "suggestionDueToday": "進行中のものがないので、今日期限のこのタスクから始めてみませんか",
+    "suggestionSuggested": "進行中のものがないので、この推奨タスクから始めてみませんか",
+    "letsDoIt": "はい、やりましょう！",
+    "starting": "開始中...",
+    "startedSuccessfully": "タスクが正常に開始されました！",
+    "giveMeSomethingElse": "他のものをください"
   },
   "modals": {
     "confirmDelete": "本当に削除してよろしいですか？",
@@ -104,6 +163,8 @@
     "noteTitlePlaceholder": "ノートのタイトルを入力",
     "noteContentPlaceholder": "ノートの内容を入力",
     "task": {
+      "statusAndOptions": "ステータスとオプション",
+      "recurrence": "繰り返し",
       "labels": {
         "recurrenceType": "繰り返し",
         "recurrenceInterval": "間隔",
@@ -165,11 +226,14 @@
     "taskDelete": "タスクの削除に失敗しました。",
     "noteTitleRequired": "ノートのタイトルは必須です。",
     "failedToLoadTags": "利用可能なタグの読み込みに失敗しました。",
-    "failedToSaveNote": "ノートの保存に失敗しました。"
+    "failedToSaveNote": "ノートの保存に失敗しました。",
+    "projectCreationFailed": "プロジェクトの作成に失敗しました。"
   },
   "success": {
     "noteUpdated": "ノートが正常に更新されました！",
-    "noteCreated": "ノートが正常に作成されました！"
+    "noteCreated": "ノートが正常に作成されました！",
+    "projectDeleted": "プロジェクトが正常に削除されました！",
+    "nextActionAdded": "次のアクションが正常に追加されました！"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
@@ -240,7 +304,17 @@
     "editTagAriaLabel": "タグ {{tagName}} を編集",
     "editTagTitle": "タグ {{tagName}} の編集",
     "deleteTagAriaLabel": "タグ {{tagName}} を削除",
-    "deleteTagTitle": "タグ {{tagName}} の削除"
+    "deleteTagTitle": "タグ {{tagName}} の削除",
+    "error": "タグの取得エラー。",
+    "notFound": "タグが見つかりませんでした。",
+    "details": "タグの詳細",
+    "name": "名前",
+    "status": "ステータス",
+    "active": "アクティブ",
+    "inactive": "非アクティブ",
+    "viewTasksWithTag": "このタグでタスクを表示",
+    "typeToAdd": "タグを追加するために入力",
+    "noItemsWithTag": "このタグのアイテムが見つかりませんでした"
   },
   "recurrence": {
     "none": "なし",
@@ -276,6 +350,15 @@
     "autoSuggestNextActions": "次のアクション自動提案",
     "autoSuggestNextActionsDescription": "プロジェクト作成時に、次に行うべき具体的なアクションを自動的に促します。",
     "enableAutoSuggestNextActions": "次のアクション促進を有効にする",
+    "productivityFeatures": "生産性機能",
+    "pomodoroDescription": "集中した作業セッションのためにナビゲーションバーでPomodoroタイマーを有効にします。",
+    "enablePomodoro": "Pomodoroタイマーを有効にする",
+    "productivityAssistant": "生産性アシスタント",
+    "productivityAssistantDescription": "停滞したプロジェクト、曖昧なタスク、ワークフローの改善を特定するのに役立つ生産性インサイトを今日ページに表示します。",
+    "enableProductivityAssistant": "生産性インサイトを有効にする",
+    "nextTaskSuggestion": "次のタスクの提案",
+    "nextTaskSuggestionDescription": "進行中のものがないときに、今日期限のタスク、次に今日ページからの推奨タスクを優先して、次に取り組むべき最適なタスクを自動的に提案します。",
+    "enableNextTaskSuggestion": "次のタスク提案を有効にする",
     "nextActionPrompt": "このプロジェクトの次の具体的なアクションは何ですか？",
     "nextActionPlaceholder": "例：クライアントに電話してミーティングをスケジュール、競合他社をオンラインで調査、プロジェクトフォルダを作成...",
     "addNextAction": "次のアクションを追加",
@@ -283,9 +366,26 @@
     "nextActionHint": "このプロジェクトを前進させるために、今すぐ取ることができる最も小さく具体的なステップを考えてみてください。",
     "tabs": {
       "general": "一般",
+      "security": "セキュリティ",
+      "productivity": "生産性",
       "telegram": "Telegram",
       "ai": "AI機能"
     },
+    "security": "セキュリティ設定",
+    "changePassword": "パスワード変更",
+    "currentPassword": "現在のパスワード",
+    "newPassword": "新しいパスワード",
+    "confirmPassword": "新しいパスワードの確認",
+    "enterCurrentPassword": "現在のパスワードを入力してください",
+    "enterNewPassword": "新しいパスワードを入力してください",
+    "confirmNewPassword": "新しいパスワードを確認してください",
+    "currentPasswordRequired": "現在のパスワードが必要です",
+    "newPasswordRequired": "新しいパスワードが必要です",
+    "passwordTooShort": "パスワードは6文字以上で入力してください",
+    "passwordMismatch": "パスワードが一致しません",
+    "passwordChangeError": "パスワードの変更に失敗しました",
+    "passwordChangeSuccess": "パスワードが正常に変更されました！",
+    "changingPassword": "パスワードを変更中...",
     "accountSettings": "アカウント設定",
     "aiProductivityFeatures": "AI & 生産性機能",
     "botSetup": "ボット設定",
@@ -301,5 +401,55 @@
     "projectImage": "プロジェクト画像",
     "uploadImageHint": "プロジェクト用の画像をアップロード（最大5MB）",
     "browseImage": "画像を参照"
+  },
+  "calendar": {
+    "month": "月",
+    "week": "週",
+    "day": "日",
+    "today": "今日",
+    "addEvent": "イベントを追加",
+    "weekView": "週表示",
+    "dayView": "日表示",
+    "loadingTasks": "タスクを読み込み中...",
+    "noEvents": "この日のイベントはありません",
+    "moreEvents": "その他",
+    "googleIntegration": "Googleカレンダー連携",
+    "googleDescription": "Googleカレンダーを接続してイベントを同期し、タスクと一緒に表示します。",
+    "googleStatus": "ステータス",
+    "notConnected": "未接続",
+    "connected": "接続済み",
+    "connectGoogle": "Googleカレンダーに接続",
+    "disconnectGoogle": "Googleカレンダーを切断",
+    "connecting": "接続中...",
+    "connectionError": "Googleカレンダーへの接続に失敗しました。もう一度お試しください。",
+    "disconnectionError": "Googleカレンダーからの切断に失敗しました。もう一度お試しください。",
+    "taskDetails": "タスクの詳細",
+    "editTask": "タスクを編集",
+    "goToTasks": "タスクへ移動",
+    "close": "閉じる",
+    "title": "タイトル",
+    "status": "ステータス",
+    "dueDate": "期限",
+    "priority": "優先度",
+    "project": "プロジェクト",
+    "area": "エリア",
+    "description": "説明",
+    "created": "作成日",
+    "completed": "完了",
+    "pending": "保留中",
+    "high": "高",
+    "medium": "中",
+    "low": "低",
+    "time": "時刻",
+    "allDay": "終日"
+  },
+  "weekdays": {
+    "monday": "月",
+    "tuesday": "火",
+    "wednesday": "水",
+    "thursday": "木",
+    "friday": "金",
+    "saturday": "土",
+    "sunday": "日"
   }
 }

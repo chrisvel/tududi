@@ -7,7 +7,8 @@ import { Task } from "../entities/Task";
 import { Project } from "../entities/Project";
 import { getTitleAndIcon } from "./Task/getTitleAndIcon";
 import { getDescription } from "./Task/getDescription";
-import { createTask } from "../utils/tasksService";
+import { createTask, toggleTaskToday } from "../utils/tasksService";
+import { useToast } from "./Shared/ToastContext";
 import {
   TagIcon,
   XMarkIcon,
@@ -34,6 +35,7 @@ const getSearchPlaceholder = (language: string): string => {
 
 const Tasks: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { showSuccessToast } = useToast();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -138,6 +140,14 @@ const Tasks: React.FC = () => {
       const newTask = await createTask(taskData as Task);
       // Add the new task optimistically to avoid race conditions
       setTasks((prevTasks) => [newTask, ...prevTasks]);
+      
+      // Show success toast with task link
+      const taskLink = (
+        <span>
+          {t('task.created', 'Task')} <a href={`/task/${newTask.uuid}`} className="text-green-200 underline hover:text-green-100">{newTask.name}</a> {t('task.createdSuccessfully', 'created successfully!')}
+        </span>
+      );
+      showSuccessToast(taskLink);
     } catch (error) {
       console.error("Error creating task:", error);
       setError("Error creating task.");
@@ -186,6 +196,20 @@ const Tasks: React.FC = () => {
     } catch (error) {
       console.error("Error deleting task:", error);
       setError("Error deleting task.");
+    }
+  };
+
+  const handleToggleToday = async (taskId: number): Promise<void> => {
+    try {
+      const updatedTask = await toggleTaskToday(taskId);
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === taskId ? updatedTask : task
+        )
+      );
+    } catch (error) {
+      console.error("Error toggling task today status:", error);
+      setError("Error toggling task today status.");
     }
   };
 
@@ -318,6 +342,7 @@ const Tasks: React.FC = () => {
                 onTaskUpdate={handleTaskUpdate}
                 onTaskDelete={handleTaskDelete}
                 projects={projects}
+                onToggleToday={handleToggleToday}
               />
             ) : (
               <p className="text-gray-500 text-center mt-4">

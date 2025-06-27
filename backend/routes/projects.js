@@ -182,7 +182,6 @@ router.get('/projects', async (req, res) => {
 
     // If grouped=true, return grouped format
     if (grouped === 'true') {
-      console.log('Returning grouped format');
       const groupedProjects = {};
       enhancedProjects.forEach(project => {
         const areaName = project.Area ? project.Area.name : 'No Area';
@@ -191,10 +190,8 @@ router.get('/projects', async (req, res) => {
         }
         groupedProjects[areaName].push(project);
       });
-      console.log('Grouped projects structure:', Object.keys(groupedProjects).map(key => `${key}: ${groupedProjects[key].length} projects`));
       res.json(groupedProjects);
     } else {
-      console.log('Returning flat array format');
       res.json({
         projects: enhancedProjects
       });
@@ -242,9 +239,6 @@ router.get('/project/:id', async (req, res) => {
       tags: projectJson.Tags || [], // Normalize Tags to tags
       due_date_at: formatDate(project.due_date_at)
     };
-    
-    console.log("Project API result:", JSON.stringify(result, null, 2));
-    console.log("Tasks found:", result.Tasks ? result.Tasks.length : 'No Tasks property');
     
     res.json(result);
   } catch (error) {

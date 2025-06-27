@@ -16,10 +16,12 @@ import TagDetails from "./components/Tag/TagDetails";
 import Tags from "./components/Tags";
 import Notes from "./components/Notes";
 import NoteDetails from "./components/Note/NoteDetails";
+import Calendar from "./components/Calendar";
 import ProfileSettings from "./components/Profile/ProfileSettings";
 import Layout from "./Layout";
 import { User } from "./entities/User";
 import TasksToday from "./components/Task/TasksToday"; 
+import TaskView from "./components/Task/TaskView";
 import LoadingScreen from "./components/Shared/LoadingScreen";
 import InboxItems from "./components/Inbox/InboxItems";
 // Lazy load Tasks component to prevent issues with tags loading
@@ -157,6 +159,7 @@ const App: React.FC = () => {
             >
               <Route index element={<Navigate to="/today" replace />} />
               <Route path="/today" element={<TasksToday />} />
+              <Route path="/task/:uuid" element={<TaskView />} />
               <Route
                 path="/tasks"
                 element={
@@ -174,6 +177,7 @@ const App: React.FC = () => {
               <Route path="/tag/:id" element={<TagDetails />} />
               <Route path="/notes" element={<Notes />} />
               <Route path="/note/:id" element={<NoteDetails />} />
+              <Route path="/calendar" element={<Calendar />} />
               <Route path="/profile" element={<ProfileSettings currentUser={currentUser} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />} />
               <Route path="*" element={<NotFound />} />
             </Route>

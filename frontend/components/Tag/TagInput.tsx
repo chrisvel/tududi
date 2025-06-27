@@ -28,9 +28,8 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
     }
   }, [initialTags]);
   
-  useEffect(() => {
-    onTagsChange(tags);
-  }, [tags, onTagsChange]);
+  // Remove this effect to prevent infinite loops
+  // onTagsChange is called directly in addNewTag, selectTag, and removeTag
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -177,7 +176,7 @@ const TagInput: React.FC<TagInputProps> = ({ initialTags, onTagsChange, availabl
       {isDropdownOpen && (
         <div
           ref={dropdownRef}
-          className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
+          className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
           role="listbox"
           id="tag-suggestions"
         >

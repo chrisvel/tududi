@@ -47,6 +47,24 @@
     "settings": "Ajustes",
     "logout": "Cerrar Sesión"
   },
+  "settings": {
+    "todayPageSettings": "Configuración de Página Hoy",
+    "showDailyQuote": "Mostrar Cita Diaria",
+    "showMetrics": "Mostrar Métricas",
+    "showProductivity": "Mostrar Información de Productividad",
+    "showIntelligence": "Mostrar Sugerencias Inteligentes",
+    "showDueToday": "Mostrar Tareas que Vencen Hoy",
+    "showCompleted": "Mostrar Tareas Completadas"
+  },
+  "dashboard": {
+    "overview": "Resumen",
+    "sameAsYesterday": "Igual que ayer",
+    "betterThanYesterday": "{{percentage}}% más que ayer",
+    "worseThanYesterday": "{{percentage}}% menos que ayer",
+    "sameAsAverage": "Igual que el promedio",
+    "betterThanAverage": "{{percentage}}% más que el promedio",
+    "worseThanAverage": "{{percentage}}% menos que el promedio"
+  },
   "auth": {
     "login": "Iniciar Sesión",
     "register": "Registrarse",
@@ -86,6 +104,15 @@
     "autoSuggestNextActions": "Auto-Sugerir Próximas Acciones",
     "autoSuggestNextActionsDescription": "Al crear un proyecto, solicitar automáticamente la próxima acción física a realizar.",
     "enableAutoSuggestNextActions": "Habilitar Avisos de Próximas Acciones",
+    "productivityFeatures": "Funciones de Productividad",
+    "pomodoroDescription": "Habilitar el temporizador Pomodoro en la barra de navegación para sesiones de trabajo enfocado.",
+    "enablePomodoro": "Habilitar Temporizador Pomodoro",
+    "productivityAssistant": "Asistente de Productividad",
+    "productivityAssistantDescription": "Mostrar información de productividad que ayude a identificar proyectos estancados, tareas vagas y mejoras en el flujo de trabajo en tu página de Hoy.",
+    "enableProductivityAssistant": "Habilitar Información de Productividad",
+    "nextTaskSuggestion": "Sugerencia de Próxima Tarea",
+    "nextTaskSuggestionDescription": "Sugerir automáticamente la mejor próxima tarea en la que trabajar cuando no tengas nada en progreso, priorizando tareas que vencen hoy, luego tareas sugeridas de tu página de Hoy.",
+    "enableNextTaskSuggestion": "Habilitar Sugerencias de Próxima Tarea",
     "nextActionPrompt": "¿Cuál es la próxima acción física para este proyecto?",
     "nextActionPlaceholder": "ej., Llamar al cliente para programar reunión, Investigar competidores en línea, Crear carpeta del proyecto...",
     "addNextAction": "Agregar Próxima Acción",
@@ -93,9 +120,26 @@
     "nextActionHint": "Piensa en el paso más pequeño y concreto que puedes tomar ahora mismo para hacer avanzar este proyecto.",
     "tabs": {
       "general": "General",
+      "security": "Seguridad",
+      "productivity": "Productividad",
       "telegram": "Telegram",
       "ai": "Funciones IA"
     },
+    "security": "Configuración de Seguridad",
+    "changePassword": "Cambiar Contraseña",
+    "currentPassword": "Contraseña Actual",
+    "newPassword": "Nueva Contraseña",
+    "confirmPassword": "Confirmar Nueva Contraseña",
+    "enterCurrentPassword": "Ingrese su contraseña actual",
+    "enterNewPassword": "Ingrese su nueva contraseña",
+    "confirmNewPassword": "Confirme su nueva contraseña",
+    "currentPasswordRequired": "La contraseña actual es obligatoria",
+    "newPasswordRequired": "La nueva contraseña es obligatoria",
+    "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "passwordChangeError": "Error al cambiar la contraseña",
+    "passwordChangeSuccess": "¡Contraseña cambiada exitosamente!",
+    "changingPassword": "Cambiando contraseña...",
     "accountSettings": "Cuenta y Preferencias",
     "aiProductivityFeatures": "Funciones de IA y Productividad",
     "botSetup": "Configuración del Bot",
@@ -113,7 +157,8 @@
     "taskDelete": "Error al eliminar la tarea.",
     "noteTitleRequired": "El título de la nota es obligatorio.",
     "failedToLoadTags": "Error al cargar las etiquetas disponibles.",
-    "failedToSaveNote": "Error al guardar la nota."
+    "failedToSaveNote": "Error al guardar la nota.",
+    "projectCreationFailed": "Error al crear el proyecto."
   },
   "dropdown": {
     "createNew": "Crear Nuevo",
@@ -123,16 +168,47 @@
     "area": "Área"
   },
   "tasks": {
+    "title": "Tareas",
     "today": "Hoy",
     "backlog": "Pendientes",
     "inProgress": "En Progreso",
     "dueToday": "Vence Hoy",
     "stale": "Atrasados",
     "suggested": "Sugeridos",
+    "completedToday": "Completadas Hoy",
     "noTasksAvailable": "No hay tareas disponibles para hoy.",
     "searchPlaceholder": "Buscar tareas...",
-    "addNewTask": "Añadir Nueva Tarea"
-    },
+    "addNewTask": "Añadir Nueva Tarea",
+    "myPlanToday": "Mi Plan para Hoy",
+    "noPlanToday": "Aún no hay tareas planificadas para hoy",
+    "addToPlanHint": "Usa los iconos + junto a las tareas sugeridas para añadirlas a tu plan de hoy",
+    "addToToday": "Añadir al plan de hoy",
+    "removeFromToday": "Eliminar del plan de hoy"
+  },
+  "timeline": {
+    "activityTimeline": "Línea de Tiempo de Actividad",
+    "showActivityTimeline": "Mostrar Línea de Tiempo de Actividad",
+    "hideActivityTimeline": "Ocultar Línea de Tiempo de Actividad",
+    "hideTimeline": "Ocultar Línea de Tiempo",
+    "failedToLoad": "Error al cargar la línea de tiempo",
+    "events": {
+      "taskCreated": "Tarea creada",
+      "statusChanged": "Estado cambiado",
+      "priorityChanged": "Prioridad cambiada",
+      "dueDateChanged": "Fecha de vencimiento cambiada",
+      "nameUpdated": "Nombre actualizado",
+      "descriptionUpdated": "Descripción actualizada",
+      "noteUpdated": "Nota actualizada",
+      "projectChanged": "Proyecto cambiado",
+      "tagsUpdated": "Etiquetas actualizadas",
+      "taskArchived": "Tarea archivada",
+      "todayFlagChanged": "Bandera de Hoy Cambiada",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "dueDate": "Fecha de vencimiento",
+      "none": "Ninguno"
+    }
+  },
   "projects": {
     "loading": "Cargando proyectos...",
     "error": "Error al cargar proyectos",
@@ -165,6 +241,16 @@
     "priority": "Prioridad",
     "status": "Estado",
     "created_at": "Fecha de Creación"
+  },
+  "nextTask": {
+    "suggestion": "Como no hay nada en progreso, ¿qué tal empezar con",
+    "suggestionTodayPlan": "Como no hay nada en progreso, ¿qué tal empezar con esta tarea de tu plan de hoy",
+    "suggestionDueToday": "Como no hay nada en progreso, ¿qué tal empezar con esta tarea que vence hoy",
+    "suggestionSuggested": "Como no hay nada en progreso, ¿qué tal empezar con esta tarea sugerida",
+    "letsDoIt": "¡Sí, hagámoslo!",
+    "starting": "Iniciando...",
+    "startedSuccessfully": "¡Tarea iniciada exitosamente!",
+    "giveMeSomethingElse": "Dame algo más"
   },
   "modals": {
     "confirmDelete": "¿Estás seguro que deseas eliminar?",
@@ -204,6 +290,8 @@
     "removeTagAriaLabel": "Eliminar etiqueta {{tagName}}",
     "task": {
       "namePlaceholder": "Agregar nombre de tarea",
+      "statusAndOptions": "Estado y Opciones",
+      "recurrence": "Recurrencia",
       "labels": {
         "tags": "Etiquetas",
         "project": "Proyecto",
@@ -357,7 +445,8 @@
     "active": "Activa",
     "inactive": "Inactiva",
     "viewTasksWithTag": "Ver tareas con esta etiqueta",
-    "typeToAdd": "Escriba para agregar una etiqueta"
+    "typeToAdd": "Escriba para agregar una etiqueta",
+    "noItemsWithTag": "No se encontraron elementos con esta etiqueta"
   },
   "note": {
     "title": "Título",
@@ -376,9 +465,11 @@
     "tagUpdated": "¡Etiqueta actualizada con éxito!",
     "tagCreated": "¡Etiqueta creada con éxito!",
     "projectCreated": "¡Proyecto creado con éxito!",
+    "projectDeleted": "¡Proyecto eliminado con éxito!",
     "taskCreated": "¡Tarea creada con éxito!",
     "taskUpdated": "¡Tarea actualizada con éxito!",
-    "taskDeleted": "¡Tarea eliminada con éxito!"
+    "taskDeleted": "¡Tarea eliminada con éxito!",
+    "nextActionAdded": "¡Próxima acción agregada con éxito!"
   },
   "recurrence": {
     "none": "Ninguna",
@@ -406,5 +497,64 @@
     "projectImage": "Imagen del Proyecto",
     "uploadImageHint": "Sube una imagen para tu proyecto (máx. 5MB)",
     "browseImage": "Examinar Imagen"
+  },
+  "pomodoro": {
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "reset": "Reiniciar",
+    "close": "Cerrar",
+    "complete": "¡Pomodoro Completado!",
+    "completeMessage": "¡Excelente trabajo! Hora de tomar un descanso.",
+    "done": "Hecho"
+  },
+  "calendar": {
+    "month": "Mes",
+    "week": "Semana",
+    "day": "Día",
+    "today": "Hoy",
+    "addEvent": "Agregar Evento",
+    "weekView": "Vista Semanal",
+    "dayView": "Vista Diaria",
+    "loadingTasks": "Cargando tareas...",
+    "noEvents": "No hay eventos para este día",
+    "moreEvents": "más",
+    "googleIntegration": "Integración de Google Calendar",
+    "googleDescription": "Conecta tu Google Calendar para sincronizar eventos y verlos junto con tus tareas.",
+    "googleStatus": "Estado",
+    "notConnected": "No Conectado",
+    "connected": "Conectado",
+    "connectGoogle": "Conectar Google Calendar",
+    "disconnectGoogle": "Desconectar Google Calendar",
+    "connecting": "Conectando...",
+    "connectionError": "Error al conectar con Google Calendar. Inténtalo de nuevo.",
+    "disconnectionError": "Error al desconectar de Google Calendar. Inténtalo de nuevo.",
+    "taskDetails": "Detalles de la Tarea",
+    "editTask": "Editar Tarea",
+    "goToTasks": "Ir a Tareas",
+    "close": "Cerrar",
+    "title": "Título",
+    "status": "Estado",
+    "dueDate": "Fecha de Vencimiento",
+    "priority": "Prioridad",
+    "project": "Proyecto",
+    "area": "Área",
+    "description": "Descripción",
+    "created": "Creado",
+    "completed": "Completado",
+    "pending": "Pendiente",
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Baja",
+    "time": "Tiempo",
+    "allDay": "Todo el día"
+  },
+  "weekdays": {
+    "monday": "Lun",
+    "tuesday": "Mar",
+    "wednesday": "Mié",
+    "thursday": "Jue",
+    "friday": "Vie",
+    "saturday": "Sáb",
+    "sunday": "Dom"
   }
 }

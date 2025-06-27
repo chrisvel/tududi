@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { PriorityType, StatusType, Task, RecurrenceType } from "../../entities/Task";
+import { PriorityType, StatusType, Task } from "../../entities/Task";
 import TaskActions from "./TaskActions";
-import PriorityDropdown from "../Shared/PriorityDropdown";
-import StatusDropdown from "../Shared/StatusDropdown";
 import ConfirmDialog from "../Shared/ConfirmDialog";
+import CollapsibleSection from "../Shared/CollapsibleSection";
 import { useToast } from "../Shared/ToastContext";
-import TagInput from "../Tag/TagInput";
-import RecurrenceInput from "./RecurrenceInput";
+import TimelinePanel from "./TimelinePanel";
 import { Project } from "../../entities/Project";
 import { useStore } from "../../store/useStore";
 import { fetchTags } from '../../utils/tagsService';
@@ -14,13 +12,22 @@ import { fetchTaskById } from '../../utils/tasksService';
 import { getTaskIntelligenceEnabled } from '../../utils/profileService';
 import { analyzeTaskName, TaskAnalysis } from '../../utils/taskIntelligenceService';
 import { useTranslation } from "react-i18next";
+import { ClockIcon } from "@heroicons/react/24/outline";
+
+// Import form sections
+import TaskTitleSection from "./TaskForm/TaskTitleSection";
+import TaskContentSection from "./TaskForm/TaskContentSection";
+import TaskTagsSection from "./TaskForm/TaskTagsSection";
+import TaskProjectSection from "./TaskForm/TaskProjectSection";
+import TaskMetadataSection from "./TaskForm/TaskMetadataSection";
+import TaskRecurrenceSection from "./TaskForm/TaskRecurrenceSection";
 
 interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   task: Task;
   onSave: (task: Task) => void;
-  onDelete: (taskId: number) => void;
+  onDelete: (taskId: number) => Promise<void>;
   projects: Project[];
   onCreateProject: (name: string) => Promise<Project>;
   onEditParentTask?: (parentTask: Task) => void;
@@ -52,8 +59,25 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const [parentTaskLoading, setParentTaskLoading] = useState(false);
   const [taskAnalysis, setTaskAnalysis] = useState<TaskAnalysis | null>(null);
   const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] = useState(true);
+  const [isTimelineExpanded, setIsTimelineExpanded] = useState(false);
+  
+  // Collapsible section states
+  const [expandedSections, setExpandedSections] = useState({
+    tags: false,
+    project: false,
+    metadata: false,
+    recurrence: false
+  });
+  
   const { showSuccessToast, showErrorToast } = useToast();
   const { t } = useTranslation();
+
+  const toggleSection = useCallback((section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  }, []);
 
   useEffect(() => {
     setFormData(task);
@@ -215,9 +239,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
         setFilteredProjects([...filteredProjects, newProject]);
         setNewProjectName(newProject.name);
         setDropdownOpen(false);
-        showSuccessToast("Project created successfully!");
+        showSuccessToast(t('success.projectCreated'));
       } catch (error) {
-        showErrorToast("Failed to create project.");
+        showErrorToast(t('errors.projectCreationFailed'));
         console.error("Error creating project:", error);
       } finally {
         setIsCreatingProject(false);
@@ -227,7 +251,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   const handleSubmit = () => {
     onSave({ ...formData, tags: tags.map((tag) => ({ name: tag })) });
-    showSuccessToast("Task updated successfully!");
+    const taskLink = (
+      <span>
+        {t('task.updated', 'Task')} <a href={`/task/${formData.uuid}`} className="text-green-200 underline hover:text-green-100">{formData.name}</a> {t('task.updatedSuccessfully', 'updated successfully!')}
+      </span>
+    );
+    showSuccessToast(taskLink);
     handleClose();
   };
 
@@ -235,12 +264,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
     setShowConfirmDialog(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (formData.id) {
-      onDelete(formData.id);
-      showSuccessToast("Task deleted successfully!");
-      setShowConfirmDialog(false);
-      handleClose();
+      try {
+        await onDelete(formData.id);
+        const taskLink = (
+          <span>
+            {t('task.deleted', 'Task')} <a href={`/task/${formData.uuid}`} className="text-green-200 underline hover:text-green-100">{formData.name}</a> {t('task.deletedSuccessfully', 'deleted successfully!')}
+          </span>
+        );
+        showSuccessToast(taskLink);
+        setShowConfirmDialog(false);
+        handleClose();
+      } catch (error) {
+        console.error('Failed to delete task:', error);
+        showErrorToast(t('task.deleteError', 'Failed to delete task'));
+      }
     }
   };
 
@@ -297,205 +336,135 @@ const TaskModal: React.FC<TaskModalProps> = ({
         <div className="min-h-full flex items-start justify-center px-4 py-4">
           <div
             ref={modalRef}
-            className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-3xl transform transition-transform duration-300 ${
+            className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-6xl transform transition-transform duration-300 ${
               isClosing ? "scale-95" : "scale-100"
             } my-4`}
           >
-            <div className="p-4 space-y-3 text-sm">
-              <form>
-                <fieldset>
-                  <div className="py-4">
-                    <input
-                      type="text"
-                      id={`task_name_${task.id}`}
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
-                      placeholder={t('forms.task.namePlaceholder', 'Add Task Name')}
-                    />
-                    {taskAnalysis && taskAnalysis.isVague && taskIntelligenceEnabled && (
-                      <div className={`mt-2 p-3 rounded-md border ${
-                        taskAnalysis.severity === 'high' 
-                          ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700'
-                          : taskAnalysis.severity === 'medium'
-                            ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700'
-                            : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700'
-                      }`}>
-                        <div className="flex items-start">
-                          <div className="flex-shrink-0">
-                            <svg className={`h-4 w-4 mt-0.5 ${
-                              taskAnalysis.severity === 'high' 
-                                ? 'text-red-400'
-                                : taskAnalysis.severity === 'medium'
-                                  ? 'text-yellow-400'
-                                  : 'text-blue-400'
-                            }`} fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <div className="ml-2">
-                            <p className={`text-sm ${
-                              taskAnalysis.severity === 'high' 
-                                ? 'text-red-800 dark:text-red-200'
-                                : taskAnalysis.severity === 'medium'
-                                  ? 'text-yellow-800 dark:text-yellow-200'
-                                  : 'text-blue-800 dark:text-blue-200'
-                            }`}>
-                              <strong>
-                                {taskAnalysis.reason === 'short' && t('task.nameHelper.short', 'Make it more descriptive!')}
-                                {taskAnalysis.reason === 'no_verb' && t('task.nameHelper.noVerb', 'Add an action verb!')}
-                                {taskAnalysis.reason === 'vague_pattern' && t('task.nameHelper.vague', 'Be more specific!')}
-                              </strong>
-                            </p>
-                            {taskAnalysis.suggestion && (
-                              <p className={`text-xs mt-1 ${
-                                taskAnalysis.severity === 'high' 
-                                  ? 'text-red-700 dark:text-red-300'
-                                  : taskAnalysis.severity === 'medium'
-                                    ? 'text-yellow-700 dark:text-yellow-300'
-                                    : 'text-blue-700 dark:text-blue-300'
-                              }`}>
-                                {t(taskAnalysis.suggestion, taskAnalysis.suggestion)}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="pb-3">
-                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t('forms.task.labels.tags', 'Tags')}
-                    </label>
-                    <div className="w-full">
-                      <TagInput
-                        onTagsChange={handleTagsChange}
-                        initialTags={formData.tags?.map((tag) => tag.name) || []}
-                        availableTags={localAvailableTags}
-                      />
-                    </div>
-                  </div>
-                  <div className="pb-3 relative">
-                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
-                      {t('forms.task.labels.project', 'Project')}
-                    </label>
-                    <input
-                      type="text"
-                      placeholder={t('forms.task.projectSearchPlaceholder', 'Search or create a project...')}
-                      value={newProjectName}
-                      onChange={handleProjectSearch}
-                      className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                    />
-                    {dropdownOpen && newProjectName && (
-                      <div className="absolute mt-1 bg-white dark:bg-gray-900 shadow-md rounded-md w-full z-10">
-                        {filteredProjects.length > 0 ? (
-                          filteredProjects.map((project) => (
-                            <button
-                              key={project.id}
-                              type="button"
-                              onClick={() => handleProjectSelection(project)}
-                              className="block w-full text-gray-500 dark:text-gray-300 text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            >
-                              {project.name}
-                            </button>
-                          ))
-                        ) : (
-                          <div className="px-4 py-2 text-gray-500 dark:text-gray-300">
-                            {t('forms.task.noMatchingProjects', 'No matching projects')}
-                          </div>
-                        )}
-                        {newProjectName && (
-                          <button
-                            type="button"
-                            onClick={handleCreateProject}
-                            disabled={isCreatingProject}
-                            className="block w-full text-left px-4 py-2 bg-blue-500 text-white hover:bg-blue-600"
-                          >
-                            {isCreatingProject
-                              ? t('forms.task.creatingProject', 'Creating...')
-                              : t('forms.task.createProject', '+ Create') + ` "${newProjectName}"`}
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pb-3 sm:grid-flow-col">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        {t('forms.task.labels.status', 'Status')}
-                      </label>
-                      <StatusDropdown
-                        value={getStatusString(formData.status)}
-                        onChange={(value: StatusType) =>
-                          setFormData({ ...formData, status: value })
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        {t('forms.task.labels.priority', 'Priority')}
-                      </label>
-                      <PriorityDropdown
-                        value={getPriorityString(formData.priority)}
-                        onChange={(value: PriorityType) =>
-                          setFormData({ ...formData, priority: value })
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
-                        {t('forms.task.labels.dueDate', 'Due Date')}
-                      </label>
-                      <input
-                        type="date"
-                        id={`task_due_date_${task.id}`}
-                        name="due_date"
-                        value={formData.due_date || ""}
+            <div className="flex flex-col lg:flex-row min-h-[400px] max-h-[90vh]">
+              {/* Main Form Section */}
+              <div className={`flex-1 flex flex-col transition-all duration-300 ${
+                isTimelineExpanded ? 'lg:pr-2' : ''
+              }`}>
+                <div className="flex-1 overflow-y-auto">
+                  <form>
+                    <fieldset>
+                      {/* Task Title Section - Always Visible */}
+                      <TaskTitleSection
+                        taskId={task.id}
+                        value={formData.name}
                         onChange={handleChange}
-                        className="block w-full focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-900 rounded-md text-gray-900 dark:text-gray-100"
+                        taskAnalysis={taskAnalysis}
+                        taskIntelligenceEnabled={taskIntelligenceEnabled}
                       />
-                    </div>
-                  </div>
-                  <div className="pb-3">
-                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-3">
-                      {t('forms.noteContent')}
-                    </label>
-                    <textarea
-                      id={`task_note_${task.id}`}
-                      name="note"
-                      rows={3}
-                      value={formData.note || ""}
-                      onChange={handleChange}
-                      className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                      placeholder={t('forms.noteContentPlaceholder')}
-                    ></textarea>
-                  </div>
-                  <RecurrenceInput
-                    recurrenceType={parentTask ? (parentTask.recurrence_type || 'none') : (formData.recurrence_type || 'none')}
-                    recurrenceInterval={parentTask ? (parentTask.recurrence_interval || 1) : (formData.recurrence_interval || 1)}
-                    recurrenceEndDate={parentTask ? parentTask.recurrence_end_date : formData.recurrence_end_date}
-                    recurrenceWeekday={parentTask ? parentTask.recurrence_weekday : formData.recurrence_weekday}
-                    recurrenceMonthDay={parentTask ? parentTask.recurrence_month_day : formData.recurrence_month_day}
-                    recurrenceWeekOfMonth={parentTask ? parentTask.recurrence_week_of_month : formData.recurrence_week_of_month}
-                    completionBased={parentTask ? (parentTask.completion_based || false) : (formData.completion_based || false)}
-                    onChange={handleRecurrenceChange}
-                    disabled={!!parentTask}
-                    isChildTask={!!parentTask}
-                    parentTaskLoading={parentTaskLoading}
-                    onEditParent={parentTask ? handleEditParent : undefined}
-                    onParentRecurrenceChange={parentTask ? handleParentRecurrenceChange : undefined}
+
+                      {/* Content Section - Always Visible */}
+                      <TaskContentSection
+                        taskId={task.id}
+                        value={formData.note || ""}
+                        onChange={handleChange}
+                      />
+
+                      {/* Tags Section - Collapsible */}
+                      <CollapsibleSection 
+                        title={t('forms.task.labels.tags', 'Tags')} 
+                        isExpanded={expandedSections.tags}
+                        onToggle={() => toggleSection('tags')}
+                      >
+                        <TaskTagsSection
+                          tags={formData.tags?.map((tag) => tag.name) || []}
+                          onTagsChange={handleTagsChange}
+                          availableTags={localAvailableTags}
+                        />
+                      </CollapsibleSection>
+
+                      {/* Project Section - Collapsible */}
+                      <CollapsibleSection 
+                        title={t('forms.task.labels.project', 'Project')} 
+                        isExpanded={expandedSections.project}
+                        onToggle={() => toggleSection('project')}
+                      >
+                        <TaskProjectSection
+                          newProjectName={newProjectName}
+                          onProjectSearch={handleProjectSearch}
+                          dropdownOpen={dropdownOpen}
+                          filteredProjects={filteredProjects}
+                          onProjectSelection={handleProjectSelection}
+                          onCreateProject={handleCreateProject}
+                          isCreatingProject={isCreatingProject}
+                        />
+                      </CollapsibleSection>
+
+                      {/* Metadata/Options Section - Collapsible */}
+                      <CollapsibleSection 
+                        title={t('forms.task.statusAndOptions', 'Status & Options')} 
+                        isExpanded={expandedSections.metadata}
+                        onToggle={() => toggleSection('metadata')}
+                      >
+                        <TaskMetadataSection
+                          priority={getPriorityString(formData.priority)}
+                          dueDate={formData.due_date || ""}
+                          taskId={task.id}
+                          onStatusChange={(value: StatusType) => {
+                            // Universal rule: when setting status to in_progress, also add to today
+                            const updatedData = { ...formData, status: value };
+                            if (value === 'in_progress') {
+                              updatedData.today = true;
+                            }
+                            setFormData(updatedData);
+                          }}
+                          onPriorityChange={(value: PriorityType) =>
+                            setFormData({ ...formData, priority: value })
+                          }
+                          onDueDateChange={handleChange}
+                        />
+                      </CollapsibleSection>
+
+                      {/* Recurrence Section - Collapsible */}
+                      <CollapsibleSection 
+                        title={t('forms.task.recurrence', 'Recurrence')} 
+                        isExpanded={expandedSections.recurrence}
+                        onToggle={() => toggleSection('recurrence')}
+                      >
+                        <TaskRecurrenceSection
+                          formData={formData}
+                          parentTask={parentTask}
+                          parentTaskLoading={parentTaskLoading}
+                          onRecurrenceChange={handleRecurrenceChange}
+                          onEditParent={parentTask ? handleEditParent : undefined}
+                          onParentRecurrenceChange={parentTask ? handleParentRecurrenceChange : undefined}
+                        />
+                      </CollapsibleSection>
+                    </fieldset>
+                  </form>
+                </div>
+                
+                {/* Action Buttons - Fixed at bottom */}
+                <div className="flex-shrink-0 p-3 flex items-center justify-between">
+                <TaskActions
+                  taskId={task.id}
+                  onDelete={handleDeleteClick}
+                  onSave={handleSubmit}
+                  onCancel={handleClose}
+                />
+                
+                {/* Timeline Toggle Button */}
+                <button
+                  onClick={() => setIsTimelineExpanded(!isTimelineExpanded)}
+                  className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                  title={isTimelineExpanded ? t('timeline.hideActivityTimeline') : t('timeline.showActivityTimeline')}
+                >
+                  <ClockIcon 
+                    className={`h-5 w-5 transition-transform duration-200 ${isTimelineExpanded ? 'rotate-180' : ''}`} 
                   />
-                </fieldset>
-              </form>
-            </div>
-            <div className="p-3 border-t border-gray-200 dark:border-gray-700">
-              <TaskActions
+                </button>
+                </div>
+              </div>
+              
+              {/* Timeline Panel - Side Panel */}
+              <TimelinePanel
                 taskId={task.id}
-                onDelete={handleDeleteClick}
-                onSave={handleSubmit}
-                onCancel={handleClose}
+                isExpanded={isTimelineExpanded}
+                onToggle={() => setIsTimelineExpanded(!isTimelineExpanded)}
               />
             </div>
           </div>

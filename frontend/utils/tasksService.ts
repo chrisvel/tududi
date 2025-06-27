@@ -77,3 +77,24 @@ export const fetchTaskById = async (taskId: number): Promise<Task> => {
   await handleAuthResponse(response, 'Failed to fetch task.');
   return await response.json();
 };
+
+export const fetchTaskByUuid = async (uuid: string): Promise<Task> => {
+  const response = await fetch(`/api/task/uuid/${uuid}`, {
+    credentials: 'include',
+    headers: getDefaultHeaders(),
+  });
+
+  await handleAuthResponse(response, 'Failed to fetch task.');
+  return await response.json();
+};
+
+export const toggleTaskToday = async (taskId: number): Promise<Task> => {
+  const response = await fetch(`/api/task/${taskId}/toggle-today`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: getPostHeaders(),
+  });
+
+  await handleAuthResponse(response, 'Failed to toggle task today status.');
+  return await response.json();
+};

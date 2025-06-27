@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -8,7 +8,10 @@ import {
   InboxIcon,
   CheckCircleIcon,
   ListBulletIcon,
+  ClockIcon,
 } from '@heroicons/react/24/solid';
+import { useStore } from '../../store/useStore';
+import { loadInboxItemsToStore } from '../../utils/inboxService';
 
 interface SidebarNavProps {
   handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -18,21 +21,27 @@ interface SidebarNavProps {
 
 const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => {
   const { t } = useTranslation();
+  const store = useStore();
+  
+  // Get inbox items count for badge
+  const inboxItemsCount = store.inboxStore.inboxItems.length;
+
+  // Load inbox items when component mounts to ensure badge shows correct count
+  useEffect(() => {
+    loadInboxItemsToStore().catch(console.error);
+  }, []);
   
   const navLinks = [
     { path: '/inbox', title: t('sidebar.inbox', 'Inbox'), icon: <InboxIcon className="h-5 w-5" /> },
     { path: '/today', title: t('sidebar.today', 'Today'), icon: <CalendarDaysIcon className="h-5 w-5" />, query: 'type=today' },
-    { path: '/tasks?type=upcoming', title: t('sidebar.upcoming', 'Upcoming'), icon: <CalendarIcon className="h-5 w-5" />, query: 'type=upcoming' },
-    { path: '/tasks?type=next', title: t('sidebar.nextActions', 'Next Actions'), icon: <ArrowRightCircleIcon className="h-5 w-5" />, query: 'type=next' },
-    // { path: '/tasks?type=someday', title: t('sidebar.someday', 'Someday'), icon: <ClockIcon className="h-5 w-5" />, query: 'type=someday' },
-    // { path: '/tasks?type=waiting', title: t('sidebar.waitingFor', 'Waiting for'), icon: <PauseCircleIcon className="h-5 w-5" />, query: 'type=waiting' },
-    { path: '/tasks?status=done', title: t('sidebar.completed', 'Completed'), icon: <CheckCircleIcon className="h-5 w-5" />, query: 'status=done' },
+    { path: '/tasks?type=upcoming', title: t('sidebar.upcoming', 'Upcoming'), icon: <ClockIcon className="h-5 w-5" />, query: 'type=upcoming' },
     { path: '/tasks', title: t('sidebar.allTasks', 'All Tasks'), icon: <ListBulletIcon className="h-5 w-5" /> },
+    { path: '/calendar', title: t('sidebar.calendar', 'Calendar'), icon: <CalendarIcon className="h-5 w-5" /> },
   ];
 
   const isActive = (path: string, query?: string) => {
     // Handle special case for paths without query parameters
-    if (path === '/inbox' || path === '/today') {
+    if (path === '/inbox' || path === '/today' || path === '/calendar') {
       const isPathMatch = location.pathname === path;
       return isPathMatch
         ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
@@ -54,13 +63,20 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
           <li>
             <button
               onClick={() => handleNavClick(link.path, link.title, link.icon)}
-              className={`w-full text-left px-4 py-1 flex items-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
+              className={`w-full text-left px-4 py-1 flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 ${isActive(
                 link.path,
                 link.query
               )}`}
             >
-              {link.icon}
-              <span className="ml-2">{link.title}</span>
+              <div className="flex items-center">
+                {link.icon}
+                <span className="ml-2">{link.title}</span>
+              </div>
+              {link.path === '/inbox' && inboxItemsCount > 0 && (
+                <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-blue-500 rounded-full">
+                  {inboxItemsCount > 99 ? '99+' : inboxItemsCount}
+                </span>
+              )}
             </button>
           </li>
           {link.path === '/inbox' && (

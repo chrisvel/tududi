@@ -19,7 +19,12 @@ const sessionStore = new SequelizeStore({
 });
 
 // Middlewares
-app.use(helmet());
+const sslEnabled = process.env.NODE_ENV === 'production' && process.env.TUDUDI_INTERNAL_SSL_ENABLED === 'true';
+app.use(helmet({
+  hsts: sslEnabled, // Only enable HSTS when SSL is enabled
+  forceHTTPS: sslEnabled, // Only force HTTPS when SSL is enabled
+  contentSecurityPolicy: false // Disable CSP for now to avoid conflicts
+}));
 app.use(compression());
 app.use(morgan('combined'));
 
@@ -31,7 +36,7 @@ const allowedOrigins = process.env.TUDUDI_ALLOWED_ORIGINS
 app.use(cors({
   origin: allowedOrigins,
   credentials: true,
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Authorization', 'Content-Type', 'Accept', 'X-Requested-With'],
   exposedHeaders: ['Content-Type'],
   maxAge: 1728000
@@ -98,6 +103,8 @@ app.use('/api', requireAuth, require('./routes/inbox'));
 app.use('/api', requireAuth, require('./routes/url'));
 app.use('/api', requireAuth, require('./routes/telegram'));
 app.use('/api', requireAuth, require('./routes/quotes'));
+app.use('/api', requireAuth, require('./routes/task-events'));
+app.use('/api/calendar', require('./routes/calendar'));
 
 // SPA fallback
 app.get('*', (req, res) => {
@@ -138,7 +145,7 @@ async function startServer() {
         where: { email: process.env.TUDUDI_USER_EMAIL },
         defaults: {
           email: process.env.TUDUDI_USER_EMAIL,
-          password: await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD, 10)
+          password_digest: await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD, 10)
         }
       });
       
