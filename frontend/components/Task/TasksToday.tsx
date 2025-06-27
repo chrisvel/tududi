@@ -13,7 +13,7 @@ import {
   ArrowDownIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-  CogIcon,
+  Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 import { fetchTasks, updateTask, deleteTask } from "../../utils/tasksService";
 import { fetchProjects } from "../../utils/projectsService";
@@ -467,7 +467,7 @@ const TasksToday: React.FC = () => {
                     className="flex flex-row items-center p-2 group focus:outline-none rounded-md transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
                     title={t('settings.todayPageSettings', 'Today Page Settings')}
                   >
-                    <CogIcon className="h-5 w-5" />
+                    <Cog6ToothIcon className="h-5 w-5" />
                     <span className="text-xs font-medium transition-all duration-200 max-w-0 overflow-hidden opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-focus:max-w-xs group-focus:opacity-100 group-hover:ml-2 group-focus:ml-2">
                       {t('common.settings', 'Settings')}
                     </span>
