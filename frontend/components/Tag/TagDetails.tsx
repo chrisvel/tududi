@@ -121,6 +121,26 @@ const TagDetails: React.FC = () => {
     }
   };
 
+  const handleToggleToday = async (taskId: number) => {
+    try {
+      const response = await fetch(`/api/task/${taskId}/today`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.ok) {
+        const updatedTask = await response.json();
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === taskId ? { ...task, today: updatedTask.today, today_move_count: updatedTask.today_move_count } : task
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error toggling today status:", error);
+    }
+  };
+
   // Project handlers  
   const handleEditProject = (project: Project) => {
     // For now, just log - could add modal later
@@ -167,20 +187,11 @@ const TagDetails: React.FC = () => {
     <div className="flex justify-center px-4 lg:px-2">
       <div className="w-full max-w-5xl">
         {/* Tag Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center">
-            <TagIcon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
-            <h2 className="text-2xl font-light text-gray-900 dark:text-white">
-              {tag.name}
-            </h2>
-          </div>
-          <div className={`px-3 py-1 rounded-full text-sm ${
-            tag.active 
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-              : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
-          }`}>
-            {tag.active ? t('tags.active') : t('tags.inactive')}
-          </div>
+        <div className="flex items-center mb-8">
+          <TagIcon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
+          <h2 className="text-2xl font-light text-gray-900 dark:text-white">
+            {tag.name}
+          </h2>
         </div>
 
         {/* Summary Stats */}
@@ -227,6 +238,7 @@ const TagDetails: React.FC = () => {
               onTaskDelete={handleTaskDelete}
               projects={[]} // Empty since we're viewing by tag
               hideProjectName={false}
+              onToggleToday={handleToggleToday}
             />
           </div>
         )}
