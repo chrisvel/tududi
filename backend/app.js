@@ -140,7 +140,7 @@ async function startServer() {
         where: { email: process.env.TUDUDI_USER_EMAIL },
         defaults: {
           email: process.env.TUDUDI_USER_EMAIL,
-          password: await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD, 10)
+          password_digest: await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD, 10)
         }
       });
       
