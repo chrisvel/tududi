@@ -17,6 +17,7 @@ import {
   updateNote,
   deleteNote as apiDeleteNote,
 } from '../utils/notesService';
+import { useModalEvents } from '../hooks/useModalEvents';
 
 const Notes: React.FC = () => {
   const { t } = useTranslation();
@@ -28,6 +29,9 @@ const Notes: React.FC = () => {
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Dispatch global modal events
+  useModalEvents(isNoteModalOpen);
   const [isError, setIsError] = useState(false);
   const [hoveredNoteId, setHoveredNoteId] = useState<number | null>(null);
 

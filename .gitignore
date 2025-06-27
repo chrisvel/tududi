@@ -16,3 +16,8 @@ backend/coverage/
 
 # User uploaded files
 backend/uploads/
+
+# Log files
+*.log
+server.log
+backend/server.log

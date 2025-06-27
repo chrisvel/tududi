@@ -5,6 +5,7 @@ import TaskHeader from './TaskHeader';
 import TaskModal from './TaskModal';
 import { toggleTaskCompletion } from '../../utils/tasksService';
 import { isTaskOverdue } from '../../utils/dateUtils';
+import { useModalEvents } from '../../hooks/useModalEvents';
 
 interface TaskItemProps {
   task: Task;
@@ -25,6 +26,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projectList, setProjectList] = useState<Project[]>(projects);
+  
+  // Dispatch global modal events
+  useModalEvents(isModalOpen);
 
   const handleTaskClick = () => {
     setIsModalOpen(true);

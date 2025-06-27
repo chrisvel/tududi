@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
 import { TrashIcon, PencilIcon, DocumentTextIcon, FolderIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { TagIcon } from '@heroicons/react/24/solid';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
@@ -118,9 +118,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     }
   };
   
-  const formattedDate = item.created_at 
-    ? format(new Date(item.created_at), 'MMM dd, yyyy HH:mm')
-    : '';
     
   const handleDelete = () => {
     setShowConfirmDialog(true);
@@ -139,20 +136,20 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex items-center justify-between px-4 py-2">
-        <div className="flex-1 mr-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-2 gap-2">
+        <div className="flex-1">
           <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
             {item.content}
-            <span className="ml-3 text-xs text-gray-500 dark:text-gray-600">
-              {formattedDate}
-            </span>
-            <span className="ml-2 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 rounded p-1">
+          </p>
+          <div className="flex items-center mt-1">
+            <TagIcon className="h-3 w-3 mr-1 text-gray-500 dark:text-gray-400" />
+            <span className="text-xs text-gray-500 dark:text-gray-400">
               {item.source}
             </span>
-          </p>
+          </div>
         </div>
 
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center justify-start space-x-1 shrink-0">
           {loading && <div className="spinner" />}
           
           {/* Edit Button */}
@@ -162,7 +159,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 onUpdate(item.id, item.content);
               }
             }}
-            className={`p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            className={`p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-opacity opacity-100 sm:${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('common.edit')}
           >
             <PencilIcon className="h-4 w-4" />
@@ -171,7 +168,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           {/* Convert to Task Button */}
           <button
             onClick={handleConvertToTask}
-            className={`p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            className={`p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-full transition-opacity opacity-100 sm:${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('inbox.createTask')}
           >
             <ClipboardDocumentListIcon className="h-4 w-4" />
@@ -180,7 +177,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           {/* Convert to Project Button */}
           <button
             onClick={handleConvertToProject}
-            className={`p-2 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            className={`p-2 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900 rounded-full transition-opacity opacity-100 sm:${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('inbox.createProject')}
           >
             <FolderIcon className="h-4 w-4" />
@@ -189,7 +186,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           {/* Convert to Note Button */}
           <button
             onClick={handleConvertToNote}
-            className={`p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            className={`p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-full transition-opacity opacity-100 sm:${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('inbox.createNote', 'Create Note')}
           >
             <DocumentTextIcon className="h-4 w-4" />
@@ -198,7 +195,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           {/* Delete Button */}
           <button
             onClick={handleDelete}
-            className={`p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            className={`p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900 rounded-full transition-opacity opacity-100 sm:${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('common.delete')}
           >
             <TrashIcon className="h-4 w-4" />

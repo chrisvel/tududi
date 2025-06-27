@@ -13,6 +13,7 @@ import { fetchAreas } from "../utils/areasService";
 import { useTranslation } from "react-i18next";
 
 import { Project } from "../entities/Project";
+import { useModalEvents } from "../hooks/useModalEvents";
 import { PriorityType } from "../entities/Task";
 import { useSearchParams } from "react-router-dom";
 import ProjectItem from "./Project/ProjectItem";
@@ -48,6 +49,9 @@ const Projects: React.FC = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const activeFilter = searchParams.get("active") || "all";
+  
+  // Dispatch global modal events
+  useModalEvents(isProjectModalOpen);
   const areaFilter = searchParams.get("area_id") || "";
 
 useEffect(() => {

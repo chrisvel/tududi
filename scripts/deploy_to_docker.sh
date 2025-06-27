@@ -27,15 +27,15 @@ echo "Setting up Docker buildx for multi-architecture builds"
 docker buildx ls | grep -q mybuilder || docker buildx create --name mybuilder --use
 docker buildx inspect --bootstrap
 
-# Build and push multi-architecture images (AMD64, ARM64, ARMv7) with the version tag
+# Build and push multi-architecture images (AMD64, ARM64) with the version tag
 echo "Building and pushing multi-architecture docker image: chrisvel/tududi:$docker_tag"
-docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 \
+docker buildx build --platform linux/amd64,linux/arm64 \
   -t chrisvel/tududi:"$docker_tag" \
   --push .
 
-# Build and push multi-architecture images (AMD64, ARM64, ARMv7) with the latest tag
+# Build and push multi-architecture images (AMD64, ARM64) with the latest tag
 echo "Building and pushing multi-architecture docker image: chrisvel/tududi:latest"
-docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 \
+docker buildx build --platform linux/amd64,linux/arm64 \
   -t chrisvel/tududi:latest \
   --push .
 

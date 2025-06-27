@@ -4,6 +4,8 @@ import { useToast } from "../Shared/ToastContext";
 import { useTranslation } from "react-i18next";
 import { createInboxItemWithStore } from "../../utils/inboxService";
 import { isAuthError } from "../../utils/authUtils";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useModalEvents } from "../../hooks/useModalEvents";
 // import UrlPreview from "../Shared/UrlPreview";
 // import { UrlTitleResult } from "../../utils/urlService";
 
@@ -34,10 +36,27 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
   const [saveMode, setSaveMode] = useState<'task' | 'inbox'>('inbox');
   // const [urlPreview, setUrlPreview] = useState<UrlTitleResult | null>(null);
 
+  // Dispatch global modal events to hide floating + button
+  useModalEvents(isOpen);
+
   useEffect(() => {
     if (isOpen && nameInputRef.current) {
       nameInputRef.current.focus();
     }
+  }, [isOpen]);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    // Cleanup function to restore scroll when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,18 +166,28 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
 
   return (
     <div
-      className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
+      className={`fixed top-16 left-0 right-0 bottom-0 sm:top-16 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-[45] transition-opacity duration-300 ${
         isClosing ? "opacity-0" : "opacity-100"
       }`}
     >
       <div
         ref={modalRef}
-        className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-2xl md:max-w-3xl overflow-hidden transform transition-transform duration-300 ${
+        className={`relative bg-white dark:bg-gray-800 border-0 sm:border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full h-full sm:h-auto sm:max-w-2xl md:max-w-3xl transform transition-transform duration-300 ${
           isClosing ? "scale-95" : "scale-100"
         } flex flex-col`}
       >
-        <div className="p-6 px-8">
-          <div className="flex items-center">
+        {/* Close button - only visible on mobile */}
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 z-10 p-2 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg transition-colors duration-200 sm:hidden"
+          aria-label="Close"
+        >
+          <XMarkIcon className="h-6 w-6" />
+        </button>
+        
+        <div className="flex-1 flex items-center justify-center sm:block sm:flex-none">
+          <div className="w-full p-6 px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center">
             <input
               ref={nameInputRef}
               type="text"
@@ -179,7 +208,7 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
               type="button"
               onClick={handleSubmit}
               disabled={!inputText.trim() || isSaving}
-              className={`ml-4 inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none ${
+              className={`mt-4 sm:mt-0 sm:ml-4 inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none ${
                 inputText.trim() && !isSaving
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-blue-400 cursor-not-allowed"
@@ -193,6 +222,7 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
             text={inputText} 
             onPreviewChange={setUrlPreview}
           /> */}
+          </div>
         </div>
       </div>
     </div>

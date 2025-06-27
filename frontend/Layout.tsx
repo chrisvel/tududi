@@ -43,6 +43,7 @@ const Layout: React.FC<LayoutProps> = ({
   const { t } = useTranslation();
   const { showSuccessToast } = useToast();
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [globalModalCount, setGlobalModalCount] = useState(0);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -100,6 +101,26 @@ const Layout: React.FC<LayoutProps> = ({
     setIsTaskModalOpen(true);
     setTaskModalType(type);
   };
+
+  // Listen for global modal events from child components
+  useEffect(() => {
+    const handleModalOpen = () => {
+      setGlobalModalCount(prev => prev + 1);
+    };
+    
+    const handleModalClose = () => {
+      setGlobalModalCount(prev => Math.max(0, prev - 1));
+    };
+    
+    window.addEventListener('modalOpen', handleModalOpen);
+    window.addEventListener('modalClose', handleModalClose);
+    
+    return () => {
+      window.removeEventListener('modalOpen', handleModalOpen);
+      window.removeEventListener('modalClose', handleModalClose);
+    };
+  }, []);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -449,14 +470,17 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </div>
 
-      <button
-        onClick={() => openTaskModal('simplified')}
-        className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg focus:outline-none transform transition-transform duration-200 hover:scale-110 z-50"
-        aria-label="Quick Capture"
-        title={t('inbox.captureThought')}
-      >
-        <PlusIcon className="h-6 w-6" />
-      </button>
+      {/* Hide floating + button when any modal is open to prevent overlap with save buttons */}
+      {!isTaskModalOpen && !isProjectModalOpen && !isNoteModalOpen && !isAreaModalOpen && !isTagModalOpen && globalModalCount === 0 && (
+        <button
+          onClick={() => openTaskModal('simplified')}
+          className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg focus:outline-none transform transition-transform duration-200 hover:scale-110 z-50"
+          aria-label="Quick Capture"
+          title={t('inbox.captureThought')}
+        >
+          <PlusIcon className="h-6 w-6" />
+        </button>
+      )}
 
       {isTaskModalOpen && (
         taskModalType === 'simplified' ? (
