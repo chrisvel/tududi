@@ -21,3 +21,10 @@ backend/uploads/
 *.log
 server.log
 backend/server.log
+
+# Build output
+dist/
+build/
+
+# Webpack output
+public/assets/

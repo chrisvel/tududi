@@ -6,7 +6,6 @@ import CollapsibleSection from "../Shared/CollapsibleSection";
 import { useToast } from "../Shared/ToastContext";
 import TimelinePanel from "./TimelinePanel";
 import { Project } from "../../entities/Project";
-import { useStore } from "../../store/useStore";
 import { fetchTags } from '../../utils/tagsService';
 import { fetchTaskById } from '../../utils/tasksService';
 import { getTaskIntelligenceEnabled } from '../../utils/profileService';
@@ -54,7 +53,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [localAvailableTags, setLocalAvailableTags] = useState<Array<{name: string}>>([]);
   const [tagsLoaded, setTagsLoaded] = useState(false);
-  const [tagsLoading, setTagsLoading] = useState(false);
   const [parentTask, setParentTask] = useState<Task | null>(null);
   const [parentTaskLoading, setParentTaskLoading] = useState(false);
   const [taskAnalysis, setTaskAnalysis] = useState<TaskAnalysis | null>(null);
@@ -152,16 +150,17 @@ const TaskModal: React.FC<TaskModalProps> = ({
   useEffect(() => {
     const loadTags = async () => {
       if (isOpen && !tagsLoaded) {
-        setTagsLoading(true);
         try {
           const fetchedTags = await fetchTags();
-          setLocalAvailableTags(fetchedTags);
+          // Ensure fetchedTags is always an array
+          const safeTagsArray = Array.isArray(fetchedTags) ? fetchedTags : [];
+          setLocalAvailableTags(safeTagsArray);
           setTagsLoaded(true);
         } catch (error: any) {
           console.error("Error fetching tags:", error);
+          // Set empty array as fallback
+          setLocalAvailableTags([]);
           setTagsLoaded(true); // Mark as loaded even on error to prevent retry loop
-        } finally {
-          setTagsLoading(false);
         }
       }
     };
@@ -180,13 +179,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     return priority || 'medium';
   };
 
-  const getStatusString = (status: StatusType | number): StatusType => {
-    if (typeof status === 'number') {
-      const statusNames: StatusType[] = ['not_started', 'in_progress', 'done', 'archived'];
-      return statusNames[status] || 'not_started';
-    }
-    return status;
-  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
