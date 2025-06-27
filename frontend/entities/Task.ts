@@ -15,6 +15,7 @@ export interface Task {
   project_id?: number;
   Project?: Project;
   created_at?: string;
+  updated_at?: string;
   recurrence_type?: RecurrenceType;
   recurrence_interval?: number;
   recurrence_end_date?: string;

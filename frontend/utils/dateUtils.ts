@@ -113,3 +113,41 @@ export const formatTime = (date: Date | number): string => {
 export const formatDateTime = (date: Date | number): string => {
   return formatLocalizedDate(date, getDateFormatPattern('dateTime', 'MMM d, yyyy h:mm a'));
 };
+
+/**
+ * Checks if a task in today plan has been there for more than a day (likely overdue)
+ * 
+ * @param task - The task to check
+ * @returns True if the task is likely overdue in today plan, false otherwise
+ */
+export const isTaskOverdue = (task: { today?: boolean; created_at?: string; today_move_count?: number; status: string | number; completed_at?: string }): boolean => {
+  // If task is not in today plan, it's not overdue
+  if (!task.today) {
+    return false;
+  }
+  
+  // Only hide overdue badge if task is actually completed (done/archived), not just in progress
+  if (task.completed_at || task.status === 'done' || task.status === 2 || task.status === 'archived' || task.status === 3) {
+    return false;
+  }
+  
+  // If task has been moved to today multiple times, it's likely been sitting around
+  if (task.today_move_count && task.today_move_count > 1) {
+    return true;
+  }
+  
+  // If no creation date, can't determine if overdue
+  if (!task.created_at) {
+    return false;
+  }
+  
+  const createdDate = new Date(task.created_at);
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(23, 59, 59, 999); // End of yesterday
+  
+  // Task is likely overdue if created before end of yesterday and is in today plan
+  // This is an approximation - tasks created yesterday or earlier that are in today plan
+  // are likely to have been sitting there for a while
+  return createdDate.getTime() < yesterday.getTime();
+};

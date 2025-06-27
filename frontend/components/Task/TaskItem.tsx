@@ -4,6 +4,7 @@ import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
 import TaskModal from './TaskModal';
 import { toggleTaskCompletion } from '../../utils/tasksService';
+import { isTaskOverdue } from '../../utils/dateUtils';
 
 interface TaskItemProps {
   task: Task;
@@ -77,6 +78,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
   // Check if task is in progress to apply pulsing border animation
   const isInProgress = task.status === 'in_progress' || task.status === 1;
+  
+  // Check if task is overdue (created yesterday or earlier and not completed)
+  const isOverdue = isTaskOverdue(task);
 
   return (
     <div 
@@ -94,6 +98,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         hideProjectName={hideProjectName}
         onToggleToday={onToggleToday}
         onTaskUpdate={onTaskUpdate}
+        isOverdue={isOverdue}
       />
 
       <TaskModal

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Task } from "../../entities/Task";
-import { InboxItem } from "../../entities/InboxItem";
 import { useToast } from "../Shared/ToastContext";
 import { useTranslation } from "react-i18next";
 import { createInboxItemWithStore } from "../../utils/inboxService";

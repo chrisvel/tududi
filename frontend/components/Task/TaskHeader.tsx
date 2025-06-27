@@ -15,6 +15,7 @@ interface TaskHeaderProps {
   hideProjectName?: boolean;
   onToggleToday?: (taskId: number) => Promise<void>;
   onTaskUpdate?: (task: Task) => Promise<void>;
+  isOverdue?: boolean;
 }
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
@@ -25,6 +26,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
   hideProjectName = false,
   onToggleToday,
   onTaskUpdate,
+  isOverdue = false,
 }) => {
   const { t } = useTranslation();
 
@@ -97,9 +99,19 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         <div className="flex items-center space-x-4 mb-2 md:mb-0">
           <TaskPriorityIcon priority={task.priority} status={task.status} onToggleCompletion={onToggleCompletion} />
           <div className="flex flex-col">
-            <span className="text-md text-gray-900 dark:text-gray-100">
-              {task.name}
-            </span>
+            <div className="flex items-center">
+              <span className="text-md text-gray-900 dark:text-gray-100">
+                {task.name}
+              </span>
+              {isOverdue && (
+                <span 
+                  className="ml-2 px-2 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-md" 
+                  title="Task has been in today plan for a while"
+                >
+                  overdue
+                </span>
+              )}
+            </div>
             {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
             <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
               {project && !hideProjectName && (
@@ -193,7 +205,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
           {/* Task Title and Project Name */}
           <div className="ml-2 flex flex-col flex-1">
             {/* Task Title */}
-            <span>{task.name}</span>
+            <div className="flex items-center">
+              <span>{task.name}</span>
+              {isOverdue && (
+                <span 
+                  className="ml-2 px-2 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-md" 
+                  title="Task has been in today plan for a while"
+                >
+                  overdue
+                </span>
+              )}
+            </div>
 
             {/* Project, tags, due date, and recurrence - each on separate lines */}
             <div className="flex flex-col text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-1">
