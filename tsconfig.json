@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2017",
+    "lib": ["es2017", "dom"],
     "module": "esnext",
     "moduleResolution": "node", 
     "jsx": "react",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"]
   },
   "include": ["frontend/**/*"]
 }

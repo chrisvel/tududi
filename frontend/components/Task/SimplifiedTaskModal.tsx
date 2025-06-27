@@ -5,8 +5,8 @@ import { useToast } from "../Shared/ToastContext";
 import { useTranslation } from "react-i18next";
 import { createInboxItemWithStore } from "../../utils/inboxService";
 import { isAuthError } from "../../utils/authUtils";
-import UrlPreview from "../Shared/UrlPreview";
-import { UrlTitleResult } from "../../utils/urlService";
+// import UrlPreview from "../Shared/UrlPreview";
+// import { UrlTitleResult } from "../../utils/urlService";
 
 interface SimplifiedTaskModalProps {
   isOpen: boolean;
@@ -33,7 +33,7 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
   const { showSuccessToast, showErrorToast } = useToast();
   const nameInputRef = useRef<HTMLInputElement>(null);
   const [saveMode, setSaveMode] = useState<'task' | 'inbox'>('inbox');
-  const [urlPreview, setUrlPreview] = useState<UrlTitleResult | null>(null);
+  // const [urlPreview, setUrlPreview] = useState<UrlTitleResult | null>(null);
 
   useEffect(() => {
     if (isOpen && nameInputRef.current) {
@@ -189,10 +189,11 @@ const SimplifiedTaskModal: React.FC<SimplifiedTaskModalProps> = ({
               {isSaving ? t('common.saving') : t('common.save')}
             </button>
           </div>
-          <UrlPreview 
+          {/* URL Preview disabled */}
+          {/* <UrlPreview 
             text={inputText} 
             onPreviewChange={setUrlPreview}
-          />
+          /> */}
         </div>
       </div>
     </div>

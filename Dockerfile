@@ -56,7 +56,7 @@ RUN npm install --production --no-audit --no-fund && \
     find node_modules -name ".github" -type d -exec rm -rf {} + 2>/dev/null || true && \
     find node_modules -name "test" -type d -exec rm -rf {} + 2>/dev/null || true && \
     find node_modules -name "tests" -type d -exec rm -rf {} + 2>/dev/null || true && \
-    find node_modules -name "docs" -type d -exec rm -rf {} + 2>/dev/null || true && \
+    find node_modules -name "docs" -type d ! -path "*/googleapis/*" -exec rm -rf {} + 2>/dev/null || true && \
     find node_modules -name "examples" -type d -exec rm -rf {} + 2>/dev/null || true
 
 # Stage 3: Test Stage (run tests before production)
