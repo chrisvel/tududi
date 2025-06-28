@@ -1,0 +1,20 @@
+services:
+  tududi:
+    image: chrisvel/tududi:latest
+    container_name: tududi
+    environment:
+      - TUDUDI_USER_EMAIL=admin@example.com
+      - TUDUDI_USER_PASSWORD=your-secure-password
+      - TUDUDI_SESSION_SECRET=changeme-please-use-openssl
+      - TUDUDI_INTERNAL_SSL_ENABLED=false
+      - TUDUDI_ALLOWED_ORIGINS=http://localhost:3002
+      # Optionally set APP_UID and APP_GID to match your host user/group
+      # - APP_UID=1001
+      # - APP_GID=1001
+    volumes:
+      - ./tududi_db:/app/backend/db
+    ports:
+      - "3002:3002"
+    restart: unless-stopped
+    # Uncomment to run as root for automatic permission fix (not recommended for production)
+    # user: "0:0"

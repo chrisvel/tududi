@@ -112,7 +112,7 @@ app.get('*', (req, res) => {
     if (process.env.NODE_ENV === 'production') {
       res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     } else {
-      res.sendFile(path.join(__dirname, 'public', 'index.html'));
+      res.sendFile(path.join(__dirname, '../public', 'index.html'));
     }
   } else {
     res.status(404).json({ error: 'Not Found', message: 'The requested resource could not be found.' });

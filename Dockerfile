@@ -95,9 +95,15 @@ FROM node:20-alpine AS production
 # Copy test success marker to ensure tests passed before production build
 COPY --from=test /app/test-success.marker /tmp/test-success.marker
 
-# Create non-root user first (before installing packages)
-RUN addgroup -g 1001 -S app && \
-    adduser -S app -u 1001 -G app
+# Set build-time and runtime UID/GID (default 1001)
+ARG APP_UID=1001
+ARG APP_GID=1001
+ENV APP_UID=${APP_UID}
+ENV APP_GID=${APP_GID}
+
+# Create non-root user/group with configurable UID/GID
+RUN addgroup -g ${APP_GID} -S app && \
+    adduser -S app -u ${APP_UID} -G app
 
 # Install minimal runtime dependencies with size optimization
 RUN apk add --no-cache --virtual .runtime-deps \
@@ -130,7 +136,7 @@ COPY --from=frontend-builder --chown=app:app /app/dist ./backend/dist
 COPY --from=frontend-builder --chown=app:app /app/public/locales ./backend/dist/locales
 
 # Create ultra-minimal startup script (before switching to non-root user)
-RUN printf '#!/bin/sh\nset -e\ncd backend\n# Check and create directories with proper permissions\nif [ ! -d "db" ]; then\n  mkdir -p db\nfi\nif [ ! -w "db" ]; then\n  echo "❌ ERROR: Database directory /app/backend/db is not writable by user app (1001:1001)"\n  echo "ℹ️  If using Docker volumes, ensure the host directory has proper ownership:"\n  echo "   sudo chown -R 1001:1001 /host/path/to/db"\n  echo "   Or use an anonymous volume: docker run -v /app/backend/db ..."\n  exit 1\nfi\nmkdir -p certs\nDB_FILE="db/production.sqlite3"\n[ "$NODE_ENV" = "development" ] && DB_FILE="db/development.sqlite3"\nif [ ! -f "$DB_FILE" ]; then\n  node -e "require(\\"./models\\").sequelize.sync({force:true}).then(()=>{console.log(\\"✅ DB ready\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nelse\n  node -e "require(\\"./models\\").sequelize.authenticate().then(()=>{console.log(\\"✅ DB OK\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nfi\nif [ -n "$TUDUDI_USER_EMAIL" ]&&[ -n "$TUDUDI_USER_PASSWORD" ]; then\n  node -e "const{User}=require(\\"./models\\");const bcrypt=require(\\"bcrypt\\");(async()=>{try{const[u,c]=await User.findOrCreate({where:{email:process.env.TUDUDI_USER_EMAIL},defaults:{email:process.env.TUDUDI_USER_EMAIL,password_digest:await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD,10)}});console.log(c?\\"✅ User created\\":\\"ℹ️ User exists\\");process.exit(0)}catch(e){console.error(\\"❌\\",e.message);process.exit(1)}})();"||exit 1\nfi\n[ "$TUDUDI_INTERNAL_SSL_ENABLED" = "true" ]&&[ ! -f "certs/server.crt" ]&&openssl req -x509 -newkey rsa:2048 -keyout certs/server.key -out certs/server.crt -days 365 -nodes -subj "/CN=localhost" 2>/dev/null||true\nexec node app.js\n' > start.sh && chmod +x start.sh
+RUN printf '#!/bin/sh\nset -e\ncd backend\n# Check and create directories with proper permissions\nif [ ! -d "db" ]; then\n  mkdir -p db\nfi\nif [ ! -w "db" ]; then\n  if [ "$(id -u)" = "0" ]; then\n    echo "⚠️  Attempting to fix permissions for /app/backend/db as root..."\n    chown -R $APP_UID:$APP_GID db || true\n    chmod -R 770 db || true\n    if [ ! -w "db" ]; then\n      echo "❌ ERROR: Database directory /app/backend/db is not writable by user $APP_UID:$APP_GID after chown/chmod"\n      exit 1\n    fi\n  else\n    echo "❌ ERROR: Database directory /app/backend/db is not writable by user $(id -u):$(id -g)"\n    echo "ℹ️  If using Docker volumes, ensure the host directory has proper ownership or run the container as root for automatic fix."\n    exit 1\n  fi\nfi\nmkdir -p certs\nDB_FILE="db/production.sqlite3"\n[ "$NODE_ENV" = "development" ] && DB_FILE="db/development.sqlite3"\nif [ ! -f "$DB_FILE" ]; then\n  node -e "require(\\"./models\\").sequelize.sync({force:true}).then(()=>{console.log(\\"✅ DB ready\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nelse\n  node -e "require(\\"./models\\").sequelize.authenticate().then(()=>{console.log(\\"✅ DB OK\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nfi\nif [ -n "$TUDUDI_USER_EMAIL" ]&&[ -n "$TUDUDI_USER_PASSWORD" ]; then\n  node -e "const{User}=require(\\"./models\\");const bcrypt=require(\\"bcrypt\\");(async()=>{try{const[u,c]=await User.findOrCreate({where:{email:process.env.TUDUDI_USER_EMAIL},defaults:{email:process.env.TUDUDI_USER_EMAIL,password_digest:await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD,10)}});console.log(c?\\"✅ User created\\":\\"ℹ️ User exists\\");process.exit(0)}catch(e){console.error(\\"❌\\",e.message);process.exit(1)}})();"||exit 1\nfi\n[ "$TUDUDI_INTERNAL_SSL_ENABLED" = "true" ]&&[ ! -f "certs/server.crt" ]&&openssl req -x509 -newkey rsa:2048 -keyout certs/server.key -out certs/server.crt -days 365 -nodes -subj "/CN=localhost" 2>/dev/null||true\nexec node app.js\n' > start.sh && chmod +x start.sh
 
 # Create necessary directories and final cleanup
 RUN mkdir -p ./backend/db ./backend/certs && \
@@ -144,7 +150,7 @@ RUN mkdir -p ./backend/db ./backend/certs && \
 # Declare volume for database persistence
 VOLUME ["/app/backend/db"]
 
-# Switch to non-root user
+# Switch to non-root user (can be overridden at runtime)
 USER app
 
 # Expose port
