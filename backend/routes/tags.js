@@ -10,7 +10,6 @@ router.get('/tags', async (req, res) => {
             attributes: ['id', 'name'],
             order: [['name', 'ASC']],
         });
-
         res.json(tags);
     } catch (error) {
         console.error('Error fetching tags:', error);

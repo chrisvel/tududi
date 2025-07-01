@@ -1,11 +1,9 @@
 const telegramPoller = require('./telegramPoller');
 const { User } = require('../models');
+const config = require('../config/config');
 
 async function initializeTelegramPolling() {
-    if (
-        process.env.NODE_ENV === 'test' ||
-        process.env.DISABLE_TELEGRAM === 'true'
-    ) {
+    if (config.environment === 'test' || config.disableTelegram) {
         return;
     }
 

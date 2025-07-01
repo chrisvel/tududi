@@ -1,14 +1,11 @@
 require('dotenv').config();
 const path = require('path');
-
-const dbPath = process.env.DATABASE_URL
-    ? process.env.DATABASE_URL.replace('sqlite:///', '')
-    : path.join(__dirname, '..', 'db');
+const config = require('./config');
 
 module.exports = {
     development: {
         dialect: 'sqlite',
-        storage: path.join(dbPath, 'development.sqlite3'),
+        storage: path.join(config.dbDir, 'development.sqlite3'),
         logging: console.log,
         define: {
             timestamps: true,
@@ -19,7 +16,7 @@ module.exports = {
     },
     test: {
         dialect: 'sqlite',
-        storage: path.join(dbPath, 'test.sqlite3'),
+        storage: path.join(config.dbDir, 'test.sqlite3'),
         logging: false,
         define: {
             timestamps: true,
@@ -30,7 +27,7 @@ module.exports = {
     },
     production: {
         dialect: 'sqlite',
-        storage: path.join(dbPath, 'production.sqlite3'),
+        storage: path.join(config.dbDir, 'production.sqlite3'),
         logging: false,
         define: {
             timestamps: true,

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { google } = require('googleapis');
 const { requireAuth } = require('../middleware/auth');
+const config = require('../config/config');
 
 // Google Calendar configuration
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
@@ -9,10 +10,9 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 // OAuth2 client setup
 const getOAuth2Client = () => {
     return new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-        process.env.GOOGLE_REDIRECT_URI ||
-            'http://localhost:3002/api/calendar/oauth/callback'
+        config.credentials.google.clientId,
+        config.credentials.google.clientSecret,
+        config.credentials.google.redirectUri
     );
 };
 
@@ -21,8 +21,8 @@ router.get('/auth', requireAuth, (req, res) => {
     try {
         // Check if Google credentials are configured
         if (
-            !process.env.GOOGLE_CLIENT_ID ||
-            !process.env.GOOGLE_CLIENT_SECRET
+            !config.credentials.google.clientId ||
+            !config.credentials.google.clientSecret
         ) {
             // Demo mode - simulate successful connection
             console.log(
@@ -31,10 +31,8 @@ router.get('/auth', requireAuth, (req, res) => {
             );
 
             // Simulate the callback redirect with success
-            const frontendUrl =
-                process.env.FRONTEND_URL || 'http://localhost:8080';
             return res.json({
-                authUrl: `${frontendUrl}/calendar?demo=true&connected=true`,
+                authUrl: `${config.frontendUrl}/calendar?demo=true&connected=true`,
                 demo: true,
                 message: 'Demo mode: Google Calendar integration simulated',
             });
@@ -82,14 +80,10 @@ router.get('/oauth/callback', async (req, res) => {
         // await saveGoogleTokensForUser(userId, tokens);
 
         // Redirect to frontend with success
-        res.redirect(
-            `${process.env.FRONTEND_URL || 'http://localhost:8080'}/calendar?connected=true`
-        );
+        res.redirect(`${config.frontendUrl}/calendar?connected=true`);
     } catch (error) {
         console.error('Error handling OAuth callback:', error);
-        res.redirect(
-            `${process.env.FRONTEND_URL || 'http://localhost:8080'}/calendar?error=auth_failed`
-        );
+        res.redirect(`${config.frontendUrl}/calendar?error=auth_failed`);
     }
 });
 
@@ -98,8 +92,8 @@ router.get('/status', requireAuth, async (req, res) => {
     try {
         // Check if we're in demo mode or have real Google integration
         if (
-            !process.env.GOOGLE_CLIENT_ID ||
-            !process.env.GOOGLE_CLIENT_SECRET
+            !config.credentials.google.clientId ||
+            !config.credentials.google.clientSecret
         ) {
             // Demo mode - check if user has been "connected" in this session
             // For demo purposes, we'll simulate connection status
@@ -155,7 +149,7 @@ router.get('/events', requireAuth, async (req, res) => {
     oauth2Client.setCredentials(tokens);
 
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-    
+
     const response = await calendar.events.list({
       calendarId: 'primary',
       timeMin: start || new Date().toISOString(),

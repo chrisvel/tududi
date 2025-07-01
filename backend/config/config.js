@@ -13,7 +13,7 @@ if (
 
 const environment = process.env.NODE_ENV;
 const production = process.env.NODE_ENV === 'production';
-const projectRootPath = path.join(__dirname, '..', '..'); // backend root path
+const projectRootPath = path.join(__dirname, '..'); // backend root path
 const dbDir = process.env.DATABASE_URL
     ? process.env.DATABASE_URL.replace('sqlite:///', '')
     : path.join(projectRootPath, 'db');

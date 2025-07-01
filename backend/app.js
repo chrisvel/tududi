@@ -10,6 +10,7 @@ const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { sequelize } = require('./models');
 const { initializeTelegramPolling } = require('./services/telegramInitializer');
 const taskScheduler = require('./services/taskScheduler');
+const config = require('./config/config');
 
 const app = express();
 
@@ -19,13 +20,10 @@ const sessionStore = new SequelizeStore({
 });
 
 // Middlewares
-const sslEnabled =
-    process.env.NODE_ENV === 'production' &&
-    process.env.TUDUDI_INTERNAL_SSL_ENABLED === 'true';
 app.use(
     helmet({
-        hsts: sslEnabled, // Only enable HSTS when SSL is enabled
-        forceHTTPS: sslEnabled, // Only force HTTPS when SSL is enabled
+        hsts: config.sslEnabled, // Only enable HSTS when SSL is enabled
+        forceHTTPS: config.sslEnabled, // Only force HTTPS when SSL is enabled
         contentSecurityPolicy: false, // Disable CSP for now to avoid conflicts
     })
 );
@@ -33,20 +31,9 @@ app.use(compression());
 app.use(morgan('combined'));
 
 // CORS configuration
-const allowedOrigins = process.env.TUDUDI_ALLOWED_ORIGINS
-    ? process.env.TUDUDI_ALLOWED_ORIGINS.split(',').map((origin) =>
-          origin.trim()
-      )
-    : [
-          'http://localhost:8080',
-          'http://localhost:9292',
-          'http://127.0.0.1:8080',
-          'http://127.0.0.1:9292',
-      ];
-
 app.use(
     cors({
-        origin: allowedOrigins,
+        origin: config.allowedOrigins,
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowedHeaders: [
@@ -65,35 +52,30 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Session configuration
-const secureFlag =
-    process.env.NODE_ENV === 'production' &&
-    process.env.TUDUDI_INTERNAL_SSL_ENABLED === 'true';
 app.use(
     session({
-        secret:
-            process.env.TUDUDI_SESSION_SECRET ||
-            require('crypto').randomBytes(64).toString('hex'),
+        secret: config.secret,
         store: sessionStore,
         resave: false,
         saveUninitialized: false,
         cookie: {
             httpOnly: true,
-            secure: secureFlag,
+            secure: config.sslEnabled,
             maxAge: 2592000000, // 30 days
-            sameSite: secureFlag ? 'none' : 'lax',
+            sameSite: config.sslEnabled ? 'none' : 'lax',
         },
     })
 );
 
 // Static files
-if (process.env.NODE_ENV === 'production') {
+if (config.production) {
     app.use(express.static(path.join(__dirname, 'dist')));
 } else {
     app.use(express.static('public'));
 }
 
 // Serve locales
-if (process.env.NODE_ENV === 'production') {
+if (config.production) {
     app.use('/locales', express.static(path.join(__dirname, 'dist/locales')));
 } else {
     app.use(
@@ -114,7 +96,7 @@ app.get('/api/health', (req, res) => {
         status: 'ok',
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
-        environment: process.env.NODE_ENV || 'development',
+        environment: config.environment,
     });
 });
 
@@ -139,7 +121,7 @@ app.get('*', (req, res) => {
         !req.path.startsWith('/api/') &&
         !req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg)$/)
     ) {
-        if (process.env.NODE_ENV === 'production') {
+        if (config.production) {
             res.sendFile(path.join(__dirname, 'dist', 'index.html'));
         } else {
             res.sendFile(path.join(__dirname, '../public', 'index.html'));
@@ -161,8 +143,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-const PORT = process.env.PORT || 3002;
-
 // Initialize database and start server
 async function startServer() {
     try {
@@ -173,18 +153,15 @@ async function startServer() {
         await sequelize.sync();
 
         // Auto-create user if not exists
-        if (process.env.TUDUDI_USER_EMAIL && process.env.TUDUDI_USER_PASSWORD) {
+        if (config.email && config.password) {
             const { User } = require('./models');
             const bcrypt = require('bcrypt');
 
             const [user, created] = await User.findOrCreate({
-                where: { email: process.env.TUDUDI_USER_EMAIL },
+                where: { email: config.email },
                 defaults: {
-                    email: process.env.TUDUDI_USER_EMAIL,
-                    password_digest: await bcrypt.hash(
-                        process.env.TUDUDI_USER_PASSWORD,
-                        10
-                    ),
+                    email: config.email,
+                    password_digest: await bcrypt.hash(config.password, 10),
                 },
             });
 
@@ -199,9 +176,9 @@ async function startServer() {
         // Initialize task scheduler
         await taskScheduler.initialize();
 
-        const server = app.listen(PORT, '0.0.0.0', () => {
-            console.log(`Server running on port ${PORT}`);
-            console.log(`Server listening on http://localhost:${PORT}`);
+        const server = app.listen(config.port, config.host, () => {
+            console.log(`Server running on port ${config.port}`);
+            console.log(`Server listening on http://localhost:${config.port}`);
         });
 
         server.on('error', (err) => {
