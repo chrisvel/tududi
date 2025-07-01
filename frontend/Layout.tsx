@@ -485,7 +485,7 @@ const Layout: React.FC<LayoutProps> = ({
       </div>
 
       {/* Hide floating + button when any modal is open to prevent overlap with save buttons */}
-      {!isTaskModalOpen && !isProjectModalOpen && !isNoteModalOpen && !isAreaModalOpen && !isTagModalOpen && globalModalCount === 0 && (
+      {!isTaskModalOpen && !isProjectModalOpen && !isNoteModalOpen && !isAreaModalOpen && !isTagModalOpen && (
         <button
           onClick={() => openTaskModal('simplified')}
           className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg focus:outline-none transform transition-transform duration-200 hover:scale-110 z-50"
