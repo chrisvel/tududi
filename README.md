@@ -1,6 +1,7 @@
 # 📝 tududi
 
-`tududi` is a self-hosted task and project management web application with hierarchical organization (Areas > Projects > Tasks), multi-language support, and Telegram integration. Built with React/TypeScript frontend and functional programming Express.js backend, it provides an intuitive experience for personal productivity.
+`tududi` is the self-hosted task management tool that puts you in control. Organize your life and projects with a clear, hierarchical structure,
+smart recurring tasks, and seamless Telegram integration. Get focused, stay productive, and keep your data private.
 
 ![Light Mode Screenshot](screenshots/all-light.png)
 

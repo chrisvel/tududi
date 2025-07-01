@@ -185,7 +185,7 @@
         }
         
         .hero-content {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
         
@@ -233,6 +233,27 @@
         .secondary-button:hover {
             background-color: var(--primary-color);
             color: white;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            background: #000;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), inset 0 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
         }
         
         .hero-image {
@@ -578,13 +599,15 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/mT7QBGssLTo?autoplay=1&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
                 <h1>Task Management Made Simple</h1>
-                <p>Self-hosted task management with smart recurring tasks, hierarchical organization, multi-language support, and Telegram integration. Built with React/TypeScript and Express.js</p>
+                <p>Self-hosted task and project management web application with hierarchical organization, multi-language support, and Telegram integration. It provides an intuitive experience for personal productivity.</p>
                 <div class="hero-buttons">
                     <a href="https://github.com/chrisvel/tududi" class="primary-button">View on GitHub</a>
                     <a href="#installation" class="secondary-button">Quick Install</a>
                 </div>
-                <img src="screenshots/all-light.png" alt="tududi Screenshot" class="hero-image" id="hero-screenshot">
             </div>
         </div>
     </section>
@@ -781,9 +804,8 @@
                 <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>Create a session secret (optional)</h3>
-                        <p>Generate a random session secret:</p>
-                        <code>openssl rand -hex 64</code>
+                        <h3>Environment Variables</h3>
+                        <p>The following environment variables are used to configure tududi, TUDUDI_USER_EMAIL, TUDUDI_USER_PASSWORD, TUDUDI_SESSION_SECRET, TUDUDI_INTERNAL_SSL_ENABLED, TUDUDI_ALLOWED_ORIGINS. For more information please check the README file.</p>
                     </div>
                 </div>
                 <div class="step">
@@ -792,13 +814,14 @@
                         <h3>Run the Docker container</h3>
                         <p>Launch the application with your configuration:</p>
                         <code>docker run \
--e TUDUDI_USER_EMAIL=myemail@example.com \
--e TUDUDI_USER_PASSWORD=mysecurepassword \
--e TUDUDI_SESSION_SECRET=your_generated_hash_here \
--e TUDUDI_INTERNAL_SSL_ENABLED=false \
--v ~/tududi_db:/usr/src/app/backend/db \
--p 3002:3002 \
--d chrisvel/tududi:latest</code>
+  -e TUDUDI_USER_EMAIL=myemail@example.com \
+  -e TUDUDI_USER_PASSWORD=mysecurepassword \
+  -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
+  -e TUDUDI_INTERNAL_SSL_ENABLED=false \
+  -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:3002 \
+  -v ~/tududi_db:/app/backend/db \
+  -p 3002:3002 \
+  -d chrisvel/tududi:latest</code>
                     </div>
                 </div>
                 <div class="step">
