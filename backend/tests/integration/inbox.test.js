@@ -65,12 +65,14 @@ describe('Inbox Routes', () => {
             inboxItem1 = await InboxItem.create({
                 content: 'First item',
                 status: 'added',
+                source: 'test',
                 user_id: user.id,
             });
 
             inboxItem2 = await InboxItem.create({
                 content: 'Second item',
                 status: 'processed',
+                source: 'test',
                 user_id: user.id,
             });
         });
@@ -107,6 +109,7 @@ describe('Inbox Routes', () => {
         beforeEach(async () => {
             inboxItem = await InboxItem.create({
                 content: 'Test content',
+                source: 'test',
                 user_id: user.id,
             });
         });
@@ -135,6 +138,7 @@ describe('Inbox Routes', () => {
 
             const otherInboxItem = await InboxItem.create({
                 content: 'Other content',
+                source: 'test',
                 user_id: otherUser.id,
             });
 
@@ -161,6 +165,7 @@ describe('Inbox Routes', () => {
             inboxItem = await InboxItem.create({
                 content: 'Test content',
                 status: 'added',
+                source: 'test',
                 user_id: user.id,
             });
         });
@@ -205,6 +210,7 @@ describe('Inbox Routes', () => {
         beforeEach(async () => {
             inboxItem = await InboxItem.create({
                 content: 'Test content',
+                source: 'test',
                 user_id: user.id,
             });
         });
@@ -247,6 +253,7 @@ describe('Inbox Routes', () => {
             inboxItem = await InboxItem.create({
                 content: 'Test content',
                 status: 'added',
+                source: 'test',
                 user_id: user.id,
             });
         });

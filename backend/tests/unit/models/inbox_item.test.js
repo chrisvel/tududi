@@ -69,6 +69,7 @@ describe('InboxItem Model', () => {
         it('should set correct default values', async () => {
             const inboxItem = await InboxItem.create({
                 content: 'Test content',
+                source: 'test',
                 user_id: user.id,
             });
 
@@ -80,6 +81,7 @@ describe('InboxItem Model', () => {
         it('should belong to a user', async () => {
             const inboxItem = await InboxItem.create({
                 content: 'Test content',
+                source: 'test',
                 user_id: user.id,
             });
 

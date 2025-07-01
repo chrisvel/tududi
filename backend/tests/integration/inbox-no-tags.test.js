@@ -36,12 +36,14 @@ describe('Inbox Routes - No Tags Scenario', () => {
             const inboxItem1 = await InboxItem.create({
                 content: 'Test item without tags',
                 status: 'added',
+                source: 'test',
                 user_id: user.id,
             });
 
             const inboxItem2 = await InboxItem.create({
                 content: 'Another item without tags',
                 status: 'added',
+                source: 'test',
                 user_id: user.id,
             });
 
@@ -66,18 +68,21 @@ describe('Inbox Routes - No Tags Scenario', () => {
             const addedItem = await InboxItem.create({
                 content: 'Added item',
                 status: 'added',
+                source: 'test',
                 user_id: user.id,
             });
 
             await InboxItem.create({
                 content: 'Processed item',
                 status: 'processed',
+                source: 'test',
                 user_id: user.id,
             });
 
             await InboxItem.create({
                 content: 'Deleted item',
                 status: 'deleted',
+                source: 'test',
                 user_id: user.id,
             });
 
@@ -104,6 +109,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
             await InboxItem.create({
                 content: 'Test item',
                 status: 'added',
+                source: 'test',
                 user_id: user.id,
             });
 
@@ -165,6 +171,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
             inboxItem = await InboxItem.create({
                 content: 'Original content',
                 status: 'added',
+                source: 'test',
                 user_id: user.id,
             });
         });
@@ -192,6 +199,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
             inboxItem = await InboxItem.create({
                 content: 'Item to process',
                 status: 'added',
+                source: 'test',
                 user_id: user.id,
             });
         });
@@ -213,6 +221,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
             inboxItem = await InboxItem.create({
                 content: 'Item to delete',
                 status: 'added',
+                source: 'test',
                 user_id: user.id,
             });
         });
