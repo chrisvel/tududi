@@ -603,7 +603,7 @@
                     <iframe src="https://www.youtube.com/embed/mT7QBGssLTo?autoplay=1&mute=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 </div>
                 <h1>Task Management Made Simple</h1>
-                <p>Self-hosted task and project management web application with hierarchical organization, multi-language support, and Telegram integration. It provides an intuitive experience for personal productivity.</p>
+                <p>tududi is the self-hosted task management tool that puts you in control. Organize your life and projects with a clear, hierarchical structure, smart recurring tasks, and seamless Telegram integration. Get focused, stay productive, and keep your data private.</p>
                 <div class="hero-buttons">
                     <a href="https://github.com/chrisvel/tududi" class="primary-button">View on GitHub</a>
                     <a href="#installation" class="secondary-button">Quick Install</a>
@@ -804,8 +804,22 @@
                 <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3>Environment Variables</h3>
-                        <p>The following environment variables are used to configure tududi, TUDUDI_USER_EMAIL, TUDUDI_USER_PASSWORD, TUDUDI_SESSION_SECRET, TUDUDI_INTERNAL_SSL_ENABLED, TUDUDI_ALLOWED_ORIGINS. For more information please check the README file.</p>
+                        <h3>Configure Environment Variables</h3>
+                        <p>Set up the required environment variables for your installation:</p>
+                        <div style="background-color: var(--card-bg); padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid var(--primary-color);">
+                            <h4 style="color: var(--text-color); margin-bottom: 10px; font-size: 1.1rem;">Required Variables:</h4>
+                            <ul style="color: var(--secondary-color); margin: 0; padding-left: 20px; line-height: 1.6;">
+                                <li><strong style="color: var(--text-color);">TUDUDI_USER_EMAIL</strong> - Initial admin user's email</li>
+                                <li><strong style="color: var(--text-color);">TUDUDI_USER_PASSWORD</strong> - Initial admin user's password</li>
+                                <li><strong style="color: var(--text-color);">TUDUDI_SESSION_SECRET</strong> - Session encryption key</li>
+                            </ul>
+                            <h4 style="color: var(--text-color); margin: 15px 0 10px 0; font-size: 1.1rem;">Optional Variables:</h4>
+                            <ul style="color: var(--secondary-color); margin: 0; padding-left: 20px; line-height: 1.6;">
+                                <li><strong style="color: var(--text-color);">TUDUDI_INTERNAL_SSL_ENABLED</strong> - Set to 'true' for HTTPS</li>
+                                <li><strong style="color: var(--text-color);">TUDUDI_ALLOWED_ORIGINS</strong> - Controls CORS access</li>
+                            </ul>
+                        </div>
+                        <p>Generate a secure session secret with: <code style="background-color: var(--card-bg); padding: 4px 8px; border-radius: 4px; font-family: monospace;">openssl rand -hex 64</code></p>
                     </div>
                 </div>
                 <div class="step">
@@ -842,6 +856,26 @@
             <div class="cta-buttons">
                 <a href="https://github.com/chrisvel/tududi" class="cta-white">View on GitHub</a>
                 <a href="https://github.com/chrisvel/tududi/issues" class="cta-outline">Report Issues</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="installation" style="padding: 60px 0; background-color: var(--bg-color);">
+        <div class="container">
+            <div class="section-header">
+                <h2>Join the tududi Community</h2>
+                <p>Connect with other users, get support, share ideas, and stay updated with the latest developments. Our community is here to help you get the most out of tududi.</p>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 40px;">
+                <a href="https://discord.gg/DmP5AcuM" style="display: inline-block;">
+                    <img src="https://img.shields.io/discord/1234567890?color=7289da&label=Discord&logo=discord&logoColor=white&style=for-the-badge" alt="Join Discord" style="height: 40px; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                </a>
+                <a href="https://www.reddit.com/r/tududi/" style="display: inline-block;">
+                    <img src="https://img.shields.io/reddit/subreddit-subscribers/tududi?color=ff4500&label=Reddit&logo=reddit&logoColor=white&style=for-the-badge" alt="Join Reddit" style="height: 40px; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                </a>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <p style="color: var(--secondary-color); font-size: 1rem;">Get help with installation, share your workflows, request features, and connect with fellow productivity enthusiasts!</p>
             </div>
         </div>
     </section>
@@ -907,6 +941,14 @@
                         <li><a href="https://github.com/chrisvel/tududi/issues">Issues</a></li>
                         <li><a href="https://github.com/chrisvel/tududi#-contributing">Contributing</a></li>
                     </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Community</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://discord.gg/DmP5AcuM"><i class="fab fa-discord"></i> Discord Server</a></li>
+                        <li><a href="https://www.reddit.com/r/tududi/"><i class="fab fa-reddit"></i> r/tududi</a></li>
+                    </ul>
+                    <p style="font-size: 0.9rem; color: #b0b0b0; margin-top: 15px;">Join our community for support, discussions, and updates!</p>
                 </div>
             </div>
             <div class="footer-bottom">
