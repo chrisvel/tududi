@@ -101,7 +101,7 @@ const InboxItems: React.FC = () => {
       window.removeEventListener('forceInboxReload', handleForceReload);
       window.removeEventListener('inboxItemsUpdated', handleInboxItemsUpdated as EventListener);
     };
-  }, [refreshInboxItems, showSuccessToast, t]);
+  }, [refreshInboxItems]);
   
   const handleProcessItem = async (id: number) => {
     try {
@@ -346,8 +346,8 @@ const InboxItems: React.FC = () => {
         }
       })()}
       
-      {/* Project Modal - Always render it but control visibility with isOpen */}
-      {(() => {
+      {/* Project Modal - Only render when needed to prevent infinite loops */}
+      {isProjectModalOpen && (() => {
         try {
           return (
             <ProjectModal

@@ -156,9 +156,23 @@ const Layout: React.FC<LayoutProps> = ({
     }
   };
 
+  const loadTags = async () => {
+    setTagsLoading(true);
+    try {
+      const tagsData = await fetchTags();
+      setTags(tagsData);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+      setTagsError(true);
+    } finally {
+      setTagsLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadNotes();
     loadAreas();
+    loadTags();
   }, []);
 
   const openNoteModal = (note: Note | null = null) => {

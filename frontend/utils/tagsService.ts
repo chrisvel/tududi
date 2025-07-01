@@ -7,8 +7,7 @@ export const fetchTags = async (): Promise<Tag[]> => {
       credentials: 'include',
       headers: {
         'Accept': 'application/json',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
+        'Cache-Control': 'no-cache'
       }
     });
     await handleAuthResponse(response, 'Failed to fetch tags.');
