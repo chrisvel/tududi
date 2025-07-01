@@ -37,9 +37,12 @@ router.post('/inbox', async (req, res) => {
             return res.status(400).json({ error: 'Content is required' });
         }
 
+        // Ensure source is never null/undefined
+        const finalSource = source && source.trim() ? source.trim() : 'manual';
+
         const item = await InboxItem.create({
             content: content.trim(),
-            source: source || 'tududi',
+            source: finalSource,
             user_id: req.session.userId,
         });
 

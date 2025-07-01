@@ -22,7 +22,7 @@ export const fetchInboxItems = async (): Promise<InboxItem[]> => {
   return result;
 };
 
-export const createInboxItem = async (content: string, source: string = 'tududi'): Promise<InboxItem> => {
+export const createInboxItem = async (content: string, source?: string): Promise<InboxItem> => {
   const response = await fetch('/api/inbox', {
     method: 'POST',
     credentials: 'include',
@@ -30,7 +30,7 @@ export const createInboxItem = async (content: string, source: string = 'tududi'
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
-    body: JSON.stringify({ content, source }),
+    body: JSON.stringify(source ? { content, source } : { content }),
   });
 
   await handleAuthResponse(response, 'Failed to create inbox item.');
@@ -132,7 +132,7 @@ export const loadInboxItemsToStore = async (): Promise<void> => {
   }
 };
 
-export const createInboxItemWithStore = async (content: string, source: string = 'tududi'): Promise<InboxItem> => {
+export const createInboxItemWithStore = async (content: string, source?: string): Promise<InboxItem> => {
   const inboxStore = useStore.getState().inboxStore;
   
   try {

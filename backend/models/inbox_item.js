@@ -21,7 +21,6 @@ module.exports = (sequelize) => {
             source: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                defaultValue: 'tududi',
             },
             user_id: {
                 type: DataTypes.INTEGER,

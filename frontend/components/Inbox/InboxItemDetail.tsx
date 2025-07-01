@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
 import { TrashIcon, PencilIcon, DocumentTextIcon, FolderIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
-import { TagIcon } from '@heroicons/react/24/solid';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
@@ -141,12 +140,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
             {item.content}
           </p>
-          <div className="flex items-center mt-1">
-            <TagIcon className="h-3 w-3 mr-1 text-gray-500 dark:text-gray-400" />
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {item.source}
-            </span>
-          </div>
         </div>
 
         <div className="flex items-center justify-start space-x-1 shrink-0">

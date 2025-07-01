@@ -73,7 +73,6 @@ describe('InboxItem Model', () => {
             });
 
             expect(inboxItem.status).toBe('added');
-            expect(inboxItem.source).toBe('tududi');
         });
     });
 

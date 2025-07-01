@@ -48,7 +48,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   const [isUploading, setIsUploading] = useState(false);
 
   const { tagsStore } = useStore();
-  const { tags: availableTags, loadTags, isLoading: tagsLoading, isError: tagsError } = tagsStore;
+  const { tags: availableTags } = tagsStore;
 
   const modalRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -84,15 +84,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     }
     setImageFile(null);
   }, [project]);
-
-  useEffect(() => {
-    // Only load tags if we have no tags, are not currently loading, and haven't errored
-    if (availableTags.length === 0 && !tagsLoading && !tagsError) {
-      loadTags().catch(error => {
-        console.error('Error loading tags:', error);
-      });
-    }
-  }, [availableTags.length, tagsLoading, tagsError, loadTags]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
