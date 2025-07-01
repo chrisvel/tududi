@@ -5,35 +5,41 @@ const path = require('path');
 let dbConfig;
 
 if (process.env.NODE_ENV === 'test') {
-  // Use temporary file database for tests to allow external script access
-  const testDbPath = path.join(__dirname, '../db', 'test.sqlite3');
-  dbConfig = {
-    dialect: 'sqlite',
-    storage: testDbPath,
-    logging: false,
-    define: {
-      timestamps: true,
-      underscored: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at'
-    }
-  };
+    // Use temporary file database for tests to allow external script access
+    const testDbPath = path.join(__dirname, '../db', 'test.sqlite3');
+    dbConfig = {
+        dialect: 'sqlite',
+        storage: testDbPath,
+        logging: false,
+        define: {
+            timestamps: true,
+            underscored: true,
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+        },
+    };
 } else {
-  const dbPath = process.env.DATABASE_URL 
-    ? process.env.DATABASE_URL.replace('sqlite:///', '')
-    : path.join(__dirname, '../db', process.env.NODE_ENV === 'production' ? 'production.sqlite3' : 'development.sqlite3');
+    const dbPath = process.env.DATABASE_URL
+        ? process.env.DATABASE_URL.replace('sqlite:///', '')
+        : path.join(
+              __dirname,
+              '../db',
+              process.env.NODE_ENV === 'production'
+                  ? 'production.sqlite3'
+                  : 'development.sqlite3'
+          );
 
-  dbConfig = {
-    dialect: 'sqlite',
-    storage: dbPath,
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    define: {
-      timestamps: true,
-      underscored: true,
-      createdAt: 'created_at',
-      updatedAt: 'updated_at'
-    }
-  };
+    dbConfig = {
+        dialect: 'sqlite',
+        storage: dbPath,
+        logging: process.env.NODE_ENV === 'development' ? console.log : false,
+        define: {
+            timestamps: true,
+            underscored: true,
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+        },
+    };
 }
 
 const sequelize = new Sequelize(dbConfig);
@@ -80,23 +86,47 @@ Task.hasMany(TaskEvent, { foreignKey: 'task_id', as: 'TaskEvents' });
 TaskEvent.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
 
 // Many-to-many associations
-Task.belongsToMany(Tag, { through: 'tasks_tags', foreignKey: 'task_id', otherKey: 'tag_id' });
-Tag.belongsToMany(Task, { through: 'tasks_tags', foreignKey: 'tag_id', otherKey: 'task_id' });
+Task.belongsToMany(Tag, {
+    through: 'tasks_tags',
+    foreignKey: 'task_id',
+    otherKey: 'tag_id',
+});
+Tag.belongsToMany(Task, {
+    through: 'tasks_tags',
+    foreignKey: 'tag_id',
+    otherKey: 'task_id',
+});
 
-Note.belongsToMany(Tag, { through: 'notes_tags', foreignKey: 'note_id', otherKey: 'tag_id' });
-Tag.belongsToMany(Note, { through: 'notes_tags', foreignKey: 'tag_id', otherKey: 'note_id' });
+Note.belongsToMany(Tag, {
+    through: 'notes_tags',
+    foreignKey: 'note_id',
+    otherKey: 'tag_id',
+});
+Tag.belongsToMany(Note, {
+    through: 'notes_tags',
+    foreignKey: 'tag_id',
+    otherKey: 'note_id',
+});
 
-Project.belongsToMany(Tag, { through: 'projects_tags', foreignKey: 'project_id', otherKey: 'tag_id' });
-Tag.belongsToMany(Project, { through: 'projects_tags', foreignKey: 'tag_id', otherKey: 'project_id' });
+Project.belongsToMany(Tag, {
+    through: 'projects_tags',
+    foreignKey: 'project_id',
+    otherKey: 'tag_id',
+});
+Tag.belongsToMany(Project, {
+    through: 'projects_tags',
+    foreignKey: 'tag_id',
+    otherKey: 'project_id',
+});
 
 module.exports = {
-  sequelize,
-  User,
-  Area,
-  Project,
-  Task,
-  Tag,
-  Note,
-  InboxItem,
-  TaskEvent
+    sequelize,
+    User,
+    Area,
+    Project,
+    Task,
+    Tag,
+    Note,
+    InboxItem,
+    TaskEvent,
 };

@@ -10,28 +10,31 @@ const fs = require('fs');
 const path = require('path');
 
 function createMigration() {
-  const migrationName = process.argv[2];
-  
-  if (!migrationName) {
-    console.error('❌ Usage: npm run migration:create <migration-name>');
-    console.error('Example: npm run migration:create add-description-to-tasks');
-    process.exit(1);
-  }
+    const migrationName = process.argv[2];
 
-  // Generate timestamp (YYYYMMDDHHMMSS format)
-  const now = new Date();
-  const timestamp = now.getFullYear().toString() +
-    (now.getMonth() + 1).toString().padStart(2, '0') +
-    now.getDate().toString().padStart(2, '0') +
-    now.getHours().toString().padStart(2, '0') +
-    now.getMinutes().toString().padStart(2, '0') +
-    now.getSeconds().toString().padStart(2, '0');
+    if (!migrationName) {
+        console.error('❌ Usage: npm run migration:create <migration-name>');
+        console.error(
+            'Example: npm run migration:create add-description-to-tasks'
+        );
+        process.exit(1);
+    }
 
-  const fileName = `${timestamp}-${migrationName}.js`;
-  const filePath = path.join(__dirname, '..', 'migrations', fileName);
+    // Generate timestamp (YYYYMMDDHHMMSS format)
+    const now = new Date();
+    const timestamp =
+        now.getFullYear().toString() +
+        (now.getMonth() + 1).toString().padStart(2, '0') +
+        now.getDate().toString().padStart(2, '0') +
+        now.getHours().toString().padStart(2, '0') +
+        now.getMinutes().toString().padStart(2, '0') +
+        now.getSeconds().toString().padStart(2, '0');
 
-  // Migration template
-  const template = `'use strict';
+    const fileName = `${timestamp}-${migrationName}.js`;
+    const filePath = path.join(__dirname, '..', 'migrations', fileName);
+
+    // Migration template
+    const template = `'use strict';
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -87,22 +90,22 @@ module.exports = {
   }
 };`;
 
-  try {
-    fs.writeFileSync(filePath, template);
-    console.log('✅ Migration created successfully');
-    console.log(`📁 File: ${fileName}`);
-    console.log(`📂 Path: ${filePath}`);
-    console.log('');
-    console.log('📝 Next steps:');
-    console.log('1. Edit the migration file to add your schema changes');
-    console.log('2. Run: npm run migration:run');
-    console.log('3. To rollback: npm run migration:undo');
-    
-    process.exit(0);
-  } catch (error) {
-    console.error('❌ Error creating migration:', error.message);
-    process.exit(1);
-  }
+    try {
+        fs.writeFileSync(filePath, template);
+        console.log('✅ Migration created successfully');
+        console.log(`📁 File: ${fileName}`);
+        console.log(`📂 Path: ${filePath}`);
+        console.log('');
+        console.log('📝 Next steps:');
+        console.log('1. Edit the migration file to add your schema changes');
+        console.log('2. Run: npm run migration:run');
+        console.log('3. To rollback: npm run migration:undo');
+
+        process.exit(0);
+    } catch (error) {
+        console.error('❌ Error creating migration:', error.message);
+        process.exit(1);
+    }
 }
 
 createMigration();

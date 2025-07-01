@@ -18,26 +18,31 @@ tests/
 ## Running Tests
 
 ### All Tests
+
 ```bash
 npm test
 ```
 
 ### Unit Tests Only
+
 ```bash
 npm run test:unit
 ```
 
 ### Integration Tests Only
+
 ```bash
 npm run test:integration
 ```
 
 ### Watch Mode (for development)
+
 ```bash
 npm run test:watch
 ```
 
 ### Coverage Report
+
 ```bash
 npm run test:coverage
 ```
@@ -45,6 +50,7 @@ npm run test:coverage
 ## Test Environment
 
 Tests run in a separate test environment with:
+
 - In-memory SQLite database (isolated from development data)
 - Test-specific configuration from `.env.test`
 - Automatic database cleanup between tests
@@ -52,17 +58,20 @@ Tests run in a separate test environment with:
 ## Writing Tests
 
 ### Unit Tests
+
 - Test individual functions, models, or middleware in isolation
 - Mock external dependencies
 - Focus on business logic and edge cases
 
 ### Integration Tests
+
 - Test complete API endpoints
 - Use authenticated requests where needed
 - Test real database interactions
 - Verify response formats and status codes
 
 ### Test Utilities
+
 - `tests/helpers/testUtils.js` provides utilities for creating test data
 - `tests/helpers/setup.js` handles database setup and cleanup
 - Use `createTestUser()` for creating authenticated test users

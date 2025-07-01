@@ -8,132 +8,149 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
 // OAuth2 client setup
 const getOAuth2Client = () => {
-  return new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3002/api/calendar/oauth/callback'
-  );
+    return new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI ||
+            'http://localhost:3002/api/calendar/oauth/callback'
+    );
 };
 
 // GET /api/calendar/auth - Start OAuth flow (Demo mode)
 router.get('/auth', requireAuth, (req, res) => {
-  try {
-    // Check if Google credentials are configured
-    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-      // Demo mode - simulate successful connection
-      console.log('Demo mode: Simulating Google Calendar connection for user:', req.currentUser.id);
-      
-      // Simulate the callback redirect with success
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
-      return res.json({ 
-        authUrl: `${frontendUrl}/calendar?demo=true&connected=true`,
-        demo: true,
-        message: 'Demo mode: Google Calendar integration simulated'
-      });
+    try {
+        // Check if Google credentials are configured
+        if (
+            !process.env.GOOGLE_CLIENT_ID ||
+            !process.env.GOOGLE_CLIENT_SECRET
+        ) {
+            // Demo mode - simulate successful connection
+            console.log(
+                'Demo mode: Simulating Google Calendar connection for user:',
+                req.currentUser.id
+            );
+
+            // Simulate the callback redirect with success
+            const frontendUrl =
+                process.env.FRONTEND_URL || 'http://localhost:8080';
+            return res.json({
+                authUrl: `${frontendUrl}/calendar?demo=true&connected=true`,
+                demo: true,
+                message: 'Demo mode: Google Calendar integration simulated',
+            });
+        }
+
+        // Production mode with real Google OAuth
+        const oauth2Client = getOAuth2Client();
+
+        const authUrl = oauth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: SCOPES,
+            state: JSON.stringify({ userId: req.currentUser.id }),
+        });
+
+        res.json({ authUrl });
+    } catch (error) {
+        console.error('Error generating auth URL:', error);
+        res.status(500).json({ error: 'Failed to generate authorization URL' });
     }
-
-    // Production mode with real Google OAuth
-    const oauth2Client = getOAuth2Client();
-    
-    const authUrl = oauth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: SCOPES,
-      state: JSON.stringify({ userId: req.currentUser.id })
-    });
-
-    res.json({ authUrl });
-  } catch (error) {
-    console.error('Error generating auth URL:', error);
-    res.status(500).json({ error: 'Failed to generate authorization URL' });
-  }
 });
 
 // GET /api/calendar/oauth/callback - Handle OAuth callback
 router.get('/oauth/callback', async (req, res) => {
-  try {
-    const { code, state } = req.query;
-    
-    if (!code) {
-      return res.status(400).json({ error: 'Authorization code not provided' });
+    try {
+        const { code, state } = req.query;
+
+        if (!code) {
+            return res
+                .status(400)
+                .json({ error: 'Authorization code not provided' });
+        }
+
+        const oauth2Client = getOAuth2Client();
+        const { tokens } = await oauth2Client.getToken(code);
+
+        // Parse state to get user ID
+        const { userId } = JSON.parse(state);
+
+        // Here you would typically save the tokens to the database
+        // For now, we'll just return them (in production, store securely)
+        console.log('Google Calendar tokens received for user:', userId);
+        console.log('Tokens:', tokens);
+
+        // TODO: Save tokens to database associated with user
+        // await saveGoogleTokensForUser(userId, tokens);
+
+        // Redirect to frontend with success
+        res.redirect(
+            `${process.env.FRONTEND_URL || 'http://localhost:8080'}/calendar?connected=true`
+        );
+    } catch (error) {
+        console.error('Error handling OAuth callback:', error);
+        res.redirect(
+            `${process.env.FRONTEND_URL || 'http://localhost:8080'}/calendar?error=auth_failed`
+        );
     }
-
-    const oauth2Client = getOAuth2Client();
-    const { tokens } = await oauth2Client.getToken(code);
-    
-    // Parse state to get user ID
-    const { userId } = JSON.parse(state);
-    
-    // Here you would typically save the tokens to the database
-    // For now, we'll just return them (in production, store securely)
-    console.log('Google Calendar tokens received for user:', userId);
-    console.log('Tokens:', tokens);
-    
-    // TODO: Save tokens to database associated with user
-    // await saveGoogleTokensForUser(userId, tokens);
-
-    // Redirect to frontend with success
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:8080'}/calendar?connected=true`);
-  } catch (error) {
-    console.error('Error handling OAuth callback:', error);
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:8080'}/calendar?error=auth_failed`);
-  }
 });
 
 // GET /api/calendar/status - Check connection status
 router.get('/status', requireAuth, async (req, res) => {
-  try {
-    // Check if we're in demo mode or have real Google integration
-    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-      // Demo mode - check if user has been "connected" in this session
-      // For demo purposes, we'll simulate connection status
-      res.json({ 
-        connected: false, // Will be set to true after demo connection
-        email: null,
-        demo: true
-      });
-      return;
-    }
+    try {
+        // Check if we're in demo mode or have real Google integration
+        if (
+            !process.env.GOOGLE_CLIENT_ID ||
+            !process.env.GOOGLE_CLIENT_SECRET
+        ) {
+            // Demo mode - check if user has been "connected" in this session
+            // For demo purposes, we'll simulate connection status
+            res.json({
+                connected: false, // Will be set to true after demo connection
+                email: null,
+                demo: true,
+            });
+            return;
+        }
 
-    // TODO: Check if user has valid Google Calendar tokens in database
-    // const tokens = await getGoogleTokensForUser(req.currentUser.id);
-    
-    res.json({ 
-      connected: false, // Change to true when tokens exist and are valid
-      email: null // Return connected Google account email when available
-    });
-  } catch (error) {
-    console.error('Error checking calendar status:', error);
-    res.status(500).json({ error: 'Failed to check calendar status' });
-  }
+        // TODO: Check if user has valid Google Calendar tokens in database
+        // const tokens = await getGoogleTokensForUser(req.currentUser.id);
+
+        res.json({
+            connected: false, // Change to true when tokens exist and are valid
+            email: null, // Return connected Google account email when available
+        });
+    } catch (error) {
+        console.error('Error checking calendar status:', error);
+        res.status(500).json({ error: 'Failed to check calendar status' });
+    }
 });
 
 // GET /api/calendar/events - Get events from Google Calendar
 router.get('/events', requireAuth, async (req, res) => {
-  try {
-    const { start, end } = req.query;
-    
-    // TODO: Get tokens from database
-    // const tokens = await getGoogleTokensForUser(req.currentUser.id);
-    // if (!tokens) {
-    //   return res.status(401).json({ error: 'Google Calendar not connected' });
-    // }
+    try {
+        const { start, end } = req.query;
 
-    // For now, return sample data
-    const sampleEvents = [
-      {
-        id: 'google-1',
-        title: 'Google Calendar Event',
-        start: new Date().toISOString(),
-        end: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-        type: 'google',
-        color: '#ea4335'
-      }
-    ];
+        // TODO: Get tokens from database
+        // const tokens = await getGoogleTokensForUser(req.currentUser.id);
+        // if (!tokens) {
+        //   return res.status(401).json({ error: 'Google Calendar not connected' });
+        // }
 
-    res.json({ events: sampleEvents });
+        // For now, return sample data
+        const sampleEvents = [
+            {
+                id: 'google-1',
+                title: 'Google Calendar Event',
+                start: new Date().toISOString(),
+                end: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+                type: 'google',
+                color: '#ea4335',
+            },
+        ];
 
-    // TODO: Implement actual Google Calendar API call
-    /*
+        res.json({ events: sampleEvents });
+
+        // TODO: Implement actual Google Calendar API call
+        /*
     const oauth2Client = getOAuth2Client();
     oauth2Client.setCredentials(tokens);
 
@@ -161,23 +178,23 @@ router.get('/events', requireAuth, async (req, res) => {
 
     res.json({ events });
     */
-  } catch (error) {
-    console.error('Error fetching calendar events:', error);
-    res.status(500).json({ error: 'Failed to fetch calendar events' });
-  }
+    } catch (error) {
+        console.error('Error fetching calendar events:', error);
+        res.status(500).json({ error: 'Failed to fetch calendar events' });
+    }
 });
 
 // POST /api/calendar/disconnect - Disconnect Google Calendar
 router.post('/disconnect', requireAuth, async (req, res) => {
-  try {
-    // TODO: Remove tokens from database
-    // await removeGoogleTokensForUser(req.currentUser.id);
-    
-    res.json({ success: true, message: 'Google Calendar disconnected' });
-  } catch (error) {
-    console.error('Error disconnecting calendar:', error);
-    res.status(500).json({ error: 'Failed to disconnect calendar' });
-  }
+    try {
+        // TODO: Remove tokens from database
+        // await removeGoogleTokensForUser(req.currentUser.id);
+
+        res.json({ success: true, message: 'Google Calendar disconnected' });
+    } catch (error) {
+        console.error('Error disconnecting calendar:', error);
+        res.status(500).json({ error: 'Failed to disconnect calendar' });
+    }
 });
 
 module.exports = router;
