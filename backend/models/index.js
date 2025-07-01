@@ -1,46 +1,21 @@
 const { Sequelize } = require('sequelize');
 const path = require('path');
+const config = require('../config/config');
 
 // Database configuration
 let dbConfig;
 
-if (process.env.NODE_ENV === 'test') {
-    // Use temporary file database for tests to allow external script access
-    const testDbPath = path.join(__dirname, '../db', 'test.sqlite3');
-    dbConfig = {
-        dialect: 'sqlite',
-        storage: testDbPath,
-        logging: false,
-        define: {
-            timestamps: true,
-            underscored: true,
-            createdAt: 'created_at',
-            updatedAt: 'updated_at',
-        },
-    };
-} else {
-    const dbPath = process.env.DATABASE_URL
-        ? process.env.DATABASE_URL.replace('sqlite:///', '')
-        : path.join(
-              __dirname,
-              '../db',
-              process.env.NODE_ENV === 'production'
-                  ? 'production.sqlite3'
-                  : 'development.sqlite3'
-          );
-
-    dbConfig = {
-        dialect: 'sqlite',
-        storage: dbPath,
-        logging: process.env.NODE_ENV === 'development' ? console.log : false,
-        define: {
-            timestamps: true,
-            underscored: true,
-            createdAt: 'created_at',
-            updatedAt: 'updated_at',
-        },
-    };
-}
+dbConfig = {
+    dialect: 'sqlite',
+    storage: config.dbFile,
+    logging: config.environment === 'development' ? console.log : false,
+    define: {
+        timestamps: true,
+        underscored: true,
+        createdAt: 'created_at',
+        updatedAt: 'updated_at',
+    },
+};
 
 const sequelize = new Sequelize(dbConfig);
 

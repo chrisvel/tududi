@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const { User } = require('../models');
 const TaskSummaryService = require('./taskSummaryService');
 const RecurringTaskService = require('./recurringTaskService');
+const config = require('../config/config');
 
 // Create scheduler state
 const createSchedulerState = () => ({
@@ -14,7 +15,7 @@ let schedulerState = createSchedulerState();
 
 // Check if scheduler should be disabled
 const shouldDisableScheduler = () =>
-    process.env.NODE_ENV === 'test' || process.env.DISABLE_SCHEDULER === 'true';
+    config.environment === 'test' || config.disableScheduler;
 
 // Create job configuration
 const createJobConfig = () => ({
