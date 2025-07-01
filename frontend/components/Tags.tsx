@@ -1,32 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PencilSquareIcon, TrashIcon, TagIcon, MagnifyingGlassIcon, CheckIcon, BookOpenIcon, FolderIcon } from '@heroicons/react/24/solid';
+import { TrashIcon, TagIcon, MagnifyingGlassIcon, CheckIcon, BookOpenIcon, FolderIcon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
-import TagModal from './Tag/TagModal';
 import { Tag } from '../entities/Tag';
-import { fetchTags, createTag, updateTag, deleteTag as apiDeleteTag } from '../utils/tagsService';
+import { deleteTag as apiDeleteTag } from '../utils/tagsService';
+import { useStore } from '../store/useStore';
 
 const Tags: React.FC = () => {
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
-  const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+  const { 
+    tagsStore: { 
+      tags, 
+      setTags, 
+      isLoading, 
+      setLoading, 
+      isError, 
+      setError 
+    } 
+  } = useStore();
+  
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isError, setIsError] = useState<boolean>(false);
   const [hoveredTagId, setHoveredTagId] = useState<number | null>(null);
   const [tagMetrics, setTagMetrics] = useState<Record<string, {tasks: number, notes: number, projects: number}>>({});
   const [metricsLoaded, setMetricsLoaded] = useState<boolean>(false);
   const [cachedProjects, setCachedProjects] = useState<any[]>([]);
 
   useEffect(() => {
-    const loadTags = async () => {
-      setIsLoading(true);
+    const loadMetrics = async () => {
+      if (tags.length === 0) {
+        // Tags not loaded yet, wait for Layout to load them
+        return;
+      }
+
       try {
-        const fetchedTags = await fetchTags();
-        setTags(fetchedTags);
-        
         // Load all data at once for better performance
         const [projectsResponse, tasksResponse, notesResponse] = await Promise.all([
           fetch('/api/projects'),
@@ -57,7 +64,7 @@ const Tags: React.FC = () => {
         // Calculate metrics for all tags at once
         const metricsMap: Record<string, {tasks: number, notes: number, projects: number}> = {};
         
-        fetchedTags.forEach(tag => {
+        tags.forEach(tag => {
           const tasksCount = allTasks.filter((task: any) => 
             task.tags && task.tags.some((taskTag: any) => taskTag.name === tag.name)
           ).length;
@@ -81,22 +88,19 @@ const Tags: React.FC = () => {
         setMetricsLoaded(true);
         
       } catch (error) {
-        console.error('Failed to fetch tags:', error);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
+        console.error('Failed to fetch metrics:', error);
       }
     };
 
-    loadTags();
-  }, []);
+    loadMetrics();
+  }, [tags]); // Only run when tags change
 
 
   const handleDeleteTag = async () => {
     if (!tagToDelete) return;
     try {
       await apiDeleteTag(tagToDelete.id!);
-      setTags((prev) => prev.filter((tag) => tag.id !== tagToDelete.id));
+      setTags(tags.filter((tag) => tag.id !== tagToDelete.id));
       // Remove the deleted tag from metrics as well
       setTagMetrics((prev) => {
         const newMetrics = { ...prev };
@@ -110,46 +114,6 @@ const Tags: React.FC = () => {
     }
   };
 
-  const handleEditTag = (tag: Tag) => {
-    setSelectedTag(tag);
-    setIsTagModalOpen(true);
-  };
-
-  const handleSaveTag = async (tagData: Tag) => {
-    try {
-      let updatedTags;
-      if (tagData.id) {
-        await updateTag(tagData.id, tagData);
-        updatedTags = tags.map((tag) => (tag.id === tagData.id ? tagData : tag));
-        
-        // If tag name changed, update metrics key
-        const oldTag = tags.find(t => t.id === tagData.id);
-        if (oldTag && oldTag.name !== tagData.name) {
-          setTagMetrics((prev) => {
-            const newMetrics = { ...prev };
-            if (newMetrics[oldTag.name]) {
-              newMetrics[tagData.name] = newMetrics[oldTag.name];
-              delete newMetrics[oldTag.name];
-            }
-            return newMetrics;
-          });
-        }
-      } else {
-        const newTag = await createTag(tagData);
-        updatedTags = [...tags, newTag];
-        // Initialize metrics for new tag
-        setTagMetrics((prev) => ({
-          ...prev,
-          [newTag.name]: { tasks: 0, notes: 0, projects: 0 }
-        }));
-      }
-      setTags(updatedTags);
-      setIsTagModalOpen(false);
-      setSelectedTag(null);
-    } catch (err) {
-      console.error('Failed to save tag:', err);
-    }
-  };
 
   const openConfirmDialog = (tag: Tag) => {
     setTagToDelete(tag);
@@ -288,16 +252,8 @@ const Tags: React.FC = () => {
                             )}
                           </div>
                           
-                          {/* Edit/Delete buttons */}
+                          {/* Delete button */}
                           <div className="flex space-x-2 ml-2">
-                            <button
-                              onClick={() => handleEditTag(tag)}
-                              className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredTagId === tag.id ? 'opacity-100' : 'opacity-0'}`}
-                              aria-label={`Edit ${tag.name}`}
-                              title={`Edit ${tag.name}`}
-                            >
-                              <PencilSquareIcon className="h-4 w-4" />
-                            </button>
                             <button
                               onClick={() => openConfirmDialog(tag)}
                               className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredTagId === tag.id ? 'opacity-100' : 'opacity-0'}`}
@@ -315,16 +271,6 @@ const Tags: React.FC = () => {
               </div>
             ))}
           </div>
-        )}
-
-        {/* TagModal */}
-        {isTagModalOpen && (
-          <TagModal
-            isOpen={isTagModalOpen}
-            onClose={() => setIsTagModalOpen(false)}
-            onSave={handleSaveTag}
-            tag={selectedTag}
-          />
         )}
 
         {/* ConfirmDialog */}

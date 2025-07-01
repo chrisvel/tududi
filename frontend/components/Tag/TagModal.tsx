@@ -88,12 +88,12 @@ const TagModal: React.FC<TagModalProps> = ({
     setIsSubmitting(true);
 
     try {
+      await onSave(formData); // Wait for the save operation to complete
       if (tag) {
         showSuccessToast(t('success.tagUpdated', 'Tag updated successfully!'));
       } else {
         showSuccessToast(t('success.tagCreated', 'Tag created successfully!'));
       }
-      onSave(formData);
       handleClose();
     } catch (err) {
       showErrorToast(t('errors.failedToSaveTag', 'Failed to save tag.'));
