@@ -7,6 +7,7 @@ import {
   TrashIcon,
   MagnifyingGlassIcon,
   TagIcon,
+  FolderIcon,
 } from '@heroicons/react/24/solid';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
@@ -154,32 +155,32 @@ const Notes: React.FC = () => {
                 onMouseLeave={() => setHoveredNoteId(null)}
               >
                 <div className="flex-grow overflow-hidden pr-4">
-                  <div className="flex items-center flex-wrap gap-2">
+                  <div className="flex flex-col">
                     <Link
                       to={`/note/${note.id}`}
-                      className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
+                      className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline mb-1"
                     >
                       {note.title}
                     </Link>
-                    {/* Tags */}
-                    {((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0)) && (
-                      <>
-                        {(note.tags || note.Tags || []).map((tag) => (
-                          <button
-                            key={tag.id}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              navigate(`/tag/${tag.id}`);
-                            }}
-                            className="flex items-center space-x-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                          >
-                            <TagIcon className="h-3 w-3 text-gray-500 dark:text-gray-300" />
-                            <span className="text-gray-700 dark:text-gray-300">
-                              {tag.name}
-                            </span>
-                          </button>
-                        ))}
-                      </>
+                    {/* Project and Tags */}
+                    {((note.project || note.Project) || ((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0))) && (
+                      <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                        {(note.project || note.Project) && (
+                          <div className="flex items-center">
+                            <FolderIcon className="h-3 w-3 mr-1" />
+                            <span>{(note.project || note.Project)?.name}</span>
+                          </div>
+                        )}
+                        {(note.project || note.Project) && ((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0)) && (
+                          <span className="mx-2">•</span>
+                        )}
+                        {((note.tags && note.tags.length > 0) || (note.Tags && note.Tags.length > 0)) && (
+                          <div className="flex items-center">
+                            <TagIcon className="h-3 w-3 mr-1" />
+                            <span>{(note.tags || note.Tags || []).map(tag => tag.name).join(', ')}</span>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
