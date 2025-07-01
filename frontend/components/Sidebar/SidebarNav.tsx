@@ -3,7 +3,6 @@ import { Location } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   CalendarDaysIcon,
-  CalendarIcon,
   ArrowRightCircleIcon,
   InboxIcon,
   CheckCircleIcon,
@@ -36,12 +35,11 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
     { path: '/today', title: t('sidebar.today', 'Today'), icon: <CalendarDaysIcon className="h-5 w-5" />, query: 'type=today' },
     { path: '/tasks?type=upcoming', title: t('sidebar.upcoming', 'Upcoming'), icon: <ClockIcon className="h-5 w-5" />, query: 'type=upcoming' },
     { path: '/tasks', title: t('sidebar.allTasks', 'All Tasks'), icon: <ListBulletIcon className="h-5 w-5" /> },
-    { path: '/calendar', title: t('sidebar.calendar', 'Calendar'), icon: <CalendarIcon className="h-5 w-5" /> },
   ];
 
   const isActive = (path: string, query?: string) => {
     // Handle special case for paths without query parameters
-    if (path === '/inbox' || path === '/today' || path === '/calendar') {
+    if (path === '/inbox' || path === '/today') {
       const isPathMatch = location.pathname === path;
       return isPathMatch
         ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'

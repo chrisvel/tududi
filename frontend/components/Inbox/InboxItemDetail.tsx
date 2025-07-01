@@ -152,7 +152,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 onUpdate(item.id, item.content);
               }
             }}
-            className={`p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-opacity opacity-100 sm:${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            className={`p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('common.edit')}
           >
             <PencilIcon className="h-4 w-4" />
@@ -161,7 +161,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           {/* Convert to Task Button */}
           <button
             onClick={handleConvertToTask}
-            className={`p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-full transition-opacity opacity-100 sm:${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            className={`p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('inbox.createTask')}
           >
             <ClipboardDocumentListIcon className="h-4 w-4" />
@@ -170,7 +170,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           {/* Convert to Project Button */}
           <button
             onClick={handleConvertToProject}
-            className={`p-2 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900 rounded-full transition-opacity opacity-100 sm:${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            className={`p-2 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('inbox.createProject')}
           >
             <FolderIcon className="h-4 w-4" />
@@ -179,7 +179,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           {/* Convert to Note Button */}
           <button
             onClick={handleConvertToNote}
-            className={`p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-full transition-opacity opacity-100 sm:${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            className={`p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('inbox.createNote', 'Create Note')}
           >
             <DocumentTextIcon className="h-4 w-4" />
@@ -188,7 +188,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
           {/* Delete Button */}
           <button
             onClick={handleDelete}
-            className={`p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900 rounded-full transition-opacity opacity-100 sm:${isHovered ? 'opacity-100' : 'opacity-0'}`}
+            className={`p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
             title={t('common.delete')}
           >
             <TrashIcon className="h-4 w-4" />
