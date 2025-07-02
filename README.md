@@ -369,7 +369,7 @@ For questions or comments, please [open an issue](https://github.com/chrisvel/tu
 
 Join the tududi community:
 
-[![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Discord&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/DmP5AcuM)  
+[![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Discord&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/sd3jhSQKYA)  
 [![Reddit](https://img.shields.io/reddit/subreddit-subscribers/tududi?color=ff4500&label=Reddit&logo=reddit&logoColor=white&style=for-the-badge)](https://www.reddit.com/r/tududi/)
 
 ## 🌟 Please check my other projects!
