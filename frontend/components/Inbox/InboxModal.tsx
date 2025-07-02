@@ -396,7 +396,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                   }
                 }}
                 required
-                className="w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
+                className="w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white focus:outline-none shadow-sm py-2"
                 placeholder={t('inbox.captureThought')}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey && !isSaving && !showTagSuggestions) {
