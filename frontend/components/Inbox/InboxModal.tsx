@@ -489,4 +489,3 @@ const InboxModal: React.FC<InboxModalProps> = ({
 };
 
 export default InboxModal;
-
