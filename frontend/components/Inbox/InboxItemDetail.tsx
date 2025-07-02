@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
-import { TrashIcon, PencilIcon, DocumentTextIcon, FolderIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, PencilIcon, DocumentTextIcon, FolderIcon, ClipboardDocumentListIcon, TagIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
 import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import { useStore } from '../../store/useStore';
 
 interface InboxItemDetailProps {
   item: InboxItem;
@@ -29,15 +30,33 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 }) => {
   const { t } = useTranslation();
   const { showSuccessToast, showErrorToast } = useToast();
+  const { tagsStore: { tags } } = useStore();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   
+  // Helper function to parse hashtags from text
+  const parseHashtags = (text: string): string[] => {
+    const hashtagRegex = /#([a-zA-Z0-9_]+)/g;
+    const matches = text.match(hashtagRegex);
+    return matches ? matches.map(tag => tag.substring(1)) : [];
+  };
+  
+  const hashtags = parseHashtags(item.content);
+  
   const handleConvertToTask = () => {
+    // Convert hashtags to Tag objects
+    const taskTags = hashtags.map(hashtagName => {
+      // Find existing tag or create a placeholder for new tag
+      const existingTag = tags.find(tag => tag.name.toLowerCase() === hashtagName.toLowerCase());
+      return existingTag || { name: hashtagName };
+    });
+
     const newTask: Task = {
       name: item.content,
       status: 'not_started',
-      priority: 'medium'
+      priority: 'medium',
+      tags: taskTags
     };
 
     if (item.id !== undefined) {
@@ -48,10 +67,18 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
   };
   
   const handleConvertToProject = () => {
+    // Convert hashtags to Tag objects
+    const projectTags = hashtags.map(hashtagName => {
+      // Find existing tag or create a placeholder for new tag
+      const existingTag = tags.find(tag => tag.name.toLowerCase() === hashtagName.toLowerCase());
+      return existingTag || { name: hashtagName };
+    });
+
     const newProject: Project = {
       name: item.content,
       description: '',
-      active: true
+      active: true,
+      tags: projectTags
     };
 
     if (item.id !== undefined) {
@@ -101,8 +128,16 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       setLoading(false);
     }
 
-    // Simple array of tag objects for the note
-    const tagObjects = isBookmark ? [{ name: "bookmark" }] : [];
+    // Convert hashtags to Tag objects and include bookmark tag if needed
+    const hashtagTags = hashtags.map(hashtagName => {
+      // Find existing tag or create a placeholder for new tag
+      const existingTag = tags.find(tag => tag.name.toLowerCase() === hashtagName.toLowerCase());
+      return existingTag || { name: hashtagName };
+    });
+    
+    // Combine hashtag tags with bookmark tag if it's a URL
+    const bookmarkTag = isBookmark ? [{ name: "bookmark" }] : [];
+    const tagObjects = [...hashtagTags, ...bookmarkTag];
         
     const newNote: Note = {
       title: title,
@@ -135,11 +170,19 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-2 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between px-4 py-2 gap-2">
         <div className="flex-1">
           <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
             {item.content}
           </p>
+          
+          {/* Tags display */}
+          {hashtags.length > 0 && (
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <TagIcon className="h-3 w-3 mr-1" />
+              <span>{hashtags.join(', ')}</span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-start space-x-1 shrink-0">

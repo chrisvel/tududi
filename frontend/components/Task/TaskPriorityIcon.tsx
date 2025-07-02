@@ -1,6 +1,5 @@
 import React from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import { CheckCircleIcon as CheckCircleOutlineIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 
 interface TaskPriorityIconProps {
@@ -53,8 +52,9 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({ priority, status, o
     );
   } else {
     return (
-      <CheckCircleOutlineIcon 
-        className={`h-5 w-5 ${colorClass} cursor-pointer hover:scale-110 transition-transform`}
+      <div 
+        className={`h-5 w-5 ${colorClass} cursor-pointer hover:scale-110 transition-transform border-2 border-current rounded-full flex-shrink-0`}
+        style={{ width: '16px', height: '16px' }}
         onClick={handleClick}
       />
     );

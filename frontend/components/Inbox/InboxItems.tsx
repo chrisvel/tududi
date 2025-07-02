@@ -16,7 +16,7 @@ import LoadingScreen from '../Shared/LoadingScreen';
 import TaskModal from '../Task/TaskModal';
 import ProjectModal from '../Project/ProjectModal';
 import NoteModal from '../Note/NoteModal';
-import SimplifiedTaskModal from '../Task/SimplifiedTaskModal';
+import InboxModal from './InboxModal';
 import { fetchProjects } from '../../utils/projectsService';
 import { createTask } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
@@ -114,7 +114,7 @@ const InboxItems: React.FC = () => {
   };
   
   const handleUpdateItem = async (id: number): Promise<void> => {
-    // When edit button is clicked, we open the SimplifiedTaskModal instead of doing inline editing
+    // When edit button is clicked, we open the InboxModal instead of doing inline editing
     setItemToEdit(id);
     setIsEditModalOpen(true);
   };
@@ -389,7 +389,7 @@ const InboxItems: React.FC = () => {
       
       {/* Edit Inbox Item Modal */}
       {isEditModalOpen && itemToEdit !== null && (
-        <SimplifiedTaskModal
+        <InboxModal
           isOpen={isEditModalOpen}
           onClose={() => {
             setIsEditModalOpen(false);

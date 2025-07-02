@@ -9,7 +9,7 @@ import ProjectModal from "./components/Project/ProjectModal";
 import NoteModal from "./components/Note/NoteModal";
 import AreaModal from "./components/Area/AreaModal";
 import TagModal from "./components/Tag/TagModal";
-import SimplifiedTaskModal from "./components/Task/SimplifiedTaskModal";
+import InboxModal from "./components/Inbox/InboxModal";
 import TaskModal from "./components/Task/TaskModal";
 import { Note } from "./entities/Note";
 import { Area } from "./entities/Area";
@@ -498,7 +498,7 @@ const Layout: React.FC<LayoutProps> = ({
 
       {isTaskModalOpen && (
         taskModalType === 'simplified' ? (
-          <SimplifiedTaskModal
+          <InboxModal
             isOpen={isTaskModalOpen}
             onClose={closeTaskModal}
             onSave={handleSaveTask}
