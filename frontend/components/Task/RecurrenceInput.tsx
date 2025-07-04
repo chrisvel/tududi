@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { RecurrenceType } from '../../entities/Task';
 import { useTranslation } from 'react-i18next';
+import RecurrenceSelectDropdown from '../Shared/RecurrenceSelectDropdown';
+import NumberSelectDropdown from '../Shared/NumberSelectDropdown';
+import ToggleSwitch from '../Shared/ToggleSwitch';
+import DatePicker from '../Shared/DatePicker';
 
 interface RecurrenceInputProps {
   recurrenceType: RecurrenceType;
@@ -54,71 +58,83 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
     { value: 5, label: t('recurrence.lastWeek', 'Last') },
   ];
 
+  const recurrenceTypeOptions = [
+    { value: 'none', label: t('recurrence.none', 'No repeat') },
+    { value: 'daily', label: t('recurrence.daily', 'Daily') },
+    { value: 'weekly', label: t('recurrence.weekly', 'Weekly') },
+    { value: 'monthly', label: t('recurrence.monthly', 'Monthly') },
+    { value: 'monthly_weekday', label: t('recurrence.monthlyWeekday', 'Monthly on weekday') },
+    { value: 'monthly_last_day', label: t('recurrence.monthlyLastDay', 'Monthly on last day') }
+  ];
+
   const renderRecurrenceTypeSelect = (customOnChange?: (field: string, value: any) => void, isDisabled?: boolean) => (
     <div className="mb-4">
       <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
         {t('forms.task.labels.recurrenceType', 'Repeat')}
       </label>
-      <select
+      <RecurrenceSelectDropdown
         value={recurrenceType}
-        onChange={(e) => (customOnChange || onChange)('recurrence_type', e.target.value as RecurrenceType)}
-        className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+        onChange={(value) => (customOnChange || onChange)('recurrence_type', value as RecurrenceType)}
+        options={recurrenceTypeOptions}
         disabled={isDisabled}
-      >
-        <option value="none">{t('recurrence.none', 'No repeat')}</option>
-        <option value="daily">{t('recurrence.daily', 'Daily')}</option>
-        <option value="weekly">{t('recurrence.weekly', 'Weekly')}</option>
-        <option value="monthly">{t('recurrence.monthly', 'Monthly')}</option>
-        <option value="monthly_weekday">{t('recurrence.monthlyWeekday', 'Monthly on weekday')}</option>
-        <option value="monthly_last_day">{t('recurrence.monthlyLastDay', 'Monthly on last day')}</option>
-      </select>
+      />
     </div>
   );
 
-  const renderIntervalInput = (customOnChange?: (field: string, value: any) => void, isDisabled?: boolean) => (
-    <div className="mb-4">
-      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-        {t('forms.task.labels.recurrenceInterval', 'Every')}
-      </label>
-      <div className="flex items-center space-x-2">
-        <input
-          type="number"
-          min="1"
-          max="999"
-          value={recurrenceInterval || 1}
-          onChange={(e) => (customOnChange || onChange)('recurrence_interval', parseInt(e.target.value))}
-          className="block w-20 border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+  const renderIntervalInput = (customOnChange?: (field: string, value: any) => void, isDisabled?: boolean) => {
+    // Determine max value based on recurrence type
+    const getMaxValue = () => {
+      if (recurrenceType === 'daily') return 30;
+      if (recurrenceType === 'weekly') return 52; // Max 52 weeks (1 year)
+      if (recurrenceType === 'monthly' || recurrenceType === 'monthly_weekday' || recurrenceType === 'monthly_last_day') return 24; // Max 24 months (2 years)
+      return 99;
+    };
+
+    return (
+      <div className="mb-4">
+        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+          {t('forms.task.labels.recurrenceInterval', 'Every')}
+        </label>
+        <div className="flex items-center space-x-2">
+          <div className="w-20">
+            <NumberSelectDropdown
+              value={recurrenceInterval || 1}
+              onChange={(value) => (customOnChange || onChange)('recurrence_interval', value)}
+              min={1}
+              max={getMaxValue()}
+              disabled={isDisabled}
+            />
+          </div>
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            {recurrenceType === 'daily' && t('recurrence.days', 'days')}
+            {recurrenceType === 'weekly' && t('recurrence.weeks', 'weeks')}
+            {(recurrenceType === 'monthly' || recurrenceType === 'monthly_weekday' || recurrenceType === 'monthly_last_day') && t('recurrence.months', 'months')}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  const renderWeekdaySelect = (customOnChange?: (field: string, value: any) => void, isDisabled?: boolean) => {
+    const weekdayOptions = [
+      { value: '', label: t('recurrence.anyDay', 'Any day') },
+      ...weekdays
+    ];
+    
+    return (
+      <div className="mb-4">
+        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+          {t('forms.task.labels.weekday', 'On day')}
+        </label>
+        <RecurrenceSelectDropdown
+          value={recurrenceWeekday !== undefined ? recurrenceWeekday : ''}
+          onChange={(value) => (customOnChange || onChange)('recurrence_weekday', value !== '' ? parseInt(value as string) : null)}
+          options={weekdayOptions}
           disabled={isDisabled}
         />
-        <span className="text-sm text-gray-600 dark:text-gray-400">
-          {recurrenceType === 'daily' && t('recurrence.days', 'days')}
-          {recurrenceType === 'weekly' && t('recurrence.weeks', 'weeks')}
-          {(recurrenceType === 'monthly' || recurrenceType === 'monthly_weekday' || recurrenceType === 'monthly_last_day') && t('recurrence.months', 'months')}
-        </span>
       </div>
-    </div>
-  );
-
-  const renderWeekdaySelect = (customOnChange?: (field: string, value: any) => void, isDisabled?: boolean) => (
-    <div className="mb-4">
-      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-        {t('forms.task.labels.weekday', 'On day')}
-      </label>
-      <select
-        value={recurrenceWeekday !== undefined ? recurrenceWeekday : ''}
-        onChange={(e) => (customOnChange || onChange)('recurrence_weekday', e.target.value ? parseInt(e.target.value) : null)}
-        className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-        disabled={isDisabled}
-      >
-        <option value="">{t('recurrence.anyDay', 'Any day')}</option>
-        {weekdays.map((day) => (
-          <option key={day.value} value={day.value}>
-            {day.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+    );
+  };
 
   const renderMonthDayInput = (customOnChange?: (field: string, value: any) => void, isDisabled?: boolean) => (
     <div className="mb-4">
@@ -144,33 +160,21 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
         <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
           {t('forms.task.labels.weekOfMonth', 'Week of month')}
         </label>
-        <select
+        <RecurrenceSelectDropdown
           value={recurrenceWeekOfMonth || 1}
-          onChange={(e) => onChange('recurrence_week_of_month', parseInt(e.target.value))}
-          className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-        >
-          {weekOfMonthOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+          onChange={(value) => onChange('recurrence_week_of_month', parseInt(value as string))}
+          options={weekOfMonthOptions}
+        />
       </div>
       <div>
         <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
           {t('forms.task.labels.weekday', 'Weekday')}
         </label>
-        <select
+        <RecurrenceSelectDropdown
           value={recurrenceWeekday || 1}
-          onChange={(e) => onChange('recurrence_weekday', parseInt(e.target.value))}
-          className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-        >
-          {weekdays.map((day) => (
-            <option key={day.value} value={day.value}>
-              {day.label}
-            </option>
-          ))}
-        </select>
+          onChange={(value) => onChange('recurrence_weekday', parseInt(value as string))}
+          options={weekdays}
+        />
       </div>
     </div>
   );
@@ -180,11 +184,10 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
       <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
         {t('forms.task.labels.recurrenceEndDate', 'End date (optional)')}
       </label>
-      <input
-        type="date"
+      <DatePicker
         value={recurrenceEndDate || ''}
-        onChange={(e) => (customOnChange || onChange)('recurrence_end_date', e.target.value || null)}
-        className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+        onChange={(value) => (customOnChange || onChange)('recurrence_end_date', value || null)}
+        placeholder={t('forms.task.endDatePlaceholder', 'Select end date')}
         disabled={isDisabled}
       />
     </div>
@@ -192,20 +195,12 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
 
   const renderCompletionBasedToggle = () => (
     <div className="mb-4">
-      <label className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          checked={completionBased}
-          onChange={(e) => onChange('completion_based', e.target.checked)}
-          className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-        />
-        <span className="text-sm text-gray-700 dark:text-gray-300">
-          {t('forms.task.labels.completionBased', 'Repeat after completion')}
-        </span>
-      </label>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-        {t('forms.task.completionBasedHelp', 'If checked, the next task will be created based on completion date instead of due date')}
-      </p>
+      <ToggleSwitch
+        checked={completionBased}
+        onChange={(checked) => onChange('completion_based', checked)}
+        label={t('forms.task.labels.completionBased', 'Repeat after completion')}
+        description={t('forms.task.completionBasedHelp', 'If checked, the next task will be created based on completion date instead of due date')}
+      />
     </div>
   );
 
@@ -294,19 +289,12 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
           <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
             {t('forms.task.labels.recurrenceType', 'Repeat')}
           </label>
-          <select
+          <RecurrenceSelectDropdown
             value={recurrenceType}
-            onChange={(e) => onChange('recurrence_type', e.target.value as RecurrenceType)}
-            className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+            onChange={(value) => onChange('recurrence_type', value as RecurrenceType)}
+            options={recurrenceTypeOptions}
             disabled={disabled}
-          >
-            <option value="none">{t('recurrence.none', 'No repeat')}</option>
-            <option value="daily">{t('recurrence.daily', 'Daily')}</option>
-            <option value="weekly">{t('recurrence.weekly', 'Weekly')}</option>
-            <option value="monthly">{t('recurrence.monthly', 'Monthly')}</option>
-            <option value="monthly_weekday">{t('recurrence.monthlyWeekday', 'Monthly on weekday')}</option>
-            <option value="monthly_last_day">{t('recurrence.monthlyLastDay', 'Monthly on last day')}</option>
-          </select>
+          />
         </div>
 
         {(recurrenceType === 'daily' || recurrenceType === 'weekly' || recurrenceType === 'monthly' || recurrenceType === 'monthly_weekday' || recurrenceType === 'monthly_last_day') && (
@@ -315,15 +303,20 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
               {t('forms.task.labels.recurrenceInterval', 'Every')}
             </label>
             <div className="flex items-center space-x-2">
-              <input
-                type="number"
-                min="1"
-                max="999"
-                value={recurrenceInterval || 1}
-                onChange={(e) => onChange('recurrence_interval', parseInt(e.target.value))}
-                className="block w-20 border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                disabled={disabled}
-              />
+              <div className="w-20">
+                <NumberSelectDropdown
+                  value={recurrenceInterval || 1}
+                  onChange={(value) => onChange('recurrence_interval', value)}
+                  min={1}
+                  max={
+                    recurrenceType === 'daily' ? 30 :
+                    recurrenceType === 'weekly' ? 52 :
+                    (recurrenceType === 'monthly' || recurrenceType === 'monthly_weekday' || recurrenceType === 'monthly_last_day') ? 24 :
+                    99
+                  }
+                  disabled={disabled}
+                />
+              </div>
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 {recurrenceType === 'daily' && t('recurrence.days', 'days')}
                 {recurrenceType === 'weekly' && t('recurrence.weeks', 'weeks')}
@@ -337,11 +330,10 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
           <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
             {t('forms.task.labels.recurrenceEndDate', 'End date (optional)')}
           </label>
-          <input
-            type="date"
+          <DatePicker
             value={recurrenceEndDate || ''}
-            onChange={(e) => onChange('recurrence_end_date', e.target.value || null)}
-            className="block w-full border border-gray-300 dark:border-gray-900 rounded-md focus:outline-none shadow-sm px-2 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+            onChange={(value) => onChange('recurrence_end_date', value || null)}
+            placeholder={t('forms.task.endDatePlaceholder', 'Select end date')}
             disabled={disabled}
           />
         </div>

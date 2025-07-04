@@ -290,6 +290,19 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      
+      // Ignore clicks on dropdown menus rendered via portal
+      if (target && (
+        target.closest('.recurrence-dropdown-menu') ||
+        target.closest('.number-dropdown-menu') ||
+        target.closest('.date-picker-menu') ||
+        target.closest('[class*="fixed z-50"]') ||
+        target.closest('[class*="z-50"]')
+      )) {
+        return;
+      }
+      
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         handleClose();
       }
@@ -396,7 +409,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                       )}
 
                       {expandedSections.metadata && (
-                        <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
+                        <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 overflow-visible">
                           <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                             {t('forms.task.statusAndOptions', 'Status & Options')}
                           </h3>
