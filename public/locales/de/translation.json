@@ -282,7 +282,7 @@
     "time": "Zeit",
     "allDay": "Ganztägig"
   },
-  "weekdays": {
+  "weekdaysShort": {
     "monday": "Mo",
     "tuesday": "Di",
     "wednesday": "Mi",

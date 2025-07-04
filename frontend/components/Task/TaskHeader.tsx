@@ -197,15 +197,16 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
       {/* Mobile view (below md breakpoint) */}
       <div className="block md:hidden">
-        {/* Task Name with Priority Icon and Project Name */}
-        <div className="flex items-start font-light text-md text-gray-900 dark:text-gray-100">
-          {/* Priority Icon */}
-          <TaskPriorityIcon priority={task.priority} status={task.status} onToggleCompletion={onToggleCompletion} />
+        <div className="flex items-start">
+          {/* Priority Icon - Centered vertically with entire card */}
+          <div className="flex items-center justify-center w-5 mt-4 flex-shrink-0">
+            <TaskPriorityIcon priority={task.priority} status={task.status} onToggleCompletion={onToggleCompletion} />
+          </div>
 
-          {/* Task Title and Project Name */}
-          <div className="ml-2 flex flex-col flex-1">
+          {/* All content - Task name and metadata */}
+          <div className="ml-2 flex-1">
             {/* Task Title */}
-            <div className="flex items-center">
+            <div className="flex items-center font-light text-md text-gray-900 dark:text-gray-100">
               <span>{task.name}</span>
               {isOverdue && (
                 <span 
@@ -217,7 +218,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
               )}
             </div>
 
-            {/* Project, tags, due date, and recurrence - each on separate lines */}
+            {/* Project, tags, due date, and recurrence */}
             <div className="flex flex-col text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-1">
               {project && !hideProjectName && (
                 <div className="flex items-center">
@@ -248,7 +249,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         </div>
 
         {/* Mobile badges row */}
-        <div className="flex items-center flex-wrap justify-start space-x-2 mt-2 ml-8">
+        <div className="flex items-center flex-wrap justify-start space-x-2 mt-2 ml-7">
           
           {/* Play/In Progress Controls - Mobile */}
           {(task.status === 'not_started' || task.status === 'in_progress' || task.status === 0 || task.status === 1) && (

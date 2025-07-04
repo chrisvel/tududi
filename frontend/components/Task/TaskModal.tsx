@@ -11,7 +11,7 @@ import { fetchTaskById } from '../../utils/tasksService';
 import { getTaskIntelligenceEnabled } from '../../utils/profileService';
 import { analyzeTaskName, TaskAnalysis } from '../../utils/taskIntelligenceService';
 import { useTranslation } from "react-i18next";
-import { ClockIcon } from "@heroicons/react/24/outline";
+import { ClockIcon, TagIcon, FolderIcon, Cog6ToothIcon, ArrowPathIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 // Import form sections
 import TaskTitleSection from "./TaskForm/TaskTitleSection";
@@ -328,13 +328,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
         <div className="min-h-full flex items-start justify-center px-4 py-4">
           <div
             ref={modalRef}
-            className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-6xl transform transition-transform duration-300 ${
+            className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-2xl transform transition-transform duration-300 ${
               isClosing ? "scale-95" : "scale-100"
             } my-4`}
           >
-            <div className="flex flex-col lg:flex-row min-h-[400px] max-h-[90vh]">
+            <div className="flex flex-col lg:flex-row min-h-[400px] max-h-[80vh]">
               {/* Main Form Section */}
-              <div className={`flex-1 flex flex-col transition-all duration-300 ${
+              <div className={`flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 ${
                 isTimelineExpanded ? 'lg:pr-2' : ''
               }`}>
                 <div className="flex-1 overflow-y-auto">
@@ -356,103 +356,212 @@ const TaskModal: React.FC<TaskModalProps> = ({
                         onChange={handleChange}
                       />
 
-                      {/* Tags Section - Collapsible */}
-                      <CollapsibleSection 
-                        title={t('forms.task.labels.tags', 'Tags')} 
-                        isExpanded={expandedSections.tags}
-                        onToggle={() => toggleSection('tags')}
-                      >
-                        <TaskTagsSection
-                          tags={formData.tags?.map((tag) => tag.name) || []}
-                          onTagsChange={handleTagsChange}
-                          availableTags={localAvailableTags}
-                        />
-                      </CollapsibleSection>
+                      {/* Expandable Sections - Only show when expanded */}
+                      {expandedSections.tags && (
+                        <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
+                          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                            {t('forms.task.labels.tags', 'Tags')}
+                          </h3>
+                          <TaskTagsSection
+                            tags={formData.tags?.map((tag) => tag.name) || []}
+                            onTagsChange={handleTagsChange}
+                            availableTags={localAvailableTags}
+                          />
+                        </div>
+                      )}
 
-                      {/* Project Section - Collapsible */}
-                      <CollapsibleSection 
-                        title={t('forms.task.labels.project', 'Project')} 
-                        isExpanded={expandedSections.project}
-                        onToggle={() => toggleSection('project')}
-                      >
-                        <TaskProjectSection
-                          newProjectName={newProjectName}
-                          onProjectSearch={handleProjectSearch}
-                          dropdownOpen={dropdownOpen}
-                          filteredProjects={filteredProjects}
-                          onProjectSelection={handleProjectSelection}
-                          onCreateProject={handleCreateProject}
-                          isCreatingProject={isCreatingProject}
-                        />
-                      </CollapsibleSection>
+                      {expandedSections.project && (
+                        <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
+                          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                            {t('forms.task.labels.project', 'Project')}
+                          </h3>
+                          <TaskProjectSection
+                            newProjectName={newProjectName}
+                            onProjectSearch={handleProjectSearch}
+                            dropdownOpen={dropdownOpen}
+                            filteredProjects={filteredProjects}
+                            onProjectSelection={handleProjectSelection}
+                            onCreateProject={handleCreateProject}
+                            isCreatingProject={isCreatingProject}
+                          />
+                        </div>
+                      )}
 
-                      {/* Metadata/Options Section - Collapsible */}
-                      <CollapsibleSection 
-                        title={t('forms.task.statusAndOptions', 'Status & Options')} 
-                        isExpanded={expandedSections.metadata}
-                        onToggle={() => toggleSection('metadata')}
-                      >
-                        <TaskMetadataSection
-                          priority={getPriorityString(formData.priority)}
-                          dueDate={formData.due_date || ""}
-                          taskId={task.id}
-                          onStatusChange={(value: StatusType) => {
-                            // Universal rule: when setting status to in_progress, also add to today
-                            const updatedData = { ...formData, status: value };
-                            if (value === 'in_progress') {
-                              updatedData.today = true;
+                      {expandedSections.metadata && (
+                        <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
+                          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                            {t('forms.task.statusAndOptions', 'Status & Options')}
+                          </h3>
+                          <TaskMetadataSection
+                            priority={getPriorityString(formData.priority)}
+                            dueDate={formData.due_date || ""}
+                            taskId={task.id}
+                            onStatusChange={(value: StatusType) => {
+                              // Universal rule: when setting status to in_progress, also add to today
+                              const updatedData = { ...formData, status: value };
+                              if (value === 'in_progress') {
+                                updatedData.today = true;
+                              }
+                              setFormData(updatedData);
+                            }}
+                            onPriorityChange={(value: PriorityType) =>
+                              setFormData({ ...formData, priority: value })
                             }
-                            setFormData(updatedData);
-                          }}
-                          onPriorityChange={(value: PriorityType) =>
-                            setFormData({ ...formData, priority: value })
-                          }
-                          onDueDateChange={handleChange}
-                        />
-                      </CollapsibleSection>
+                            onDueDateChange={handleChange}
+                          />
+                        </div>
+                      )}
 
-                      {/* Recurrence Section - Collapsible */}
-                      <CollapsibleSection 
-                        title={t('forms.task.recurrence', 'Recurrence')} 
-                        isExpanded={expandedSections.recurrence}
-                        onToggle={() => toggleSection('recurrence')}
-                      >
-                        <TaskRecurrenceSection
-                          formData={formData}
-                          parentTask={parentTask}
-                          parentTaskLoading={parentTaskLoading}
-                          onRecurrenceChange={handleRecurrenceChange}
-                          onEditParent={parentTask ? handleEditParent : undefined}
-                          onParentRecurrenceChange={parentTask ? handleParentRecurrenceChange : undefined}
-                        />
-                      </CollapsibleSection>
+                      {expandedSections.recurrence && (
+                        <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
+                          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                            {t('forms.task.recurrence', 'Recurrence')}
+                          </h3>
+                          <TaskRecurrenceSection
+                            formData={formData}
+                            parentTask={parentTask}
+                            parentTaskLoading={parentTaskLoading}
+                            onRecurrenceChange={handleRecurrenceChange}
+                            onEditParent={parentTask ? handleEditParent : undefined}
+                            onParentRecurrenceChange={parentTask ? handleParentRecurrenceChange : undefined}
+                          />
+                        </div>
+                      )}
                     </fieldset>
                   </form>
                 </div>
                 
-                {/* Action Buttons - Fixed at bottom */}
-                <div className="flex-shrink-0 p-3 flex items-center justify-between">
-                <TaskActions
-                  taskId={task.id}
-                  onDelete={handleDeleteClick}
-                  onSave={handleSubmit}
-                  onCancel={handleClose}
-                />
+                {/* Timeline Panel - Show when expanded on mobile only */}
+                {isTimelineExpanded && (
+                  <div className="lg:hidden border-t border-gray-200 dark:border-gray-700">
+                    <TimelinePanel
+                      taskId={task.id}
+                      isExpanded={isTimelineExpanded}
+                      onToggle={() => setIsTimelineExpanded(!isTimelineExpanded)}
+                    />
+                  </div>
+                )}
                 
-                {/* Timeline Toggle Button */}
-                <button
-                  onClick={() => setIsTimelineExpanded(!isTimelineExpanded)}
-                  className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-                  title={isTimelineExpanded ? t('timeline.hideActivityTimeline') : t('timeline.showActivityTimeline')}
-                >
-                  <ClockIcon 
-                    className={`h-5 w-5 transition-transform duration-200 ${isTimelineExpanded ? 'rotate-180' : ''}`} 
-                  />
-                </button>
+                {/* Section Icons - Above border, split layout */}
+                <div className="flex-shrink-0 bg-white dark:bg-gray-800 px-3 py-2">
+                  <div className="flex items-center justify-between">
+                    {/* Left side: Section icons */}
+                    <div className="flex items-center space-x-1">
+                      {/* Tags Toggle */}
+                      <button
+                        onClick={() => toggleSection('tags')}
+                        className={`relative p-2 rounded-full transition-colors ${
+                          expandedSections.tags
+                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                        title={t('forms.task.labels.tags', 'Tags')}
+                      >
+                        <TagIcon className="h-5 w-5" />
+                        {formData.tags && formData.tags.length > 0 && (
+                          <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                        )}
+                      </button>
+                      
+                      {/* Project Toggle */}
+                      <button
+                        onClick={() => toggleSection('project')}
+                        className={`relative p-2 rounded-full transition-colors ${
+                          expandedSections.project
+                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                        title={t('forms.task.labels.project', 'Project')}
+                      >
+                        <FolderIcon className="h-5 w-5" />
+                        {formData.project_id && (
+                          <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                        )}
+                      </button>
+                      
+                      {/* Status & Options Toggle */}
+                      <button
+                        onClick={() => toggleSection('metadata')}
+                        className={`relative p-2 rounded-full transition-colors ${
+                          expandedSections.metadata
+                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                        title={t('forms.task.statusAndOptions', 'Status & Options')}
+                      >
+                        <Cog6ToothIcon className="h-5 w-5" />
+                        {(formData.due_date || formData.priority !== 'medium' || (formData.status && formData.status !== 'not_started')) && (
+                          <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                        )}
+                      </button>
+                      
+                      {/* Recurrence Toggle */}
+                      <button
+                        onClick={() => toggleSection('recurrence')}
+                        className={`relative p-2 rounded-full transition-colors ${
+                          expandedSections.recurrence
+                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        }`}
+                        title={t('forms.task.recurrence', 'Recurrence')}
+                      >
+                        <ArrowPathIcon className="h-5 w-5" />
+                        {(formData.recurrence_type || formData.recurring_parent_id) && (
+                          <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                        )}
+                      </button>
+                    </div>
+                    
+                    {/* Right side: Timeline Toggle Button */}
+                    <button
+                      onClick={() => setIsTimelineExpanded(!isTimelineExpanded)}
+                      className={`p-2 rounded-full transition-colors ${
+                        isTimelineExpanded
+                          ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                      title={isTimelineExpanded ? t('timeline.hideActivityTimeline') : t('timeline.showActivityTimeline')}
+                    >
+                      <ClockIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Action Buttons - Below border with custom layout */}
+                <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
+                  {/* Left side: Delete and Cancel */}
+                  <div className="flex items-center space-x-3">
+                    {task.id && (
+                      <button
+                        type="button"
+                        onClick={handleDeleteClick}
+                        className="p-2 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none transition duration-150 ease-in-out"
+                        title={t('common.delete', 'Delete')}
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleClose}
+                      className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none transition duration-150 ease-in-out text-sm"
+                    >
+                      {t('common.cancel', 'Cancel')}
+                    </button>
+                  </div>
+                  
+                  {/* Right side: Save */}
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm"
+                  >
+                    {t('common.save', 'Save')}
+                  </button>
                 </div>
               </div>
               
-              {/* Timeline Panel - Side Panel */}
+              {/* Timeline Panel - Desktop Sidebar */}
               <TimelinePanel
                 taskId={task.id}
                 isExpanded={isTimelineExpanded}
