@@ -18,6 +18,7 @@ import Notes from "./components/Notes";
 import NoteDetails from "./components/Note/NoteDetails";
 import Calendar from "./components/Calendar";
 import ProfileSettings from "./components/Profile/ProfileSettings";
+import About from "./components/About";
 import Layout from "./Layout";
 import { User } from "./entities/User";
 import TasksToday from "./components/Task/TasksToday"; 
@@ -179,6 +180,7 @@ const App: React.FC = () => {
               <Route path="/note/:id" element={<NoteDetails />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/profile" element={<ProfileSettings currentUser={currentUser} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />} />
+              <Route path="/about" element={<About />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </>

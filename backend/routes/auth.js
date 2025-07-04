@@ -1,6 +1,12 @@
 const express = require('express');
 const { User } = require('../models');
+const packageJson = require('../../package.json');
 const router = express.Router();
+
+// Get version
+router.get('/version', (req, res) => {
+    res.json({ version: packageJson.version });
+});
 
 // Get current user
 router.get('/current_user', async (req, res) => {
