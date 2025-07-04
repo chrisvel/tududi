@@ -197,7 +197,9 @@
     "failedToSaveTag": "Αποτυχία αποθήκευσης ετικέτας.",
     "areaNameRequired": "Το όνομα περιοχής είναι υποχρεωτικό.",
     "failedToSaveArea": "Αποτυχία αποθήκευσης περιοχής.",
-    "projectCreationFailed": "Αποτυχία δημιουργίας έργου."
+    "projectCreationFailed": "Αποτυχία δημιουργίας έργου.",
+    "projectNameRequired": "Το όνομα έργου είναι υποχρεωτικό.",
+    "projectSaveFailed": "Αποτυχία αποθήκευσης έργου."
   },
   "dropdown": {
     "createNew": "Δημιουργία Νέου",

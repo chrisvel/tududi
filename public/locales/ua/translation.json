@@ -173,7 +173,9 @@
     "noteTitleRequired": "Заголовок нотатки обов'язковий.",
     "failedToLoadTags": "Не вдалося завантажити доступні теги.",
     "failedToSaveNote": "Не вдалося зберегти нотатку.",
-    "projectCreationFailed": "Не вдалося створити проект."
+    "projectCreationFailed": "Не вдалося створити проект.",
+    "projectNameRequired": "Назва проекту обов'язкова.",
+    "projectSaveFailed": "Не вдалося зберегти проект."
   },
 
   "success": {

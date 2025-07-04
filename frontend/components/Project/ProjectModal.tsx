@@ -54,8 +54,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const { showSuccessToast } = useToast();
+  const { showSuccessToast, showErrorToast } = useToast();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -83,6 +84,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
       setImagePreview("");
     }
     setImageFile(null);
+    setError(null);
   }, [project]);
 
   useEffect(() => {
@@ -124,6 +126,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   ) => {
     const target = e.target;
     const { name, type, value } = target;
+
+    // Clear error when user starts typing in the name field
+    if (name === 'name' && error) {
+      setError(null);
+    }
 
     if (type === "checkbox") {
       if (target instanceof HTMLInputElement) {
@@ -204,6 +211,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
   };
 
   const handleSubmit = async () => {
+    // Validate required fields
+    if (!formData.name.trim()) {
+      setError(t('errors.projectNameRequired', 'Project name is required'));
+      return;
+    }
+
     try {
       let imageUrl = formData.image_url;
       
@@ -233,6 +246,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
       handleClose();
     } catch (error) {
       console.error('Error saving project:', error);
+      setError(t('errors.projectSaveFailed', 'Failed to save project'));
     }
   };
 
@@ -295,9 +309,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
+                    className={`block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 ${
+                      error ? 'border-red-500' : 'border-gray-200 dark:border-gray-900'
+                    } focus:outline-none shadow-sm py-2`}
                     placeholder={t('project.name', 'Enter project name')}
                   />
+                  {error && (
+                    <div className="mt-2 text-red-500 text-sm font-medium">
+                      {error}
+                    </div>
+                  )}
                 </div>
 
                 <div className="pb-3">

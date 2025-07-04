@@ -444,7 +444,9 @@
     "areaNameRequired": "Area name is required.",
     "failedToSaveArea": "Failed to save area.",
     "tagNameRequired": "Tag name is required.",
-    "failedToSaveTag": "Failed to save tag."
+    "failedToSaveTag": "Failed to save tag.",
+    "projectNameRequired": "Project name is required.",
+    "projectSaveFailed": "Failed to save project."
   },
   "inbox": {
     "title": "Inbox",

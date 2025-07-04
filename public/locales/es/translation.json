@@ -158,7 +158,9 @@
     "noteTitleRequired": "El título de la nota es obligatorio.",
     "failedToLoadTags": "Error al cargar las etiquetas disponibles.",
     "failedToSaveNote": "Error al guardar la nota.",
-    "projectCreationFailed": "Error al crear el proyecto."
+    "projectCreationFailed": "Error al crear el proyecto.",
+    "projectNameRequired": "El nombre del proyecto es obligatorio.",
+    "projectSaveFailed": "Error al guardar el proyecto."
   },
   "dropdown": {
     "createNew": "Crear Nuevo",

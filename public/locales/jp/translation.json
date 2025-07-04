@@ -227,7 +227,9 @@
     "noteTitleRequired": "ノートのタイトルは必須です。",
     "failedToLoadTags": "利用可能なタグの読み込みに失敗しました。",
     "failedToSaveNote": "ノートの保存に失敗しました。",
-    "projectCreationFailed": "プロジェクトの作成に失敗しました。"
+    "projectCreationFailed": "プロジェクトの作成に失敗しました。",
+    "projectNameRequired": "プロジェクト名は必須です。",
+    "projectSaveFailed": "プロジェクトの保存に失敗しました。"
   },
   "success": {
     "noteUpdated": "ノートが正常に更新されました！",
