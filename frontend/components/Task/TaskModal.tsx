@@ -296,9 +296,16 @@ const TaskModal: React.FC<TaskModalProps> = ({
     };
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      // Disable body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Re-enable body scroll when modal is closed
+      document.body.style.overflow = 'unset';
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      // Clean up: re-enable body scroll
+      document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
@@ -321,25 +328,26 @@ const TaskModal: React.FC<TaskModalProps> = ({
   return (
     <>
       <div
-        className={`fixed top-16 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 overflow-y-auto ${
+        className={`fixed top-16 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 overflow-hidden sm:overflow-y-auto ${
           isClosing ? "opacity-0" : "opacity-100"
         }`}
       >
-        <div className="min-h-full flex items-start justify-center px-4 py-4">
+        <div className="h-full flex items-start justify-center sm:px-4 sm:py-4">
           <div
             ref={modalRef}
-            className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-2xl transform transition-transform duration-300 ${
+            className={`bg-white dark:bg-gray-800 border-0 sm:border sm:border-gray-200 sm:dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-2xl transform transition-transform duration-300 ${
               isClosing ? "scale-95" : "scale-100"
-            } my-4`}
+            } h-full sm:h-auto sm:my-4`}
           >
-            <div className="flex flex-col lg:flex-row min-h-[400px] max-h-[80vh]">
+            <div className="flex flex-col lg:flex-row h-full sm:min-h-[600px] sm:max-h-[90vh]">
               {/* Main Form Section */}
               <div className={`flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 ${
                 isTimelineExpanded ? 'lg:pr-2' : ''
               }`}>
-                <div className="flex-1 overflow-y-auto">
-                  <form>
-                    <fieldset>
+                <div className="flex-1 relative">
+                  <div className="absolute inset-0 overflow-y-auto overflow-x-hidden" style={{ WebkitOverflowScrolling: 'touch' }}>
+                    <form className="h-full">
+                      <fieldset className="h-full flex flex-col">
                       {/* Task Title Section - Always Visible */}
                       <TaskTitleSection
                         taskId={task.id}
@@ -427,8 +435,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
                           />
                         </div>
                       )}
-                    </fieldset>
-                  </form>
+                      </fieldset>
+                    </form>
+                  </div>
                 </div>
                 
                 {/* Timeline Panel - Show when expanded on mobile only */}
