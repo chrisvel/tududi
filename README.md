@@ -40,6 +40,7 @@ For the thinking behind Tududi, read [Designing a Life Management System That Do
   - Create tasks directly through Telegram messages
   - Receive daily digests of your tasks
   - Quick capture of ideas and todos on the go
+  - Secure bot token management with polling controls
 
 ## 🔄 Recurring Tasks
 
@@ -144,6 +145,84 @@ docker run \
 ```
 
 Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
+
+## 📱 Telegram Integration Setup
+
+Tududi includes built-in Telegram integration that allows you to create tasks directly from Telegram messages. This feature is optional and can be configured after installation.
+
+### 🤖 Creating a Telegram Bot
+
+1. **Start a chat with @BotFather** on Telegram
+2. **Create a new bot**:
+   ```
+   /newbot
+   ```
+3. **Choose a name** for your bot (e.g., "My Tududi Bot")
+4. **Choose a username** for your bot (must end with "bot", e.g., "mytududi_bot")
+5. **Save the bot token** - BotFather will provide a token like `123456789:ABCdefGHIjklMNOpqrSTUvwxyz`
+
+### ⚙️ Configuring Telegram Integration
+
+#### Method: Through the Web Interface (Recommended)
+
+1. **Login to Tududi** and go to Settings
+2. **Navigate to the Telegram tab**
+3. **Paste your bot token** from BotFather
+4. **Click "Setup Telegram"** - this will:
+   - Validate your bot token
+   - Display your bot's username
+   - Provide a direct link to start chatting with your bot
+5. **Start chatting** with your bot by clicking the provided link or searching for your bot in Telegram
+6. **Send your first message** to your bot - it will automatically appear in your Tududi inbox!
+
+### 🔄 How It Works
+
+1. **Message Collection**: Tududi polls your bot every 30 seconds for new messages
+2. **Automatic Inbox Creation**: Every message sent to your bot creates a new item in your Tududi inbox
+3. **Duplicate Prevention**: The same message won't create multiple inbox items
+4. **Processing**: You can then process inbox items into tasks, projects, or notes
+
+### 📊 Telegram Settings Overview
+
+In the Telegram settings tab, you can:
+
+- **Bot Setup**: Configure your bot token and view connection status
+- **Polling Control**: Start/stop message polling manually
+- **Bot Information**: View bot username and connection status
+- **Test Integration**: Send a test message to verify connectivity
+- **Task Summaries**: Enable/disable daily task summary notifications
+
+### 🔧 Troubleshooting
+
+**Bot not receiving messages:**
+- Verify your bot token is correct
+- Ensure you've started a conversation with your bot in Telegram
+- Check that polling is active in the Telegram settings
+- Verify your server can reach Telegram's API (check firewall settings)
+
+**Messages not appearing in inbox:**
+- Check the polling status in Telegram settings
+- Verify your bot token hasn't expired
+- Ensure your account is properly connected to the bot
+
+**Bot setup failing:**
+- Double-check your bot token format (should be like `123456789:ABCdefGHIjklMNOpqrSTUvwxyz`)
+- Verify your bot is active and not deleted
+- Check your internet connection
+
+### 🔒 Security Considerations
+
+- **Bot tokens are stored securely** in your local database
+- **Only you can send messages** to your bot (private by default)
+- **No data is shared** with third parties - everything runs on your self-hosted instance
+- **Tokens are encrypted** in transit and at rest
+
+### 🚫 Disabling Telegram Integration
+
+To completely disable Telegram integration:
+
+1. **Via Interface**: Simply don't configure a bot token in the settings
+2. **Remove Bot Token**: Delete your bot token from the Telegram settings to stop all integration
 
 ### 🔑 Authentication
 
