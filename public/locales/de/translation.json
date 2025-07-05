@@ -231,6 +231,9 @@
     "giveMeSomethingElse": "Gib mir etwas anderes"
   },
   "task": {
+    "suggestions": {
+      "short": "Versuchen Sie, spezifischer zu beschreiben, was getan werden muss"
+    },
     "nameHelper": {
       "title": "Machen Sie es beschreibender!",
       "suggestion": "Versuchen Sie, mehr Details hinzuzufügen wie \"Zahnarzt anrufen um Reinigungstermin zu vereinbaren\" anstatt nur \"Zahnarzt anrufen\""

@@ -550,6 +550,9 @@
     "updatedSuccessfully": "updated successfully!",
     "deleted": "Task",
     "deletedSuccessfully": "deleted successfully!",
+    "suggestions": {
+      "short": "Try to be more specific about what needs to be done"
+    },
     "nameHelper": {
       "title": "Make it more descriptive!",
       "suggestion": "Try adding more details like \"Call dentist to schedule cleaning appointment\" instead of just \"Call dentist\""

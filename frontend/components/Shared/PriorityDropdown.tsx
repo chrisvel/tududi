@@ -42,7 +42,12 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({ value, onChange }) 
   };
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    if (
+      dropdownRef.current && 
+      !dropdownRef.current.contains(event.target as Node) &&
+      menuRef.current &&
+      !menuRef.current.contains(event.target as Node)
+    ) {
       setIsOpen(false);
     }
   };

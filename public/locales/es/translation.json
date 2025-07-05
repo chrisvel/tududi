@@ -367,6 +367,9 @@
     "createSuccess": "Tarea creada exitosamente",
     "createError": "Error al crear tarea",
     "saveAsTask": "Guardar como Tarea",
+    "suggestions": {
+      "short": "Trata de ser más específico acerca de lo que necesita hacerse"
+    },
     "nameHelper": {
       "title": "¡Hazlo más descriptivo!",
       "suggestion": "Intenta agregar más detalles como \"Llamar al dentista para programar cita de limpieza\" en lugar de solo \"Llamar dentista\""
