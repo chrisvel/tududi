@@ -757,6 +757,10 @@ router.patch('/task/:id', async (req, res) => {
 
         // Handle both tags and Tags (Sequelize association format)
         const tagsData = tags || Tags;
+        
+        // Debug logging for tag saving
+        console.log('Task update request body:', JSON.stringify(req.body, null, 2));
+        console.log('Tags data:', tagsData);
 
         const task = await Task.findOne({
             where: { id: req.params.id, user_id: req.currentUser.id },

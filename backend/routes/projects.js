@@ -245,9 +245,23 @@ router.get('/project/:id', async (req, res) => {
         }
 
         const projectJson = project.toJSON();
+        
+        // Normalize task data to match frontend expectations
+        const normalizedTasks = projectJson.Tasks ? projectJson.Tasks.map(task => {
+            const normalizedTask = {
+                ...task,
+                tags: task.Tags || [], // Normalize Tags to tags for each task
+                due_date: task.due_date ? task.due_date.split('T')[0] : null
+            };
+            // Remove the original Tags property to avoid confusion
+            delete normalizedTask.Tags;
+            return normalizedTask;
+        }) : [];
+        
         const result = {
             ...projectJson,
             tags: projectJson.Tags || [], // Normalize Tags to tags
+            Tasks: normalizedTasks, // Keep as Tasks (capital T) to match expected structure
             due_date_at: formatDate(project.due_date_at),
         };
 

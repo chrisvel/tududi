@@ -16,7 +16,7 @@ import NewTask from "../Task/NewTask";
 import { Project } from "../../entities/Project";
 import { PriorityType, Task } from "../../entities/Task";
 import { fetchProjectById, updateProject, deleteProject } from "../../utils/projectsService";
-import { createTask, updateTask, deleteTask, toggleTaskToday } from "../../utils/tasksService";
+import { createTask, deleteTask, toggleTaskToday } from "../../utils/tasksService";
 import { fetchAreas } from "../../utils/areasService";
 import { isAuthError } from "../../utils/authUtils";
 import { CalendarDaysIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
@@ -129,10 +129,24 @@ const ProjectDetails: React.FC = () => {
       return;
     }
     try {
-      await updateTask(updatedTask.id, updatedTask);
+      // Use direct fetch call like Tasks.tsx to ensure proper tag saving
+      const response = await fetch(`/api/task/${updatedTask.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(updatedTask),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to update task:", errorData.error);
+        throw new Error("Failed to update task");
+      }
+
+      const savedTask = await response.json();
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
-          task.id === updatedTask.id ? updatedTask : task
+          task.id === updatedTask.id ? savedTask : task
         )
       );
     } catch (err) {
