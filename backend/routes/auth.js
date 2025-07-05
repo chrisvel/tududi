@@ -1,6 +1,6 @@
 const express = require('express');
 const { User } = require('../models');
-const packageJson = require('../../package.json');
+const packageJson = require('../package.json');
 const router = express.Router();
 
 // Get version

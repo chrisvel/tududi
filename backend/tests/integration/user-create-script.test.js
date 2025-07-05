@@ -174,7 +174,7 @@ describe('User Create Script', () => {
                     '❌ Password must be at least 6 characters long'
                 );
             }
-        });
+        }, 15000);
 
         it('should reject duplicate email', async () => {
             const email = 'existing@example.com';

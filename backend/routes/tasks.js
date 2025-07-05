@@ -160,12 +160,6 @@ async function filterTasksByParams(params, userId) {
 
 // Compute task metrics
 async function computeTaskMetrics(userId, userTimezone = 'UTC') {
-    console.log(
-        'Computing metrics for user',
-        userId,
-        'with timezone:',
-        userTimezone
-    );
     const totalOpenTasks = await Task.count({
         where: { user_id: userId, status: { [Op.ne]: Task.STATUS.DONE } },
     });
@@ -839,9 +833,6 @@ router.patch('/task/:id', async (req, res) => {
                             ? completion_based
                             : parentTask.completion_based,
                 });
-                console.log(
-                    `Updated parent task ${parentTask.id} recurrence settings from child task ${task.id}`
-                );
             }
         }
 
@@ -1129,22 +1120,12 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
             return res.status(404).json({ error: 'Task not found.' });
         }
 
-        console.log('🎯 Toggle completion called for task:', {
-            id: task.id,
-            name: task.name,
-            currentStatus: task.status,
-            recurrence_type: task.recurrence_type,
-            completion_based: task.completion_based,
-        });
-
         const newStatus =
             task.status === Task.STATUS.DONE || task.status === 'done'
                 ? task.note
                     ? Task.STATUS.IN_PROGRESS
                     : Task.STATUS.NOT_STARTED
                 : Task.STATUS.DONE;
-
-        console.log('📝 Status changing from', task.status, 'to', newStatus);
 
         // Set completed_at when task is completed/uncompleted
         const updateData = { status: newStatus };
@@ -1159,14 +1140,7 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
         // Handle recurring task completion
         let nextTask = null;
         if (newStatus === Task.STATUS.DONE || newStatus === 'done') {
-            console.log(
-                '✅ Task marked as done, calling RecurringTaskService...'
-            );
             nextTask = await RecurringTaskService.handleTaskCompletion(task);
-        } else {
-            console.log(
-                '❌ Task not marked as done, skipping RecurringTaskService'
-            );
         }
 
         const response = {
@@ -1187,7 +1161,6 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
 
         res.json(response);
     } catch (error) {
-        console.error('Error toggling task completion:', error);
         res.status(422).json({ error: 'Unable to update task' });
     }
 });
@@ -1203,19 +1176,13 @@ router.delete('/task/:id', async (req, res) => {
             return res.status(404).json({ error: 'Task not found.' });
         }
 
-        console.log(`Attempting to delete task ${req.params.id}`);
-
         // Check for child tasks - prevent deletion of parent tasks with children
         const childTasks = await Task.findAll({
             where: { recurring_parent_id: req.params.id },
         });
-        console.log(`Found ${childTasks.length} child tasks`);
 
         // If this is a recurring parent task with children, prevent deletion
         if (childTasks.length > 0) {
-            console.log(
-                `Cannot delete task ${req.params.id} - has ${childTasks.length} child tasks`
-            );
             return res
                 .status(400)
                 .json({ error: 'There was a problem deleting the task.' });
@@ -1224,20 +1191,17 @@ router.delete('/task/:id', async (req, res) => {
         const taskEvents = await TaskEvent.findAll({
             where: { task_id: req.params.id },
         });
-        console.log(`Found ${taskEvents.length} task events`);
 
         const tagAssociations = await sequelize.query(
             'SELECT COUNT(*) as count FROM tasks_tags WHERE task_id = ?',
             { replacements: [req.params.id], type: sequelize.QueryTypes.SELECT }
         );
-        console.log(`Found ${tagAssociations[0].count} tag associations`);
 
         // Check SQLite foreign key list for tasks table
         const foreignKeys = await sequelize.query(
             'PRAGMA foreign_key_list(tasks)',
             { type: sequelize.QueryTypes.SELECT }
         );
-        console.log('Foreign keys in tasks table:', foreignKeys);
 
         // Find all tables that reference tasks
         const allTables = await sequelize.query(
@@ -1254,10 +1218,6 @@ router.delete('/task/:id', async (req, res) => {
                     );
                     const taskRefs = fks.filter((fk) => fk.table === 'tasks');
                     if (taskRefs.length > 0) {
-                        console.log(
-                            `Table ${table.name} references tasks:`,
-                            taskRefs
-                        );
                         // Check if this table has any records referencing our task
                         for (const fk of taskRefs) {
                             const count = await sequelize.query(
@@ -1266,9 +1226,6 @@ router.delete('/task/:id', async (req, res) => {
                                     replacements: [req.params.id],
                                     type: sequelize.QueryTypes.SELECT,
                                 }
-                            );
-                            console.log(
-                                `  ${table.name}.${fk.from} -> tasks.${fk.to}: ${count[0].count} references`
                             );
                         }
                     }
@@ -1304,10 +1261,8 @@ router.delete('/task/:id', async (req, res) => {
             await sequelize.query('PRAGMA foreign_keys = ON');
         }
 
-        console.log(`Successfully deleted task ${req.params.id}`);
         res.json({ message: 'Task successfully deleted' });
     } catch (error) {
-        console.error('Error deleting task:', error);
         res.status(400).json({
             error: 'There was a problem deleting the task.',
         });

@@ -24,12 +24,6 @@ router.get('/auth', requireAuth, (req, res) => {
             !config.credentials.google.clientId ||
             !config.credentials.google.clientSecret
         ) {
-            // Demo mode - simulate successful connection
-            console.log(
-                'Demo mode: Simulating Google Calendar connection for user:',
-                req.currentUser.id
-            );
-
             // Simulate the callback redirect with success
             return res.json({
                 authUrl: `${config.frontendUrl}/calendar?demo=true&connected=true`,
@@ -70,11 +64,6 @@ router.get('/oauth/callback', async (req, res) => {
 
         // Parse state to get user ID
         const { userId } = JSON.parse(state);
-
-        // Here you would typically save the tokens to the database
-        // For now, we'll just return them (in production, store securely)
-        console.log('Google Calendar tokens received for user:', userId);
-        console.log('Tokens:', tokens);
 
         // TODO: Save tokens to database associated with user
         // await saveGoogleTokensForUser(userId, tokens);
