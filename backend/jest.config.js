@@ -19,4 +19,5 @@ module.exports = {
     clearMocks: true,
     resetMocks: true,
     restoreMocks: true,
+    testTimeout: process.env.DOCKER_BUILD ? 30000 : 5000,
 };

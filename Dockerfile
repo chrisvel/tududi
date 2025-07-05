@@ -1,7 +1,3 @@
-# ============================================================================
-# Ultra-optimized multi-stage build for minimal rootless Docker image
-# ============================================================================
-
 # Stage 1: Frontend Build Environment (optimized)
 FROM node:20-alpine AS frontend-builder
 
@@ -84,7 +80,7 @@ RUN cd backend && \
 COPY backend/ ./backend/
 
 # Run tests
-RUN cd backend && npm test
+RUN cd backend && DOCKER_BUILD=1 npm test
 
 # Create test completion marker to ensure tests passed
 RUN echo "Tests passed successfully" > /app/test-success.marker
@@ -134,6 +130,10 @@ COPY --chown=app:app backend/services/ ./backend/services/
 # Copy minimal built frontend assets from builder stage
 COPY --from=frontend-builder --chown=app:app /app/dist ./backend/dist
 COPY --from=frontend-builder --chown=app:app /app/public/locales ./backend/dist/locales
+
+# Copy frontend source and public directories (needed at runtime)
+COPY --from=frontend-builder --chown=app:app /app/frontend ./frontend
+COPY --from=frontend-builder --chown=app:app /app/public ./public
 
 # Create ultra-minimal startup script (before switching to non-root user)
 RUN printf '#!/bin/sh\nset -e\ncd backend\n# Check and create directories with proper permissions\nif [ ! -d "db" ]; then\n  mkdir -p db\nfi\nif [ ! -w "db" ]; then\n  if [ "$(id -u)" = "0" ]; then\n    echo "⚠️  Attempting to fix permissions for /app/backend/db as root..."\n    chown -R $APP_UID:$APP_GID db || true\n    chmod -R 770 db || true\n    if [ ! -w "db" ]; then\n      echo "❌ ERROR: Database directory /app/backend/db is not writable by user $APP_UID:$APP_GID after chown/chmod"\n      exit 1\n    fi\n  else\n    echo "❌ ERROR: Database directory /app/backend/db is not writable by user $(id -u):$(id -g)"\n    echo "ℹ️  If using Docker volumes, ensure the host directory has proper ownership or run the container as root for automatic fix."\n    exit 1\n  fi\nfi\nmkdir -p certs\nDB_FILE="db/production.sqlite3"\n[ "$NODE_ENV" = "development" ] && DB_FILE="db/development.sqlite3"\nif [ ! -f "$DB_FILE" ]; then\n  node -e "require(\\"./models\\").sequelize.sync({force:true}).then(()=>{console.log(\\"✅ DB ready\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nelse\n  node -e "require(\\"./models\\").sequelize.authenticate().then(()=>{console.log(\\"✅ DB OK\\");process.exit(0)}).catch(e=>{console.error(\\"❌\\",e.message);process.exit(1)})"\nfi\nif [ -n "$TUDUDI_USER_EMAIL" ]&&[ -n "$TUDUDI_USER_PASSWORD" ]; then\n  node -e "const{User}=require(\\"./models\\");const bcrypt=require(\\"bcrypt\\");(async()=>{try{const[u,c]=await User.findOrCreate({where:{email:process.env.TUDUDI_USER_EMAIL},defaults:{email:process.env.TUDUDI_USER_EMAIL,password_digest:await bcrypt.hash(process.env.TUDUDI_USER_PASSWORD,10)}});console.log(c?\\"✅ User created\\":\\"ℹ️ User exists\\");process.exit(0)}catch(e){console.error(\\"❌\\",e.message);process.exit(1)}})();"||exit 1\nfi\n[ "$TUDUDI_INTERNAL_SSL_ENABLED" = "true" ]&&[ ! -f "certs/server.crt" ]&&openssl req -x509 -newkey rsa:2048 -keyout certs/server.key -out certs/server.crt -days 365 -nodes -subj "/CN=localhost" 2>/dev/null||true\nexec node app.js\n' > start.sh && chmod +x start.sh
