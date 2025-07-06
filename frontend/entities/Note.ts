@@ -6,6 +6,7 @@ export interface Note {
   content: string;
   created_at?: string;
   updated_at?: string; 
+  project_id?: number; // Foreign key for project
   tags?: Tag[];
   Tags?: Tag[]; // Sequelize association naming (capitalized)
   project?: {

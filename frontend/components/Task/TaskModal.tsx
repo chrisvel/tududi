@@ -71,10 +71,27 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const { t } = useTranslation();
 
   const toggleSection = useCallback((section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+    setExpandedSections(prev => {
+      const newExpanded = {
+        ...prev,
+        [section]: !prev[section]
+      };
+      
+      // Auto-scroll to show the expanded section
+      if (newExpanded[section]) {
+        setTimeout(() => {
+          const scrollContainer = document.querySelector('.absolute.inset-0.overflow-y-auto');
+          if (scrollContainer) {
+            scrollContainer.scrollTo({
+              top: scrollContainer.scrollHeight,
+              behavior: 'smooth'
+            });
+          }
+        }, 100); // Small delay to ensure DOM is updated
+      }
+      
+      return newExpanded;
+    });
   }, []);
 
   useEffect(() => {

@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { Project, Task, Tag, Area, sequelize } = require('../models');
+const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const router = express.Router();
 
@@ -231,6 +231,11 @@ router.get('/project/:id', async (req, res) => {
                         },
                     ],
                 },
+                {
+                    model: Note,
+                    required: false,
+                    attributes: ['id', 'title', 'content', 'created_at', 'updated_at'],
+                },
                 { model: Area, required: false, attributes: ['id', 'name'] },
                 {
                     model: Tag,
@@ -262,6 +267,7 @@ router.get('/project/:id', async (req, res) => {
             ...projectJson,
             tags: projectJson.Tags || [], // Normalize Tags to tags
             Tasks: normalizedTasks, // Keep as Tasks (capital T) to match expected structure
+            Notes: projectJson.Notes || [], // Include notes
             due_date_at: formatDate(project.due_date_at),
         };
 

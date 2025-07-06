@@ -6,7 +6,9 @@ import {
   PencilSquareIcon,
   TrashIcon,
   FolderIcon,
-  Squares2X2Icon
+  Squares2X2Icon,
+  BookOpenIcon,
+  TagIcon
 } from "@heroicons/react/24/outline";
 import TaskList from "../Task/TaskList";
 import ProjectModal from "../Project/ProjectModal";
@@ -15,6 +17,7 @@ import { useStore } from "../../store/useStore";
 import NewTask from "../Task/NewTask";
 import { Project } from "../../entities/Project";
 import { PriorityType, Task } from "../../entities/Task";
+import { Note } from "../../entities/Note";
 import { fetchProjectById, updateProject, deleteProject } from "../../utils/projectsService";
 import { createTask, deleteTask, toggleTaskToday } from "../../utils/tasksService";
 import { fetchAreas } from "../../utils/areasService";
@@ -43,6 +46,7 @@ const ProjectDetails: React.FC = () => {
 
   const [project, setProject] = useState<Project | undefined>(undefined);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,6 +72,9 @@ const ProjectDetails: React.FC = () => {
         // Handle both 'tasks' and 'Tasks' property names
         const projectTasks = projectData.tasks || projectData.Tasks || [];
         setTasks(projectTasks);
+        // Handle project notes
+        const projectNotes = projectData.notes || projectData.Notes || [];
+        setNotes(projectNotes);
       } catch (error) {
         console.error("Error fetching project data:", error);
       } finally {
@@ -501,6 +508,52 @@ const ProjectDetails: React.FC = () => {
             />
           ) : (
             <p className="text-gray-500 dark:text-gray-400">No tasks.</p>
+          )}
+        </div>
+
+        {/* Notes Section */}
+        <div className="mt-8">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+            <BookOpenIcon className="h-5 w-5 mr-2" />
+            {t('sidebar.notes', 'Notes')}
+          </h3>
+          
+          {notes.length > 0 ? (
+            <div className="space-y-3">
+              {notes.map((note) => (
+                <div
+                  key={note.id}
+                  className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 border-l-4 border-blue-500"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-grow">
+                      <Link
+                        to={`/note/${note.id}`}
+                        className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
+                      >
+                        {note.title || t('notes.untitled', 'Untitled Note')}
+                      </Link>
+                      {note.content && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                          {note.content.length > 150 
+                            ? note.content.substring(0, 150) + '...' 
+                            : note.content
+                          }
+                        </p>
+                      )}
+                      {note.tags && note.tags.length > 0 && (
+                        <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
+                          <TagIcon className="h-3 w-3 mr-1" />
+                          <span>{note.tags.map(tag => tag.name).join(', ')}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400">{t('notes.noNotes', 'No notes for this project.')}</p>
           )}
         </div>
 

@@ -169,10 +169,24 @@ const Layout: React.FC<LayoutProps> = ({
     }
   };
 
+  const loadProjects = async () => {
+    setProjectsLoading(true);
+    try {
+      const projectsData = await fetchProjects();
+      setProjects(projectsData);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      setProjectsError(true);
+    } finally {
+      setProjectsLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadNotes();
     loadAreas();
     loadTags();
+    loadProjects();
   }, []);
 
   const openNoteModal = (note: Note | null = null) => {
@@ -533,7 +547,19 @@ const Layout: React.FC<LayoutProps> = ({
           isOpen={isNoteModalOpen}
           onClose={closeNoteModal}
           onSave={handleSaveNote}
+          onDelete={async (noteId) => {
+            try {
+              const { deleteNote } = await import('./utils/notesService');
+              await deleteNote(noteId);
+              loadNotes();
+              closeNoteModal();
+            } catch (error) {
+              console.error('Error deleting note:', error);
+            }
+          }}
           note={selectedNote}
+          projects={projects}
+          onCreateProject={handleCreateProject}
         />
       )}
 

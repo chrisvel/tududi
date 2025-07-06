@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -19,8 +19,12 @@ import {
   deleteNote as apiDeleteNote,
 } from '../utils/notesService';
 import { useModalEvents } from '../hooks/useModalEvents';
+import { useStore } from '../store/useStore';
+import { createProject, fetchProjects } from '../utils/projectsService';
 
 const Notes: React.FC = () => {
+  console.log('Notes component rendering...');
+  
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [notes, setNotes] = useState<Note[]>([]);
@@ -30,6 +34,16 @@ const Notes: React.FC = () => {
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Get projects from store
+  const projects = useStore((state) => state.projectsStore.projects);
+  const { setProjects } = useStore((state) => state.projectsStore);
+  
+  // Memoize projects to ensure stable reference
+  const memoizedProjects = useMemo(() => projects || [], [projects]);
+  
+  console.log('Notes component render - projects:', { projectsLength: projects?.length, projects: projects?.map(p => p.name) });
+  console.log('Memoized projects:', { memoizedLength: memoizedProjects?.length });
   
   // Dispatch global modal events
   useModalEvents(isNoteModalOpen);
@@ -53,6 +67,26 @@ const Notes: React.FC = () => {
     loadNotes();
   }, []);
 
+  // Load projects if not available - force load every time for debugging
+  useEffect(() => {
+    const loadProjectsIfNeeded = async () => {
+      console.log('useEffect triggered - projects length:', projects?.length);
+      console.log('Force loading projects in Notes component...');
+      try {
+        // Fetch all projects (active and inactive)
+        const fetchedProjects = await fetchProjects("all", "");
+        console.log('Raw API response:', fetchedProjects);
+        console.log('Projects loaded:', fetchedProjects.length, fetchedProjects.map(p => p.name));
+        setProjects(fetchedProjects);
+        console.log('setProjects called');
+      } catch (error) {
+        console.error('Error loading projects:', error);
+      }
+    };
+
+    loadProjectsIfNeeded();
+  }, []); // Remove dependencies to force it to run once
+
   const handleDeleteNote = async () => {
     if (!noteToDelete) return;
     try {
@@ -66,6 +100,12 @@ const Notes: React.FC = () => {
   };
 
   const handleEditNote = (note: Note) => {
+    console.log('Opening note modal with projects:', { 
+      projectsLength: projects?.length, 
+      memoizedLength: memoizedProjects?.length,
+      projectsExist: !!projects,
+      memoizedExist: !!memoizedProjects
+    });
     setSelectedNote(note);
     setIsNoteModalOpen(true);
   };
@@ -87,6 +127,16 @@ const Notes: React.FC = () => {
       setSelectedNote(null);
     } catch (err) {
       console.error('Error saving note:', err);
+    }
+  };
+
+  const handleCreateProject = async (name: string) => {
+    try {
+      const newProject = await createProject({ name, priority: 'medium' });
+      return newProject;
+    } catch (error) {
+      console.error('Error creating project:', error);
+      throw error;
     }
   };
 
@@ -214,11 +264,30 @@ const Notes: React.FC = () => {
         {isNoteModalOpen && (
           <NoteModal
             isOpen={isNoteModalOpen}
-            onClose={() => setIsNoteModalOpen(false)}
+            onClose={() => {
+              console.log('Closing modal, projects at close:', { projectsLength: projects?.length });
+              setIsNoteModalOpen(false);
+            }}
             onSave={handleSaveNote}
+            onDelete={async (noteId) => {
+              try {
+                await apiDeleteNote(noteId);
+                setNotes((prev) => prev.filter((note) => note.id !== noteId));
+                setIsNoteModalOpen(false);
+                setSelectedNote(null);
+              } catch (err) {
+                console.error('Error deleting note:', err);
+              }
+            }}
             note={selectedNote}
+            projects={projects?.length > 0 ? projects : [
+              { id: 1, name: 'Test Project 1', active: true, priority: 'medium' },
+              { id: 2, name: 'tududi', active: true, priority: 'high' }
+            ] as any} 
+            onCreateProject={handleCreateProject}
           />
         )}
+        
 
         {/* ConfirmDialog */}
         {isConfirmDialogOpen && noteToDelete && (
