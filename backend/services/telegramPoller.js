@@ -206,6 +206,38 @@ const createInboxItem = async (content, userId, messageId) => {
     });
 };
 
+// Function to handle bot commands
+const handleBotCommand = async (command, user, chatId, messageId) => {
+    const botToken = user.telegram_bot_token;
+    
+    switch (command.toLowerCase()) {
+        case '/start':
+            await sendTelegramMessage(
+                botToken,
+                chatId,
+                `🚀 Welcome to Tududi!\n\nYour personal task management bot is ready. Simply send me any message and I'll add it to your inbox.\n\nCommands:\n/help - Show this help message\n/start - Show welcome message`,
+                messageId
+            );
+            break;
+        case '/help':
+            await sendTelegramMessage(
+                botToken,
+                chatId,
+                `📋 Tududi Bot Help\n\nSend me any text message and I'll add it to your Tududi inbox as a task.\n\nCommands:\n/start - Welcome message\n/help - Show this help message\n\nJust type your task and I'll take care of the rest!`,
+                messageId
+            );
+            break;
+        default:
+            await sendTelegramMessage(
+                botToken,
+                chatId,
+                `❓ Unknown command: ${command}\n\nUse /help to see available commands or just send a regular message to add it to your inbox.`,
+                messageId
+            );
+            break;
+    }
+};
+
 // Function to process a single message (contains side effects)
 const processMessage = async (user, update) => {
     const message = update.message;
@@ -220,7 +252,16 @@ const processMessage = async (user, update) => {
     }
 
     try {
-        // Create inbox item (with duplicate check)
+        // Check if message is a bot command
+        if (text.startsWith('/')) {
+            await handleBotCommand(text, user, chatId, messageId);
+            console.log(
+                `Successfully processed command ${messageId} for user ${user.id}: "${text}"`
+            );
+            return;
+        }
+
+        // Create inbox item for regular messages (with duplicate check)
         const inboxItem = await createInboxItem(text, user.id, messageId);
 
         // Send confirmation
