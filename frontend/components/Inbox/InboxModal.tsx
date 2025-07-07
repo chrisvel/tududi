@@ -7,7 +7,6 @@ import { createInboxItemWithStore } from "../../utils/inboxService";
 import { isAuthError } from "../../utils/authUtils";
 import { createTag } from "../../utils/tagsService";
 import { XMarkIcon, TagIcon } from "@heroicons/react/24/outline";
-import { useModalEvents } from "../../hooks/useModalEvents";
 import { useStore } from "../../store/useStore";
 import { Link } from "react-router-dom";
 // import UrlPreview from "../Shared/UrlPreview";
@@ -47,7 +46,6 @@ const InboxModal: React.FC<InboxModalProps> = ({
   // const [urlPreview, setUrlPreview] = useState<UrlTitleResult | null>(null);
 
   // Dispatch global modal events to hide floating + button
-  useModalEvents(isOpen);
 
   // Helper function to parse hashtags from text
   const parseHashtags = (text: string): string[] => {

@@ -13,7 +13,6 @@ import { fetchAreas } from "../utils/areasService";
 import { useTranslation } from "react-i18next";
 
 import { Project } from "../entities/Project";
-import { useModalEvents } from "../hooks/useModalEvents";
 import { PriorityType } from "../entities/Task";
 import { useSearchParams } from "react-router-dom";
 import ProjectItem from "./Project/ProjectItem";
@@ -35,7 +34,7 @@ const getPriorityStyles = (priority: PriorityType) => {
 const Projects: React.FC = () => {
   const { t } = useTranslation();
   const { areas, setAreas, setLoading: setAreasLoading, setError: setAreasError } = useStore((state) => state.areasStore);
-  const { setLoading: setProjectsLoading, setError: setProjectsError } = useStore((state) => state.projectsStore);
+  const { projects, setProjects, setLoading: setProjectsLoading, setError: setProjectsError } = useStore((state) => state.projectsStore);
   const { isLoading, isError } = useStore((state) => state.projectsStore);
 
   const [groupedProjects, setGroupedProjects] = useState<Record<string, Project[]>>({});
@@ -51,7 +50,6 @@ const Projects: React.FC = () => {
   const activeFilter = searchParams.get("active") || "all";
   
   // Dispatch global modal events
-  useModalEvents(isProjectModalOpen);
   const areaFilter = searchParams.get("area_id") || "";
 
 useEffect(() => {
@@ -351,7 +349,7 @@ useEffect(() => {
           onDelete={async (projectId) => {
             try {
               await deleteProject(projectId);
-              setProjects(prev => prev.filter(p => p.id !== projectId));
+              setProjects(projects.filter((p: Project) => p.id !== projectId));
               setIsProjectModalOpen(false);
               setProjectToEdit(null);
             } catch (error) {

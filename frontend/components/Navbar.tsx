@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { UserIcon, Bars3Icon } from "@heroicons/react/24/solid";
+import { UserIcon, Bars3Icon, PlusIcon, InboxIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "react-i18next";
 import PomodoroTimer from "./Shared/PomodoroTimer";
 
@@ -14,6 +14,7 @@ interface NavbarProps {
   setCurrentUser: React.Dispatch<React.SetStateAction<any>>;
   isSidebarOpen: boolean;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  openTaskModal: (type?: 'simplified' | 'full') => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -23,6 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({
   setCurrentUser, 
   isSidebarOpen,
   setIsSidebarOpen,
+  openTaskModal,
 }) => {
   const { t } = useTranslation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -119,6 +121,15 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         <div className="flex items-center space-x-4">
+          <button
+            onClick={() => openTaskModal('simplified')}
+            className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none transition-colors duration-200 px-3 py-2"
+            aria-label="Quick Capture"
+            title="Quick Capture"
+          >
+            <PlusIcon className="h-4 w-4" />
+            <InboxIcon className="hidden md:inline-block ml-2 h-4 w-4" />
+          </button>
           {pomodoroEnabled && <PomodoroTimer />}
           
           <div className="relative" ref={dropdownRef}>

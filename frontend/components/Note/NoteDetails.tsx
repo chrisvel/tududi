@@ -6,7 +6,6 @@ import NoteModal from './NoteModal';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import { Note } from '../../entities/Note';
 import { fetchNotes, deleteNote as apiDeleteNote, updateNote as apiUpdateNote } from '../../utils/notesService';
-import { useModalEvents } from '../../hooks/useModalEvents';
 
 const NoteDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,7 +18,6 @@ const NoteDetails: React.FC = () => {
   const navigate = useNavigate();
   
   // Dispatch global modal events
-  useModalEvents(isNoteModalOpen);
 
   useEffect(() => {
     const fetchNote = async () => {

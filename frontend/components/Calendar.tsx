@@ -17,7 +17,6 @@ import { el, enUS, es, ja, uk, de } from 'date-fns/locale';
 import CalendarMonthView from './Calendar/CalendarMonthView';
 import CalendarWeekView from './Calendar/CalendarWeekView';
 import CalendarDayView from './Calendar/CalendarDayView';
-import { useModalEvents } from '../hooks/useModalEvents';
 
 const getLocale = (language: string) => {
   switch (language) {
@@ -60,7 +59,6 @@ const Calendar: React.FC = () => {
   const [isEventDetailModalOpen, setIsEventDetailModalOpen] = useState(false);
   
   // Dispatch global modal events
-  useModalEvents(isTaskModalOpen || isEventDetailModalOpen);
 
   const locale = getLocale(i18n.language);
 

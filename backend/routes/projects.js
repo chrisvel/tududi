@@ -256,7 +256,7 @@ router.get('/project/:id', async (req, res) => {
             const normalizedTask = {
                 ...task,
                 tags: task.Tags || [], // Normalize Tags to tags for each task
-                due_date: task.due_date ? task.due_date.split('T')[0] : null
+                due_date: task.due_date ? (typeof task.due_date === 'string' ? task.due_date.split('T')[0] : task.due_date.toISOString().split('T')[0]) : null
             };
             // Remove the original Tags property to avoid confusion
             delete normalizedTask.Tags;

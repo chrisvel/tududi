@@ -175,7 +175,18 @@ const InboxItems: React.FC = () => {
     setIsProjectModalOpen(true);
   };
   
-  const handleOpenNoteModal = (note: Note | null, inboxItemId?: number) => {
+  const handleOpenNoteModal = async (note: Note | null, inboxItemId?: number) => {
+    // Load projects first before opening the modal
+    try {
+      const projectData = await fetchProjects();
+      // Make sure we always set an array
+      setProjects(Array.isArray(projectData) ? projectData : []);
+    } catch (error) {
+      console.error('Failed to load projects:', error);
+      showErrorToast(t('project.loadError', 'Failed to load projects'));
+      setProjects([]); // Ensure we have an empty array even on error
+    }
+    
     // If note has content that's a URL, ensure it has a bookmark tag
     if (note && note.content && isUrl(note.content.trim())) {
       if (!note.tags) {
@@ -378,7 +389,9 @@ const InboxItems: React.FC = () => {
                 setNoteToEdit(null);
               }}
               onSave={handleSaveNote}
-              note={noteToEdit || { title: '', content: '' }}
+              note={noteToEdit}
+              projects={Array.isArray(projects) ? projects : []}
+              onCreateProject={handleCreateProject}
             />
           );
         } catch (error) {

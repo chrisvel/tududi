@@ -18,7 +18,6 @@ import {
   updateNote,
   deleteNote as apiDeleteNote,
 } from '../utils/notesService';
-import { useModalEvents } from '../hooks/useModalEvents';
 import { useStore } from '../store/useStore';
 import { createProject, fetchProjects } from '../utils/projectsService';
 
@@ -45,8 +44,6 @@ const Notes: React.FC = () => {
   console.log('Notes component render - projects:', { projectsLength: projects?.length, projects: projects?.map(p => p.name) });
   console.log('Memoized projects:', { memoizedLength: memoizedProjects?.length });
   
-  // Dispatch global modal events
-  useModalEvents(isNoteModalOpen);
   const [isError, setIsError] = useState(false);
   const [hoveredNoteId, setHoveredNoteId] = useState<number | null>(null);
 

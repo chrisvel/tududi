@@ -49,6 +49,9 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave, on
 
   const { showSuccessToast, showErrorToast } = useToast();
 
+  // Memoize projects to prevent infinite re-renders
+  const memoizedProjects = useMemo(() => projects || [], [projects]);
+
   useEffect(() => {
     if (!isOpen) return;
     
@@ -63,12 +66,12 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave, on
     };
 
     loadTags();
-  }, [isOpen, showErrorToast]);
+  }, [isOpen]);
 
   // Initialize filtered projects from props - like TaskModal
   useEffect(() => {
-    setFilteredProjects(projects || []);
-  }, [projects]);
+    setFilteredProjects(memoizedProjects);
+  }, [memoizedProjects]);
 
   // Initialize form data when modal opens - exactly like TaskModal
   useEffect(() => {
@@ -85,10 +88,10 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave, on
       setError(null);
       
       // Initialize project name from note - exactly like TaskModal
-      const currentProject = projects?.find((project) => project.id === (note?.project?.id || note?.Project?.id));
+      const currentProject = memoizedProjects.find((project) => project.id === (note?.project?.id || note?.Project?.id));
       setNewProjectName(currentProject ? currentProject.name : '');
     }
-  }, [isOpen, note, projects]);
+  }, [isOpen, note, memoizedProjects]);
 
   const handleClose = useCallback(() => {
     setIsClosing(true);

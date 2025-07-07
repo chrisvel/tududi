@@ -25,7 +25,6 @@ import { isAuthError } from "../../utils/authUtils";
 import { CalendarDaysIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
 import { getAutoSuggestNextActionsEnabled } from "../../utils/profileService";
 import AutoSuggestNextActionBox from "./AutoSuggestNextActionBox";
-import { useModalEvents } from "../../hooks/useModalEvents";
 
 type PriorityStyles = Record<PriorityType, string> & { default: string };
 
@@ -55,7 +54,6 @@ const ProjectDetails: React.FC = () => {
   const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
   
   // Dispatch global modal events
-  useModalEvents(isModalOpen);
 
   useEffect(() => {
     const loadProjectData = async () => {
