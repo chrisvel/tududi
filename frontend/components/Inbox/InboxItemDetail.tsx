@@ -170,7 +170,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between px-4 py-2 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-2 gap-2">
         <div className="flex-1">
           <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
             {item.content}

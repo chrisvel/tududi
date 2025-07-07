@@ -8,7 +8,8 @@ import {
   FolderIcon,
   Squares2X2Icon,
   BookOpenIcon,
-  TagIcon
+  TagIcon,
+  ListBulletIcon
 } from "@heroicons/react/24/outline";
 import TaskList from "../Task/TaskList";
 import ProjectModal from "../Project/ProjectModal";
@@ -456,7 +457,10 @@ const ProjectDetails: React.FC = () => {
 
         {!showAutoSuggestForm && (
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('sidebar.tasks', 'Tasks')}</h3>
+            <div className="flex items-center">
+              <ListBulletIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('sidebar.tasks', 'Tasks')}</h3>
+            </div>
             {completedTasks.length > 0 && (
               <label className="flex items-center space-x-2 cursor-pointer">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Show completed</span>

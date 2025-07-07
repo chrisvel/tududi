@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { UserIcon, Bars3Icon, PlusIcon, InboxIcon } from "@heroicons/react/24/solid";
+import { UserIcon, Bars3Icon, BoltIcon, InboxIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "react-i18next";
 import PomodoroTimer from "./Shared/PomodoroTimer";
 
@@ -123,12 +123,12 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center space-x-4">
           <button
             onClick={() => openTaskModal('simplified')}
-            className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none transition-colors duration-200 px-3 py-2"
-            aria-label="Quick Capture"
-            title="Quick Capture"
+            className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
+            aria-label="Quick Inbox Capture"
+            title="Quick Inbox Capture"
           >
-            <PlusIcon className="h-4 w-4" />
-            <InboxIcon className="hidden md:inline-block ml-2 h-4 w-4" />
+            <BoltIcon className="h-4 w-4 text-white" />
+            <InboxIcon className="hidden md:inline-block ml-1.5 h-4 w-4 text-blue-200" />
           </button>
           {pomodoroEnabled && <PomodoroTimer />}
           
