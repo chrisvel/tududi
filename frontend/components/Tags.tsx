@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { TrashIcon, TagIcon, MagnifyingGlassIcon, CheckIcon, BookOpenIcon, FolderIcon } from '@heroicons/react/24/solid';
+import { TrashIcon, TagIcon, MagnifyingGlassIcon, CheckIcon, BookOpenIcon, FolderIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
+import TagModal from './Tag/TagModal';
 import { Tag } from '../entities/Tag';
-import { deleteTag as apiDeleteTag } from '../utils/tagsService';
+import { deleteTag as apiDeleteTag, createTag, updateTag } from '../utils/tagsService';
 import { useStore } from '../store/useStore';
 
 const Tags: React.FC = () => {
@@ -22,6 +23,8 @@ const Tags: React.FC = () => {
   const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [hoveredTagId, setHoveredTagId] = useState<number | null>(null);
+  const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
+  const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [tagMetrics, setTagMetrics] = useState<Record<string, {tasks: number, notes: number, projects: number}>>({});
   const [metricsLoaded, setMetricsLoaded] = useState<boolean>(false);
   const [cachedProjects, setCachedProjects] = useState<any[]>([]);
@@ -114,6 +117,27 @@ const Tags: React.FC = () => {
     }
   };
 
+
+  const handleEditTag = (tag: Tag) => {
+    setSelectedTag(tag);
+    setIsTagModalOpen(true);
+  };
+
+  const handleSaveTag = async (tagData: Tag) => {
+    try {
+      if (tagData.id) {
+        await updateTag(tagData.id, tagData);
+        setTags(tags.map(tag => tag.id === tagData.id ? tagData : tag));
+      } else {
+        const newTag = await createTag(tagData);
+        setTags([...tags, newTag]);
+      }
+      setIsTagModalOpen(false);
+      setSelectedTag(null);
+    } catch (error) {
+      console.error('Error saving tag:', error);
+    }
+  };
 
   const openConfirmDialog = (tag: Tag) => {
     setTagToDelete(tag);
@@ -252,8 +276,16 @@ const Tags: React.FC = () => {
                             )}
                           </div>
                           
-                          {/* Delete button */}
+                          {/* Action buttons */}
                           <div className="flex space-x-2 ml-2">
+                            <button
+                              onClick={() => handleEditTag(tag)}
+                              className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredTagId === tag.id ? 'opacity-100' : 'opacity-0'}`}
+                              aria-label={`Edit ${tag.name}`}
+                              title={`Edit ${tag.name}`}
+                            >
+                              <PencilSquareIcon className="h-4 w-4" />
+                            </button>
                             <button
                               onClick={() => openConfirmDialog(tag)}
                               className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredTagId === tag.id ? 'opacity-100' : 'opacity-0'}`}
@@ -271,6 +303,37 @@ const Tags: React.FC = () => {
               </div>
             ))}
           </div>
+        )}
+
+        {/* TagModal */}
+        {isTagModalOpen && (
+          <TagModal
+            isOpen={isTagModalOpen}
+            onClose={() => {
+              setIsTagModalOpen(false);
+              setSelectedTag(null);
+            }}
+            onSave={handleSaveTag}
+            onDelete={async (tagId) => {
+              try {
+                await apiDeleteTag(tagId);
+                setTags(tags.filter((tag) => tag.id !== tagId));
+                setTagMetrics((prev) => {
+                  const newMetrics = { ...prev };
+                  const deletedTag = tags.find(t => t.id === tagId);
+                  if (deletedTag) {
+                    delete newMetrics[deletedTag.name];
+                  }
+                  return newMetrics;
+                });
+                setIsTagModalOpen(false);
+                setSelectedTag(null);
+              } catch (error) {
+                console.error('Error deleting tag:', error);
+              }
+            }}
+            tag={selectedTag}
+          />
         )}
 
         {/* ConfirmDialog */}

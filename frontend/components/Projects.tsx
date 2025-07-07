@@ -348,6 +348,16 @@ useEffect(() => {
             setProjectToEdit(null);
           }}
           onSave={handleSaveProject}
+          onDelete={async (projectId) => {
+            try {
+              await deleteProject(projectId);
+              setProjects(prev => prev.filter(p => p.id !== projectId));
+              setIsProjectModalOpen(false);
+              setProjectToEdit(null);
+            } catch (error) {
+              console.error('Error deleting project:', error);
+            }
+          }}
           project={projectToEdit || undefined}
           areas={areas}
         />

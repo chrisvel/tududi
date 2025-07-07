@@ -2,15 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Area } from '../../entities/Area';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
+import { TrashIcon } from '@heroicons/react/24/outline';
 
 interface AreaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (areaData: Partial<Area>) => Promise<void>; 
+  onSave: (areaData: Partial<Area>) => Promise<void>;
+  onDelete?: (areaId: number) => Promise<void>;
   area?: Area | null;
 }
 
-const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area, onSave }) => {
+const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area, onSave, onDelete }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<Area>({
     id: area?.id || 0,
@@ -108,80 +110,117 @@ const AreaModal: React.FC<AreaModalProps> = ({ isOpen, onClose, area, onSave }) 
     }, 300);
   };
 
+  const handleDeleteArea = async () => {
+    if (formData.id && formData.id !== 0 && onDelete) {
+      try {
+        await onDelete(formData.id);
+        showSuccessToast(t('success.areaDeleted', 'Area deleted successfully!'));
+        handleClose();
+      } catch (err) {
+        setError((err as Error).message);
+        showErrorToast(t('errors.failedToDeleteArea', 'Failed to delete area.'));
+      }
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div
-      className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}
+      className={`fixed top-16 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 overflow-hidden sm:overflow-y-auto ${
+        isClosing ? "opacity-0" : "opacity-100"
+      }`}
     >
-      <div
-        ref={modalRef}
-        className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-md overflow-hidden transform transition-transform duration-300 ${isClosing ? 'scale-95' : 'scale-100'} h-screen sm:h-auto flex flex-col`}
-        style={{
-          maxHeight: 'calc(100vh - 4rem)',
-        }}
-      >
-        <form className="flex flex-col flex-1">
-          <fieldset className="flex flex-col flex-1">
-            <div className="p-4 space-y-3 flex-1 text-sm overflow-y-auto">
-              {/* Area Name */}
-              <div className="py-4">
-                <input
-                  type="text"
-                  id="areaName"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
-                  placeholder={t('forms.areaNamePlaceholder')}
-                />
+      <div className="h-full flex items-center justify-center sm:px-4 sm:py-4">
+        <div
+          ref={modalRef}
+          className={`bg-white dark:bg-gray-800 border-0 sm:border sm:border-gray-200 sm:dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-md transform transition-transform duration-300 ${
+            isClosing ? "scale-95" : "scale-100"
+          } h-full sm:h-auto sm:my-4`}
+        >
+          <div className="flex flex-col h-full sm:min-h-[400px] sm:max-h-[90vh]">
+            {/* Main Form Section */}
+            <div className="flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800">
+              <div className="flex-1 relative">
+                <div className="absolute inset-0 overflow-y-auto overflow-x-hidden" style={{ WebkitOverflowScrolling: 'touch' }}>
+                  <form className="h-full">
+                    <fieldset className="h-full flex flex-col">
+                      {/* Area Title Section - Always Visible */}
+                      <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 pt-4">
+                        <input
+                          type="text"
+                          id="areaName"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          required
+                          className="block w-full text-xl font-semibold bg-transparent text-black dark:text-white border-none focus:outline-none shadow-sm py-2"
+                          placeholder={t('forms.areaNamePlaceholder')}
+                        />
+                      </div>
+
+                      {/* Description Section - Always Visible */}
+                      <div className="flex-1 pb-4 mb-4 px-4">
+                        <textarea
+                          id="areaDescription"
+                          name="description"
+                          value={formData.description}
+                          onChange={handleChange}
+                          className="block w-full h-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
+                          placeholder={t('forms.areaDescriptionPlaceholder')}
+                          style={{ minHeight: '150px' }}
+                        />
+                      </div>
+
+                      {/* Error Message */}
+                      {error && <div className="text-red-500 px-4 mb-4">{error}</div>}
+                    </fieldset>
+                  </form>
+                </div>
               </div>
-
-              {/* Area Description */}
-              <div className="pb-3">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('forms.areaDescription')}
-                </label>
-                <textarea
-                  id="areaDescription"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows={4}
-                  className="block w-full rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-                  placeholder={t('forms.areaDescriptionPlaceholder')}
-                />
+              
+              {/* Action Buttons - Below border with custom layout */}
+              <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
+                {/* Left side: Delete and Cancel */}
+                <div className="flex items-center space-x-3">
+                  {(area && area.id && area.id !== 0 && onDelete) && (
+                    <button
+                      type="button"
+                      onClick={handleDeleteArea}
+                      className="p-2 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none transition duration-150 ease-in-out"
+                      title={t('common.delete', 'Delete')}
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none transition duration-150 ease-in-out text-sm"
+                  >
+                    {t('common.cancel')}
+                  </button>
+                </div>
+                
+                {/* Right side: Save */}
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm ${
+                    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {isSubmitting
+                    ? t('modals.submitting')
+                    : formData.id && formData.id !== 0
+                    ? t('modals.updateArea')
+                    : t('modals.createArea')}
+                </button>
               </div>
-
-              {/* Error Message */}
-              {error && <div className="text-red-500">{error}</div>}
             </div>
-
-            {/* Action Buttons */}
-            <div className="p-3 flex-shrink-0 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2">
-              <button
-                type="button"
-                onClick={handleClose}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none transition duration-150 ease-in-out"
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {isSubmitting
-                  ? t('modals.submitting')
-                  : formData.id && formData.id !== 0
-                  ? t('modals.updateArea')
-                  : t('modals.createArea')}
-              </button>
-            </div>
-          </fieldset>
-        </form>
+          </div>
+        </div>
       </div>
     </div>
   );

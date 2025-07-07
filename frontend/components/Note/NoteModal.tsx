@@ -22,7 +22,7 @@ interface NoteModalProps {
 const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave, onDelete, projects = [], onCreateProject }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<Note>({
-    id: note?.id || 0,
+    id: note?.id,
     title: note?.title || '',
     content: note?.content || '',
     tags: note?.tags || [],
@@ -76,7 +76,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave, on
       // Initialize form data
       const tagNames = note?.tags?.map((tag) => tag.name) || [];
       setFormData({
-        id: note?.id || 0,
+        id: note?.id,
         title: note?.title || '',
         content: note?.content || '',
         tags: note?.tags || [],
@@ -473,7 +473,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, note, onSave, on
                 <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
                   {/* Left side: Delete and Cancel */}
                   <div className="flex items-center space-x-3">
-                    {formData.id && formData.id !== 0 && (
+                    {(note && note.id && onDelete) && (
                       <button
                         type="button"
                         onClick={handleDeleteNote}

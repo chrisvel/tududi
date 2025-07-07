@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tag } from '../../entities/Tag';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { TrashIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +8,7 @@ interface TagModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (tag: Tag) => void;
+  onDelete?: (tagId: number) => void;
   tag?: Tag | null;
 }
 
@@ -15,6 +16,7 @@ const TagModal: React.FC<TagModalProps> = ({
   isOpen,
   onClose,
   onSave,
+  onDelete,
   tag,
 }) => {
   const [formData, setFormData] = useState<Tag>(
@@ -110,6 +112,18 @@ const TagModal: React.FC<TagModalProps> = ({
     }, 300);
   };
 
+  const handleDeleteTag = async () => {
+    if (formData.id && onDelete) {
+      try {
+        await onDelete(formData.id);
+        showSuccessToast(t('success.tagDeleted', 'Tag deleted successfully!'));
+        handleClose();
+      } catch (err) {
+        showErrorToast(t('errors.failedToDeleteTag', 'Failed to delete tag.'));
+      }
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -121,57 +135,72 @@ const TagModal: React.FC<TagModalProps> = ({
       >
         <div
           ref={modalRef}
-          className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-md overflow-hidden transform transition-transform duration-300 ${
+          className={`bg-white dark:bg-gray-800 border-0 sm:border sm:border-gray-200 sm:dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-md transform transition-transform duration-300 ${
             isClosing ? 'scale-95' : 'scale-100'
-          } h-screen sm:h-auto flex flex-col`}
-          style={{
-            maxHeight: 'calc(100vh - 4rem)',
-          }}
+          } h-full sm:h-auto sm:my-4`}
         >
-          <form className="flex flex-col flex-1">
-            <fieldset className="flex flex-col flex-1">
-              <div className="p-4 space-y-3 flex-1 text-sm overflow-y-auto">
-                {/* Tag Name */}
-                <div className="py-4">
-                  <input
-                    type="text"
-                    id="tagName"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-b-2 border-gray-200 dark:border-gray-900 focus:outline-none shadow-sm py-2"
-                    placeholder={t('forms.tagNamePlaceholder', 'Enter tag name')}
-                  />
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="p-3 flex-shrink-0 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-2">
+          <div className="flex flex-col h-auto">
+            {/* Main Form Section */}
+            <div className="bg-white dark:bg-gray-800">
+              <form>
+                <fieldset>
+                  {/* Tag Title Section - Always Visible */}
+                  <div className="px-4 pt-4 pb-4">
+                    <input
+                      type="text"
+                      id="tagName"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="block w-full text-xl font-semibold bg-transparent text-black dark:text-white border-none focus:outline-none shadow-sm py-2"
+                      placeholder={t('forms.tagNamePlaceholder', 'Enter tag name')}
+                    />
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+            
+            {/* Action Buttons - Below border with custom layout */}
+            <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
+              {/* Left side: Delete and Cancel */}
+              <div className="flex items-center space-x-3">
+                {(tag && tag.id && onDelete) && (
+                  <button
+                    type="button"
+                    onClick={handleDeleteTag}
+                    className="p-2 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none transition duration-150 ease-in-out"
+                    title={t('common.delete', 'Delete')}
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none transition duration-150 ease-in-out"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none transition duration-150 ease-in-out text-sm"
                 >
                   {t('common.cancel', 'Cancel')}
                 </button>
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out ${
-                    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
-                >
-                  {isSubmitting 
-                    ? t('modals.submitting', 'Submitting...') 
-                    : tag 
-                      ? t('modals.updateTag', 'Update Tag') 
-                      : t('modals.createTag', 'Create Tag')}
-                </button>
               </div>
-            </fieldset>
-          </form>
+              
+              {/* Right side: Save */}
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isSubmitting 
+                  ? t('modals.submitting', 'Submitting...') 
+                  : tag 
+                    ? t('modals.updateTag', 'Update Tag') 
+                    : t('modals.createTag', 'Create Tag')}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </>

@@ -538,6 +538,16 @@ const Layout: React.FC<LayoutProps> = ({
           isOpen={isProjectModalOpen}
           onClose={closeProjectModal}
           onSave={handleSaveProject}
+          onDelete={async (projectId) => {
+            try {
+              const { deleteProject } = await import('./utils/projectsService');
+              await deleteProject(projectId);
+              loadProjects();
+              closeProjectModal();
+            } catch (error) {
+              console.error('Error deleting project:', error);
+            }
+          }}
           areas={areas}
         />
       )}

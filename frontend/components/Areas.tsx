@@ -20,6 +20,7 @@ const Areas: React.FC = () => {
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
+  const [hoveredAreaId, setHoveredAreaId] = useState<number | null>(null);
 
   useEffect(() => {
     const loadAreas = async () => {
@@ -121,6 +122,8 @@ const Areas: React.FC = () => {
               <li
                 key={area.id}
                 className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center"
+                onMouseEnter={() => setHoveredAreaId(area.id || null)}
+                onMouseLeave={() => setHoveredAreaId(null)}
               >
                 {/* Area Content */}
                 <div className="flex-grow overflow-hidden pr-4">
@@ -141,7 +144,9 @@ const Areas: React.FC = () => {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEditArea(area)}
-                    className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
+                    className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${
+                      hoveredAreaId === area.id ? 'opacity-100' : 'opacity-0'
+                    }`}
                     aria-label={t('areas.editAreaAriaLabel', { name: area.name })}
                     title={t('areas.editAreaTitle', { name: area.name })}
                   >
@@ -149,7 +154,9 @@ const Areas: React.FC = () => {
                   </button>
                   <button
                     onClick={() => openConfirmDialog(area)}
-                    className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
+                    className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${
+                      hoveredAreaId === area.id ? 'opacity-100' : 'opacity-0'
+                    }`}
                     aria-label={t('areas.deleteAreaAriaLabel', { name: area.name })}
                     title={t('areas.deleteAreaTitle', { name: area.name })}
                   >
@@ -167,6 +174,18 @@ const Areas: React.FC = () => {
             isOpen={isAreaModalOpen}
             onClose={() => setIsAreaModalOpen(false)}
             onSave={handleSaveArea}
+            onDelete={async (areaId) => {
+              try {
+                await deleteArea(areaId);
+                const updatedAreas = await fetchAreas();
+                setAreas(updatedAreas);
+                setIsAreaModalOpen(false);
+                setSelectedArea(null);
+              } catch (error) {
+                console.error('Error deleting area:', error);
+                setError(true);
+              }
+            }}
             area={selectedArea}
           />
         )}
