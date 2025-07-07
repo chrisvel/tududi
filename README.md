@@ -140,6 +140,7 @@ docker run \
   -e TUDUDI_INTERNAL_SSL_ENABLED=false \
   -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:3002 \
   -v ~/tududi_db:/app/backend/db \
+  -v ~/tududi_uploads:/app/backend/uploads \
   -p 3002:3002 \
   -d chrisvel/tududi:latest
 ```
