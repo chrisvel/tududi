@@ -201,12 +201,27 @@ const Tasks: React.FC = () => {
 
   const handleToggleToday = async (taskId: number): Promise<void> => {
     try {
-      const updatedTask = await toggleTaskToday(taskId);
-      setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === taskId ? updatedTask : task
-        )
-      );
+      await toggleTaskToday(taskId);
+      // Refetch data to ensure consistency with all task relationships
+      const params = new URLSearchParams(location.search);
+      const type = params.get("type") || "all";
+      const tag = params.get("tag");
+      const project = params.get("project");
+      const priority = params.get("priority");
+      
+      let apiPath = `/api/tasks?type=${type}&order_by=${orderBy}`;
+      if (tag) apiPath += `&tag=${tag}`;
+      if (project) apiPath += `&project=${project}`;
+      if (priority) apiPath += `&priority=${priority}`;
+      
+      const response = await fetch(apiPath, {
+        credentials: "include",
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setTasks(data.tasks || data);
+      }
     } catch (error) {
       console.error("Error toggling task today status:", error);
       setError("Error toggling task today status.");

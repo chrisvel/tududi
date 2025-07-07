@@ -1296,6 +1296,14 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
     try {
         const task = await Task.findOne({
             where: { id: req.params.id, user_id: req.currentUser.id },
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] },
+                },
+                { model: Project, attributes: ['name'], required: false },
+            ],
         });
 
         if (!task) {
@@ -1322,12 +1330,9 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
             // Don't fail the request if event logging fails
         }
 
-        res.json({
-            ...task.toJSON(),
-            due_date: task.due_date
-                ? task.due_date.toISOString().split('T')[0]
-                : null,
-        });
+        // Use serializeTask helper to ensure consistent response format including tags
+        const serializedTask = await serializeTask(task);
+        res.json(serializedTask);
     } catch (error) {
         console.error('Error toggling task today flag:', error);
         res.status(500).json({ error: 'Failed to update task today flag' });
