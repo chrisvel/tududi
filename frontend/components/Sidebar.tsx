@@ -9,7 +9,6 @@ import SidebarNav from './Sidebar/SidebarNav';
 import SidebarNotes from './Sidebar/SidebarNotes';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
-import CreateNewDropdownButton from './Sidebar/CreateNewDropdownButton';
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -70,12 +69,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex flex-col h-full overflow-y-auto">
           <div className="px-3 pb-3 pt-8">
             {/* Sidebar Contents */}
-            <CreateNewDropdownButton
-              openTaskModal={(type) => openTaskModal(type || 'full')}
-              openProjectModal={openProjectModal}
-              openNoteModal={openNoteModal}
-              openAreaModal={openAreaModal}
-            />
             <SidebarNav
               handleNavClick={handleNavClick}
               location={location}
@@ -118,6 +111,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             setIsSidebarOpen={setIsSidebarOpen}
             isDropdownOpen={isDropdownOpen}
             toggleDropdown={toggleDropdown}
+            openTaskModal={openTaskModal}
+            openProjectModal={openProjectModal}
+            openNoteModal={openNoteModal}
+            openAreaModal={openAreaModal}
+            openTagModal={openTagModal}
           />
         </div>
       )}

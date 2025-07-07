@@ -77,9 +77,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ handleNavClick, location }) => 
               )}
             </button>
           </li>
-          {link.path === '/inbox' && (
-            <li className="py-1" />
-          )}
         </React.Fragment>
       ))}
     </ul>
