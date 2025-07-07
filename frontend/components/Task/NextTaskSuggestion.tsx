@@ -6,6 +6,7 @@ import {
   ArrowPathIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline';
+import { FolderIcon } from '@heroicons/react/24/solid';
 import { Task } from '../../entities/Task';
 import { useToast } from '../Shared/ToastContext';
 
@@ -16,12 +17,14 @@ interface NextTaskSuggestionProps {
     tasks_in_progress: Task[];
     today_plan_tasks?: Task[];
   };
+  projects: any[];
   onTaskUpdate: (task: Task) => Promise<void>;
   onClose?: () => void;
 }
 
 const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({ 
   metrics,
+  projects,
   onTaskUpdate, 
   onClose 
 }) => {
@@ -65,6 +68,18 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
   const currentTaskData = allAvailableTasks[currentTaskIndex % allAvailableTasks.length];
   const suggestedTask = currentTaskData.task;
   const suggestionSource = currentTaskData.source;
+
+  // Helper function to get project name
+  const getProjectName = (task: Task) => {
+    if (task.Project) {
+      return task.Project.name;
+    }
+    if (task.project_id) {
+      const project = projects.find(p => p.id === task.project_id);
+      return project?.name;
+    }
+    return null;
+  };
 
   const handleStartTask = async () => {
     if (!suggestedTask || !suggestedTask.id) return;
@@ -114,6 +129,12 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
             <p className="text-gray-900 dark:text-gray-100 font-medium break-words">
               {suggestedTask.name}
             </p>
+            {getProjectName(suggestedTask) && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center">
+                <FolderIcon className="h-3 w-3 mr-1" />
+                {getProjectName(suggestedTask)}
+              </p>
+            )}
             {suggestedTask.due_date && (
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {t('forms.task.labels.dueDate', 'Due')}: {new Date(suggestedTask.due_date).toLocaleDateString()}

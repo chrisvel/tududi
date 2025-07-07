@@ -70,10 +70,7 @@ const TasksToday: React.FC = () => {
     showDailyQuote: true,
   });
   const [nextTaskSuggestionEnabled, setNextTaskSuggestionEnabled] = useState(true);
-  const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(() => {
-    const stored = sessionStorage.getItem('hideNextTaskSuggestion');
-    return stored !== 'true';
-  });
+  const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(true);
   const [isSuggestedCollapsed, setIsSuggestedCollapsed] = useState(() => {
     const stored = localStorage.getItem('suggestedTasksCollapsed');
     return stored === 'true';
@@ -159,7 +156,6 @@ const TasksToday: React.FC = () => {
   // Function to handle next task suggestion dismissal
   const handleCloseNextTaskSuggestion = () => {
     setShowNextTaskSuggestion(false);
-    sessionStorage.setItem('hideNextTaskSuggestion', 'true');
   };
 
   // Toggle functions for collapsible sections
@@ -629,6 +625,7 @@ const TasksToday: React.FC = () => {
                   tasks_in_progress: metrics.tasks_in_progress,
                   today_plan_tasks: metrics.today_plan_tasks
                 }}
+                projects={localProjects}
                 onTaskUpdate={handleTaskUpdate}
                 onClose={handleCloseNextTaskSuggestion}
               />

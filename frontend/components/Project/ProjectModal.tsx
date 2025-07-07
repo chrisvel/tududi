@@ -100,12 +100,20 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
-        handleClose();
+      const target = event.target as Node;
+      
+      // Check if click is inside modal
+      if (modalRef.current && modalRef.current.contains(target)) {
+        return;
       }
+      
+      // Check if click is on priority dropdown (which is portaled to document.body)
+      const clickedElement = target as Element;
+      if (clickedElement && clickedElement.closest && clickedElement.closest('.fixed.z-50.bg-white, .fixed.z-50.bg-gray-700')) {
+        return;
+      }
+      
+      handleClose();
     };
 
     if (isOpen) {
