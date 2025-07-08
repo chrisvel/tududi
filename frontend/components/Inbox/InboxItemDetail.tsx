@@ -12,7 +12,6 @@ import {
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
-import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useStore } from '../../store/useStore';
 
@@ -28,7 +27,7 @@ interface InboxItemDetailProps {
 
 const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     item,
-    onProcess,
+    onProcess, // eslint-disable-line @typescript-eslint/no-unused-vars
     onDelete,
     onUpdate,
     openTaskModal,
@@ -36,7 +35,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     openNoteModal,
 }) => {
     const { t } = useTranslation();
-    const { showSuccessToast, showErrorToast } = useToast();
     const {
         tagsStore: { tags },
     } = useStore();

@@ -30,7 +30,7 @@ const TaskView: React.FC = () => {
             try {
                 const taskData = await fetchTaskByUuid(uuid);
                 setTask(taskData);
-            } catch (err) {
+            } catch {
                 setError('An error occurred while fetching the task');
             } finally {
                 setLoading(false);

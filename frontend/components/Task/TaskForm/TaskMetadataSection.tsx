@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { PriorityType, StatusType } from '../../../entities/Task';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import StatusDropdown from '../../Shared/StatusDropdown';
 import PriorityDropdown from '../../Shared/PriorityDropdown';
 import DatePicker from '../../Shared/DatePicker';
@@ -8,7 +9,7 @@ import DatePicker from '../../Shared/DatePicker';
 interface TaskMetadataSectionProps {
     priority: PriorityType;
     dueDate: string;
-    taskId: number | undefined;
+    taskId?: number;
     onStatusChange: (value: StatusType) => void;
     onPriorityChange: (value: PriorityType) => void;
     onDueDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -17,8 +18,8 @@ interface TaskMetadataSectionProps {
 const TaskMetadataSection: React.FC<TaskMetadataSectionProps> = ({
     priority,
     dueDate,
-    taskId,
-    onStatusChange,
+    taskId, // eslint-disable-line @typescript-eslint/no-unused-vars
+    onStatusChange, // eslint-disable-line @typescript-eslint/no-unused-vars
     onPriorityChange,
     onDueDateChange,
 }) => {

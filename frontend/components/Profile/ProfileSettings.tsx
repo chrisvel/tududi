@@ -201,7 +201,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             window.forceLanguageReload(value);
                         }
                     }
-                } catch (err) {}
+                } catch {
+                    // Ignore errors loading language resources
+                }
             }
 
             setTimeout(() => {
@@ -226,7 +228,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     }
                 }, 800);
             }, 200);
-        } catch (error) {
+        } catch {
             setIsChangingLanguage(false);
         }
     };
@@ -311,7 +313,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 if (data.token_exists && !data.running) {
                     handleStartPolling();
                 }
-            } catch (error) {}
+            } catch {
+                // Ignore errors fetching polling status
+            }
         };
         fetchProfile();
     }, []);
@@ -431,7 +435,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     polling_status: data.status,
                 });
             }
-        } catch (error) {
+        } catch {
             showErrorToast(t('profile.pollingError'));
         }
     };
@@ -462,7 +466,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     polling_status: data.status,
                 });
             }
-        } catch (error) {
+        } catch {
             showErrorToast(t('profile.pollingError'));
         }
     };
@@ -1442,7 +1446,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                                         );
                                                                     }
                                                                 }
-                                                            } catch (error) {
+                                                            } catch {
                                                                 showErrorToast(
                                                                     t(
                                                                         'profile.testMessageError',

@@ -33,7 +33,6 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     isDarkMode,
     toggleDarkMode,
     isSidebarOpen,
-    setIsSidebarOpen,
     openTaskModal,
     openProjectModal,
     openNoteModal,

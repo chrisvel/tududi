@@ -1,5 +1,5 @@
 import React from 'react';
-import { RecurrenceType, Task } from '../../../entities/Task';
+import { Task } from '../../../entities/Task';
 import RecurrenceInput from '../RecurrenceInput';
 
 interface TaskRecurrenceSectionProps {

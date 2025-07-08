@@ -11,7 +11,7 @@ interface AutoSuggestNextActionBoxProps {
 const AutoSuggestNextActionBox: React.FC<AutoSuggestNextActionBoxProps> = ({
     onAddAction,
     onDismiss,
-    projectName,
+    projectName, // eslint-disable-line @typescript-eslint/no-unused-vars
 }) => {
     const [actionDescription, setActionDescription] = useState('');
     const [isFocused, setIsFocused] = useState(false);

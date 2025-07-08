@@ -5,7 +5,6 @@ import {
     ArchiveBoxIcon,
     ArrowPathIcon,
 } from '@heroicons/react/24/solid';
-import { useTranslation } from 'react-i18next';
 import { StatusType } from '../../entities/Task';
 
 interface TaskStatusBadgeProps {
@@ -17,8 +16,6 @@ const TaskStatusBadge: React.FC<TaskStatusBadgeProps> = ({
     status,
     className,
 }) => {
-    const { t } = useTranslation();
-
     // Convert numeric status to string
     const getStatusString = (status: StatusType | number): StatusType => {
         if (typeof status === 'number') {
@@ -34,28 +31,23 @@ const TaskStatusBadge: React.FC<TaskStatusBadgeProps> = ({
     };
 
     const statusString = getStatusString(status);
-    let statusIcon, statusLabel;
+    let statusIcon;
 
     switch (statusString) {
         case 'not_started':
             statusIcon = <MinusIcon className="h-4 w-4 text-gray-400" />;
-            statusLabel = t('status.notStarted', 'Not Started');
             break;
         case 'in_progress':
             statusIcon = <ArrowPathIcon className="h-4 w-4 text-blue-400" />;
-            statusLabel = t('status.inProgress', 'In Progress');
             break;
         case 'done':
             statusIcon = <CheckCircleIcon className="h-4 w-4 text-green-400" />;
-            statusLabel = t('status.done', 'Done');
             break;
         case 'archived':
             statusIcon = <ArchiveBoxIcon className="h-4 w-4 text-gray-400" />;
-            statusLabel = t('status.archived', 'Archived');
             break;
         default:
             statusIcon = <MinusIcon className="h-4 w-4 text-gray-400" />;
-            statusLabel = t('status.unknown', 'Unknown');
     }
 
     return (

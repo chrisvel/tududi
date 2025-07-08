@@ -141,8 +141,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                         } else {
                             // This is inline code - apply our custom styling
                             // Check if parent is a pre element - if so, this might be a code block without language
-                            const parentIsPre =
-                                (props as any).node?.parent?.tagName === 'pre';
+                            // eslint-disable-next-line react/prop-types
+                            const node = (props as any).node;
+                            // eslint-disable-next-line react/prop-types
+                            const parentIsPre = node?.parent?.tagName === 'pre';
                             if (parentIsPre) {
                                 return (
                                     <code className="hljs" {...props}>

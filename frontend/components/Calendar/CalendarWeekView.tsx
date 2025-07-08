@@ -7,7 +7,6 @@ import {
     isToday,
     addHours,
 } from 'date-fns';
-import { useTranslation } from 'react-i18next';
 
 interface CalendarEvent {
     id: string;
@@ -29,12 +28,9 @@ interface CalendarWeekViewProps {
 const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
     currentDate,
     events,
-    onDateClick,
     onEventClick,
     onTimeSlotClick,
 }) => {
-    const { t } = useTranslation();
-
     const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
     const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
     const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });

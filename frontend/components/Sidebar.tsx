@@ -50,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         setIsDropdownOpen(!isDropdownOpen);
     };
 
-    const handleNavClick = (path: string, title: string, icon: JSX.Element) => {
+    const handleNavClick = (path: string, title: string) => {
         navigate(path, { state: { title } });
         if (window.innerWidth < 1024) {
             setIsSidebarOpen(false);

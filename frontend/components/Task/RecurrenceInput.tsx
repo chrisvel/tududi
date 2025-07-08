@@ -34,7 +34,7 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
     disabled = false,
     isChildTask = false,
     parentTaskLoading = false,
-    onEditParent,
+    onEditParent, // eslint-disable-line @typescript-eslint/no-unused-vars
     onParentRecurrenceChange,
 }) => {
     const { t } = useTranslation();
@@ -347,9 +347,9 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
                     {editingParentRecurrence && (
                         <div className="mb-4 p-2 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-md">
                             <div className="text-xs text-yellow-800 dark:text-yellow-200">
-                                ⚠️ You are editing the parent task's recurrence
-                                settings. Changes will affect all future
-                                instances of this recurring task.
+                                ⚠️ You are editing the parent task&apos;s
+                                recurrence settings. Changes will affect all
+                                future instances of this recurring task.
                             </div>
                         </div>
                     )}

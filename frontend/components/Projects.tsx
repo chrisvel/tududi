@@ -40,7 +40,6 @@ const Projects: React.FC = () => {
     const {
         areas,
         setAreas,
-        setLoading: setAreasLoading,
         setError: setAreasError,
     } = useStore((state) => state.areasStore);
     const {
@@ -68,8 +67,6 @@ const Projects: React.FC = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const activeFilter = searchParams.get('active') || 'all';
-
-    // Dispatch global modal events
     const areaFilter = searchParams.get('area_id') || '';
 
     useEffect(() => {

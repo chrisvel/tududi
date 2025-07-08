@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { PriorityType, StatusType, Task } from '../../entities/Task';
-import TaskActions from './TaskActions';
 import ConfirmDialog from '../Shared/ConfirmDialog';
-import CollapsibleSection from '../Shared/CollapsibleSection';
 import { useToast } from '../Shared/ToastContext';
 import TimelinePanel from './TimelinePanel';
 import { Project } from '../../entities/Project';

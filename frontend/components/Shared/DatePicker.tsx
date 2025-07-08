@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
-    ChevronDownIcon,
     ChevronLeftIcon,
     ChevronRightIcon,
     CalendarDaysIcon,
@@ -13,7 +12,6 @@ interface DatePickerProps {
     placeholder?: string;
     disabled?: boolean;
     className?: string;
-    label?: string;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({
@@ -22,7 +20,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
     placeholder = 'Select date',
     disabled = false,
     className = '',
-    label,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState({

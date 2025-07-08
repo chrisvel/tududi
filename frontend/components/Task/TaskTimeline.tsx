@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { TaskEvent } from '../../entities/TaskEvent';
 import {
     getTaskTimeline,
-    formatDuration,
     getEventTypeLabel,
     getStatusLabel,
     getPriorityLabel,
@@ -17,7 +16,6 @@ import {
     CalendarIcon,
     FolderIcon,
     PlayIcon,
-    PauseIcon,
     ArchiveBoxIcon,
     SparklesIcon,
     AdjustmentsHorizontalIcon,
@@ -128,33 +126,36 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
     };
 
     const getEventDescription = (event: TaskEvent) => {
-        const { event_type, old_value, new_value, field_name } = event;
+        const { event_type, old_value, new_value } = event;
 
         switch (event_type) {
             case 'created':
                 return t('timeline.events.taskCreated');
             case 'status_changed':
-            case 'completed':
+            case 'completed': {
                 const oldStatus = old_value?.status;
                 const newStatus = new_value?.status;
                 if (oldStatus !== undefined && newStatus !== undefined) {
                     return `${t('timeline.events.status')}: ${getStatusLabel(oldStatus)} → ${getStatusLabel(newStatus)}`;
                 }
                 return t('timeline.events.statusChanged');
-            case 'priority_changed':
+            }
+            case 'priority_changed': {
                 const oldPriority = old_value?.priority;
                 const newPriority = new_value?.priority;
                 if (oldPriority !== undefined && newPriority !== undefined) {
                     return `${t('timeline.events.priority')}: ${getPriorityLabel(oldPriority)} → ${getPriorityLabel(newPriority)}`;
                 }
                 return t('timeline.events.priorityChanged');
-            case 'due_date_changed':
+            }
+            case 'due_date_changed': {
                 const oldDate = old_value?.due_date;
                 const newDate = new_value?.due_date;
                 if (oldDate || newDate) {
                     return `${t('timeline.events.dueDate')}: ${oldDate || t('timeline.events.none')} → ${newDate || t('timeline.events.none')}`;
                 }
                 return t('timeline.events.dueDateChanged');
+            }
             case 'name_changed':
                 return t('timeline.events.nameUpdated');
             case 'description_changed':
@@ -231,7 +232,7 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
     return (
         <div className="h-full overflow-y-auto">
             <div className="space-y-2">
-                {events.map((event, index) => (
+                {events.map((event) => (
                     <div key={event.id} className="relative">
                         {/* Event item */}
                         <div className="flex items-start space-x-3 py-1 relative z-10">

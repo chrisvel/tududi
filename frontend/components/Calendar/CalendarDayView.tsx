@@ -1,6 +1,5 @@
 import React from 'react';
 import { format, addHours, isToday } from 'date-fns';
-import { useTranslation } from 'react-i18next';
 
 interface CalendarEvent {
     id: string;
@@ -24,8 +23,6 @@ const CalendarDayView: React.FC<CalendarDayViewProps> = ({
     onEventClick,
     onTimeSlotClick,
 }) => {
-    const { t } = useTranslation();
-
     const hours = Array.from({ length: 24 }, (_, i) => i);
 
     const getEventsForTimeSlot = (hour: number) => {

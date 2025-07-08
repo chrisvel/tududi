@@ -16,19 +16,15 @@ export const fetchNotes = async (): Promise<Note[]> => {
 };
 
 export const createNote = async (noteData: Note): Promise<Note> => {
-    try {
-        const response = await fetch('/api/note', {
-            method: 'POST',
-            credentials: 'include',
-            headers: getPostHeaders(),
-            body: JSON.stringify(noteData),
-        });
+    const response = await fetch('/api/note', {
+        method: 'POST',
+        credentials: 'include',
+        headers: getPostHeaders(),
+        body: JSON.stringify(noteData),
+    });
 
-        await handleAuthResponse(response, 'Failed to create note.');
-        return await response.json();
-    } catch (error) {
-        throw error;
-    }
+    await handleAuthResponse(response, 'Failed to create note.');
+    return await response.json();
 };
 
 export const updateNote = async (

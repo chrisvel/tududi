@@ -1,6 +1,5 @@
 import React from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import { useTranslation } from 'react-i18next';
 
 interface TaskPriorityIconProps {
     priority: string | number | undefined;
@@ -13,7 +12,6 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
     status,
     onToggleCompletion,
 }) => {
-    const { t } = useTranslation();
     const getIconColor = () => {
         if (status === 'done' || status === 2) return 'text-green-500';
 

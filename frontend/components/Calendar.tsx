@@ -8,7 +8,6 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
     CalendarIcon,
-    PlusIcon,
     XMarkIcon,
     ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
@@ -153,7 +152,7 @@ const Calendar: React.FC = () => {
             return [];
         }
 
-        tasks.forEach((task, index) => {
+        tasks.forEach((task) => {
             // Add tasks with due dates
             if (task.due_date) {
                 const dueDate = new Date(task.due_date);

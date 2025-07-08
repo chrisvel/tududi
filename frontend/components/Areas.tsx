@@ -75,11 +75,6 @@ const Areas: React.FC = () => {
         setIsAreaModalOpen(true);
     };
 
-    const handleCreateArea = () => {
-        setSelectedArea(null);
-        setIsAreaModalOpen(true);
-    };
-
     const openConfirmDialog = (area: Area) => {
         setAreaToDelete(area);
         setIsConfirmDialogOpen(true);

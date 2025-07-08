@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import TagInput from '../../Tag/TagInput';
 
 interface TaskTagsSectionProps {
@@ -13,8 +12,6 @@ const TaskTagsSection: React.FC<TaskTagsSectionProps> = ({
     onTagsChange,
     availableTags,
 }) => {
-    const { t } = useTranslation();
-
     return (
         <TagInput
             onTagsChange={onTagsChange}

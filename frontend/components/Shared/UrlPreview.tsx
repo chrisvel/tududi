@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { extractTitleFromText, UrlTitleResult } from '../../utils/urlService';
-import { LinkIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 
 interface UrlPreviewProps {
     text: string;

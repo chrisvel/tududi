@@ -128,7 +128,7 @@ export const useStore = create<StoreState>((set) => ({
         setError: (isError) =>
             set((state) => ({ tagsStore: { ...state.tagsStore, isError } })),
         loadTags: async () => {
-            const { fetchTags } = require('../utils/tagsService');
+            const { fetchTags } = await import('../utils/tagsService');
             set((state) => ({
                 tagsStore: {
                     ...state.tagsStore,

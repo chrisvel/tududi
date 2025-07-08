@@ -37,7 +37,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         setIsModalOpen(false);
     };
 
-    const handleDelete = async (taskId: number) => {
+    const handleDelete = async () => {
         if (task.id) {
             await onTaskDelete(task.id);
         }
@@ -48,7 +48,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
             try {
                 const updatedTask = await toggleTaskCompletion(task.id);
                 await onTaskUpdate(updatedTask);
-            } catch (error) {}
+            } catch (error) {
+                console.error('Error toggling task completion:', error);
+            }
         }
     };
 
@@ -70,6 +72,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
             setProjectList((prevProjects) => [...prevProjects, newProject]);
             return newProject;
         } catch (error) {
+            console.error('Error creating project:', error);
             throw error;
         }
     };

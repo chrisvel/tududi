@@ -60,7 +60,6 @@ const Layout: React.FC<LayoutProps> = ({
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
-    const [newTask, setNewTask] = useState<Task | null>(null);
 
     const {
         notesStore: {
@@ -79,12 +78,7 @@ const Layout: React.FC<LayoutProps> = ({
             isLoading: isAreasLoading,
             isError: isAreasError,
         },
-        tasksStore: {
-            setLoading: setTasksLoading,
-            setError: setTasksError,
-            isLoading: isTasksLoading,
-            isError: isTasksError,
-        },
+        tasksStore: { isLoading: isTasksLoading, isError: isTasksError },
         projectsStore: {
             projects,
             setProjects,
@@ -187,7 +181,6 @@ const Layout: React.FC<LayoutProps> = ({
 
     const closeTaskModal = () => {
         setIsTaskModalOpen(false);
-        setNewTask(null);
     };
 
     const openProjectModal = () => {
@@ -354,23 +347,6 @@ const Layout: React.FC<LayoutProps> = ({
                 return;
             }
             closeTagModal();
-        }
-    };
-
-    const handleLogout = async () => {
-        try {
-            const response = await fetch('/api/logout', {
-                method: 'GET',
-                credentials: 'include',
-            });
-
-            if (response.ok) {
-                setCurrentUser(null);
-            } else {
-                console.error('Logout failed:', await response.json());
-            }
-        } catch (error) {
-            console.error('Error during logout:', error);
         }
     };
 

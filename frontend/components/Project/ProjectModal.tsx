@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import {
     TagIcon,
     FolderIcon,
-    Cog6ToothIcon,
     TrashIcon,
     CameraIcon,
     CalendarIcon,
@@ -78,7 +77,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         active: false,
     });
 
-    const { showSuccessToast, showErrorToast } = useToast();
+    const { showSuccessToast } = useToast();
     const { t } = useTranslation();
 
     useEffect(() => {

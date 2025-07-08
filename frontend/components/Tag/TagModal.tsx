@@ -103,7 +103,7 @@ const TagModal: React.FC<TagModalProps> = ({
                 );
             }
             handleClose();
-        } catch (err) {
+        } catch {
             showErrorToast(t('errors.failedToSaveTag', 'Failed to save tag.'));
         } finally {
             setIsSubmitting(false);
@@ -126,7 +126,7 @@ const TagModal: React.FC<TagModalProps> = ({
                     t('success.tagDeleted', 'Tag deleted successfully!')
                 );
                 handleClose();
-            } catch (err) {
+            } catch {
                 showErrorToast(
                     t('errors.failedToDeleteTag', 'Failed to delete tag.')
                 );

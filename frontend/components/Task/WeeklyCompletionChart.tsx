@@ -19,7 +19,7 @@ const WeeklyCompletionChart: React.FC<WeeklyCompletionChartProps> = ({
 }) => {
     const { t } = useTranslation();
 
-    const CustomTooltip = ({ active, payload, label }: any) => {
+    const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
             return (

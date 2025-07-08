@@ -13,7 +13,7 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
     const [showNameLengthHelper, setShowNameLengthHelper] = useState(false);
     const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] =
         useState(true);
-    const { showSuccessToast, showErrorToast } = useToast();
+    const { showErrorToast } = useToast();
     const { t } = useTranslation();
 
     // Fetch task intelligence setting when component mounts

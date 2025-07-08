@@ -8,7 +8,6 @@ import {
 import { TagIcon, FolderIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import TaskPriorityIcon from './TaskPriorityIcon';
-import TaskTags from './TaskTags';
 import { Project } from '../../entities/Project';
 import { Task, StatusType } from '../../entities/Task';
 

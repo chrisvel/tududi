@@ -78,6 +78,6 @@ export const extractTitleFromText = async (
 export const isUrl = (text: string): boolean => {
     // Basic URL validation regex
     const urlRegex =
-        /^(https?:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
+        /^(https?:\/\/)?[a-z0-9]+([-.]?[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
     return urlRegex.test(text.trim());
 };

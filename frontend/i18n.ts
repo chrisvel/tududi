@@ -116,9 +116,16 @@ i18nInstance
                                         true
                                     );
                                 })
-                                .catch(() => {});
+                                .catch((error) => {
+                                    console.error(
+                                        'Error loading translation:',
+                                        error
+                                    );
+                                });
                         }, 1000);
-                    } catch (e) {}
+                    } catch (e) {
+                        console.error('Error in retry mechanism:', e);
+                    }
                 }
             });
     });
@@ -173,7 +180,8 @@ i18n.on('languageChanged', (lng) => {
                     handleTranslationsLoaded();
                 }
             })
-            .catch(() => {
+            .catch((error) => {
+                console.error('Error loading translations:', error);
                 handleTranslationsLoaded();
             });
     } else {
@@ -196,7 +204,8 @@ window.checkTranslation = (key: string) => {
     try {
         const translation = i18n.t(key);
         return translation;
-    } catch {
+    } catch (error) {
+        console.error('Error checking translation:', error);
         return null;
     }
 };
@@ -234,7 +243,9 @@ window.forceLanguageReload = (lng?: string) => {
                 }, 50);
             }
         })
-        .catch(() => {});
+        .catch((error) => {
+            console.error('Error reloading language:', error);
+        });
 };
 
 export default i18n;
