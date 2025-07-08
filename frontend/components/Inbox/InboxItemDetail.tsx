@@ -251,7 +251,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     <button
                         onClick={handleDelete}
                         className={`p-2 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-                        title={t('common.delete')}
+                        title={t('common.delete', 'Delete')}
                     >
                         <TrashIcon className="h-4 w-4" />
                     </button>
