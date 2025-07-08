@@ -342,7 +342,7 @@
   },
   "inbox": {
     "empty": "受信箱は空です",
-    "emptyDescription": "右下の + ボタンを使用して、思考やアイデアを素早く記録できます"
+    "emptyDescription": "右上の + ボタンを使用して、思考やアイデアを素早く記録できます"
   },
   "profile": {
     "taskIntelligence": "タスクインテリジェンス",

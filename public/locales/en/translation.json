@@ -451,7 +451,7 @@
   "inbox": {
     "title": "Inbox",
     "empty": "Your inbox is empty",
-    "emptyDescription": "Quickly capture thoughts and ideas using the + button in the bottom right corner",
+    "emptyDescription": "Quickly capture thoughts and ideas using the + button in the top right corner",
     "captureThought": "Capture your thought...",
     "saveToInbox": "Save to Inbox",
     "itemAdded": "Item added to inbox",
