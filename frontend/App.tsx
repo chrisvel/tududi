@@ -175,7 +175,7 @@ const App: React.FC = () => {
               <Route path="/areas" element={<Areas />} />
               <Route path="/area/:id" element={<AreaDetails />} />
               <Route path="/tags" element={<Tags />} />
-              <Route path="/tag/:id" element={<TagDetails />} />
+              <Route path="/tag/:identifier" element={<TagDetails />} />
               <Route path="/notes" element={<Notes />} />
               <Route path="/note/:id" element={<NoteDetails />} />
               <Route path="/calendar" element={<Calendar />} />

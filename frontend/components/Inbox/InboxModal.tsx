@@ -72,7 +72,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
           return (
             <Link
               key={index}
-              to={`/tag/${tag.id}`}
+              to={`/tag/${encodeURIComponent(tag.name)}`}
               className="text-blue-600 dark:text-blue-400 hover:underline"
               onClick={(e) => e.stopPropagation()}
             >
@@ -417,7 +417,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                         return (
                           <span key={index}>
                             <Link
-                              to={`/tag/${tag.id}`}
+                              to={`/tag/${encodeURIComponent(tag.name)}`}
                               className="text-blue-600 dark:text-blue-400 hover:underline"
                               onClick={(e) => e.stopPropagation()}
                             >

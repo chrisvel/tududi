@@ -17,11 +17,24 @@ router.get('/tags', async (req, res) => {
     }
 });
 
-// GET /api/tag/:id
-router.get('/tag/:id', async (req, res) => {
+// GET /api/tag/:identifier (supports both ID and name)
+router.get('/tag/:identifier', async (req, res) => {
     try {
+        const identifier = req.params.identifier;
+        let whereClause;
+        
+        // Check if identifier is a number (ID) or string (name)
+        if (/^\d+$/.test(identifier)) {
+            // It's a numeric ID
+            whereClause = { id: parseInt(identifier), user_id: req.currentUser.id };
+        } else {
+            // It's a tag name - decode URI component to handle special characters
+            const tagName = decodeURIComponent(identifier);
+            whereClause = { name: tagName, user_id: req.currentUser.id };
+        }
+
         const tag = await Tag.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
+            where: whereClause,
             attributes: ['id', 'name'],
         });
 
@@ -62,11 +75,24 @@ router.post('/tag', async (req, res) => {
     }
 });
 
-// PATCH /api/tag/:id
-router.patch('/tag/:id', async (req, res) => {
+// PATCH /api/tag/:identifier (supports both ID and name)
+router.patch('/tag/:identifier', async (req, res) => {
     try {
+        const identifier = req.params.identifier;
+        let whereClause;
+        
+        // Check if identifier is a number (ID) or string (name)
+        if (/^\d+$/.test(identifier)) {
+            // It's a numeric ID
+            whereClause = { id: parseInt(identifier), user_id: req.currentUser.id };
+        } else {
+            // It's a tag name - decode URI component to handle special characters
+            const tagName = decodeURIComponent(identifier);
+            whereClause = { name: tagName, user_id: req.currentUser.id };
+        }
+
         const tag = await Tag.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
+            where: whereClause,
         });
 
         if (!tag) {
@@ -93,13 +119,26 @@ router.patch('/tag/:id', async (req, res) => {
     }
 });
 
-// DELETE /api/tag/:id
-router.delete('/tag/:id', async (req, res) => {
+// DELETE /api/tag/:identifier (supports both ID and name)
+router.delete('/tag/:identifier', async (req, res) => {
     const transaction = await sequelize.transaction();
 
     try {
+        const identifier = req.params.identifier;
+        let whereClause;
+        
+        // Check if identifier is a number (ID) or string (name)
+        if (/^\d+$/.test(identifier)) {
+            // It's a numeric ID
+            whereClause = { id: parseInt(identifier), user_id: req.currentUser.id };
+        } else {
+            // It's a tag name - decode URI component to handle special characters
+            const tagName = decodeURIComponent(identifier);
+            whereClause = { name: tagName, user_id: req.currentUser.id };
+        }
+
         const tag = await Tag.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
+            where: whereClause,
         });
 
         if (!tag) {

@@ -240,7 +240,7 @@ const Tags: React.FC = () => {
                           {/* Tag Name and Metrics - inline */}
                           <div className="flex items-center space-x-3 flex-grow">
                             <Link
-                              to={`/tag/${tag.id}`}
+                              to={`/tag/${encodeURIComponent(tag.name)}`}
                               className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
                             >
                               {tag.name}

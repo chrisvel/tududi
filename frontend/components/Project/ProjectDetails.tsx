@@ -405,7 +405,7 @@ const ProjectDetails: React.FC = () => {
                       {project.tags.map((tag, index) => (
                         <button
                           key={index}
-                          onClick={() => navigate(`/tag/${tag.id}`)}
+                          onClick={() => navigate(`/tag/${encodeURIComponent(tag.name)}`)}
                           className="inline-block px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
                         >
                           {tag.name}

@@ -23,7 +23,7 @@ interface Tag {
 
 const TagDetails: React.FC = () => {
   const { t } = useTranslation();
-  const { id } = useParams<{ id: string }>();
+  const { identifier } = useParams<{ identifier: string }>();
   const [tag, setTag] = useState<Tag | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -42,7 +42,7 @@ const TagDetails: React.FC = () => {
     const fetchTagData = async () => {
       try {
         // First fetch tag details
-        const tagResponse = await fetch(`/api/tag/${id}`);
+        const tagResponse = await fetch(`/api/tag/${encodeURIComponent(identifier!)}`);
         if (tagResponse.ok) {
           const tagData = await tagResponse.json();
           setTag(tagData);
@@ -84,7 +84,7 @@ const TagDetails: React.FC = () => {
       }
     };
     fetchTagData();
-  }, [id, t]);
+  }, [identifier, t]);
 
   // Task handlers
   const handleTaskUpdate = async (updatedTask: Task) => {
@@ -274,7 +274,7 @@ const TagDetails: React.FC = () => {
                               key={noteTag.id}
                               onClick={(e) => {
                                 e.preventDefault();
-                                navigate(`/tag/${noteTag.id}`);
+                                navigate(`/tag/${encodeURIComponent(noteTag.name)}`);
                               }}
                               className="flex items-center space-x-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                             >

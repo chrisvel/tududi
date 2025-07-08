@@ -13,7 +13,7 @@ const TaskTags: React.FC<TaskTagsProps> = ({ tags = [], onTagRemove, className }
   const navigate = useNavigate();
 
   const handleTagClick = (tag: Tag) => {
-    navigate(`/tag/${tag.id}`);
+    navigate(`/tag/${encodeURIComponent(tag.name)}`);
   };
 
   // Don't render anything if there are no tags

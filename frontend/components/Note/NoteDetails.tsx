@@ -137,7 +137,7 @@ const NoteDetails: React.FC = () => {
                       {(note.tags || note.Tags || []).map((tag) => (
                         <button
                           key={tag.id}
-                          onClick={() => navigate(`/tag/${tag.id}`)}
+                          onClick={() => navigate(`/tag/${encodeURIComponent(tag.name)}`)}
                           className="flex items-center space-x-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-xs"
                         >
                           <TagIcon className="h-3 w-3" />
