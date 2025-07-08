@@ -7,22 +7,22 @@ import { useModal } from '../contexts/ModalContext';
  * @returns Object with the modal context functions
  */
 export const useModalManager = (isOpen: boolean) => {
-  const modalContext = useModal();
+    const modalContext = useModal();
 
-  useEffect(() => {
-    if (isOpen) {
-      modalContext.openModal();
-    } else {
-      modalContext.closeModal();
-    }
+    useEffect(() => {
+        if (isOpen) {
+            modalContext.openModal();
+        } else {
+            modalContext.closeModal();
+        }
 
-    // Cleanup function to ensure we close the modal if component unmounts while open
-    return () => {
-      if (isOpen) {
-        modalContext.closeModal();
-      }
-    };
-  }, [isOpen, modalContext]);
+        // Cleanup function to ensure we close the modal if component unmounts while open
+        return () => {
+            if (isOpen) {
+                modalContext.closeModal();
+            }
+        };
+    }, [isOpen, modalContext]);
 
-  return modalContext;
+    return modalContext;
 };

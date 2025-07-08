@@ -6,52 +6,55 @@ import PriorityDropdown from '../../Shared/PriorityDropdown';
 import DatePicker from '../../Shared/DatePicker';
 
 interface TaskMetadataSectionProps {
-  priority: PriorityType;
-  dueDate: string;
-  taskId: number | undefined;
-  onStatusChange: (value: StatusType) => void;
-  onPriorityChange: (value: PriorityType) => void;
-  onDueDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    priority: PriorityType;
+    dueDate: string;
+    taskId: number | undefined;
+    onStatusChange: (value: StatusType) => void;
+    onPriorityChange: (value: PriorityType) => void;
+    onDueDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const TaskMetadataSection: React.FC<TaskMetadataSectionProps> = ({
-  priority,
-  dueDate,
-  taskId,
-  onStatusChange,
-  onPriorityChange,
-  onDueDateChange
+    priority,
+    dueDate,
+    taskId,
+    onStatusChange,
+    onPriorityChange,
+    onDueDateChange,
 }) => {
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-visible">
-      <div className="overflow-visible">
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-          {t('forms.task.labels.priority', 'Priority')}
-        </label>
-        <PriorityDropdown
-          value={priority}
-          onChange={onPriorityChange}
-        />
-      </div>
-      <div className="overflow-visible">
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-          {t('forms.task.labels.dueDate', 'Due Date')}
-        </label>
-        <DatePicker
-          value={dueDate}
-          onChange={(value) => {
-            const event = {
-              target: { name: 'due_date', value }
-            } as React.ChangeEvent<HTMLInputElement>;
-            onDueDateChange(event);
-          }}
-          placeholder={t('forms.task.dueDatePlaceholder', 'Select due date')}
-        />
-      </div>
-    </div>
-  );
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-visible">
+            <div className="overflow-visible">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('forms.task.labels.priority', 'Priority')}
+                </label>
+                <PriorityDropdown
+                    value={priority}
+                    onChange={onPriorityChange}
+                />
+            </div>
+            <div className="overflow-visible">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('forms.task.labels.dueDate', 'Due Date')}
+                </label>
+                <DatePicker
+                    value={dueDate}
+                    onChange={(value) => {
+                        const event = {
+                            target: { name: 'due_date', value },
+                        } as React.ChangeEvent<HTMLInputElement>;
+                        onDueDateChange(event);
+                    }}
+                    placeholder={t(
+                        'forms.task.dueDatePlaceholder',
+                        'Select due date'
+                    )}
+                />
+            </div>
+        </div>
+    );
 };
 
 export default TaskMetadataSection;
