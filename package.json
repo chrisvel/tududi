@@ -15,7 +15,8 @@
     "dev": "webpack serve --config webpack.config.js --hot",
     "lint": "eslint 'frontend/**/*.{js,jsx,ts,tsx}'",
     "lint-fix": "eslint --fix 'frontend/**/*.{js,jsx,ts,tsx}'",
-    "docker:test-build": "bash scripts/test-docker-build.sh"
+    "docker:test-build": "bash scripts/test-docker-build.sh",
+    "format": "prettier --write 'frontend/**/*.{js,jsx,ts,tsx}'"
   },
   "keywords": [],
   "author": "",
@@ -67,6 +68,7 @@
     "i18next": "^24.2.3",
     "i18next-browser-languagedetector": "^8.0.4",
     "i18next-http-backend": "^3.0.2",
+    "prettier": "^3.6.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.4.1",
