@@ -53,20 +53,15 @@ const InboxItems: React.FC = () => {
     // Fetch projects for modals
     const [projects, setProjects] = useState<Project[]>([]);
 
-    // Wrapped in useCallback to prevent dependency issues in useEffect
-    const refreshInboxItems = useCallback(() => {
-        loadInboxItemsToStore();
-    }, []);
-
     useEffect(() => {
         // Initial data loading
-        refreshInboxItems();
+        loadInboxItemsToStore(true);
 
         // Set up an event listener for force reload
         const handleForceReload = () => {
             // Wait a short time to ensure the backend has processed the new item
             setTimeout(() => {
-                refreshInboxItems();
+                loadInboxItemsToStore(false); // Don't show loading state during forced reload
             }, 500);
         };
 
@@ -104,9 +99,10 @@ const InboxItems: React.FC = () => {
 
         // Set up polling for new inbox items (especially from Telegram)
         // This ensures real-time updates when items are added externally
+        // Use a reasonable interval that balances responsiveness with performance
         const pollInterval = setInterval(() => {
-            refreshInboxItems();
-        }, 5000); // Check for new items every 5 seconds
+            loadInboxItemsToStore(false); // Don't show loading state during polling
+        }, 15000); // Check for new items every 15 seconds
 
         // Add event listeners
         window.addEventListener('forceInboxReload', handleForceReload);
@@ -123,7 +119,7 @@ const InboxItems: React.FC = () => {
                 handleInboxItemsUpdated as EventListener
             );
         };
-    }, [refreshInboxItems]);
+    }, [t, showSuccessToast]); // Include dependencies that are actually used
 
     const handleProcessItem = async (id: number) => {
         try {

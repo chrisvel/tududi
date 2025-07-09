@@ -88,10 +88,10 @@ export const deleteInboxItem = async (itemId: number): Promise<void> => {
 let lastCheckTimestamp = Date.now();
 
 // Store-aware functions
-export const loadInboxItemsToStore = async (): Promise<void> => {
+export const loadInboxItemsToStore = async (isInitialLoad: boolean = false): Promise<void> => {
     const inboxStore = useStore.getState().inboxStore;
-    // Only show loading for initial load
-    if (inboxStore.inboxItems.length === 0) {
+    // Only show loading for initial load, not for polling
+    if (isInitialLoad && inboxStore.inboxItems.length === 0) {
         inboxStore.setLoading(true);
     }
 
@@ -141,7 +141,10 @@ export const loadInboxItemsToStore = async (): Promise<void> => {
         console.error('Failed to load inbox items:', error);
         inboxStore.setError(true);
     } finally {
-        inboxStore.setLoading(false);
+        // Only set loading to false if we were actually loading
+        if (isInitialLoad) {
+            inboxStore.setLoading(false);
+        }
     }
 };
 

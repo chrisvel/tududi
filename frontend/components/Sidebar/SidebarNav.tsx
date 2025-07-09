@@ -28,7 +28,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 
     // Load inbox items when component mounts to ensure badge shows correct count
     useEffect(() => {
-        loadInboxItemsToStore().catch(console.error);
+        loadInboxItemsToStore(false).catch(console.error);
     }, []);
 
     const navLinks = [
