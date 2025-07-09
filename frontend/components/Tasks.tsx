@@ -270,7 +270,7 @@ const Tasks: React.FC = () => {
     return (
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
                     <div className="flex items-center mb-2 sm:mb-0">
                         {IconComponent && (
                             <IconComponent className="h-6 w-6 mr-2" />

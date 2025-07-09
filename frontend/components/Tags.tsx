@@ -216,13 +216,11 @@ const Tags: React.FC = () => {
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
                 {/* Tags Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center">
-                        <TagIcon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
-                        <h2 className="text-2xl font-light text-gray-900 dark:text-white">
-                            Tags
-                        </h2>
-                    </div>
+                <div className="flex items-center mb-8">
+                    <TagIcon className="h-6 w-6 mr-2" />
+                    <h2 className="text-2xl font-light">
+                        Tags
+                    </h2>
                 </div>
 
                 {/* Search Bar with Icon */}

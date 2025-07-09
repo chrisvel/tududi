@@ -232,10 +232,10 @@ const Projects: React.FC = () => {
 
     return (
         <div className="flex justify-center px-4 lg:px-2">
-            <div className="w-full max-w-6xl">
+            <div className="w-full max-w-5xl">
                 <div className="flex items-center mb-8">
-                    <FolderIcon className="h-6 w-6 text-gray-500 mr-2" />
-                    <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
+                    <FolderIcon className="h-6 w-6 mr-2" />
+                    <h2 className="text-2xl font-light">
                         {t('projects.title')}
                     </h2>
                 </div>

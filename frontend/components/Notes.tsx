@@ -181,13 +181,11 @@ const Notes: React.FC = () => {
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
                 {/* Notes Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center">
-                        <BookOpenIcon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
-                        <h2 className="text-2xl font-light text-gray-900 dark:text-white">
-                            {t('notes.title')}
-                        </h2>
-                    </div>
+                <div className="flex items-center mb-8">
+                    <BookOpenIcon className="h-6 w-6 mr-2" />
+                    <h2 className="text-2xl font-light">
+                        {t('notes.title')}
+                    </h2>
                 </div>
 
                 {/* Search Bar with Icon */}

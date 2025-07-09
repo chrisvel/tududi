@@ -107,13 +107,11 @@ const Areas: React.FC = () => {
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
                 {/* Areas Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center">
-                        <Squares2X2Icon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
-                        <h2 className="text-2xl font-light text-gray-900 dark:text-white">
-                            {t('areas.title')}
-                        </h2>
-                    </div>
+                <div className="flex items-center mb-8">
+                    <Squares2X2Icon className="h-6 w-6 mr-2" />
+                    <h2 className="text-2xl font-light">
+                        {t('areas.title')}
+                    </h2>
                 </div>
 
                 {/* Areas List */}

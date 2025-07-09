@@ -336,136 +336,140 @@ const InboxItems: React.FC = () => {
         return <LoadingScreen />;
     }
 
-    if (inboxItems.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center p-8 space-y-4 text-center text-gray-600 dark:text-gray-300">
-                <InboxIcon className="h-16 w-16" />
-                <h3 className="text-xl font-semibold">{t('inbox.empty')}</h3>
-                <p>{t('inbox.emptyDescription')}</p>
-            </div>
-        );
-    }
-
     return (
-        <div className="container mx-auto p-4">
-            <div className="flex items-center mb-8">
-                <InboxIcon className="h-6 w-6 mr-2" />
-                <h1 className="text-2xl font-light">{t('inbox.title')}</h1>
-            </div>
+        <div className="flex justify-center px-4 lg:px-2">
+            <div className="w-full max-w-5xl">
+                <div className="flex items-center mb-8">
+                    <InboxIcon className="h-6 w-6 mr-2" />
+                    <h1 className="text-2xl font-light">{t('inbox.title')}</h1>
+                </div>
 
-            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                {t(
-                    'taskViews.inbox',
-                    "Inbox is where all uncategorized tasks are located. Tasks that have not been assigned to a project or don't have a due date will appear here. This is your 'brain dump' area where you can quickly note down tasks and organize them later."
+                <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+                    {t(
+                        'taskViews.inbox',
+                        "Inbox is where all uncategorized tasks are located. Tasks that have not been assigned to a project or don't have a due date will appear here. This is your 'brain dump' area where you can quickly note down tasks and organize them later."
+                    )}
+                </p>
+
+                {inboxItems.length === 0 ? (
+                    <div className="text-center py-8">
+                        <InboxIcon className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                        <p className="text-gray-500 dark:text-gray-400 mb-2">
+                            {t('inbox.empty')}
+                        </p>
+                        <p className="text-sm text-gray-400 dark:text-gray-500">
+                            {t('inbox.emptyDescription')}
+                        </p>
+                    </div>
+                ) : (
+                    <div className="space-y-2">
+                        {inboxItems.map((item) => (
+                            <InboxItemDetail
+                                key={item.id}
+                                item={item}
+                                onProcess={handleProcessItem}
+                                onDelete={handleDeleteItem}
+                                onUpdate={handleUpdateItem}
+                                openTaskModal={handleOpenTaskModal}
+                                openProjectModal={handleOpenProjectModal}
+                                openNoteModal={handleOpenNoteModal}
+                            />
+                        ))}
+                    </div>
                 )}
-            </p>
 
-            <div className="space-y-2">
-                {inboxItems.map((item) => (
-                    <InboxItemDetail
-                        key={item.id}
-                        item={item}
-                        onProcess={handleProcessItem}
-                        onDelete={handleDeleteItem}
-                        onUpdate={handleUpdateItem}
-                        openTaskModal={handleOpenTaskModal}
-                        openProjectModal={handleOpenProjectModal}
-                        openNoteModal={handleOpenNoteModal}
-                    />
-                ))}
-            </div>
-
-            {/* Task Modal - Always render it but control visibility with isOpen */}
-            {/* Add error boundary protection for modal rendering */}
-            {(() => {
-                try {
-                    return (
-                        <TaskModal
-                            isOpen={isTaskModalOpen}
-                            onClose={() => {
-                                setIsTaskModalOpen(false);
-                                setTaskToEdit(null);
-                            }}
-                            task={
-                                taskToEdit || {
-                                    name: '',
-                                    status: 'not_started',
-                                    priority: 'medium',
-                                }
-                            }
-                            onSave={handleSaveTask}
-                            onDelete={async () => {}} // No need to delete since it's a new task
-                            projects={Array.isArray(projects) ? projects : []}
-                            onCreateProject={handleCreateProject}
-                        />
-                    );
-                } catch (error) {
-                    console.error('TaskModal rendering error:', error);
-                    return null;
-                }
-            })()}
-
-            {/* Project Modal - Only render when needed to prevent infinite loops */}
-            {isProjectModalOpen &&
-                (() => {
+                {/* Task Modal - Always render it but control visibility with isOpen */}
+                {/* Add error boundary protection for modal rendering */}
+                {(() => {
                     try {
                         return (
-                            <ProjectModal
-                                isOpen={isProjectModalOpen}
+                            <TaskModal
+                                isOpen={isTaskModalOpen}
                                 onClose={() => {
-                                    setIsProjectModalOpen(false);
-                                    setProjectToEdit(null);
+                                    setIsTaskModalOpen(false);
+                                    setTaskToEdit(null);
                                 }}
-                                onSave={handleSaveProject}
-                                project={projectToEdit || undefined}
-                                areas={[]}
+                                task={
+                                    taskToEdit || {
+                                        name: '',
+                                        status: 'not_started',
+                                        priority: 'medium',
+                                    }
+                                }
+                                onSave={handleSaveTask}
+                                onDelete={async () => {}} // No need to delete since it's a new task
+                                projects={Array.isArray(projects) ? projects : []}
+                                onCreateProject={handleCreateProject}
                             />
                         );
                     } catch (error) {
-                        console.error('ProjectModal rendering error:', error);
+                        console.error('TaskModal rendering error:', error);
                         return null;
                     }
                 })()}
 
-            {/* Note Modal - Always render it but control visibility with isOpen */}
-            {(() => {
-                try {
-                    return (
-                        <NoteModal
-                            isOpen={isNoteModalOpen}
-                            onClose={() => {
-                                setIsNoteModalOpen(false);
-                                setNoteToEdit(null);
-                            }}
-                            onSave={handleSaveNote}
-                            note={noteToEdit}
-                            projects={Array.isArray(projects) ? projects : []}
-                            onCreateProject={handleCreateProject}
-                        />
-                    );
-                } catch (error) {
-                    console.error('NoteModal rendering error:', error);
-                    return null;
-                }
-            })()}
+                {/* Project Modal - Only render when needed to prevent infinite loops */}
+                {isProjectModalOpen &&
+                    (() => {
+                        try {
+                            return (
+                                <ProjectModal
+                                    isOpen={isProjectModalOpen}
+                                    onClose={() => {
+                                        setIsProjectModalOpen(false);
+                                        setProjectToEdit(null);
+                                    }}
+                                    onSave={handleSaveProject}
+                                    project={projectToEdit || undefined}
+                                    areas={[]}
+                                />
+                            );
+                        } catch (error) {
+                            console.error('ProjectModal rendering error:', error);
+                            return null;
+                        }
+                    })()}
 
-            {/* Edit Inbox Item Modal */}
-            {isEditModalOpen && itemToEdit !== null && (
-                <InboxModal
-                    isOpen={isEditModalOpen}
-                    onClose={() => {
-                        setIsEditModalOpen(false);
-                        setItemToEdit(null);
-                    }}
-                    onSave={async () => {}} // Not used in edit mode
-                    initialText={
-                        inboxItems.find((item) => item.id === itemToEdit)
-                            ?.content || ''
+                {/* Note Modal - Always render it but control visibility with isOpen */}
+                {(() => {
+                    try {
+                        return (
+                            <NoteModal
+                                isOpen={isNoteModalOpen}
+                                onClose={() => {
+                                    setIsNoteModalOpen(false);
+                                    setNoteToEdit(null);
+                                }}
+                                onSave={handleSaveNote}
+                                note={noteToEdit}
+                                projects={Array.isArray(projects) ? projects : []}
+                                onCreateProject={handleCreateProject}
+                            />
+                        );
+                    } catch (error) {
+                        console.error('NoteModal rendering error:', error);
+                        return null;
                     }
-                    editMode={true}
-                    onEdit={handleSaveEditedItem}
-                />
-            )}
+                })()}
+
+                {/* Edit Inbox Item Modal */}
+                {isEditModalOpen && itemToEdit !== null && (
+                    <InboxModal
+                        isOpen={isEditModalOpen}
+                        onClose={() => {
+                            setIsEditModalOpen(false);
+                            setItemToEdit(null);
+                        }}
+                        onSave={async () => {}} // Not used in edit mode
+                        initialText={
+                            inboxItems.find((item) => item.id === itemToEdit)
+                                ?.content || ''
+                        }
+                        editMode={true}
+                        onEdit={handleSaveEditedItem}
+                    />
+                )}
+            </div>
         </div>
     );
 };
