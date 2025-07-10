@@ -273,9 +273,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     </div>
 
                     {/* Task content - 65% width */}
-                    <div className="ml-2 flex-1 w-[65%]">
+                    <div className="ml-2 flex-1 w-[65%] min-w-0">
                         {/* Task Title */}
-                        <div className="flex items-center font-light text-md text-gray-900 dark:text-gray-100">
+                        <div className="font-light text-md text-gray-900 dark:text-gray-100">
                             <span className="break-words">{task.name}</span>
                             {isOverdue && (
                                 <span
