@@ -4,6 +4,7 @@ import {
     CalendarIcon,
     PlayIcon,
     ArrowPathIcon,
+    ArrowRightIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
@@ -128,12 +129,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 {task.name}
                             </span>
                             {isOverdue && (
-                                <span
-                                    className="ml-2 px-2 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-md"
-                                    title="Task has been in today plan for a while"
-                                >
-                                    overdue
-                                </span>
+                                <ArrowRightIcon
+                                    className="ml-2 h-4 w-4 text-amber-600 dark:text-amber-400 opacity-60"
+                                    title="This task was in your plan yesterday and wasn't completed."
+                                />
                             )}
                         </div>
                         {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
@@ -278,12 +277,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         <div className="font-light text-md text-gray-900 dark:text-gray-100">
                             <span className="break-words">{task.name}</span>
                             {isOverdue && (
-                                <span
-                                    className="ml-2 px-2 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-md"
-                                    title="Task has been in today plan for a while"
-                                >
-                                    overdue
-                                </span>
+                                <ArrowRightIcon
+                                    className="ml-2 h-4 w-4 text-amber-600 dark:text-amber-400 opacity-60"
+                                    title="This task was in your plan yesterday and wasn't completed."
+                                />
                             )}
                         </div>
 

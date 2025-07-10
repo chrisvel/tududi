@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     MagnifyingGlassIcon,
     FolderIcon,
     Squares2X2Icon,
     Bars3Icon,
+    ChevronDownIcon,
 } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import ProjectModal from './Project/ProjectModal';
@@ -35,6 +36,71 @@ const getPriorityStyles = (priority: PriorityType) => {
     }
 };
 
+// Reusable dropdown component
+interface DropdownOption {
+    value: string;
+    label: string;
+}
+
+interface DropdownProps {
+    label: string;
+    value: string;
+    options: DropdownOption[];
+    onChange: (value: string) => void;
+    placeholder?: string;
+}
+
+const Dropdown: React.FC<DropdownProps> = ({ label, value, options, onChange, placeholder }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const selectedOption = options.find(option => option.value === value);
+
+    return (
+        <div className="w-full md:w-auto relative" ref={dropdownRef}>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {label}
+            </label>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="inline-flex justify-between w-full px-3 py-2 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+                <span>{selectedOption?.label || placeholder}</span>
+                <ChevronDownIcon className={`w-5 h-5 text-gray-500 dark:text-gray-300 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isOpen && (
+                <div className="absolute z-10 mt-2 w-full bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600 max-h-60 overflow-y-auto">
+                    {options.map((option) => (
+                        <button
+                            key={option.value}
+                            onClick={() => {
+                                onChange(option.value);
+                                setIsOpen(false);
+                            }}
+                            className={`flex items-center justify-between w-full px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
+                                option.value === value ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                            }`}
+                        >
+                            {option.label}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const Projects: React.FC = () => {
     const { t } = useTranslation();
     const {
@@ -64,6 +130,7 @@ const Projects: React.FC = () => {
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
+    const [isSearchExpanded, setIsSearchExpanded] = useState<boolean>(false);
 
     const [searchParams, setSearchParams] = useSearchParams();
     const activeFilter = searchParams.get('active') || 'all';
@@ -99,6 +166,7 @@ const Projects: React.FC = () => {
 
         loadProjects();
     }, [activeFilter, areaFilter]);
+
 
     const handleSaveProject = async (project: Project) => {
         setProjectsLoading(true);
@@ -266,65 +334,54 @@ const Projects: React.FC = () => {
                         >
                             <Bars3Icon className="h-5 w-5" />
                         </button>
+
+                        {/* Search Toggle Button */}
+                        <button
+                            onClick={() => setIsSearchExpanded(!isSearchExpanded)}
+                            className={`p-2 rounded-md focus:outline-none transition-colors ${
+                                isSearchExpanded
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                            }`}
+                            aria-label={t('common.search', 'Search')}
+                        >
+                            <MagnifyingGlassIcon className="h-5 w-5" />
+                        </button>
                     </div>
 
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                        <div className="w-full md:w-auto">
-                            <label
-                                htmlFor="activeFilter"
-                                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                            >
-                                {t('common.status')}
-                            </label>
-                            <select
-                                id="activeFilter"
-                                value={activeFilter}
-                                onChange={handleActiveFilterChange}
-                                className="block w-full p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="true">
-                                    {t('projects.filters.active')}
-                                </option>
-                                <option value="false">
-                                    {t('projects.filters.inactive')}
-                                </option>
-                                <option value="all">
-                                    {t('projects.filters.all')}
-                                </option>
-                            </select>
-                        </div>
+                        {/* Status Dropdown */}
+                        <Dropdown
+                            label={t('common.status')}
+                            value={activeFilter}
+                            options={[
+                                { value: 'true', label: t('projects.filters.active') },
+                                { value: 'false', label: t('projects.filters.inactive') },
+                                { value: 'all', label: t('projects.filters.all') }
+                            ]}
+                            onChange={(value) => handleActiveFilterChange({target: {value}} as any)}
+                        />
 
-                        <div className="w-full md:w-auto">
-                            <label
-                                htmlFor="areaFilter"
-                                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                            >
-                                {t('common.area')}
-                            </label>
-                            <select
-                                id="areaFilter"
-                                value={areaFilter}
-                                onChange={handleAreaFilterChange}
-                                className="block w-full p-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">
-                                    {t('projects.filters.allAreas')}
-                                </option>
-                                {areas.map((area) => (
-                                    <option
-                                        key={area.id}
-                                        value={area.id?.toString()}
-                                    >
-                                        {area.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        {/* Area Dropdown */}
+                        <Dropdown
+                            label={t('common.area')}
+                            value={areaFilter}
+                            options={[
+                                { value: '', label: t('projects.filters.allAreas') },
+                                ...areas.map(area => ({
+                                    value: area.id?.toString() || '',
+                                    label: area.name
+                                }))
+                            ]}
+                            onChange={(value) => handleAreaFilterChange({target: {value}} as any)}
+                        />
                     </div>
                 </div>
 
-                {/* Search Bar */}
-                <div className="mb-4">
+                {/* Collapsible Search Bar */}
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    isSearchExpanded ? 'max-h-20 opacity-100 mb-4' : 'max-h-0 opacity-0 mb-0'
+                }`}>
                     <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm p-2">
                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
                         <input
