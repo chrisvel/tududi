@@ -383,7 +383,7 @@
   "inbox": {
     "title": "Bandeja de Entrada",
     "empty": "Su bandeja de entrada está vacía",
-    "emptyDescription": "Capture rápidamente pensamientos e ideas usando el botón + en la esquina superior derecha",
+    "emptyDescription": "Capture rápidamente pensamientos e ideas usando el icono ⚡ en la barra superior o el botón + en la barra lateral",
     "captureThought": "Capture su pensamiento...",
     "saveToInbox": "Guardar en Bandeja de Entrada",
     "itemAdded": "Elemento agregado a la bandeja de entrada",
