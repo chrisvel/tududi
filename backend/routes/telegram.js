@@ -100,18 +100,164 @@ router.post('/telegram/setup', async (req, res) => {
                 .json({ error: 'Invalid Telegram bot token format.' });
         }
 
+        // Get bot info from Telegram API
+        const botInfo = await getBotInfo(token);
+        if (!botInfo) {
+            return res
+                .status(400)
+                .json({ error: 'Invalid bot token or bot not accessible.' });
+        }
+
         // Update user's telegram bot token
         await user.update({ telegram_bot_token: token });
 
         res.json({
             success: true,
             message: 'Telegram bot token updated successfully',
-            token: token,
+            bot: botInfo,
         });
     } catch (error) {
         console.error('Error setting up Telegram:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// Helper function to get bot info from Telegram API
+async function getBotInfo(token) {
+    return new Promise((resolve, reject) => {
+        const url = `https://api.telegram.org/bot${token}/getMe`;
+        
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+        const req = require('https').request(url, options, (res) => {
+            let data = '';
+            
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+            
+            res.on('end', () => {
+                try {
+                    const response = JSON.parse(data);
+                    if (response.ok) {
+                        resolve(response.result);
+                    } else {
+                        console.error('Telegram API error:', response.description);
+                        resolve(null);
+                    }
+                } catch (error) {
+                    console.error('Error parsing Telegram response:', error);
+                    resolve(null);
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            console.error('Error getting bot info:', error);
+            resolve(null);
+        });
+
+        req.end();
+    });
+}
+
+// POST /api/telegram/send-welcome
+router.post('/telegram/send-welcome', async (req, res) => {
+    try {
+        if (!req.session || !req.session.userId) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
+
+        const user = await User.findByPk(req.session.userId);
+        if (!user || !user.telegram_bot_token) {
+            return res
+                .status(400)
+                .json({ error: 'Telegram bot token not set.' });
+        }
+
+        const { chatId } = req.body;
+        if (!chatId) {
+            return res
+                .status(400)
+                .json({ error: 'Chat ID is required.' });
+        }
+
+        // Send welcome message
+        const success = await sendWelcomeMessage(user.telegram_bot_token, chatId);
+        
+        if (success) {
+            res.json({
+                success: true,
+                message: 'Welcome message sent successfully',
+            });
+        } else {
+            res.status(500).json({
+                error: 'Failed to send welcome message.',
+            });
+        }
+    } catch (error) {
+        console.error('Error sending welcome message:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Helper function to send welcome message
+async function sendWelcomeMessage(token, chatId) {
+    return new Promise((resolve) => {
+        const welcomeText = `🎉 Welcome to Tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your Tududi inbox as a task.\n\n✨ Commands:\n• /help - Show help information\n• Just type any text - Add it as a task\n\nLet's get organized! 🚀`;
+        
+        const postData = JSON.stringify({
+            chat_id: chatId,
+            text: welcomeText,
+        });
+
+        const url = `https://api.telegram.org/bot${token}/sendMessage`;
+        
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(postData),
+            },
+        };
+
+        const req = require('https').request(url, options, (res) => {
+            let data = '';
+            
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+            
+            res.on('end', () => {
+                try {
+                    const response = JSON.parse(data);
+                    if (response.ok) {
+                        console.log('Welcome message sent successfully');
+                        resolve(true);
+                    } else {
+                        console.error('Failed to send welcome message:', response.description);
+                        resolve(false);
+                    }
+                } catch (error) {
+                    console.error('Error parsing welcome message response:', error);
+                    resolve(false);
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            console.error('Error sending welcome message:', error);
+            resolve(false);
+        });
+
+        req.write(postData);
+        req.end();
+    });
+}
 
 module.exports = router;

@@ -215,7 +215,7 @@ const handleBotCommand = async (command, user, chatId, messageId) => {
             await sendTelegramMessage(
                 botToken,
                 chatId,
-                `🚀 Welcome to Tududi!\n\nYour personal task management bot is ready. Simply send me any message and I'll add it to your inbox.\n\nCommands:\n/help - Show this help message\n/start - Show welcome message`,
+                `🎉 Welcome to Tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your Tududi inbox as a task.\n\n✨ Commands:\n• /help - Show help information\n• /start - Show welcome message\n• Just type any text - Add it as a task\n\nLet's get organized! 🚀`,
                 messageId
             );
             break;
@@ -245,10 +245,24 @@ const processMessage = async (user, update) => {
     const chatId = message.chat.id.toString();
     const messageId = message.message_id;
 
-    // Update chat ID if needed
+    // Update chat ID if needed and send welcome message for new users
     if (!user.telegram_chat_id) {
         await updateUserChatId(user.id, chatId);
         user.telegram_chat_id = chatId; // Update local object
+        
+        // Send welcome message for first-time users
+        await sendTelegramMessage(
+            user.telegram_bot_token,
+            chatId,
+            `🎉 Welcome to Tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your Tududi inbox as a task.\n\n✨ Commands:\n• /help - Show help information\n• /start - Show welcome message\n• Just type any text - Add it as a task\n\nLet's get organized! 🚀`
+        );
+        
+        console.log(`Sent welcome message to new user ${user.id} in chat ${chatId}`);
+        
+        // If the first message was just /start, don't process it further
+        if (text.toLowerCase() === '/start') {
+            return;
+        }
     }
 
     try {

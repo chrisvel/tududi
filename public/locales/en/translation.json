@@ -155,7 +155,7 @@
     "telegramConnected": "Your Telegram account is connected! Send messages to your bot to add items to your Tududi inbox.",
     "setupTelegram": "Setup Telegram",
     "settingUp": "Setting up...",
-    "telegramSetupSuccess": "Telegram bot configured successfully!",
+    "telegramSetupSuccess": "Telegram bot \"{{botName}}\" configured successfully!",
     "telegramSetupFailed": "Failed to set up Telegram bot.",
     "invalidTelegramToken": "Invalid Telegram bot token format.",
     "telegramInstructions": "Go to https://t.me/{{botUsername}} and start chatting with your bot to connect it to your Tududi account.",

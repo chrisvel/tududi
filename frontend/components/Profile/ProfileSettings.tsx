@@ -24,6 +24,7 @@ import {
     CheckIcon,
 } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
+import { dispatchTelegramStatusChange } from '../../contexts/TelegramStatusContext';
 
 interface ProfileSettingsProps {
     currentUser: { id: number; email: string };
@@ -51,6 +52,7 @@ interface Profile {
 
 interface TelegramBotInfo {
     username: string;
+    first_name?: string;
     polling_status: any;
     chat_url: string;
 }
@@ -308,9 +310,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 }
 
                 const data = await response.json();
-                setIsPolling(data.running);
+                setIsPolling(data.status?.running || false);
 
-                if (data.token_exists && !data.running) {
+                // Auto-start polling if user has a bot token but polling is not running
+                if (profile?.telegram_bot_token && !data.status?.running) {
                     handleStartPolling();
                 }
             } catch {
@@ -319,6 +322,63 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         };
         fetchProfile();
     }, []);
+
+    // Fetch Telegram bot info when profile loads
+    useEffect(() => {
+        const fetchTelegramInfo = async () => {
+            if (profile?.telegram_bot_token) {
+                try {
+                    // Fetch bot info
+                    const setupResponse = await fetch('/api/telegram/setup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ token: profile.telegram_bot_token }),
+                    });
+                    
+                    if (setupResponse.ok) {
+                        const setupData = await setupResponse.json();
+                        if (setupData.bot) {
+                            setTelegramBotInfo({
+                                username: setupData.bot.username,
+                                first_name: setupData.bot.first_name,
+                                chat_url: `https://t.me/${setupData.bot.username}`,
+                                polling_status: null
+                            });
+                        }
+                    }
+
+                    // Also fetch and auto-start polling status
+                    const pollingResponse = await fetch('/api/telegram/polling-status', {
+                        credentials: 'include',
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                    });
+                    
+                    if (pollingResponse.ok) {
+                        const pollingData = await pollingResponse.json();
+                        setIsPolling(pollingData.status?.running || false);
+                        
+                        // Auto-start polling if not running
+                        if (!pollingData.status?.running) {
+                            setTimeout(() => {
+                                handleStartPolling();
+                            }, 1000);
+                        } else {
+                            // Dispatch healthy status if already running
+                            dispatchTelegramStatusChange('healthy');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching Telegram info:', error);
+                }
+            }
+        };
+
+        fetchTelegramInfo();
+    }, [profile?.telegram_bot_token]);
 
     useEffect(() => {}, [updateKey, i18n.language]);
 
@@ -383,28 +443,62 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
             const data = await response.json();
             setTelegramSetupStatus('success');
+            
+            // Extract bot info properly
+            const bot = data.bot;
+            let botDisplayName = 'Bot';
+            
+            if (bot) {
+                if (bot.first_name && bot.username) {
+                    botDisplayName = `${bot.first_name} (@${bot.username})`;
+                } else if (bot.first_name) {
+                    botDisplayName = bot.first_name;
+                } else if (bot.username) {
+                    botDisplayName = `@${bot.username}`;
+                }
+            }
+            
             showSuccessToast(
                 t(
                     'profile.telegramSetupSuccess',
-                    'Telegram bot configured successfully!'
+                    'Telegram bot "{{botName}}" configured successfully!',
+                    { botName: botDisplayName }
                 )
             );
 
             if (data.bot) {
-                setTelegramBotInfo(data.bot);
+                setTelegramBotInfo({
+                    username: data.bot.username,
+                    first_name: data.bot.first_name,
+                    chat_url: `https://t.me/${data.bot.username}`,
+                    polling_status: null
+                });
                 setIsPolling(true);
+
+                // Send welcome message on first setup
+                if (profile?.telegram_chat_id) {
+                    try {
+                        await fetch('/api/telegram/send-welcome', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ chatId: profile.telegram_chat_id }),
+                        });
+                    } catch (error) {
+                        console.error('Error sending welcome message:', error);
+                    }
+                }
 
                 if (!data.bot.polling_status?.running) {
                     setTimeout(() => {
                         handleStartPolling();
                     }, 1000);
                 }
+                
+                // Dispatch status change event
+                dispatchTelegramStatusChange('healthy');
             }
-
-            const botUsername =
-                data.bot?.username || formData.telegram_bot_token.split(':')[0];
-
-            window.open(`https://t.me/${botUsername}`, '_blank');
         } catch (error) {
             setTelegramSetupStatus('error');
             showErrorToast((error as Error).message);
@@ -428,6 +522,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             const data = await response.json();
             setIsPolling(true);
             showSuccessToast(t('profile.pollingStarted'));
+            
+            // Dispatch status change event
+            dispatchTelegramStatusChange('healthy');
 
             if (telegramBotInfo) {
                 setTelegramBotInfo({
@@ -437,6 +534,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             }
         } catch {
             showErrorToast(t('profile.pollingError'));
+            dispatchTelegramStatusChange('problem');
         }
     };
 
@@ -459,6 +557,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             showSuccessToast(
                 t('profile.pollingStopped', 'Polling stopped successfully.')
             );
+            
+            // Dispatch status change event
+            dispatchTelegramStatusChange('problem');
 
             if (telegramBotInfo) {
                 setTelegramBotInfo({
@@ -468,6 +569,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             }
         } catch {
             showErrorToast(t('profile.pollingError'));
+            dispatchTelegramStatusChange('problem');
         }
     };
 
@@ -1315,7 +1417,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     </div>
                                 )}
 
-                                {telegramBotInfo && (
+                                {(telegramBotInfo || profile?.telegram_bot_token) && (
                                     <div className="p-2 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded text-blue-800 dark:text-blue-200">
                                         <p className="font-medium mb-2">
                                             {t(
@@ -1324,15 +1426,25 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             )}
                                         </p>
                                         <div className="text-sm space-y-1">
-                                            <p>
-                                                <span className="font-semibold">
-                                                    {t(
-                                                        'profile.botUsername',
-                                                        'Bot Username:'
-                                                    )}{' '}
-                                                </span>
-                                                @{telegramBotInfo.username}
-                                            </p>
+                                            {telegramBotInfo?.first_name && (
+                                                <p>
+                                                    <span className="font-semibold">
+                                                        Bot Name:{' '}
+                                                    </span>
+                                                    {telegramBotInfo.first_name}
+                                                </p>
+                                            )}
+                                            {telegramBotInfo?.username && (
+                                                <p>
+                                                    <span className="font-semibold">
+                                                        {t(
+                                                            'profile.botUsername',
+                                                            'Bot Username:'
+                                                        )}{' '}
+                                                    </span>
+                                                    @{telegramBotInfo.username}
+                                                </p>
+                                            )}
                                             <div className="mt-2">
                                                 <p className="font-semibold mb-1">
                                                     {t(
@@ -1386,82 +1498,21 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                             )}
                                                         </button>
                                                     )}
-                                                    <a
-                                                        href={
-                                                            telegramBotInfo.chat_url
-                                                        }
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="px-3 py-1 bg-green-600 text-white dark:bg-green-700 rounded text-sm hover:bg-green-700 dark:hover:bg-green-800"
-                                                    >
-                                                        {t(
-                                                            'profile.openTelegram',
-                                                            'Open in Telegram'
-                                                        )}
-                                                    </a>
-                                                    <button
-                                                        onClick={async () => {
-                                                            try {
-                                                                const testMessage =
-                                                                    prompt(
-                                                                        'Enter a test message:'
-                                                                    );
-                                                                if (
-                                                                    testMessage
-                                                                ) {
-                                                                    const response =
-                                                                        await fetch(
-                                                                            `/api/telegram/test/${profile?.id}`,
-                                                                            {
-                                                                                method: 'POST',
-                                                                                headers:
-                                                                                    {
-                                                                                        'Content-Type':
-                                                                                            'application/json',
-                                                                                    },
-                                                                                body: JSON.stringify(
-                                                                                    {
-                                                                                        text: testMessage,
-                                                                                    }
-                                                                                ),
-                                                                            }
-                                                                        );
-                                                                    const result =
-                                                                        await response.json();
-                                                                    if (
-                                                                        result.success
-                                                                    ) {
-                                                                        showSuccessToast(
-                                                                            t(
-                                                                                'profile.testMessageSent',
-                                                                                'Test message sent successfully!'
-                                                                            )
-                                                                        );
-                                                                    } else {
-                                                                        showErrorToast(
-                                                                            t(
-                                                                                'profile.testMessageFailed',
-                                                                                'Failed to send test message.'
-                                                                            )
-                                                                        );
-                                                                    }
-                                                                }
-                                                            } catch {
-                                                                showErrorToast(
-                                                                    t(
-                                                                        'profile.testMessageError',
-                                                                        'Error sending test message.'
-                                                                    )
-                                                                );
+                                                    {telegramBotInfo?.chat_url && (
+                                                        <a
+                                                            href={
+                                                                telegramBotInfo.chat_url
                                                             }
-                                                        }}
-                                                        className="px-3 py-1 bg-purple-600 text-white dark:bg-purple-700 rounded text-sm hover:bg-purple-700 dark:hover:bg-purple-800"
-                                                    >
-                                                        {t(
-                                                            'profile.testTelegramMessage',
-                                                            'Test Telegram'
-                                                        )}
-                                                    </button>
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="px-3 py-1 bg-green-600 text-white dark:bg-green-700 rounded text-sm hover:bg-green-700 dark:hover:bg-green-800"
+                                                        >
+                                                            {t(
+                                                                'profile.openTelegram',
+                                                                'Open in Telegram'
+                                                            )}
+                                                        </a>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -1492,6 +1543,25 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                               'Setup Telegram'
                                           )}
                                 </button>
+                                
+                                {/* Status indicator */}
+                                {telegramSetupStatus === 'success' && (
+                                    <div className="mt-2 flex items-center text-green-600 dark:text-green-400">
+                                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                        </svg>
+                                        <span className="text-sm font-medium">Bot configured successfully!</span>
+                                    </div>
+                                )}
+                                
+                                {telegramSetupStatus === 'error' && (
+                                    <div className="mt-2 flex items-center text-red-600 dark:text-red-400">
+                                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                        </svg>
+                                        <span className="text-sm font-medium">Setup failed. Please check your token.</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

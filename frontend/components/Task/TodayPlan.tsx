@@ -28,15 +28,17 @@ const TodayPlan: React.FC<TodayPlanProps> = ({
     if (safeTodayPlanTasks.length === 0) {
         return (
             <>
-                <div className="text-center py-8">
-                    <CalendarDaysIcon className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-gray-400 mb-2">
+                <div className="text-center py-12">
+                    <div className="mb-6">
+                        <CalendarDaysIcon className="h-16 w-16 text-gray-300 dark:text-gray-500 mx-auto opacity-75" />
+                    </div>
+                    <h3 className="text-xl font-light text-gray-700 dark:text-gray-300 mb-3">
                         {t(
                             'tasks.noPlanToday',
                             'No tasks planned for today yet'
                         )}
-                    </p>
-                    <p className="text-sm text-gray-400 dark:text-gray-500">
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
                         {t(
                             'tasks.addToPlanHint',
                             'Use the calendar icons next to suggested tasks to add them to your today plan'

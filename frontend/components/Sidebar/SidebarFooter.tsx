@@ -9,10 +9,12 @@ import {
     Squares2X2Icon,
     TagIcon,
     InboxIcon,
+    ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { Note } from '../../entities/Note';
 import { Area } from '../../entities/Area';
+import { useTelegramStatus } from '../../contexts/TelegramStatusContext';
 
 interface SidebarFooterProps {
     currentUser: { email: string };
@@ -41,6 +43,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
 }) => {
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const { status: telegramStatus } = useTelegramStatus();
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const toggleDropdown = () => {
@@ -233,18 +236,37 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                             )}
                         </div>
 
-                        {/* Dark Mode Toggle - Right */}
-                        <button
-                            onClick={toggleDarkMode}
-                            className="flex items-center justify-center focus:outline-none text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-2 py-1 transition-colors duration-200"
-                            aria-label="Toggle Dark Mode"
-                        >
-                            {isDarkMode ? (
-                                <SunIcon className="h-6 w-6 text-yellow-500" />
-                            ) : (
-                                <MoonIcon className="h-6 w-6 text-gray-500" />
+                        {/* Telegram Status and Dark Mode Toggle - Right */}
+                        <div className="flex items-center space-x-2">
+                            {/* Telegram Status Indicator */}
+                            {telegramStatus !== 'none' && (
+                                <div 
+                                    className="flex items-center justify-center"
+                                    title={telegramStatus === 'healthy' ? 'Telegram connected and polling' : 'Telegram connection problem'}
+                                >
+                                    <ChatBubbleLeftRightIcon 
+                                        className={`h-5 w-5 ${
+                                            telegramStatus === 'healthy' 
+                                                ? 'text-green-500' 
+                                                : 'text-red-500'
+                                        }`} 
+                                    />
+                                </div>
                             )}
-                        </button>
+                            
+                            {/* Dark Mode Toggle */}
+                            <button
+                                onClick={toggleDarkMode}
+                                className="flex items-center justify-center focus:outline-none text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-2 py-1 transition-colors duration-200"
+                                aria-label="Toggle Dark Mode"
+                            >
+                                {isDarkMode ? (
+                                    <SunIcon className="h-6 w-6 text-yellow-500" />
+                                ) : (
+                                    <MoonIcon className="h-6 w-6 text-gray-500" />
+                                )}
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>

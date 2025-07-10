@@ -850,7 +850,8 @@ const TasksToday: React.FC = () => {
 
                 {metrics.tasks_due_today.length === 0 &&
                     metrics.tasks_in_progress.length === 0 &&
-                    metrics.suggested_tasks.length === 0 && (
+                    metrics.suggested_tasks.length === 0 &&
+                    (metrics.today_plan_tasks || []).length > 0 && (
                         <p className="text-gray-500 text-center mt-4">
                             {t('tasks.noTasksAvailable')}
                         </p>

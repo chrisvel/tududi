@@ -27,6 +27,7 @@ interface SchedulerStatus {
 
 interface TelegramBotInfo {
     username: string;
+    first_name?: string;
     polling_status: any;
     chat_url: string;
 }
