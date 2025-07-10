@@ -1,0 +1,22 @@
+{
+  "name": "tududi",
+  "short_name": "tududi",
+  "description": "A simple and effective task management application",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#4a5568",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

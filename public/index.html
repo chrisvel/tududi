@@ -4,7 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="/">
-    <title>Tududi</title>
+    <title>tududi</title>
+    <!-- SVG favicon with built-in light/dark mode support -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    
+    <!-- Light mode favicon for browsers that support it -->
+    <link rel="icon" type="image/x-icon" href="/favicon-light.ico" media="(prefers-color-scheme: light)">
+    
+    <!-- Dark mode favicon for browsers that support it -->
+    <link rel="icon" type="image/x-icon" href="/favicon-dark.ico" media="(prefers-color-scheme: dark)">
+    
+    <!-- Fallback favicon (medium gray - works reasonably in both modes) -->
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <!-- Web app manifest for PWA support -->
+    <link rel="manifest" href="/manifest.json">
   </head>
   <body>
     <div id="root"></div>

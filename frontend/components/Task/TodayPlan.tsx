@@ -28,22 +28,22 @@ const TodayPlan: React.FC<TodayPlanProps> = ({
     if (safeTodayPlanTasks.length === 0) {
         return (
             <>
-                <div className="text-center py-12">
-                    <div className="mb-6">
-                        <CalendarDaysIcon className="h-16 w-16 text-gray-300 dark:text-gray-500 mx-auto opacity-75" />
+                <div className="flex justify-center items-center mt-4">
+                    <div className="w-full max-w bg-black/15 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
+                        <CalendarDaysIcon className="h-20 w-20 text-gray-400 opacity-30 mb-6" />
+                        <p className="text-2xl font-light text-center text-gray-600 dark:text-gray-300 mb-2">
+                            {t(
+                                'tasks.noPlanToday',
+                                'No tasks planned for today yet'
+                            )}
+                        </p>
+                        <p className="text-base text-center text-gray-400 dark:text-gray-400">
+                            {t(
+                                'tasks.addToPlanHint',
+                                'Click the "add to today plan" icon on the right of any task to add it here'
+                            )}
+                        </p>
                     </div>
-                    <h3 className="text-xl font-light text-gray-700 dark:text-gray-300 mb-3">
-                        {t(
-                            'tasks.noPlanToday',
-                            'No tasks planned for today yet'
-                        )}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
-                        {t(
-                            'tasks.addToPlanHint',
-                            'Use the calendar icons next to suggested tasks to add them to your today plan'
-                        )}
-                    </p>
                 </div>
             </>
         );

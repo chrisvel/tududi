@@ -57,7 +57,7 @@ module.exports = {
     isDevelopment && new ReactRefreshWebpackPlugin(),
     isDevelopment && new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
-      title: 'Tududi',
+      title: 'tududi',
       filename: 'index.html',
       template: 'public/index.html'
     }),

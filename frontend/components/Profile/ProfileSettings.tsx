@@ -1376,7 +1376,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     <p>
                                         {t(
                                             'profile.telegramDescription',
-                                            'Connect your Tududi account to a Telegram bot to add items to your inbox via Telegram messages.'
+                                            'Connect your tududi account to a Telegram bot to add items to your inbox via Telegram messages.'
                                         )}
                                     </p>
                                 </div>
@@ -1411,7 +1411,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                         <p className="text-sm">
                                             {t(
                                                 'profile.telegramConnected',
-                                                'Your Telegram account is connected! Send messages to your bot to add items to your Tududi inbox.'
+                                                'Your Telegram account is connected! Send messages to your bot to add items to your tududi inbox.'
                                             )}
                                         </p>
                                     </div>

@@ -17,7 +17,7 @@ This app allows users to manage their tasks, projects, areas, notes, and tags in
 
 ## 🧠 Philosophy
 
-For the thinking behind Tududi, read [Designing a Life Management System That Doesn't Fight Back](https://example.com/designing-a-life-management-system-that-doesnt-fight-back)
+For the thinking behind tududi, read [Designing a Life Management System That Doesn't Fight Back](https://example.com/designing-a-life-management-system-that-doesnt-fight-back)
 
 ## ✨ Features
 
@@ -44,7 +44,7 @@ For the thinking behind Tududi, read [Designing a Life Management System That Do
 
 ## 🔄 Recurring Tasks
 
-Tududi features a sophisticated recurring task system designed to handle complex scheduling needs while maintaining an intuitive user experience.
+tududi features a sophisticated recurring task system designed to handle complex scheduling needs while maintaining an intuitive user experience.
 
 ### Recurrence Patterns
 
@@ -149,7 +149,7 @@ Navigate to [http://localhost:3002](http://localhost:3002) and login with your c
 
 ## 📱 Telegram Integration Setup
 
-Tududi includes built-in Telegram integration that allows you to create tasks directly from Telegram messages. This feature is optional and can be configured after installation.
+tududi includes built-in Telegram integration that allows you to create tasks directly from Telegram messages. This feature is optional and can be configured after installation.
 
 ### 🤖 Creating a Telegram Bot
 
@@ -158,7 +158,7 @@ Tududi includes built-in Telegram integration that allows you to create tasks di
    ```
    /newbot
    ```
-3. **Choose a name** for your bot (e.g., "My Tududi Bot")
+3. **Choose a name** for your bot (e.g., "My tududi Bot")
 4. **Choose a username** for your bot (must end with "bot", e.g., "mytududi_bot")
 5. **Save the bot token** - BotFather will provide a token like `123456789:ABCdefGHIjklMNOpqrSTUvwxyz`
 
@@ -166,7 +166,7 @@ Tududi includes built-in Telegram integration that allows you to create tasks di
 
 #### Method: Through the Web Interface (Recommended)
 
-1. **Login to Tududi** and go to Settings
+1. **Login to tududi** and go to Settings
 2. **Navigate to the Telegram tab**
 3. **Paste your bot token** from BotFather
 4. **Click "Setup Telegram"** - this will:
@@ -174,12 +174,12 @@ Tududi includes built-in Telegram integration that allows you to create tasks di
    - Display your bot's username
    - Provide a direct link to start chatting with your bot
 5. **Start chatting** with your bot by clicking the provided link or searching for your bot in Telegram
-6. **Send your first message** to your bot - it will automatically appear in your Tududi inbox!
+6. **Send your first message** to your bot - it will automatically appear in your tududi inbox!
 
 ### 🔄 How It Works
 
-1. **Message Collection**: Tududi polls your bot every 30 seconds for new messages
-2. **Automatic Inbox Creation**: Every message sent to your bot creates a new item in your Tududi inbox
+1. **Message Collection**: tududi polls your bot every 30 seconds for new messages
+2. **Automatic Inbox Creation**: Every message sent to your bot creates a new item in your tududi inbox
 3. **Duplicate Prevention**: The same message won't create multiple inbox items
 4. **Processing**: You can then process inbox items into tasks, projects, or notes
 

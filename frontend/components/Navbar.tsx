@@ -116,8 +116,8 @@ const Navbar: React.FC<NavbarProps> = ({
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md h-16">
             <div className="h-full flex items-center">
-                {/* Sidebar-width area with logo centered */}
-                <div className={`${isSidebarOpen ? 'w-full sm:w-72' : 'w-16'} flex items-center justify-center transition-all duration-300 ease-in-out px-4`}>
+                {/* Sidebar-width area with logo and hamburger */}
+                <div className={`${isSidebarOpen ? 'w-full sm:w-72' : 'w-16'} flex items-center ${isSidebarOpen ? 'justify-start' : 'justify-center'} transition-all duration-300 ease-in-out px-4 relative`}>
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                         className="flex items-center focus:outline-none text-gray-500 dark:text-gray-500 absolute left-4"
@@ -131,6 +131,15 @@ const Navbar: React.FC<NavbarProps> = ({
                     </button>
                     
                     {isSidebarOpen && (
+                        <Link
+                            to="/"
+                            className="flex items-center no-underline text-gray-900 dark:text-white ml-12"
+                        >
+                            <span className="text-2xl font-bold">tududi</span>
+                        </Link>
+                    )}
+                    
+                    {!isSidebarOpen && (
                         <Link
                             to="/"
                             className="flex items-center no-underline text-gray-900 dark:text-white"

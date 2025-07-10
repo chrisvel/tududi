@@ -22,7 +22,6 @@ import { useStore } from '../store/useStore';
 import { createProject, fetchProjects } from '../utils/projectsService';
 
 const Notes: React.FC = () => {
-    console.log('Notes component rendering...');
 
     const { t } = useTranslation();
     const [notes, setNotes] = useState<Note[]>([]);
@@ -40,13 +39,6 @@ const Notes: React.FC = () => {
     // Memoize projects to ensure stable reference
     const memoizedProjects = useMemo(() => projects || [], [projects]);
 
-    console.log('Notes component render - projects:', {
-        projectsLength: projects?.length,
-        projects: projects?.map((p) => p.name),
-    });
-    console.log('Memoized projects:', {
-        memoizedLength: memoizedProjects?.length,
-    });
 
     const [isError, setIsError] = useState(false);
     const [hoveredNoteId, setHoveredNoteId] = useState<number | null>(null);
@@ -71,22 +63,10 @@ const Notes: React.FC = () => {
     // Load projects if not available - force load every time for debugging
     useEffect(() => {
         const loadProjectsIfNeeded = async () => {
-            console.log(
-                'useEffect triggered - projects length:',
-                projects?.length
-            );
-            console.log('Force loading projects in Notes component...');
             try {
                 // Fetch all projects (active and inactive)
                 const fetchedProjects = await fetchProjects('all', '');
-                console.log('Raw API response:', fetchedProjects);
-                console.log(
-                    'Projects loaded:',
-                    fetchedProjects.length,
-                    fetchedProjects.map((p) => p.name)
-                );
                 setProjects(fetchedProjects);
-                console.log('setProjects called');
             } catch (error) {
                 console.error('Error loading projects:', error);
             }
@@ -110,12 +90,6 @@ const Notes: React.FC = () => {
     };
 
     const handleEditNote = (note: Note) => {
-        console.log('Opening note modal with projects:', {
-            projectsLength: projects?.length,
-            memoizedLength: memoizedProjects?.length,
-            projectsExist: !!projects,
-            memoizedExist: !!memoizedProjects,
-        });
         setSelectedNote(note);
         setIsNoteModalOpen(true);
     };
@@ -325,9 +299,6 @@ const Notes: React.FC = () => {
                     <NoteModal
                         isOpen={isNoteModalOpen}
                         onClose={() => {
-                            console.log('Closing modal, projects at close:', {
-                                projectsLength: projects?.length,
-                            });
                             setIsNoteModalOpen(false);
                         }}
                         onSave={handleSaveNote}

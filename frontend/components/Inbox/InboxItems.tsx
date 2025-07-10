@@ -11,7 +11,7 @@ import {
 import InboxItemDetail from './InboxItemDetail';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
-import { InboxIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { InboxIcon } from '@heroicons/react/24/outline';
 import LoadingScreen from '../Shared/LoadingScreen';
 import TaskModal from '../Task/TaskModal';
 import ProjectModal from '../Project/ProjectModal';
@@ -380,16 +380,16 @@ const InboxItems: React.FC = () => {
                 </div>
 
                 {inboxItems.length === 0 ? (
-                    <div className="text-center py-12">
-                        <div className="mb-6">
-                            <InboxIcon className="h-16 w-16 text-gray-300 dark:text-gray-500 mx-auto opacity-75" />
+                    <div className="flex justify-center items-center mt-4">
+                        <div className="w-full max-w bg-black/15 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
+                            <InboxIcon className="h-20 w-20 text-gray-400 opacity-30 mb-6" />
+                            <p className="text-2xl font-light text-center text-gray-600 dark:text-gray-300 mb-2">
+                                {t('inbox.empty')}
+                            </p>
+                            <p className="text-base text-center text-gray-400 dark:text-gray-400">
+                                {t('inbox.emptyDescription')}
+                            </p>
                         </div>
-                        <h3 className="text-xl font-light text-gray-700 dark:text-gray-300 mb-3">
-                            {t('inbox.empty')}
-                        </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
-                            {t('inbox.emptyDescription')}
-                        </p>
                     </div>
                 ) : (
                     <div className="space-y-2">
