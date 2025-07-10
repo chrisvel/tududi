@@ -9,8 +9,8 @@ import {
     Squares2X2Icon,
     TagIcon,
     InboxIcon,
-    ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
+import TelegramIcon from '../Icons/TelegramIcon';
 import { useTranslation } from 'react-i18next';
 import { Note } from '../../entities/Note';
 import { Area } from '../../entities/Area';
@@ -244,7 +244,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                                     className="flex items-center justify-center"
                                     title={telegramStatus === 'healthy' ? 'Telegram connected and polling' : 'Telegram connection problem'}
                                 >
-                                    <ChatBubbleLeftRightIcon 
+                                    <TelegramIcon 
                                         className={`h-5 w-5 ${
                                             telegramStatus === 'healthy' 
                                                 ? 'text-green-500' 

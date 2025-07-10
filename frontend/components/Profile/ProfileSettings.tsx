@@ -12,7 +12,6 @@ import {
     EyeSlashIcon,
     UserIcon,
     ClockIcon,
-    ChatBubbleLeftRightIcon,
     ShieldCheckIcon,
     LightBulbIcon,
     CogIcon,
@@ -23,6 +22,7 @@ import {
     FaceSmileIcon,
     CheckIcon,
 } from '@heroicons/react/24/outline';
+import TelegramIcon from '../Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
 import { dispatchTelegramStatusChange } from '../../contexts/TelegramStatusContext';
 
@@ -765,7 +765,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             case 'clock':
                 return <ClockIcon className="w-5 h-5" />;
             case 'chat':
-                return <ChatBubbleLeftRightIcon className="w-5 h-5" />;
+                return <TelegramIcon className="w-5 h-5" />;
             case 'shield':
                 return <ShieldCheckIcon className="w-5 h-5" />;
             case 'sparkles':
@@ -1356,7 +1356,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 {activeTab === 'telegram' && (
                     <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-blue-300 dark:border-blue-700 mb-8">
                         <h3 className="text-xl font-semibold text-blue-700 dark:text-blue-300 mb-6 flex items-center">
-                            <ChatBubbleLeftRightIcon className="w-6 h-6 mr-3 text-blue-500" />
+                            <TelegramIcon className="w-6 h-6 mr-3 text-blue-500" />
                             {t(
                                 'profile.telegramIntegration',
                                 'Telegram Integration'
