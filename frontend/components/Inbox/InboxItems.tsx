@@ -11,7 +11,7 @@ import {
 import InboxItemDetail from './InboxItemDetail';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
-import { InboxIcon } from '@heroicons/react/24/outline';
+import { InboxIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import LoadingScreen from '../Shared/LoadingScreen';
 import TaskModal from '../Task/TaskModal';
 import ProjectModal from '../Project/ProjectModal';
@@ -36,6 +36,7 @@ const InboxItems: React.FC = () => {
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isInfoExpanded, setIsInfoExpanded] = useState(false); 
 
     // Data for modals
     const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
@@ -335,17 +336,48 @@ const InboxItems: React.FC = () => {
     return (
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
-                <div className="flex items-center mb-8">
-                    <InboxIcon className="h-6 w-6 mr-2" />
-                    <h1 className="text-2xl font-light">{t('inbox.title')}</h1>
+                {/* Title row with info button on the right */}
+                <div className="flex items-center mb-8 justify-between">
+                    <div className="flex items-center">
+                        <InboxIcon className="h-6 w-6 mr-2" />
+                        <h1 className="text-2xl font-light">{t('inbox.title')}</h1>
+                    </div>
+                    <button
+                        onClick={() => setIsInfoExpanded(!isInfoExpanded)}
+                        className={`flex items-center hover:bg-blue-100/50 dark:hover:bg-blue-800/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg${isInfoExpanded ? ' bg-blue-50/70 dark:bg-blue-900/20' : ''} p-2`}
+                        aria-expanded={isInfoExpanded}
+                        aria-label={isInfoExpanded ? 'Collapse info panel' : 'Show inbox information'}
+                        title={isInfoExpanded ? 'Hide info' : 'About Inbox'}
+                    >
+                        <svg className="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                        </svg>
+                        <span className="sr-only">{isInfoExpanded ? 'Hide info' : 'About Inbox'}</span>
+                    </button>
                 </div>
 
-                <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                    {t(
-                        'taskViews.inbox',
-                        "Inbox is where all uncategorized tasks are located. Tasks that have not been assigned to a project or don't have a due date will appear here. This is your 'brain dump' area where you can quickly note down tasks and organize them later."
-                    )}
-                </p>
+                {/* Info section below title row */}
+                <div className={`transition-all duration-300 ease-in-out ${
+                    isInfoExpanded ? 'max-h-96 opacity-100 mb-6' : 'max-h-0 opacity-0 mb-0'
+                } overflow-hidden`}
+                >
+                    <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-lg px-6 py-5 flex items-start gap-4">
+                        {/* Large low-opacity info icon */}
+                        <div className="flex-shrink-0">
+                            <svg className="h-12 w-12 text-blue-400 opacity-20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                            </svg>
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                                {t(
+                                    'taskViews.inbox',
+                                    "Inbox is where all uncategorized tasks are located. Tasks that have not been assigned to a project or don't have a due date will appear here. This is your 'brain dump' area where you can quickly note down tasks and organize them later."
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
                 {inboxItems.length === 0 ? (
                     <div className="text-center py-12">

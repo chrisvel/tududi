@@ -239,7 +239,6 @@
     "accountSettings": "Account & Preferences",
     "aiProductivityFeatures": "AI & Productivity Features",
     "botSetup": "Bot Setup",
-    "successMessage": "Profile updated successfully!",
     "passwordChangeNote": "Password changes will be saved when you click \"Save Changes\" at the bottom of the form.",
     "passwordChangeOptional": "Leave password fields empty to update other settings without changing your password."
   },

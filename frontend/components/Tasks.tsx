@@ -15,6 +15,7 @@ import {
     ChevronDownIcon,
     ChevronDoubleDownIcon,
     MagnifyingGlassIcon,
+    ChevronUpIcon,
 } from '@heroicons/react/24/solid';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -43,6 +44,8 @@ const Tasks: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
     const [orderBy, setOrderBy] = useState<string>('due_date:asc');
     const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
+    const [isInfoExpanded, setIsInfoExpanded] = useState(false); // Collapsed by default
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false); // Collapsed by default
 
     const dropdownRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
@@ -270,13 +273,13 @@ const Tasks: React.FC = () => {
     return (
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
+                {/* Title row with info button and filters dropdown on the right */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
                     <div className="flex items-center mb-2 sm:mb-0">
                         {IconComponent && (
                             <IconComponent className="h-6 w-6 mr-2" />
                         )}
                         <h2 className="text-2xl font-light">{title}</h2>
-
                         {tag && (
                             <div className="ml-4 flex items-center space-x-2">
                                 <button
@@ -292,77 +295,134 @@ const Tasks: React.FC = () => {
                             </div>
                         )}
                     </div>
-
-                    <div
-                        className="relative inline-block text-left"
-                        ref={dropdownRef}
-                    >
+                    {/* Info expand/collapse button, search button, and filters dropdown */}
+                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0">
                         <button
-                            type="button"
-                            className="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
-                            id="menu-button"
-                            aria-expanded={dropdownOpen}
-                            aria-haspopup="true"
-                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                            onClick={() => setIsInfoExpanded((v) => !v)}
+                            className={`flex items-center hover:bg-blue-100/50 dark:hover:bg-blue-800/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg${isInfoExpanded ? ' bg-blue-50/70 dark:bg-blue-900/20' : ''} p-2`}
+                            aria-expanded={isInfoExpanded}
+                            aria-label={isInfoExpanded ? 'Collapse info panel' : 'Show tasks information'}
+                            title={isInfoExpanded ? 'Hide info' : 'About Tasks'}
                         >
-                            <ChevronDoubleDownIcon className="h-5 w-5 text-gray-500 mr-2" />{' '}
-                            {t(
-                                `sort.${orderBy.split(':')[0]}`,
-                                capitalize(
-                                    orderBy.split(':')[0].replace('_', ' ')
-                                )
-                            )}
-                            <ChevronDownIcon className="h-5 w-5 ml-2 text-gray-500 dark:text-gray-300" />
+                            <svg className="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                            </svg>
+                            <span className="sr-only">{isInfoExpanded ? 'Hide info' : 'About Tasks'}</span>
                         </button>
-
-                        {dropdownOpen && (
-                            <div
-                                className="origin-top-right absolute left-0 sm:right-0 sm:left-auto mt-2 w-full sm:w-56 max-w-full rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
-                                role="menu"
-                                aria-orientation="vertical"
-                                aria-labelledby="menu-button"
+                        <button
+                            onClick={() => setIsSearchExpanded((v) => !v)}
+                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
+                                isSearchExpanded
+                                    ? 'bg-blue-50/70 dark:bg-blue-900/20'
+                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                            }`}
+                            aria-expanded={isSearchExpanded}
+                            aria-label={isSearchExpanded ? 'Collapse search panel' : 'Show search input'}
+                            title={isSearchExpanded ? 'Hide search' : 'Search Tasks'}
+                        >
+                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-300 dark:text-gray-200" />
+                            <span className="sr-only">{isSearchExpanded ? 'Hide search' : 'Search Tasks'}</span>
+                        </button>
+                        <div
+                            className="relative inline-block text-left"
+                            ref={dropdownRef}
+                        >
+                            <button
+                                type="button"
+                                className="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
+                                id="menu-button"
+                                aria-expanded={dropdownOpen}
+                                aria-haspopup="true"
+                                onClick={() => setDropdownOpen(!dropdownOpen)}
                             >
+                                <ChevronDoubleDownIcon className="h-5 w-5 text-gray-500 mr-2" />{' '}
+                                {t(
+                                    `sort.${orderBy.split(':')[0]}`,
+                                    capitalize(
+                                        orderBy.split(':')[0].replace('_', ' ')
+                                    )
+                                )}
+                                <ChevronDownIcon className="h-5 w-5 ml-2 text-gray-500 dark:text-gray-300" />
+                            </button>
+
+                            {dropdownOpen && (
                                 <div
-                                    className="py-1 max-h-60 overflow-y-auto"
-                                    role="none"
+                                    className="origin-top-right absolute left-0 sm:right-0 sm:left-auto mt-2 w-full sm:w-56 max-w-full rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                                    role="menu"
+                                    aria-orientation="vertical"
+                                    aria-labelledby="menu-button"
                                 >
-                                    {[
-                                        'due_date:asc',
-                                        'name:asc',
-                                        'priority:desc',
-                                        'status:desc',
-                                        'created_at:desc',
-                                    ].map((order) => (
-                                        <button
-                                            key={order}
-                                            onClick={() =>
-                                                handleSortChange(order)
-                                            }
-                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                            role="menuitem"
-                                        >
-                                            {t(
-                                                `sort.${order.split(':')[0]}`,
-                                                capitalize(
-                                                    order
-                                                        .split(':')[0]
-                                                        .replace('_', ' ')
-                                                )
-                                            )}
-                                        </button>
-                                    ))}
+                                    <div
+                                        className="py-1 max-h-60 overflow-y-auto"
+                                        role="none"
+                                    >
+                                        {[
+                                            'due_date:asc',
+                                            'name:asc',
+                                            'priority:desc',
+                                            'status:desc',
+                                            'created_at:desc',
+                                        ].map((order) => (
+                                            <button
+                                                key={order}
+                                                onClick={() =>
+                                                    handleSortChange(order)
+                                                }
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                                role="menuitem"
+                                            >
+                                                {t(
+                                                    `sort.${order.split(':')[0]}`,
+                                                    capitalize(
+                                                        order
+                                                            .split(':')[0]
+                                                            .replace('_', ' ')
+                                                    )
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                    {description}
-                </p>
+                {/* Info/description section with large info icon, collapsible */}
+                <div className={`transition-all duration-300 ease-in-out ${
+                    isInfoExpanded ? 'max-h-96 opacity-100 mb-6' : 'max-h-0 opacity-0 mb-0'
+                } overflow-hidden`}
+                >
+                    <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-lg px-6 py-5 flex items-start gap-4">
+                        <div className="flex-shrink-0">
+                            <svg
+                                className="h-12 w-12 text-blue-400 opacity-20"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                                />
+                            </svg>
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                {description}
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-                <div className="mb-4">
-                    <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm p-2">
+                {/* Search input section, collapsible */}
+                <div className={`transition-all duration-300 ease-in-out ${
+                    isSearchExpanded ? 'max-h-24 opacity-100 mb-4' : 'max-h-0 opacity-0 mb-0'
+                } overflow-hidden`}
+                >
+                    <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
                         <input
                             type="text"
@@ -373,6 +433,7 @@ const Tasks: React.FC = () => {
                         />
                     </div>
                 </div>
+
                 {loading ? (
                     <p>{t('common.loading', 'Loading...')}</p>
                 ) : error ? (
