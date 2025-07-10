@@ -115,29 +115,33 @@ const Navbar: React.FC<NavbarProps> = ({
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md h-16">
-            <div className="px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
-                <div className="flex items-center">
+            <div className="h-full flex items-center">
+                {/* Sidebar-width area with logo centered */}
+                <div className={`${isSidebarOpen ? 'w-full sm:w-72' : 'w-16'} flex items-center justify-center transition-all duration-300 ease-in-out px-4`}>
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="flex items-center focus:outline-none text-gray-500 dark:text-gray-500"
+                        className="flex items-center focus:outline-none text-gray-500 dark:text-gray-500 absolute left-4"
                         aria-label={
                             isSidebarOpen
                                 ? 'Collapse Sidebar'
                                 : 'Expand Sidebar'
                         }
                     >
-                        <Bars3Icon className="h-6 mt-1 w-6 mr-2" />
+                        <Bars3Icon className="h-6 mt-1 w-6" />
                     </button>
-
-                    <Link
-                        to="/"
-                        className="flex items-center no-underline text-gray-900 dark:text-white"
-                    >
-                        <span className="text-2xl font-bold">tududi</span>
-                    </Link>
+                    
+                    {isSidebarOpen && (
+                        <Link
+                            to="/"
+                            className="flex items-center no-underline text-gray-900 dark:text-white"
+                        >
+                            <span className="text-2xl font-bold">tududi</span>
+                        </Link>
+                    )}
                 </div>
 
-                <div className="flex items-center space-x-4">
+                {/* Right section - Actions and user menu */}
+                <div className="flex items-center justify-end space-x-4 flex-1 px-4 sm:px-6 lg:px-8">
                     <button
                         onClick={() => openTaskModal('simplified')}
                         className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
