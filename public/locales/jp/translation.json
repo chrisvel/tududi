@@ -37,6 +37,7 @@
     "profile": "プロフィール",
     "profileSettings": "プロフィール設定",
     "settings": "設定",
+    "about": "について",
     "logout": "ログアウト"
   },
   "settings": {
@@ -72,6 +73,7 @@
     "myPlanToday": "今日の私の計画",
     "noPlanToday": "今日はまだ予定されたタスクがありません",
     "addToPlanHint": "タスクの横にあるカレンダーアイコンを使用して、今日の計画に追加します",
+    "blankSlateHint": "新しいタスクを作成するか、フィルターを変更して開始してください。",
     "addToToday": "今日の計画に追加",
     "removeFromToday": "今日の計画から削除"
   },
@@ -101,13 +103,30 @@
   },
   "profile": {
     "settings": "プロフィール設定",
+    "title": "プロフィール設定",
+    "appearance": "外観",
     "language": "言語",
+    "timezone": "タイムゾーン",
     "theme": "テーマ",
     "notifications": "通知",
     "english": "英語",
     "spanish": "スペイン語",
     "greek": "ギリシャ語",
-    "japanese": "日本語"
+    "ukrainian": "ウクライナ語",
+    "deutsch": "ドイツ語",
+    "japanese": "日本語",
+    "pollingNote": "ポーリングはTelegramからの新しいメッセージを定期的にチェックし、受信トレイに追加します。",
+    "pollingDescription": "ポーリングはTelegramからの新しいメッセージを定期的にチェックし、受信トレイに追加します。",
+    "startPolling": "ポーリング開始",
+    "stopPolling": "ポーリング停止",
+    "startPollingLower": "ポーリング開始",
+    "stopPollingLower": "ポーリング停止",
+    "openTelegram": "Telegramで開く",
+    "openInTelegram": "telegramで開く",
+    "setupTelegram": "Telegram設定",
+    "setupTelegramLower": "telegram設定",
+    "passwordChangeNote": "パスワードの変更は、フォームの下部にある「変更を保存」をクリックすると保存されます。",
+    "passwordChangeOptional": "パスワードを変更せずに他の設定を更新するには、パスワードフィールドを空のままにしてください。"
   },
   "nextTask": {
     "suggestion": "進行中のものがないので、こちらから始めてみませんか",
@@ -140,12 +159,12 @@
       "title": "ノートの削除",
       "message": "\"{{noteTitle}}\" ノートを削除してもよろしいですか？"
     },
-    "deleteProject": {
-      "title": "プロジェクトの削除",
-      "message": "\"{{projectName}}\" プロジェクトを削除してもよろしいですか？"
-    },
     "createProject": "プロジェクトを作成",
-    "updateProject": "プロジェクトを更新"
+    "updateProject": "プロジェクトを更新",
+    "deleteProject": {
+      "title": "プロジェクトを削除",
+      "message": "プロジェクト「{{projectName}}」を削除してもよろしいですか？"
+    }
   },
   "forms": {
     "title": "タイトル",
@@ -341,8 +360,19 @@
     "saturday": "土曜日"
   },
   "inbox": {
+    "title": "受信箱",
     "empty": "受信箱は空です",
-    "emptyDescription": "上部ナビゲーションバーの ⚡ アイコンまたはサイドバーの + ボタンを使用して、思考やアイデアを素早く記録できます"
+    "emptyDescription": "上部ナビゲーションバーの ⚡ アイコンまたはサイドバーの + ボタンを使用して、思考やアイデアを素早く記録できます",
+    "description": "受信箱は、カテゴリ未分類のタスクがすべて保存される場所です。プロジェクトに割り当てられていない、または期限が設定されていないタスクがここに表示されます。これは思考を素早くメモし、後で整理できる「頭の整理」エリアです。"
+  },
+  "project": {
+    "name": "プロジェクト名",
+    "projectImage": "プロジェクト画像",
+    "uploadImageHint": "プロジェクトの画像をアップロード（最大5MB）",
+    "browseImage": "画像を参照",
+    "noNotes": "このプロジェクトにはメモがありません。",
+    "deleteProject": "プロジェクトを削除",
+    "showCompleted": "完了済みを表示"
   },
   "profile": {
     "taskIntelligence": "タスクインテリジェンス",

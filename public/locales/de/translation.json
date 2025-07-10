@@ -31,6 +31,7 @@
     "profile": "Profil",
     "profileSettings": "Profil-Einstellungen",
     "settings": "Einstellungen",
+    "about": "Über",
     "logout": "Abmelden"
   },
   "settings": {
@@ -60,6 +61,7 @@
     "myPlanToday": "Mein Plan für Heute",
     "noPlanToday": "Noch keine Aufgaben für heute geplant",
     "addToPlanHint": "Verwende die Kalendersymbole neben den Aufgaben, um sie zu deinem heutigen Plan hinzuzufügen",
+    "blankSlateHint": "Beginnen Sie mit der Erstellung einer neuen Aufgabe oder ändern Sie Ihre Filter.",
     "addToToday": "Zu heutigem Plan hinzufügen",
     "removeFromToday": "Aus heutigem Plan entfernen"
   },
@@ -120,7 +122,11 @@
     "noteCreation": "Neue Notiz erstellen",
     "noteEdit": "Notiz bearbeiten",
     "createProject": "Projekt erstellen",
-    "updateProject": "Projekt aktualisieren"
+    "updateProject": "Projekt aktualisieren",
+    "deleteProject": {
+      "title": "Projekt löschen",
+      "message": "Sind Sie sicher, dass Sie das Projekt \"{{projectName}}\" löschen möchten?"
+    }
   },
   "errors": {
     "noteTitleRequired": "Notiz-Titel ist erforderlich.",
@@ -167,11 +173,43 @@
     "saturday": "Samstag"
   },
   "inbox": {
+    "title": "Posteingang",
     "empty": "Ihr Posteingang ist leer",
-    "emptyDescription": "Erfassen Sie schnell Gedanken und Ideen mit dem ⚡ Symbol in der oberen Navigationsleiste oder dem + Button in der Seitenleiste"
+    "emptyDescription": "Erfassen Sie schnell Gedanken und Ideen mit dem ⚡ Symbol in der oberen Navigationsleiste oder dem + Button in der Seitenleiste",
+    "description": "Der Posteingang ist der Ort, an dem sich alle unkategorisierten Aufgaben befinden. Aufgaben, die keinem Projekt zugewiesen wurden oder kein Fälligkeitsdatum haben, werden hier angezeigt. Dies ist Ihr 'Gedankendeponie'-Bereich, in dem Sie schnell Aufgaben notieren und später organisieren können."
+  },
+  "project": {
+    "name": "Projektname",
+    "projectImage": "Projektbild",
+    "uploadImageHint": "Laden Sie ein Bild für Ihr Projekt hoch (max. 5MB)",
+    "browseImage": "Bild durchsuchen",
+    "noNotes": "Keine Notizen für dieses Projekt.",
+    "deleteProject": "Projekt löschen",
+    "showCompleted": "Abgeschlossene anzeigen"
   },
   "profile": {
+    "title": "Profil-Einstellungen",
+    "appearance": "Erscheinungsbild",
+    "language": "Sprache",
+    "timezone": "Zeitzone",
+    "english": "Englisch",
+    "spanish": "Spanisch",
+    "greek": "Griechisch", 
+    "ukrainian": "Ukrainisch",
+    "deutsch": "Deutsch",
     "japanese": "Japanisch",
+    "pollingNote": "Das Polling prüft regelmäßig neue Nachrichten von Telegram und fügt sie zu Ihrem Posteingang hinzu.",
+    "pollingDescription": "Das Polling prüft regelmäßig neue Nachrichten von Telegram und fügt sie zu Ihrem Posteingang hinzu.",
+    "startPolling": "Polling starten",
+    "stopPolling": "Polling stoppen",
+    "startPollingLower": "polling starten",
+    "stopPollingLower": "polling stoppen",
+    "openTelegram": "In Telegram öffnen",
+    "openInTelegram": "in telegram öffnen",
+    "setupTelegram": "Telegram einrichten",
+    "setupTelegramLower": "telegram einrichten",
+    "passwordChangeNote": "Passwort-Änderungen werden gespeichert, wenn Sie unten im Formular auf \"Änderungen speichern\" klicken.",
+    "passwordChangeOptional": "Lassen Sie die Passwort-Felder leer, um andere Einstellungen zu aktualisieren, ohne Ihr Passwort zu ändern."
     "taskIntelligence": "Aufgaben-Intelligenz",
     "taskIntelligenceDescription": "Erhalten Sie hilfreiche Vorschläge, um Ihre Aufgabennamen beschreibender und umsetzbarer zu machen.",
     "enableTaskIntelligence": "Aufgaben-Intelligenz-Assistent aktivieren",

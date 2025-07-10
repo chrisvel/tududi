@@ -40,7 +40,7 @@ const i18nInstance = i18n
 i18nInstance
     .init({
         fallbackLng: 'en',
-        debug: isDevelopment,
+        debug: false,
         load: 'languageOnly',
         supportedLngs: ['en', 'es', 'el', 'jp', 'ua', 'de'],
         nonExplicitSupportedLngs: true,

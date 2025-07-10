@@ -502,11 +502,11 @@ const TasksToday: React.FC = () => {
                     <div className="mb-4">
                         <div className="flex items-end justify-between mb-4">
                             <div className="flex items-end">
-                                <CalendarDaysIcon className="h-5 w-5 mr-2 mb-1" />
-                                <h2 className="text-2xl font-light mr-4">
-                                    {t('tasks.today')}
+                                <CalendarDaysIcon className="h-6 w-6 mr-2 mb-1" />
+                                <h2 className="text-2xl font-light mr-2">
+                                    {t('tasks.today')},
                                 </h2>
-                                <span className="text-gray-500">
+                                <span className="text-lg font-light text-gray-500 dark:text-gray-400 opacity-80">
                                     {format(new Date(), 'PPP', {
                                         locale: getLocale(i18n.language),
                                     })}

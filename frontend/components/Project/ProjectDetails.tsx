@@ -543,7 +543,7 @@ const ProjectDetails: React.FC = () => {
                         {completedTasks.length > 0 && (
                             <label className="flex items-center space-x-2 cursor-pointer">
                                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                                    Show completed
+                                    {t('project.showCompleted', 'Show completed')}
                                 </span>
                                 <div className="relative flex items-center">
                                     <input
@@ -666,7 +666,7 @@ const ProjectDetails: React.FC = () => {
                         </div>
                     ) : (
                         <p className="text-gray-500 dark:text-gray-400">
-                            {t('notes.noNotes', 'No notes for this project.')}
+                            {t('project.noNotes', 'No notes for this project.')}
                         </p>
                     )}
                 </div>

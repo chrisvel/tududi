@@ -45,6 +45,7 @@
     "profile": "Perfil",
     "profileSettings": "Configuración de Perfil",
     "settings": "Ajustes",
+    "about": "Acerca de",
     "logout": "Cerrar Sesión"
   },
   "settings": {
@@ -85,11 +86,15 @@
   },
   "profile": {
     "title": "Configuración de Perfil",
+    "appearance": "Apariencia",
     "language": "Idioma",
+    "timezone": "Zona Horaria",
     "theme": "Tema",
     "english": "Inglés",
     "spanish": "Español",
     "greek": "Griego",
+    "ukrainian": "Ucraniano",
+    "deutsch": "Alemán",
     "japanese": "Japonés",
     "languagePreference": "Preferencia de Idioma",
     "personalInfo": "Información Personal",
@@ -143,7 +148,19 @@
     "accountSettings": "Cuenta y Preferencias",
     "aiProductivityFeatures": "Funciones de IA y Productividad",
     "botSetup": "Configuración del Bot",
-    "successMessage": "¡Perfil actualizado con éxito!"
+    "successMessage": "¡Perfil actualizado con éxito!",
+    "pollingNote": "El sondeo verifica periódicamente nuevos mensajes de Telegram y los agrega a tu bandeja de entrada.",
+    "pollingDescription": "El sondeo verifica periódicamente nuevos mensajes de Telegram y los agrega a tu bandeja de entrada.",
+    "startPolling": "Iniciar Sondeo",
+    "stopPolling": "Detener Sondeo",
+    "startPollingLower": "iniciar sondeo",
+    "stopPollingLower": "detener sondeo",
+    "openTelegram": "Abrir en Telegram",
+    "openInTelegram": "abrir en telegram",
+    "setupTelegram": "Configurar Telegram",
+    "setupTelegramLower": "configurar telegram",
+    "passwordChangeNote": "Los cambios de contraseña se guardarán cuando hagas clic en \"Guardar Cambios\" en la parte inferior del formulario.",
+    "passwordChangeOptional": "Deja los campos de contraseña vacíos para actualizar otras configuraciones sin cambiar tu contraseña."
   },
   "errors": {
     "required": "Este campo es obligatorio",
@@ -184,6 +201,7 @@
     "myPlanToday": "Mi Plan para Hoy",
     "noPlanToday": "Aún no hay tareas planificadas para hoy",
     "addToPlanHint": "Usa los iconos + junto a las tareas sugeridas para añadirlas a tu plan de hoy",
+    "blankSlateHint": "Comience creando una nueva tarea o cambiando sus filtros.",
     "addToToday": "Añadir al plan de hoy",
     "removeFromToday": "Eliminar del plan de hoy"
   },
@@ -264,7 +282,11 @@
     "createNote": "Crear Nota",
     "submitting": "Enviando...",
     "createProject": "Crear Proyecto",
-    "updateProject": "Actualizar Proyecto"
+    "updateProject": "Actualizar Proyecto",
+    "deleteProject": {
+      "title": "Eliminar Proyecto",
+      "message": "¿Estás seguro de que quieres eliminar el proyecto \"{{projectName}}\"?"
+    }
   },
   "forms": {
     "title": "Título",
@@ -384,6 +406,7 @@
     "title": "Bandeja de Entrada",
     "empty": "Su bandeja de entrada está vacía",
     "emptyDescription": "Capture rápidamente pensamientos e ideas usando el icono ⚡ en la barra superior o el botón + en la barra lateral",
+    "description": "La bandeja de entrada es donde se encuentran todas las tareas sin categorizar. Las tareas que no han sido asignadas a un proyecto o no tienen fecha de vencimiento aparecerán aquí. Esta es tu área de 'volcado mental' donde puedes anotar rápidamente tareas y organizarlas más tarde.",
     "captureThought": "Capture su pensamiento...",
     "saveToInbox": "Guardar en Bandeja de Entrada",
     "itemAdded": "Elemento agregado a la bandeja de entrada",
@@ -499,9 +522,13 @@
     "saturday": "Sábado"
   },
   "project": {
+    "name": "Nombre del Proyecto",
     "projectImage": "Imagen del Proyecto",
     "uploadImageHint": "Sube una imagen para tu proyecto (máx. 5MB)",
-    "browseImage": "Examinar Imagen"
+    "browseImage": "Examinar Imagen",
+    "noNotes": "No hay notas para este proyecto.",
+    "deleteProject": "Eliminar Proyecto",
+    "showCompleted": "Mostrar Completados"
   },
   "pomodoro": {
     "play": "Reproducir",

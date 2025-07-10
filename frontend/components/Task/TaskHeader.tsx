@@ -262,9 +262,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
             {/* Mobile view (below md breakpoint) */}
             <div className="block md:hidden">
-                <div className="flex items-start">
+                <div className="flex items-center">
                     {/* Priority Icon - Centered vertically with entire card */}
-                    <div className="flex items-center justify-center w-5 mt-4 flex-shrink-0">
+                    <div className="flex items-center justify-center w-5 flex-shrink-0">
                         <TaskPriorityIcon
                             priority={task.priority}
                             status={task.status}
@@ -272,11 +272,11 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         />
                     </div>
 
-                    {/* All content - Task name and metadata */}
-                    <div className="ml-2 flex-1">
+                    {/* Task content - 65% width */}
+                    <div className="ml-2 flex-1 w-[65%]">
                         {/* Task Title */}
                         <div className="flex items-center font-light text-md text-gray-900 dark:text-gray-100">
-                            <span>{task.name}</span>
+                            <span className="break-words">{task.name}</span>
                             {isOverdue && (
                                 <span
                                     className="ml-2 px-2 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-md"
@@ -324,70 +324,70 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 )}
                         </div>
                     </div>
-                </div>
 
-                {/* Mobile badges row */}
-                <div className="flex items-center flex-wrap justify-start space-x-2 mt-2 ml-7">
-                    {/* Play/In Progress Controls - Mobile */}
-                    {(task.status === 'not_started' ||
-                        task.status === 'in_progress' ||
-                        task.status === 0 ||
-                        task.status === 1) && (
-                        <button
-                            onClick={handlePlayToggle}
-                            className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
-                                task.status === 'in_progress' ||
-                                task.status === 1
-                                    ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse'
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
-                            }`}
-                            title={
-                                task.status === 'in_progress' ||
-                                task.status === 1
-                                    ? t(
-                                          'tasks.setNotStarted',
-                                          'Set to not started'
-                                      )
-                                    : t(
-                                          'tasks.setInProgress',
-                                          'Set in progress'
-                                      )
-                            }
-                        >
-                            <PlayIcon className="h-3 w-3" />
-                        </button>
-                    )}
+                    {/* Mobile buttons on the right */}
+                    <div className="flex items-center space-x-2 ml-2">
+                        {/* Today Plan Controls - Mobile */}
+                        {onToggleToday && (
+                            <button
+                                onClick={handleTodayToggle}
+                                className={`items-center justify-center ${Number(task.today_move_count) > 1 ? 'px-2 h-6' : 'w-6 h-6'} rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 ${
+                                    task.today
+                                        ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 flex'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hidden group-hover:flex'
+                                }`}
+                                title={
+                                    task.today
+                                        ? t(
+                                              'tasks.removeFromToday',
+                                              'Remove from today plan'
+                                          )
+                                        : t('tasks.addToToday', 'Add to today plan')
+                                }
+                            >
+                                {task.today ? (
+                                    <CalendarDaysIcon className="h-3 w-3" />
+                                ) : (
+                                    <CalendarIcon className="h-3 w-3" />
+                                )}
+                                {Number(task.today_move_count) > 1 && (
+                                    <span className="ml-1 text-xs font-medium">
+                                        {Number(task.today_move_count)}
+                                    </span>
+                                )}
+                            </button>
+                        )}
 
-                    {/* Today Plan Controls - Mobile */}
-                    {onToggleToday && (
-                        <button
-                            onClick={handleTodayToggle}
-                            className={`items-center justify-center ${Number(task.today_move_count) > 1 ? 'px-2 h-6' : 'w-6 h-6'} rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 ${
-                                task.today
-                                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 flex'
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hidden group-hover:flex'
-                            }`}
-                            title={
-                                task.today
-                                    ? t(
-                                          'tasks.removeFromToday',
-                                          'Remove from today plan'
-                                      )
-                                    : t('tasks.addToToday', 'Add to today plan')
-                            }
-                        >
-                            {task.today ? (
-                                <CalendarDaysIcon className="h-3 w-3" />
-                            ) : (
-                                <CalendarIcon className="h-3 w-3" />
-                            )}
-                            {Number(task.today_move_count) > 1 && (
-                                <span className="ml-1 text-xs font-medium">
-                                    {Number(task.today_move_count)}
-                                </span>
-                            )}
-                        </button>
-                    )}
+                        {/* Play/In Progress Controls - Mobile */}
+                        {(task.status === 'not_started' ||
+                            task.status === 'in_progress' ||
+                            task.status === 0 ||
+                            task.status === 1) && (
+                            <button
+                                onClick={handlePlayToggle}
+                                className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                                    task.status === 'in_progress' ||
+                                    task.status === 1
+                                        ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
+                                }`}
+                                title={
+                                    task.status === 'in_progress' ||
+                                    task.status === 1
+                                        ? t(
+                                              'tasks.setNotStarted',
+                                              'Set to not started'
+                                          )
+                                        : t(
+                                              'tasks.setInProgress',
+                                              'Set in progress'
+                                          )
+                                }
+                            >
+                                <PlayIcon className="h-3 w-3" />
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

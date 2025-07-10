@@ -143,6 +143,8 @@
     "appearance": "Appearance",
     "lightMode": "Light Mode",
     "darkMode": "Dark Mode",
+    "light": "Light",
+    "dark": "Dark",
     "timezone": "Timezone",
     "saveChanges": "Save Changes",
     "successMessage": "Profile updated successfully!",
@@ -157,6 +159,7 @@
     "telegramTokenDescription": "Create a bot with @BotFather on Telegram and paste the token here.",
     "telegramConnected": "Your Telegram account is connected! Send messages to your bot to add items to your tududi inbox.",
     "setupTelegram": "Setup Telegram",
+    "setupTelegramLower": "setup telegram",
     "settingUp": "Setting up...",
     "telegramSetupSuccess": "Telegram bot \"{{botName}}\" configured successfully!",
     "telegramSetupFailed": "Failed to set up Telegram bot.",
@@ -168,14 +171,18 @@
     "pollingActive": "Active - Receiving messages",
     "pollingInactive": "Inactive - Not receiving messages",
     "pollingNote": "Polling periodically checks for new messages from Telegram and adds them to your inbox.",
+    "pollingDescription": "Polling periodically checks for new messages from Telegram and adds them to your inbox.",
     "startPolling": "Start Polling",
     "stopPolling": "Stop Polling",
+    "startPollingLower": "start polling",
+    "stopPollingLower": "stop polling",
     "pollingStarted": "Telegram polling started",
     "pollingStopped": "Telegram polling stopped",
     "pollingError": "Error managing Telegram polling",
     "startPollingFailed": "Failed to start polling",
     "stopPollingFailed": "Failed to stop polling",
     "openTelegram": "Open in Telegram",
+    "openInTelegram": "open in telegram",
     "testTelegramMessage": "Test Telegram",
     "testMessageSent": "Test message sent successfully!",
     "testMessageFailed": "Failed to send test message.",
@@ -345,7 +352,21 @@
       "creatingProject": "Creating...",
       "createProject": "+ Create",
       "recurrenceSettings": "Recurrence Settings",
-      "completionBasedHelp": "If checked, the next task will be created based on completion date instead of due date"
+      "completionBasedHelp": "If checked, the next task will be created based on completion date instead of due date",
+      "dueDatePlaceholder": "Select due date",
+      "endDatePlaceholder": "Select end date",
+      "nameHelper": {
+        "title": "Make it more descriptive!",
+        "suggestion": "Try adding more details like \"Call dentist to schedule cleaning appointment\" instead of just \"Call dentist\"",
+        "short": "Make it more descriptive!",
+        "noVerb": "Add an action verb!",
+        "vague": "Be more specific!"
+      },
+      "suggestions": {
+        "short": "Try to be more specific about what needs to be done",
+        "noVerb": "What specific action do you need to take? Try starting with a verb.",
+        "vague": "Try starting with an action verb like \"Call\", \"Write\", \"Schedule\", or \"Research\""
+      }
     },
     "noteTitle": "Note Title",
     "noteContent": "Note Content",
@@ -359,21 +380,7 @@
     "tagNamePlaceholder": "Enter tag name",
     "tagInputPlaceholder": "Type to add a tag",
     "createTagOption": "+ Create \"{{tagName}}\"",
-    "removeTagAriaLabel": "Remove tag {{tagName}}",
-    "task": {
-      "nameHelper": {
-        "title": "Make it more descriptive!",
-        "suggestion": "Try adding more details like \"Call dentist to schedule cleaning appointment\" instead of just \"Call dentist\"",
-        "short": "Make it more descriptive!",
-        "noVerb": "Add an action verb!",
-        "vague": "Be more specific!"
-      },
-      "suggestions": {
-        "short": "Try to be more specific about what needs to be done",
-        "noVerb": "What specific action do you need to take? Try starting with a verb.",
-        "vague": "Try starting with an action verb like \"Call\", \"Write\", \"Schedule\", or \"Research\""
-      }
-    }
+    "removeTagAriaLabel": "Remove tag {{tagName}}"
   },
   "auth": {
     "login": "Login",
@@ -423,7 +430,9 @@
     "name": "Project Name",
     "projectImage": "Project Image",
     "uploadImageHint": "Upload an image for your project (max 5MB)",
-    "browseImage": "Browse Image"
+    "browseImage": "Browse Image",
+    "noNotes": "No notes for this project.",
+    "deleteProject": "Delete Project"
   },
   "errors": {
     "required": "This field is required",
@@ -454,6 +463,7 @@
     "title": "Inbox",
     "empty": "Your inbox is empty",
     "emptyDescription": "Capture thoughts and ideas quickly using the ⚡ icon in the top navbar or the + button in the sidebar",
+    "description": "Inbox is where all uncategorized tasks are located. Tasks that have not been assigned to a project or don't have a due date will appear here. This is your 'brain dump' area where you can quickly note down tasks and organize them later.",
     "captureThought": "Capture your thought...",
     "saveToInbox": "Save to Inbox",
     "itemAdded": "Item added to inbox",
@@ -642,7 +652,8 @@
     "secondWeek": "Second week",
     "thirdWeek": "Third week",
     "fourthWeek": "Fourth week",
-    "lastWeek": "Last week"
+    "lastWeek": "Last week",
+    "days": "days"
   },
   "weekdays": {
     "sunday": "Sunday",
@@ -702,14 +713,5 @@
     "low": "Low",
     "time": "Time",
     "allDay": "All day"
-  },
-  "weekdays": {
-    "monday": "Mon",
-    "tuesday": "Tue", 
-    "wednesday": "Wed",
-    "thursday": "Thu",
-    "friday": "Fri",
-    "saturday": "Sat",
-    "sunday": "Sun"
   }
 }

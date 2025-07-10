@@ -18,7 +18,6 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const [toasts, setToasts] = useState<Toast[]>([]);
-    const [nextId, setNextId] = useState(1);
 
     const removeToast = useCallback((id: number) => {
         setToasts(prev => prev.filter(toast => toast.id !== id));
@@ -26,22 +25,20 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const showSuccessToast = useCallback(
         (message: string | React.ReactNode) => {
-            const id = nextId;
-            setNextId(prev => prev + 1);
+            const id = Date.now() + Math.random();
             const newToast: Toast = { id, message, type: 'success' };
             setToasts(prev => [...prev, newToast]);
             setTimeout(() => removeToast(id), 4000);
         },
-        [nextId, removeToast]
+        [removeToast]
     );
 
     const showErrorToast = useCallback((message: string | React.ReactNode) => {
-        const id = nextId;
-        setNextId(prev => prev + 1);
+        const id = Date.now() + Math.random();
         const newToast: Toast = { id, message, type: 'error' };
         setToasts(prev => [...prev, newToast]);
         setTimeout(() => removeToast(id), 4000);
-    }, [nextId, removeToast]);
+    }, [removeToast]);
 
     return (
         <ToastContext.Provider value={{ showSuccessToast, showErrorToast }}>
