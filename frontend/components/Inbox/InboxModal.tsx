@@ -11,6 +11,7 @@ import { fetchProjects, createProject } from '../../utils/projectsService';
 import { XMarkIcon, TagIcon, FolderIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { Link } from 'react-router-dom';
+import { isUrl } from '../../utils/urlService';
 // import UrlPreview from "../Shared/UrlPreview";
 // import { UrlTitleResult } from "../../utils/urlService";
 
@@ -58,7 +59,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
     // Dispatch global modal events to hide floating + button
 
-    // Helper function to parse hashtags from text (only at start and end)
+    // Helper function to parse hashtags from text (consecutive groups anywhere)
     const parseHashtags = (text: string): string[] => {
         const trimmedText = text.trim();
         const matches: string[] = [];
@@ -67,73 +68,119 @@ const InboxModal: React.FC<InboxModalProps> = ({
         const words = trimmedText.split(/\s+/);
         if (words.length === 0) return matches;
         
-        // Check for hashtags at the beginning (consecutive tags/projects only)
-        let startIndex = 0;
-        while (startIndex < words.length && (words[startIndex].startsWith('#') || words[startIndex].startsWith('+'))) {
-            if (words[startIndex].startsWith('#')) {
-                const tagName = words[startIndex].substring(1);
-                if (tagName && /^[a-zA-Z0-9_]+$/.test(tagName)) {
-                    matches.push(tagName);
+        // Find all consecutive groups of tags/projects
+        let i = 0;
+        while (i < words.length) {
+            // Check if current word starts a tag/project group
+            if (words[i].startsWith('#') || words[i].startsWith('+')) {
+                // Found start of a group, collect all consecutive tags/projects
+                let groupEnd = i;
+                while (groupEnd < words.length && (words[groupEnd].startsWith('#') || words[groupEnd].startsWith('+'))) {
+                    groupEnd++;
                 }
-            }
-            startIndex++;
-        }
-        
-        // Check for hashtags at the end (consecutive tags/projects only)
-        let endIndex = words.length - 1;
-        while (endIndex >= 0 && (words[endIndex].startsWith('#') || words[endIndex].startsWith('+'))) {
-            if (words[endIndex].startsWith('#')) {
-                const tagName = words[endIndex].substring(1);
-                if (tagName && /^[a-zA-Z0-9_]+$/.test(tagName)) {
-                    // Only add if not already added from the beginning
-                    if (!matches.includes(tagName)) {
-                        matches.push(tagName);
+                
+                // Process all hashtags in this group
+                for (let j = i; j < groupEnd; j++) {
+                    if (words[j].startsWith('#')) {
+                        const tagName = words[j].substring(1);
+                        if (tagName && /^[a-zA-Z0-9_-]+$/.test(tagName) && !matches.includes(tagName)) {
+                            matches.push(tagName);
+                        }
                     }
                 }
+                
+                // Skip to end of this group
+                i = groupEnd;
+            } else {
+                i++;
             }
-            endIndex--;
         }
         
         return matches;
     };
 
-    // Helper function to parse project references from text (only at start and end)
+    // Helper function to parse project references from text (consecutive groups anywhere)
     const parseProjectRefs = (text: string): string[] => {
         const trimmedText = text.trim();
         const matches: string[] = [];
         
-        // Split text into words/phrases for project references
-        const words = trimmedText.split(/\s+/);
-        if (words.length === 0) return matches;
+        // Tokenize the text handling quoted strings properly
+        const tokens = tokenizeText(trimmedText);
         
-        // Check for project references at the beginning (consecutive tags/projects only)
-        let startIndex = 0;
-        while (startIndex < words.length && (words[startIndex].startsWith('+') || words[startIndex].startsWith('#'))) {
-            if (words[startIndex].startsWith('+')) {
-                const projectName = words[startIndex].substring(1);
-                if (projectName && /^[a-zA-Z0-9_\s]+$/.test(projectName)) {
-                    matches.push(projectName);
+        // Find consecutive groups of tags/projects
+        let i = 0;
+        while (i < tokens.length) {
+            // Check if current token starts a tag/project group
+            if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
+                // Found start of a group, collect all consecutive tags/projects
+                let groupEnd = i;
+                while (groupEnd < tokens.length && (tokens[groupEnd].startsWith('#') || tokens[groupEnd].startsWith('+'))) {
+                    groupEnd++;
                 }
-            }
-            startIndex++;
-        }
-        
-        // Check for project references at the end (consecutive tags/projects only)
-        let endIndex = words.length - 1;
-        while (endIndex >= 0 && (words[endIndex].startsWith('+') || words[endIndex].startsWith('#'))) {
-            if (words[endIndex].startsWith('+')) {
-                const projectName = words[endIndex].substring(1);
-                if (projectName && /^[a-zA-Z0-9_\s]+$/.test(projectName)) {
-                    // Only add if not already added from the beginning
-                    if (!matches.includes(projectName)) {
-                        matches.push(projectName);
+                
+                // Process all project references in this group
+                for (let j = i; j < groupEnd; j++) {
+                    if (tokens[j].startsWith('+')) {
+                        let projectName = tokens[j].substring(1);
+                        
+                        // Handle quoted project names
+                        if (projectName.startsWith('"') && projectName.endsWith('"')) {
+                            projectName = projectName.slice(1, -1);
+                        }
+                        
+                        if (projectName && !matches.includes(projectName)) {
+                            matches.push(projectName);
+                        }
                     }
                 }
+                
+                // Skip to end of this group
+                i = groupEnd;
+            } else {
+                i++;
             }
-            endIndex--;
         }
         
         return matches;
+    };
+    
+    // Helper function to tokenize text handling quoted strings
+    const tokenizeText = (text: string): string[] => {
+        const tokens: string[] = [];
+        let currentToken = '';
+        let inQuotes = false;
+        let i = 0;
+        
+        while (i < text.length) {
+            const char = text[i];
+            
+            if (char === '"' && (i === 0 || text[i-1] === '+')) {
+                // Start of a quoted string after +
+                inQuotes = true;
+                currentToken += char;
+            } else if (char === '"' && inQuotes) {
+                // End of quoted string
+                inQuotes = false;
+                currentToken += char;
+            } else if (char === ' ' && !inQuotes) {
+                // Space outside quotes - end current token
+                if (currentToken) {
+                    tokens.push(currentToken);
+                    currentToken = '';
+                }
+            } else {
+                // Regular character
+                currentToken += char;
+            }
+            i++;
+        }
+        
+        // Add final token
+        if (currentToken) {
+            tokens.push(currentToken);
+        }
+        
+        return tokens;
     };
 
     // Helper function to get current hashtag query at cursor position (only at start/end)
@@ -175,9 +222,13 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const getCurrentProjectQuery = (text: string, position: number): string => {
         const beforeCursor = text.substring(0, position);
         const afterCursor = text.substring(position);
-        const projectMatch = beforeCursor.match(/\+([a-zA-Z0-9_\s]*)$/);
+        // Match both quoted and unquoted project references
+        const projectMatch = beforeCursor.match(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/);
         
         if (!projectMatch) return '';
+        
+        // Get the project name (from quoted or unquoted match)
+        const projectQuery = projectMatch[1] || projectMatch[2] || '';
         
         // Check if project ref is at start or end position
         const projectStart = beforeCursor.lastIndexOf('+');
@@ -186,12 +237,12 @@ const InboxModal: React.FC<InboxModalProps> = ({
         
         // Check if we're at the very end (no text after cursor)
         if (textAfterCursor === '') {
-            return projectMatch[1];
+            return projectQuery;
         }
         
         // Check if we're at the very beginning
         if (textBeforeProject === '') {
-            return projectMatch[1];
+            return projectQuery;
         }
         
         // Check if we're in a consecutive group of tags/projects at the beginning
@@ -200,7 +251,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
             word.startsWith('#') || word.startsWith('+'));
         
         if (allWordsAreTagsOrProjects) {
-            return projectMatch[1];
+            return projectQuery;
         }
         
         return '';
@@ -469,6 +520,21 @@ const InboxModal: React.FC<InboxModalProps> = ({
         }
     };
 
+    // Helper function to get all tags including auto-detected bookmark
+    const getAllTags = (text: string): string[] => {
+        const explicitTags = parseHashtags(text);
+        
+        // Auto-add bookmark if text contains URL and bookmark tag isn't already present
+        if (isUrl(text.trim())) {
+            const hasBookmarkTag = explicitTags.some(tag => tag.toLowerCase() === 'bookmark');
+            if (!hasBookmarkTag) {
+                return [...explicitTags, 'bookmark'];
+            }
+        }
+        
+        return explicitTags;
+    };
+
     // Handle tag suggestion selection
     const handleTagSelect = (tagName: string) => {
         const beforeCursor = inputText.substring(0, cursorPosition);
@@ -525,7 +591,8 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const handleProjectSelect = (projectName: string) => {
         const beforeCursor = inputText.substring(0, cursorPosition);
         const afterCursor = inputText.substring(cursorPosition);
-        const projectMatch = beforeCursor.match(/\+([a-zA-Z0-9_\s]*)$/);
+        // Match both quoted and unquoted project references
+        const projectMatch = beforeCursor.match(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/);
 
         if (projectMatch) {
             const projectStart = beforeCursor.lastIndexOf('+');
@@ -548,8 +615,13 @@ const InboxModal: React.FC<InboxModalProps> = ({
             }
             
             if (allowReplacement) {
+                // Automatically add quotes if project name contains spaces
+                const formattedProjectName = projectName.includes(' ') 
+                    ? `"${projectName}"` 
+                    : projectName;
+                
                 const newText =
-                    beforeCursor.replace(/\+([a-zA-Z0-9_\s]*)$/, `+${projectName}`) +
+                    beforeCursor.replace(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/, `+${formattedProjectName}`) +
                     afterCursor;
                 setInputText(newText);
                 setShowProjectSuggestions(false);
@@ -560,8 +632,8 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     if (nameInputRef.current) {
                         nameInputRef.current.focus();
                         const newCursorPos = beforeCursor.replace(
-                            /\+([a-zA-Z0-9_\s]*)$/,
-                            `+${projectName}`
+                            /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/,
+                            `+${formattedProjectName}`
                         ).length;
                         nameInputRef.current.setSelectionRange(
                             newCursorPos,
@@ -576,36 +648,30 @@ const InboxModal: React.FC<InboxModalProps> = ({
     // Helper function to clean text by removing tags and project references at start/end
     const cleanTextFromTagsAndProjects = (text: string): string => {
         const trimmedText = text.trim();
-        const words = trimmedText.split(/\s+/);
+        const tokens = tokenizeText(trimmedText);
+        const cleanedTokens: string[] = [];
         
-        if (words.length === 0) return '';
-        
-        // Find the start and end indices of actual content (non-tags/projects)
-        let startIndex = 0;
-        let endIndex = words.length - 1;
-        
-        // Skip tags and projects at the beginning
-        while (startIndex < words.length && (words[startIndex].startsWith('#') || words[startIndex].startsWith('+'))) {
-            startIndex++;
+        let i = 0;
+        while (i < tokens.length) {
+            // Check if current token starts a tag/project group
+            if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
+                // Skip this entire consecutive group
+                while (i < tokens.length && (tokens[i].startsWith('#') || tokens[i].startsWith('+'))) {
+                    i++;
+                }
+            } else {
+                // Keep regular tokens
+                cleanedTokens.push(tokens[i]);
+                i++;
+            }
         }
         
-        // Skip tags and projects at the end
-        while (endIndex >= 0 && (words[endIndex].startsWith('#') || words[endIndex].startsWith('+'))) {
-            endIndex--;
-        }
-        
-        // If all words are tags/projects, return empty string
-        if (startIndex > endIndex) {
-            return '';
-        }
-        
-        // Return the cleaned content
-        return words.slice(startIndex, endIndex + 1).join(' ').trim();
+        return cleanedTokens.join(' ').trim();
     };
 
     // Create missing tags automatically
     const createMissingTags = async (text: string): Promise<void> => {
-        const hashtagsInText = parseHashtags(text);
+        const hashtagsInText = getAllTags(text);
         const existingTagNames = tags.map((tag) => tag.name.toLowerCase());
         const missingTags = hashtagsInText.filter(
             (tagName) => !existingTagNames.includes(tagName.toLowerCase())
@@ -884,11 +950,11 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
                                 {/* Tags display like TaskItem */}
                                 {inputText &&
-                                    parseHashtags(inputText).length > 0 && (
+                                    getAllTags(inputText).length > 0 && (
                                         <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
                                             <TagIcon className="h-3 w-3 mr-1" />
                                             <div className="flex flex-wrap gap-1">
-                                                {parseHashtags(inputText).map(
+                                                {getAllTags(inputText).map(
                                                     (tagName, index) => {
                                                         const tag = tags.find(
                                                             (t) =>

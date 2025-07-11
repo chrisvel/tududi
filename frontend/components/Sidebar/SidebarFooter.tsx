@@ -73,8 +73,8 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     // Handle keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            // Check for Ctrl/Cmd key combinations
-            if (event.ctrlKey || event.metaKey) {
+            // Check for Ctrl key combinations only (not Cmd/Meta key)
+            if (event.ctrlKey && !event.metaKey) {
                 switch (event.key.toLowerCase()) {
                     case 'i':
                         event.preventDefault();
