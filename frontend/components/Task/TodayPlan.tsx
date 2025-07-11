@@ -29,7 +29,7 @@ const TodayPlan: React.FC<TodayPlanProps> = ({
         return (
             <>
                 <div className="flex justify-center items-center mt-4">
-                    <div className="w-full max-w bg-black/15 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
+                    <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
                         <CalendarDaysIcon className="h-20 w-20 text-gray-400 opacity-30 mb-6" />
                         <p className="text-2xl font-light text-center text-gray-600 dark:text-gray-300 mb-2">
                             {t(

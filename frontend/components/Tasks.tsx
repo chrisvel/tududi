@@ -463,7 +463,7 @@ const Tasks: React.FC = () => {
                             />
                         ) : (
                             <div className="flex justify-center items-center mt-4">
-                                <div className="w-full max-w bg-black/15 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
+                                <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
                                     <svg className="h-20 w-20 text-gray-400 opacity-30 mb-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                                     </svg>
