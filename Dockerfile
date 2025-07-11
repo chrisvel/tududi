@@ -19,7 +19,7 @@ RUN NODE_ENV=production npm run build
 # Install backend dependencies
 RUN cd backend && npm install --no-audit --no-fund
 # Run backend tests
-#RUN cd backend && DOCKER_BUILD=1 npm test
+RUN cd backend && DOCKER_BUILD=1 npm test
 # Cleanup
 RUN npm cache clean --force && \
     rm -rf ~/.npm /tmp/* && \
