@@ -196,6 +196,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const projectRefs = parseProjectRefs(item.content);
     const cleanedContent = cleanTextFromTagsAndProjects(item.content);
 
+
+
     const handleConvertToTask = () => {
         // Convert hashtags to Tag objects
         const taskTags = hashtags.map((hashtagName) => {
@@ -398,6 +400,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                             )}
                         </div>
                     )}
+
                 </div>
 
                 <div className="flex items-center justify-start space-x-1 shrink-0">

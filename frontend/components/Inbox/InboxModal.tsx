@@ -19,18 +19,24 @@ interface InboxModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (task: Task) => Promise<void>;
+    onSaveNote?: (note: Note) => Promise<void>; // For note creation
     initialText?: string;
     editMode?: boolean;
     onEdit?: (text: string) => Promise<void>;
+    onConvertToTask?: () => Promise<void>; // Called when editing item gets converted to task
+    onConvertToNote?: () => Promise<void>; // Called when editing item gets converted to note
 }
 
 const InboxModal: React.FC<InboxModalProps> = ({
     isOpen,
     onClose,
     onSave,
+    onSaveNote,
     initialText = '',
     editMode = false,
     onEdit,
+    onConvertToTask,
+    onConvertToNote,
 }) => {
     const { t } = useTranslation();
     const [inputText, setInputText] = useState<string>(initialText);
@@ -56,6 +62,17 @@ const InboxModal: React.FC<InboxModalProps> = ({
         top: 0,
     });
     // const [urlPreview, setUrlPreview] = useState<UrlTitleResult | null>(null);
+    
+    // Real-time text analysis state
+    const [analysisResult, setAnalysisResult] = useState<{
+        parsed_tags: string[];
+        parsed_projects: string[];
+        cleaned_content: string;
+        suggested_type: 'task' | 'note' | null;
+        suggested_reason: string | null;
+    } | null>(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const analysisTimeoutRef = useRef<NodeJS.Timeout>();
 
     // Dispatch global modal events to hide floating + button
 
@@ -522,6 +539,23 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
     // Helper function to get all tags including auto-detected bookmark
     const getAllTags = (text: string): string[] => {
+        // Use analysis result if available, otherwise fall back to local parsing
+        if (analysisResult) {
+            const explicitTags = analysisResult.parsed_tags;
+            
+            // Auto-add bookmark if text contains URL or backend suggests URL note
+            const isUrlContent = isUrl(text.trim()) || analysisResult.suggested_reason === 'url_detected';
+            if (isUrlContent) {
+                const hasBookmarkTag = explicitTags.some(tag => tag.toLowerCase() === 'bookmark');
+                if (!hasBookmarkTag) {
+                    return [...explicitTags, 'bookmark'];
+                }
+            }
+            
+            return explicitTags;
+        }
+        
+        // Fallback to local parsing
         const explicitTags = parseHashtags(text);
         
         // Auto-add bookmark if text contains URL and bookmark tag isn't already present
@@ -534,6 +568,110 @@ const InboxModal: React.FC<InboxModalProps> = ({
         
         return explicitTags;
     };
+
+    // Helper function to get all project references
+    const getAllProjects = (text: string): string[] => {
+        // Use analysis result if available, otherwise fall back to local parsing
+        if (analysisResult) {
+            return analysisResult.parsed_projects;
+        }
+        
+        // Fallback to local parsing
+        return parseProjectRefs(text);
+    };
+
+    // Helper function to get cleaned content
+    const getCleanedContent = (text: string): string => {
+        // Use analysis result if available, otherwise fall back to local cleaning
+        if (analysisResult) {
+            return analysisResult.cleaned_content;
+        }
+        
+        // Fallback to local cleaning (simplified version)
+        return text.replace(/#[a-zA-Z0-9_-]+/g, '').replace(/\+\S+/g, '').trim();
+    };
+
+    // Helper function to get suggestion
+    const getSuggestion = (): { type: 'note' | 'task' | null; message: string | null; projectName: string | null } => {
+        if (!analysisResult || !analysisResult.suggested_type) {
+            return { type: null, message: null, projectName: null };
+        }
+
+        const projectName = analysisResult.parsed_projects[0] || null;
+        const type = analysisResult.suggested_type;
+
+        if (type === 'note') {
+            // Check if this is a URL (bookmark) note
+            const isUrlNote = analysisResult.suggested_reason === 'url_detected';
+            const message = isUrlNote 
+                ? `This item will be saved as a bookmark note for ${projectName}.`
+                : `This item will be saved for later processing as it looks like a note for ${projectName}.`;
+            
+            return {
+                type: 'note',
+                message,
+                projectName
+            };
+        } else if (type === 'task') {
+            return {
+                type: 'task',
+                message: `This item looks like a task and will be created under project ${projectName}.`,
+                projectName
+            };
+        }
+
+        return { type: null, message: null, projectName: null };
+    };
+
+    // Debounced text analysis function
+    const analyzeText = useCallback(async (text: string) => {
+        if (!text.trim()) {
+            setAnalysisResult(null);
+            return;
+        }
+
+        try {
+            setIsAnalyzing(true);
+            const response = await fetch('/api/inbox/analyze-text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ content: text }),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                setAnalysisResult(result);
+            } else {
+                console.error('Failed to analyze text:', response.statusText);
+                setAnalysisResult(null);
+            }
+        } catch (error) {
+            console.error('Error analyzing text:', error);
+            setAnalysisResult(null);
+        } finally {
+            setIsAnalyzing(false);
+        }
+    }, []);
+
+    // Debounced text analysis effect
+    useEffect(() => {
+        if (analysisTimeoutRef.current) {
+            clearTimeout(analysisTimeoutRef.current);
+        }
+
+        analysisTimeoutRef.current = setTimeout(() => {
+            analyzeText(inputText);
+        }, 300); // 300ms debounce
+
+        return () => {
+            if (analysisTimeoutRef.current) {
+                clearTimeout(analysisTimeoutRef.current);
+            }
+        };
+    }, [inputText, analyzeText]);
 
     // Handle tag suggestion selection
     const handleTagSelect = (tagName: string) => {
@@ -691,7 +829,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
     // Create missing projects automatically
     const createMissingProjects = async (text: string): Promise<void> => {
-        const projectsInText = parseProjectRefs(text);
+        const projectsInText = getAllProjects(text);
         const existingProjectNames = projects.map((project) => project.name.toLowerCase());
         const missingProjects = projectsInText.filter(
             (projectName) => !existingProjectNames.includes(projectName.toLowerCase())
@@ -709,12 +847,146 @@ const InboxModal: React.FC<InboxModalProps> = ({
         }
     };
 
-    const handleSubmit = useCallback(async () => {
+    const handleSubmit = useCallback(async (forceInbox = false) => {
+        console.log('HandleSubmit called with forceInbox:', forceInbox);
         if (!inputText.trim() || isSaving) return;
 
         setIsSaving(true);
 
         try {
+            // Check if suggestions are present first, even in edit mode (unless forced to inbox mode)
+            console.log('Checking task suggestion:', { suggestedType: analysisResult?.suggested_type, forceInbox });
+            if (analysisResult?.suggested_type === 'task' && !forceInbox) {
+                console.log('Taking task creation path');
+                // Auto-convert to task using the same logic as convert to task action
+                await createMissingTags(inputText.trim());
+                await createMissingProjects(inputText.trim());
+                
+                const cleanedText = getCleanedContent(inputText.trim());
+                
+                // Convert parsed tags to Tag objects
+                const taskTags = analysisResult.parsed_tags.map((tagName) => {
+                    // Find existing tag or create a placeholder for new tag
+                    const existingTag = tags.find(
+                        (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
+                    );
+                    return existingTag || { name: tagName };
+                });
+
+                // Find the project to assign (use first project reference if any)
+                let projectId = undefined;
+                if (analysisResult.parsed_projects.length > 0) {
+                    // Look for an existing project with the first project reference name
+                    const projectName = analysisResult.parsed_projects[0];
+                    const matchingProject = projects.find(
+                        (project) => project.name.toLowerCase() === projectName.toLowerCase()
+                    );
+                    if (matchingProject) {
+                        projectId = matchingProject.id;
+                    }
+                }
+
+                const newTask: Task = {
+                    name: cleanedText,
+                    status: 'not_started',
+                    priority: 'medium',
+                    tags: taskTags,
+                    project_id: projectId,
+                };
+
+                try {
+                    await onSave(newTask);
+                    showSuccessToast(t('task.createSuccess'));
+                    
+                    // If in edit mode, we need to mark the original inbox item as processed
+                    if (editMode && onConvertToTask) {
+                        await onConvertToTask();
+                    }
+                    
+                    setInputText('');
+                    handleClose();
+                    return;
+                } catch (error: any) {
+                    if (isAuthError(error)) {
+                        return;
+                    }
+                    throw error;
+                }
+            }
+            
+            // Check if it's a note suggestion (bookmark + project) (unless forced to inbox mode)
+            console.log('Checking note suggestion:', { suggestedType: analysisResult?.suggested_type, forceInbox });
+            if (analysisResult?.suggested_type === 'note' && !forceInbox) {
+                console.log('Taking note creation path');
+                // Auto-convert to note using similar logic
+                await createMissingTags(inputText.trim());
+                await createMissingProjects(inputText.trim());
+                
+                const cleanedText = getCleanedContent(inputText.trim());
+                
+                // Convert parsed tags to Tag objects and include bookmark tag
+                const hashtagTags = analysisResult.parsed_tags.map((tagName) => {
+                    const existingTag = tags.find(
+                        (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
+                    );
+                    return existingTag || { name: tagName };
+                });
+
+                // Add bookmark tag for URLs or when suggested reason is url_detected
+                const isUrlContent = isUrl(inputText.trim()) || analysisResult.suggested_reason === 'url_detected';
+                const bookmarkTag = isUrlContent ? [{ name: 'bookmark' }] : [];
+                
+                // Make sure we don't duplicate bookmark tag if it's already in parsed tags
+                const hasBookmarkInParsed = hashtagTags.some(tag => tag.name.toLowerCase() === 'bookmark');
+                const finalBookmarkTag = hasBookmarkInParsed ? [] : bookmarkTag;
+                
+                const taskTags = [...hashtagTags, ...finalBookmarkTag];
+
+                // Find the project to assign
+                let projectId = undefined;
+                if (analysisResult.parsed_projects.length > 0) {
+                    const projectName = analysisResult.parsed_projects[0];
+                    const matchingProject = projects.find(
+                        (project) => project.name.toLowerCase() === projectName.toLowerCase()
+                    );
+                    if (matchingProject) {
+                        projectId = matchingProject.id;
+                    }
+                }
+
+                const newNote: Note = {
+                    title: cleanedText || inputText.trim(),
+                    content: inputText.trim(),
+                    tags: taskTags,
+                    project_id: projectId,
+                };
+
+                try {
+                    if (onSaveNote) {
+                        await onSaveNote(newNote);
+                        showSuccessToast(t('note.createSuccess', 'Note created successfully'));
+                        
+                        // If in edit mode, we need to mark the original inbox item as processed
+                        if (editMode && onConvertToNote) {
+                            await onConvertToNote();
+                        }
+                        
+                        setInputText('');
+                        handleClose();
+                        return;
+                    } else {
+                        // If no note creation handler, fall back to inbox mode
+                        console.log('No note creation handler, falling back to inbox');
+                    }
+                } catch (error: any) {
+                    console.error('Error in note creation flow:', error);
+                    if (isAuthError(error)) {
+                        return;
+                    }
+                    throw error;
+                }
+            }
+            
             if (editMode && onEdit) {
                 // For edit mode, store the original text with tags/projects
                 await onEdit(inputText.trim());
@@ -726,7 +998,9 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 return; // Exit early to prevent creating duplicates
             }
 
-            if (saveMode === 'task') {
+            const effectiveSaveMode = saveMode;
+
+            if (effectiveSaveMode === 'task') {
                 // For task mode, create missing tags and projects, then clean the text
                 await createMissingTags(inputText.trim());
                 await createMissingProjects(inputText.trim());
@@ -750,6 +1024,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     throw error;
                 }
             } else {
+                console.log('Taking inbox creation path');
                 try {
                     // For inbox mode, store the original text with tags/projects
                     // Tags and projects will be created and assigned when the item is processed later
@@ -793,6 +1068,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
         setTags,
         projects,
         setProjects,
+        analysisResult,
+        createMissingTags,
+        createMissingProjects,
+        getCleanedContent,
     ]);
 
     const handleClose = useCallback(() => {
@@ -1013,11 +1292,11 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
                                 {/* Projects display like TaskItem */}
                                 {inputText &&
-                                    parseProjectRefs(inputText).length > 0 && (
+                                    getAllProjects(inputText).length > 0 && (
                                         <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
                                             <FolderIcon className="h-3 w-3 mr-1" />
                                             <div className="flex flex-wrap gap-1">
-                                                {parseProjectRefs(inputText).map(
+                                                {getAllProjects(inputText).map(
                                                     (projectName, index) => {
                                                         const project = projects.find(
                                                             (p) =>
@@ -1129,10 +1408,51 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                             ))}
                                         </div>
                                     )}
+
+                                {/* Intelligent Suggestion */}
+                                {(() => {
+                                    const suggestion = getSuggestion();
+                                    return suggestion.type && suggestion.message ? (
+                                        <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex items-start flex-1">
+                                                    <div className="text-purple-600 dark:text-purple-400 mr-2 mt-0.5">
+                                                        {/* AI Stars Icon */}
+                                                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M12 2l2.09 6.26L20 10.27l-5.91 2.01L12 18.54l-2.09-6.26L4 10.27l5.91-2.01L12 2z" />
+                                                            <path d="M8 1l1.18 3.52L12 5.64l-2.82.96L8 10.12l-1.18-3.52L4 5.64l2.82-.96L8 1z" />
+                                                            <path d="M20 14l.79 2.37L23 17.45l-2.21.75L20 20.57l-.79-2.37L17 17.45l2.21-.75L20 14z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="text-xs text-purple-700 dark:text-purple-300 mb-2">
+                                                            {suggestion.message}
+                                                        </p>
+                                                        <div className="flex items-center gap-2 text-xs">
+                                                            <span className="text-gray-600 dark:text-gray-400">or</span>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setSaveMode('inbox');
+                                                                    handleSubmit(true); // Pass true to force inbox mode
+                                                                }}
+                                                                className="text-purple-600 dark:text-purple-400 hover:underline"
+                                                            >
+                                                                save as inbox item instead
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {isAnalyzing && (
+                                                    <div className="ml-2 h-3 w-3 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ) : null;
+                                })()}
                             </div>
                             <button
                                 type="button"
-                                onClick={handleSubmit}
+                                onClick={() => handleSubmit(false)} // Explicitly allow intelligent suggestions
                                 disabled={!inputText.trim() || isSaving}
                                 className={`mt-4 sm:mt-0 sm:ml-4 inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none ${
                                     inputText.trim() && !isSaving
