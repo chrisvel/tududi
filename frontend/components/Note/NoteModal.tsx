@@ -41,11 +41,10 @@ const NoteModal: React.FC<NoteModalProps> = ({
     onCreateProject,
 }) => {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState<Note>({
-        id: note?.id,
-        title: note?.title || '',
-        content: note?.content || '',
-        tags: note?.tags || [],
+    const [formData, setFormData] = useState<Note>(note || {
+        title: '',
+        content: '',
+        tags: [],
     });
     const [tags, setTags] = useState<string[]>(
         note?.tags?.map((tag) => tag.name) || []
@@ -97,24 +96,32 @@ const NoteModal: React.FC<NoteModalProps> = ({
 
     // Initialize form data when modal opens - exactly like TaskModal
     useEffect(() => {
-        if (isOpen) {
-            // Initialize form data
+        if (isOpen && note) {
+            // Initialize form data directly from note (like TaskModal)
+            setFormData(note);
             const tagNames = note?.tags?.map((tag) => tag.name) || [];
-            setFormData({
-                id: note?.id,
-                title: note?.title || '',
-                content: note?.content || '',
-                tags: note?.tags || [],
-            });
             setTags(tagNames);
             setError(null);
 
             // Initialize project name from note - exactly like TaskModal
+            const projectIdToFind = note?.project?.id || note?.Project?.id || note?.project_id;
+            
             const currentProject = memoizedProjects.find(
-                (project) =>
-                    project.id === (note?.project?.id || note?.Project?.id)
+                (project) => project.id === projectIdToFind
             );
             setNewProjectName(currentProject ? currentProject.name : '');
+            
+            // Auto-expand sections if they have content from inbox item
+            const shouldExpandTags = tagNames.length > 0;
+            const shouldExpandProject = !!currentProject;
+            
+            if (shouldExpandTags || shouldExpandProject) {
+                setExpandedSections(prev => ({
+                    ...prev,
+                    tags: shouldExpandTags,
+                    project: shouldExpandProject,
+                }));
+            }
         }
     }, [isOpen, note, memoizedProjects]);
 
@@ -123,6 +130,11 @@ const NoteModal: React.FC<NoteModalProps> = ({
         setTimeout(() => {
             onClose();
             setIsClosing(false);
+            // Reset expanded sections when closing
+            setExpandedSections({
+                tags: false,
+                project: false,
+            });
         }, 300);
     }, [onClose]);
 

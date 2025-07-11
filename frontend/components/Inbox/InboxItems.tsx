@@ -57,6 +57,18 @@ const InboxItems: React.FC = () => {
     useEffect(() => {
         // Initial data loading
         loadInboxItemsToStore(true);
+        
+        // Load projects initially
+        const loadInitialProjects = async () => {
+            try {
+                const projectData = await fetchProjects();
+                setProjects(Array.isArray(projectData) ? projectData : []);
+            } catch (error) {
+                console.error('Failed to load initial projects:', error);
+                setProjects([]);
+            }
+        };
+        loadInitialProjects();
 
         // Set up an event listener for force reload
         const handleForceReload = () => {
@@ -201,18 +213,7 @@ const InboxItems: React.FC = () => {
         note: Note | null,
         inboxItemId?: number
     ) => {
-        // Load projects first before opening the modal
-        try {
-            const projectData = await fetchProjects();
-            // Make sure we always set an array
-            setProjects(Array.isArray(projectData) ? projectData : []);
-        } catch (error) {
-            console.error('Failed to load projects:', error);
-            showErrorToast(t('project.loadError', 'Failed to load projects'));
-            setProjects([]); // Ensure we have an empty array even on error
-        }
-
-        // If note has content that's a URL, ensure it has a bookmark tag
+        // Set up the note data first
         if (note && note.content && isUrl(note.content.trim())) {
             if (!note.tags) {
                 note.tags = [{ name: 'bookmark' }];
@@ -225,6 +226,19 @@ const InboxItems: React.FC = () => {
 
         if (inboxItemId) {
             setCurrentConversionItemId(inboxItemId);
+        }
+
+        // Projects should already be loaded from initial useEffect, 
+        // but refresh them if they're empty as a fallback
+        if (projects.length === 0) {
+            try {
+                const projectData = await fetchProjects();
+                setProjects(Array.isArray(projectData) ? projectData : []);
+            } catch (error) {
+                console.error('Failed to load projects:', error);
+                showErrorToast(t('project.loadError', 'Failed to load projects'));
+                setProjects([]);
+            }
         }
 
         setIsNoteModalOpen(true);
@@ -403,6 +417,7 @@ const InboxItems: React.FC = () => {
                                 openTaskModal={handleOpenTaskModal}
                                 openProjectModal={handleOpenProjectModal}
                                 openNoteModal={handleOpenNoteModal}
+                                projects={projects}
                             />
                         ))}
                     </div>
