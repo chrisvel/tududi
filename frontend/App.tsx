@@ -22,6 +22,7 @@ import LoadingScreen from './components/Shared/LoadingScreen';
 import InboxItems from './components/Inbox/InboxItems';
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
+const Admin = lazy(() => import('./components/Admin'));
 
 const App: React.FC = () => {
     const { i18n } = useTranslation();
@@ -226,6 +227,14 @@ const App: React.FC = () => {
                                 }
                             />
                             <Route path="/about" element={<About />} />
+                            <Route
+                                path="/admin"
+                                element={
+                                    <Suspense fallback={<div className="p-4">Loading admin...</div>}>
+                                        <Admin />
+                                    </Suspense>
+                                }
+                            />
                             <Route path="*" element={<NotFound />} />
                         </Route>
                     </>

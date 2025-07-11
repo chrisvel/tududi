@@ -216,7 +216,26 @@ const parseProjectRefs = (text) => {
 };
 
 /**
- * Clean text by removing tags and project references (consecutive groups anywhere)
+ * Parse priority from text using !high, !medium, !low syntax
+ * @param {string} text - Text to parse
+ * @returns {string|null} Priority level or null if none found
+ */
+const parsePriority = (text) => {
+    const trimmedText = text.trim();
+    const priorityRegex = /!(?:high|medium|low)\b/gi;
+    const matches = trimmedText.match(priorityRegex);
+    
+    if (matches && matches.length > 0) {
+        // Return the last priority found (in case of multiple)
+        const lastMatch = matches[matches.length - 1];
+        return lastMatch.substring(1).toLowerCase(); // Remove ! and convert to lowercase
+    }
+    
+    return null;
+};
+
+/**
+ * Clean text by removing tags, project references, and priority indicators
  * @param {string} text - Text to clean
  * @returns {string} Cleaned text
  */
@@ -227,14 +246,17 @@ const cleanTextFromTagsAndProjects = (text) => {
 
     let i = 0;
     while (i < tokens.length) {
-        // Check if current token starts a tag/project group
-        if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
-            // Skip this entire consecutive group
-            while (
-                i < tokens.length &&
-                (tokens[i].startsWith('#') || tokens[i].startsWith('+'))
-            ) {
+        // Check if current token starts a tag/project group or is a priority indicator
+        if (tokens[i].startsWith('#') || tokens[i].startsWith('+') || tokens[i].match(/^!(?:high|medium|low)$/i)) {
+            // Skip this entire consecutive group (for tags/projects) or single priority token
+            if (tokens[i].match(/^!(?:high|medium|low)$/i)) {
+                // Just skip this single priority token
                 i++;
+            } else {
+                // Skip entire consecutive group of tags/projects
+                while (i < tokens.length && (tokens[i].startsWith('#') || tokens[i].startsWith('+'))) {
+                    i++;
+                }
             }
         } else {
             // Keep regular tokens
@@ -276,7 +298,7 @@ const containsUrl = (text) => {
 };
 
 /**
- * Generate suggestion for an inbox item
+ * Generate suggestion for an inbox item using rules engine
  * @param {string} content - Original content
  * @param {string[]} tags - Parsed tags
  * @param {string[]} projects - Parsed projects
@@ -284,40 +306,36 @@ const containsUrl = (text) => {
  * @returns {object} Suggestion object
  */
 const generateSuggestion = (content, tags, projects, cleanedContent) => {
-    const hasProject = projects.length > 0;
-    const hasBookmarkTag = tags.some((tag) => tag.toLowerCase() === 'bookmark');
-    const textStartsWithVerb = startsWithVerb(cleanedContent);
-    const hasUrl = containsUrl(content);
-
-    if (!hasProject) {
+    try {
+        const rulesEngine = require('./suggestionRulesEngine');
+        return rulesEngine.generateSuggestion(content, tags, projects, cleanedContent);
+    } catch (error) {
+        console.error('Error using rules engine, falling back to hardcoded logic:', error);
+        
+        // Fallback to hardcoded logic if rules engine fails
+        const hasProject = projects.length > 0;
+        const hasBookmarkTag = tags.some(tag => tag.toLowerCase() === 'bookmark');
+        const textStartsWithVerb = startsWithVerb(cleanedContent);
+        const hasUrl = containsUrl(content);
+        
+        if (!hasProject) {
+            return { type: null, reason: null };
+        }
+        
+        if (hasBookmarkTag) {
+            return { type: 'note', reason: 'bookmark_tag' };
+        }
+        
+        if (hasUrl) {
+            return { type: 'note', reason: 'url_detected' };
+        }
+        
+        if (textStartsWithVerb) {
+            return { type: 'task', reason: 'verb_detected' };
+        }
+        
         return { type: null, reason: null };
     }
-
-    // Suggest note for bookmark items with project (explicit bookmark tag)
-    if (hasBookmarkTag) {
-        return {
-            type: 'note',
-            reason: 'bookmark_tag',
-        };
-    }
-
-    // Suggest note for URLs with project (auto-bookmark)
-    if (hasUrl) {
-        return {
-            type: 'note',
-            reason: 'url_detected',
-        };
-    }
-
-    // Suggest task for items with project that start with a verb
-    if (textStartsWithVerb) {
-        return {
-            type: 'task',
-            reason: 'verb_detected',
-        };
-    }
-
-    return { type: null, reason: null };
 };
 
 /**
@@ -329,23 +347,35 @@ const processInboxItem = (content) => {
     // Parse the content
     const tags = parseHashtags(content);
     const projects = parseProjectRefs(content);
+    const priority = parsePriority(content);
     const cleanedContent = cleanTextFromTagsAndProjects(content);
 
     // Generate suggestion
-    const suggestion = generateSuggestion(
-        content,
-        tags,
-        projects,
-        cleanedContent
-    );
+    const suggestion = generateSuggestion(content, tags, projects, cleanedContent);
 
-    return {
+    const result = {
         parsed_tags: tags,
         parsed_projects: projects,
+        parsed_priority: priority,
         cleaned_content: cleanedContent,
         suggested_type: suggestion.type,
-        suggested_reason: suggestion.reason,
+        suggested_reason: suggestion.reason
     };
+    
+    // Add enhanced metadata from suggestion if available
+    if (suggestion.priority) {
+        result.suggested_priority = suggestion.priority;
+    }
+    
+    if (suggestion.tags && Array.isArray(suggestion.tags)) {
+        result.suggested_tags = suggestion.tags;
+    }
+    
+    if (suggestion.due_date) {
+        result.suggested_due_date = suggestion.due_date;
+    }
+    
+    return result;
 };
 
 module.exports = {
@@ -360,6 +390,7 @@ module.exports = {
     // Parsing functions
     parseHashtags,
     parseProjectRefs,
+    parsePriority,
     cleanTextFromTagsAndProjects,
     tokenizeText,
 

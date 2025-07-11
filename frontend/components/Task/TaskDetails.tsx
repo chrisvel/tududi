@@ -241,12 +241,12 @@ const TaskDetails: React.FC = () => {
     }, [
         task?.id,
         task?.recurrence_type,
-        task?.last_generated_date,
+        (task as any)?.last_generated_date,
         task?.due_date,
         task?.recurring_parent_id,
         parentTask?.id,
         parentTask?.recurrence_type,
-        parentTask?.last_generated_date,
+        (parentTask as any)?.last_generated_date,
     ]);
 
     // Load parent task for child tasks (recurring instances)
