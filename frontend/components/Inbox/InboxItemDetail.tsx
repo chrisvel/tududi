@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
 import {
@@ -8,6 +8,8 @@ import {
     FolderIcon,
     ClipboardDocumentListIcon,
     TagIcon,
+    ExclamationTriangleIcon,
+    CalendarIcon,
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
@@ -43,6 +45,17 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const [analysisResult, setAnalysisResult] = useState<{
+        parsed_tags: string[];
+        parsed_projects: string[];
+        parsed_priority: string | null;
+        cleaned_content: string;
+        suggested_type: 'task' | 'note' | null;
+        suggested_reason: string | null;
+        suggested_priority?: string;
+        suggested_tags?: string[];
+        suggested_due_date?: string;
+    } | null>(null);
 
     // Helper function to parse hashtags from text (consecutive groups anywhere)
     const parseHashtags = (text: string): string[] => {
@@ -192,47 +205,209 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         return cleanedTokens.join(' ').trim();
     };
 
+    // Helper function to parse priority from text using !high, !medium, !low syntax
+    const parsePriority = (text: string): string | null => {
+        const trimmedText = text.trim();
+        const priorityRegex = /!(?:high|medium|low)\b/gi;
+        const matches = trimmedText.match(priorityRegex);
+        
+        if (matches && matches.length > 0) {
+            // Return the last priority found (in case of multiple)
+            const lastMatch = matches[matches.length - 1];
+            return lastMatch.substring(1).toLowerCase(); // Remove ! and convert to lowercase
+        }
+        
+        return null;
+    };
+
+    // Helper function to parse due date from text
+    const parseDueDate = (text: string): string | null => {
+        const trimmedText = text.trim().toLowerCase();
+        const now = new Date();
+        
+        // Check for "today"
+        if (trimmedText.includes('today')) {
+            return now.toISOString().split('T')[0];
+        }
+        
+        // Check for "tomorrow"
+        if (trimmedText.includes('tomorrow')) {
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return tomorrow.toISOString().split('T')[0];
+        }
+        
+        // Check for "by [day]" patterns
+        const dayMatches = trimmedText.match(/(by|next)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/);
+        if (dayMatches) {
+            const dayName = dayMatches[2];
+            const targetDay = getNextWeekday(dayName);
+            return targetDay.toISOString().split('T')[0];
+        }
+        
+        return null;
+    };
+
+    // Helper function to get next occurrence of a weekday
+    const getNextWeekday = (dayName: string): Date => {
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const targetDay = days.indexOf(dayName.toLowerCase());
+        
+        const now = new Date();
+        const currentDay = now.getDay();
+        
+        let daysToAdd = targetDay - currentDay;
+        if (daysToAdd <= 0) {
+            daysToAdd += 7; // Next week
+        }
+        
+        const result = new Date(now);
+        result.setDate(result.getDate() + daysToAdd);
+        return result;
+    };
+
+    // Analyze the inbox item content for intelligent suggestions
+    useEffect(() => {
+        const analyzeItem = async () => {
+            try {
+                const response = await fetch('/api/inbox/analyze-text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ content: item.content }),
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    setAnalysisResult(result);
+                }
+            } catch (error) {
+                console.error('Error analyzing inbox item:', error);
+            }
+        };
+
+        analyzeItem();
+    }, [item.content]);
+
     const hashtags = parseHashtags(item.content);
     const projectRefs = parseProjectRefs(item.content);
     const cleanedContent = cleanTextFromTagsAndProjects(item.content);
 
 
 
-    const handleConvertToTask = () => {
-        // Convert hashtags to Tag objects
-        const taskTags = hashtags.map((hashtagName) => {
-            // Find existing tag or create a placeholder for new tag
-            const existingTag = tags.find(
-                (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
-            );
-            return existingTag || { name: hashtagName };
-        });
+    const handleConvertToTask = async () => {
+        try {
+            // Get intelligent analysis for the inbox item
+            const response = await fetch('/api/inbox/analyze-text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ content: item.content }),
+            });
 
-        // Find the project to assign (use first project reference if any)
-        let projectId = undefined;
-        if (projectRefs.length > 0) {
-            // Look for an existing project with the first project reference name
-            const projectName = projectRefs[0];
-            const matchingProject = projects.find(
-                (project) => project.name.toLowerCase() === projectName.toLowerCase()
-            );
-            if (matchingProject) {
-                projectId = matchingProject.id;
+            let analysisResult = null;
+            if (response.ok) {
+                analysisResult = await response.json();
             }
-        }
 
-        const newTask: Task = {
-            name: cleanedContent || item.content,
-            status: 'not_started',
-            priority: 'medium',
-            tags: taskTags,
-            project_id: projectId,
-        };
+            // Combine explicit tags with suggested tags from analysis
+            const allTagNames = [
+                ...hashtags,
+                ...(analysisResult?.suggested_tags || [])
+            ];
+            
+            // Remove duplicates (case-insensitive)
+            const uniqueTagNames = allTagNames.filter((tagName, index, array) => 
+                array.findIndex(t => t.toLowerCase() === tagName.toLowerCase()) === index
+            );
 
-        if (item.id !== undefined) {
-            openTaskModal(newTask, item.id);
-        } else {
-            openTaskModal(newTask);
+            // Convert to Tag objects
+            const taskTags = uniqueTagNames.map((tagName) => {
+                const existingTag = tags.find(
+                    (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
+                );
+                return existingTag || { name: tagName };
+            });
+
+            // Find the project to assign (use first project reference if any)
+            let projectId = undefined;
+            const allProjectRefs = [
+                ...projectRefs,
+                ...(analysisResult?.parsed_projects || [])
+            ];
+            
+            if (allProjectRefs.length > 0) {
+                // Look for an existing project with the first project reference name
+                const projectName = allProjectRefs[0];
+                const matchingProject = projects.find(
+                    (project) => project.name.toLowerCase() === projectName.toLowerCase()
+                );
+                if (matchingProject) {
+                    projectId = matchingProject.id;
+                }
+            }
+
+            // Get priority from analysis or parsed text or default to medium
+            const parsedPriority = parsePriority(item.content);
+            const finalPriority = analysisResult?.parsed_priority || analysisResult?.suggested_priority || parsedPriority || 'medium';
+
+            // Get due date from analysis
+            const dueDate = analysisResult?.suggested_due_date || parseDueDate(item.content);
+
+            const newTask: Task = {
+                name: cleanedContent || item.content,
+                status: 'not_started',
+                priority: finalPriority as 'low' | 'medium' | 'high',
+                tags: taskTags,
+                project_id: projectId,
+                due_date: dueDate || undefined,
+            };
+
+            if (item.id !== undefined) {
+                openTaskModal(newTask, item.id);
+            } else {
+                openTaskModal(newTask);
+            }
+        } catch (error) {
+            console.error('Error analyzing inbox item:', error);
+            
+            // Fallback to basic conversion if analysis fails
+            const taskTags = hashtags.map((hashtagName) => {
+                const existingTag = tags.find(
+                    (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
+                );
+                return existingTag || { name: hashtagName };
+            });
+
+            let projectId = undefined;
+            if (projectRefs.length > 0) {
+                const projectName = projectRefs[0];
+                const matchingProject = projects.find(
+                    (project) => project.name.toLowerCase() === projectName.toLowerCase()
+                );
+                if (matchingProject) {
+                    projectId = matchingProject.id;
+                }
+            }
+
+            const newTask: Task = {
+                name: cleanedContent || item.content,
+                status: 'not_started',
+                priority: parsePriority(item.content) as 'low' | 'medium' | 'high' || 'medium',
+                tags: taskTags,
+                project_id: projectId,
+                due_date: parseDueDate(item.content) || undefined,
+            };
+
+            if (item.id !== undefined) {
+                openTaskModal(newTask, item.id);
+            } else {
+                openTaskModal(newTask);
+            }
         }
     };
 
@@ -307,13 +482,43 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             setLoading(false);
         }
 
-        // Convert hashtags to Tag objects and include bookmark tag if needed
-        const hashtagTags = hashtags.map((hashtagName) => {
+        // Get intelligent analysis for suggested tags
+        let analysisResult = null;
+        try {
+            const response = await fetch('/api/inbox/analyze-text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ content: item.content }),
+            });
+
+            if (response.ok) {
+                analysisResult = await response.json();
+            }
+        } catch (error) {
+            console.error('Error analyzing inbox item for note:', error);
+        }
+
+        // Combine explicit tags with suggested tags from analysis
+        const allTagNames = [
+            ...hashtags,
+            ...(analysisResult?.suggested_tags || [])
+        ];
+        
+        // Remove duplicates (case-insensitive)
+        const uniqueTagNames = allTagNames.filter((tagName, index, array) => 
+            array.findIndex(t => t.toLowerCase() === tagName.toLowerCase()) === index
+        );
+
+        // Convert hashtags to Tag objects
+        const hashtagTags = uniqueTagNames.map((tagName) => {
             // Find existing tag or create a placeholder for new tag
             const existingTag = tags.find(
-                (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
+                (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
             );
-            return existingTag || { name: hashtagName };
+            return existingTag || { name: tagName };
         });
 
         // Combine hashtag tags with bookmark tag if it's a URL
@@ -326,9 +531,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         
         // Find the project to assign (use first project reference if any)
         let projectId = undefined;
-        if (projectRefs.length > 0) {
+        const allProjectRefs = [
+            ...projectRefs,
+            ...(analysisResult?.parsed_projects || [])
+        ];
+        
+        if (allProjectRefs.length > 0) {
             // Look for an existing project with the first project reference name
-            const projectName = projectRefs[0];
+            const projectName = allProjectRefs[0];
             const matchingProject = projects.find(
                 (project) => project.name.toLowerCase() === projectName.toLowerCase()
             );
@@ -375,31 +585,96 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                         {cleanedContent || item.content}
                     </p>
 
-                    {/* Tags and Projects display - TaskHeader style */}
-                    {(hashtags.length > 0 || projectRefs.length > 0) && (
-                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            {/* Projects display first */}
-                            {projectRefs.length > 0 && (
-                                <div className="flex items-center">
-                                    <FolderIcon className="h-3 w-3 mr-1" />
-                                    <span>{projectRefs.join(', ')}</span>
-                                </div>
-                            )}
-                            
-                            {/* Add spacing between project and tags */}
-                            {projectRefs.length > 0 && hashtags.length > 0 && (
-                                <span className="mx-2">•</span>
-                            )}
-                            
-                            {/* Tags display */}
-                            {hashtags.length > 0 && (
-                                <div className="flex items-center">
-                                    <TagIcon className="h-3 w-3 mr-1" />
-                                    <span>{hashtags.join(', ')}</span>
-                                </div>
-                            )}
-                        </div>
-                    )}
+                    {/* Enhanced metadata display with intelligent analysis */}
+                    {(() => {
+                        // Combine explicit and suggested tags
+                        const allTags = [
+                            ...hashtags,
+                            ...(analysisResult?.suggested_tags || [])
+                        ];
+                        const uniqueTags = [...new Set(allTags)]; // Remove duplicates
+
+                        // Combine explicit and suggested projects
+                        const allProjects = [
+                            ...projectRefs,
+                            ...(analysisResult?.parsed_projects || [])
+                        ];
+                        const uniqueProjects = [...new Set(allProjects)]; // Remove duplicates
+
+                        // Get priority
+                        const priority = analysisResult?.parsed_priority || analysisResult?.suggested_priority || parsePriority(item.content);
+                        
+                        // Get due date
+                        const dueDate = analysisResult?.suggested_due_date || parseDueDate(item.content);
+
+                        const hasAnyMetadata = uniqueTags.length > 0 || uniqueProjects.length > 0 || priority || dueDate;
+
+                        return hasAnyMetadata ? (
+                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
+                                {/* Projects display first */}
+                                {uniqueProjects.length > 0 && (
+                                    <div className="flex items-center">
+                                        <FolderIcon className="h-3 w-3 mr-1" />
+                                        <span>{uniqueProjects.join(', ')}</span>
+                                    </div>
+                                )}
+                                
+                                {/* Add spacing */}
+                                {uniqueProjects.length > 0 && (uniqueTags.length > 0 || priority || dueDate) && (
+                                    <span className="mx-1">•</span>
+                                )}
+                                
+                                {/* Tags display */}
+                                {uniqueTags.length > 0 && (
+                                    <div className="flex items-center">
+                                        <TagIcon className="h-3 w-3 mr-1" />
+                                        <span>{uniqueTags.join(', ')}</span>
+                                    </div>
+                                )}
+
+                                {/* Add spacing */}
+                                {uniqueTags.length > 0 && (priority || dueDate) && (
+                                    <span className="mx-1">•</span>
+                                )}
+
+                                {/* Priority display */}
+                                {priority && (
+                                    <div className={`flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                                        priority === 'high' 
+                                            ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
+                                            : priority === 'medium'
+                                            ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
+                                            : 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                                    }`}>
+                                        <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
+                                        {priority}
+                                    </div>
+                                )}
+
+                                {/* Add spacing */}
+                                {priority && dueDate && (
+                                    <span className="mx-1">•</span>
+                                )}
+
+                                {/* Due date display */}
+                                {dueDate && (
+                                    <div className="flex items-center px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 rounded text-xs font-medium">
+                                        <CalendarIcon className="h-3 w-3 mr-1" />
+                                        {(() => {
+                                            const today = new Date().toISOString().split('T')[0];
+                                            const tomorrow = new Date();
+                                            tomorrow.setDate(tomorrow.getDate() + 1);
+                                            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                                            
+                                            if (dueDate === today) return 'Today';
+                                            if (dueDate === tomorrowStr) return 'Tomorrow';
+                                            return new Date(dueDate).toLocaleDateString();
+                                        })()}
+                                    </div>
+                                )}
+                            </div>
+                        ) : null;
+                    })()}
 
                 </div>
 

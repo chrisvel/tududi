@@ -9,7 +9,7 @@ import { createInboxItemWithStore } from '../../utils/inboxService';
 import { isAuthError } from '../../utils/authUtils';
 import { createTag } from '../../utils/tagsService';
 import { fetchProjects, createProject } from '../../utils/projectsService';
-import { XMarkIcon, TagIcon, FolderIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, TagIcon, FolderIcon, ExclamationTriangleIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { Link } from 'react-router-dom';
 import { isUrl } from '../../utils/urlService';
@@ -68,12 +68,17 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const [analysisResult, setAnalysisResult] = useState<{
         parsed_tags: string[];
         parsed_projects: string[];
+        parsed_priority: string | null;
         cleaned_content: string;
         suggested_type: 'task' | 'note' | null;
         suggested_reason: string | null;
+        suggested_priority?: string;
+        suggested_tags?: string[];
+        suggested_due_date?: string;
     } | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const analysisTimeoutRef = useRef<NodeJS.Timeout>();
+    const lastSuggestedTagsRef = useRef<string[]>([]);
 
     // Dispatch global modal events to hide floating + button
 
@@ -115,6 +120,21 @@ const InboxModal: React.FC<InboxModalProps> = ({
         }
         
         return matches;
+    };
+
+    // Helper function to parse priority from text using !high, !medium, !low syntax
+    const parsePriority = (text: string): string | null => {
+        const trimmedText = text.trim();
+        const priorityRegex = /!(?:high|medium|low)\b/gi;
+        const matches = trimmedText.match(priorityRegex);
+        
+        if (matches && matches.length > 0) {
+            // Return the last priority found (in case of multiple)
+            const lastMatch = matches[matches.length - 1];
+            return lastMatch.substring(1).toLowerCase(); // Remove ! and convert to lowercase
+        }
+        
+        return null;
     };
 
     // Helper function to parse project references from text (consecutive groups anywhere)
@@ -201,45 +221,20 @@ const InboxModal: React.FC<InboxModalProps> = ({
         return tokens;
     };
 
-    // Helper function to get current hashtag query at cursor position (only at start/end)
+    // Helper function to get current hashtag query at cursor position (anywhere in text)
     const getCurrentHashtagQuery = (text: string, position: number): string => {
         const beforeCursor = text.substring(0, position);
-        const afterCursor = text.substring(position);
         const hashtagMatch = beforeCursor.match(/#([a-zA-Z0-9_]*)$/);
         
         if (!hashtagMatch) return '';
         
-        // Check if hashtag is at start or end position
-        const hashtagStart = beforeCursor.lastIndexOf('#');
-        const textBeforeHashtag = text.substring(0, hashtagStart).trim();
-        const textAfterCursor = afterCursor.trim();
-        
-        // Check if we're at the very end (no text after cursor)
-        if (textAfterCursor === '') {
-            return hashtagMatch[1];
-        }
-        
-        // Check if we're at the very beginning
-        if (textBeforeHashtag === '') {
-            return hashtagMatch[1];
-        }
-        
-        // Check if we're in a consecutive group of tags/projects at the beginning
-        const wordsBeforeHashtag = textBeforeHashtag.split(/\s+/).filter(word => word.length > 0);
-        const allWordsAreTagsOrProjects = wordsBeforeHashtag.every(word => 
-            word.startsWith('#') || word.startsWith('+'));
-        
-        if (allWordsAreTagsOrProjects) {
-            return hashtagMatch[1];
-        }
-        
-        return '';
+        // Return the hashtag query if found, allowing hashtags anywhere
+        return hashtagMatch[1];
     };
 
-    // Helper function to get current project query at cursor position (only at start/end)
+    // Helper function to get current project query at cursor position (anywhere in text)
     const getCurrentProjectQuery = (text: string, position: number): string => {
         const beforeCursor = text.substring(0, position);
-        const afterCursor = text.substring(position);
         // Match both quoted and unquoted project references
         const projectMatch = beforeCursor.match(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/);
         
@@ -248,31 +243,8 @@ const InboxModal: React.FC<InboxModalProps> = ({
         // Get the project name (from quoted or unquoted match)
         const projectQuery = projectMatch[1] || projectMatch[2] || '';
         
-        // Check if project ref is at start or end position
-        const projectStart = beforeCursor.lastIndexOf('+');
-        const textBeforeProject = text.substring(0, projectStart).trim();
-        const textAfterCursor = afterCursor.trim();
-        
-        // Check if we're at the very end (no text after cursor)
-        if (textAfterCursor === '') {
-            return projectQuery;
-        }
-        
-        // Check if we're at the very beginning
-        if (textBeforeProject === '') {
-            return projectQuery;
-        }
-        
-        // Check if we're in a consecutive group of tags/projects at the beginning
-        const wordsBeforeProject = textBeforeProject.split(/\s+/).filter(word => word.length > 0);
-        const allWordsAreTagsOrProjects = wordsBeforeProject.every(word => 
-            word.startsWith('#') || word.startsWith('+'));
-        
-        if (allWordsAreTagsOrProjects) {
-            return projectQuery;
-        }
-        
-        return '';
+        // Return the project query if found, allowing projects anywhere
+        return projectQuery;
     };
 
     // Helper function to remove a tag from the input text
@@ -292,6 +264,38 @@ const InboxModal: React.FC<InboxModalProps> = ({
         const filteredWords = words.filter(word => word !== `+${projectToRemove}`);
         const newText = filteredWords.join(' ').trim();
         setInputText(newText);
+        if (nameInputRef.current) {
+            nameInputRef.current.focus();
+        }
+    };
+
+    // Helper function to remove priority from the input text
+    const removePriorityFromText = () => {
+        const currentText = inputText;
+        const newText = currentText.replace(/!(?:high|medium|low)\b/gi, '').replace(/\s+/g, ' ').trim();
+        setInputText(newText);
+        
+        // Clear analysis result to force re-analysis
+        setAnalysisResult(null);
+        
+        if (nameInputRef.current) {
+            nameInputRef.current.focus();
+        }
+    };
+
+    // Helper function to remove due date keywords from the input text
+    const removeDueDateFromText = () => {
+        const currentText = inputText;
+        let newText = currentText
+            .replace(/\b(today|tomorrow)\b/gi, '')
+            .replace(/\b(by|next)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/gi, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        setInputText(newText);
+        
+        // Clear analysis result to force re-analysis
+        setAnalysisResult(null);
+        
         if (nameInputRef.current) {
             nameInputRef.current.focus();
         }
@@ -341,92 +345,53 @@ const InboxModal: React.FC<InboxModalProps> = ({
         const textWidth = temp.getBoundingClientRect().width;
         document.body.removeChild(temp);
 
-        // Get the # position for the current hashtag or + for project (only at start/end)
+        // Get the # position for the current hashtag or + for project (anywhere in text)
         const beforeCursor = inputText.substring(0, cursorPos);
-        const afterCursor = inputText.substring(cursorPos);
         const hashtagMatch = beforeCursor.match(/#[a-zA-Z0-9_]*$/);
         const projectMatch = beforeCursor.match(/\+[a-zA-Z0-9_\s]*$/);
 
         if (hashtagMatch) {
             const hashtagStart = beforeCursor.lastIndexOf('#');
-            const textBeforeHashtag = inputText.substring(0, hashtagStart).trim();
-            const textAfterCursor = afterCursor.trim();
             
-            // Check if we're at the very end, very beginning, or in a consecutive group at start
-            let showDropdown = false;
-            
-            if (textAfterCursor === '' || textBeforeHashtag === '') {
-                showDropdown = true;
-            } else {
-                // Check if we're in a consecutive group of tags/projects at the beginning
-                const wordsBeforeHashtag = textBeforeHashtag.split(/\s+/).filter(word => word.length > 0);
-                const allWordsAreTagsOrProjects = wordsBeforeHashtag.every(word => 
-                    word.startsWith('#') || word.startsWith('+'));
-                if (allWordsAreTagsOrProjects) {
-                    showDropdown = true;
-                }
-            }
-            
-            if (showDropdown) {
-                // Create temp element for text up to hashtag start
-                const tempToHashtag = document.createElement('span');
-                tempToHashtag.style.visibility = 'hidden';
-                tempToHashtag.style.position = 'absolute';
-                tempToHashtag.style.fontSize = getComputedStyle(input).fontSize;
-                tempToHashtag.style.fontFamily = getComputedStyle(input).fontFamily;
-                tempToHashtag.style.fontWeight = getComputedStyle(input).fontWeight;
-                tempToHashtag.textContent = inputText.substring(0, hashtagStart);
+            // Create temp element for text up to hashtag start
+            const tempToHashtag = document.createElement('span');
+            tempToHashtag.style.visibility = 'hidden';
+            tempToHashtag.style.position = 'absolute';
+            tempToHashtag.style.fontSize = getComputedStyle(input).fontSize;
+            tempToHashtag.style.fontFamily = getComputedStyle(input).fontFamily;
+            tempToHashtag.style.fontWeight = getComputedStyle(input).fontWeight;
+            tempToHashtag.textContent = inputText.substring(0, hashtagStart);
 
-                document.body.appendChild(tempToHashtag);
-                const hashtagOffset = tempToHashtag.getBoundingClientRect().width;
-                document.body.removeChild(tempToHashtag);
+            document.body.appendChild(tempToHashtag);
+            const hashtagOffset = tempToHashtag.getBoundingClientRect().width;
+            document.body.removeChild(tempToHashtag);
 
-                return {
-                    left: hashtagOffset,
-                    top: input.offsetHeight,
-                };
-            }
+            return {
+                left: hashtagOffset,
+                top: input.offsetHeight,
+            };
         }
 
         if (projectMatch) {
             const projectStart = beforeCursor.lastIndexOf('+');
-            const textBeforeProject = inputText.substring(0, projectStart).trim();
-            const textAfterCursor = afterCursor.trim();
             
-            // Check if we're at the very end, very beginning, or in a consecutive group at start
-            let showDropdown = false;
-            
-            if (textAfterCursor === '' || textBeforeProject === '') {
-                showDropdown = true;
-            } else {
-                // Check if we're in a consecutive group of tags/projects at the beginning
-                const wordsBeforeProject = textBeforeProject.split(/\s+/).filter(word => word.length > 0);
-                const allWordsAreTagsOrProjects = wordsBeforeProject.every(word => 
-                    word.startsWith('#') || word.startsWith('+'));
-                if (allWordsAreTagsOrProjects) {
-                    showDropdown = true;
-                }
-            }
-            
-            if (showDropdown) {
-                // Create temp element for text up to project start
-                const tempToProject = document.createElement('span');
-                tempToProject.style.visibility = 'hidden';
-                tempToProject.style.position = 'absolute';
-                tempToProject.style.fontSize = getComputedStyle(input).fontSize;
-                tempToProject.style.fontFamily = getComputedStyle(input).fontFamily;
-                tempToProject.style.fontWeight = getComputedStyle(input).fontWeight;
-                tempToProject.textContent = inputText.substring(0, projectStart);
+            // Create temp element for text up to project start
+            const tempToProject = document.createElement('span');
+            tempToProject.style.visibility = 'hidden';
+            tempToProject.style.position = 'absolute';
+            tempToProject.style.fontSize = getComputedStyle(input).fontSize;
+            tempToProject.style.fontFamily = getComputedStyle(input).fontFamily;
+            tempToProject.style.fontWeight = getComputedStyle(input).fontWeight;
+            tempToProject.textContent = inputText.substring(0, projectStart);
 
-                document.body.appendChild(tempToProject);
-                const projectOffset = tempToProject.getBoundingClientRect().width;
-                document.body.removeChild(tempToProject);
+            document.body.appendChild(tempToProject);
+            const projectOffset = tempToProject.getBoundingClientRect().width;
+            document.body.removeChild(tempToProject);
 
-                return {
-                    left: projectOffset,
-                    top: input.offsetHeight,
-                };
-            }
+            return {
+                left: projectOffset,
+                top: input.offsetHeight,
+            };
         }
 
         return { left: textWidth, top: input.offsetHeight };
@@ -483,7 +448,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
         const projectQuery = getCurrentProjectQuery(newText, newCursorPosition);
         setCurrentProjectQuery(projectQuery);
 
-        // Only show suggestions if hashtag/project is at start or end
+        // Show suggestions for hashtags anywhere in text
         if ((newText.charAt(newCursorPosition - 1) === '#' || hashtagQuery) && hashtagQuery !== '') {
             // Hide project suggestions when showing tag suggestions
             setShowProjectSuggestions(false);
@@ -538,36 +503,65 @@ const InboxModal: React.FC<InboxModalProps> = ({
         }
     };
 
-    // Helper function to get all tags including auto-detected bookmark
+    // Helper function to check if a specific tag should be kept based on text content
+    const shouldKeepSpecificTag = (tag: string, text: string): boolean => {
+        const textLower = text.toLowerCase();
+        
+        // Keep health tag if text still contains medical keywords
+        if (tag === 'health') {
+            const medicalKeywords = ['doctor', 'dentist', 'medical', 'appointment', 'checkup', 'clinic', 'hospital'];
+            return medicalKeywords.some(keyword => textLower.includes(keyword));
+        }
+        
+        // Keep urgent tag if text still contains urgent keywords
+        if (tag === 'urgent') {
+            const urgentKeywords = ['urgent', 'critical', 'asap', 'emergency', 'immediately'];
+            return urgentKeywords.some(keyword => textLower.includes(keyword));
+        }
+        
+        // For other tags, default to not keeping them unless they're in the new analysis
+        return false;
+    };
+
+    // Helper function to check if we should keep suggested tags based on text content
+    const shouldKeepSuggestedTags = (text: string): boolean => {
+        if (lastSuggestedTagsRef.current.length === 0) return false;
+        
+        // Check if any of the previous tags should be kept
+        return lastSuggestedTagsRef.current.some(tag => shouldKeepSpecificTag(tag, text));
+    };
+
+    // Helper function to get all tags including auto-detected bookmark and suggested tags
     const getAllTags = (text: string): string[] => {
-        // Use analysis result if available, otherwise fall back to local parsing
-        if (analysisResult) {
-            const explicitTags = analysisResult.parsed_tags;
-            
-            // Auto-add bookmark if text contains URL or backend suggests URL note
-            const isUrlContent = isUrl(text.trim()) || analysisResult.suggested_reason === 'url_detected';
-            if (isUrlContent) {
-                const hasBookmarkTag = explicitTags.some(tag => tag.toLowerCase() === 'bookmark');
-                if (!hasBookmarkTag) {
-                    return [...explicitTags, 'bookmark'];
-                }
-            }
-            
-            return explicitTags;
-        }
-        
-        // Fallback to local parsing
+        // Parse explicit hashtags from the text
         const explicitTags = parseHashtags(text);
+        let allTagNames = [...explicitTags];
         
-        // Auto-add bookmark if text contains URL and bookmark tag isn't already present
-        if (isUrl(text.trim())) {
-            const hasBookmarkTag = explicitTags.some(tag => tag.toLowerCase() === 'bookmark');
+        // Add suggested tags from analysis result
+        if (analysisResult && analysisResult.suggested_tags) {
+            allTagNames = [...allTagNames, ...analysisResult.suggested_tags];
+        }
+        
+        // ALWAYS include last known suggested tags if text still contains triggering keywords
+        // This prevents tags from disappearing during re-analysis
+        if (lastSuggestedTagsRef.current.length > 0 && shouldKeepSuggestedTags(text)) {
+            // Merge with previous tags to prevent loss during analysis transitions
+            allTagNames = [...allTagNames, ...lastSuggestedTagsRef.current];
+        }
+        
+        // Auto-add bookmark if text contains URL
+        const isUrlContent = isUrl(text.trim()) || (analysisResult && analysisResult.suggested_reason === 'url_detected');
+        if (isUrlContent) {
+            const hasBookmarkTag = allTagNames.some(tag => tag.toLowerCase() === 'bookmark');
             if (!hasBookmarkTag) {
-                return [...explicitTags, 'bookmark'];
+                allTagNames.push('bookmark');
             }
         }
         
-        return explicitTags;
+        // Remove duplicates (case-insensitive)
+        return allTagNames.filter((tagName, index, array) => 
+            array.findIndex(t => t.toLowerCase() === tagName.toLowerCase()) === index
+        );
     };
 
     // Helper function to get all project references
@@ -579,6 +573,72 @@ const InboxModal: React.FC<InboxModalProps> = ({
         
         // Fallback to local parsing
         return parseProjectRefs(text);
+    };
+
+    // Helper function to get priority (parsed or suggested)
+    const getPriority = (text: string): string | null => {
+        if (analysisResult) {
+            return analysisResult.parsed_priority || analysisResult.suggested_priority || null;
+        }
+        
+        // Fallback to local parsing
+        return parsePriority(text);
+    };
+
+    // Helper function to parse due date from text
+    const parseDueDate = (text: string): string | null => {
+        const trimmedText = text.trim().toLowerCase();
+        const now = new Date();
+        
+        // Check for "today"
+        if (trimmedText.includes('today')) {
+            return now.toISOString().split('T')[0];
+        }
+        
+        // Check for "tomorrow"
+        if (trimmedText.includes('tomorrow')) {
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return tomorrow.toISOString().split('T')[0];
+        }
+        
+        // Check for "by [day]" patterns
+        const dayMatches = trimmedText.match(/(by|next)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/);
+        if (dayMatches) {
+            const dayName = dayMatches[2];
+            const targetDay = getNextWeekday(dayName);
+            return targetDay.toISOString().split('T')[0];
+        }
+        
+        return null;
+    };
+
+    // Helper function to get next occurrence of a weekday
+    const getNextWeekday = (dayName: string): Date => {
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const targetDay = days.indexOf(dayName.toLowerCase());
+        
+        const now = new Date();
+        const currentDay = now.getDay();
+        
+        let daysToAdd = targetDay - currentDay;
+        if (daysToAdd <= 0) {
+            daysToAdd += 7; // Next week
+        }
+        
+        const result = new Date(now);
+        result.setDate(result.getDate() + daysToAdd);
+        return result;
+    };
+
+    // Helper function to get due date (parsed or suggested)
+    const getDueDate = (text: string): string | null => {
+        if (analysisResult) {
+            return analysisResult.suggested_due_date || parseDueDate(text);
+        }
+        
+        // Fallback to local parsing
+        return parseDueDate(text);
     };
 
     // Helper function to get cleaned content
@@ -604,9 +664,17 @@ const InboxModal: React.FC<InboxModalProps> = ({
         if (type === 'note') {
             // Check if this is a URL (bookmark) note
             const isUrlNote = analysisResult.suggested_reason === 'url_detected';
-            const message = isUrlNote 
-                ? `This item will be saved as a bookmark note for ${projectName}.`
-                : `This item will be saved for later processing as it looks like a note for ${projectName}.`;
+            let message: string;
+            
+            if (isUrlNote) {
+                message = projectName 
+                    ? `This item will be saved as a bookmark note for ${projectName}.`
+                    : 'This item will be saved as a bookmark note.';
+            } else {
+                message = projectName
+                    ? `This item will be saved for later processing as it looks like a note for ${projectName}.`
+                    : 'This item will be saved for later processing as it looks like a note.';
+            }
             
             return {
                 type: 'note',
@@ -614,9 +682,12 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 projectName
             };
         } else if (type === 'task') {
+            const message = projectName 
+                ? `This item looks like a task and will be created under project ${projectName}.`
+                : 'This item looks like a task. Save to add to tasks.';
             return {
                 type: 'task',
-                message: `This item looks like a task and will be created under project ${projectName}.`,
+                message,
                 projectName
             };
         }
@@ -628,6 +699,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const analyzeText = useCallback(async (text: string) => {
         if (!text.trim()) {
             setAnalysisResult(null);
+            lastSuggestedTagsRef.current = [];
             return;
         }
 
@@ -645,6 +717,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
             if (response.ok) {
                 const result = await response.json();
                 setAnalysisResult(result);
+                // Store suggested tags for fallback
+                if (result.suggested_tags && Array.isArray(result.suggested_tags)) {
+                    lastSuggestedTagsRef.current = result.suggested_tags;
+                }
             } else {
                 console.error('Failed to analyze text:', response.statusText);
                 setAnalysisResult(null);
@@ -681,48 +757,28 @@ const InboxModal: React.FC<InboxModalProps> = ({
         const hashtagMatch = beforeCursor.match(/#([a-zA-Z0-9_]*)$/);
 
         if (hashtagMatch) {
-            const hashtagStart = beforeCursor.lastIndexOf('#');
-            const textBeforeHashtag = inputText.substring(0, hashtagStart).trim();
-            const textAfterCursor = afterCursor.trim();
-            
-            // Check if we're at the very end, very beginning, or in a consecutive group at start
-            let allowReplacement = false;
-            
-            if (textAfterCursor === '' || textBeforeHashtag === '') {
-                allowReplacement = true;
-            } else {
-                // Check if we're in a consecutive group of tags/projects at the beginning
-                const wordsBeforeHashtag = textBeforeHashtag.split(/\s+/).filter(word => word.length > 0);
-                const allWordsAreTagsOrProjects = wordsBeforeHashtag.every(word => 
-                    word.startsWith('#') || word.startsWith('+'));
-                if (allWordsAreTagsOrProjects) {
-                    allowReplacement = true;
-                }
-            }
-            
-            if (allowReplacement) {
-                const newText =
-                    beforeCursor.replace(/#([a-zA-Z0-9_]*)$/, `#${tagName}`) +
-                    afterCursor;
-                setInputText(newText);
-                setShowTagSuggestions(false);
-                setFilteredTags([]);
+            // Always allow tag replacement when hashtag is detected
+            const newText =
+                beforeCursor.replace(/#([a-zA-Z0-9_]*)$/, `#${tagName}`) +
+                afterCursor;
+            setInputText(newText);
+            setShowTagSuggestions(false);
+            setFilteredTags([]);
 
-                // Focus back on input and set cursor position
-                setTimeout(() => {
-                    if (nameInputRef.current) {
-                        nameInputRef.current.focus();
-                        const newCursorPos = beforeCursor.replace(
-                            /#([a-zA-Z0-9_]*)$/,
-                            `#${tagName}`
-                        ).length;
-                        nameInputRef.current.setSelectionRange(
-                            newCursorPos,
-                            newCursorPos
-                        );
-                    }
-                }, 0);
-            }
+            // Focus back on input and set cursor position
+            setTimeout(() => {
+                if (nameInputRef.current) {
+                    nameInputRef.current.focus();
+                    const newCursorPos = beforeCursor.replace(
+                        /#([a-zA-Z0-9_]*)$/,
+                        `#${tagName}`
+                    ).length;
+                    nameInputRef.current.setSelectionRange(
+                        newCursorPos,
+                        newCursorPos
+                    );
+                }
+            }, 0);
         }
     };
 
@@ -734,57 +790,37 @@ const InboxModal: React.FC<InboxModalProps> = ({
         const projectMatch = beforeCursor.match(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/);
 
         if (projectMatch) {
-            const projectStart = beforeCursor.lastIndexOf('+');
-            const textBeforeProject = inputText.substring(0, projectStart).trim();
-            const textAfterCursor = afterCursor.trim();
+            // Always allow project replacement when project reference is detected
+            // Automatically add quotes if project name contains spaces
+            const formattedProjectName = projectName.includes(' ') 
+                ? `"${projectName}"` 
+                : projectName;
             
-            // Check if we're at the very end, very beginning, or in a consecutive group at start
-            let allowReplacement = false;
-            
-            if (textAfterCursor === '' || textBeforeProject === '') {
-                allowReplacement = true;
-            } else {
-                // Check if we're in a consecutive group of tags/projects at the beginning
-                const wordsBeforeProject = textBeforeProject.split(/\s+/).filter(word => word.length > 0);
-                const allWordsAreTagsOrProjects = wordsBeforeProject.every(word => 
-                    word.startsWith('#') || word.startsWith('+'));
-                if (allWordsAreTagsOrProjects) {
-                    allowReplacement = true;
-                }
-            }
-            
-            if (allowReplacement) {
-                // Automatically add quotes if project name contains spaces
-                const formattedProjectName = projectName.includes(' ') 
-                    ? `"${projectName}"` 
-                    : projectName;
-                
-                const newText =
-                    beforeCursor.replace(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/, `+${formattedProjectName}`) +
-                    afterCursor;
-                setInputText(newText);
-                setShowProjectSuggestions(false);
-                setFilteredProjects([]);
+            const newText =
+                beforeCursor.replace(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/, `+${formattedProjectName}`) +
+                afterCursor;
+            setInputText(newText);
+            setShowProjectSuggestions(false);
+            setFilteredProjects([]);
 
-                // Focus back on input and set cursor position
-                setTimeout(() => {
-                    if (nameInputRef.current) {
-                        nameInputRef.current.focus();
-                        const newCursorPos = beforeCursor.replace(
-                            /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/,
-                            `+${formattedProjectName}`
-                        ).length;
-                        nameInputRef.current.setSelectionRange(
-                            newCursorPos,
-                            newCursorPos
-                        );
-                    }
-                }, 0);
-            }
+            // Focus back on input and set cursor position
+            setTimeout(() => {
+                if (nameInputRef.current) {
+                    nameInputRef.current.focus();
+                    const newCursorPos = beforeCursor.replace(
+                        /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/,
+                        `+${formattedProjectName}`
+                    ).length;
+                    nameInputRef.current.setSelectionRange(
+                        newCursorPos,
+                        newCursorPos
+                    );
+                }
+            }, 0);
         }
     };
 
-    // Helper function to clean text by removing tags and project references at start/end
+    // Helper function to clean text by removing tags, project references, priority indicators, and due date keywords
     const cleanTextFromTagsAndProjects = (text: string): string => {
         const trimmedText = text.trim();
         const tokens = tokenizeText(trimmedText);
@@ -792,11 +828,29 @@ const InboxModal: React.FC<InboxModalProps> = ({
         
         let i = 0;
         while (i < tokens.length) {
-            // Check if current token starts a tag/project group
-            if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
-                // Skip this entire consecutive group
-                while (i < tokens.length && (tokens[i].startsWith('#') || tokens[i].startsWith('+'))) {
+            // Check if current token starts a tag/project group, is a priority indicator, or is a due date keyword
+            const isDueDateKeyword = tokens[i].match(/^(today|tomorrow)$/i) || 
+                                   (tokens[i].match(/^(by|next)$/i) && i + 1 < tokens.length && 
+                                    tokens[i + 1].match(/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)$/i));
+            
+            if (tokens[i].startsWith('#') || tokens[i].startsWith('+') || tokens[i].match(/^!(?:high|medium|low)$/i) || isDueDateKeyword) {
+                // Skip this entire consecutive group (for tags/projects) or single special token
+                if (tokens[i].match(/^!(?:high|medium|low)$/i)) {
+                    // Just skip this single priority token
                     i++;
+                } else if (isDueDateKeyword) {
+                    // Skip due date keywords (handle "by friday" as two tokens)
+                    if (tokens[i].match(/^(by|next)$/i) && i + 1 < tokens.length && 
+                        tokens[i + 1].match(/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)$/i)) {
+                        i += 2; // Skip both "by" and "friday"
+                    } else {
+                        i++; // Skip single keyword like "today" or "tomorrow"
+                    }
+                } else {
+                    // Skip entire consecutive group of tags/projects
+                    while (i < tokens.length && (tokens[i].startsWith('#') || tokens[i].startsWith('+'))) {
+                        i++;
+                    }
                 }
             } else {
                 // Keep regular tokens
@@ -865,8 +919,18 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 
                 const cleanedText = getCleanedContent(inputText.trim());
                 
-                // Convert parsed tags to Tag objects
-                const taskTags = analysisResult.parsed_tags.map((tagName) => {
+                // Convert parsed tags to Tag objects and include suggested tags from rules engine
+                const allTagNames = [
+                    ...analysisResult.parsed_tags,
+                    ...(analysisResult.suggested_tags || [])
+                ];
+                
+                // Remove duplicates (case-insensitive)
+                const uniqueTagNames = allTagNames.filter((tagName, index, array) => 
+                    array.findIndex(t => t.toLowerCase() === tagName.toLowerCase()) === index
+                );
+                
+                const taskTags = uniqueTagNames.map((tagName) => {
                     // Find existing tag or create a placeholder for new tag
                     const existingTag = tags.find(
                         (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
@@ -887,12 +951,21 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     }
                 }
 
+                // Get priority from text or use suggested priority from rules engine
+                const textPriority = analysisResult?.parsed_priority || parsePriority(inputText.trim());
+                const suggestedPriority = analysisResult?.suggested_priority;
+                const finalPriority = textPriority || suggestedPriority || 'medium';
+
+                // Get due date from analysis result or parse from text
+                const dueDate = analysisResult?.suggested_due_date || getDueDate(inputText.trim());
+
                 const newTask: Task = {
                     name: cleanedText,
                     status: 'not_started',
-                    priority: 'medium',
+                    priority: finalPriority as 'low' | 'medium' | 'high',
                     tags: taskTags,
                     project_id: projectId,
+                    due_date: dueDate || undefined,
                 };
 
                 try {
@@ -925,8 +998,18 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 
                 const cleanedText = getCleanedContent(inputText.trim());
                 
-                // Convert parsed tags to Tag objects and include bookmark tag
-                const hashtagTags = analysisResult.parsed_tags.map((tagName) => {
+                // Convert parsed tags to Tag objects and include suggested tags from rules engine
+                const allTagNames = [
+                    ...analysisResult.parsed_tags,
+                    ...(analysisResult.suggested_tags || [])
+                ];
+                
+                // Remove duplicates (case-insensitive)
+                const uniqueTagNames = allTagNames.filter((tagName, index, array) => 
+                    array.findIndex(t => t.toLowerCase() === tagName.toLowerCase()) === index
+                );
+                
+                const hashtagTags = uniqueTagNames.map((tagName) => {
                     const existingTag = tags.find(
                         (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
                     );
@@ -1007,9 +1090,43 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 await createMissingProjects(inputText.trim());
                 
                 const cleanedText = cleanTextFromTagsAndProjects(inputText.trim());
+                
+                // Get priority from text (fallback mode doesn't have analysis result)
+                const textPriority = parsePriority(inputText.trim());
+                const finalPriority = textPriority || 'medium';
+                
+                // Get all tags (explicit hashtags in this fallback mode)
+                const allTagNames = getAllTags(inputText.trim());
+                const taskTags = allTagNames.map((tagName) => {
+                    const existingTag = tags.find(
+                        (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
+                    );
+                    return existingTag || { name: tagName };
+                });
+
+                // Find the project to assign (use first project reference if any)
+                const allProjects = getAllProjects(inputText.trim());
+                let projectId = undefined;
+                if (allProjects.length > 0) {
+                    const projectName = allProjects[0];
+                    const matchingProject = projects.find(
+                        (project) => project.name.toLowerCase() === projectName.toLowerCase()
+                    );
+                    if (matchingProject) {
+                        projectId = matchingProject.id;
+                    }
+                }
+
+                // Get due date from text parsing
+                const dueDate = getDueDate(inputText.trim());
+                
                 const newTask: Task = {
                     name: cleanedText,
                     status: 'not_started',
+                    priority: finalPriority as 'low' | 'medium' | 'high',
+                    tags: taskTags,
+                    project_id: projectId,
+                    due_date: dueDate || undefined,
                 };
 
                 try {
@@ -1354,6 +1471,79 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                         </div>
                                     )}
 
+                                {/* Priority display like TaskItem */}
+                                {inputText && getPriority(inputText) && (
+                                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
+                                        <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
+                                        <span
+                                            className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
+                                                getPriority(inputText) === 'high'
+                                                    ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                                                    : getPriority(inputText) === 'medium'
+                                                    ? 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400'
+                                                    : 'bg-gray-50 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400'
+                                            }`}
+                                        >
+                                            {getPriority(inputText) && (getPriority(inputText)!.charAt(0).toUpperCase() + getPriority(inputText)!.slice(1))} Priority
+                                            {analysisResult?.parsed_priority && (
+                                                <button
+                                                    onClick={removePriorityFromText}
+                                                    className="h-3 w-3 ml-1 text-gray-400 hover:text-red-500 transition-colors"
+                                                    title="Remove priority"
+                                                >
+                                                    <XMarkIcon className="h-3 w-3" />
+                                                </button>
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Due Date display like TaskItem */}
+                                {inputText && getDueDate(inputText) && (
+                                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
+                                        <CalendarIcon className="h-3 w-3 mr-1" />
+                                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded text-xs font-medium">
+                                            Due: {(() => {
+                                                const dueDate = getDueDate(inputText);
+                                                if (!dueDate) return '';
+                                                
+                                                const date = new Date(dueDate);
+                                                const today = new Date();
+                                                const tomorrow = new Date(today);
+                                                tomorrow.setDate(tomorrow.getDate() + 1);
+                                                
+                                                // Format dates for comparison (YYYY-MM-DD)
+                                                const dueDateStr = date.toISOString().split('T')[0];
+                                                const todayStr = today.toISOString().split('T')[0];
+                                                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                                                
+                                                if (dueDateStr === todayStr) {
+                                                    return 'Today';
+                                                } else if (dueDateStr === tomorrowStr) {
+                                                    return 'Tomorrow';
+                                                } else {
+                                                    // Format as "Mon, Dec 25"
+                                                    return date.toLocaleDateString('en-US', { 
+                                                        weekday: 'short', 
+                                                        month: 'short', 
+                                                        day: 'numeric' 
+                                                    });
+                                                }
+                                            })()}
+                                            {/* Only show remove button if due date was parsed from text (not suggested) */}
+                                            {parseDueDate(inputText) && (
+                                                <button
+                                                    onClick={removeDueDateFromText}
+                                                    className="h-3 w-3 ml-1 text-blue-400 hover:text-red-500 transition-colors"
+                                                    title="Remove due date"
+                                                >
+                                                    <XMarkIcon className="h-3 w-3" />
+                                                </button>
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
+
                                 {/* Tag Suggestions Dropdown */}
                                 {showTagSuggestions &&
                                     filteredTags.length > 0 && (
@@ -1426,19 +1616,41 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                         </svg>
                                                     </div>
                                                     <div className="flex-1">
-                                                        <p className="text-xs text-purple-700 dark:text-purple-300 mb-2">
-                                                            {suggestion.message}
-                                                        </p>
+                                                        <div className="text-xs text-purple-700 dark:text-purple-300 mb-3">
+                                                            {suggestion.type === 'task' 
+                                                                ? (suggestion.projectName 
+                                                                    ? `This item looks like a task and will be created under project ${suggestion.projectName}.`
+                                                                    : 'This item looks like a task.')
+                                                                : (suggestion.projectName
+                                                                    ? `This item looks like a note${analysisResult?.suggested_reason === 'url_detected' ? ' (bookmark)' : ''} for ${suggestion.projectName}.`
+                                                                    : `This item looks like a note${analysisResult?.suggested_reason === 'url_detected' ? ' (bookmark)' : ''}.`)
+                                                            }
+                                                        </div>
                                                         <div className="flex items-center gap-2 text-xs">
+                                                            <button
+                                                                onClick={() => {
+                                                                    // The handleSubmit logic already handles task vs note based on analysisResult.suggested_type
+                                                                    // We don't need to set saveMode for notes, just call handleSubmit(false)
+                                                                    if (suggestion.type === 'task') {
+                                                                        setSaveMode('task');
+                                                                    }
+                                                                    handleSubmit(false);
+                                                                }}
+                                                                disabled={isSaving}
+                                                                className="inline-flex items-center px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            >
+                                                                {isSaving ? 'Creating...' : (suggestion.type === 'task' ? 'Create Task' : 'Create Note')}
+                                                            </button>
                                                             <span className="text-gray-600 dark:text-gray-400">or</span>
                                                             <button
                                                                 onClick={() => {
                                                                     setSaveMode('inbox');
-                                                                    handleSubmit(true); // Pass true to force inbox mode
+                                                                    handleSubmit(true);
                                                                 }}
-                                                                className="text-purple-600 dark:text-purple-400 hover:underline"
+                                                                disabled={isSaving}
+                                                                className="text-purple-600 dark:text-purple-400 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                                                             >
-                                                                save as inbox item instead
+                                                                Add to Inbox
                                                             </button>
                                                         </div>
                                                     </div>
@@ -1451,20 +1663,23 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                     ) : null;
                                 })()}
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => handleSubmit(false)} // Explicitly allow intelligent suggestions
-                                disabled={!inputText.trim() || isSaving}
-                                className={`mt-4 sm:mt-0 sm:ml-4 inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none ${
-                                    inputText.trim() && !isSaving
-                                        ? 'bg-blue-600 hover:bg-blue-700'
-                                        : 'bg-blue-400 cursor-not-allowed'
-                                }`}
-                            >
-                                {isSaving
-                                    ? t('common.saving')
-                                    : t('common.save')}
-                            </button>
+                            {/* Only show main save button when there's no suggestion */}
+                            {!getSuggestion().type && (
+                                <button
+                                    type="button"
+                                    onClick={() => handleSubmit(false)}
+                                    disabled={!inputText.trim() || isSaving}
+                                    className={`mt-4 sm:mt-0 sm:ml-4 inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none ${
+                                        inputText.trim() && !isSaving
+                                            ? 'bg-blue-600 hover:bg-blue-700'
+                                            : 'bg-blue-400 cursor-not-allowed'
+                                    }`}
+                                >
+                                    {isSaving
+                                        ? t('common.saving')
+                                        : t('common.save')}
+                                </button>
+                            )}
                         </div>
                         {/* URL Preview disabled */}
                         {/* <UrlPreview 

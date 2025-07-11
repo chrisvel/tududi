@@ -1,0 +1,195 @@
+{
+    "rules": [
+        {
+            "id": "urgent_high_priority",
+            "name": "Urgent Items → High Priority Task",
+            "description": "When text contains urgent keywords, create high priority task",
+            "priority": 300,
+            "examples": [
+                "URGENT: Call client about contract +Sales",
+                "Critical bug in production +DevOps",
+                "ASAP meeting with stakeholders +Management"
+            ],
+            "conditions": {
+                "and": [
+                    { "type": "contains_keywords", "value": ["urgent", "critical", "asap", "emergency", "immediately"] }
+                ]
+            },
+            "action": {
+                "suggested_type": "task",
+                "suggested_reason": "urgent_priority",
+                "suggested_priority": "high",
+                "suggested_tags": ["urgent"],
+                "suggested_due_date": {
+                    "type": "relative",
+                    "value": "today"
+                }
+            }
+        },
+        {
+            "id": "specific_time_today_tomorrow",
+            "name": "Today/Tomorrow Tasks → Due Date",
+            "description": "When text mentions today or tomorrow, set specific due dates",
+            "priority": 280,
+            "examples": [
+                "Call dentist today +Health",
+                "Submit proposal tomorrow +Sales", 
+                "Finish report by tomorrow +Work",
+                "Schedule meeting for today +Management"
+            ],
+            "conditions": {
+                "and": [
+                    { "type": "contains_keywords", "value": ["today", "tomorrow"] },
+                    { "type": "starts_with_verb", "value": true }
+                ]
+            },
+            "action": {
+                "suggested_type": "task",
+                "suggested_reason": "time_specific",
+                "suggested_priority": "medium",
+                "suggested_due_date": {
+                    "type": "extracted"
+                }
+            }
+        },
+        {
+            "id": "deadline_with_date",
+            "name": "Deadline Detection → Task with Due Date",
+            "description": "When text mentions specific deadlines, extract due date",
+            "priority": 250,
+            "examples": [
+                "Submit report by Friday +Work",
+                "Send proposal by tomorrow +Sales",
+                "Complete project by next Monday +Development"
+            ],
+            "conditions": {
+                "and": [
+                    { "type": "has_project", "value": true },
+                    { "type": "contains_keywords", "value": ["by", "deadline", "due"] },
+                    { "type": "contains_keywords", "value": ["friday", "monday", "tuesday", "wednesday", "thursday", "saturday", "sunday", "tomorrow", "today"] }
+                ]
+            },
+            "action": {
+                "suggested_type": "task",
+                "suggested_reason": "deadline_detected",
+                "suggested_priority": "medium",
+                "suggested_due_date": {
+                    "type": "extracted"
+                }
+            }
+        },
+        {
+            "id": "medical_appointment",
+            "name": "Medical Appointments → Medium Priority",
+            "description": "Medical-related tasks get medium priority and health tag",
+            "priority": 200,
+            "examples": [
+                "Doctor appointment next week",
+                "Call dentist to schedule cleaning",
+                "Schedule medical checkup +Health",
+                "Visit clinic for blood test"
+            ],
+            "conditions": {
+                "and": [
+                    { "type": "contains_keywords", "value": ["doctor", "dentist", "medical", "appointment", "checkup", "clinic", "hospital"] }
+                ]
+            },
+            "action": {
+                "suggested_type": "task",
+                "suggested_reason": "medical_appointment",
+                "suggested_priority": "medium",
+                "suggested_tags": ["health"]
+            }
+        },
+        {
+            "id": "verb_with_project_task",
+            "name": "Verb + Project → Task",
+            "description": "When text starts with a verb and has a project, suggest creating a task",
+            "priority": 100,
+            "examples": [
+                "Call the doctor +Health",
+                "Review quarterly reports +Business",
+                "Update website content +Marketing"
+            ],
+            "conditions": {
+                "and": [
+                    { "type": "has_project", "value": true },
+                    { "type": "starts_with_verb", "value": true }
+                ]
+            },
+            "action": {
+                "suggested_type": "task",
+                "suggested_reason": "verb_detected"
+            }
+        },
+        {
+            "id": "url_with_project_note",
+            "name": "URL + Project → Bookmark Note",
+            "description": "When text contains a URL and has a project, suggest creating a bookmark note",
+            "priority": 200,
+            "examples": [
+                "https://docs.react.dev/learn +Development",
+                "https://example.com/api-docs +\"Backend API\"",
+                "Useful tutorial: https://youtube.com/watch?v=abc123 +Learning"
+            ],
+            "conditions": {
+                "and": [
+                    { "type": "has_project", "value": true },
+                    { "type": "contains_url", "value": true }
+                ]
+            },
+            "action": {
+                "suggested_type": "note",
+                "suggested_reason": "url_detected"
+            }
+        }
+    ],
+    "condition_types": {
+        "has_project": {
+            "description": "Check if text has project references",
+            "type": "boolean"
+        },
+        "has_tag": {
+            "description": "Check if text has specific tag",
+            "type": "string"
+        },
+        "starts_with_verb": {
+            "description": "Check if text starts with an action verb",
+            "type": "boolean"
+        },
+        "contains_url": {
+            "description": "Check if text contains a URL",
+            "type": "boolean"
+        },
+        "contains_keywords": {
+            "description": "Check if text contains any of the specified keywords",
+            "type": "array"
+        },
+        "text_length": {
+            "description": "Check text length (words)",
+            "type": "number",
+            "operators": ["gt", "lt", "eq", "gte", "lte"]
+        },
+        "tag_count": {
+            "description": "Check number of tags",
+            "type": "number",
+            "operators": ["gt", "lt", "eq", "gte", "lte"]
+        },
+        "project_name_matches": {
+            "description": "Match specific project names",
+            "type": "string"
+        },
+        "contains_time_reference": {
+            "description": "Contains time/date references",
+            "type": "boolean"
+        },
+        "is_question": {
+            "description": "Text ends with ? or contains question words",
+            "type": "boolean"
+        },
+        "contains_priority_keywords": {
+            "description": "Contains priority indicators",
+            "type": "array"
+        }
+    }
+}
