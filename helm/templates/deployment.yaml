@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tududi.fullname" . }}
+  labels:
+    {{- include "tududi.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "tududi.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "tududi.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "tududi.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3002
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3002"
+            - name: TUDUDI_INTERNAL_SSL_ENABLED
+              value: {{ .Values.tududi.ssl.enabled | quote }}
+            - name: TUDUDI_ALLOWED_ORIGINS
+              value: {{ .Values.tududi.allowedOrigins | quote }}
+            - name: DISABLE_TELEGRAM
+              value: {{ not .Values.tududi.telegram.enabled | quote }}
+            - name: DISABLE_SCHEDULER
+              value: {{ not .Values.tududi.scheduler.enabled | quote }}
+            - name: TUDUDI_USER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "tududi.secretName" . }}
+                  key: TUDUDI_USER_EMAIL
+            - name: TUDUDI_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "tududi.secretName" . }}
+                  key: TUDUDI_USER_PASSWORD
+            - name: TUDUDI_SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "tududi.secretName" . }}
+                  key: TUDUDI_SESSION_SECRET
+            {{- if .Values.tududi.telegram.enabled }}
+            - name: TUDUDI_TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "tududi.secretName" . }}
+                  key: TUDUDI_TELEGRAM_BOT_TOKEN
+            {{- end }}
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.healthCheck.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthCheck.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+            successThreshold: {{ .Values.healthCheck.successThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: data
+              mountPath: {{ .Values.persistence.dbPath }}
+              subPath: db
+            - name: data
+              mountPath: {{ .Values.persistence.uploadsPath }}
+              subPath: uploads
+            {{- end }}
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "tududi.pvcName" . }}
+        {{- end }}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

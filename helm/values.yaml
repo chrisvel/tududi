@@ -1,0 +1,147 @@
+# Default values for tududi.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: chrisvel/tududi
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1001
+
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+
+service:
+  type: ClusterIP
+  port: 3002
+
+ingress:
+  enabled: true
+  className: "traefik"  # or "nginx" depending on your ingress controller
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: tududi.example.com  # Change to your domain
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: tududi-tls
+  #    hosts:
+  #      - tududi.example.com
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Tududi application configuration
+tududi:
+  # Required: Initial admin user configuration
+  user:
+    email: "admin@example.com"  # Change to your preferred admin email
+    password: "change-me-to-secure-password"  # Change this to a secure password
+  
+  # Required: Session secret for encryption (generate with: openssl rand -hex 64)
+  sessionSecret: "your-generated-session-secret-here"  # Generate with openssl rand -hex 64
+  
+  # Optional: SSL configuration
+  ssl:
+    enabled: false
+  
+  # Optional: CORS configuration
+  allowedOrigins: ""  # Leave empty for localhost only, or specify comma-separated URLs
+  
+  # Optional: Telegram integration
+  telegram:
+    enabled: false
+    # Set bot token if you want to enable Telegram integration
+    botToken: ""
+  
+  # Optional: Scheduler configuration
+  scheduler:
+    enabled: true
+
+# Persistence configuration
+persistence:
+  enabled: true
+  # existingClaim: ""
+  storageClass: "local-path"  # Change to your home lab storage class (e.g., "local-path", "nfs-client", etc.)
+  accessMode: ReadWriteOnce
+  size: 5Gi  # Increased size for home lab use
+  # Path where the database will be stored (SQLite only)
+  dbPath: /app/backend/db
+  # Path where uploads will be stored
+  uploadsPath: /app/backend/uploads
+
+# Database configuration
+database:
+  # Tududi currently only supports SQLite
+  type: "sqlite"
+  
+  # SQLite configuration
+  path: /app/backend/db  # Path where SQLite database will be stored
+
+# Health check configuration
+healthCheck:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+# Environment variables
+env: []
+  # - name: CUSTOM_VAR
+  #   value: "custom_value"
+
+# Additional volumes
+volumes: []
+
+# Additional volume mounts
+volumeMounts: []
