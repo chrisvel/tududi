@@ -96,31 +96,44 @@ const NoteModal: React.FC<NoteModalProps> = ({
 
     // Initialize form data when modal opens - exactly like TaskModal
     useEffect(() => {
-        if (isOpen && note) {
-            // Initialize form data directly from note (like TaskModal)
-            setFormData(note);
-            const tagNames = note?.tags?.map((tag) => tag.name) || [];
-            setTags(tagNames);
-            setError(null);
+        if (isOpen) {
+            if (note) {
+                // Initialize form data directly from note (like TaskModal)
+                setFormData(note);
+                const tagNames = note?.tags?.map((tag) => tag.name) || [];
+                setTags(tagNames);
+                setError(null);
 
-            // Initialize project name from note - exactly like TaskModal
-            const projectIdToFind = note?.project?.id || note?.Project?.id || note?.project_id;
-            
-            const currentProject = memoizedProjects.find(
-                (project) => project.id === projectIdToFind
-            );
-            setNewProjectName(currentProject ? currentProject.name : '');
-            
-            // Auto-expand sections if they have content from inbox item
-            const shouldExpandTags = tagNames.length > 0;
-            const shouldExpandProject = !!currentProject;
-            
-            if (shouldExpandTags || shouldExpandProject) {
-                setExpandedSections(prev => ({
-                    ...prev,
+                // Initialize project name from note - exactly like TaskModal
+                const projectIdToFind = note?.project?.id || note?.Project?.id || note?.project_id;
+                
+                const currentProject = memoizedProjects.find(
+                    (project) => project.id === projectIdToFind
+                );
+                setNewProjectName(currentProject ? currentProject.name : '');
+                
+                // Auto-expand sections if they have content from existing note or always for editing
+                const shouldExpandTags = tagNames.length > 0 || !!note.id; // Expand if has tags OR editing existing note
+                const shouldExpandProject = !!currentProject || !!note.id; // Expand if has project OR editing existing note
+                
+                setExpandedSections({
                     tags: shouldExpandTags,
                     project: shouldExpandProject,
-                }));
+                });
+            } else {
+                // Reset for new note
+                setFormData({
+                    title: '',
+                    content: '',
+                    tags: [],
+                });
+                setTags([]);
+                setNewProjectName('');
+                setError(null);
+                setExpandedSections({
+                    tags: false,
+                    project: false,
+                });
             }
         }
     }, [isOpen, note, memoizedProjects]);
@@ -346,13 +359,14 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                         type="text"
                                                         id="noteTitle"
                                                         name="title"
-                                                        value={formData.title}
+                                                        value={formData.title || ''}
                                                         onChange={handleChange}
                                                         required
                                                         className="block w-full text-xl font-semibold bg-transparent text-black dark:text-white border-none focus:outline-none shadow-sm py-2"
                                                         placeholder={t(
                                                             'forms.noteTitlePlaceholder'
                                                         )}
+                                                        autoComplete="off"
                                                     />
                                                 </div>
 
@@ -415,7 +429,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             id="noteContent"
                                                             name="content"
                                                             value={
-                                                                formData.content
+                                                                formData.content || ''
                                                             }
                                                             onChange={
                                                                 handleChange
@@ -423,6 +437,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             rows={15}
                                                             className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
                                                             placeholder="Write your content using Markdown formatting...&#10;&#10;Examples:&#10;# Heading&#10;**Bold text**&#10;*Italic text*&#10;- List item&#10;```code```"
+                                                            autoComplete="off"
                                                         />
                                                     ) : (
                                                         <div
@@ -487,12 +502,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                                     'Search or create a project...'
                                                                 )}
                                                                 value={
-                                                                    newProjectName
+                                                                    newProjectName || ''
                                                                 }
                                                                 onChange={
                                                                     handleProjectSearch
                                                                 }
                                                                 className="block w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                                                                autoComplete="off"
                                                             />
                                                             {dropdownOpen &&
                                                                 newProjectName && (
