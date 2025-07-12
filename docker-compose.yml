@@ -18,3 +18,12 @@ services:
     restart: unless-stopped
     # Uncomment to run as root for automatic permission fix (not recommended for production)
     # user: "0:0"
+
+  mongo:
+    image: mongo:latest
+    container_name: tududi_mongo_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/db:/data/db
+    restart: unless-stopped

@@ -1,15 +1,17 @@
 const express = require('express');
-const { Tag, Task, Note, Project, sequelize } = require('../models');
+const mongoose = require('mongoose');
+const Tag = require('../models/tag');
+const Task = require('../models/task');
+const Note = require('../models/note');
+const Project = require('../models/project');
 const router = express.Router();
 
 // GET /api/tags
 router.get('/tags', async (req, res) => {
     try {
-        const tags = await Tag.findAll({
-            where: { user_id: req.currentUser.id },
-            attributes: ['id', 'name'],
-            order: [['name', 'ASC']],
-        });
+        const tags = await Tag.find({ user_id: req.currentUser.id })
+            .select('name')
+            .sort({ name: 1 });
         res.json(tags);
     } catch (error) {
         console.error('Error fetching tags:', error);
@@ -24,19 +26,16 @@ router.get('/tag/:identifier', async (req, res) => {
         let whereClause;
         
         // Check if identifier is a number (ID) or string (name)
-        if (/^\d+$/.test(identifier)) {
-            // It's a numeric ID
-            whereClause = { id: parseInt(identifier), user_id: req.currentUser.id };
+        if (mongoose.Types.ObjectId.isValid(identifier)) {
+            // It's a valid ObjectId
+            whereClause = { _id: identifier, user_id: req.currentUser.id };
         } else {
             // It's a tag name - decode URI component to handle special characters
             const tagName = decodeURIComponent(identifier);
             whereClause = { name: tagName, user_id: req.currentUser.id };
         }
 
-        const tag = await Tag.findOne({
-            where: whereClause,
-            attributes: ['id', 'name'],
-        });
+        const tag = await Tag.findOne(whereClause).select('name');
 
         if (!tag) {
             return res.status(404).json({ error: 'Tag not found' });
@@ -82,18 +81,16 @@ router.patch('/tag/:identifier', async (req, res) => {
         let whereClause;
         
         // Check if identifier is a number (ID) or string (name)
-        if (/^\d+$/.test(identifier)) {
-            // It's a numeric ID
-            whereClause = { id: parseInt(identifier), user_id: req.currentUser.id };
+        if (mongoose.Types.ObjectId.isValid(identifier)) {
+            // It's a valid ObjectId
+            whereClause = { _id: identifier, user_id: req.currentUser.id };
         } else {
             // It's a tag name - decode URI component to handle special characters
             const tagName = decodeURIComponent(identifier);
             whereClause = { name: tagName, user_id: req.currentUser.id };
         }
 
-        const tag = await Tag.findOne({
-            where: whereClause,
-        });
+        const tag = await Tag.findOne(whereClause);
 
         if (!tag) {
             return res.status(404).json({ error: 'Tag not found' });
@@ -105,7 +102,8 @@ router.patch('/tag/:identifier', async (req, res) => {
             return res.status(400).json({ error: 'Tag name is required' });
         }
 
-        await tag.update({ name: name.trim() });
+        tag.set({ name: name.trim() });
+        await tag.save();
 
         res.json({
             id: tag.id,
@@ -121,77 +119,42 @@ router.patch('/tag/:identifier', async (req, res) => {
 
 // DELETE /api/tag/:identifier (supports both ID and name)
 router.delete('/tag/:identifier', async (req, res) => {
-    const transaction = await sequelize.transaction();
-
     try {
         const identifier = req.params.identifier;
         let whereClause;
         
-        // Check if identifier is a number (ID) or string (name)
-        if (/^\d+$/.test(identifier)) {
-            // It's a numeric ID
-            whereClause = { id: parseInt(identifier), user_id: req.currentUser.id };
+        if (mongoose.Types.ObjectId.isValid(identifier)) {
+            whereClause = { _id: identifier, user_id: req.currentUser.id };
         } else {
-            // It's a tag name - decode URI component to handle special characters
             const tagName = decodeURIComponent(identifier);
             whereClause = { name: tagName, user_id: req.currentUser.id };
         }
 
-        const tag = await Tag.findOne({
-            where: whereClause,
-        });
+        const tag = await Tag.findOne(whereClause);
 
         if (!tag) {
-            await transaction.rollback();
             return res.status(404).json({ error: 'Tag not found' });
         }
 
-        // Use transaction to ensure all deletions happen atomically
-        // Remove all associations before deleting the tag by manually deleting from junction tables
-        // Only delete from tables that exist
-        try {
-            await sequelize.query('DELETE FROM tasks_tags WHERE tag_id = ?', {
-                replacements: [tag.id],
-                type: sequelize.QueryTypes.DELETE,
-                transaction,
-            });
-        } catch (error) {
-            // Ignore if table doesn't exist
-            console.log('tasks_tags table not found, skipping');
-        }
+        // Remove tag from tasks, notes, and projects
+        await Task.updateMany(
+            { user_id: req.currentUser.id, tags: tag._id },
+            { $pull: { tags: tag._id } }
+        );
+        await Note.updateMany(
+            { user_id: req.currentUser.id, tags: tag._id },
+            { $pull: { tags: tag._id } }
+        );
+        await Project.updateMany(
+            { user_id: req.currentUser.id, tags: tag._id },
+            { $pull: { tags: tag._id } }
+        );
 
-        try {
-            await sequelize.query('DELETE FROM notes_tags WHERE tag_id = ?', {
-                replacements: [tag.id],
-                type: sequelize.QueryTypes.DELETE,
-                transaction,
-            });
-        } catch (error) {
-            // Ignore if table doesn't exist
-            console.log('notes_tags table not found, skipping');
-        }
+        // Delete the tag itself
+        await tag.deleteOne();
 
-        try {
-            await sequelize.query(
-                'DELETE FROM projects_tags WHERE tag_id = ?',
-                {
-                    replacements: [tag.id],
-                    type: sequelize.QueryTypes.DELETE,
-                    transaction,
-                }
-            );
-        } catch (error) {
-            // Ignore if table doesn't exist
-            console.log('projects_tags table not found, skipping');
-        }
-
-        // Now safely delete the tag
-        await tag.destroy({ transaction });
-
-        await transaction.commit();
         res.json({ message: 'Tag successfully deleted' });
     } catch (error) {
-        await transaction.rollback();
         console.error('Error deleting tag:', error);
         res.status(400).json({
             error: 'There was a problem deleting the tag.',

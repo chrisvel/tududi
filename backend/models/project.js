@@ -1,77 +1,45 @@
-const { DataTypes } = require('sequelize');
+const mongoose = require('mongoose');
 
-module.exports = (sequelize) => {
-    const Project = sequelize.define(
-        'Project',
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                primaryKey: true,
-                autoIncrement: true,
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            description: {
-                type: DataTypes.TEXT,
-                allowNull: true,
-            },
-            active: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-            },
-            pin_to_sidebar: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-            },
-            priority: {
-                type: DataTypes.INTEGER,
-                allowNull: true,
-                validate: {
-                    min: 0,
-                    max: 2,
-                },
-            },
-            due_date_at: {
-                type: DataTypes.DATE,
-                allowNull: true,
-            },
-            user_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'users',
-                    key: 'id',
-                },
-            },
-            area_id: {
-                type: DataTypes.INTEGER,
-                allowNull: true,
-                references: {
-                    model: 'areas',
-                    key: 'id',
-                },
-            },
-            image_url: {
-                type: DataTypes.TEXT,
-                allowNull: true,
-            },
-        },
-        {
-            tableName: 'projects',
-            indexes: [
-                {
-                    fields: ['user_id'],
-                },
-                {
-                    fields: ['area_id'],
-                },
-            ],
-        }
-    );
+const ProjectSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    description: {
+        type: String,
+        trim: true,
+    },
+    active: {
+        type: Boolean,
+        default: false,
+    },
+    pin_to_sidebar: {
+        type: Boolean,
+        default: false,
+    },
+    priority: {
+        type: Number,
+        min: 0,
+        max: 2,
+    },
+    due_date_at: {
+        type: Date,
+    },
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    area_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Area',
+    },
+    image_url: {
+        type: String,
+    },
+}, {
+    timestamps: true,
+});
 
-    return Project;
-};
+module.exports = mongoose.model('Project', ProjectSchema);

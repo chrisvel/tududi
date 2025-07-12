@@ -1,45 +1,27 @@
-const { DataTypes } = require('sequelize');
+const mongoose = require('mongoose');
 
-module.exports = (sequelize) => {
-    const InboxItem = sequelize.define(
-        'InboxItem',
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                primaryKey: true,
-                autoIncrement: true,
-            },
-            content: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            status: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                defaultValue: 'added',
-            },
-            source: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            user_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'users',
-                    key: 'id',
-                },
-            },
-        },
-        {
-            tableName: 'inbox_items',
-            indexes: [
-                {
-                    fields: ['user_id'],
-                },
-            ],
-        }
-    );
+const InboxItemSchema = new mongoose.Schema({
+    content: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    status: {
+        type: String,
+        required: true,
+        default: 'added',
+    },
+    source: {
+        type: String,
+        required: true,
+    },
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+}, {
+    timestamps: true,
+});
 
-    return InboxItem;
-};
+module.exports = mongoose.model('InboxItem', InboxItemSchema);

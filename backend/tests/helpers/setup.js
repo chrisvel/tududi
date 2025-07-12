@@ -1,46 +1,34 @@
 // Set test environment before importing models
 process.env.NODE_ENV = 'test';
 
-const { sequelize } = require('../../models');
+const mongoose = require('mongoose');
+const User = require('../../models/user');
+const Area = require('../../models/area');
+const Project = require('../../models/project');
+const Task = require('../../models/task');
+const Tag = require('../../models/tag');
+const Note = require('../../models/note');
+const InboxItem = require('../../models/inbox_item');
+const TaskEvent = require('../../models/task_event');
 
 beforeAll(async () => {
-    // Ensure test database is clean and created
-    await sequelize.sync({ force: true });
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/tududi_test');
 }, 30000);
 
 beforeEach(async () => {
-    // Clean all tables except Sessions to avoid conflicts
-    try {
-        const models = Object.values(sequelize.models);
-        const nonSessionModels = models.filter(
-            (model) => model.name !== 'Session'
-        );
-        await Promise.all(
-            nonSessionModels.map((model) =>
-                model.destroy({ truncate: true, cascade: true })
-            )
-        );
-    } catch (error) {
-        // Ignore errors during cleanup
-    }
-});
-
-afterEach(async () => {
-    // Clean up sessions after each test
-    try {
-        const Session = sequelize.models.Session;
-        if (Session) {
-            await Session.destroy({ truncate: true });
-        }
-    } catch (error) {
-        // Ignore errors during session cleanup
-    }
+    // Clear all collections before each test
+    await Promise.all([
+        User.deleteMany(),
+        Area.deleteMany(),
+        Project.deleteMany(),
+        Task.deleteMany(),
+        Tag.deleteMany(),
+        Note.deleteMany(),
+        InboxItem.deleteMany(),
+        TaskEvent.deleteMany(),
+    ]);
 });
 
 afterAll(async () => {
-    try {
-        await sequelize.close();
-    } catch (error) {
-        // Database may already be closed
-    }
+    await mongoose.connection.close();
 }, 30000);

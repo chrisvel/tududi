@@ -12,17 +12,7 @@
         "test:unit": "cross-env NODE_ENV=test jest tests/unit",
         "test:integration": "cross-env NODE_ENV=test jest tests/integration",
         "test:telegram-duplicates": "node scripts/test-telegram-duplicates.js",
-        "db:init": "node scripts/db-init.js",
-        "db:sync": "node scripts/db-sync.js",
-        "db:migrate": "node scripts/db-migrate.js",
-        "db:reset": "node scripts/db-reset.js",
-        "db:status": "node scripts/db-status.js",
         "user:create": "node scripts/user-create.js",
-        "migration:create": "node scripts/migration-create.js",
-        "migration:run": "npx sequelize-cli db:migrate",
-        "migration:undo": "npx sequelize-cli db:migrate:undo",
-        "migration:undo:all": "npx sequelize-cli db:migrate:undo:all",
-        "migration:status": "npx sequelize-cli db:migrate:status",
         "seed:dev": "node scripts/seed-dev-data.js",
         "lint": "eslint .",
         "lint-fix": "eslint . --fix",
@@ -34,7 +24,7 @@
     "dependencies": {
         "bcrypt": "~6.0.0",
         "compression": "~1.8.0",
-        "connect-session-sequelize": "~7.1.7",
+        "connect-mongo": "^5.1.0",
         "cors": "~2.8.5",
         "dotenv": "~16.5.0",
         "eslint": "^8.0.0",
@@ -44,12 +34,11 @@
         "helmet": "~8.1.0",
         "js-yaml": "~4.1.0",
         "moment-timezone": "~0.6.0",
+        "mongoose": "^8.4.4",
         "morgan": "~1.10.0",
         "multer": "~2.0.1",
         "node-cron": "~4.1.0",
         "recharts": "~2.15.4",
-        "sequelize": "~6.37.7",
-        "sqlite3": "~5.1.7",
         "uuid": "~11.1.0"
     },
     "devDependencies": {
@@ -59,7 +48,6 @@
         "jest": "~30.0.0",
         "nodemon": "~3.0.1",
         "prettier": "~3.6.2",
-        "sequelize-cli": "~6.6.2",
         "supertest": "~7.1.1"
     }
 }

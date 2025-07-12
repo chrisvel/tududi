@@ -32,7 +32,7 @@ describe('Inbox Routes', () => {
             expect(response.body.content).toBe(inboxData.content);
             expect(response.body.source).toBe(inboxData.source);
             expect(response.body.status).toBe('added');
-            expect(response.body.user_id).toBe(user.id);
+            expect(response.body.user_id).toBe(user._id.toString());
         });
 
         it('should require authentication', async () => {
@@ -66,14 +66,14 @@ describe('Inbox Routes', () => {
                 content: 'First item',
                 status: 'added',
                 source: 'test',
-                user_id: user.id,
+                user_id: user._id,
             });
 
             inboxItem2 = await InboxItem.create({
                 content: 'Second item',
                 status: 'processed',
                 source: 'test',
-                user_id: user.id,
+                user_id: user._id,
             });
         });
 
@@ -83,7 +83,7 @@ describe('Inbox Routes', () => {
             expect(response.status).toBe(200);
             expect(Array.isArray(response.body)).toBe(true);
             expect(response.body.length).toBe(1); // Only items with status 'added' are returned
-            expect(response.body.map((i) => i.id)).toContain(inboxItem1.id);
+            expect(response.body.map((i) => i.id)).toContain(inboxItem1._id.toString());
         });
 
         it('should only return items with added status', async () => {
@@ -91,7 +91,7 @@ describe('Inbox Routes', () => {
 
             expect(response.status).toBe(200);
             expect(response.body.length).toBe(1);
-            expect(response.body[0].id).toBe(inboxItem1.id);
+            expect(response.body[0].id).toBe(inboxItem1._id.toString());
             expect(response.body[0].status).toBe('added');
         });
 
@@ -110,15 +110,15 @@ describe('Inbox Routes', () => {
             inboxItem = await InboxItem.create({
                 content: 'Test content',
                 source: 'test',
-                user_id: user.id,
+                user_id: user._id,
             });
         });
 
         it('should get inbox item by id', async () => {
-            const response = await agent.get(`/api/inbox/${inboxItem.id}`);
+            const response = await agent.get(`/api/inbox/${inboxItem._id.toString()}`);
 
             expect(response.status).toBe(200);
-            expect(response.body.id).toBe(inboxItem.id);
+            expect(response.body.id).toBe(inboxItem._id);
             expect(response.body.content).toBe(inboxItem.content);
         });
 
@@ -139,10 +139,10 @@ describe('Inbox Routes', () => {
             const otherInboxItem = await InboxItem.create({
                 content: 'Other content',
                 source: 'test',
-                user_id: otherUser.id,
+                user_id: otherUser._id,
             });
 
-            const response = await agent.get(`/api/inbox/${otherInboxItem.id}`);
+            const response = await agent.get(`/api/inbox/${otherInboxItem._id.toString()}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Inbox item not found.');
@@ -150,7 +150,7 @@ describe('Inbox Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app).get(
-                `/api/inbox/${inboxItem.id}`
+                `/api/inbox/${inboxItem._id.toString()}`
             );
 
             expect(response.status).toBe(401);
@@ -166,7 +166,7 @@ describe('Inbox Routes', () => {
                 content: 'Test content',
                 status: 'added',
                 source: 'test',
-                user_id: user.id,
+                user_id: user._id,
             });
         });
 
@@ -177,7 +177,7 @@ describe('Inbox Routes', () => {
             };
 
             const response = await agent
-                .patch(`/api/inbox/${inboxItem.id}`)
+                .patch(`/api/inbox/${inboxItem._id.toString()}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -196,7 +196,7 @@ describe('Inbox Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app)
-                .patch(`/api/inbox/${inboxItem.id}`)
+                .patch(`/api/inbox/${inboxItem._id.toString()}`)
                 .send({ content: 'Updated' });
 
             expect(response.status).toBe(401);
@@ -211,12 +211,12 @@ describe('Inbox Routes', () => {
             inboxItem = await InboxItem.create({
                 content: 'Test content',
                 source: 'test',
-                user_id: user.id,
+                user_id: user._id,
             });
         });
 
         it('should delete inbox item', async () => {
-            const response = await agent.delete(`/api/inbox/${inboxItem.id}`);
+            const response = await agent.delete(`/api/inbox/${inboxItem._id.toString()}`);
 
             expect(response.status).toBe(200);
             expect(response.body.message).toBe(
@@ -224,7 +224,7 @@ describe('Inbox Routes', () => {
             );
 
             // Verify inbox item status is updated to deleted
-            const deletedItem = await InboxItem.findByPk(inboxItem.id);
+            const deletedItem = await InboxItem.findByPk(inboxItem._id);
             expect(deletedItem).not.toBeNull();
             expect(deletedItem.status).toBe('deleted');
         });
@@ -238,7 +238,7 @@ describe('Inbox Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app).delete(
-                `/api/inbox/${inboxItem.id}`
+                `/api/inbox/${inboxItem._id.toString()}`
             );
 
             expect(response.status).toBe(401);
@@ -254,13 +254,13 @@ describe('Inbox Routes', () => {
                 content: 'Test content',
                 status: 'added',
                 source: 'test',
-                user_id: user.id,
+                user_id: user._id,
             });
         });
 
         it('should process inbox item', async () => {
             const response = await agent.patch(
-                `/api/inbox/${inboxItem.id}/process`
+                `/api/inbox/${inboxItem._id}/process`
             );
 
             expect(response.status).toBe(200);
@@ -276,7 +276,7 @@ describe('Inbox Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app).patch(
-                `/api/inbox/${inboxItem.id}/process`
+                `/api/inbox/${inboxItem._id}/process`
             );
 
             expect(response.status).toBe(401);

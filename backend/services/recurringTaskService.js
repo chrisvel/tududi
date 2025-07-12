@@ -1,5 +1,4 @@
-const { Task } = require('../models');
-const { Op } = require('sequelize');
+const Task = require('../models/task');
 
 /**
  * Service for managing recurring tasks
@@ -22,10 +21,8 @@ class RecurringTaskService {
             }
 
             // Find all recurring tasks that need processing
-            const recurringTasks = await Task.findAll({
-                where: whereClause,
-                order: [['last_generated_date', 'ASC']],
-            });
+            const recurringTasks = await Task.find(whereClause)
+                .sort({ last_generated_date: 1 });
 
             const newTasks = [];
             const now = new Date();
@@ -65,12 +62,10 @@ class RecurringTaskService {
         while (nextDueDate && nextDueDate <= now) {
             // Check if this due date already has a task instance
             const existingTask = await Task.findOne({
-                where: {
-                    user_id: task.user_id,
-                    name: task.name,
-                    due_date: nextDueDate,
-                    project_id: task.project_id,
-                },
+                user_id: task.user_id,
+                name: task.name,
+                due_date: nextDueDate,
+                project_id: task.project_id,
             });
 
             if (!existingTask) {
@@ -83,7 +78,7 @@ class RecurringTaskService {
 
             // Update last generated date
             task.last_generated_date = nextDueDate;
-            await task.save();
+        await task.save();
 
             // Calculate next due date
             nextDueDate = this.calculateNextDueDate(task, nextDueDate);
@@ -121,7 +116,9 @@ class RecurringTaskService {
             recurring_parent_id: template.id, // Link to the original recurring task
         };
 
-        return await Task.create(taskData);
+        const newTask = new Task(taskData);
+        await newTask.save();
+        return newTask;
     }
 
     /**
@@ -450,9 +447,7 @@ class RecurringTaskService {
             whereClause.project_id = null;
         }
 
-        const existingTask = await Task.findOne({
-            where: whereClause,
-        });
+        const existingTask = await Task.findOne(whereClause);
 
         if (existingTask) {
             return null; // Task already exists for this date

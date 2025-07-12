@@ -7,7 +7,8 @@
  */
 
 require('dotenv').config();
-const { User } = require('../models');
+const mongoose = require('mongoose');
+const User = require('../models/user');
 const bcrypt = require('bcrypt');
 
 async function createUser() {
@@ -48,16 +49,19 @@ async function createUser() {
     }
 
     try {
+        await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/tududi');
+        console.log('MongoDB Connected for user creation');
+
         console.log(`Creating user with email: ${email}`);
 
         // Check if user already exists
-        const existingUser = await User.findOne({ where: { email } });
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
             console.error(`❌ User with email ${email} already exists`);
             process.exit(1);
         }
 
-        // Hash the password manually since the hook might not be working in this context
+        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create the user
@@ -68,7 +72,7 @@ async function createUser() {
 
         console.log('✅ User created successfully');
         console.log(`📧 Email: ${user.email}`);
-        console.log(`🆔 User ID: ${user.id}`);
+        console.log(`🆔 User ID: ${user._id}`); // Use _id for MongoDB
         console.log(`📅 Created: ${user.created_at}`);
 
         process.exit(0);

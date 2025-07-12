@@ -1,36 +1,18 @@
-const { DataTypes } = require('sequelize');
+const mongoose = require('mongoose');
 
-module.exports = (sequelize) => {
-    const Tag = sequelize.define(
-        'Tag',
-        {
-            id: {
-                type: DataTypes.INTEGER,
-                primaryKey: true,
-                autoIncrement: true,
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            user_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'users',
-                    key: 'id',
-                },
-            },
-        },
-        {
-            tableName: 'tags',
-            indexes: [
-                {
-                    fields: ['user_id'],
-                },
-            ],
-        }
-    );
+const TagSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+}, {
+    timestamps: true,
+});
 
-    return Tag;
-};
+module.exports = mongoose.model('Tag', TagSchema);

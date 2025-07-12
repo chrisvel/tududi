@@ -6,18 +6,16 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const session = require('express-session');
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
-const { sequelize } = require('./models');
+const MongoStore = require('connect-mongo');
+const connectDB = require('./config/database');
 const { initializeTelegramPolling } = require('./services/telegramInitializer');
 const taskScheduler = require('./services/taskScheduler');
 const config = require('./config/config');
 
 const app = express();
 
-// Session store
-const sessionStore = new SequelizeStore({
-    db: sequelize,
-});
+// Connect to MongoDB
+connectDB();
 
 // Middlewares
 app.use(
@@ -55,7 +53,12 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(
     session({
         secret: config.secret,
-        store: sessionStore,
+        store: MongoStore.create({
+            mongoUrl: process.env.MONGO_URI || 'mongodb://localhost:27017/tududi',
+            ttl: 14 * 24 * 60 * 60, // 14 days
+            autoRemove: 'interval',
+            autoRemoveInterval: 10, // In minutes. Default
+        }),
         resave: false,
         saveUninitialized: false,
         cookie: {
@@ -123,7 +126,8 @@ app.get('*', (req, res) => {
     ) {
         if (config.production) {
             res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-        } else {
+        }
+        else {
             res.sendFile(path.join(__dirname, '../public', 'index.html'));
         }
     } else {
@@ -146,27 +150,19 @@ app.use((err, req, res, next) => {
 // Initialize database and start server
 async function startServer() {
     try {
-        // Create session store table
-        await sessionStore.sync();
-
-        // Sync database
-        await sequelize.sync();
-
         // Auto-create user if not exists
         if (config.email && config.password) {
-            const { User } = require('./models');
+            const User = require('./models/user'); // Assuming user model is updated
             const bcrypt = require('bcrypt');
 
-            const [user, created] = await User.findOrCreate({
-                where: { email: config.email },
-                defaults: {
+            const user = await User.findOne({ email: config.email });
+
+            if (!user) {
+                await User.create({
                     email: config.email,
                     password_digest: await bcrypt.hash(config.password, 10),
-                },
-            });
-
-            if (created) {
-                console.log('Default user created:', user.email);
+                });
+                console.log('Default user created:', config.email);
             }
         }
 

@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { User } = require('../models');
+const User = require('../models/user');
 const TaskSummaryService = require('./taskSummaryService');
 const RecurringTaskService = require('./recurringTaskService');
 const config = require('../config/config');
@@ -88,13 +88,11 @@ const stopJobs = (jobs) => {
 
 // Side effect function to fetch users for frequency
 const fetchUsersForFrequency = async (frequency) => {
-    return await User.findAll({
-        where: {
-            telegram_bot_token: { [require('sequelize').Op.ne]: null },
-            telegram_chat_id: { [require('sequelize').Op.ne]: null },
-            task_summary_enabled: true,
-            task_summary_frequency: frequency,
-        },
+    return await User.find({
+        telegram_bot_token: { $ne: null },
+        telegram_chat_id: { $ne: null },
+        task_summary_enabled: true,
+        task_summary_frequency: frequency,
     });
 };
 

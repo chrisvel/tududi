@@ -1,5 +1,5 @@
 const express = require('express');
-const { User } = require('../models');
+const User = require('../models/user');
 const packageJson = require('../package.json');
 const router = express.Router();
 
@@ -12,7 +12,7 @@ router.get('/version', (req, res) => {
 router.get('/current_user', async (req, res) => {
     try {
         if (req.session && req.session.userId) {
-            const user = await User.findByPk(req.session.userId);
+            const user = await User.findById(req.session.userId);
             if (user) {
                 return res.json({
                     user: {
@@ -42,14 +42,13 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: 'Invalid login parameters.' });
         }
 
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({ errors: ['Invalid credentials'] });
         }
 
-        const isValidPassword = await User.checkPassword(
-            password,
-            user.password_digest
+        const isValidPassword = await user.checkPassword(
+            password
         );
         if (!isValidPassword) {
             return res.status(401).json({ errors: ['Invalid credentials'] });
