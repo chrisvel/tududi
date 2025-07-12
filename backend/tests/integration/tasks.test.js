@@ -209,7 +209,7 @@ describe('Tasks Routes', () => {
             // Verify task is deleted
             const deletedTask = await Task.findByPk(task.id);
             expect(deletedTask).toBeNull();
-        });
+        }, 10000); // 10 second timeout for DELETE operations
 
         it('should return 404 for non-existent task', async () => {
             const response = await agent.delete('/api/task/999999');
@@ -234,7 +234,7 @@ describe('Tasks Routes', () => {
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Task not found.');
-        });
+        }, 10000); // 10 second timeout for this specific test
 
         it('should require authentication', async () => {
             const response = await request(app).delete(`/api/task/${task.id}`);

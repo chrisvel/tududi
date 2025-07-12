@@ -72,8 +72,6 @@ const config = {
         production && process.env.TUDUDI_INTERNAL_SSL_ENABLED === 'true',
 };
 
-if (environment !== 'production') {
-    console.log(`Configuration: ${JSON.stringify(config, null, 4)}`);
-}
+// Configuration logging removed for cleaner test output
 
 module.exports = config;

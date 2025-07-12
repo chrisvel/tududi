@@ -56,7 +56,6 @@ const loadQuotesFromFile = () => {
         const quotes = extractQuotes(data);
 
         if (quotes) {
-            console.log(`Loaded ${quotes.length} quotes from configuration`);
             return quotes;
         } else {
             console.warn('No quotes found in configuration file');
