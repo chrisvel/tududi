@@ -1,5 +1,5 @@
 const express = require('express');
-const { User } = require('../models');
+const User = require('../models-mongo/user');
 const telegramPoller = require('../services/telegramPoller');
 const { getBotInfo } = require('../services/telegramApi');
 const router = express.Router();
@@ -11,7 +11,7 @@ router.post('/telegram/start-polling', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findById(req.session.userId);
         if (!user || !user.telegram_bot_token) {
             return res
                 .status(400)
@@ -89,7 +89,7 @@ router.post('/telegram/setup', async (req, res) => {
                 .json({ error: 'Telegram bot token is required.' });
         }
 
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findById(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -122,7 +122,8 @@ router.post('/telegram/setup', async (req, res) => {
         }
 
         // Update user's telegram bot token
-        await user.update({ telegram_bot_token: token });
+        user.telegram_bot_token = token;
+        await user.save();
 
         res.json({
             success: true,
@@ -143,7 +144,7 @@ router.post('/telegram/send-welcome', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findById(req.session.userId);
         if (!user || !user.telegram_bot_token) {
             return res
                 .status(400)

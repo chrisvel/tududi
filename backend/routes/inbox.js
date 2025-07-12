@@ -66,7 +66,8 @@ router.get('/inbox/:id', async (req, res) => {
         }
 
         const item = await InboxItem.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            _id: req.params.id,
+            user: req.session.userId,
         });
 
         if (!item) {
@@ -88,7 +89,8 @@ router.patch('/inbox/:id', async (req, res) => {
         }
 
         const item = await InboxItem.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            _id: req.params.id,
+            user: req.session.userId,
         });
 
         if (!item) {
@@ -96,20 +98,17 @@ router.patch('/inbox/:id', async (req, res) => {
         }
 
         const { content, status } = req.body;
-        const updateData = {};
 
-        if (content !== undefined) updateData.content = content;
-        if (status !== undefined) updateData.status = status;
+        if (content !== undefined) item.content = content;
+        if (status !== undefined) item.status = status;
 
-        await item.update(updateData);
+        await item.save();
         res.json(item);
     } catch (error) {
         console.error('Error updating inbox item:', error);
         res.status(400).json({
             error: 'There was a problem updating the inbox item.',
-            details: error.errors
-                ? error.errors.map((e) => e.message)
-                : [error.message],
+            details: error.message,
         });
     }
 });
@@ -122,7 +121,8 @@ router.delete('/inbox/:id', async (req, res) => {
         }
 
         const item = await InboxItem.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            _id: req.params.id,
+            user: req.session.userId,
         });
 
         if (!item) {
@@ -130,7 +130,8 @@ router.delete('/inbox/:id', async (req, res) => {
         }
 
         // Mark as deleted instead of actual deletion
-        await item.update({ status: 'deleted' });
+        item.status = 'deleted';
+        await item.save();
         res.json({ message: 'Inbox item successfully deleted' });
     } catch (error) {
         console.error('Error deleting inbox item:', error);
@@ -148,14 +149,16 @@ router.patch('/inbox/:id/process', async (req, res) => {
         }
 
         const item = await InboxItem.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            _id: req.params.id,
+            user: req.session.userId,
         });
 
         if (!item) {
             return res.status(404).json({ error: 'Inbox item not found.' });
         }
 
-        await item.update({ status: 'processed' });
+        item.status = 'processed';
+        await item.save();
         res.json(item);
     } catch (error) {
         console.error('Error processing inbox item:', error);

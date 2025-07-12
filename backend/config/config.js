@@ -14,9 +14,6 @@ if (
 const environment = process.env.NODE_ENV;
 const production = process.env.NODE_ENV === 'production';
 const projectRootPath = path.join(__dirname, '..'); // backend root path
-const dbDir = process.env.DATABASE_URL
-    ? process.env.DATABASE_URL.replace('sqlite:///', '')
-    : path.join(projectRootPath, 'db');
 
 const credentials = {
     google: {
@@ -40,9 +37,7 @@ const config = {
               'http://127.0.0.1:9292',
           ],
 
-    dbDir,
-
-    dbFile: path.join(dbDir, `${environment}.sqlite3`),
+    mongodb_uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/tududi',
 
     disableScheduler: process.env.DISABLE_SCHEDULER === 'true',
 

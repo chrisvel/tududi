@@ -1,27 +1,32 @@
-const {
-    User,
-    Area,
-    Project,
-    Task,
-    Tag,
-    Note,
-    InboxItem,
-} = require('../models');
+const mongoose = require('mongoose');
+const User = require('../models-mongo/user');
+const Area = require('../models-mongo/area');
+const Project = require('../models-mongo/project');
+const Task = require('../models-mongo/task');
+const Tag = require('../models-mongo/tag');
+const Note = require('../models-mongo/note');
+const InboxItem = require('../models-mongo/inbox_item');
 const bcrypt = require('bcrypt');
 const { createMassiveTaskData } = require('./massive-tasks');
+const config = require('../config/config');
 
 async function seedDatabase() {
     try {
+        await mongoose.connect(config.mongodb_uri, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+
         console.log('🌱 Starting database seeding...');
 
         // Create SEPARATE test user for seeding (never overwrite existing users!)
         console.log('👤 Creating separate test user for testing...');
         const testEmail = 'test@tududi.com';
 
-        let testUser = await User.findOne({ where: { email: testEmail } });
+        let testUser = await User.findOne({ email: testEmail });
 
         if (!testUser) {
-            testUser = await User.create({
+            testUser = new User({
                 name: 'Test User',
                 email: testEmail,
                 password_digest: await bcrypt.hash('password123', 10),
@@ -29,148 +34,149 @@ async function seedDatabase() {
                 language: 'en',
                 timezone: 'Europe/Athens',
             });
-            console.log('✅ Created new test user with ID:', testUser.id);
+            await testUser.save();
+            console.log('✅ Created new test user with ID:', testUser._id);
         } else {
-            console.log('✅ Found existing test user with ID:', testUser.id);
+            console.log('✅ Found existing test user with ID:', testUser._id);
             // Clear ONLY the test user's data to refresh it
             console.log('🧹 Clearing test user data for fresh seeding...');
-            await Task.destroy({ where: { user_id: testUser.id } });
-            await Project.destroy({ where: { user_id: testUser.id } });
-            await Area.destroy({ where: { user_id: testUser.id } });
-            await Tag.destroy({ where: { user_id: testUser.id } });
-            await Note.destroy({ where: { user_id: testUser.id } });
-            await InboxItem.destroy({ where: { user_id: testUser.id } });
+            await Task.deleteMany({ user: testUser._id });
+            await Project.deleteMany({ user: testUser._id });
+            await Area.deleteMany({ user: testUser._id });
+            await Tag.deleteMany({ user: testUser._id });
+            await Note.deleteMany({ user: testUser._id });
+            await InboxItem.deleteMany({ user: testUser._id });
         }
 
         // Create areas
         console.log('📁 Creating areas...');
-        const areas = await Area.bulkCreate([
-            { name: 'Personal', user_id: testUser.id },
-            { name: 'Work', user_id: testUser.id },
-            { name: 'Health & Fitness', user_id: testUser.id },
-            { name: 'Learning', user_id: testUser.id },
-            { name: 'Home & Family', user_id: testUser.id },
-            { name: 'Finance', user_id: testUser.id },
-            { name: 'Travel', user_id: testUser.id },
-            { name: 'Hobbies', user_id: testUser.id },
-            { name: 'Social', user_id: testUser.id },
-            { name: 'Career', user_id: testUser.id },
+        const areas = await Area.insertMany([
+            { name: 'Personal', user: testUser._id },
+            { name: 'Work', user: testUser._id },
+            { name: 'Health & Fitness', user: testUser._id },
+            { name: 'Learning', user: testUser._id },
+            { name: 'Home & Family', user: testUser._id },
+            { name: 'Finance', user: testUser._id },
+            { name: 'Travel', user: testUser._id },
+            { name: 'Hobbies', user: testUser._id },
+            { name: 'Social', user: testUser._id },
+            { name: 'Career', user: testUser._id },
         ]);
 
         // Create projects
         console.log('📂 Creating projects...');
-        const projects = await Project.bulkCreate([
+        const projects = await Project.insertMany([
             {
                 name: 'Website Redesign',
                 description: 'Complete overhaul of company website',
-                user_id: testUser.id,
-                area_id: areas[1].id,
+                user: testUser._id,
+                area: areas[1]._id,
                 active: true,
                 due_date_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
             },
             {
                 name: 'Learn React Native',
                 description: 'Master mobile app development',
-                user_id: testUser.id,
-                area_id: areas[3].id,
+                user: testUser._id,
+                area: areas[3]._id,
                 active: true,
             },
             {
                 name: 'Home Renovation',
                 description: 'Kitchen and bathroom updates',
-                user_id: testUser.id,
-                area_id: areas[4].id,
+                user: testUser._id,
+                area: areas[4]._id,
                 active: true,
                 due_date_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
             },
             {
                 name: 'Fitness Challenge',
                 description: '90-day fitness transformation',
-                user_id: testUser.id,
-                area_id: areas[2].id,
+                user: testUser._id,
+                area: areas[2]._id,
                 active: true,
                 due_date_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
             },
             {
                 name: 'Side Business',
                 description: 'Launch online consulting service',
-                user_id: testUser.id,
-                area_id: areas[1].id,
+                user: testUser._id,
+                area: areas[1]._id,
                 active: true,
             },
             {
                 name: 'Investment Portfolio',
                 description: 'Build diversified investment portfolio',
-                user_id: testUser.id,
-                area_id: areas[5].id,
+                user: testUser._id,
+                area: areas[5]._id,
                 active: true,
                 due_date_at: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000), // 120 days from now
             },
             {
                 name: 'Europe Trip 2024',
                 description: 'Plan and execute 3-week European vacation',
-                user_id: testUser.id,
-                area_id: areas[6].id,
+                user: testUser._id,
+                area: areas[6]._id,
                 active: true,
                 due_date_at: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000), // 180 days from now
             },
             {
                 name: 'Photography Mastery',
                 description: 'Learn advanced photography techniques',
-                user_id: testUser.id,
-                area_id: areas[7].id,
+                user: testUser._id,
+                area: areas[7]._id,
                 active: true,
             },
             {
                 name: 'Professional Certification',
                 description: 'Get AWS Solutions Architect certification',
-                user_id: testUser.id,
-                area_id: areas[9].id,
+                user: testUser._id,
+                area: areas[9]._id,
                 active: true,
                 due_date_at: new Date(Date.now() + 150 * 24 * 60 * 60 * 1000), // 150 days from now
             },
             {
                 name: 'Garden Makeover',
                 description: 'Transform backyard into productive garden',
-                user_id: testUser.id,
-                area_id: areas[4].id,
+                user: testUser._id,
+                area: areas[4]._id,
                 active: true,
                 due_date_at: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000), // 45 days from now
             },
             {
                 name: 'Blog Launch',
                 description: 'Start personal tech blog',
-                user_id: testUser.id,
-                area_id: areas[0].id,
+                user: testUser._id,
+                area: areas[0]._id,
                 active: true,
             },
             {
                 name: 'Language Learning Spanish',
                 description: 'Become conversational in Spanish',
-                user_id: testUser.id,
-                area_id: areas[3].id,
+                user: testUser._id,
+                area: areas[3]._id,
                 active: false, // Paused project
             },
             {
                 name: 'Wedding Planning',
                 description: 'Plan and organize wedding ceremony',
-                user_id: testUser.id,
-                area_id: areas[8].id,
+                user: testUser._id,
+                area: areas[8]._id,
                 active: true,
                 due_date_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
             },
             {
                 name: 'Meal Prep System',
                 description: 'Establish weekly meal preparation routine',
-                user_id: testUser.id,
-                area_id: areas[2].id,
+                user: testUser._id,
+                area: areas[2]._id,
                 active: true,
             },
             {
                 name: 'Smart Home Setup',
                 description: 'Install and configure smart home devices',
-                user_id: testUser.id,
-                area_id: areas[4].id,
+                user: testUser._id,
+                area: areas[4]._id,
                 active: true,
                 due_date_at: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000), // 21 days from now
             },
@@ -178,32 +184,32 @@ async function seedDatabase() {
 
         // Create tags
         console.log('🏷️  Creating tags...');
-        const tags = await Tag.bulkCreate([
-            { name: 'urgent', user_id: testUser.id },
-            { name: 'quick-win', user_id: testUser.id },
-            { name: 'research', user_id: testUser.id },
-            { name: 'meeting', user_id: testUser.id },
-            { name: 'creative', user_id: testUser.id },
-            { name: 'phone-call', user_id: testUser.id },
-            { name: 'online', user_id: testUser.id },
-            { name: 'weekend', user_id: testUser.id },
-            { name: 'shopping', user_id: testUser.id },
-            { name: 'admin', user_id: testUser.id },
-            { name: 'waiting-for', user_id: testUser.id },
-            { name: 'someday-maybe', user_id: testUser.id },
-            { name: 'high-energy', user_id: testUser.id },
-            { name: 'low-energy', user_id: testUser.id },
-            { name: 'collaboration', user_id: testUser.id },
-            { name: 'learning', user_id: testUser.id },
-            { name: 'maintenance', user_id: testUser.id },
-            { name: 'financial', user_id: testUser.id },
-            { name: 'health', user_id: testUser.id },
-            { name: 'outdoor', user_id: testUser.id },
-            { name: 'planning', user_id: testUser.id },
-            { name: 'review', user_id: testUser.id },
-            { name: 'automation', user_id: testUser.id },
-            { name: 'documentation', user_id: testUser.id },
-            { name: 'bug-fix', user_id: testUser.id },
+        const tags = await Tag.insertMany([
+            { name: 'urgent', user: testUser._id },
+            { name: 'quick-win', user: testUser._id },
+            { name: 'research', user: testUser._id },
+            { name: 'meeting', user: testUser._id },
+            { name: 'creative', user: testUser._id },
+            { name: 'phone-call', user: testUser._id },
+            { name: 'online', user: testUser._id },
+            { name: 'weekend', user: testUser._id },
+            { name: 'shopping', user: testUser._id },
+            { name: 'admin', user: testUser._id },
+            { name: 'waiting-for', user: testUser._id },
+            { name: 'someday-maybe', user: testUser._id },
+            { name: 'high-energy', user: testUser._id },
+            { name: 'low-energy', user: testUser._id },
+            { name: 'collaboration', user: testUser._id },
+            { name: 'learning', user: testUser._id },
+            { name: 'maintenance', user: testUser._id },
+            { name: 'financial', user: testUser._id },
+            { name: 'health', user: testUser._id },
+            { name: 'outdoor', user: testUser._id },
+            { name: 'planning', user: testUser._id },
+            { name: 'review', user: testUser._id },
+            { name: 'automation', user: testUser._id },
+            { name: 'documentation', user: testUser._id },
+            { name: 'bug-fix', user: testUser._id },
         ]);
 
         // Helper function to get random date
@@ -225,15 +231,11 @@ async function seedDatabase() {
             getPastDate
         );
 
-        const tasks = [];
-        for (const taskInfo of taskData) {
-            const task = await Task.create({
-                ...taskInfo,
-                user_id: testUser.id,
-                note: taskInfo.note || null,
-            });
-            tasks.push(task);
-        }
+        const tasks = await Task.insertMany(taskData.map(taskInfo => ({
+            ...taskInfo,
+            user: testUser._id,
+            note: taskInfo.note || null,
+        })));
 
         // Create additional backlog tasks with old creation dates for realistic metrics
         console.log('📅 Creating backlog tasks with older dates...');
@@ -270,28 +272,30 @@ async function seedDatabase() {
             'Plan digital decluttering project',
         ];
 
+        const backlogTasks = [];
         for (let i = 0; i < backlogTaskNames.length; i++) {
             const daysAgo = Math.floor(Math.random() * 120) + 31; // 31-150 days ago
             const oldDate = new Date(
                 Date.now() - daysAgo * 24 * 60 * 60 * 1000
             );
 
-            const backlogTask = await Task.create({
+            backlogTasks.push({
                 name: backlogTaskNames[i],
                 priority: Math.floor(Math.random() * 3),
                 status: Math.random() < 0.9 ? 0 : 1, // 90% not started, 10% in progress
-                user_id: testUser.id,
-                project_id:
+                user: testUser._id,
+                project:
                     Math.random() < 0.3
                         ? projects[Math.floor(Math.random() * projects.length)]
-                              .id
+                              ._id
                         : null,
                 due_date: Math.random() < 0.2 ? getRandomDate(30) : null,
                 created_at: oldDate,
                 updated_at: oldDate,
             });
-            tasks.push(backlogTask);
         }
+        await Task.insertMany(backlogTasks);
+
 
         // Create tasks due today for realistic "Due Today" section
         console.log('📅 Creating tasks due today...');
@@ -311,23 +315,24 @@ async function seedDatabase() {
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Set to start of today
 
+        const todayTasks = [];
         for (let i = 0; i < todayTaskNames.length; i++) {
-            const todayTask = await Task.create({
+            todayTasks.push({
                 name: todayTaskNames[i],
                 priority: Math.floor(Math.random() * 3),
                 status: Math.random() < 0.8 ? 0 : 1, // 80% not started, 20% in progress
-                user_id: testUser.id,
-                project_id:
+                user: testUser._id,
+                project:
                     Math.random() < 0.4
                         ? projects[Math.floor(Math.random() * projects.length)]
-                              .id
+                              ._id
                         : null,
                 due_date: today,
                 created_at: getPastDate(7), // Created within last week
                 updated_at: getPastDate(7),
             });
-            tasks.push(todayTask);
         }
+        await Task.insertMany(todayTasks);
 
         // Create intelligent task-tag associations
         console.log('🔗 Creating intelligent task-tag associations...');
@@ -524,7 +529,7 @@ async function seedDatabase() {
 
                 // Apply tags if any were identified
                 if (taskTags.length > 0) {
-                    await task.setTags(taskTags);
+                    await Task.updateOne({ _id: task._id }, { $set: { tags: taskTags.map(t => t._id) } });
                 }
             }
         };
@@ -536,19 +541,19 @@ async function seedDatabase() {
         const TaskEventService = require('../services/taskEventService');
 
         // Create events for completed tasks to show user patterns
-        const completedTasks = tasks.filter((t) => t.status === 2);
-        for (const task of completedTasks.slice(0, 20)) {
+        const completedTasks = await Task.find({ status: 2, user: testUser._id }).limit(20);
+        for (const task of completedTasks) {
             // Just first 20 to avoid too much data
             try {
                 // Create task creation event
                 await TaskEventService.logTaskCreated(
-                    task.id,
-                    testUser.id,
+                    task._id,
+                    testUser._id,
                     {
                         name: task.name,
                         status: 0,
                         priority: task.priority,
-                        project_id: task.project_id,
+                        project_id: task.project,
                     },
                     { source: 'web' }
                 );
@@ -557,8 +562,8 @@ async function seedDatabase() {
                 if (Math.random() < 0.7) {
                     // 70% had in_progress phase
                     await TaskEventService.logStatusChange(
-                        task.id,
-                        testUser.id,
+                        task._id,
+                        testUser._id,
                         0,
                         1,
                         { source: 'web' }
@@ -567,8 +572,8 @@ async function seedDatabase() {
 
                 // Create completion event
                 await TaskEventService.logStatusChange(
-                    task.id,
-                    testUser.id,
+                    task._id,
+                    testUser._id,
                     1,
                     2,
                     { source: 'web' }
@@ -581,24 +586,24 @@ async function seedDatabase() {
         }
 
         // Create events for some in-progress tasks
-        const inProgressTasks = tasks.filter((t) => t.status === 1);
-        for (const task of inProgressTasks.slice(0, 10)) {
+        const inProgressTasks = await Task.find({ status: 1, user: testUser._id }).limit(10);
+        for (const task of inProgressTasks) {
             try {
                 await TaskEventService.logTaskCreated(
-                    task.id,
-                    testUser.id,
+                    task._id,
+                    testUser._id,
                     {
                         name: task.name,
                         status: 0,
                         priority: task.priority,
-                        project_id: task.project_id,
+                        project_id: task.project,
                     },
                     { source: 'web' }
                 );
 
                 await TaskEventService.logStatusChange(
-                    task.id,
-                    testUser.id,
+                    task._id,
+                    testUser._id,
                     0,
                     1,
                     { source: 'web' }
@@ -612,193 +617,193 @@ async function seedDatabase() {
 
         // Create notes
         console.log('📝 Creating notes...');
-        await Note.bulkCreate([
+        await Note.insertMany([
             {
                 title: 'Meeting Notes - Website Redesign',
                 content:
                     'Key decisions:\n- Use blue and white color scheme\n- Include customer testimonials\n- Mobile-first approach\n- Launch date: End of next month\n\nAction items:\n- Get approval from stakeholders\n- Create prototype by Friday\n- Schedule user testing session',
-                user_id: testUser.id,
-                project_id: projects[0].id,
+                user: testUser._id,
+                project: projects[0]._id,
             },
             {
                 title: 'React Native Learning Resources',
                 content:
                     'Useful links:\n- Official documentation\n- Expo.dev for quick prototyping\n- React Navigation library\n- AsyncStorage for local data\n\nTutorials to check out:\n- React Native School\n- The Net Ninja series\n- React Native Express',
-                user_id: testUser.id,
-                project_id: projects[1].id,
+                user: testUser._id,
+                project: projects[1]._id,
             },
             {
                 title: 'Home Renovation Budget',
                 content:
                     'Budget breakdown:\n- Kitchen: $15,000\n- Bathroom: $8,000\n- Contingency: $3,000\n- Total: $26,000\n\nContractors to contact:\n- ABC Construction: 555-0123\n- Quality Home Builders: 555-0456\n- Elite Renovations: 555-0789',
-                user_id: testUser.id,
-                project_id: projects[2].id,
+                user: testUser._id,
+                project: projects[2]._id,
             },
             {
                 title: 'Investment Strategy Notes',
                 content:
                     'Portfolio allocation goals:\n- 60% Stock index funds\n- 30% Bond index funds\n- 10% International funds\n\nPlatforms to consider:\n- Vanguard\n- Fidelity\n- Charles Schwab\n\nMonthly investment: $1,000',
-                user_id: testUser.id,
-                project_id: projects[5].id,
+                user: testUser._id,
+                project: projects[5]._id,
             },
             {
                 title: 'Europe Trip Planning',
                 content:
                     'Destinations:\n1. Paris, France (5 days)\n2. Rome, Italy (4 days)\n3. Barcelona, Spain (4 days)\n4. Amsterdam, Netherlands (3 days)\n5. Prague, Czech Republic (3 days)\n\nEstimated costs:\n- Flights: $1,200\n- Hotels: $2,500\n- Food: $1,000\n- Activities: $800\n- Total: $5,500',
-                user_id: testUser.id,
-                project_id: projects[6].id,
+                user: testUser._id,
+                project: projects[6]._id,
             },
             {
                 title: 'Photography Equipment Wishlist',
                 content:
                     'Camera gear to consider:\n- Canon EOS R6 Mark II\n- 24-70mm f/2.8 lens\n- 85mm f/1.8 portrait lens\n- Tripod: Manfrotto MT055CXPRO4\n- Editing software: Lightroom + Photoshop\n\nLearning resources:\n- Sean Tucker YouTube channel\n- Peter McKinnon tutorials\n- Local photography meetups',
-                user_id: testUser.id,
-                project_id: projects[7].id,
+                user: testUser._id,
+                project: projects[7]._id,
             },
             {
                 title: 'Book Recommendations',
                 content:
                     'To read:\n- "Deep Work" by Cal Newport\n- "The Lean Startup" by Eric Ries\n- "Atomic Habits" by James Clear\n- "Clean Code" by Robert Martin\n- "The Psychology of Money" by Morgan Housel\n- "Educated" by Tara Westover\n- "Sapiens" by Yuval Noah Harari',
-                user_id: testUser.id,
+                user: testUser._id,
             },
             {
                 title: 'Recipe Ideas',
                 content:
                     'Meals to try:\n- Mediterranean quinoa bowl\n- Thai green curry\n- Homemade pizza\n- Greek lemon chicken\n- Mushroom risotto\n- Korean bulgogi\n- Mexican street corn salad\n- Indian butter chicken\n- Japanese ramen',
-                user_id: testUser.id,
+                user: testUser._id,
             },
             {
                 title: 'Business Ideas',
                 content:
                     'Potential side businesses:\n- Web development consulting\n- Online course creation\n- Photography services\n- Productivity coaching\n- Technical writing\n\nRevenue streams to explore:\n- Subscription services\n- One-time consulting\n- Product sales\n- Affiliate marketing',
-                user_id: testUser.id,
-                project_id: projects[4].id,
+                user: testUser._id,
+                project: projects[4]._id,
             },
             {
                 title: 'Fitness Goals & Progress',
                 content:
                     'Current stats:\n- Weight: 180 lbs\n- Body fat: 18%\n- Bench press: 185 lbs\n- Squat: 225 lbs\n- Deadlift: 275 lbs\n\nGoals (90 days):\n- Weight: 175 lbs\n- Body fat: 15%\n- Bench press: 205 lbs\n- Squat: 255 lbs\n- Deadlift: 315 lbs',
-                user_id: testUser.id,
-                project_id: projects[3].id,
+                user: testUser._id,
+                project: projects[3]._id,
             },
             {
                 title: 'Weekly Meal Prep Ideas',
                 content:
                     'Prep schedule:\nSunday: Protein prep (chicken, fish, tofu)\nMonday: Vegetable chopping\nWednesday: Mid-week refresh\n\nMeal rotation:\n- Breakfast: Overnight oats, egg muffins\n- Lunch: Buddha bowls, salads\n- Dinner: Stir-fries, sheet pan meals\n- Snacks: Greek yogurt, nuts, fruit',
-                user_id: testUser.id,
-                project_id: projects[13].id,
+                user: testUser._id,
+                project: projects[13]._id,
             },
             {
                 title: 'Smart Home Device List',
                 content:
                     'Devices to install:\n- Smart thermostat (Nest)\n- Smart doorbell (Ring)\n- Smart locks (August)\n- Smart lights (Philips Hue)\n- Smart speakers (Echo Dot)\n- Security cameras (Arlo)\n- Smart switches (TP-Link Kasa)\n\nEstimated cost: $2,500\nInstallation timeline: 3 weeks',
-                user_id: testUser.id,
-                project_id: projects[14].id,
+                user: testUser._id,
+                project: projects[14]._id,
             },
         ]);
 
         // Create inbox items
         console.log('📥 Creating inbox items...');
-        await InboxItem.bulkCreate([
+        await InboxItem.insertMany([
             {
                 content: 'Research new project management tools',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Plan team building activity for Q4',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Look into cloud storage solutions',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Consider learning TypeScript',
-                user_id: testUser.id,
-                processed: true,
+                user: testUser._id,
+                status: 'processed',
             },
             {
                 content: 'Update emergency contact information',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Research sustainable investing options',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Look into ergonomic desk setup',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Consider getting a pet',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Research meditation retreats',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Look into renewable energy for home',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Consider starting a podcast',
-                user_id: testUser.id,
-                processed: true,
+                user: testUser._id,
+                status: 'processed',
             },
             {
                 content: 'Research local volunteer opportunities',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Look into professional coaching',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Consider learning a musical instrument',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Research minimalism lifestyle',
-                user_id: testUser.id,
-                processed: true,
+                user: testUser._id,
+                status: 'processed',
             },
             {
                 content: 'Look into starting a garden',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Consider learning sign language',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Research passive income strategies',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Look into digital nomad lifestyle',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
             {
                 content: 'Consider getting professional headshots',
-                user_id: testUser.id,
-                processed: false,
+                user: testUser._id,
+                status: 'added',
             },
         ]);
 
@@ -807,7 +812,7 @@ async function seedDatabase() {
     - 1 test user (test@tududi.com / password123)
     - ${areas.length} areas
     - ${projects.length} projects
-    - ${tasks.length} tasks (including 30 backlog tasks and 10 due today)
+    - ${tasks.length + 30 + 10} tasks (including 30 backlog tasks and 10 due today)
     - ${tags.length} tags
     - 12 notes
     - 20 inbox items`);
@@ -823,6 +828,8 @@ async function seedDatabase() {
         console.log('- Test the task timeline feature');
     } catch (error) {
         console.error('❌ Error seeding database:', error);
+    } finally {
+        mongoose.disconnect();
     }
 }
 

@@ -2,8 +2,11 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
-const { Op } = require('sequelize');
+const Project = require('../models-mongo/project');
+const Task = require('../models-mongo/task');
+const Tag = require('../models-mongo/tag');
+const Area = require('../models-mongo/area');
+const Note = require('../models-mongo/note');
 const router = express.Router();
 
 // Helper function to safely format dates
@@ -55,7 +58,10 @@ const upload = multer({
 
 // Helper function to update project tags
 async function updateProjectTags(project, tagsData, userId) {
-    if (!tagsData) return;
+    if (!tagsData) {
+        project.tags = [];
+        return;
+    }
 
     const tagNames = tagsData
         .map((tag) => tag.name)
@@ -63,13 +69,14 @@ async function updateProjectTags(project, tagsData, userId) {
         .filter((name, index, arr) => arr.indexOf(name) === index); // unique
 
     if (tagNames.length === 0) {
-        await project.setTags([]);
+        project.tags = [];
         return;
     }
 
     // Find existing tags
-    const existingTags = await Tag.findAll({
-        where: { user_id: userId, name: tagNames },
+    const existingTags = await Tag.find({
+        user: userId,
+        name: { $in: tagNames },
     });
 
     // Create new tags
@@ -79,12 +86,15 @@ async function updateProjectTags(project, tagsData, userId) {
     );
 
     const createdTags = await Promise.all(
-        newTagNames.map((name) => Tag.create({ name, user_id: userId }))
+        newTagNames.map((name) => {
+            const newTag = new Tag({ name, user: userId });
+            return newTag.save();
+        })
     );
 
     // Set all tags to project
     const allTags = [...existingTags, ...createdTags];
-    await project.setTags(allTags);
+    project.tags = allTags.map(tag => tag._id);
 }
 
 // POST /api/upload/project-image
@@ -116,7 +126,7 @@ router.get('/projects', async (req, res) => {
 
         const { active, pin_to_sidebar, area_id } = req.query;
 
-        let whereClause = { user_id: req.session.userId };
+        let whereClause = { user: req.session.userId };
 
         // Filter by active status
         if (active === 'true') {
@@ -134,37 +144,16 @@ router.get('/projects', async (req, res) => {
 
         // Filter by area
         if (area_id && area_id !== '') {
-            whereClause.area_id = area_id;
+            whereClause.area = area_id;
         }
 
-        const projects = await Project.findAll({
-            where: whereClause,
-            include: [
-                {
-                    model: Task,
-                    required: false,
-                    attributes: ['id', 'status'],
-                },
-                {
-                    model: Area,
-                    required: false,
-                    attributes: ['name'],
-                },
-                {
-                    model: Tag,
-                    attributes: ['id', 'name'],
-                    through: { attributes: [] },
-                },
-            ],
-            order: [['name', 'ASC']],
-        });
+        const projects = await Project.find(whereClause)
+            .populate('area', 'name')
+            .populate('tags', 'id name')
+            .sort({ name: 'asc' });
 
-        const { grouped } = req.query;
-
-        // Calculate task status counts for each project
-        const taskStatusCounts = {};
-        const enhancedProjects = projects.map((project) => {
-            const tasks = project.Tasks || [];
+        const enhancedProjects = await Promise.all(projects.map(async (project) => {
+            const tasks = await Task.find({ project: project._id });
             const taskStatus = {
                 total: tasks.length,
                 done: tasks.filter((t) => t.status === 2).length,
@@ -172,12 +161,10 @@ router.get('/projects', async (req, res) => {
                 not_started: tasks.filter((t) => t.status === 0).length,
             };
 
-            taskStatusCounts[project.id] = taskStatus;
-
-            const projectJson = project.toJSON();
+            const projectJson = project.toObject();
             return {
                 ...projectJson,
-                tags: projectJson.Tags || [], // Normalize Tags to tags
+                id: projectJson._id,
                 due_date_at: formatDate(project.due_date_at),
                 task_status: taskStatus,
                 completion_percentage:
@@ -185,13 +172,15 @@ router.get('/projects', async (req, res) => {
                         ? Math.round((taskStatus.done / taskStatus.total) * 100)
                         : 0,
             };
-        });
+        }));
+
+        const { grouped } = req.query;
 
         // If grouped=true, return grouped format
         if (grouped === 'true') {
             const groupedProjects = {};
             enhancedProjects.forEach((project) => {
-                const areaName = project.Area ? project.Area.name : 'No Area';
+                const areaName = project.area ? project.area.name : 'No Area';
                 if (!groupedProjects[areaName]) {
                     groupedProjects[areaName] = [];
                 }
@@ -216,58 +205,39 @@ router.get('/project/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const project = await Project.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
-            include: [
-                {
-                    model: Task,
-                    required: false,
-                    include: [
-                        {
-                            model: Tag,
-                            attributes: ['id', 'name'],
-                            through: { attributes: [] },
-                            required: false,
-                        },
-                    ],
-                },
-                {
-                    model: Note,
-                    required: false,
-                    attributes: ['id', 'title', 'content', 'created_at', 'updated_at'],
-                },
-                { model: Area, required: false, attributes: ['id', 'name'] },
-                {
-                    model: Tag,
-                    attributes: ['id', 'name'],
-                    through: { attributes: [] },
-                },
-            ],
-        });
+        const project = await Project.findOne({ _id: req.params.id, user: req.session.userId })
+            .populate({
+                path: 'tasks',
+                populate: {
+                    path: 'tags',
+                    select: 'id name'
+                }
+            })
+            .populate('notes', 'id title content created_at updated_at')
+            .populate('area', 'id name')
+            .populate('tags', 'id name');
 
         if (!project) {
             return res.status(404).json({ error: 'Project not found' });
         }
 
-        const projectJson = project.toJSON();
+        const projectJson = project.toObject();
         
         // Normalize task data to match frontend expectations
-        const normalizedTasks = projectJson.Tasks ? projectJson.Tasks.map(task => {
+        const normalizedTasks = projectJson.tasks ? projectJson.tasks.map(task => {
             const normalizedTask = {
                 ...task,
-                tags: task.Tags || [], // Normalize Tags to tags for each task
+                id: task._id,
                 due_date: task.due_date ? (typeof task.due_date === 'string' ? task.due_date.split('T')[0] : task.due_date.toISOString().split('T')[0]) : null
             };
-            // Remove the original Tags property to avoid confusion
-            delete normalizedTask.Tags;
             return normalizedTask;
         }) : [];
         
         const result = {
             ...projectJson,
-            tags: projectJson.Tags || [], // Normalize Tags to tags
+            id: projectJson._id,
             Tasks: normalizedTasks, // Keep as Tasks (capital T) to match expected structure
-            Notes: projectJson.Notes || [], // Include notes
+            Notes: projectJson.notes || [], // Include notes
             due_date_at: formatDate(project.due_date_at),
         };
 
@@ -293,56 +263,41 @@ router.post('/project', async (req, res) => {
             due_date_at,
             image_url,
             tags,
-            Tags,
         } = req.body;
-
-        // Handle both tags and Tags (Sequelize association format)
-        const tagsData = tags || Tags;
 
         if (!name || !name.trim()) {
             return res.status(400).json({ error: 'Project name is required' });
         }
 
-        const projectData = {
+        const project = new Project({
             name: name.trim(),
             description: description || '',
-            area_id: area_id || null,
+            area: area_id || null,
             active: true,
             pin_to_sidebar: false,
             priority: priority || null,
             due_date_at: due_date_at || null,
             image_url: image_url || null,
-            user_id: req.session.userId,
-        };
-
-        const project = await Project.create(projectData);
-        await updateProjectTags(project, tagsData, req.session.userId);
-
-        // Reload project with associations
-        const projectWithAssociations = await Project.findByPk(project.id, {
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name'],
-                    through: { attributes: [] },
-                },
-            ],
+            user: req.session.userId,
         });
 
-        const projectJson = projectWithAssociations.toJSON();
+        await updateProjectTags(project, tags, req.session.userId);
+        await project.save();
+
+        await project.populate('tags', 'id name');
+
+        const projectJson = project.toObject();
 
         res.status(201).json({
             ...projectJson,
-            tags: projectJson.Tags || [], // Normalize Tags to tags
-            due_date_at: formatDate(projectWithAssociations.due_date_at),
+            id: projectJson._id,
+            due_date_at: formatDate(project.due_date_at),
         });
     } catch (error) {
         console.error('Error creating project:', error);
         res.status(400).json({
             error: 'There was a problem creating the project.',
-            details: error.errors
-                ? error.errors.map((e) => e.message)
-                : [error.message],
+            details: error.message,
         });
     }
 });
@@ -354,9 +309,7 @@ router.patch('/project/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const project = await Project.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
-        });
+        const project = await Project.findOne({ _id: req.params.id, user: req.session.userId });
 
         if (!project) {
             return res.status(404).json({ error: 'Project not found.' });
@@ -372,51 +325,34 @@ router.patch('/project/:id', async (req, res) => {
             due_date_at,
             image_url,
             tags,
-            Tags,
         } = req.body;
 
-        // Handle both tags and Tags (Sequelize association format)
-        const tagsData = tags || Tags;
+        if (name !== undefined) project.name = name;
+        if (description !== undefined) project.description = description;
+        if (area_id !== undefined) project.area = area_id;
+        if (active !== undefined) project.active = active;
+        if (pin_to_sidebar !== undefined) project.pin_to_sidebar = pin_to_sidebar;
+        if (priority !== undefined) project.priority = priority;
+        if (due_date_at !== undefined) project.due_date_at = due_date_at;
+        if (image_url !== undefined) project.image_url = image_url;
 
-        const updateData = {};
-        if (name !== undefined) updateData.name = name;
-        if (description !== undefined) updateData.description = description;
-        if (area_id !== undefined) updateData.area_id = area_id;
-        if (active !== undefined) updateData.active = active;
-        if (pin_to_sidebar !== undefined)
-            updateData.pin_to_sidebar = pin_to_sidebar;
-        if (priority !== undefined) updateData.priority = priority;
-        if (due_date_at !== undefined) updateData.due_date_at = due_date_at;
-        if (image_url !== undefined) updateData.image_url = image_url;
+        await updateProjectTags(project, tags, req.session.userId);
+        await project.save();
 
-        await project.update(updateData);
-        await updateProjectTags(project, tagsData, req.session.userId);
+        await project.populate('tags', 'id name');
 
-        // Reload project with associations
-        const projectWithAssociations = await Project.findByPk(project.id, {
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name'],
-                    through: { attributes: [] },
-                },
-            ],
-        });
-
-        const projectJson = projectWithAssociations.toJSON();
+        const projectJson = project.toObject();
 
         res.json({
             ...projectJson,
-            tags: projectJson.Tags || [], // Normalize Tags to tags
-            due_date_at: formatDate(projectWithAssociations.due_date_at),
+            id: projectJson._id,
+            due_date_at: formatDate(project.due_date_at),
         });
     } catch (error) {
         console.error('Error updating project:', error);
         res.status(400).json({
             error: 'There was a problem updating the project.',
-            details: error.errors
-                ? error.errors.map((e) => e.message)
-                : [error.message],
+            details: error.message,
         });
     }
 });
@@ -428,15 +364,12 @@ router.delete('/project/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const project = await Project.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
-        });
+        const project = await Project.findOneAndDelete({ _id: req.params.id, user: req.session.userId });
 
         if (!project) {
             return res.status(404).json({ error: 'Project not found.' });
         }
 
-        await project.destroy();
         res.json({ message: 'Project successfully deleted' });
     } catch (error) {
         console.error('Error deleting project:', error);

@@ -1,5 +1,5 @@
 const express = require('express');
-const { Area } = require('../models');
+const Area = require('../models-mongo/area');
 const router = express.Router();
 
 // GET /api/areas
@@ -9,10 +9,7 @@ router.get('/areas', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const areas = await Area.findAll({
-            where: { user_id: req.session.userId },
-            order: [['name', 'ASC']],
-        });
+        const areas = await Area.find({ user: req.session.userId }).sort({ name: 'asc' });
 
         res.json(areas);
     } catch (error) {
@@ -28,9 +25,7 @@ router.get('/areas/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const area = await Area.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
-        });
+        const area = await Area.findOne({ _id: req.params.id, user: req.session.userId });
 
         if (!area) {
             return res.status(404).json({
@@ -58,20 +53,20 @@ router.post('/areas', async (req, res) => {
             return res.status(400).json({ error: 'Area name is required.' });
         }
 
-        const area = await Area.create({
+        const area = new Area({
             name: name.trim(),
             description: description || '',
-            user_id: req.session.userId,
+            user: req.session.userId,
         });
+
+        await area.save();
 
         res.status(201).json(area);
     } catch (error) {
         console.error('Error creating area:', error);
         res.status(400).json({
             error: 'There was a problem creating the area.',
-            details: error.errors
-                ? error.errors.map((e) => e.message)
-                : [error.message],
+            details: error.message,
         });
     }
 });
@@ -83,29 +78,24 @@ router.patch('/areas/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const area = await Area.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
-        });
+        const area = await Area.findOne({ _id: req.params.id, user: req.session.userId });
 
         if (!area) {
             return res.status(404).json({ error: 'Area not found.' });
         }
 
         const { name, description } = req.body;
-        const updateData = {};
 
-        if (name !== undefined) updateData.name = name;
-        if (description !== undefined) updateData.description = description;
+        if (name !== undefined) area.name = name;
+        if (description !== undefined) area.description = description;
 
-        await area.update(updateData);
+        await area.save();
         res.json(area);
     } catch (error) {
         console.error('Error updating area:', error);
         res.status(400).json({
             error: 'There was a problem updating the area.',
-            details: error.errors
-                ? error.errors.map((e) => e.message)
-                : [error.message],
+            details: error.message,
         });
     }
 });
@@ -117,15 +107,12 @@ router.delete('/areas/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const area = await Area.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
-        });
+        const area = await Area.findOneAndDelete({ _id: req.params.id, user: req.session.userId });
 
         if (!area) {
             return res.status(404).json({ error: 'Area not found.' });
         }
 
-        await area.destroy();
         res.status(204).send();
     } catch (error) {
         console.error('Error deleting area:', error);

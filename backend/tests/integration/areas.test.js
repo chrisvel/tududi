@@ -1,12 +1,15 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Area, User } = require('../../models');
+const Area = require('../../models-mongo/area');
+const User = require('../../models-mongo/user');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Areas Routes', () => {
     let user, agent;
 
     beforeEach(async () => {
+        await User.deleteMany({});
+        await Area.deleteMany({});
         user = await createTestUser({
             email: 'test@example.com',
         });
@@ -31,7 +34,7 @@ describe('Areas Routes', () => {
             expect(response.status).toBe(201);
             expect(response.body.name).toBe(areaData.name);
             expect(response.body.description).toBe(areaData.description);
-            expect(response.body.user_id).toBe(user.id);
+            expect(response.body.user).toBe(user._id.toString());
         });
 
         it('should require authentication', async () => {
@@ -63,17 +66,19 @@ describe('Areas Routes', () => {
         let area1, area2;
 
         beforeEach(async () => {
-            area1 = await Area.create({
+            area1 = new Area({
                 name: 'Work',
                 description: 'Work projects',
-                user_id: user.id,
+                user: user._id,
             });
+            await area1.save();
 
-            area2 = await Area.create({
+            area2 = new Area({
                 name: 'Personal',
                 description: 'Personal projects',
-                user_id: user.id,
+                user: user._id,
             });
+            await area2.save();
         });
 
         it('should get all user areas', async () => {
@@ -81,8 +86,8 @@ describe('Areas Routes', () => {
 
             expect(response.status).toBe(200);
             expect(response.body).toHaveLength(2);
-            expect(response.body.map((a) => a.id)).toContain(area1.id);
-            expect(response.body.map((a) => a.id)).toContain(area2.id);
+            expect(response.body.map((a) => a._id)).toContain(area1._id.toString());
+            expect(response.body.map((a) => a._id)).toContain(area2._id.toString());
         });
 
         it('should order areas by name', async () => {
@@ -105,24 +110,25 @@ describe('Areas Routes', () => {
         let area;
 
         beforeEach(async () => {
-            area = await Area.create({
+            area = new Area({
                 name: 'Work',
                 description: 'Work projects',
-                user_id: user.id,
+                user: user._id,
             });
+            await area.save();
         });
 
         it('should get area by id', async () => {
-            const response = await agent.get(`/api/areas/${area.id}`);
+            const response = await agent.get(`/api/areas/${area._id}`);
 
             expect(response.status).toBe(200);
-            expect(response.body.id).toBe(area.id);
+            expect(response.body._id).toBe(area._id.toString());
             expect(response.body.name).toBe(area.name);
             expect(response.body.description).toBe(area.description);
         });
 
         it('should return 404 for non-existent area', async () => {
-            const response = await agent.get('/api/areas/999999');
+            const response = await agent.get('/api/areas/60c72b2f9b1d8c001f8e4d6a');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe(
@@ -131,18 +137,14 @@ describe('Areas Routes', () => {
         });
 
         it("should not allow access to other user's areas", async () => {
-            const bcrypt = require('bcrypt');
-            const otherUser = await User.create({
-                email: 'other@example.com',
-                password_digest: await bcrypt.hash('password123', 10),
-            });
-
-            const otherArea = await Area.create({
+            const otherUser = await createTestUser({ email: 'other@example.com' });
+            const otherArea = new Area({
                 name: 'Other Area',
-                user_id: otherUser.id,
+                user: otherUser._id,
             });
+            await otherArea.save();
 
-            const response = await agent.get(`/api/areas/${otherArea.id}`);
+            const response = await agent.get(`/api/areas/${otherArea._id}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe(
@@ -151,7 +153,7 @@ describe('Areas Routes', () => {
         });
 
         it('should require authentication', async () => {
-            const response = await request(app).get(`/api/areas/${area.id}`);
+            const response = await request(app).get(`/api/areas/${area._id}`);
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');
@@ -162,11 +164,12 @@ describe('Areas Routes', () => {
         let area;
 
         beforeEach(async () => {
-            area = await Area.create({
+            area = new Area({
                 name: 'Work',
                 description: 'Work projects',
-                user_id: user.id,
+                user: user._id,
             });
+            await area.save();
         });
 
         it('should update area', async () => {
@@ -176,7 +179,7 @@ describe('Areas Routes', () => {
             };
 
             const response = await agent
-                .patch(`/api/areas/${area.id}`)
+                .patch(`/api/areas/${area._id}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -186,7 +189,7 @@ describe('Areas Routes', () => {
 
         it('should return 404 for non-existent area', async () => {
             const response = await agent
-                .patch('/api/areas/999999')
+                .patch('/api/areas/60c72b2f9b1d8c001f8e4d6a')
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -194,19 +197,15 @@ describe('Areas Routes', () => {
         });
 
         it("should not allow updating other user's areas", async () => {
-            const bcrypt = require('bcrypt');
-            const otherUser = await User.create({
-                email: 'other@example.com',
-                password_digest: await bcrypt.hash('password123', 10),
-            });
-
-            const otherArea = await Area.create({
+            const otherUser = await createTestUser({ email: 'other@example.com' });
+            const otherArea = new Area({
                 name: 'Other Area',
-                user_id: otherUser.id,
+                user: otherUser._id,
             });
+            await otherArea.save();
 
             const response = await agent
-                .patch(`/api/areas/${otherArea.id}`)
+                .patch(`/api/areas/${otherArea._id}`)
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -215,7 +214,7 @@ describe('Areas Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app)
-                .patch(`/api/areas/${area.id}`)
+                .patch(`/api/areas/${area._id}`)
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(401);
@@ -227,49 +226,46 @@ describe('Areas Routes', () => {
         let area;
 
         beforeEach(async () => {
-            area = await Area.create({
+            area = new Area({
                 name: 'Work',
-                user_id: user.id,
+                user: user._id,
             });
+            await area.save();
         });
 
         it('should delete area', async () => {
-            const response = await agent.delete(`/api/areas/${area.id}`);
+            const response = await agent.delete(`/api/areas/${area._id}`);
 
             expect(response.status).toBe(204);
 
             // Verify area is deleted
-            const deletedArea = await Area.findByPk(area.id);
+            const deletedArea = await Area.findById(area._id);
             expect(deletedArea).toBeNull();
         });
 
         it('should return 404 for non-existent area', async () => {
-            const response = await agent.delete('/api/areas/999999');
+            const response = await agent.delete('/api/areas/60c72b2f9b1d8c001f8e4d6a');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Area not found.');
         });
 
         it("should not allow deleting other user's areas", async () => {
-            const bcrypt = require('bcrypt');
-            const otherUser = await User.create({
-                email: 'other@example.com',
-                password_digest: await bcrypt.hash('password123', 10),
-            });
-
-            const otherArea = await Area.create({
+            const otherUser = await createTestUser({ email: 'other@example.com' });
+            const otherArea = new Area({
                 name: 'Other Area',
-                user_id: otherUser.id,
+                user: otherUser._id,
             });
+            await otherArea.save();
 
-            const response = await agent.delete(`/api/areas/${otherArea.id}`);
+            const response = await agent.delete(`/api/areas/${otherArea._id}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Area not found.');
         });
 
         it('should require authentication', async () => {
-            const response = await request(app).delete(`/api/areas/${area.id}`);
+            const response = await request(app).delete(`/api/areas/${area._id}`);
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');

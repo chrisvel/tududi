@@ -6,17 +6,30 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const session = require('express-session');
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
-const { sequelize } = require('./models');
+const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
 const { initializeTelegramPolling } = require('./services/telegramInitializer');
 const taskScheduler = require('./services/taskScheduler');
 const config = require('./config/config');
 
 const app = express();
 
+// Connect to MongoDB
+mongoose.connect(config.mongodb_uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(() => {
+    console.log('Connected to MongoDB');
+}).catch((err) => {
+    console.error('Failed to connect to MongoDB', err);
+    process.exit(1);
+});
+
+
 // Session store
-const sessionStore = new SequelizeStore({
-    db: sequelize,
+const sessionStore = MongoStore.create({
+    mongoUrl: config.mongodb_uri,
+    collectionName: 'sessions'
 });
 
 // Middlewares
@@ -146,27 +159,18 @@ app.use((err, req, res, next) => {
 // Initialize database and start server
 async function startServer() {
     try {
-        // Create session store table
-        await sessionStore.sync();
-
-        // Sync database
-        await sequelize.sync();
-
         // Auto-create user if not exists
         if (config.email && config.password) {
-            const { User } = require('./models');
-            const bcrypt = require('bcrypt');
+            const User = require('./models-mongo/user');
+            const existingUser = await User.findOne({ email: config.email });
 
-            const [user, created] = await User.findOrCreate({
-                where: { email: config.email },
-                defaults: {
+            if (!existingUser) {
+                const newUser = new User({
                     email: config.email,
-                    password_digest: await bcrypt.hash(config.password, 10),
-                },
-            });
-
-            if (created) {
-                console.log('Default user created:', user.email);
+                    password_digest: await User.hashPassword(config.password),
+                });
+                await newUser.save();
+                console.log('Default user created:', newUser.email);
             }
         }
 

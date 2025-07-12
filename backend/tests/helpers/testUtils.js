@@ -1,14 +1,16 @@
 const bcrypt = require('bcrypt');
-const { User } = require('../../models');
+const User = require('../../models-mongo/user');
 
 const createTestUser = async (userData = {}) => {
     const defaultUser = {
         email: 'test@example.com',
-        password: 'password123', // Use password field to trigger model hook
+        password: 'password123',
         ...userData,
     };
 
-    return await User.create(defaultUser);
+    const user = new User(defaultUser);
+    await user.save();
+    return user;
 };
 
 const authenticateUser = async (request, user) => {

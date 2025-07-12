@@ -1,6 +1,9 @@
 const express = require('express');
-const { Task, Tag, Project, TaskEvent, sequelize } = require('../models');
-const { Op } = require('sequelize');
+const mongoose = require('mongoose');
+const Task = require('../models-mongo/task');
+const Tag = require('../models-mongo/tag');
+const Project = require('../models-mongo/project');
+const TaskEvent = require('../models-mongo/task_event');
 const RecurringTaskService = require('../services/recurringTaskService');
 const TaskEventService = require('../services/taskEventService');
 const moment = require('moment-timezone');
@@ -8,14 +11,14 @@ const router = express.Router();
 
 // Helper function to serialize task with today move count
 async function serializeTask(task) {
-    const taskJson = task.toJSON();
+    const taskJson = task.toObject();
     const todayMoveCount = await TaskEventService.getTaskTodayMoveCount(
-        task.id
+        task._id
     );
 
     return {
         ...taskJson,
-        tags: taskJson.Tags || [],
+        id: taskJson._id,
         due_date: task.due_date
             ? task.due_date.toISOString().split('T')[0]
             : null,
@@ -33,13 +36,14 @@ async function updateTaskTags(task, tagsData, userId) {
         .filter((name, index, arr) => arr.indexOf(name) === index); // unique
 
     if (tagNames.length === 0) {
-        await task.setTags([]);
+        task.tags = [];
         return;
     }
 
     // Find existing tags
-    const existingTags = await Tag.findAll({
-        where: { user_id: userId, name: tagNames },
+    const existingTags = await Tag.find({
+        user: userId,
+        name: { $in: tagNames },
     });
 
     // Create new tags
@@ -49,74 +53,71 @@ async function updateTaskTags(task, tagsData, userId) {
     );
 
     const createdTags = await Promise.all(
-        newTagNames.map((name) => Tag.create({ name, user_id: userId }))
+        newTagNames.map((name) => {
+            const newTag = new Tag({ name, user: userId });
+            return newTag.save();
+        })
     );
 
     // Set all tags to task
     const allTags = [...existingTags, ...createdTags];
-    await task.setTags(allTags);
+    task.tags = allTags.map(t => t._id);
 }
 
 // Filter tasks by parameters
 async function filterTasksByParams(params, userId) {
-    let whereClause = { user_id: userId };
-    let includeClause = [
-        { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
-        { model: Project, attributes: ['name'], required: false },
-    ];
+    let whereClause = { user: userId };
+    let query = Task.find(whereClause)
+        .populate('tags', 'id name')
+        .populate('project', 'name');
 
     // Filter by type
     switch (params.type) {
         case 'today':
-            whereClause.status = {
-                [Op.notIn]: [
-                    Task.STATUS.DONE,
-                    Task.STATUS.ARCHIVED,
-                    'done',
-                    'archived',
-                ],
-            }; // Exclude completed and archived tasks (both integer and string values)
+            whereClause.status = { $nin: [2, 3] }; // Exclude DONE, ARCHIVED
             break;
         case 'upcoming':
             whereClause.due_date = {
-                [Op.between]: [
-                    new Date(),
-                    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-                ],
+                $gte: new Date(),
+                $lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             };
-            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+            whereClause.status = { $ne: 2 }; // Exclude DONE
             break;
         case 'next':
             whereClause.due_date = null;
-            whereClause.project_id = null;
-            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+            whereClause.project = null;
+            whereClause.status = { $ne: 2 }; // Exclude DONE
             break;
         case 'inbox':
-            whereClause[Op.or] = [{ due_date: null }, { project_id: null }];
-            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+            whereClause.$or = [{ due_date: null }, { project: null }];
+            whereClause.status = { $ne: 2 }; // Exclude DONE
             break;
         case 'someday':
             whereClause.due_date = null;
-            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+            whereClause.status = { $ne: 2 }; // Exclude DONE
             break;
         case 'waiting':
-            whereClause.status = Task.STATUS.WAITING;
+            whereClause.status = 4; // WAITING
             break;
         default:
             if (params.status === 'done') {
-                whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
+                whereClause.status = 2; // DONE
             } else {
-                whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+                whereClause.status = { $ne: 2 }; // Exclude DONE
             }
     }
 
     // Filter by tag
     if (params.tag) {
-        includeClause[0].where = { name: params.tag };
-        includeClause[0].required = true;
+        const tag = await Tag.findOne({ name: params.tag, user: userId });
+        if (tag) {
+            whereClause.tags = tag._id;
+        } else {
+            return [];
+        }
     }
 
-    let orderClause = [['created_at', 'ASC']];
+    let sortClause = { created_at: 'asc' };
 
     // Apply ordering
     if (params.order_by) {
@@ -131,31 +132,12 @@ async function filterTasksByParams(params, userId) {
             'due_date',
         ];
 
-        if (!allowedColumns.includes(orderColumn)) {
-            throw new Error('Invalid order column specified.');
-        }
-
-        if (orderColumn === 'due_date') {
-            orderClause = [
-                [
-                    sequelize.literal(
-                        'CASE WHEN due_date IS NULL THEN 1 ELSE 0 END'
-                    ),
-                    'ASC',
-                ],
-                ['due_date', orderDirection.toUpperCase()],
-            ];
-        } else {
-            orderClause = [[orderColumn, orderDirection.toUpperCase()]];
+        if (allowedColumns.includes(orderColumn)) {
+            sortClause = { [orderColumn]: orderDirection };
         }
     }
 
-    return await Task.findAll({
-        where: whereClause,
-        include: includeClause,
-        order: orderClause,
-        distinct: true,
-    });
+    return await query.sort(sortClause);
 }
 
 // Compute task metrics
@@ -1273,17 +1255,12 @@ router.delete('/task/:id', async (req, res) => {
 router.post('/tasks/generate-recurring', async (req, res) => {
     try {
         const newTasks = await RecurringTaskService.generateRecurringTasks(
-            req.currentUser.id
+            req.session.userId
         );
 
         res.json({
             message: `Generated ${newTasks.length} recurring tasks`,
-            tasks: newTasks.map((task) => ({
-                ...task.toJSON(),
-                due_date: task.due_date
-                    ? task.due_date.toISOString().split('T')[0]
-                    : null,
-            })),
+            tasks: await Promise.all(newTasks.map(task => serializeTask(task))),
         });
     } catch (error) {
         console.error('Error generating recurring tasks:', error);
@@ -1294,17 +1271,9 @@ router.post('/tasks/generate-recurring', async (req, res) => {
 // PATCH /api/task/:id/toggle-today
 router.patch('/task/:id/toggle-today', async (req, res) => {
     try {
-        const task = await Task.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name'],
-                    through: { attributes: [] },
-                },
-                { model: Project, attributes: ['name'], required: false },
-            ],
-        });
+        const task = await Task.findOne({ _id: req.params.id, user: req.session.userId })
+            .populate('tags', 'id name')
+            .populate('project', 'name');
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
@@ -1312,13 +1281,14 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
 
         // Toggle the today flag
         const newTodayValue = !task.today;
-        await task.update({ today: newTodayValue });
+        task.today = newTodayValue;
+        await task.save();
 
         // Log the change
         try {
             await TaskEventService.logEvent({
-                taskId: task.id,
-                userId: req.currentUser.id,
+                taskId: task._id,
+                userId: req.session.userId,
                 eventType: 'today_changed',
                 fieldName: 'today',
                 oldValue: !newTodayValue,

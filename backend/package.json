@@ -34,7 +34,7 @@
     "dependencies": {
         "bcrypt": "~6.0.0",
         "compression": "~1.8.0",
-        "connect-session-sequelize": "~7.1.7",
+        "connect-mongo": "^5.1.0",
         "cors": "~2.8.5",
         "dotenv": "~16.5.0",
         "eslint": "^8.0.0",
@@ -44,12 +44,11 @@
         "helmet": "~8.1.0",
         "js-yaml": "~4.1.0",
         "moment-timezone": "~0.6.0",
+        "mongoose": "^8.4.1",
         "morgan": "~1.10.0",
         "multer": "~2.0.1",
         "node-cron": "~4.1.0",
         "recharts": "~2.15.4",
-        "sequelize": "~6.37.7",
-        "sqlite3": "~5.1.7",
         "uuid": "~11.1.0"
     },
     "devDependencies": {
@@ -59,7 +58,6 @@
         "jest": "~30.0.0",
         "nodemon": "~3.0.1",
         "prettier": "~3.6.2",
-        "sequelize-cli": "~6.6.2",
         "supertest": "~7.1.1"
     }
 }

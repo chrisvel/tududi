@@ -46,7 +46,7 @@ router.get('/user/productivity-metrics', async (req, res) => {
         const { startDate, endDate } = req.query;
 
         const metrics = await TaskEventService.getUserProductivityMetrics(
-            req.currentUser.id,
+            req.session.userId,
             startDate ? new Date(startDate) : null,
             endDate ? new Date(endDate) : null
         );
@@ -70,7 +70,7 @@ router.get('/user/activity-summary', async (req, res) => {
         }
 
         const activitySummary = await TaskEventService.getTaskActivitySummary(
-            req.currentUser.id,
+            req.session.userId,
             new Date(startDate),
             new Date(endDate)
         );
@@ -88,39 +88,35 @@ router.get('/tasks/completion-analytics', async (req, res) => {
         const { limit = 50, offset = 0, projectId } = req.query;
 
         // Get completed tasks for the user
-        const { Task, Project } = require('../models');
-        const { Op } = require('sequelize');
+        const Task = require('../models-mongo/task');
+        const Project = require('../models-mongo/project');
 
         const whereClause = {
-            user_id: req.currentUser.id,
+            user: req.session.userId,
             status: 2, // completed
         };
 
         if (projectId) {
-            whereClause.project_id = projectId;
+            whereClause.project = projectId;
         }
 
-        const completedTasks = await Task.findAll({
-            where: whereClause,
-            include: [
-                { model: Project, attributes: ['name'], required: false },
-            ],
-            order: [['completed_at', 'DESC']],
-            limit: parseInt(limit),
-            offset: parseInt(offset),
-        });
+        const completedTasks = await Task.find(whereClause)
+            .populate('project', 'name')
+            .sort({ completed_at: 'desc' })
+            .limit(parseInt(limit))
+            .skip(parseInt(offset));
 
         // Get completion time analytics for each task
         const analytics = [];
         for (const task of completedTasks) {
             const completionTime = await TaskEventService.getTaskCompletionTime(
-                task.id
+                task._id
             );
             if (completionTime) {
                 analytics.push({
-                    task_id: task.id,
+                    task_id: task._id,
                     task_name: task.name,
-                    project_name: task.Project?.name || null,
+                    project_name: task.project?.name || null,
                     ...completionTime,
                 });
             }

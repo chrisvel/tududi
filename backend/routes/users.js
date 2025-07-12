@@ -225,7 +225,7 @@ router.post('/profile/task-summary/toggle', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findById(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -410,7 +410,8 @@ router.put('/profile/today-settings', async (req, res) => {
                     : user.today_settings?.showDailyQuote || true,
         };
 
-        await user.update({ today_settings: todaySettings });
+        user.today_settings = todaySettings;
+        await user.save();
 
         res.json({
             success: true,
