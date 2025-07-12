@@ -84,6 +84,7 @@ const TasksToday: React.FC = () => {
         const stored = localStorage.getItem('completedTasksCollapsed');
         return stored === 'true';
     });
+    const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
 
     // Metrics from the API
     const [metrics, setMetrics] = useState<Metrics>({
@@ -345,10 +346,14 @@ const TasksToday: React.FC = () => {
                         settings.showProgressBar = true;
 
                         setTodaySettings(settings);
+                        setIsSettingsLoaded(true);
                     }
+                } else {
+                    setIsSettingsLoaded(true);
                 }
             } catch (error) {
                 console.error('Failed to load user settings:', error);
+                setIsSettingsLoaded(true);
             }
         };
 
@@ -472,8 +477,8 @@ const TasksToday: React.FC = () => {
         setTodaySettings(newSettings);
     };
 
-    // Show loading state
-    if (isLoading && localTasks.length === 0) {
+    // Show loading state until both data and settings are loaded
+    if ((isLoading && localTasks.length === 0) || !isSettingsLoaded) {
         return (
             <div className="flex justify-center items-center h-64">
                 <p className="text-gray-500 dark:text-gray-400">
@@ -571,8 +576,17 @@ const TasksToday: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Metrics Section - Conditionally Rendered */}
-                {todaySettings.showMetrics && (
+                {/* Metrics Section - Always reserve space to prevent layout shift */}
+                {!isSettingsLoaded ? (
+                    // Invisible placeholder that reserves the exact same space
+                    <div className="mb-2 opacity-0 pointer-events-none" aria-hidden="true">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-32"></div>
+                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-32"></div>
+                            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-32"></div>
+                        </div>
+                    </div>
+                ) : todaySettings.showMetrics ? (
                     <div className="mb-2 grid grid-cols-1 lg:grid-cols-3 gap-4">
                         {/* Combined Task & Project Metrics */}
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4">
@@ -718,16 +732,20 @@ const TasksToday: React.FC = () => {
                             />
                         </div>
                     </div>
-                )}
+                ) : null}
 
                 {/* Productivity Assistant - Conditionally Rendered */}
-                {todaySettings.showProductivity &&
-                    productivityAssistantEnabled && (
+                {!isSettingsLoaded ? (
+                    // Invisible placeholder for productivity assistant
+                    <div className="mb-4 opacity-0 pointer-events-none" aria-hidden="true">
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-24"></div>
+                    </div>
+                ) : (todaySettings.showProductivity && productivityAssistantEnabled) ? (
                         <ProductivityAssistant
                             tasks={localTasks}
                             projects={localProjects}
                         />
-                    )}
+                ) : null}
 
                 {/* Today Plan */}
                 <TodayPlan
@@ -739,7 +757,12 @@ const TasksToday: React.FC = () => {
                 />
 
                 {/* Intelligence - Conditionally Rendered - Appears after Today Plan */}
-                {todaySettings.showIntelligence && (
+                {!isSettingsLoaded ? (
+                    // Invisible placeholder for intelligence section
+                    <div className="mt-2 opacity-0 pointer-events-none" aria-hidden="true">
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-20"></div>
+                    </div>
+                ) : todaySettings.showIntelligence ? (
                     <div className="mt-2">
                         {/* Next Task Suggestion */}
                         {nextTaskSuggestionEnabled &&
@@ -794,10 +817,10 @@ const TasksToday: React.FC = () => {
                             </div>
                         )}
                     </div>
-                )}
+                ) : null}
 
                 {/* Due Today Tasks - Conditionally Rendered */}
-                {todaySettings.showDueToday &&
+                {isSettingsLoaded && todaySettings.showDueToday &&
                     metrics.tasks_due_today.length > 0 && (
                         <div className="mb-6">
                             <h3 className="text-xl font-medium mt-6 mb-2">
@@ -814,7 +837,7 @@ const TasksToday: React.FC = () => {
                     )}
 
                 {/* Completed Tasks - Conditionally Rendered */}
-                {todaySettings.showCompleted &&
+                {isSettingsLoaded && todaySettings.showCompleted &&
                     metrics.tasks_completed_today.length > 0 && (
                         <div className="mb-6">
                             <div

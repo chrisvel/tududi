@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Task } from '../../entities/Task';
 import { Tag } from '../../entities/Tag';
 import { Project } from '../../entities/Project';
+import { Note } from '../../entities/Note';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import { createInboxItemWithStore } from '../../utils/inboxService';
