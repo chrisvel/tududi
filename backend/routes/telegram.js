@@ -110,14 +110,14 @@ router.post('/telegram/setup', async (req, res) => {
                 id: 123456789,
                 is_bot: true,
                 first_name: 'Test Bot',
-                username: 'testbot'
+                username: 'testbot',
             };
         } else {
             botInfo = await getBotInfo(token);
             if (!botInfo) {
-                return res
-                    .status(400)
-                    .json({ error: 'Invalid bot token or bot not accessible.' });
+                return res.status(400).json({
+                    error: 'Invalid bot token or bot not accessible.',
+                });
             }
         }
 
@@ -136,7 +136,6 @@ router.post('/telegram/setup', async (req, res) => {
     }
 });
 
-
 // POST /api/telegram/send-welcome
 router.post('/telegram/send-welcome', async (req, res) => {
     try {
@@ -153,14 +152,15 @@ router.post('/telegram/send-welcome', async (req, res) => {
 
         const { chatId } = req.body;
         if (!chatId) {
-            return res
-                .status(400)
-                .json({ error: 'Chat ID is required.' });
+            return res.status(400).json({ error: 'Chat ID is required.' });
         }
 
         // Send welcome message
-        const success = await sendWelcomeMessage(user.telegram_bot_token, chatId);
-        
+        const success = await sendWelcomeMessage(
+            user.telegram_bot_token,
+            chatId
+        );
+
         if (success) {
             res.json({
                 success: true,
@@ -180,15 +180,15 @@ router.post('/telegram/send-welcome', async (req, res) => {
 // Helper function to send welcome message
 async function sendWelcomeMessage(token, chatId) {
     return new Promise((resolve) => {
-        const welcomeText = `🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your tududi inbox as a task.\n\n✨ Commands:\n• /help - Show help information\n• Just type any text - Add it as a task\n\nLet's get organized! 🚀`;
-        
+        const welcomeText = `🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your tududi inbox as an item.\n\n✨ Commands:\n• /help - Show help information\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀`;
+
         const postData = JSON.stringify({
             chat_id: chatId,
             text: welcomeText,
         });
 
         const url = `https://api.telegram.org/bot${token}/sendMessage`;
-        
+
         const options = {
             method: 'POST',
             headers: {
@@ -199,11 +199,11 @@ async function sendWelcomeMessage(token, chatId) {
 
         const req = require('https').request(url, options, (res) => {
             let data = '';
-            
+
             res.on('data', (chunk) => {
                 data += chunk;
             });
-            
+
             res.on('end', () => {
                 try {
                     const response = JSON.parse(data);
@@ -211,11 +211,17 @@ async function sendWelcomeMessage(token, chatId) {
                         console.log('Welcome message sent successfully');
                         resolve(true);
                     } else {
-                        console.error('Failed to send welcome message:', response.description);
+                        console.error(
+                            'Failed to send welcome message:',
+                            response.description
+                        );
                         resolve(false);
                     }
                 } catch (error) {
-                    console.error('Error parsing welcome message response:', error);
+                    console.error(
+                        'Error parsing welcome message response:',
+                        error
+                    );
                     resolve(false);
                 }
             });

@@ -505,13 +505,24 @@ const InboxItems: React.FC = () => {
                             setIsEditModalOpen(false);
                             setItemToEdit(null);
                         }}
-                        onSave={async () => {}} // Not used in edit mode
+                        onSave={handleSaveTask}
+                        onSaveNote={handleSaveNote}
                         initialText={
                             inboxItems.find((item) => item.id === itemToEdit)
                                 ?.content || ''
                         }
                         editMode={true}
                         onEdit={handleSaveEditedItem}
+                        onConvertToTask={async () => {
+                            if (itemToEdit !== null) {
+                                await handleProcessItem(itemToEdit);
+                            }
+                        }}
+                        onConvertToNote={async () => {
+                            if (itemToEdit !== null) {
+                                await handleProcessItem(itemToEdit);
+                            }
+                        }}
                     />
                 )}
             </div>

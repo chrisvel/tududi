@@ -30,6 +30,26 @@ module.exports = (sequelize) => {
                     key: 'id',
                 },
             },
+            suggested_type: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            suggested_reason: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            parsed_tags: {
+                type: DataTypes.JSON,
+                allowNull: true,
+            },
+            parsed_projects: {
+                type: DataTypes.JSON,
+                allowNull: true,
+            },
+            cleaned_content: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
         },
         {
             tableName: 'inbox_items',

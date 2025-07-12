@@ -1,5 +1,6 @@
 const express = require('express');
 const { InboxItem } = require('../models');
+const InboxProcessingService = require('../services/inboxProcessingService');
 const router = express.Router();
 
 // GET /api/inbox
@@ -165,6 +166,29 @@ router.patch('/inbox/:id/process', async (req, res) => {
         res.status(400).json({
             error: 'There was a problem processing the inbox item.',
         });
+    }
+});
+
+// POST /api/inbox/analyze-text
+router.post('/inbox/analyze-text', async (req, res) => {
+    try {
+        if (!req.session || !req.session.userId) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
+
+        const { content } = req.body;
+
+        if (!content || typeof content !== 'string') {
+            return res.status(400).json({ error: 'Content is required and must be a string' });
+        }
+
+        // Process the text using the inbox processing service
+        const result = InboxProcessingService.processInboxItem(content);
+
+        res.json(result);
+    } catch (error) {
+        console.error('Error analyzing inbox text:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

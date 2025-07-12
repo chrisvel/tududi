@@ -15,6 +15,8 @@ import {
     deleteNote as apiDeleteNote,
     updateNote as apiUpdateNote,
 } from '../../utils/notesService';
+import { createProject, fetchProjects } from '../../utils/projectsService';
+import { Project } from '../../entities/Project';
 
 const NoteDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -25,6 +27,7 @@ const NoteDetails: React.FC = () => {
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
+    const [projects, setProjects] = useState<Project[]>([]);
     const navigate = useNavigate();
 
     // Dispatch global modal events
@@ -48,6 +51,19 @@ const NoteDetails: React.FC = () => {
         };
         fetchNote();
     }, [id]);
+
+    // Load projects for the modal
+    useEffect(() => {
+        const loadProjects = async () => {
+            try {
+                const fetchedProjects = await fetchProjects('all', '');
+                setProjects(fetchedProjects);
+            } catch (error) {
+                console.error('Error loading projects:', error);
+            }
+        };
+        loadProjects();
+    }, []);
 
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
@@ -78,6 +94,20 @@ const NoteDetails: React.FC = () => {
 
     const handleEditNote = () => {
         setIsNoteModalOpen(true);
+    };
+
+    const handleCreateProject = async (name: string) => {
+        try {
+            const newProject = await createProject({
+                name,
+                priority: 'medium',
+            });
+            setProjects(prev => [...prev, newProject]);
+            return newProject;
+        } catch (error) {
+            console.error('Error creating project:', error);
+            throw error;
+        }
     };
 
     const handleOpenConfirmDialog = (note: Note) => {
@@ -209,7 +239,17 @@ const NoteDetails: React.FC = () => {
                         isOpen={isNoteModalOpen}
                         onClose={() => setIsNoteModalOpen(false)}
                         onSave={handleSaveNote}
+                        onDelete={async (noteId) => {
+                            try {
+                                await apiDeleteNote(noteId);
+                                navigate('/notes');
+                            } catch (err) {
+                                console.error('Error deleting note:', err);
+                            }
+                        }}
                         note={note}
+                        projects={projects}
+                        onCreateProject={handleCreateProject}
                     />
                 )}
                 {/* ConfirmDialog */}

@@ -35,6 +35,8 @@
         "bcrypt": "~6.0.0",
         "compression": "~1.8.0",
         "connect-mongo": "^5.1.0",
+        "compromise": "^14.14.4",
+        "connect-session-sequelize": "~7.1.7",
         "cors": "~2.8.5",
         "dotenv": "~16.5.0",
         "eslint": "^8.0.0",

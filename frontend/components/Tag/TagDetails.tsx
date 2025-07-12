@@ -140,26 +140,22 @@ const TagDetails: React.FC = () => {
 
     const handleToggleToday = async (taskId: number) => {
         try {
-            const response = await fetch(`/api/task/${taskId}/today`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-            });
-
-            if (response.ok) {
-                const updatedTask = await response.json();
-                setTasks((prevTasks) =>
-                    prevTasks.map((task) =>
-                        task.id === taskId
-                            ? {
-                                  ...task,
-                                  today: updatedTask.today,
-                                  today_move_count:
-                                      updatedTask.today_move_count,
-                              }
-                            : task
-                    )
-                );
-            }
+            // Use the proper service function that includes auth
+            const { toggleTaskToday } = await import('../../utils/tasksService');
+            const updatedTask = await toggleTaskToday(taskId);
+            
+            setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                    task.id === taskId
+                        ? {
+                              ...task,
+                              today: updatedTask.today,
+                              today_move_count:
+                                  updatedTask.today_move_count,
+                          }
+                        : task
+                )
+            );
         } catch (error) {
             console.error('Error toggling today status:', error);
         }

@@ -270,6 +270,7 @@ const Tasks: React.FC = () => {
         task.name.toLowerCase().includes(taskSearchQuery.toLowerCase())
     );
 
+
     return (
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
