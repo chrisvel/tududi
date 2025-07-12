@@ -1,5 +1,5 @@
 const express = require('express');
-const User = require('../models/user');
+const { User } = require('../models');
 const taskSummaryService = require('../services/taskSummaryService');
 const router = express.Router();
 
@@ -68,7 +68,7 @@ router.patch('/profile', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const user = await User.findById(req.session.userId);
+        const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'Profile not found.' });
         }
@@ -135,11 +135,10 @@ router.patch('/profile', async (req, res) => {
             allowedUpdates.password_digest = hashedNewPassword;
         }
 
-        user.set(allowedUpdates);
-        await user.save();
+        await user.update(allowedUpdates);
 
         // Return updated user with limited fields
-        const updatedUser = await User.findById(user._id, {
+        const updatedUser = await User.findByPk(user.id, {
             attributes: [
                 'id',
                 'email',
@@ -191,7 +190,7 @@ router.post('/profile/change-password', async (req, res) => {
             });
         }
 
-        const user = await User.findById(req.session.userId);
+        const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -210,8 +209,7 @@ router.post('/profile/change-password', async (req, res) => {
 
         // Hash and update new password
         const hashedNewPassword = await User.hashPassword(newPassword);
-        user.set({ password_digest: hashedNewPassword });
-        await user.save();
+        await user.update({ password_digest: hashedNewPassword });
 
         res.json({ message: 'Password changed successfully' });
     } catch (error) {
@@ -227,15 +225,14 @@ router.post('/profile/task-summary/toggle', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const user = await User.findById(req.session.userId);
+        const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
 
         const enabled = !user.task_summary_enabled;
 
-        user.set({ task_summary_enabled: enabled });
-        await user.save();
+        await user.update({ task_summary_enabled: enabled });
 
         // Note: Telegram integration would need to be implemented separately
         const message = enabled
@@ -275,13 +272,12 @@ router.post('/profile/task-summary/frequency', async (req, res) => {
             return res.status(400).json({ error: 'Invalid frequency value.' });
         }
 
-        const user = await User.findById(req.session.userId);
+        const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
 
-        user.set({ task_summary_frequency: frequency });
-        await user.save();
+        await user.update({ task_summary_frequency: frequency });
 
         res.json({
             success: true,
@@ -306,7 +302,7 @@ router.post('/profile/task-summary/send-now', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const user = await User.findById(req.session.userId);
+        const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -346,7 +342,7 @@ router.get('/profile/task-summary/status', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const user = await User.findById(req.session.userId);
+        const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -371,7 +367,7 @@ router.put('/profile/today-settings', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const user = await User.findById(req.session.userId);
+        const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -414,8 +410,7 @@ router.put('/profile/today-settings', async (req, res) => {
                     : user.today_settings?.showDailyQuote || true,
         };
 
-        user.set({ today_settings: todaySettings });
-        await user.save();
+        await user.update({ today_settings: todaySettings });
 
         res.json({
             success: true,

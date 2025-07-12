@@ -1,5 +1,5 @@
 const express = require('express');
-const TaskEvent = require('../models/task_event');
+const { TaskEvent } = require('../models');
 const TaskEventService = require('../services/taskEventService');
 const router = express.Router();
 
@@ -88,8 +88,8 @@ router.get('/tasks/completion-analytics', async (req, res) => {
         const { limit = 50, offset = 0, projectId } = req.query;
 
         // Get completed tasks for the user
-        const Task = require('../models/task');
-        const Project = require('../models/project');
+        const { Task, Project } = require('../models');
+        const { Op } = require('sequelize');
 
         const whereClause = {
             user_id: req.currentUser.id,
@@ -100,23 +100,27 @@ router.get('/tasks/completion-analytics', async (req, res) => {
             whereClause.project_id = projectId;
         }
 
-        const completedTasks = await Task.find(whereClause)
-            .populate('project_id', 'name')
-            .sort({ completed_at: -1 })
-            .limit(parseInt(limit))
-            .skip(parseInt(offset));
+        const completedTasks = await Task.findAll({
+            where: whereClause,
+            include: [
+                { model: Project, attributes: ['name'], required: false },
+            ],
+            order: [['completed_at', 'DESC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+        });
 
         // Get completion time analytics for each task
         const analytics = [];
         for (const task of completedTasks) {
             const completionTime = await TaskEventService.getTaskCompletionTime(
-                task._id
+                task.id
             );
             if (completionTime) {
                 analytics.push({
-                    task_id: task._id,
+                    task_id: task.id,
                     task_name: task.name,
-                    project_name: task.project_id?.name || null,
+                    project_name: task.Project?.name || null,
                     ...completionTime,
                 });
             }

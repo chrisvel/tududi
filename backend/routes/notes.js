@@ -1,33 +1,29 @@
 const express = require('express');
-const Note = require('../models/note');
-const Tag = require('../models/tag');
-const Project = require('../models/project');
+const { Note, Tag, Project, sequelize } = require('../models');
+const { Op } = require('sequelize');
 const router = express.Router();
 
 // Helper function to update note tags
 async function updateNoteTags(note, tagsArray, userId) {
-    try {
-        if (!tagsArray || tagsArray.length === 0) {
-            note.tags = [];
-            await note.save();
-            return;
-        }
+    if (!tagsArray || tagsArray.length === 0) {
+        await note.setTags([]);
+        return;
+    }
 
+    try {
         const tagNames = tagsArray.filter(
             (name, index, arr) => arr.indexOf(name) === index
         ); // unique
-
-        const tagIds = [];
-        for (const name of tagNames) {
-            const tag = await Tag.findOneAndUpdate(
-                { name, user_id: userId },
-                { name, user_id: userId },
-                { upsert: true, new: true }
-            );
-            tagIds.push(tag._id);
-        }
-        note.tags = tagIds;
-        await note.save();
+        const tags = await Promise.all(
+            tagNames.map(async (name) => {
+                const [tag] = await Tag.findOrCreate({
+                    where: { name, user_id: userId },
+                    defaults: { name, user_id: userId },
+                });
+                return tag;
+            })
+        );
+        await note.setTags(tags);
     } catch (error) {
         console.error('Failed to update tags:', error.message);
     }
@@ -55,10 +51,12 @@ router.get('/notes', async (req, res) => {
             includeClause[0].required = true;
         }
 
-        const notes = await Note.find(whereClause)
-            .populate('tags')
-            .populate('project_id', 'name')
-            .sort({ [orderColumn]: orderDirection === 'asc' ? 1 : -1 });
+        const notes = await Note.findAll({
+            where: whereClause,
+            include: includeClause,
+            order: [[orderColumn, orderDirection.toUpperCase()]],
+            distinct: true,
+        });
 
         res.json(notes);
     } catch (error) {
@@ -74,9 +72,13 @@ router.get('/note/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const note = await Note.findOne({ _id: req.params.id, user_id: req.session.userId })
-            .populate('tags')
-            .populate('project_id', 'name');
+        const note = await Note.findOne({
+            where: { id: req.params.id, user_id: req.session.userId },
+            include: [
+                { model: Tag, through: { attributes: [] } },
+                { model: Project, required: false, attributes: ['id', 'name'] },
+            ],
+        });
 
         if (!note) {
             return res.status(404).json({ error: 'Note not found.' });
@@ -106,7 +108,9 @@ router.post('/note', async (req, res) => {
 
         // Handle project assignment
         if (project_id && project_id.toString().trim()) {
-            const project = await Project.findOne({ _id: project_id, user_id: req.session.userId });
+            const project = await Project.findOne({
+                where: { id: project_id, user_id: req.session.userId },
+            });
             if (!project) {
                 return res.status(400).json({ error: 'Invalid project.' });
             }
@@ -128,9 +132,12 @@ router.post('/note', async (req, res) => {
         await updateNoteTags(note, tagNames, req.session.userId);
 
         // Reload note with associations
-        const noteWithAssociations = await Note.findById(note._id)
-            .populate('tags')
-            .populate('project_id', 'name');
+        const noteWithAssociations = await Note.findByPk(note.id, {
+            include: [
+                { model: Tag, through: { attributes: [] } },
+                { model: Project, required: false, attributes: ['id', 'name'] },
+            ],
+        });
 
         res.status(201).json(noteWithAssociations);
     } catch (error) {
@@ -151,7 +158,9 @@ router.patch('/note/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const note = await Note.findOne({ _id: req.params.id, user_id: req.session.userId });
+        const note = await Note.findOne({
+            where: { id: req.params.id, user_id: req.session.userId },
+        });
 
         if (!note) {
             return res.status(404).json({ error: 'Note not found.' });
@@ -166,7 +175,9 @@ router.patch('/note/:id', async (req, res) => {
         // Handle project assignment
         if (project_id !== undefined) {
             if (project_id && project_id.toString().trim()) {
-                const project = await Project.findOne({ _id: project_id, user_id: req.session.userId });
+                const project = await Project.findOne({
+                    where: { id: project_id, user_id: req.session.userId },
+                });
                 if (!project) {
                     return res.status(400).json({ error: 'Invalid project.' });
                 }
@@ -176,8 +187,7 @@ router.patch('/note/:id', async (req, res) => {
             }
         }
 
-        note.set(updateData);
-        await note.save();
+        await note.update(updateData);
 
         // Handle tags if provided
         if (tags !== undefined) {
@@ -193,9 +203,12 @@ router.patch('/note/:id', async (req, res) => {
         }
 
         // Reload note with associations
-        const noteWithAssociations = await Note.findById(note._id)
-            .populate('tags')
-            .populate('project_id', 'name');
+        const noteWithAssociations = await Note.findByPk(note.id, {
+            include: [
+                { model: Tag, through: { attributes: [] } },
+                { model: Project, required: false, attributes: ['id', 'name'] },
+            ],
+        });
 
         res.json(noteWithAssociations);
     } catch (error) {
@@ -216,7 +229,9 @@ router.delete('/note/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const note = await Note.findOne({ _id: req.params.id, user_id: req.session.userId });
+        const note = await Note.findOne({
+            where: { id: req.params.id, user_id: req.session.userId },
+        });
 
         if (!note) {
             return res.status(404).json({ error: 'Note not found.' });

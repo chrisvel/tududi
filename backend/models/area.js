@@ -1,22 +1,40 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
 
-const AreaSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    description: {
-        type: String,
-        trim: true,
-    },
-    user_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-}, {
-    timestamps: true,
-});
+module.exports = (sequelize) => {
+    const Area = sequelize.define(
+        'Area',
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                autoIncrement: true,
+            },
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            description: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'users',
+                    key: 'id',
+                },
+            },
+        },
+        {
+            tableName: 'areas',
+            indexes: [
+                {
+                    fields: ['user_id'],
+                },
+            ],
+        }
+    );
 
-module.exports = mongoose.model('Area', AreaSchema);
+    return Area;
+};

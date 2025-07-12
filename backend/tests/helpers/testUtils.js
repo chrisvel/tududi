@@ -1,10 +1,10 @@
 const bcrypt = require('bcrypt');
-const User = require('../../models/user');
+const { User } = require('../../models');
 
 const createTestUser = async (userData = {}) => {
     const defaultUser = {
         email: 'test@example.com',
-        password_digest: await bcrypt.hash('password123', 10), // Hash directly
+        password: 'password123', // Use password field to trigger model hook
         ...userData,
     };
 

@@ -1,40 +1,81 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 
-const CalendarTokenSchema = new mongoose.Schema({
-    user_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
+const CalendarToken = sequelize.define(
+    'CalendarToken',
+    {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Users',
+                key: 'id',
+            },
+            onDelete: 'CASCADE',
+        },
+        provider: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'google',
+        },
+        access_token: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+        },
+        refresh_token: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        token_type: {
+            type: DataTypes.STRING,
+            defaultValue: 'Bearer',
+        },
+        expires_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        scope: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        connected_email: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        created_at: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+        },
+        updated_at: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+        },
     },
-    provider: {
-        type: String,
-        required: true,
-        default: 'google',
-    },
-    access_token: {
-        type: String,
-        required: true,
-    },
-    refresh_token: {
-        type: String,
-    },
-    token_type: {
-        type: String,
-        default: 'Bearer',
-    },
-    expires_at: {
-        type: Date,
-    },
-    scope: {
-        type: String,
-    },
-    connected_email: {
-        type: String,
-    },
-}, {
-    timestamps: true,
-});
+    {
+        tableName: 'calendar_tokens',
+        timestamps: true,
+        createdAt: 'created_at',
+        updatedAt: 'updated_at',
+        indexes: [
+            {
+                unique: true,
+                fields: ['user_id', 'provider'],
+            },
+        ],
+    }
+);
 
-CalendarTokenSchema.index({ user_id: 1, provider: 1 }, { unique: true });
+// Associations
+CalendarToken.associate = function (models) {
+    CalendarToken.belongsTo(models.User, {
+        foreignKey: 'user_id',
+        as: 'user',
+    });
+};
 
-module.exports = mongoose.model('CalendarToken', CalendarTokenSchema);
+module.exports = CalendarToken;

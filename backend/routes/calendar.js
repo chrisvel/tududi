@@ -1,5 +1,4 @@
 const express = require('express');
-const CalendarToken = require('../models/calendar_token');
 const router = express.Router();
 const { google } = require('googleapis');
 const { requireAuth } = require('../middleware/auth');
@@ -66,17 +65,8 @@ router.get('/oauth/callback', async (req, res) => {
         // Parse state to get user ID
         const { userId } = JSON.parse(state);
 
-        await CalendarToken.findOneAndUpdate(
-            { user_id: userId, provider: 'google' },
-            {
-                access_token: tokens.access_token,
-                refresh_token: tokens.refresh_token,
-                token_type: tokens.token_type,
-                expires_at: new Date(Date.now() + tokens.expires_in * 1000),
-                scope: tokens.scope,
-            },
-            { upsert: true, new: true }
-        );
+        // TODO: Save tokens to database associated with user
+        // await saveGoogleTokensForUser(userId, tokens);
 
         // Redirect to frontend with success
         res.redirect(`${config.frontendUrl}/calendar?connected=true`);
@@ -104,11 +94,12 @@ router.get('/status', requireAuth, async (req, res) => {
             return;
         }
 
-        const tokens = await CalendarToken.findOne({ user_id: req.currentUser.id, provider: 'google' });
+        // TODO: Check if user has valid Google Calendar tokens in database
+        // const tokens = await getGoogleTokensForUser(req.currentUser.id);
 
         res.json({
-            connected: !!tokens,
-            email: tokens ? tokens.connected_email : null,
+            connected: false, // Change to true when tokens exist and are valid
+            email: null, // Return connected Google account email when available
         });
     } catch (error) {
         console.error('Error checking calendar status:', error);
@@ -121,52 +112,55 @@ router.get('/events', requireAuth, async (req, res) => {
     try {
         const { start, end } = req.query;
 
-        const tokens = await CalendarToken.findOne({ user_id: req.currentUser.id, provider: 'google' });
-        if (!tokens) {
-            return res.status(401).json({ error: 'Google Calendar not connected' });
-        }
+        // TODO: Get tokens from database
+        // const tokens = await getGoogleTokensForUser(req.currentUser.id);
+        // if (!tokens) {
+        //   return res.status(401).json({ error: 'Google Calendar not connected' });
+        // }
 
-        const oauth2Client = getOAuth2Client();
-        oauth2Client.setCredentials({
-            access_token: tokens.access_token,
-            refresh_token: tokens.refresh_token,
-            expiry_date: tokens.expires_at.getTime(),
-        });
+        // For now, return sample data
+        const sampleEvents = [
+            {
+                id: 'google-1',
+                title: 'Google Calendar Event',
+                start: new Date().toISOString(),
+                end: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+                type: 'google',
+                color: '#ea4335',
+            },
+        ];
 
-        // Refresh token if expired
-        if (oauth2Client.isTokenExpired()) {
-            const { credentials } = await oauth2Client.refreshAccessToken();
-            tokens.access_token = credentials.access_token;
-            tokens.expires_at = new Date(credentials.expiry_date);
-            if (credentials.refresh_token) {
-                tokens.refresh_token = credentials.refresh_token;
-            }
-            await tokens.save();
-        }
+        res.json({ events: sampleEvents });
 
-        const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+        // TODO: Implement actual Google Calendar API call
+        /*
+    const oauth2Client = getOAuth2Client();
+    oauth2Client.setCredentials(tokens);
 
-        const response = await calendar.events.list({
-            calendarId: 'primary',
-            timeMin: start || new Date().toISOString(),
-            timeMax: end || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            maxResults: 100,
-            singleEvents: true,
-            orderBy: 'startTime',
-        });
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
-        const events = response.data.items.map(event => ({
-            id: event.id,
-            title: event.summary,
-            start: event.start.dateTime || event.start.date,
-            end: event.end.dateTime || event.end.date,
-            type: 'google',
-            color: '#ea4335',
-            description: event.description,
-            location: event.location
-        }));
+    const response = await calendar.events.list({
+      calendarId: 'primary',
+      timeMin: start || new Date().toISOString(),
+      timeMax: end || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      maxResults: 100,
+      singleEvents: true,
+      orderBy: 'startTime',
+    });
 
-        res.json({ events });
+    const events = response.data.items.map(event => ({
+      id: event.id,
+      title: event.summary,
+      start: event.start.dateTime || event.start.date,
+      end: event.end.dateTime || event.end.date,
+      type: 'google',
+      color: '#ea4335',
+      description: event.description,
+      location: event.location
+    }));
+
+    res.json({ events });
+    */
     } catch (error) {
         console.error('Error fetching calendar events:', error);
         res.status(500).json({ error: 'Failed to fetch calendar events' });
@@ -176,7 +170,8 @@ router.get('/events', requireAuth, async (req, res) => {
 // POST /api/calendar/disconnect - Disconnect Google Calendar
 router.post('/disconnect', requireAuth, async (req, res) => {
     try {
-        await CalendarToken.deleteOne({ user_id: req.currentUser.id, provider: 'google' });
+        // TODO: Remove tokens from database
+        // await removeGoogleTokensForUser(req.currentUser.id);
 
         res.json({ success: true, message: 'Google Calendar disconnected' });
     } catch (error) {

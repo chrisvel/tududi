@@ -1,7 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const Area = require('../../models/area');
-const User = require('../../models/user');
+const { Area, User } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Areas Routes', () => {
@@ -32,7 +31,7 @@ describe('Areas Routes', () => {
             expect(response.status).toBe(201);
             expect(response.body.name).toBe(areaData.name);
             expect(response.body.description).toBe(areaData.description);
-            expect(response.body.user_id).toBe(user._id.toString());
+            expect(response.body.user_id).toBe(user.id);
         });
 
         it('should require authentication', async () => {
@@ -65,15 +64,15 @@ describe('Areas Routes', () => {
 
         beforeEach(async () => {
             area1 = await Area.create({
-                name: 'Personal',
-                description: 'Personal projects',
-                user_id: user._id,
+                name: 'Work',
+                description: 'Work projects',
+                user_id: user.id,
             });
 
             area2 = await Area.create({
                 name: 'Personal',
                 description: 'Personal projects',
-                user_id: user._id,
+                user_id: user.id,
             });
         });
 
@@ -82,8 +81,8 @@ describe('Areas Routes', () => {
 
             expect(response.status).toBe(200);
             expect(response.body).toHaveLength(2);
-            expect(response.body.map((a) => a.id)).toContain(area1._id.toString());
-            expect(response.body.map((a) => a.id)).toContain(area2._id.toString());
+            expect(response.body.map((a) => a.id)).toContain(area1.id);
+            expect(response.body.map((a) => a.id)).toContain(area2.id);
         });
 
         it('should order areas by name', async () => {
@@ -109,15 +108,15 @@ describe('Areas Routes', () => {
             area = await Area.create({
                 name: 'Work',
                 description: 'Work projects',
-                user_id: user._id,
+                user_id: user.id,
             });
         });
 
         it('should get area by id', async () => {
-            const response = await agent.get(`/api/areas/${area._id.toString()}`);
+            const response = await agent.get(`/api/areas/${area.id}`);
 
             expect(response.status).toBe(200);
-            expect(response.body.id).toBe(area._id.toString());
+            expect(response.body.id).toBe(area.id);
             expect(response.body.name).toBe(area.name);
             expect(response.body.description).toBe(area.description);
         });
@@ -140,10 +139,10 @@ describe('Areas Routes', () => {
 
             const otherArea = await Area.create({
                 name: 'Other Area',
-                user_id: otherUser._id,
+                user_id: otherUser.id,
             });
 
-            const response = await agent.get(`/api/areas/${otherArea._id.toString()}`);
+            const response = await agent.get(`/api/areas/${otherArea.id}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe(
@@ -152,7 +151,7 @@ describe('Areas Routes', () => {
         });
 
         it('should require authentication', async () => {
-            const response = await request(app).get(`/api/areas/${area._id.toString()}`);
+            const response = await request(app).get(`/api/areas/${area.id}`);
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');
@@ -166,7 +165,7 @@ describe('Areas Routes', () => {
             area = await Area.create({
                 name: 'Work',
                 description: 'Work projects',
-                user_id: user._id,
+                user_id: user.id,
             });
         });
 
@@ -177,7 +176,7 @@ describe('Areas Routes', () => {
             };
 
             const response = await agent
-                .patch(`/api/areas/${area._id.toString()}`)
+                .patch(`/api/areas/${area.id}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -203,11 +202,11 @@ describe('Areas Routes', () => {
 
             const otherArea = await Area.create({
                 name: 'Other Area',
-                user_id: otherUser._id,
+                user_id: otherUser.id,
             });
 
             const response = await agent
-                .patch(`/api/areas/${otherArea._id.toString()}`)
+                .patch(`/api/areas/${otherArea.id}`)
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -216,7 +215,7 @@ describe('Areas Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app)
-                .patch(`/api/areas/${area._id.toString()}`)
+                .patch(`/api/areas/${area.id}`)
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(401);
@@ -230,17 +229,17 @@ describe('Areas Routes', () => {
         beforeEach(async () => {
             area = await Area.create({
                 name: 'Work',
-                user_id: user._id,
+                user_id: user.id,
             });
         });
 
         it('should delete area', async () => {
-            const response = await agent.delete(`/api/areas/${area._id.toString()}`);
+            const response = await agent.delete(`/api/areas/${area.id}`);
 
             expect(response.status).toBe(204);
 
             // Verify area is deleted
-            const deletedArea = await Area.findById(area._id);
+            const deletedArea = await Area.findByPk(area.id);
             expect(deletedArea).toBeNull();
         });
 
@@ -260,17 +259,17 @@ describe('Areas Routes', () => {
 
             const otherArea = await Area.create({
                 name: 'Other Area',
-                user_id: otherUser._id,
+                user_id: otherUser.id,
             });
 
-            const response = await agent.delete(`/api/areas/${otherArea._id.toString()}`);
+            const response = await agent.delete(`/api/areas/${otherArea.id}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Area not found.');
         });
 
         it('should require authentication', async () => {
-            const response = await request(app).delete(`/api/areas/${area._id.toString()}`);
+            const response = await request(app).delete(`/api/areas/${area.id}`);
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');

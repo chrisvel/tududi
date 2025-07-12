@@ -1,7 +1,5 @@
-const User = require('../models/user');
-const Task = require('../models/task');
-const Project = require('../models/project');
-const Tag = require('../models/tag');
+const { User, Task, Project, Tag } = require('../models');
+const { Op } = require('sequelize');
 const TelegramPoller = require('./telegramPoller');
 
 // escape markdown special characters
@@ -143,53 +141,64 @@ const calculateNextRunTime = (user, fromTime = new Date()) => {
 };
 
 // Side effect function to fetch user by ID
-const fetchUser = async (userId) => await User.findById(userId);
+const fetchUser = async (userId) => await User.findByPk(userId);
 
 // Side effect function to fetch due today tasks
 const fetchDueTodayTasks = async (userId, today, tomorrow) =>
-    await Task.find({
-        user_id: userId,
-        due_date: {
-            $gte: today,
-            $lt: tomorrow,
+    await Task.findAll({
+        where: {
+            user_id: userId,
+            due_date: {
+                [Op.gte]: today,
+                [Op.lt]: tomorrow,
+            },
+            status: { [Op.ne]: 2 }, // not done
         },
-        status: { $ne: 2 }, // not done
-    })
-        .populate('project_id', 'name')
-        .sort({ name: 1 });
+        include: [{ model: Project, attributes: ['name'] }],
+        order: [['name', 'ASC']],
+    });
 
 // Side effect function to fetch in progress tasks
 const fetchInProgressTasks = async (userId) =>
-    await Task.find({
-        user_id: userId,
-        status: 1, // in_progress
-    })
-        .populate('project_id', 'name')
-        .sort({ name: 1 });
+    await Task.findAll({
+        where: {
+            user_id: userId,
+            status: 1, // in_progress
+        },
+        include: [{ model: Project, attributes: ['name'] }],
+        order: [['name', 'ASC']],
+    });
 
 // Side effect function to fetch completed today tasks
 const fetchCompletedTodayTasks = async (userId, today, tomorrow) =>
-    await Task.find({
-        user_id: userId,
-        status: 2, // done
-        updated_at: {
-            $gte: today,
-            $lt: tomorrow,
+    await Task.findAll({
+        where: {
+            user_id: userId,
+            status: 2, // done
+            updated_at: {
+                [Op.gte]: today,
+                [Op.lt]: tomorrow,
+            },
         },
-    })
-        .populate('project_id', 'name')
-        .sort({ name: 1 });
+        include: [{ model: Project, attributes: ['name'] }],
+        order: [['name', 'ASC']],
+    });
 
 // Side effect function to fetch suggested tasks
 const fetchSuggestedTasks = async (userId, excludedIds) =>
-    await Task.find({
-        user_id: userId,
-        status: { $ne: 2 }, // not done
-        _id: { $nin: excludedIds },
-    })
-        .populate('project_id', 'name')
-        .sort({ priority: -1, name: 1 })
-        .limit(5);
+    await Task.findAll({
+        where: {
+            user_id: userId,
+            status: { [Op.ne]: 2 }, // not done
+            id: { [Op.notIn]: excludedIds },
+        },
+        include: [{ model: Project, attributes: ['name'] }],
+        order: [
+            ['priority', 'DESC'],
+            ['name', 'ASC'],
+        ],
+        limit: 5,
+    });
 
 // Side effect function to send telegram message
 const sendTelegramMessage = async (token, chatId, message) => {
@@ -198,11 +207,11 @@ const sendTelegramMessage = async (token, chatId, message) => {
 };
 
 // Side effect function to update user tracking fields
-const updateUserTracking = async (user, lastRun, nextRun) => {
-    user.task_summary_last_run = lastRun;
-    user.task_summary_next_run = nextRun;
-    await user.save();
-};
+const updateUserTracking = async (user, lastRun, nextRun) =>
+    await user.update({
+        task_summary_last_run: lastRun,
+        task_summary_next_run: nextRun,
+    });
 
 // Function to generate summary for user (contains side effects)
 const generateSummaryForUser = async (userId) => {
@@ -221,8 +230,8 @@ const generateSummaryForUser = async (userId) => {
 
         // Get suggested tasks (excluding already fetched ones)
         const excludedIds = [
-            ...dueToday.map((t) => t._id),
-            ...inProgress.map((t) => t._id),
+            ...dueToday.map((t) => t.id),
+            ...inProgress.map((t) => t.id),
         ];
         const suggestedTasks = await fetchSuggestedTasks(userId, excludedIds);
 

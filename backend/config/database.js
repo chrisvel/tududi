@@ -1,13 +1,39 @@
-const mongoose = require('mongoose');
+require('dotenv').config();
+const path = require('path');
+const config = require('./config');
 
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/tududi');
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
-  }
+module.exports = {
+    development: {
+        dialect: 'sqlite',
+        storage: path.join(config.dbDir, 'development.sqlite3'),
+        logging: console.log,
+        define: {
+            timestamps: true,
+            underscored: true,
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+        },
+    },
+    test: {
+        dialect: 'sqlite',
+        storage: path.join(config.dbDir, 'test.sqlite3'),
+        logging: false,
+        define: {
+            timestamps: true,
+            underscored: true,
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+        },
+    },
+    production: {
+        dialect: 'sqlite',
+        storage: path.join(config.dbDir, 'production.sqlite3'),
+        logging: false,
+        define: {
+            timestamps: true,
+            underscored: true,
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+        },
+    },
 };
-
-module.exports = connectDB;

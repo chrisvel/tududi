@@ -1,6 +1,5 @@
 const https = require('https');
-const User = require('../models/user');
-const InboxItem = require('../models/inbox_item');
+const { User, InboxItem } = require('../models');
 
 // Create poller state
 const createPollerState = () => ({
@@ -16,11 +15,11 @@ const createPollerState = () => ({
 let pollerState = createPollerState();
 
 // Check if user exists in list
-const userExistsInList = (users, userId) => users.some((u) => u._id.toString() === userId.toString());
+const userExistsInList = (users, userId) => users.some((u) => u.id === userId);
 
 // Add user to list
 const addUserToList = (users, user) => {
-    if (userExistsInList(users, user._id)) {
+    if (userExistsInList(users, user.id)) {
         return users;
     }
     return [...users, user];
@@ -172,7 +171,7 @@ const sendTelegramMessage = async (
 
 // Side effect function to update user chat ID
 const updateUserChatId = async (userId, chatId) => {
-    await User.findByIdAndUpdate(userId, { telegram_chat_id: chatId });
+    await User.update({ telegram_chat_id: chatId }, { where: { id: userId } });
 };
 
 // Side effect function to create inbox item
@@ -182,11 +181,13 @@ const createInboxItem = async (content, userId, messageId) => {
     const recentCutoff = new Date(Date.now() - 30000); // 30 seconds ago
 
     const existingItem = await InboxItem.findOne({
-        content: content,
-        user_id: userId,
-        source: 'telegram',
-        created_at: {
-            $gte: recentCutoff,
+        where: {
+            content: content,
+            user_id: userId,
+            source: 'telegram',
+            created_at: {
+                [require('sequelize').Op.gte]: recentCutoff,
+            },
         },
     });
 
@@ -246,7 +247,7 @@ const processMessage = async (user, update) => {
 
     // Update chat ID if needed and send welcome message for new users
     if (!user.telegram_chat_id) {
-        await updateUserChatId(user._id, chatId);
+        await updateUserChatId(user.id, chatId);
         user.telegram_chat_id = chatId; // Update local object
         
         // Send welcome message for first-time users
@@ -256,7 +257,7 @@ const processMessage = async (user, update) => {
             `🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your tududi inbox as a task.\n\n✨ Commands:\n• /help - Show help information\n• /start - Show welcome message\n• Just type any text - Add it as a task\n\nLet's get organized! 🚀`
         );
         
-        console.log(`Sent welcome message to new user ${user._id} in chat ${chatId}`);
+        console.log(`Sent welcome message to new user ${user.id} in chat ${chatId}`);
         
         // If the first message was just /start, don't process it further
         if (text.toLowerCase() === '/start') {
@@ -305,7 +306,7 @@ const processUpdates = async (user, updates) => {
 
     // Filter out already processed updates
     const newUpdates = updates.filter((update) => {
-        const updateKey = `${user._id}-${update.update_id}`;
+        const updateKey = `${user.id}-${update.update_id}`;
         return !pollerState.processedUpdates.has(updateKey);
     });
 
@@ -317,7 +318,7 @@ const processUpdates = async (user, updates) => {
     // Update user status
     pollerState = {
         ...pollerState,
-        userStatus: updateUserStatus(pollerState.userStatus, user._id, {
+        userStatus: updateUserStatus(pollerState.userStatus, user.id, {
             lastUpdateId: highestUpdateId,
         }),
     };
@@ -325,7 +326,7 @@ const processUpdates = async (user, updates) => {
     // Process each new update
     for (const update of newUpdates) {
         try {
-            const updateKey = `${user._id}-${update.update_id}`;
+            const updateKey = `${user.id}-${update.update_id}`;
 
             if (update.message && update.message.text) {
                 await processMessage(user, update);
@@ -360,12 +361,12 @@ const pollUpdates = async () => {
 
         try {
             const lastUpdateId =
-                pollerState.userStatus[user._id]?.lastUpdateId || 0;
+                pollerState.userStatus[user.id]?.lastUpdateId || 0;
             const updates = await getTelegramUpdates(token, lastUpdateId + 1);
 
             if (updates && updates.length > 0) {
                 console.log(
-                    `Processing ${updates.length} updates for user ${user._id}, starting from update ID ${lastUpdateId + 1}`
+                    `Processing ${updates.length} updates for user ${user.id}, starting from update ID ${lastUpdateId + 1}`
                 );
                 await processUpdates(user, updates);
             }

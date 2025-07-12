@@ -1,4 +1,4 @@
-const TaskEvent = require('../models/task_event');
+const { TaskEvent } = require('../models');
 
 class TaskEventService {
     /**
@@ -32,8 +32,12 @@ class TaskEventService {
                 user_id: userId,
                 event_type: eventType,
                 field_name: fieldName,
-                old_value: oldValue,
-                new_value: newValue,
+                old_value: oldValue
+                    ? { [fieldName || 'value']: oldValue }
+                    : null,
+                new_value: newValue
+                    ? { [fieldName || 'value']: newValue }
+                    : null,
                 metadata: metadata,
             });
 
@@ -236,19 +240,30 @@ class TaskEventService {
      * Get task timeline (all events for a task)
      */
     static async getTaskTimeline(taskId) {
-        return await TaskEvent.find({ task_id: taskId })
-            .sort({ created_at: 1 })
-            .populate('user_id', 'name email');
+        return await TaskEvent.findAll({
+            where: { task_id: taskId },
+            order: [['created_at', 'ASC']],
+            include: [
+                {
+                    model: require('../models').User,
+                    as: 'User',
+                    attributes: ['id', 'name', 'email'],
+                },
+            ],
+        });
     }
 
     /**
      * Get task completion metrics
      */
     static async getTaskCompletionTime(taskId) {
-        const events = await TaskEvent.find({
-            task_id: taskId,
-            event_type: { $in: ['status_changed', 'created', 'completed'] },
-        }).sort({ created_at: 1 });
+        const events = await TaskEvent.findAll({
+            where: {
+                task_id: taskId,
+                event_type: ['status_changed', 'created', 'completed'],
+            },
+            order: [['created_at', 'ASC']],
+        });
 
         if (events.length === 0) return null;
 
@@ -292,11 +307,15 @@ class TaskEventService {
         const whereClause = { user_id: userId };
 
         if (startDate && endDate) {
-            whereClause.created_at = { $gte: startDate, $lte: endDate };
+            whereClause.created_at = {
+                [require('sequelize').Op.between]: [startDate, endDate],
+            };
         }
 
-        const events = await TaskEvent.find(whereClause)
-            .sort({ created_at: 1 });
+        const events = await TaskEvent.findAll({
+            where: whereClause,
+            order: [['created_at', 'ASC']],
+        });
 
         // Calculate metrics
         const metrics = {
@@ -344,36 +363,33 @@ class TaskEventService {
      * Get task activity summary for a date range
      */
     static async getTaskActivitySummary(userId, startDate, endDate) {
-        const events = await TaskEvent.aggregate([
-            {
-                $match: {
-                    user_id: userId,
-                    created_at: { $gte: startDate, $lte: endDate },
+        const events = await TaskEvent.findAll({
+            where: {
+                user_id: userId,
+                created_at: {
+                    [require('sequelize').Op.between]: [startDate, endDate],
                 },
             },
-            {
-                $group: {
-                    _id: {
-                        eventType: '$event_type',
-                        date: { $dateToString: { format: '%Y-%m-%d', date: '$created_at' } },
-                    },
-                    count: { $sum: 1 },
-                },
-            },
-            {
-                $project: {
-                    _id: 0,
-                    event_type: '$_id.eventType',
-                    date: '$_id.date',
-                    count: 1,
-                },
-            },
-            {
-                $sort: {
-                    date: 1,
-                },
-            },
-        ]);
+            attributes: [
+                'event_type',
+                [
+                    require('sequelize').fn(
+                        'COUNT',
+                        require('sequelize').col('id')
+                    ),
+                    'count',
+                ],
+                [
+                    require('sequelize').fn(
+                        'DATE',
+                        require('sequelize').col('created_at')
+                    ),
+                    'date',
+                ],
+            ],
+            group: ['event_type', 'date'],
+            order: [['date', 'ASC']],
+        });
 
         return events;
     }
@@ -382,10 +398,16 @@ class TaskEventService {
      * Get count of how many times a task has been moved to today
      */
     static async getTaskTodayMoveCount(taskId) {
-        const count = await TaskEvent.countDocuments({
-            task_id: taskId,
-            event_type: 'today_changed',
-            new_value: true, // Assuming new_value is a boolean now
+        const { Op } = require('sequelize');
+
+        const count = await TaskEvent.count({
+            where: {
+                task_id: taskId,
+                event_type: 'today_changed',
+                new_value: {
+                    [Op.like]: '%"today":true%',
+                },
+            },
         });
 
         return count;

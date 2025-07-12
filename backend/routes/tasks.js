@@ -1,8 +1,6 @@
 const express = require('express');
-const Task = require('../models/task');
-const Tag = require('../models/tag');
-const Project = require('../models/project');
-const TaskEvent = require('../models/task_event');
+const { Task, Tag, Project, TaskEvent, sequelize } = require('../models');
+const { Op } = require('sequelize');
 const RecurringTaskService = require('../services/recurringTaskService');
 const TaskEventService = require('../services/taskEventService');
 const moment = require('moment-timezone');
@@ -10,18 +8,16 @@ const router = express.Router();
 
 // Helper function to serialize task with today move count
 async function serializeTask(task) {
-    const taskObject = task.toObject();
+    const taskJson = task.toJSON();
     const todayMoveCount = await TaskEventService.getTaskTodayMoveCount(
-        task._id
+        task.id
     );
 
     return {
-        ...taskObject,
-        id: taskObject._id, // Use _id as id
-        tags: taskObject.tags || [], // Access populated tags
-        project: taskObject.project_id ? { id: taskObject.project_id._id, name: taskObject.project_id.name } : null, // Access populated project
-        due_date: taskObject.due_date
-            ? taskObject.due_date.toISOString().split('T')[0]
+        ...taskJson,
+        tags: taskJson.Tags || [],
+        due_date: task.due_date
+            ? task.due_date.toISOString().split('T')[0]
             : null,
         today_move_count: todayMoveCount,
     };
@@ -37,73 +33,90 @@ async function updateTaskTags(task, tagsData, userId) {
         .filter((name, index, arr) => arr.indexOf(name) === index); // unique
 
     if (tagNames.length === 0) {
-        task.tags = [];
-        await task.save();
+        await task.setTags([]);
         return;
     }
 
-    const tagIds = [];
-    for (const name of tagNames) {
-        const tag = await Tag.findOneAndUpdate(
-            { name, user_id: userId },
-            { name, user_id: userId },
-            { upsert: true, new: true }
-        );
-        tagIds.push(tag._id);
-    }
-    task.tags = tagIds;
-    await task.save();
+    // Find existing tags
+    const existingTags = await Tag.findAll({
+        where: { user_id: userId, name: tagNames },
+    });
+
+    // Create new tags
+    const existingTagNames = existingTags.map((tag) => tag.name);
+    const newTagNames = tagNames.filter(
+        (name) => !existingTagNames.includes(name)
+    );
+
+    const createdTags = await Promise.all(
+        newTagNames.map((name) => Tag.create({ name, user_id: userId }))
+    );
+
+    // Set all tags to task
+    const allTags = [...existingTags, ...createdTags];
+    await task.setTags(allTags);
 }
 
 // Filter tasks by parameters
 async function filterTasksByParams(params, userId) {
     let whereClause = { user_id: userId };
+    let includeClause = [
+        { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
+        { model: Project, attributes: ['name'], required: false },
+    ];
 
     // Filter by type
     switch (params.type) {
         case 'today':
-            whereClause.status = { $nin: [Task.STATUS.DONE, Task.STATUS.ARCHIVED] };
+            whereClause.status = {
+                [Op.notIn]: [
+                    Task.STATUS.DONE,
+                    Task.STATUS.ARCHIVED,
+                    'done',
+                    'archived',
+                ],
+            }; // Exclude completed and archived tasks (both integer and string values)
             break;
         case 'upcoming':
-            whereClause.due_date = { $gte: new Date(), $lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) };
-            whereClause.status = { $ne: Task.STATUS.DONE };
+            whereClause.due_date = {
+                [Op.between]: [
+                    new Date(),
+                    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                ],
+            };
+            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             break;
         case 'next':
             whereClause.due_date = null;
             whereClause.project_id = null;
-            whereClause.status = { $ne: Task.STATUS.DONE };
+            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             break;
         case 'inbox':
-            whereClause.$or = [{ due_date: null }, { project_id: null }];
-            whereClause.status = { $ne: Task.STATUS.DONE };
+            whereClause[Op.or] = [{ due_date: null }, { project_id: null }];
+            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             break;
         case 'someday':
             whereClause.due_date = null;
-            whereClause.status = { $ne: Task.STATUS.DONE };
+            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             break;
         case 'waiting':
             whereClause.status = Task.STATUS.WAITING;
             break;
         default:
             if (params.status === 'done') {
-                whereClause.status = Task.STATUS.DONE;
+                whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
             } else {
-                whereClause.status = { $ne: Task.STATUS.DONE };
+                whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             }
     }
 
     // Filter by tag
     if (params.tag) {
-        const tag = await Tag.findOne({ name: params.tag, user_id: userId });
-        if (tag) {
-            whereClause.tags = tag._id;
-        } else {
-            // If tag not found, return no tasks
-            return [];
-        }
+        includeClause[0].where = { name: params.tag };
+        includeClause[0].required = true;
     }
 
-    let sortClause = { created_at: 1 };
+    let orderClause = [['created_at', 'ASC']];
 
     // Apply ordering
     if (params.order_by) {
@@ -123,64 +136,134 @@ async function filterTasksByParams(params, userId) {
         }
 
         if (orderColumn === 'due_date') {
-            sortClause = {
-                due_date: orderDirection === 'asc' ? 1 : -1,
-            };
+            orderClause = [
+                [
+                    sequelize.literal(
+                        'CASE WHEN due_date IS NULL THEN 1 ELSE 0 END'
+                    ),
+                    'ASC',
+                ],
+                ['due_date', orderDirection.toUpperCase()],
+            ];
         } else {
-            sortClause = { [orderColumn]: orderDirection === 'asc' ? 1 : -1 };
+            orderClause = [[orderColumn, orderDirection.toUpperCase()]];
         }
     }
 
-    return await Task.find(whereClause)
-        .populate('tags')
-        .populate('project_id', 'name')
-        .sort(sortClause);
+    return await Task.findAll({
+        where: whereClause,
+        include: includeClause,
+        order: orderClause,
+        distinct: true,
+    });
 }
 
 // Compute task metrics
 async function computeTaskMetrics(userId, userTimezone = 'UTC') {
-    const totalOpenTasks = await Task.countDocuments({
-        user_id: userId, status: { $ne: Task.STATUS.DONE }
+    const totalOpenTasks = await Task.count({
+        where: { user_id: userId, status: { [Op.ne]: Task.STATUS.DONE } },
     });
 
     const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const tasksPendingOverMonth = await Task.countDocuments({
-        user_id: userId,
-        status: { $ne: Task.STATUS.DONE },
-        created_at: { $lt: oneMonthAgo },
+    const tasksPendingOverMonth = await Task.count({
+        where: {
+            user_id: userId,
+            status: { [Op.ne]: Task.STATUS.DONE },
+            created_at: { [Op.lt]: oneMonthAgo },
+        },
     });
 
-    const tasksInProgress = await Task.find({
-        user_id: userId,
-        status: { $in: [Task.STATUS.IN_PROGRESS] },
-    })
-        .populate('tags', 'name')
-        .populate('project_id', 'name active')
-        .sort({ priority: -1 });
+    const tasksInProgress = await Task.findAll({
+        where: {
+            user_id: userId,
+            status: { [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'] },
+        },
+        include: [
+            {
+                model: Tag,
+                attributes: ['id', 'name'],
+                through: { attributes: [] },
+                required: false,
+            },
+            {
+                model: Project,
+                attributes: ['id', 'name', 'active'],
+                required: false,
+            },
+        ],
+        order: [['priority', 'DESC']],
+    });
 
     // Get tasks in today plan
-    const todayPlanTasks = await Task.find({
-        user_id: userId,
-        today: true,
-        status: { $nin: [Task.STATUS.DONE, Task.STATUS.ARCHIVED] },
-    })
-        .populate('tags', 'name')
-        .populate('project_id', 'name active')
-        .sort({ priority: -1, created_at: 1 });
+    const todayPlanTasks = await Task.findAll({
+        where: {
+            user_id: userId,
+            today: true,
+            status: {
+                [Op.notIn]: [
+                    Task.STATUS.DONE,
+                    Task.STATUS.ARCHIVED,
+                    'done',
+                    'archived',
+                ],
+            },
+        },
+        include: [
+            {
+                model: Tag,
+                attributes: ['id', 'name'],
+                through: { attributes: [] },
+                required: false,
+            },
+            {
+                model: Project,
+                attributes: ['id', 'name', 'active'],
+                required: false,
+            },
+        ],
+        order: [
+            ['priority', 'DESC'],
+            ['created_at', 'ASC'],
+        ],
+    });
 
     const today = new Date();
     today.setHours(23, 59, 59, 999);
 
-    const tasksDueToday = await Task.find({
-        user_id: userId,
-        status: { $nin: [Task.STATUS.DONE, Task.STATUS.ARCHIVED] },
-        $or: [
-            { due_date: { $lte: today } },
-            { 'project_id.due_date_at': { $lte: today } } // Assuming project_id is populated and has due_date_at
+    const tasksDueToday = await Task.findAll({
+        where: {
+            user_id: userId,
+            status: {
+                [Op.notIn]: [
+                    Task.STATUS.DONE,
+                    Task.STATUS.ARCHIVED,
+                    'done',
+                    'archived',
+                ],
+            },
+            [Op.or]: [
+                { due_date: { [Op.lte]: today } },
+                sequelize.literal(`EXISTS (
+          SELECT 1 FROM projects 
+          WHERE projects.id = Task.project_id 
+          AND projects.due_date_at <= '${today.toISOString()}'
+        )`),
+            ],
+        },
+        include: [
+            {
+                model: Tag,
+                attributes: ['id', 'name'],
+                through: { attributes: [] },
+                required: false,
+            },
+            {
+                model: Project,
+                attributes: ['id', 'name', 'active'],
+                required: false,
+            },
         ],
-    })
-        .populate('tags', 'name')
-        .populate('project_id', 'name active');
+    });
 
     // Get suggested tasks only if user has a meaningful task base
     let suggestedTasks = [];
@@ -194,37 +277,82 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         tasksDueToday.length > 0
     ) {
         const excludedTaskIds = [
-            ...tasksInProgress.map((t) => t._id),
-            ...tasksDueToday.map((t) => t._id),
+            ...tasksInProgress.map((t) => t.id),
+            ...tasksDueToday.map((t) => t.id),
         ];
 
         // Get task IDs that have "someday" tag
-        const somedayTag = await Tag.findOne({ name: 'someday', user_id: userId });
-        const somedayTaskIds = somedayTag ? await Task.find({ tags: somedayTag._id }).distinct('_id') : [];
+        const somedayTaskIds = await sequelize
+            .query(
+                `SELECT DISTINCT task_id FROM tasks_tags 
+       JOIN tags ON tasks_tags.tag_id = tags.id 
+       WHERE tags.name = 'someday' AND tags.user_id = ?`,
+                {
+                    replacements: [userId],
+                    type: sequelize.QueryTypes.SELECT,
+                }
+            )
+            .then((results) => results.map((r) => r.task_id));
 
         // Get tasks without projects (excluding someday tagged tasks)
-        const nonProjectTasks = await Task.find({
-            user_id: userId,
-            status: { $in: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING] },
-            _id: { $nin: [...excludedTaskIds, ...somedayTaskIds] },
-            $or: [{ project_id: null }, { project_id: '' }],
-        })
-            .populate('tags', 'name')
-            .populate('project_id', 'name active')
-            .sort({ priority: -1, created_at: 1 })
-            .limit(6);
+        const nonProjectTasks = await Task.findAll({
+            where: {
+                user_id: userId,
+                status: {
+                    [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
+                },
+                id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
+                [Op.or]: [{ project_id: null }, { project_id: '' }],
+            },
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] },
+                    required: false,
+                },
+                {
+                    model: Project,
+                    attributes: ['id', 'name', 'active'],
+                    required: false,
+                },
+            ],
+            order: [
+                ['priority', 'DESC'],
+                ['created_at', 'ASC'],
+            ],
+            limit: 6,
+        });
 
         // Get tasks with projects (excluding someday tagged tasks)
-        const projectTasks = await Task.find({
-            user_id: userId,
-            status: { $in: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING] },
-            _id: { $nin: [...excludedTaskIds, ...somedayTaskIds] },
-            project_id: { $ne: null, $ne: '' },
-        })
-            .populate('tags', 'name')
-            .populate('project_id', 'name active')
-            .sort({ priority: -1, created_at: 1 })
-            .limit(6);
+        const projectTasks = await Task.findAll({
+            where: {
+                user_id: userId,
+                status: {
+                    [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
+                },
+                id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
+                project_id: { [Op.not]: null, [Op.ne]: '' },
+            },
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] },
+                    required: false,
+                },
+                {
+                    model: Project,
+                    attributes: ['id', 'name', 'active'],
+                    required: false,
+                },
+            ],
+            order: [
+                ['priority', 'DESC'],
+                ['created_at', 'ASC'],
+            ],
+            limit: 6,
+        });
 
         // Check if we have enough suggestions (at least 6 total)
         let combinedTasks = [...nonProjectTasks, ...projectTasks];
@@ -233,18 +361,39 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         if (combinedTasks.length < 6) {
             const usedTaskIds = [
                 ...excludedTaskIds,
-                ...combinedTasks.map((t) => t._id),
+                ...combinedTasks.map((t) => t.id),
             ];
 
-            const somedayFallbackTasks = await Task.find({
-                user_id: userId,
-                status: { $in: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING] },
-                _id: { $nin: usedTaskIds, $in: somedayTaskIds },
-            })
-                .populate('tags', 'name')
-                .populate('project_id', 'name active')
-                .sort({ priority: -1, created_at: 1 })
-                .limit(12 - combinedTasks.length);
+            const somedayFallbackTasks = await Task.findAll({
+                where: {
+                    user_id: userId,
+                    status: {
+                        [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
+                    },
+                    id: {
+                        [Op.notIn]: usedTaskIds,
+                        [Op.in]: somedayTaskIds,
+                    },
+                },
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name'],
+                        through: { attributes: [] },
+                        required: false,
+                    },
+                    {
+                        model: Project,
+                        attributes: ['id', 'name', 'active'],
+                        required: false,
+                    },
+                ],
+                order: [
+                    ['priority', 'DESC'],
+                    ['created_at', 'ASC'],
+                ],
+                limit: 12 - combinedTasks.length,
+            });
 
             combinedTasks = [...combinedTasks, ...somedayFallbackTasks];
         }
@@ -257,30 +406,53 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
     const todayStart = todayInUserTz.clone().startOf('day').utc().toDate();
     const todayEnd = todayInUserTz.clone().endOf('day').utc().toDate();
 
-    const tasksCompletedToday = await Task.find({
-        user_id: userId,
-        status: Task.STATUS.DONE,
-        completed_at: { $gte: todayStart, $lte: todayEnd },
-    })
-        .populate('tags', 'name')
-        .populate('project_id', 'name active')
-        .sort({ completed_at: -1 });
+    const tasksCompletedToday = await Task.findAll({
+        where: {
+            user_id: userId,
+            status: Task.STATUS.DONE,
+            completed_at: {
+                [Op.between]: [todayStart, todayEnd],
+            },
+        },
+        include: [
+            {
+                model: Tag,
+                attributes: ['id', 'name'],
+                through: { attributes: [] },
+                required: false,
+            },
+            {
+                model: Project,
+                attributes: ['id', 'name', 'active'],
+                required: false,
+            },
+        ],
+        order: [['completed_at', 'DESC']],
+    });
 
     // Get weekly completion data (last 7 days) - use user's timezone
     const weekStartInUserTz = moment.tz(userTimezone).subtract(6, 'days');
     const weekStart = weekStartInUserTz.clone().startOf('day').utc().toDate();
     const weekEnd = todayInUserTz.clone().endOf('day').utc().toDate();
 
-    const weeklyCompletionsRaw = await Task.find({
-        user_id: userId,
-        status: Task.STATUS.DONE,
-        completed_at: { $gte: weekStart, $lte: weekEnd },
-    }).select('completed_at');
+    // For SQLite, we'll fetch the raw data and process it in JavaScript
+    const weeklyCompletionsRaw = await Task.findAll({
+        where: {
+            user_id: userId,
+            status: Task.STATUS.DONE,
+            completed_at: {
+                [Op.between]: [weekStart, weekEnd],
+            },
+        },
+        attributes: ['completed_at'],
+        raw: true,
+    });
 
     // Process the data in JavaScript to group by date in user's timezone
     const dateCountMap = {};
     weeklyCompletionsRaw.forEach((task) => {
-        const completedDate = task.completed_at;
+        // Parse the completed_at field more reliably - convert to Date first, then to moment
+        const completedDate = new Date(task.completed_at);
         const dateInUserTz = moment(completedDate)
             .tz(userTimezone)
             .format('YYYY-MM-DD');
@@ -378,9 +550,17 @@ router.get('/tasks', async (req, res) => {
 // GET /api/task/uuid/:uuid
 router.get('/task/uuid/:uuid', async (req, res) => {
     try {
-        const task = await Task.findOne({ uuid: req.params.uuid, user_id: req.currentUser.id })
-            .populate('tags', 'name')
-            .populate('project_id', 'name');
+        const task = await Task.findOne({
+            where: { uuid: req.params.uuid, user_id: req.currentUser.id },
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] },
+                },
+                { model: Project, attributes: ['name'], required: false },
+            ],
+        });
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
@@ -398,9 +578,17 @@ router.get('/task/uuid/:uuid', async (req, res) => {
 // GET /api/task/:id
 router.get('/task/:id', async (req, res) => {
     try {
-        const task = await Task.findOne({ _id: req.params.id, user_id: req.currentUser.id })
-            .populate('tags', 'name')
-            .populate('project_id', 'name');
+        const task = await Task.findOne({
+            where: { id: req.params.id, user_id: req.currentUser.id },
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] },
+                },
+                { model: Project, attributes: ['name'], required: false },
+            ],
+        });
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
@@ -481,7 +669,9 @@ router.post('/task', async (req, res) => {
 
         // Handle project assignment
         if (project_id && project_id.toString().trim()) {
-            const project = await Project.findOne({ _id: project_id, user_id: req.currentUser.id });
+            const project = await Project.findOne({
+                where: { id: project_id, user_id: req.currentUser.id },
+            });
             if (!project) {
                 return res.status(400).json({ error: 'Invalid project.' });
             }
@@ -511,9 +701,16 @@ router.post('/task', async (req, res) => {
         }
 
         // Reload task with associations
-        const taskWithAssociations = await Task.findById(task._id)
-            .populate('tags', 'name')
-            .populate('project_id', 'name');
+        const taskWithAssociations = await Task.findByPk(task.id, {
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['name'],
+                    through: { attributes: [] },
+                },
+                { model: Project, attributes: ['name'], required: false },
+            ],
+        });
 
         const taskJson = taskWithAssociations.toJSON();
 
@@ -561,8 +758,16 @@ router.patch('/task/:id', async (req, res) => {
         // Handle both tags and Tags (Sequelize association format)
         const tagsData = tags || Tags;
 
-        const task = await Task.findOne({ _id: req.params.id, user_id: req.currentUser.id })
-            .populate('tags', 'name');
+        const task = await Task.findOne({
+            where: { id: req.params.id, user_id: req.currentUser.id },
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] },
+                },
+            ],
+        });
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
@@ -590,10 +795,15 @@ router.patch('/task/:id', async (req, res) => {
 
         // Handle updating parent recurrence settings if this is a child task
         if (update_parent_recurrence && task.recurring_parent_id) {
-            const parentTask = await Task.findOne({ _id: task.recurring_parent_id, user_id: req.currentUser.id });
+            const parentTask = await Task.findOne({
+                where: {
+                    id: task.recurring_parent_id,
+                    user_id: req.currentUser.id,
+                },
+            });
 
             if (parentTask) {
-                parentTask.set({
+                await parentTask.update({
                     recurrence_type:
                         recurrence_type !== undefined
                             ? recurrence_type
@@ -623,7 +833,6 @@ router.patch('/task/:id', async (req, res) => {
                             ? completion_based
                             : parentTask.completion_based,
                 });
-                await parentTask.save();
             }
         }
 
@@ -702,7 +911,9 @@ router.patch('/task/:id', async (req, res) => {
 
         // Handle project assignment
         if (project_id && project_id.toString().trim()) {
-            const project = await Project.findOne({ _id: project_id, user_id: req.currentUser.id });
+            const project = await Project.findOne({
+                where: { id: project_id, user_id: req.currentUser.id },
+            });
             if (!project) {
                 return res.status(400).json({ error: 'Invalid project.' });
             }
@@ -711,8 +922,7 @@ router.patch('/task/:id', async (req, res) => {
             taskAttributes.project_id = null;
         }
 
-        task.set(taskAttributes);
-        await task.save();
+        await task.update(taskAttributes);
         await updateTaskTags(task, tagsData, req.currentUser.id);
 
         // Log task update events
@@ -925,8 +1135,7 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
             updateData.completed_at = null;
         }
 
-        task.set(updateData);
-        await task.save();
+        await task.update(updateData);
 
         // Handle recurring task completion
         let nextTask = null;
@@ -935,7 +1144,7 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
         }
 
         const response = {
-            ...task.toObject(),
+            ...task.toJSON(),
             due_date: task.due_date
                 ? task.due_date.toISOString().split('T')[0]
                 : null,
@@ -943,7 +1152,7 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
 
         if (nextTask) {
             response.next_task = {
-                ...nextTask.toObject(),
+                ...nextTask.toJSON(),
                 due_date: nextTask.due_date
                     ? nextTask.due_date.toISOString().split('T')[0]
                     : null,
@@ -959,14 +1168,18 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
 // DELETE /api/task/:id
 router.delete('/task/:id', async (req, res) => {
     try {
-        const task = await Task.findOne({ _id: req.params.id, user_id: req.currentUser.id });
+        const task = await Task.findOne({
+            where: { id: req.params.id, user_id: req.currentUser.id },
+        });
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
         }
 
         // Check for child tasks - prevent deletion of parent tasks with children
-        const childTasks = await Task.find({ recurring_parent_id: req.params.id });
+        const childTasks = await Task.findAll({
+            where: { recurring_parent_id: req.params.id },
+        });
 
         // If this is a recurring parent task with children, prevent deletion
         if (childTasks.length > 0) {
@@ -975,25 +1188,78 @@ router.delete('/task/:id', async (req, res) => {
                 .json({ error: 'There was a problem deleting the task.' });
         }
 
-        const taskEvents = await TaskEvent.find({ task_id: req.params.id });
+        const taskEvents = await TaskEvent.findAll({
+            where: { task_id: req.params.id },
+        });
 
-        // Delete associated task events
-        await TaskEvent.deleteMany({ task_id: req.params.id });
-
-        // Remove tag associations (Mongoose handles this via $pull in updateMany)
-        await Task.updateMany(
-            { tags: req.params.id },
-            { $pull: { tags: req.params.id } }
+        const tagAssociations = await sequelize.query(
+            'SELECT COUNT(*) as count FROM tasks_tags WHERE task_id = ?',
+            { replacements: [req.params.id], type: sequelize.QueryTypes.SELECT }
         );
 
-        // Set recurring_parent_id to null for any child tasks
-        await Task.updateMany(
-            { recurring_parent_id: req.params.id },
-            { recurring_parent_id: null }
+        // Check SQLite foreign key list for tasks table
+        const foreignKeys = await sequelize.query(
+            'PRAGMA foreign_key_list(tasks)',
+            { type: sequelize.QueryTypes.SELECT }
         );
 
-        // Delete the task itself
-        await task.deleteOne();
+        // Find all tables that reference tasks
+        const allTables = await sequelize.query(
+            "SELECT name FROM sqlite_master WHERE type='table'",
+            { type: sequelize.QueryTypes.SELECT }
+        );
+
+        for (const table of allTables) {
+            if (table.name !== 'tasks') {
+                try {
+                    const fks = await sequelize.query(
+                        `PRAGMA foreign_key_list(${table.name})`,
+                        { type: sequelize.QueryTypes.SELECT }
+                    );
+                    const taskRefs = fks.filter((fk) => fk.table === 'tasks');
+                    if (taskRefs.length > 0) {
+                        // Check if this table has any records referencing our task
+                        for (const fk of taskRefs) {
+                            const count = await sequelize.query(
+                                `SELECT COUNT(*) as count FROM ${table.name} WHERE ${fk.from} = ?`,
+                                {
+                                    replacements: [req.params.id],
+                                    type: sequelize.QueryTypes.SELECT,
+                                }
+                            );
+                        }
+                    }
+                } catch (error) {
+                    // Skip tables that might not exist or have issues
+                }
+            }
+        }
+
+        // Temporarily disable foreign key constraints for this operation
+        await sequelize.query('PRAGMA foreign_keys = OFF');
+
+        try {
+            // Use force delete to bypass foreign key constraints
+            await TaskEvent.destroy({
+                where: { task_id: req.params.id },
+                force: true,
+            });
+
+            await sequelize.query('DELETE FROM tasks_tags WHERE task_id = ?', {
+                replacements: [req.params.id],
+            });
+
+            await Task.update(
+                { recurring_parent_id: null },
+                { where: { recurring_parent_id: req.params.id } }
+            );
+
+            // Delete the task itself
+            await task.destroy({ force: true });
+        } finally {
+            // Re-enable foreign key constraints
+            await sequelize.query('PRAGMA foreign_keys = ON');
+        }
 
         res.json({ message: 'Task successfully deleted' });
     } catch (error) {
@@ -1013,7 +1279,7 @@ router.post('/tasks/generate-recurring', async (req, res) => {
         res.json({
             message: `Generated ${newTasks.length} recurring tasks`,
             tasks: newTasks.map((task) => ({
-                ...task.toObject(),
+                ...task.toJSON(),
                 due_date: task.due_date
                     ? task.due_date.toISOString().split('T')[0]
                     : null,

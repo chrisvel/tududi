@@ -1,5 +1,5 @@
 const express = require('express');
-const InboxItem = require('../models/inbox_item');
+const { InboxItem } = require('../models');
 const router = express.Router();
 
 // GET /api/inbox
@@ -9,10 +9,13 @@ router.get('/inbox', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const items = await InboxItem.find({
-            user_id: req.session.userId,
-            status: 'added',
-        }).sort({ created_at: -1 });
+        const items = await InboxItem.findAll({
+            where: {
+                user_id: req.session.userId,
+                status: 'added',
+            },
+            order: [['created_at', 'DESC']],
+        });
 
         res.json(items);
     } catch (error) {
@@ -62,7 +65,9 @@ router.get('/inbox/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const item = await InboxItem.findOne({ _id: req.params.id, user_id: req.session.userId });
+        const item = await InboxItem.findOne({
+            where: { id: req.params.id, user_id: req.session.userId },
+        });
 
         if (!item) {
             return res.status(404).json({ error: 'Inbox item not found.' });
@@ -82,7 +87,9 @@ router.patch('/inbox/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const item = await InboxItem.findOne({ _id: req.params.id, user_id: req.session.userId });
+        const item = await InboxItem.findOne({
+            where: { id: req.params.id, user_id: req.session.userId },
+        });
 
         if (!item) {
             return res.status(404).json({ error: 'Inbox item not found.' });
@@ -94,8 +101,7 @@ router.patch('/inbox/:id', async (req, res) => {
         if (content !== undefined) updateData.content = content;
         if (status !== undefined) updateData.status = status;
 
-        item.set(updateData);
-        await item.save();
+        await item.update(updateData);
         res.json(item);
     } catch (error) {
         console.error('Error updating inbox item:', error);
@@ -115,15 +121,16 @@ router.delete('/inbox/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const item = await InboxItem.findOne({ _id: req.params.id, user_id: req.session.userId });
+        const item = await InboxItem.findOne({
+            where: { id: req.params.id, user_id: req.session.userId },
+        });
 
         if (!item) {
             return res.status(404).json({ error: 'Inbox item not found.' });
         }
 
         // Mark as deleted instead of actual deletion
-        item.set({ status: 'deleted' });
-        await item.save();
+        await item.update({ status: 'deleted' });
         res.json({ message: 'Inbox item successfully deleted' });
     } catch (error) {
         console.error('Error deleting inbox item:', error);
@@ -140,14 +147,15 @@ router.patch('/inbox/:id/process', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const item = await InboxItem.findOne({ _id: req.params.id, user_id: req.session.userId });
+        const item = await InboxItem.findOne({
+            where: { id: req.params.id, user_id: req.session.userId },
+        });
 
         if (!item) {
             return res.status(404).json({ error: 'Inbox item not found.' });
         }
 
-        item.set({ status: 'processed' });
-        await item.save();
+        await item.update({ status: 'processed' });
         res.json(item);
     } catch (error) {
         console.error('Error processing inbox item:', error);

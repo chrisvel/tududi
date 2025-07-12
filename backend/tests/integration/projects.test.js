@@ -1,8 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const Project = require('../../models/project');
-const User = require('../../models/user');
-const Area = require('../../models/area');
+const { Project, User, Area } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Projects Routes', () => {
@@ -15,7 +13,7 @@ describe('Projects Routes', () => {
 
         area = await Area.create({
             name: 'Work',
-            user_id: user._id,
+            user_id: user.id,
         });
 
         // Create authenticated agent

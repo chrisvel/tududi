@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const User = require('../../models/user');
+const { User } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Auth Routes', () => {
@@ -22,7 +22,7 @@ describe('Auth Routes', () => {
             expect(response.status).toBe(200);
             expect(response.body.user).toBeDefined();
             expect(response.body.user.email).toBe('test@example.com');
-            expect(response.body.user.id).toBe(user._id.toString());
+            expect(response.body.user.id).toBe(user.id);
             expect(response.body.user.language).toBe('en');
             expect(response.body.user.appearance).toBe('light');
             expect(response.body.user.timezone).toBe('UTC');
@@ -91,7 +91,7 @@ describe('Auth Routes', () => {
             expect(response.status).toBe(200);
             expect(response.body.user).toBeDefined();
             expect(response.body.user.email).toBe('test@example.com');
-            expect(response.body.user.id).toBe(user._id.toString());
+            expect(response.body.user.id).toBe(user.id);
         });
 
         it('should return null user when not logged in', async () => {
