@@ -43,7 +43,6 @@
         "express-session": "~1.18.1",
         "googleapis": "~144.0.0",
         "helmet": "~8.1.0",
-        "js-yaml": "~4.1.0",
         "moment-timezone": "~0.6.0",
         "morgan": "~1.10.0",
         "multer": "~2.0.1",

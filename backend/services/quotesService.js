@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const yaml = require('js-yaml');
 
 // create default quotes
 const createDefaultQuotes = () => [
@@ -12,7 +11,7 @@ const createDefaultQuotes = () => [
 ];
 
 // get quotes file path
-const getQuotesFilePath = () => path.join(__dirname, '../config/quotes.yml');
+const getQuotesFilePath = () => path.join(__dirname, '../../public/locales/en/quotes.json');
 
 // Side effect function to check if file exists
 const fileExists = (filePath) => fs.existsSync(filePath);
@@ -20,12 +19,12 @@ const fileExists = (filePath) => fs.existsSync(filePath);
 // Side effect function to read file contents
 const readFileContents = (filePath) => fs.readFileSync(filePath, 'utf8');
 
-// parse YAML content
-const parseYamlContent = (content) => {
+// parse JSON content
+const parseJsonContent = (content) => {
     try {
-        return yaml.load(content);
+        return JSON.parse(content);
     } catch (error) {
-        throw new Error(`Failed to parse YAML: ${error.message}`);
+        throw new Error(`Failed to parse JSON: ${error.message}`);
     }
 };
 
@@ -47,18 +46,18 @@ const loadQuotesFromFile = () => {
         const quotesPath = getQuotesFilePath();
 
         if (!fileExists(quotesPath)) {
-            console.warn('Quotes configuration file not found, using defaults');
+            console.warn('Quotes translation file not found, using defaults');
             return createDefaultQuotes();
         }
 
         const fileContents = readFileContents(quotesPath);
-        const data = parseYamlContent(fileContents);
+        const data = parseJsonContent(fileContents);
         const quotes = extractQuotes(data);
 
         if (quotes) {
             return quotes;
         } else {
-            console.warn('No quotes found in configuration file');
+            console.warn('No quotes found in translation file');
             return createDefaultQuotes();
         }
     } catch (error) {
@@ -113,7 +112,7 @@ module.exports = {
     // For testing
     _createDefaultQuotes: createDefaultQuotes,
     _getQuotesFilePath: getQuotesFilePath,
-    _parseYamlContent: parseYamlContent,
+    _parseJsonContent: parseJsonContent,
     _validateQuotesData: validateQuotesData,
     _extractQuotes: extractQuotes,
     _getRandomIndex: getRandomIndex,
