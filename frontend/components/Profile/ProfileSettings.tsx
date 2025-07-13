@@ -21,6 +21,8 @@ import {
     ExclamationTriangleIcon,
     FaceSmileIcon,
     CheckIcon,
+    SunIcon,
+    MoonIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
@@ -827,19 +829,32 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     {t('profile.appearance')}
                                 </label>
-                                <select
-                                    name="appearance"
-                                    value={formData.appearance}
-                                    onChange={handleChange}
-                                    className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                >
-                                    <option value="light">
+                                <div className="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, appearance: 'light' }))}
+                                        className={`flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors ${
+                                            formData.appearance === 'light'
+                                                ? 'bg-blue-500 text-white'
+                                                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+                                        }`}
+                                    >
+                                        <SunIcon className="h-4 w-4 mr-2" />
                                         {t('profile.lightMode', 'Light')}
-                                    </option>
-                                    <option value="dark">
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, appearance: 'dark' }))}
+                                        className={`flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors ${
+                                            formData.appearance === 'dark'
+                                                ? 'bg-blue-500 text-white'
+                                                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+                                        }`}
+                                    >
+                                        <MoonIcon className="h-4 w-4 mr-2" />
                                         {t('profile.darkMode', 'Dark')}
-                                    </option>
-                                </select>
+                                    </button>
+                                </div>
                             </div>
 
                             <div>

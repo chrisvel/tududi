@@ -866,5 +866,17 @@
     "commandProcessed": "Comando processado com sucesso",
     "messageProcessed": "Mensagem processada com sucesso",
     "failedToAddToInbox": "❌ Falha ao adicionar à caixa de entrada: {{error}}"
+  },
+  "about": {
+    "title": "Sobre",
+    "version": "Versão",
+    "description": "Gerenciamento de tarefas auto-hospedado com organização hierárquica, suporte a múltiplos idiomas e integração com Telegram. Construído com amor para entusiastas da produtividade.",
+    "madeWithLove": "Feito com amor",
+    "appreciation": "Obrigado por usar o tududi! Seu apoio ajuda a manter este projeto vivo e em crescimento. Se você achar útil, considere apoiar o desenvolvimento.",
+    "supportDevelopment": "Apoiar o Desenvolvimento",
+    "community": "Comunidade",
+    "viewOnGitHub": "Ver no GitHub",
+    "license": "Licenciado para uso pessoal",
+    "builtBy": "Construído por"
   }
 }

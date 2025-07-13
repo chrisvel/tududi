@@ -837,7 +837,27 @@
       "couldNotExtractMetadata": "Nie można wyodrębnić metadanych",
       "textParameterRequired": "Parametr tekstowy jest wymagany",
       "notFound": "Nie znaleziono",
-      "resourceNotFound": "Żądany zasób nie został znaleziony."
+      "resourceNotFound": "Żądany zasób nie został znaleziony.",
+      "passwordChangeRequired": "Aktualne hasło i nowe hasło są wymagane",
+      "passwordChangedSuccessfully": "Hasło zmienione pomyślnie",
+      "failedToUpdateTaskSummary": "Nie udało się zaktualizować ustawień podsumowania zadania.",
+      "frequencyRequired": "Częstotliwość jest wymagana.",
+      "invalidFrequency": "Nieprawidłowa wartość częstotliwości.",
+      "failedToStartTelegramPolling": "Nie udało się uruchomić pobierania Telegramu.",
+      "failedToStopTelegramPolling": "Nie udało się zatrzymać pobierania Telegramu.",
+      "invalidTelegramTokenFormat": "Nieprawidłowy format tokena bota Telegram.",
+      "invalidBotToken": "Nieprawidłowy token bota lub bot niedostępny.",
+      "chatIdRequired": "ID czatu jest wymagane.",
+      "areaNotFound": "Obszar nie został znaleziony lub nie należy do bieżącego użytkownika.",
+      "areaNameRequired": "Nazwa obszaru jest wymagana.",
+      "tagNotFound": "Tag nie został znaleziony",
+      "tagNameRequired": "Nazwa tagu jest wymagana",
+      "tagDeleted": "Tag został pomyślnie usunięty",
+      "demoModeGoogleCalendar": "Tryb demonstracyjny: symulacja integracji z Google Calendar",
+      "failedToGenerateAuthUrl": "Nie udało się wygenerować adresu URL autoryzacji",
+      "authCodeNotProvided": "Kod autoryzacji nie został podany",
+      "failedToCheckCalendarStatus": "Nie udało się sprawdzić statusu kalendarza",
+      "failedToFetchCalendarEvents": "Nie udało się pobrać wydarzeń kalendarza"
     }
   },
   "telegram": {
@@ -846,5 +866,17 @@
     "commandProcessed": "Polecenie przetworzone pomyślnie",
     "messageProcessed": "Wiadomość przetworzona pomyślnie",
     "failedToAddToInbox": "❌ Nie udało się dodać do skrzynki odbiorczej: {{error}}"
+  },
+  "about": {
+    "title": "O aplikacji",
+    "version": "Wersja",
+    "description": "Samodzielnie hostowane zarządzanie zadaniami z hierarchiczną organizacją, wsparciem dla wielu języków i integracją z Telegramem. Stworzone z miłością dla entuzjastów produktywności.",
+    "madeWithLove": "Stworzone z miłością",
+    "appreciation": "Dziękujemy za korzystanie z tududi! Twoje wsparcie pomaga utrzymać ten projekt przy życiu i rozwijać go. Jeśli uważasz, że jest przydatny, rozważ wsparcie rozwoju.",
+    "supportDevelopment": "Wspieraj rozwój",
+    "community": "Społeczność",
+    "viewOnGitHub": "Zobacz na GitHubie",
+    "license": "Licencjonowane do użytku osobistego",
+    "builtBy": "Stworzone przez"
   }
 }

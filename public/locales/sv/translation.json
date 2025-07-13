@@ -866,5 +866,17 @@
     "commandProcessed": "Kommandot har behandlats framgångsrikt",
     "messageProcessed": "Meddelandet har behandlats framgångsrikt",
     "failedToAddToInbox": "❌ Misslyckades med att lägga till i inkorgen: {{error}}"
+  },
+  "about": {
+    "title": "Om",
+    "version": "Version",
+    "description": "Självhostad uppgiftshantering med hierarkisk organisation, flerspråkigt stöd och Telegram-integration. Byggd med kärlek för produktivitetsentusiaster.",
+    "madeWithLove": "Byggd med kärlek",
+    "appreciation": "Tack för att du använder tududi! Ditt stöd hjälper till att hålla detta projekt vid liv och växande. Om du tycker att det är användbart, överväg att stödja utvecklingen.",
+    "supportDevelopment": "Stöd utvecklingen",
+    "community": "Gemenskap",
+    "viewOnGitHub": "Visa på GitHub",
+    "license": "Licensierad för personligt bruk",
+    "builtBy": "Byggd av"
   }
 }

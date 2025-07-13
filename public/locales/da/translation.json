@@ -866,5 +866,17 @@
     "commandProcessed": "Kommando behandlet med succes",
     "messageProcessed": "Besked behandlet med succes",
     "failedToAddToInbox": "❌ Kunne ikke tilføje til indbakke: {{error}}"
+  },
+  "about": {
+    "title": "Om",
+    "version": "Version",
+    "description": "Selvhostet opgavestyring med hierarkisk organisering, flersproget support og Telegram-integration. Bygget med kærlighed til produktivitetsentusiaster.",
+    "madeWithLove": "Bygget med kærlighed",
+    "appreciation": "Tak fordi du bruger tududi! Din støtte hjælper med at holde dette projekt i live og voksende. Hvis du finder det nyttigt, overvej at støtte udviklingen.",
+    "supportDevelopment": "Støt udviklingen",
+    "community": "Fællesskab",
+    "viewOnGitHub": "Se på GitHub",
+    "license": "Licenseret til personlig brug",
+    "builtBy": "Bygget af"
   }
 }

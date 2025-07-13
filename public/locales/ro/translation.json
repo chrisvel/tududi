@@ -866,5 +866,17 @@
     "commandProcessed": "Comanda procesată cu succes",
     "messageProcessed": "Mesaj procesat cu succes",
     "failedToAddToInbox": "❌ Nu s-a reușit adăugarea în inbox: {{error}}"
+  },
+  "about": {
+    "title": "Despre",
+    "version": "Versiune",
+    "description": "Gestionare a sarcinilor auto-găzduită cu organizare ierarhică, suport multi-limbă și integrare Telegram. Construit cu dragoste pentru entuziaștii productivității.",
+    "madeWithLove": "Creat cu dragoste",
+    "appreciation": "Îți mulțumim că folosești tududi! Sprijinul tău ajută la menținerea acestui proiect în viață și în creștere. Dacă îl găsești util, ia în considerare sprijinirea dezvoltării.",
+    "supportDevelopment": "Sprijină Dezvoltarea",
+    "community": "Comunitate",
+    "viewOnGitHub": "Vezi pe GitHub",
+    "license": "Licențiat pentru uz personal",
+    "builtBy": "Construit de"
   }
 }

@@ -82,10 +82,10 @@ const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
                 }}
                 aria-expanded={isOpen}
                 aria-haspopup="listbox"
-                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-left flex items-center justify-between"
+                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-left flex items-center justify-between text-sm font-medium"
             >
                 <div className="flex items-center space-x-2">
-                    <span className="text-lg">{selectedLanguage.flag}</span>
+                    <span className="text-sm">{selectedLanguage.flag}</span>
                     <span>{selectedLanguage.name}</span>
                 </div>
                 <ChevronDownIcon 
