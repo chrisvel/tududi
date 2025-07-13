@@ -38,7 +38,14 @@
     "nextActions": "Prossime Azioni",
     "inbox": "Inbox",
     "completed": "Completati",
-    "allTasks": "Tutte le Attività"
+    "allTasks": "Tutte le Attività",
+    "addInboxAriaLabel": "Aggiungi elemento alla Posta in arrivo",
+    "addInboxTitle": "Aggiungi elemento alla Posta in arrivo",
+    "addProjectAriaLabel": "Aggiungi progetto",
+    "addProjectTitle": "Aggiungi progetto",
+    "addNoteAriaLabel": "Aggiungi nota",
+    "addNoteTitle": "Aggiungi nota",
+    "createNew": "Crea nuovo"
   },
   "navigation": {
     "home": "Home",
@@ -128,7 +135,14 @@
       "priority": "Priorità",
       "dueDate": "Data di scadenza",
       "none": "Nessuno"
-    }
+    },
+    "justNow": "Proprio adesso",
+    "minutesAgo": "{{minutes}}m fa",
+    "hoursAgo": "{{hours}}h fa",
+    "daysAgo": "{{days}}d fa",
+    "loadingTimeline": "Caricamento della timeline...",
+    "timelineWillAppear": "La timeline apparirà dopo il salvataggio",
+    "noActivity": "Nessuna attività ancora"
   },
   "profile": {
     "settings": "Impostazioni Profilo",
@@ -426,7 +440,9 @@
     "task": "Attività",
     "project": "Progetto",
     "note": "Nota",
-    "area": "Area"
+    "area": "Area",
+    "inbox": "Posta in arrivo",
+    "tag": "Tag"
   },
   "sort": {
     "due_date": "Data di Scadenza",
@@ -445,7 +461,9 @@
     "inProgress": "In Corso",
     "done": "Completata",
     "archived": "Archiviata",
-    "unknown": "Sconosciuto"
+    "unknown": "Sconosciuto",
+    "telegramConnected": "Telegram connesso e in polling",
+    "telegramConnectionProblem": "Problema di connessione a Telegram"
   },
   "project": {
     "name": "Nome Progetto",
@@ -677,7 +695,13 @@
     "thirdWeek": "Terza settimana",
     "fourthWeek": "Quarta settimana",
     "lastWeek": "Ultima settimana",
-    "days": "giorni"
+    "days": "giorni",
+    "loadingParentSettings": "Caricamento delle impostazioni di ricorrenza del compito principale...",
+    "recurringTaskInstance": "Istanza di compito ricorrente",
+    "inheritedSettingsMessage": "Questo compito è stato generato da un compito ricorrente. Le impostazioni di ricorrenza mostrate di seguito sono ereditate dal compito originale e non possono essere modificate qui.",
+    "cancelEdit": "Annulla Modifica",
+    "editParentRecurrence": "Modifica Ricorrenza Genitore",
+    "parentEditWarning": "⚠️ Stai modificando le impostazioni di ricorrenza del compito genitore. Le modifiche influenzeranno tutte le future istanze di questo compito ricorrente."
   },
   "weekdays": {
     "sunday": "Domenica",
@@ -737,5 +761,111 @@
     "low": "Bassa",
     "time": "Ora",
     "allDay": "Tutto il giorno"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Pagina Non Trovata",
+      "message": "La pagina che stai cercando non esiste."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Cattura Rapida della Posta in Arrivo",
+    "userMenu": "Menu Utente",
+    "collapseSidebar": "Riduci Barra Laterale",
+    "expandSidebar": "Espandi Barra Laterale"
+  },
+  "upload": {
+    "uploading": "Caricamento in corso..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Cerca progetti...",
+    "searchTags": "Cerca tag...",
+    "searchTasks": "Cerca compiti..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Nascondi info",
+    "aboutTasks": "Informazioni sui Compiti",
+    "hideSearch": "Nascondi ricerca",
+    "searchTasks": "Cerca Compiti",
+    "aboutInbox": "Informazioni sulla Posta in Arrivo",
+    "collapseInfoPanel": "Riduci il pannello informativo",
+    "showTasksInformation": "Mostra informazioni sui compiti",
+    "collapseSearchPanel": "Riduci il pannello di ricerca",
+    "showSearchInput": "Mostra input di ricerca",
+    "showInboxInformation": "Mostra informazioni sulla posta in arrivo"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Autenticazione richiesta",
+      "userNotFound": "Utente non trovato",
+      "authenticationError": "Errore di autenticazione",
+      "internalServerError": "Errore interno del server",
+      "invalidLoginParameters": "Parametri di accesso non validi.",
+      "invalidCredentials": "Credenziali non valide",
+      "couldNotLogout": "Impossibile disconnettersi",
+      "loggedOutSuccessfully": "Disconnesso con successo",
+      "contentRequired": "Il contenuto è richiesto",
+      "inboxItemNotFound": "Elemento della posta in arrivo non trovato.",
+      "inboxItemDeleted": "Elemento della posta in arrivo eliminato con successo",
+      "contentRequiredString": "Il contenuto è richiesto e deve essere una stringa",
+      "problemCreatingInboxItem": "C'è stato un problema nella creazione dell'elemento della posta in arrivo.",
+      "problemUpdatingInboxItem": "C'è stato un problema nell'aggiornamento dell'elemento della posta in arrivo.",
+      "problemDeletingInboxItem": "C'è stato un problema nell'eliminazione dell'elemento della posta in arrivo.",
+      "problemProcessingInboxItem": "C'è stato un problema nell'elaborazione dell'elemento della posta in arrivo.",
+      "invalidOrderColumn": "Colonna di ordinamento specificata non valida.",
+      "taskNotFound": "Compito non trovato.",
+      "taskNameRequired": "Il nome del compito è obbligatorio.",
+      "invalidProject": "Progetto non valido.",
+      "unableToUpdateTask": "Impossibile aggiornare il compito",
+      "taskDeleted": "Compito eliminato con successo",
+      "failedToGenerateRecurringTasks": "Impossibile generare compiti ricorrenti",
+      "failedToUpdateTodayFlag": "Impossibile aggiornare il flag di oggi del compito",
+      "noImageProvided": "Nessun file immagine fornito",
+      "failedToUploadImage": "Impossibile caricare l'immagine",
+      "projectNotFound": "Progetto non trovato",
+      "projectNameRequired": "Il nome del progetto è obbligatorio",
+      "projectDeleted": "Progetto eliminato con successo",
+      "noteNotFound": "Nota non trovata.",
+      "noteDeleted": "Nota eliminata con successo.",
+      "profileNotFound": "Profilo non trovato.",
+      "passwordTooShort": "La password deve contenere almeno 6 caratteri",
+      "currentPasswordIncorrect": "La password attuale è errata",
+      "failedToUpdateProfile": "Impossibile aggiornare il profilo.",
+      "passwordChangeRequired": "La password attuale e la nuova password sono richieste",
+      "passwordChangedSuccessfully": "Password cambiata con successo",
+      "failedToUpdateTaskSummary": "Impossibile aggiornare le impostazioni del riepilogo attività.",
+      "frequencyRequired": "La frequenza è richiesta.",
+      "invalidFrequency": "Valore di frequenza non valido.",
+      "failedToStartTelegramPolling": "Impossibile avviare il polling di Telegram.",
+      "failedToStopTelegramPolling": "Impossibile fermare il polling di Telegram.",
+      "invalidTelegramTokenFormat": "Formato del token del bot di Telegram non valido.",
+      "invalidBotToken": "Token del bot non valido o bot non accessibile.",
+      "chatIdRequired": "L'ID chat è richiesto.",
+      "areaNotFound": "Area non trovata o non appartiene all'utente corrente.",
+      "areaNameRequired": "Il nome dell'area è richiesto.",
+      "tagNotFound": "Tag non trovato",
+      "tagNameRequired": "Il nome del tag è richiesto",
+      "tagDeleted": "Tag eliminato con successo",
+      "demoModeGoogleCalendar": "Modalità demo: integrazione con Google Calendar simulata",
+      "failedToGenerateAuthUrl": "Impossibile generare l'URL di autorizzazione",
+      "authCodeNotProvided": "Codice di autorizzazione non fornito",
+      "failedToCheckCalendarStatus": "Impossibile controllare lo stato del calendario",
+      "failedToFetchCalendarEvents": "Impossibile recuperare gli eventi del calendario",
+      "googleCalendarDisconnected": "Google Calendar disconnesso",
+      "failedToDisconnectCalendar": "Impossibile disconnettere il calendario",
+      "urlParameterRequired": "Il parametro URL è obbligatorio",
+      "couldNotExtractMetadata": "Impossibile estrarre i metadati",
+      "textParameterRequired": "Il parametro di testo è obbligatorio",
+      "notFound": "Non trovato",
+      "resourceNotFound": "La risorsa richiesta non è stata trovata."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Benvenuto in tududi!\n\nIl tuo bot personale per la gestione delle attività è ora connesso e pronto ad aiutarti!\n\n📝 Inviami semplicemente un messaggio e lo aggiungerò alla tua casella di posta di tududi come un elemento.\n\n✨ Comandi:\n• /help - Mostra informazioni di aiuto\n• /start - Mostra il messaggio di benvenuto\n• Digita semplicemente qualsiasi testo - Aggiungilo come un elemento della casella di posta\n\nOrganizziamoci! 🚀",
+    "helpMessage": "📋 Aiuto Bot tududi\n\nInviami qualsiasi messaggio di testo e lo aggiungerò alla tua casella di posta di tududi come un elemento della casella di posta.\n\nComandi:\n/start - Messaggio di benvenuto\n/help - Mostra questo messaggio di aiuto\n\nDigita semplicemente il tuo elemento e mi occuperò del resto!",
+    "commandProcessed": "Comando elaborato con successo",
+    "messageProcessed": "Messaggio elaborato con successo",
+    "failedToAddToInbox": "❌ Impossibile aggiungere alla casella di posta: {{error}}"
   }
 }

@@ -38,7 +38,14 @@
     "nextActions": "下一步行动",
     "inbox": "收件箱",
     "completed": "已完成",
-    "allTasks": "所有任务"
+    "allTasks": "所有任务",
+    "addInboxAriaLabel": "添加收件箱项目",
+    "addInboxTitle": "添加收件箱项目",
+    "addProjectAriaLabel": "添加项目",
+    "addProjectTitle": "添加项目",
+    "addNoteAriaLabel": "添加备注",
+    "addNoteTitle": "添加备注",
+    "createNew": "创建新项目"
   },
   "navigation": {
     "home": "首页",
@@ -128,7 +135,14 @@
       "priority": "优先级",
       "dueDate": "截止日期",
       "none": "无"
-    }
+    },
+    "justNow": "刚刚",
+    "minutesAgo": "{{minutes}}分钟前",
+    "hoursAgo": "{{hours}}小时前",
+    "daysAgo": "{{days}}天前",
+    "loadingTimeline": "加载时间线...",
+    "timelineWillAppear": "保存后时间线将出现",
+    "noActivity": "还没有活动"
   },
   "profile": {
     "settings": "个人资料设置",
@@ -264,7 +278,14 @@
     "aiProductivityFeatures": "人工智能与生产力功能",
     "botSetup": "机器人设置",
     "passwordChangeNote": "密码更改将在您点击表单底部的“保存更改”时保存。",
-    "passwordChangeOptional": "留空密码字段以更新其他设置，而不更改您的密码。"
+    "passwordChangeOptional": "留空密码字段以更新其他设置，而不更改您的密码。",
+    "bulgarian": "保加利亚语",
+    "danish": "丹麦语",
+    "finnish": "芬兰语",
+    "norwegian": "挪威语",
+    "polish": "波兰语",
+    "slovenian": "斯洛文尼亚语",
+    "swedish": "瑞典语"
   },
   "productivity": {
     "stalledProjects": "停滞项目",
@@ -419,7 +440,9 @@
     "task": "任务",
     "project": "项目",
     "note": "笔记",
-    "area": "区域"
+    "area": "区域",
+    "inbox": "收件箱",
+    "tag": "标签"
   },
   "sort": {
     "due_date": "截止日期",
@@ -438,7 +461,9 @@
     "inProgress": "进行中",
     "done": "完成",
     "archived": "已归档",
-    "unknown": "未知"
+    "unknown": "未知",
+    "telegramConnected": "Telegram 已连接并正在轮询",
+    "telegramConnectionProblem": "Telegram 连接问题"
   },
   "project": {
     "name": "项目名称",
@@ -669,7 +694,13 @@
     "thirdWeek": "第三周",
     "fourthWeek": "第四周",
     "lastWeek": "最后一周",
-    "days": "天"
+    "days": "天",
+    "loadingParentSettings": "正在加载父任务的重复设置...",
+    "recurringTaskInstance": "重复任务实例",
+    "inheritedSettingsMessage": "此任务是从一个重复任务生成的。下面显示的重复设置是从原始任务继承的，无法在此处编辑。",
+    "cancelEdit": "取消编辑",
+    "editParentRecurrence": "编辑父级重复",
+    "parentEditWarning": "⚠️ 您正在编辑父任务的重复设置。更改将影响此重复任务的所有未来实例。"
   },
   "weekdays": {
     "sunday": "星期日",
@@ -729,5 +760,111 @@
     "low": "低",
     "time": "时间",
     "allDay": "全天"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - 页面未找到",
+      "message": "您要找的页面不存在。"
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "快速收件箱捕获",
+    "userMenu": "用户菜单",
+    "collapseSidebar": "折叠侧边栏",
+    "expandSidebar": "展开侧边栏"
+  },
+  "upload": {
+    "uploading": "上传中..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "搜索项目...",
+    "searchTags": "搜索标签...",
+    "searchTasks": "搜索任务..."
+  },
+  "ariaLabels": {
+    "hideInfo": "隐藏信息",
+    "aboutTasks": "关于任务",
+    "hideSearch": "隐藏搜索",
+    "searchTasks": "搜索任务",
+    "aboutInbox": "关于收件箱",
+    "collapseInfoPanel": "折叠信息面板",
+    "showTasksInformation": "显示任务信息",
+    "collapseSearchPanel": "折叠搜索面板",
+    "showSearchInput": "显示搜索输入",
+    "showInboxInformation": "显示收件箱信息"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "需要身份验证",
+      "userNotFound": "用户未找到",
+      "authenticationError": "身份验证错误",
+      "internalServerError": "内部服务器错误",
+      "invalidLoginParameters": "无效的登录参数。",
+      "invalidCredentials": "无效的凭据",
+      "couldNotLogout": "无法注销",
+      "loggedOutSuccessfully": "成功注销",
+      "contentRequired": "内容是必需的",
+      "inboxItemNotFound": "未找到收件箱项目。",
+      "inboxItemDeleted": "收件箱项目已成功删除",
+      "contentRequiredString": "内容是必需的，且必须为字符串",
+      "problemCreatingInboxItem": "创建收件箱项目时出现问题。",
+      "problemUpdatingInboxItem": "更新收件箱项目时出现问题。",
+      "problemDeletingInboxItem": "删除收件箱项目时出现问题。",
+      "problemProcessingInboxItem": "处理收件箱项目时出现问题。",
+      "invalidOrderColumn": "指定的订单列无效。",
+      "taskNotFound": "未找到任务。",
+      "taskNameRequired": "任务名称是必需的。",
+      "invalidProject": "无效的项目。",
+      "unableToUpdateTask": "无法更新任务",
+      "taskDeleted": "任务已成功删除",
+      "failedToGenerateRecurringTasks": "生成重复任务失败",
+      "failedToUpdateTodayFlag": "更新任务今日标志失败",
+      "noImageProvided": "未提供图像文件",
+      "failedToUploadImage": "上传图像失败",
+      "projectNotFound": "未找到项目",
+      "projectNameRequired": "项目名称是必需的",
+      "projectDeleted": "项目已成功删除",
+      "noteNotFound": "未找到笔记。",
+      "noteDeleted": "笔记已成功删除。",
+      "profileNotFound": "未找到个人资料。",
+      "passwordTooShort": "密码必须至少为6个字符",
+      "currentPasswordIncorrect": "当前密码不正确",
+      "failedToUpdateProfile": "更新个人资料失败。",
+      "passwordChangeRequired": "当前密码和新密码是必需的",
+      "passwordChangedSuccessfully": "密码已成功更改",
+      "failedToUpdateTaskSummary": "更新任务摘要设置失败。",
+      "frequencyRequired": "频率是必需的。",
+      "invalidFrequency": "无效的频率值。",
+      "failedToStartTelegramPolling": "启动Telegram轮询失败。",
+      "failedToStopTelegramPolling": "停止Telegram轮询失败。",
+      "invalidTelegramTokenFormat": "无效的Telegram机器人令牌格式。",
+      "invalidBotToken": "无效的机器人令牌或机器人不可访问。",
+      "chatIdRequired": "聊天ID是必需的。",
+      "areaNotFound": "区域未找到或不属于当前用户。",
+      "areaNameRequired": "区域名称是必需的。",
+      "tagNotFound": "未找到标签",
+      "tagNameRequired": "标签名称是必需的",
+      "tagDeleted": "标签已成功删除",
+      "demoModeGoogleCalendar": "演示模式：Google 日历集成已模拟",
+      "failedToGenerateAuthUrl": "生成授权 URL 失败",
+      "authCodeNotProvided": "未提供授权代码",
+      "failedToCheckCalendarStatus": "检查日历状态失败",
+      "failedToFetchCalendarEvents": "获取日历事件失败",
+      "googleCalendarDisconnected": "Google 日历已断开连接",
+      "failedToDisconnectCalendar": "断开日历连接失败",
+      "urlParameterRequired": "URL 参数是必需的",
+      "couldNotExtractMetadata": "无法提取元数据",
+      "textParameterRequired": "文本参数是必需的",
+      "notFound": "未找到",
+      "resourceNotFound": "请求的资源未找到。"
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 欢迎来到 tududi！\n\n您的个人任务管理机器人现在已连接并准备好帮助您！\n\n📝 只需发送我任何消息，我会将其添加到您的 tududi 收件箱作为一项。\n\n✨ 命令：\n• /help - 显示帮助信息\n• /start - 显示欢迎消息\n• 只需输入任何文本 - 将其添加为收件箱项目\n\n让我们开始整理吧！🚀",
+    "helpMessage": "📋 tududi 机器人帮助\n\n发送我任何文本消息，我会将其添加到您的 tududi 收件箱作为一项。\n\n命令：\n/start - 欢迎消息\n/help - 显示此帮助消息\n\n只需输入您的项目，我会处理其余的！",
+    "commandProcessed": "命令处理成功",
+    "messageProcessed": "消息处理成功",
+    "failedToAddToInbox": "❌ 添加到收件箱失败：{{error}}"
   }
 }

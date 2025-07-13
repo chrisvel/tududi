@@ -38,7 +38,14 @@
     "addAreaAriaLabel": "Agregar Área",
     "addAreaTitle": "Agregar Área",
     "addTagAriaLabel": "Agregar Etiqueta",
-    "addTagTitle": "Agregar Etiqueta"
+    "addTagTitle": "Agregar Etiqueta",
+    "addInboxAriaLabel": "Agregar elemento de bandeja de entrada",
+    "addInboxTitle": "Agregar elemento de bandeja de entrada",
+    "addProjectAriaLabel": "Agregar proyecto",
+    "addProjectTitle": "Agregar proyecto",
+    "addNoteAriaLabel": "Agregar nota",
+    "addNoteTitle": "Agregar nota",
+    "createNew": "Crear nuevo"
   },
   "navigation": {
     "home": "Inicio",
@@ -272,7 +279,9 @@
     "task": "Tarea",
     "project": "Proyecto",
     "note": "Nota",
-    "area": "Área"
+    "area": "Área",
+    "inbox": "Bandeja de entrada",
+    "tag": "Etiqueta"
   },
   "tasks": {
     "title": "Tareas",
@@ -321,7 +330,14 @@
       "priority": "Prioridad",
       "dueDate": "Fecha de vencimiento",
       "none": "Ninguno"
-    }
+    },
+    "justNow": "Justo ahora",
+    "minutesAgo": "{{minutes}}m hace",
+    "hoursAgo": "{{hours}}h hace",
+    "daysAgo": "{{days}}d hace",
+    "loadingTimeline": "Cargando línea de tiempo...",
+    "timelineWillAppear": "La línea de tiempo aparecerá después de guardar",
+    "noActivity": "Sin actividad aún"
   },
   "projects": {
     "loading": "Cargando proyectos...",
@@ -501,7 +517,9 @@
     "inProgress": "En Progreso",
     "done": "Completado",
     "archived": "Archivado",
-    "unknown": "Desconocido"
+    "unknown": "Desconocido",
+    "telegramConnected": "Telegram conectado y sondeando",
+    "telegramConnectionProblem": "Problema de conexión de Telegram"
   },
   "project": {
     "name": "Nombre del Proyecto",
@@ -660,7 +678,13 @@
     "thirdWeek": "Tercera semana",
     "fourthWeek": "Cuarta semana",
     "lastWeek": "Última semana",
-    "days": "días"
+    "days": "días",
+    "loadingParentSettings": "Cargando configuraciones de recurrencia de tarea principal...",
+    "recurringTaskInstance": "Instancia de tarea recurrente",
+    "inheritedSettingsMessage": "Esta tarea fue generada a partir de una tarea recurrente. La configuración de recurrencia que se muestra a continuación se hereda de la tarea original y no se puede editar aquí.",
+    "cancelEdit": "Cancelar Edición",
+    "editParentRecurrence": "Editar Recurrencia Principal",
+    "parentEditWarning": "⚠️ Estás editando la configuración de recurrencia de la tarea principal. Los cambios afectarán a todas las instancias futuras de esta tarea recurrente."
   },
   "weekdays": {
     "monday": "Lun",
@@ -737,5 +761,111 @@
     "issuesFound": "Se encontraron {{count}} problema(s) de productividad que necesitan atención",
     "reviewItems": "Haga clic para revisar y mejorar su flujo de trabajo",
     "suggestion": "Haga clic en cualquier elemento de arriba para abrirlo y hacer mejoras."
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Página No Encontrada",
+      "message": "La página que estás buscando no existe."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Captura Rápida de Bandeja de Entrada",
+    "userMenu": "Menú de Usuario",
+    "collapseSidebar": "Colapsar Barra Lateral",
+    "expandSidebar": "Expandir Barra Lateral"
+  },
+  "upload": {
+    "uploading": "Subiendo..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Buscar proyectos...",
+    "searchTags": "Buscar etiquetas...",
+    "searchTasks": "Buscar tareas..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Ocultar información",
+    "aboutTasks": "Acerca de las Tareas",
+    "hideSearch": "Ocultar búsqueda",
+    "searchTasks": "Buscar Tareas",
+    "aboutInbox": "Acerca de la Bandeja de Entrada",
+    "collapseInfoPanel": "Colapsar panel de información",
+    "showTasksInformation": "Mostrar información de tareas",
+    "collapseSearchPanel": "Colapsar panel de búsqueda",
+    "showSearchInput": "Mostrar entrada de búsqueda",
+    "showInboxInformation": "Mostrar información de la bandeja de entrada"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Se requiere autenticación",
+      "userNotFound": "Usuario no encontrado",
+      "authenticationError": "Error de autenticación",
+      "internalServerError": "Error interno del servidor",
+      "invalidLoginParameters": "Parámetros de inicio de sesión inválidos.",
+      "invalidCredentials": "Credenciales inválidas",
+      "couldNotLogout": "No se pudo cerrar sesión",
+      "loggedOutSuccessfully": "Cierre de sesión exitoso",
+      "contentRequired": "Se requiere contenido",
+      "inboxItemNotFound": "Elemento de la bandeja de entrada no encontrado.",
+      "inboxItemDeleted": "Elemento de la bandeja de entrada eliminado con éxito",
+      "contentRequiredString": "Se requiere contenido y debe ser una cadena",
+      "problemCreatingInboxItem": "Hubo un problema al crear el elemento de la bandeja de entrada.",
+      "problemUpdatingInboxItem": "Hubo un problema al actualizar el elemento de la bandeja de entrada.",
+      "problemDeletingInboxItem": "Hubo un problema al eliminar el elemento de la bandeja de entrada.",
+      "problemProcessingInboxItem": "Hubo un problema al procesar el elemento de la bandeja de entrada.",
+      "invalidOrderColumn": "Columna de orden inválida especificada.",
+      "taskNotFound": "Tarea no encontrada.",
+      "taskNameRequired": "Se requiere el nombre de la tarea.",
+      "invalidProject": "Proyecto inválido.",
+      "unableToUpdateTask": "No se puede actualizar la tarea.",
+      "taskDeleted": "Tarea eliminada con éxito.",
+      "failedToGenerateRecurringTasks": "Error al generar tareas recurrentes.",
+      "failedToUpdateTodayFlag": "Error al actualizar la bandera de tarea de hoy.",
+      "noImageProvided": "No se proporcionó ningún archivo de imagen.",
+      "failedToUploadImage": "Error al subir la imagen.",
+      "projectNotFound": "Proyecto no encontrado.",
+      "projectNameRequired": "Se requiere el nombre del proyecto.",
+      "projectDeleted": "Proyecto eliminado con éxito.",
+      "noteNotFound": "Nota no encontrada.",
+      "noteDeleted": "Nota eliminada con éxito.",
+      "profileNotFound": "Perfil no encontrado.",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres.",
+      "currentPasswordIncorrect": "La contraseña actual es incorrecta.",
+      "failedToUpdateProfile": "Error al actualizar el perfil.",
+      "passwordChangeRequired": "Se requiere la contraseña actual y la nueva contraseña",
+      "passwordChangedSuccessfully": "Contraseña cambiada con éxito",
+      "failedToUpdateTaskSummary": "Error al actualizar la configuración del resumen de la tarea.",
+      "frequencyRequired": "La frecuencia es obligatoria.",
+      "invalidFrequency": "Valor de frecuencia no válido.",
+      "failedToStartTelegramPolling": "Error al iniciar la consulta de Telegram.",
+      "failedToStopTelegramPolling": "Error al detener la consulta de Telegram.",
+      "invalidTelegramTokenFormat": "Formato de token de bot de Telegram no válido.",
+      "invalidBotToken": "Token de bot no válido o bot no accesible.",
+      "chatIdRequired": "Se requiere el ID de chat.",
+      "areaNotFound": "Área no encontrada o no pertenece al usuario actual.",
+      "areaNameRequired": "Se requiere el nombre del área.",
+      "tagNotFound": "Etiqueta no encontrada",
+      "tagNameRequired": "Se requiere el nombre de la etiqueta",
+      "tagDeleted": "Etiqueta eliminada con éxito",
+      "demoModeGoogleCalendar": "Modo de demostración: integración de Google Calendar simulada",
+      "failedToGenerateAuthUrl": "Error al generar la URL de autorización",
+      "authCodeNotProvided": "Código de autorización no proporcionado",
+      "failedToCheckCalendarStatus": "Error al verificar el estado del calendario",
+      "failedToFetchCalendarEvents": "Error al obtener eventos del calendario",
+      "googleCalendarDisconnected": "Google Calendar desconectado",
+      "failedToDisconnectCalendar": "Error al desconectar el calendario",
+      "urlParameterRequired": "Se requiere el parámetro de URL",
+      "couldNotExtractMetadata": "No se pudo extraer los metadatos",
+      "textParameterRequired": "Se requiere el parámetro de texto",
+      "notFound": "No encontrado",
+      "resourceNotFound": "No se pudo encontrar el recurso solicitado."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 ¡Bienvenido a tududi!\n\n¡Tu bot personal de gestión de tareas está ahora conectado y listo para ayudar!\n\n📝 Simplemente envíame cualquier mensaje y lo agregaré a tu bandeja de entrada de tududi como un elemento.\n\n✨ Comandos:\n• /help - Mostrar información de ayuda\n• /start - Mostrar mensaje de bienvenida\n• Simplemente escribe cualquier texto - Agrégalo como un elemento de bandeja de entrada\n\n¡Vamos a organizarnos! 🚀",
+    "helpMessage": "📋 Ayuda del Bot tududi\n\nEnvíame cualquier mensaje de texto y lo agregaré a tu bandeja de entrada de tududi como un elemento de bandeja de entrada.\n\nComandos:\n/start - Mensaje de bienvenida\n/help - Mostrar este mensaje de ayuda\n\n¡Simplemente escribe tu elemento y yo me encargaré del resto!",
+    "commandProcessed": "Comando procesado con éxito",
+    "messageProcessed": "Mensaje procesado con éxito",
+    "failedToAddToInbox": "❌ Error al agregar a la bandeja de entrada: {{error}}"
   }
 }
