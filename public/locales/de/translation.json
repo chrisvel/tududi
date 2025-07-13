@@ -40,6 +40,8 @@
     "showMetrics": "Metriken anzeigen",
     "showProductivity": "Produktivitäts-Einblicke anzeigen",
     "showIntelligence": "Intelligente Vorschläge anzeigen",
+    "showNextTaskSuggestion": "Nächste Aufgabe Vorschlag",
+    "showSuggestions": "Vorgeschlagene anzeigen",
     "showDueToday": "Heute fällige Aufgaben anzeigen",
     "showCompleted": "Erledigte Aufgaben anzeigen"
   },

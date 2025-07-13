@@ -67,7 +67,8 @@ const TasksToday: React.FC = () => {
     const [todaySettings, setTodaySettings] = useState({
         showMetrics: false,
         showProductivity: false,
-        showIntelligence: false,
+        showNextTaskSuggestion: false,
+        showSuggestions: false,
         showDueToday: true,
         showCompleted: true,
         showProgressBar: true, // Always enabled
@@ -75,6 +76,10 @@ const TasksToday: React.FC = () => {
     });
     const [nextTaskSuggestionEnabled, setNextTaskSuggestionEnabled] =
         useState(true);
+    const [profileSettings, setProfileSettings] = useState({
+        productivity_assistant_enabled: false,
+        next_task_suggestion_enabled: false,
+    });
     const [showNextTaskSuggestion, setShowNextTaskSuggestion] = useState(true);
     const [isSuggestedCollapsed, setIsSuggestedCollapsed] = useState(() => {
         const stored = localStorage.getItem('suggestedTasksCollapsed');
@@ -335,12 +340,30 @@ const TasksToday: React.FC = () => {
                         settings = settings || {
                             showMetrics: false,
                             showProductivity: false,
-                            showIntelligence: false,
+                            showNextTaskSuggestion: false,
+                            showSuggestions: false,
                             showDueToday: true,
                             showCompleted: true,
                             showProgressBar: true, // Always enabled
                             showDailyQuote: true,
                         };
+
+                        // Store profile settings
+                        const currentProfileSettings = {
+                            productivity_assistant_enabled: userData.productivity_assistant_enabled === true,
+                            next_task_suggestion_enabled: userData.next_task_suggestion_enabled === true,
+                        };
+                        setProfileSettings(currentProfileSettings);
+
+                        // Sync with profile AI & productivity features
+                        // If profile has productivity assistant enabled, sync the setting
+                        if (userData.productivity_assistant_enabled !== undefined) {
+                            settings.showProductivity = userData.productivity_assistant_enabled;
+                        }
+                        // If profile has next task suggestion enabled, sync the setting  
+                        if (userData.next_task_suggestion_enabled !== undefined) {
+                            settings.showNextTaskSuggestion = userData.next_task_suggestion_enabled;
+                        }
 
                         // Ensure progress bar is always enabled
                         settings.showProgressBar = true;
@@ -544,6 +567,7 @@ const TasksToday: React.FC = () => {
                                             setIsSettingsEnabled(false)
                                         }
                                         settings={todaySettings}
+                                        profileSettings={profileSettings}
                                         onSettingsChange={handleSettingsChange}
                                     />
                                 </div>
@@ -740,11 +764,33 @@ const TasksToday: React.FC = () => {
                     <div className="mb-4 opacity-0 pointer-events-none" aria-hidden="true">
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-24"></div>
                     </div>
-                ) : (todaySettings.showProductivity && productivityAssistantEnabled) ? (
+                ) : (todaySettings.showProductivity && productivityAssistantEnabled && profileSettings.productivity_assistant_enabled === true) ? (
                         <ProductivityAssistant
                             tasks={localTasks}
                             projects={localProjects}
                         />
+                ) : null}
+
+                {/* Next Task Suggestion - At top of tasks section */}
+                {!isSettingsLoaded ? (
+                    // Invisible placeholder for next task suggestion
+                    <div className="mb-4 opacity-0 pointer-events-none" aria-hidden="true">
+                        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-20"></div>
+                    </div>
+                ) : (todaySettings.showNextTaskSuggestion && nextTaskSuggestionEnabled && showNextTaskSuggestion && profileSettings.next_task_suggestion_enabled === true) ? (
+                    <div className="mb-4">
+                        <NextTaskSuggestion
+                            metrics={{
+                                tasks_due_today: metrics.tasks_due_today,
+                                suggested_tasks: metrics.suggested_tasks,
+                                tasks_in_progress: metrics.tasks_in_progress,
+                                today_plan_tasks: metrics.today_plan_tasks,
+                            }}
+                            projects={localProjects}
+                            onTaskUpdate={handleTaskUpdate}
+                            onClose={handleCloseNextTaskSuggestion}
+                        />
+                    </div>
                 ) : null}
 
                 {/* Today Plan */}
@@ -756,65 +802,41 @@ const TasksToday: React.FC = () => {
                     onToggleToday={handleToggleToday}
                 />
 
-                {/* Intelligence - Conditionally Rendered - Appears after Today Plan */}
+
+                {/* Suggested Tasks - Separate setting */}
                 {!isSettingsLoaded ? (
-                    // Invisible placeholder for intelligence section
+                    // Invisible placeholder for suggestions
                     <div className="mt-2 opacity-0 pointer-events-none" aria-hidden="true">
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-20"></div>
                     </div>
-                ) : todaySettings.showIntelligence ? (
-                    <div className="mt-2">
-                        {/* Next Task Suggestion */}
-                        {nextTaskSuggestionEnabled &&
-                            showNextTaskSuggestion && (
-                                <NextTaskSuggestion
-                                    metrics={{
-                                        tasks_due_today:
-                                            metrics.tasks_due_today,
-                                        suggested_tasks:
-                                            metrics.suggested_tasks,
-                                        tasks_in_progress:
-                                            metrics.tasks_in_progress,
-                                        today_plan_tasks:
-                                            metrics.today_plan_tasks,
-                                    }}
-                                    projects={localProjects}
-                                    onTaskUpdate={handleTaskUpdate}
-                                    onClose={handleCloseNextTaskSuggestion}
-                                />
-                            )}
-
-                        {/* Suggested Tasks */}
-                        {metrics.suggested_tasks.length > 0 && (
-                            <div className="mb-6">
-                                <div
-                                    className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
-                                    onClick={toggleSuggestedCollapsed}
-                                >
-                                    <h3 className="text-xl font-medium">
-                                        {t('tasks.suggested')}
-                                    </h3>
-                                    <div className="flex items-center">
-                                        <span className="text-sm text-gray-500 mr-2">
-                                            {metrics.suggested_tasks.length}
-                                        </span>
-                                        {isSuggestedCollapsed ? (
-                                            <ChevronRightIcon className="h-5 w-5 text-gray-500" />
-                                        ) : (
-                                            <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-                                        )}
-                                    </div>
-                                </div>
-                                {!isSuggestedCollapsed && (
-                                    <TaskList
-                                        tasks={metrics.suggested_tasks}
-                                        onTaskUpdate={handleTaskUpdate}
-                                        onTaskDelete={handleTaskDelete}
-                                        projects={localProjects}
-                                        onToggleToday={handleToggleToday}
-                                    />
+                ) : (todaySettings.showSuggestions && metrics.suggested_tasks.length > 0) ? (
+                    <div className="mt-2 mb-6">
+                        <div
+                            className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                            onClick={toggleSuggestedCollapsed}
+                        >
+                            <h3 className="text-xl font-medium">
+                                {t('tasks.suggested')}
+                            </h3>
+                            <div className="flex items-center">
+                                <span className="text-sm text-gray-500 mr-2">
+                                    {metrics.suggested_tasks.length}
+                                </span>
+                                {isSuggestedCollapsed ? (
+                                    <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                ) : (
+                                    <ChevronDownIcon className="h-5 w-5 text-gray-500" />
                                 )}
                             </div>
+                        </div>
+                        {!isSuggestedCollapsed && (
+                            <TaskList
+                                tasks={metrics.suggested_tasks}
+                                onTaskUpdate={handleTaskUpdate}
+                                onTaskDelete={handleTaskDelete}
+                                projects={localProjects}
+                                onToggleToday={handleToggleToday}
+                            />
                         )}
                     </div>
                 ) : null}
