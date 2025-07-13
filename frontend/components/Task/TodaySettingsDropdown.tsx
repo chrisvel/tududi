@@ -7,6 +7,7 @@ import {
     ClockIcon,
     TrophyIcon,
     ChatBubbleBottomCenterTextIcon,
+    ListBulletIcon,
 } from '@heroicons/react/24/outline';
 
 interface TodaySettingsDropdownProps {
@@ -15,11 +16,16 @@ interface TodaySettingsDropdownProps {
     settings: {
         showMetrics: boolean;
         showProductivity: boolean;
-        showIntelligence: boolean;
+        showNextTaskSuggestion: boolean;
+        showSuggestions: boolean;
         showDueToday: boolean;
         showCompleted: boolean;
         showProgressBar: boolean;
         showDailyQuote: boolean;
+    };
+    profileSettings?: {
+        productivity_assistant_enabled?: boolean;
+        next_task_suggestion_enabled?: boolean;
     };
     onSettingsChange: (settings: any) => void;
 }
@@ -28,6 +34,7 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
     isOpen,
     onClose,
     settings,
+    profileSettings,
     onSettingsChange,
 }) => {
     const { t } = useTranslation();
@@ -112,18 +119,28 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
             label: t('settings.showMetrics', 'Show Metrics'),
             icon: ChartBarIcon,
         },
-        {
-            key: 'showProductivity',
+        // Only show productivity option if enabled in profile
+        ...(profileSettings?.productivity_assistant_enabled === true ? [{
+            key: 'showProductivity' as keyof typeof localSettings,
             label: t('settings.showProductivity', 'Show Productivity Insights'),
             icon: LightBulbIcon,
-        },
-        {
-            key: 'showIntelligence',
+        }] : []),
+        // Only show next task suggestion option if enabled in profile
+        ...(profileSettings?.next_task_suggestion_enabled === true ? [{
+            key: 'showNextTaskSuggestion' as keyof typeof localSettings,
             label: t(
-                'settings.showIntelligence',
-                'Show Intelligence Suggestions'
+                'settings.showNextTaskSuggestion',
+                'Next Task Suggestion'
             ),
             icon: SparklesIcon,
+        }] : []),
+        {
+            key: 'showSuggestions',
+            label: t(
+                'settings.showSuggestions',
+                'Show Suggested'
+            ),
+            icon: ListBulletIcon,
         },
         {
             key: 'showDueToday',

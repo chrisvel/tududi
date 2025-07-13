@@ -47,6 +47,8 @@
     "showMetrics": "Показувати метрики",
     "showProductivity": "Показувати поради з продуктивності",
     "showIntelligence": "Показувати розумні пропозиції",
+    "showNextTaskSuggestion": "Пропозиція наступного завдання",
+    "showSuggestions": "Показувати рекомендовані",
     "showDueToday": "Показувати завдання на сьогодні",
     "showCompleted": "Показувати виконані завдання"
   },

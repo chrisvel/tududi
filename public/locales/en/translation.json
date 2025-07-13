@@ -55,6 +55,8 @@
     "showMetrics": "Show Metrics",
     "showProductivity": "Show Productivity Insights",
     "showIntelligence": "Show Intelligence Suggestions",
+    "showNextTaskSuggestion": "Next Task Suggestion",
+    "showSuggestions": "Show Suggested",
     "showDueToday": "Show Due Today Tasks",
     "showCompleted": "Show Completed Tasks"
   },

@@ -54,6 +54,8 @@
     "showMetrics": "Mostrar Métricas",
     "showProductivity": "Mostrar Información de Productividad",
     "showIntelligence": "Mostrar Sugerencias Inteligentes",
+    "showNextTaskSuggestion": "Sugerencia de Próxima Tarea",
+    "showSuggestions": "Mostrar Sugeridas",
     "showDueToday": "Mostrar Tareas que Vencen Hoy",
     "showCompleted": "Mostrar Tareas Completadas"
   },

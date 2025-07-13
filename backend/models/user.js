@@ -108,13 +108,24 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: true,
             },
+            productivity_assistant_enabled: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: true,
+            },
+            next_task_suggestion_enabled: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: true,
+            },
             today_settings: {
                 type: DataTypes.JSON,
                 allowNull: true,
                 defaultValue: {
                     showMetrics: false,
                     showProductivity: false,
-                    showIntelligence: false,
+                    showNextTaskSuggestion: false,
+                    showSuggestions: false,
                     showDueToday: true,
                     showCompleted: true,
                     showProgressBar: true,

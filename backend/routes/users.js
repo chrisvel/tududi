@@ -37,6 +37,8 @@ router.get('/profile', async (req, res) => {
                 'auto_suggest_next_actions_enabled',
                 'pomodoro_enabled',
                 'today_settings',
+                'productivity_assistant_enabled',
+                'next_task_suggestion_enabled',
             ],
         });
 
@@ -83,6 +85,8 @@ router.patch('/profile', async (req, res) => {
             task_summary_enabled,
             task_summary_frequency,
             auto_suggest_next_actions_enabled,
+            productivity_assistant_enabled,
+            next_task_suggestion_enabled,
             pomodoro_enabled,
             currentPassword,
             newPassword,
@@ -106,6 +110,12 @@ router.patch('/profile', async (req, res) => {
         if (auto_suggest_next_actions_enabled !== undefined)
             allowedUpdates.auto_suggest_next_actions_enabled =
                 auto_suggest_next_actions_enabled;
+        if (productivity_assistant_enabled !== undefined)
+            allowedUpdates.productivity_assistant_enabled =
+                productivity_assistant_enabled;
+        if (next_task_suggestion_enabled !== undefined)
+            allowedUpdates.next_task_suggestion_enabled =
+                next_task_suggestion_enabled;
         if (pomodoro_enabled !== undefined)
             allowedUpdates.pomodoro_enabled = pomodoro_enabled;
 
@@ -152,6 +162,8 @@ router.patch('/profile', async (req, res) => {
                 'task_summary_enabled',
                 'task_summary_frequency',
                 'auto_suggest_next_actions_enabled',
+                'productivity_assistant_enabled',
+                'next_task_suggestion_enabled',
                 'pomodoro_enabled',
             ],
         });
@@ -375,7 +387,8 @@ router.put('/profile/today-settings', async (req, res) => {
         const {
             showMetrics,
             showProductivity,
-            showIntelligence,
+            showNextTaskSuggestion,
+            showSuggestions,
             showDueToday,
             showCompleted,
             showProgressBar,
@@ -391,10 +404,14 @@ router.put('/profile/today-settings', async (req, res) => {
                 showProductivity !== undefined
                     ? showProductivity
                     : user.today_settings?.showProductivity || false,
-            showIntelligence:
-                showIntelligence !== undefined
-                    ? showIntelligence
-                    : user.today_settings?.showIntelligence || false,
+            showNextTaskSuggestion:
+                showNextTaskSuggestion !== undefined
+                    ? showNextTaskSuggestion
+                    : user.today_settings?.showNextTaskSuggestion || false,
+            showSuggestions:
+                showSuggestions !== undefined
+                    ? showSuggestions
+                    : user.today_settings?.showSuggestions || false,
             showDueToday:
                 showDueToday !== undefined
                     ? showDueToday
@@ -410,7 +427,19 @@ router.put('/profile/today-settings', async (req, res) => {
                     : user.today_settings?.showDailyQuote || true,
         };
 
-        await user.update({ today_settings: todaySettings });
+        // Sync productivity features with today settings
+        const profileUpdates = {};
+        if (showProductivity !== undefined) {
+            profileUpdates.productivity_assistant_enabled = showProductivity;
+        }
+        if (showNextTaskSuggestion !== undefined) {
+            profileUpdates.next_task_suggestion_enabled = showNextTaskSuggestion;
+        }
+
+        await user.update({ 
+            today_settings: todaySettings,
+            ...profileUpdates
+        });
 
         res.json({
             success: true,

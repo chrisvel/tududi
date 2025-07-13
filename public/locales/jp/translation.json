@@ -46,6 +46,8 @@
     "showMetrics": "メトリクスを表示",
     "showProductivity": "生産性の洞察を表示",
     "showIntelligence": "インテリジェンス提案を表示",
+    "showNextTaskSuggestion": "次のタスク提案",
+    "showSuggestions": "推奨されたものを表示",
     "showDueToday": "今日期限のタスクを表示",
     "showCompleted": "完了したタスクを表示"
   },
