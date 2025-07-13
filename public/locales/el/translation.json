@@ -96,6 +96,7 @@
     "japanese": "Ιαπωνικά",
     "ukrainian": "Ουκρανικά",
     "deutsch": "Γερμανικά",
+    "italian": "Ιταλικά",
     "languagePreference": "Προτίμηση Γλώσσας",
     "personalInfo": "Προσωπικές Πληροφορίες",
     "notifications": "Ειδοποιήσεις",
@@ -604,7 +605,8 @@
     "browseImage": "Περιήγηση Εικόνας",
     "noNotes": "Δεν υπάρχουν σημειώσεις για αυτό το έργο.",
     "deleteProject": "Διαγραφή Έργου",
-    "showCompleted": "Εμφάνιση Ολοκληρωμένων"
+    "showCompleted": "Εμφάνιση Ολοκληρωμένων",
+    "createSuccess": "Το έργο δημιουργήθηκε με επιτυχία!"
   },
   "pomodoro": {
     "play": "Αναπαραγωγή",
@@ -664,5 +666,14 @@
     "friday": "Παρ",
     "saturday": "Σαβ",
     "sunday": "Κυρ"
+  },
+  "dateFormats": {
+    "long": "EEEE, d MMMM yyyy",
+    "short": "d MMM yyyy",
+    "monthYear": "MMMM yyyy",
+    "dayMonth": "d MMMM",
+    "time": "HH:mm",
+    "dateTime": "d MMM yyyy, HH:mm",
+    "todayHeader": "dddd, d MMMM yyyy"
   }
 }
