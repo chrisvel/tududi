@@ -323,6 +323,88 @@
             color: var(--secondary-color);
         }
         
+        /* Languages Section */
+        .languages {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1565c0 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .languages::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .languages .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .languages .section-header {
+            margin-bottom: 60px;
+        }
+        
+        .languages .section-header h2 {
+            color: white;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+        }
+        
+        .languages .section-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+        }
+        
+        .languages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .language-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .language-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .language-flag {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        
+        .language-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            margin: 0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        
         /* Screenshots */
         .screenshots {
             padding: 100px 0;
@@ -580,6 +662,7 @@
                 </div>
                 <ul class="nav-links">
                     <li><a href="#features">Features</a></li>
+                    <li><a href="#languages">Languages</a></li>
                     <li><a href="#screenshots">Screenshots</a></li>
                     <li><a href="#installation">Installation</a></li>
                     <li class="theme-switch">
@@ -672,7 +755,7 @@
                         <i class="fas fa-language"></i>
                     </div>
                     <h3>Multi-Language Support</h3>
-                    <p>Available in multiple languages including English, German, Greek, Spanish, Japanese, and Ukrainian among others.</p>
+                    <p>Available in 24 languages with full localization support for a truly global productivity experience.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -708,6 +791,117 @@
                     </div>
                     <h3>Productivity Insights</h3>
                     <p>Track your progress with task completion statistics, project timelines, and productivity patterns to optimize your workflow.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="languages" id="languages">
+        <div class="container">
+            <div class="section-header">
+                <h2>🌍 Global Language Support</h2>
+                <p>tududi speaks your language! Available in 24 languages with full localization support, making productivity accessible to users worldwide.</p>
+            </div>
+            <div class="languages-grid">
+                <div class="language-item">
+                    <span class="language-flag">🇸🇦</span>
+                    <p class="language-name">Arabic</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇧🇬</span>
+                    <p class="language-name">Bulgarian</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇨🇳</span>
+                    <p class="language-name">Chinese</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇩🇰</span>
+                    <p class="language-name">Danish</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇳🇱</span>
+                    <p class="language-name">Dutch</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇺🇸</span>
+                    <p class="language-name">English</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇫🇮</span>
+                    <p class="language-name">Finnish</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇫🇷</span>
+                    <p class="language-name">French</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇩🇪</span>
+                    <p class="language-name">German</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇬🇷</span>
+                    <p class="language-name">Greek</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇮🇩</span>
+                    <p class="language-name">Indonesian</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇮🇹</span>
+                    <p class="language-name">Italian</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇯🇵</span>
+                    <p class="language-name">Japanese</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇰🇷</span>
+                    <p class="language-name">Korean</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇳🇴</span>
+                    <p class="language-name">Norwegian</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇵🇱</span>
+                    <p class="language-name">Polish</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇵🇹</span>
+                    <p class="language-name">Portuguese</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇷🇴</span>
+                    <p class="language-name">Romanian</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇷🇺</span>
+                    <p class="language-name">Russian</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇪🇸</span>
+                    <p class="language-name">Spanish</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇸🇮</span>
+                    <p class="language-name">Slovenian</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇸🇪</span>
+                    <p class="language-name">Swedish</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇹🇷</span>
+                    <p class="language-name">Turkish</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇺🇦</span>
+                    <p class="language-name">Ukrainian</p>
+                </div>
+                <div class="language-item">
+                    <span class="language-flag">🇻🇳</span>
+                    <p class="language-name">Vietnamese</p>
                 </div>
             </div>
         </div>
@@ -928,6 +1122,7 @@
                     <h3>Links</h3>
                     <ul class="footer-links">
                         <li><a href="#features">Features</a></li>
+                        <li><a href="#languages">Languages</a></li>
                         <li><a href="#screenshots">Screenshots</a></li>
                         <li><a href="#installation">Installation</a></li>
                         <li><a href="https://github.com/chrisvel/tududi">GitHub Repository</a></li>

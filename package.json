@@ -17,7 +17,12 @@
     "lint": "eslint 'frontend/**/*.{js,jsx,ts,tsx}'",
     "lint-fix": "eslint --fix 'frontend/**/*.{js,jsx,ts,tsx}'",
     "docker:test-build": "bash scripts/test-docker-build.sh",
-    "format": "prettier --write 'frontend/**/*.{js,jsx,ts,tsx}'"
+    "format": "prettier --write 'frontend/**/*.{js,jsx,ts,tsx}'",
+    "translations:sync": "cd scripts && ./sync-translations.js",
+    "translations:sync-all": "cd scripts && ./sync-translations.js --all",
+    "translations:dry-run": "cd scripts && ./sync-translations.js --all --dry-run",
+    "translations:check": "cd scripts && ./sync-translations.js --all --dry-run --verbose",
+    "translations:export": "cd scripts && ./sync-translations.js --all --dry-run --output missing-translations.json"
   },
   "keywords": [],
   "author": "",
