@@ -98,6 +98,7 @@
     "ukrainian": "Ucraniano",
     "deutsch": "Alemán",
     "japanese": "Japonés",
+    "italian": "Italiano",
     "languagePreference": "Preferencia de Idioma",
     "personalInfo": "Información Personal",
     "notifications": "Notificaciones",
@@ -347,7 +348,8 @@
     "monthYear": "MMMM 'de' yyyy",
     "dayMonth": "d 'de' MMMM",
     "time": "H:mm",
-    "dateTime": "d MMM yyyy, H:mm"
+    "dateTime": "d MMM yyyy, H:mm",
+    "todayHeader": "dddd, d 'de' MMMM 'de' yyyy"
   },
   "taskViews": {
     "project": {
@@ -530,7 +532,8 @@
     "browseImage": "Examinar Imagen",
     "noNotes": "No hay notas para este proyecto.",
     "deleteProject": "Eliminar Proyecto",
-    "showCompleted": "Mostrar Completados"
+    "showCompleted": "Mostrar Completados",
+    "createSuccess": "¡Proyecto creado exitosamente!"
   },
   "pomodoro": {
     "play": "Reproducir",

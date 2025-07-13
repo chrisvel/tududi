@@ -117,6 +117,7 @@
     "ukrainian": "ウクライナ語",
     "deutsch": "ドイツ語",
     "japanese": "日本語",
+    "italian": "イタリア語",
     "pollingNote": "ポーリングはTelegramからの新しいメッセージを定期的にチェックし、受信トレイに追加します。",
     "pollingDescription": "ポーリングはTelegramからの新しいメッセージを定期的にチェックし、受信トレイに追加します。",
     "startPolling": "ポーリング開始",
@@ -264,7 +265,8 @@
     "monthYear": "MMMM yyyy",
     "dayMonth": "MMMM d",
     "time": "h:mm a",
-    "dateTime": "MMM d, yyyy h:mm a"
+    "dateTime": "MMM d, yyyy h:mm a",
+    "todayHeader": "dddd, yyyy年M月d日"
   },
   "taskViews": {
     "project": {
@@ -374,7 +376,8 @@
     "browseImage": "画像を参照",
     "noNotes": "このプロジェクトにはメモがありません。",
     "deleteProject": "プロジェクトを削除",
-    "showCompleted": "完了済みを表示"
+    "showCompleted": "完了済みを表示",
+    "createSuccess": "プロジェクトが正常に作成されました！"
   },
   "profile": {
     "taskIntelligence": "タスクインテリジェンス",

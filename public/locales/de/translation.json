@@ -187,7 +187,8 @@
     "browseImage": "Bild durchsuchen",
     "noNotes": "Keine Notizen für dieses Projekt.",
     "deleteProject": "Projekt löschen",
-    "showCompleted": "Abgeschlossene anzeigen"
+    "showCompleted": "Abgeschlossene anzeigen",
+    "createSuccess": "Projekt erfolgreich erstellt!"
   },
   "profile": {
     "title": "Profil-Einstellungen",
@@ -200,6 +201,7 @@
     "ukrainian": "Ukrainisch",
     "deutsch": "Deutsch",
     "japanese": "Japanisch",
+    "italian": "Italienisch",
     "pollingNote": "Das Polling prüft regelmäßig neue Nachrichten von Telegram und fügt sie zu Ihrem Posteingang hinzu.",
     "pollingDescription": "Das Polling prüft regelmäßig neue Nachrichten von Telegram und fügt sie zu Ihrem Posteingang hinzu.",
     "startPolling": "Polling starten",
@@ -333,6 +335,15 @@
     "friday": "Fr",
     "saturday": "Sa",
     "sunday": "So"
+  },
+  "dateFormats": {
+    "long": "EEEE, d. MMMM yyyy",
+    "short": "d. MMM yyyy",
+    "monthYear": "MMMM yyyy",
+    "dayMonth": "d. MMMM",
+    "time": "HH:mm",
+    "dateTime": "d. MMM yyyy, HH:mm",
+    "todayHeader": "dddd, d. MMMM yyyy"
   }
 }
 

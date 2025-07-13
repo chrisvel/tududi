@@ -241,7 +241,8 @@
     "browseImage": "Вибрати Зображення",
     "noNotes": "Немає нотаток для цього проекту.",
     "deleteProject": "Видалити Проект",
-    "showCompleted": "Показати Завершені"
+    "showCompleted": "Показати Завершені",
+    "createSuccess": "Проект успішно створено!"
   },
   "profile": {
     "title": "Налаштування Профілю",
@@ -254,6 +255,7 @@
     "ukrainian": "Українська",
     "deutsch": "Німецька",
     "japanese": "Японська",
+    "italian": "Італійська",
     "pollingNote": "Опитування періодично перевіряє нові повідомлення з Telegram і додає їх до вашої вхідної скриньки.",
     "pollingDescription": "Опитування періодично перевіряє нові повідомлення з Telegram і додає їх до вашої вхідної скриньки.",
     "startPolling": "Почати опитування",
@@ -377,5 +379,14 @@
     "friday": "Пт",
     "saturday": "Сб",
     "sunday": "Нд"
+  },
+  "dateFormats": {
+    "long": "EEEE, d MMMM yyyy",
+    "short": "d MMM yyyy",
+    "monthYear": "MMMM yyyy",
+    "dayMonth": "d MMMM",
+    "time": "HH:mm",
+    "dateTime": "d MMM yyyy, HH:mm",
+    "todayHeader": "dddd, d MMMM yyyy 'р.'"
   }
 }

@@ -25,6 +25,7 @@ import {
 import TelegramIcon from '../Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
 import { dispatchTelegramStatusChange } from '../../contexts/TelegramStatusContext';
+import LanguageDropdown from '../Shared/LanguageDropdown';
 
 interface ProfileSettingsProps {
     currentUser: { id: number; email: string };
@@ -845,31 +846,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     {t('profile.language')}
                                 </label>
-                                <select
-                                    name="language"
-                                    value={formData.language}
-                                    onChange={handleChange}
-                                    className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                >
-                                    <option value="en">
-                                        {t('profile.english')}
-                                    </option>
-                                    <option value="es">
-                                        {t('profile.spanish')}
-                                    </option>
-                                    <option value="el">
-                                        {t('profile.greek')}
-                                    </option>
-                                    <option value="jp">
-                                        {t('profile.japanese')}
-                                    </option>
-                                    <option value="ua">
-                                        {t('profile.ukrainian')}
-                                    </option>
-                                    <option value="de">
-                                        {t('profile.deutsch')}
-                                    </option>
-                                </select>
+                                <LanguageDropdown
+                                    value={formData.language || 'en'}
+                                    onChange={(languageCode) => {
+                                        setFormData(prev => ({ ...prev, language: languageCode }));
+                                    }}
+                                />
                             </div>
 
                             <div>
