@@ -380,7 +380,8 @@
     "tagNamePlaceholder": "Enter tag name",
     "tagInputPlaceholder": "Type to add a tag",
     "createTagOption": "+ Create \"{{tagName}}\"",
-    "removeTagAriaLabel": "Remove tag {{tagName}}"
+    "removeTagAriaLabel": "Remove tag {{tagName}}",
+    "projectDescriptionPlaceholder": "Enter project description"
   },
   "auth": {
     "login": "Login",

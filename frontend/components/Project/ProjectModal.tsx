@@ -403,7 +403,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     onChange={handleChange}
                                                     className="block w-full h-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
                                                     placeholder={t(
-                                                        'forms.areaDescriptionPlaceholder',
+                                                        'forms.projectDescriptionPlaceholder',
                                                         'Enter project description (optional)'
                                                     )}
                                                     style={{
