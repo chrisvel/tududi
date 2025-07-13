@@ -38,7 +38,14 @@
     "nextActions": "Næste handlinger",
     "inbox": "Indbakke",
     "completed": "Fuldført",
-    "allTasks": "Alle opgaver"
+    "allTasks": "Alle opgaver",
+    "addInboxAriaLabel": "Tilføj indbakkeelement",
+    "addInboxTitle": "Tilføj indbakkeelement",
+    "addProjectAriaLabel": "Tilføj projekt",
+    "addProjectTitle": "Tilføj projekt",
+    "addNoteAriaLabel": "Tilføj note",
+    "addNoteTitle": "Tilføj note",
+    "createNew": "Opret ny"
   },
   "navigation": {
     "home": "Hjem",
@@ -128,7 +135,14 @@
       "priority": "Prioritet",
       "dueDate": "Forfaldsdato",
       "none": "Ingen"
-    }
+    },
+    "justNow": "Lige nu",
+    "minutesAgo": "{{minutes}}m siden",
+    "hoursAgo": "{{hours}}t siden",
+    "daysAgo": "{{days}}d siden",
+    "loadingTimeline": "Indlæser tidslinje...",
+    "timelineWillAppear": "Tidslinjen vises efter gemning",
+    "noActivity": "Ingen aktivitet endnu"
   },
   "profile": {
     "settings": "Profilindstillinger",
@@ -426,7 +440,9 @@
     "task": "Opgave",
     "project": "Projekt",
     "note": "Note",
-    "area": "Område"
+    "area": "Område",
+    "inbox": "Indbakke",
+    "tag": "Tag"
   },
   "sort": {
     "due_date": "Forfaldsdato",
@@ -445,7 +461,9 @@
     "inProgress": "I Gang",
     "done": "Færdig",
     "archived": "Arkiveret",
-    "unknown": "Ukendt"
+    "unknown": "Ukendt",
+    "telegramConnected": "Telegram tilsluttet og polling",
+    "telegramConnectionProblem": "Telegram forbindelsesproblem"
   },
   "project": {
     "name": "Projekt Navn",
@@ -676,7 +694,13 @@
     "thirdWeek": "Tredje uge",
     "fourthWeek": "Fjerde uge",
     "lastWeek": "Sidste uge",
-    "days": "dage"
+    "days": "dage",
+    "loadingParentSettings": "Indlæser indstillinger for tilbagevendende opgave...",
+    "recurringTaskInstance": "Tilbagevendende opgaveinstans",
+    "inheritedSettingsMessage": "Denne opgave blev genereret fra en tilbagevendende opgave. De tilbagevendende indstillinger, der vises nedenfor, er arvet fra den oprindelige opgave og kan ikke redigeres her.",
+    "cancelEdit": "Annuller redigering",
+    "editParentRecurrence": "Rediger forælderens tilbagevendende indstillinger",
+    "parentEditWarning": "⚠️ Du redigerer forælderopgavens tilbagevendende indstillinger. Ændringer vil påvirke alle fremtidige tilfælde af denne tilbagevendende opgave."
   },
   "weekdays": {
     "sunday": "Søndag",
@@ -736,5 +760,111 @@
     "low": "Lav",
     "time": "Tid",
     "allDay": "Hele dagen"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Side ikke fundet",
+      "message": "Den side, du leder efter, findes ikke."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Hurtig indbakkeoptagelse",
+    "userMenu": "Bruger-menu",
+    "collapseSidebar": "Skjul sidepanel",
+    "expandSidebar": "Udvid sidepanel"
+  },
+  "upload": {
+    "uploading": "Uploader..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Søg projekter...",
+    "searchTags": "Søg tags...",
+    "searchTasks": "Søg opgaver..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Skjul info",
+    "aboutTasks": "Om opgaver",
+    "hideSearch": "Skjul søgning",
+    "searchTasks": "Søg opgaver",
+    "aboutInbox": "Om indbakke",
+    "collapseInfoPanel": "Skjul infopanel",
+    "showTasksInformation": "Vis opgaveinformation",
+    "collapseSearchPanel": "Skjul søgepanel",
+    "showSearchInput": "Vis søgefelt",
+    "showInboxInformation": "Vis indbakkeinformation"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Godkendelse kræves",
+      "userNotFound": "Bruger ikke fundet",
+      "authenticationError": "Godkendelsesfejl",
+      "internalServerError": "Intern serverfejl",
+      "invalidLoginParameters": "Ugyldige loginparametre.",
+      "invalidCredentials": "Ugyldige legitimationsoplysninger",
+      "couldNotLogout": "Kunne ikke logge ud",
+      "loggedOutSuccessfully": "Logget ud med succes",
+      "contentRequired": "Indhold er påkrævet",
+      "inboxItemNotFound": "Indbakkeelement ikke fundet.",
+      "inboxItemDeleted": "Indbakkeelement slettet med succes",
+      "contentRequiredString": "Indhold er påkrævet og skal være en streng",
+      "problemCreatingInboxItem": "Der opstod et problem med at oprette indbakkeelementet.",
+      "problemUpdatingInboxItem": "Der opstod et problem med at opdatere indbakkeelementet.",
+      "problemDeletingInboxItem": "Der opstod et problem med at slette indbakkeelementet.",
+      "problemProcessingInboxItem": "Der opstod et problem med at behandle indbakkeelementet.",
+      "invalidOrderColumn": "Ugyldig rækkefølge kolonne angivet.",
+      "taskNotFound": "Opgave ikke fundet.",
+      "taskNameRequired": "Opgavenavn er påkrævet.",
+      "invalidProject": "Ugyldigt projekt.",
+      "unableToUpdateTask": "Kan ikke opdatere opgave",
+      "taskDeleted": "Opgave slettet med succes",
+      "failedToGenerateRecurringTasks": "Mislykkedes med at generere tilbagevendende opgaver",
+      "failedToUpdateTodayFlag": "Mislykkedes med at opdatere opgave i dag flag",
+      "noImageProvided": "Ingen billedfil angivet",
+      "failedToUploadImage": "Mislykkedes med at uploade billede",
+      "projectNotFound": "Projekt ikke fundet",
+      "projectNameRequired": "Projektnavn er påkrævet",
+      "projectDeleted": "Projekt slettet med succes",
+      "noteNotFound": "Note ikke fundet.",
+      "noteDeleted": "Note slettet med succes.",
+      "profileNotFound": "Profil ikke fundet.",
+      "passwordTooShort": "Adgangskode skal være mindst 6 tegn",
+      "currentPasswordIncorrect": "Nuværende adgangskode er forkert",
+      "failedToUpdateProfile": "Mislykkedes med at opdatere profil.",
+      "passwordChangeRequired": "Nuværende adgangskode og ny adgangskode er påkrævet",
+      "passwordChangedSuccessfully": "Adgangskode ændret med succes",
+      "failedToUpdateTaskSummary": "Mislykkedes med at opdatere opgaveoversigt indstillinger.",
+      "frequencyRequired": "Frekvens er påkrævet.",
+      "invalidFrequency": "Ugyldigt frekvensværdi.",
+      "failedToStartTelegramPolling": "Mislykkedes med at starte Telegram polling.",
+      "failedToStopTelegramPolling": "Mislykkedes med at stoppe Telegram polling.",
+      "invalidTelegramTokenFormat": "Ugyldigt format for Telegram bot-token.",
+      "invalidBotToken": "Ugyldigt bot-token eller bot ikke tilgængelig.",
+      "chatIdRequired": "Chat ID er påkrævet.",
+      "areaNotFound": "Område ikke fundet eller tilhører ikke den nuværende bruger.",
+      "areaNameRequired": "Område navn er påkrævet.",
+      "tagNotFound": "Tag ikke fundet",
+      "tagNameRequired": "Tag navn er påkrævet",
+      "tagDeleted": "Tag slettet med succes",
+      "demoModeGoogleCalendar": "Demotilstand: Google Kalender integration simuleret",
+      "failedToGenerateAuthUrl": "Mislykkedes med at generere autorisations-URL",
+      "authCodeNotProvided": "Autoriseringskode ikke angivet",
+      "failedToCheckCalendarStatus": "Mislykkedes med at tjekke kalenderstatus",
+      "failedToFetchCalendarEvents": "Mislykkedes med at hente kalenderbegivenheder",
+      "googleCalendarDisconnected": "Google Kalender afbrudt",
+      "failedToDisconnectCalendar": "Kunne ikke afbryde kalender",
+      "urlParameterRequired": "URL-parameter er påkrævet",
+      "couldNotExtractMetadata": "Kunne ikke udtrække metadata",
+      "textParameterRequired": "Tekstparameter er påkrævet",
+      "notFound": "Ikke fundet",
+      "resourceNotFound": "Den anmodede ressource kunne ikke findes."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Velkommen til tududi!\n\nDin personlige opgavestyringsbot er nu tilsluttet og klar til at hjælpe!\n\n📝 Send mig blot en hvilken som helst besked, og jeg tilføjer den til din tududi indbakke som et punkt.\n\n✨ Kommandoer:\n• /help - Vis hjælpeinformation\n• /start - Vis velkomstbesked\n• Skriv blot en hvilken som helst tekst - Tilføj den som et indbakkeelement\n\nLad os blive organiseret! 🚀",
+    "helpMessage": "📋 tududi Bot Hjælp\n\nSend mig enhver tekstbesked, og jeg tilføjer den til din tududi indbakke som et indbakkeelement.\n\nKommandoer:\n/start - Velkomstbesked\n/help - Vis denne hjælpebesked\n\nSkriv blot dit punkt, så tager jeg mig af resten!",
+    "commandProcessed": "Kommando behandlet med succes",
+    "messageProcessed": "Besked behandlet med succes",
+    "failedToAddToInbox": "❌ Kunne ikke tilføje til indbakke: {{error}}"
   }
 }

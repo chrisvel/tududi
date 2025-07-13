@@ -38,7 +38,14 @@
     "nextActions": "Seuraavat toimet",
     "inbox": "Saapuneet",
     "completed": "Valmiit",
-    "allTasks": "Kaikki tehtävät"
+    "allTasks": "Kaikki tehtävät",
+    "addInboxAriaLabel": "Lisää saapuneet kohde",
+    "addInboxTitle": "Lisää saapuneet kohde",
+    "addProjectAriaLabel": "Lisää projekti",
+    "addProjectTitle": "Lisää projekti",
+    "addNoteAriaLabel": "Lisää muistiinpano",
+    "addNoteTitle": "Lisää muistiinpano",
+    "createNew": "Luo uusi"
   },
   "navigation": {
     "home": "Koti",
@@ -128,7 +135,14 @@
       "priority": "Prioriteetti",
       "dueDate": "Eräpäivä",
       "none": "Ei mitään"
-    }
+    },
+    "justNow": "Juuri nyt",
+    "minutesAgo": "{{minutes}}m sitten",
+    "hoursAgo": "{{hours}}h sitten",
+    "daysAgo": "{{days}}d sitten",
+    "loadingTimeline": "Ladataan aikajanaa...",
+    "timelineWillAppear": "Aikajana tulee näkyviin tallentamisen jälkeen",
+    "noActivity": "Ei vielä aktiivisuutta"
   },
   "profile": {
     "settings": "Profiilin asetukset",
@@ -426,7 +440,9 @@
     "task": "Tehtävä",
     "project": "Projekti",
     "note": "Muistio",
-    "area": "Alue"
+    "area": "Alue",
+    "inbox": "Saapuneet",
+    "tag": "Tunniste"
   },
   "sort": {
     "due_date": "Eräpäivä",
@@ -445,7 +461,9 @@
     "inProgress": "Käynnissä",
     "done": "Valmis",
     "archived": "Arkistoitu",
-    "unknown": "Tuntematon"
+    "unknown": "Tuntematon",
+    "telegramConnected": "Telegram yhdistetty ja kyselyssä",
+    "telegramConnectionProblem": "Telegram-yhteysongelma"
   },
   "project": {
     "name": "Projektin nimi",
@@ -676,7 +694,13 @@
     "thirdWeek": "Kolmas viikko",
     "fourthWeek": "Neljäs viikko",
     "lastWeek": "Viimeinen viikko",
-    "days": "päivää"
+    "days": "päivää",
+    "loadingParentSettings": "Ladataan vanhemman tehtävän toistuvuusasetuksia...",
+    "recurringTaskInstance": "Toistuva tehtäväinstanssi",
+    "inheritedSettingsMessage": "Tämä tehtävä on luotu toistuvasta tehtävästä. Alla näkyvät toistuvat asetukset on peritty alkuperäisestä tehtävästä, eikä niitä voi muokata täällä.",
+    "cancelEdit": "Peruuta muokkaus",
+    "editParentRecurrence": "Muokkaa vanhemman toistuvuutta",
+    "parentEditWarning": "⚠️ Olet muokkaamassa vanhemman tehtävän toistuvia asetuksia. Muutokset vaikuttavat kaikkiin tuleviin ilmentymiin tästä toistuvasta tehtävästä."
   },
   "weekdays": {
     "sunday": "Sunnuntai",
@@ -736,5 +760,111 @@
     "low": "Matala",
     "time": "Aika",
     "allDay": "Koko päivä"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Sivua ei löytynyt",
+      "message": "Etsimääsi sivua ei ole olemassa."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Nopea saapuvan postin tallennus",
+    "userMenu": "Käyttäjävalikko",
+    "collapseSidebar": "Pienennä sivupalkkia",
+    "expandSidebar": "Laajenna sivupalkkia"
+  },
+  "upload": {
+    "uploading": "Ladataan..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Hae projekteja...",
+    "searchTags": "Hae tageja...",
+    "searchTasks": "Hae tehtäviä..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Piilota tiedot",
+    "aboutTasks": "Tietoa tehtävistä",
+    "hideSearch": "Piilota haku",
+    "searchTasks": "Hae tehtäviä",
+    "aboutInbox": "Tietoa saapuvasta postista",
+    "collapseInfoPanel": "Pienennä tietopaneeli",
+    "showTasksInformation": "Näytä tehtävien tiedot",
+    "collapseSearchPanel": "Pienennä hakupaneeli",
+    "showSearchInput": "Näytä hakukenttä",
+    "showInboxInformation": "Näytä saapuneet tiedot"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Todennus vaaditaan",
+      "userNotFound": "Käyttäjää ei löytynyt",
+      "authenticationError": "Todennusvirhe",
+      "internalServerError": "Sisäinen palvelinvirhe",
+      "invalidLoginParameters": "Virheelliset kirjautumistiedot.",
+      "invalidCredentials": "Virheelliset tunnistetiedot",
+      "couldNotLogout": "Kirjautumista ei voitu suorittaa",
+      "loggedOutSuccessfully": "Kirjautuminen onnistui",
+      "contentRequired": "Sisältö on pakollinen",
+      "inboxItemNotFound": "Saapuneita kohteita ei löytynyt.",
+      "inboxItemDeleted": "Saapunut kohde poistettiin onnistuneesti",
+      "contentRequiredString": "Sisältö on pakollinen ja sen on oltava merkkijono",
+      "problemCreatingInboxItem": "Saapuvan kohteen luomisessa tapahtui ongelma.",
+      "problemUpdatingInboxItem": "Saapuvan kohteen päivittämisessä tapahtui ongelma.",
+      "problemDeletingInboxItem": "Saapuvan kohteen poistamisessa tapahtui ongelma.",
+      "problemProcessingInboxItem": "Inbox-alkion käsittelyssä tapahtui ongelma.",
+      "invalidOrderColumn": "Virheellinen järjestyssarake määritelty.",
+      "taskNotFound": "Tehtävää ei löytynyt.",
+      "taskNameRequired": "Tehtävän nimi on pakollinen.",
+      "invalidProject": "Virheellinen projekti.",
+      "unableToUpdateTask": "Tehtävää ei voida päivittää",
+      "taskDeleted": "Tehtävä poistettu onnistuneesti",
+      "failedToGenerateRecurringTasks": "Toistuvien tehtävien luonti epäonnistui",
+      "failedToUpdateTodayFlag": "Tehtävän tänään-lippua ei voitu päivittää",
+      "noImageProvided": "Kuvafailia ei ole annettu",
+      "failedToUploadImage": "Kuvan lataaminen epäonnistui",
+      "projectNotFound": "Projektia ei löytynyt",
+      "projectNameRequired": "Projektin nimi on pakollinen",
+      "projectDeleted": "Projekti poistettu onnistuneesti",
+      "noteNotFound": "Muistutusta ei löytynyt.",
+      "noteDeleted": "Muistutus poistettu onnistuneesti.",
+      "profileNotFound": "Profiilia ei löytynyt.",
+      "passwordTooShort": "Salasanan on oltava vähintään 6 merkkiä",
+      "currentPasswordIncorrect": "Nykyinen salasana on väärin",
+      "failedToUpdateProfile": "Profiilin päivittäminen epäonnistui.",
+      "passwordChangeRequired": "Nykyinen salasana ja uusi salasana vaaditaan",
+      "passwordChangedSuccessfully": "Salasana vaihdettu onnistuneesti",
+      "failedToUpdateTaskSummary": "Tehtäväyhteenvetoasetusten päivittäminen epäonnistui.",
+      "frequencyRequired": "Taajuus on pakollinen.",
+      "invalidFrequency": "Virheellinen taajuusarvo.",
+      "failedToStartTelegramPolling": "Telegram-pollauksen käynnistäminen epäonnistui.",
+      "failedToStopTelegramPolling": "Telegram-pollauksen pysäyttäminen epäonnistui.",
+      "invalidTelegramTokenFormat": "Virheellinen Telegram-botin token-muoto.",
+      "invalidBotToken": "Virheellinen bot-token tai botti ei ole käytettävissä.",
+      "chatIdRequired": "Chat ID on pakollinen.",
+      "areaNotFound": "Aluetta ei löytynyt tai se ei kuulu nykyiselle käyttäjälle.",
+      "areaNameRequired": "Alueen nimi on pakollinen.",
+      "tagNotFound": "Tagia ei löytynyt",
+      "tagNameRequired": "Tagin nimi on pakollinen",
+      "tagDeleted": "Tagi poistettu onnistuneesti",
+      "demoModeGoogleCalendar": "Demo-tila: Google Kalenteri -integraatio simuloitu",
+      "failedToGenerateAuthUrl": "Valtuutus-URL:n luominen epäonnistui",
+      "authCodeNotProvided": "Valtuutuskoodia ei annettu",
+      "failedToCheckCalendarStatus": "Kalenterin tilan tarkistaminen epäonnistui",
+      "failedToFetchCalendarEvents": "Kalenteritapahtumien hakeminen epäonnistui",
+      "googleCalendarDisconnected": "Google Kalenteri irrotettu",
+      "failedToDisconnectCalendar": "Kalenterin irrottaminen epäonnistui",
+      "urlParameterRequired": "URL-parametri on pakollinen",
+      "couldNotExtractMetadata": "Metatietojen purkaminen epäonnistui",
+      "textParameterRequired": "Tekstiparametri on pakollinen",
+      "notFound": "Ei löytynyt",
+      "resourceNotFound": "Pyydettyä resurssia ei löytynyt."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Tervetuloa tududiin!\n\nHenkilökohtainen tehtävienhallintabotisi on nyt yhdistetty ja valmis auttamaan!\n\n📝 Lähetä minulle vain viesti, niin lisään sen tududi-postilaatikkoosi kohteena.\n\n✨ Komennot:\n• /help - Näytä ohjeet\n• /start - Näytä tervetuloviesti\n• Kirjoita vain mitä tahansa tekstiä - Lisää se postilaatikkokohteeksi\n\nAletaan järjestää! 🚀",
+    "helpMessage": "📋 tududi Bot Ohjeet\n\nLähetä minulle mikä tahansa tekstiviesti, niin lisään sen tududi-postilaatikkoosi kohteena.\n\nKomennot:\n/start - Tervetuloviesti\n/help - Näytä tämä ohjeviesti\n\nKirjoita vain kohteesi, niin huolehdin lopusta!",
+    "commandProcessed": "Komento käsitelty onnistuneesti",
+    "messageProcessed": "Viesti käsitelty onnistuneesti",
+    "failedToAddToInbox": "❌ Lisääminen postilaatikkoon epäonnistui: {{error}}"
   }
 }

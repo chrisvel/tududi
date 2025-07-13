@@ -38,7 +38,14 @@
     "nextActions": "Próximas Ações",
     "inbox": "Caixa de Entrada",
     "completed": "Concluído",
-    "allTasks": "Todas as Tarefas"
+    "allTasks": "Todas as Tarefas",
+    "addInboxAriaLabel": "Adicionar Item à Caixa de Entrada",
+    "addInboxTitle": "Adicionar Item à Caixa de Entrada",
+    "addProjectAriaLabel": "Adicionar Projeto",
+    "addProjectTitle": "Adicionar Projeto",
+    "addNoteAriaLabel": "Adicionar Nota",
+    "addNoteTitle": "Adicionar Nota",
+    "createNew": "Criar Novo"
   },
   "navigation": {
     "home": "Início",
@@ -128,7 +135,14 @@
       "priority": "Prioridade",
       "dueDate": "Data de vencimento",
       "none": "Nenhum"
-    }
+    },
+    "justNow": "Agora mesmo",
+    "minutesAgo": "{{minutes}}m atrás",
+    "hoursAgo": "{{hours}}h atrás",
+    "daysAgo": "{{days}}d atrás",
+    "loadingTimeline": "Carregando linha do tempo...",
+    "timelineWillAppear": "A linha do tempo aparecerá após a salvamento",
+    "noActivity": "Nenhuma atividade ainda"
   },
   "profile": {
     "settings": "Configurações do Perfil",
@@ -264,7 +278,14 @@
     "aiProductivityFeatures": "Recursos de IA e Produtividade",
     "botSetup": "Configuração do Bot",
     "passwordChangeNote": "As alterações de senha serão salvas quando você clicar em \"Salvar Alterações\" na parte inferior do formulário.",
-    "passwordChangeOptional": "Deixe os campos de senha vazios para atualizar outras configurações sem alterar sua senha."
+    "passwordChangeOptional": "Deixe os campos de senha vazios para atualizar outras configurações sem alterar sua senha.",
+    "bulgarian": "Búlgaro",
+    "danish": "Dinamarquês",
+    "finnish": "Finlandês",
+    "norwegian": "Norueguês",
+    "polish": "Polonês",
+    "slovenian": "Esloveno",
+    "swedish": "Sueco"
   },
   "productivity": {
     "stalledProjects": "Projetos Parados",
@@ -419,7 +440,9 @@
     "task": "Tarefa",
     "project": "Projeto",
     "note": "Nota",
-    "area": "Área"
+    "area": "Área",
+    "inbox": "Caixa de Entrada",
+    "tag": "Etiqueta"
   },
   "sort": {
     "due_date": "Data de Vencimento",
@@ -438,7 +461,9 @@
     "inProgress": "Em Progresso",
     "done": "Concluído",
     "archived": "Arquivado",
-    "unknown": "Desconhecido"
+    "unknown": "Desconhecido",
+    "telegramConnected": "Telegram conectado e recebendo dados",
+    "telegramConnectionProblem": "Problema de conexão com o Telegram"
   },
   "project": {
     "name": "Nome do Projeto",
@@ -669,7 +694,13 @@
     "thirdWeek": "Terceira semana",
     "fourthWeek": "Quarta semana",
     "lastWeek": "Última semana",
-    "days": "dias"
+    "days": "dias",
+    "loadingParentSettings": "Carregando configurações de recorrência da tarefa pai...",
+    "recurringTaskInstance": "Instância de Tarefa Recorrente",
+    "inheritedSettingsMessage": "Esta tarefa foi gerada a partir de uma tarefa recorrente. As configurações de recorrência mostradas abaixo são herdadas da tarefa original e não podem ser editadas aqui.",
+    "cancelEdit": "Cancelar Edição",
+    "editParentRecurrence": "Editar Recorrência Principal",
+    "parentEditWarning": "⚠️ Você está editando as configurações de recorrência da tarefa principal. As alterações afetarão todas as instâncias futuras desta tarefa recorrente."
   },
   "weekdays": {
     "sunday": "Domingo",
@@ -729,5 +760,111 @@
     "low": "Baixo",
     "time": "Tempo",
     "allDay": "O dia todo"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Página Não Encontrada",
+      "message": "A página que você está procurando não existe."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Captura Rápida de Caixa de Entrada",
+    "userMenu": "Menu do Usuário",
+    "collapseSidebar": "Colapsar Barra Lateral",
+    "expandSidebar": "Expandir Barra Lateral"
+  },
+  "upload": {
+    "uploading": "Carregando..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Pesquisar projetos...",
+    "searchTags": "Pesquisar tags...",
+    "searchTasks": "Pesquisar tarefas..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Ocultar informações",
+    "aboutTasks": "Sobre Tarefas",
+    "hideSearch": "Ocultar pesquisa",
+    "searchTasks": "Pesquisar Tarefas",
+    "aboutInbox": "Sobre Caixa de Entrada",
+    "collapseInfoPanel": "Colapsar painel de informações",
+    "showTasksInformation": "Mostrar informações das tarefas",
+    "collapseSearchPanel": "Colapsar painel de busca",
+    "showSearchInput": "Mostrar campo de busca",
+    "showInboxInformation": "Mostrar informações da caixa de entrada"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Autenticação necessária",
+      "userNotFound": "Usuário não encontrado",
+      "authenticationError": "Erro de autenticação",
+      "internalServerError": "Erro interno do servidor",
+      "invalidLoginParameters": "Parâmetros de login inválidos.",
+      "invalidCredentials": "Credenciais inválidas",
+      "couldNotLogout": "Não foi possível sair",
+      "loggedOutSuccessfully": "Desconectado com sucesso",
+      "contentRequired": "Conteúdo é necessário",
+      "inboxItemNotFound": "Item da caixa de entrada não encontrado.",
+      "inboxItemDeleted": "Item da caixa de entrada excluído com sucesso",
+      "contentRequiredString": "Conteúdo é necessário e deve ser uma string",
+      "problemCreatingInboxItem": "Houve um problema ao criar o item da caixa de entrada.",
+      "problemUpdatingInboxItem": "Houve um problema ao atualizar o item da caixa de entrada.",
+      "problemDeletingInboxItem": "Houve um problema ao excluir o item da caixa de entrada.",
+      "problemProcessingInboxItem": "Houve um problema ao processar o item da caixa de entrada.",
+      "invalidOrderColumn": "Coluna de ordem inválida especificada.",
+      "taskNotFound": "Tarefa não encontrada.",
+      "taskNameRequired": "O nome da tarefa é obrigatório.",
+      "invalidProject": "Projeto inválido.",
+      "unableToUpdateTask": "Não foi possível atualizar a tarefa",
+      "taskDeleted": "Tarefa excluída com sucesso",
+      "failedToGenerateRecurringTasks": "Falha ao gerar tarefas recorrentes",
+      "failedToUpdateTodayFlag": "Falha ao atualizar a bandeira de tarefa de hoje",
+      "noImageProvided": "Nenhum arquivo de imagem fornecido",
+      "failedToUploadImage": "Falha ao fazer upload da imagem",
+      "projectNotFound": "Projeto não encontrado",
+      "projectNameRequired": "O nome do projeto é obrigatório",
+      "projectDeleted": "Projeto excluído com sucesso",
+      "noteNotFound": "Nota não encontrada.",
+      "noteDeleted": "Nota excluída com sucesso.",
+      "profileNotFound": "Perfil não encontrado.",
+      "passwordTooShort": "A senha deve ter pelo menos 6 caracteres",
+      "currentPasswordIncorrect": "A senha atual está incorreta",
+      "failedToUpdateProfile": "Falha ao atualizar o perfil.",
+      "passwordChangeRequired": "A senha atual e a nova senha são obrigatórias",
+      "passwordChangedSuccessfully": "Senha alterada com sucesso",
+      "failedToUpdateTaskSummary": "Falha ao atualizar as configurações do resumo da tarefa.",
+      "frequencyRequired": "A frequência é obrigatória.",
+      "invalidFrequency": "Valor de frequência inválido.",
+      "failedToStartTelegramPolling": "Falha ao iniciar a coleta do Telegram.",
+      "failedToStopTelegramPolling": "Falha ao parar a coleta do Telegram.",
+      "invalidTelegramTokenFormat": "Formato de token do bot do Telegram inválido.",
+      "invalidBotToken": "Token do bot inválido ou bot inacessível.",
+      "chatIdRequired": "O ID do chat é obrigatório.",
+      "areaNotFound": "Área não encontrada ou não pertence ao usuário atual.",
+      "areaNameRequired": "O nome da área é obrigatório.",
+      "tagNotFound": "Tag não encontrada",
+      "tagNameRequired": "O nome da tag é obrigatório",
+      "tagDeleted": "Tag excluída com sucesso",
+      "demoModeGoogleCalendar": "Modo de demonstração: integração com o Google Calendar simulada",
+      "failedToGenerateAuthUrl": "Falha ao gerar a URL de autorização",
+      "authCodeNotProvided": "Código de autorização não fornecido",
+      "failedToCheckCalendarStatus": "Falha ao verificar o status do calendário",
+      "failedToFetchCalendarEvents": "Falha ao buscar eventos do calendário",
+      "googleCalendarDisconnected": "Google Calendar desconectado",
+      "failedToDisconnectCalendar": "Falha ao desconectar o calendário",
+      "urlParameterRequired": "O parâmetro URL é obrigatório",
+      "couldNotExtractMetadata": "Não foi possível extrair os metadados",
+      "textParameterRequired": "O parâmetro de texto é obrigatório",
+      "notFound": "Não Encontrado",
+      "resourceNotFound": "O recurso solicitado não pôde ser encontrado."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Bem-vindo ao tududi!\n\nSeu bot pessoal de gerenciamento de tarefas está agora conectado e pronto para ajudar!\n\n📝 Basta me enviar qualquer mensagem e eu a adicionarei à sua caixa de entrada do tududi como um item.\n\n✨ Comandos:\n• /help - Mostrar informações de ajuda\n• /start - Mostrar mensagem de boas-vindas\n• Basta digitar qualquer texto - Adicioná-lo como um item na caixa de entrada\n\nVamos nos organizar! 🚀",
+    "helpMessage": "📋 Ajuda do Bot tududi\n\nEnvie-me qualquer mensagem de texto e eu a adicionarei à sua caixa de entrada do tududi como um item.\n\nComandos:\n/start - Mensagem de boas-vindas\n/help - Mostrar esta mensagem de ajuda\n\nBasta digitar seu item e eu cuidarei do resto!",
+    "commandProcessed": "Comando processado com sucesso",
+    "messageProcessed": "Mensagem processada com sucesso",
+    "failedToAddToInbox": "❌ Falha ao adicionar à caixa de entrada: {{error}}"
   }
 }

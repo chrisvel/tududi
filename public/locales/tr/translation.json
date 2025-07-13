@@ -38,7 +38,14 @@
     "nextActions": "Sonraki Eylemler",
     "inbox": "Gelen Kutusu",
     "completed": "Tamamlandı",
-    "allTasks": "Tüm Görevler"
+    "allTasks": "Tüm Görevler",
+    "addInboxAriaLabel": "Gelen Kutusu Öğesi Ekle",
+    "addInboxTitle": "Gelen Kutusu Öğesi Ekle",
+    "addProjectAriaLabel": "Proje Ekle",
+    "addProjectTitle": "Proje Ekle",
+    "addNoteAriaLabel": "Not Ekle",
+    "addNoteTitle": "Not Ekle",
+    "createNew": "Yeni Oluştur"
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -128,7 +135,14 @@
       "priority": "Öncelik",
       "dueDate": "Son tarih",
       "none": "Yok"
-    }
+    },
+    "justNow": "Şu anda",
+    "minutesAgo": "{{minutes}}d önce",
+    "hoursAgo": "{{hours}}s önce",
+    "daysAgo": "{{days}}g önce",
+    "loadingTimeline": "Zaman çizelgesi yükleniyor...",
+    "timelineWillAppear": "Zaman çizelgesi kaydedildikten sonra görünecek",
+    "noActivity": "Henüz etkinlik yok"
   },
   "profile": {
     "settings": "Profil Ayarları",
@@ -264,7 +278,14 @@
     "aiProductivityFeatures": "Yapay Zeka & Verimlilik Özellikleri",
     "botSetup": "Bot Ayarları",
     "passwordChangeNote": "\"Değişiklikleri Kaydet\" butonuna tıkladığınızda şifre değişiklikleri kaydedilecektir.",
-    "passwordChangeOptional": "Şifre alanlarını boş bırakın, böylece şifrenizi değiştirmeden diğer ayarları güncelleyebilirsiniz."
+    "passwordChangeOptional": "Şifre alanlarını boş bırakın, böylece şifrenizi değiştirmeden diğer ayarları güncelleyebilirsiniz.",
+    "bulgarian": "Bulgarca",
+    "danish": "Danca",
+    "finnish": "Fince",
+    "norwegian": "Norveççe",
+    "polish": "Lehçe",
+    "slovenian": "Slovence",
+    "swedish": "İsveççe"
   },
   "productivity": {
     "stalledProjects": "Duraklayan Projeler",
@@ -419,7 +440,9 @@
     "task": "Görev",
     "project": "Proje",
     "note": "Not",
-    "area": "Alan"
+    "area": "Alan",
+    "inbox": "Gelen Kutusu",
+    "tag": "Etiket"
   },
   "sort": {
     "due_date": "Son Tarih",
@@ -438,7 +461,9 @@
     "inProgress": "Devam Ediyor",
     "done": "Tamamlandı",
     "archived": "Arşivlendi",
-    "unknown": "Bilinmiyor"
+    "unknown": "Bilinmiyor",
+    "telegramConnected": "Telegram bağlı ve sorgulama yapılıyor",
+    "telegramConnectionProblem": "Telegram bağlantı sorunu"
   },
   "project": {
     "name": "Proje Adı",
@@ -669,7 +694,13 @@
     "thirdWeek": "Üçüncü hafta",
     "fourthWeek": "Dördüncü hafta",
     "lastWeek": "Son hafta",
-    "days": "gün"
+    "days": "gün",
+    "loadingParentSettings": "Ana görev tekrar ayarları yükleniyor...",
+    "recurringTaskInstance": "Tekrarlayan Görev Örneği",
+    "inheritedSettingsMessage": "Bu görev, tekrarlayan bir görevden oluşturulmuştur. Aşağıda gösterilen tekrar ayarları, orijinal görevden miras alınmıştır ve burada düzenlenemez.",
+    "cancelEdit": "Düzenlemeyi İptal Et",
+    "editParentRecurrence": "Ana Tekrarı Düzenle",
+    "parentEditWarning": "⚠️ Ana görevin tekrar ayarlarını düzenliyorsunuz. Değişiklikler, bu tekrarlayan görevin tüm gelecekteki örneklerini etkileyecektir."
   },
   "weekdays": {
     "sunday": "Pazar",
@@ -729,5 +760,111 @@
     "low": "Düşük",
     "time": "Zaman",
     "allDay": "Tüm gün"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Sayfa Bulunamadı",
+      "message": "Aradığınız sayfa mevcut değil."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Hızlı Gelen Kutusu Yakalama",
+    "userMenu": "Kullanıcı Menüsü",
+    "collapseSidebar": "Yan Paneli Kapat",
+    "expandSidebar": "Yan Paneli Genişlet"
+  },
+  "upload": {
+    "uploading": "Yükleniyor..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Projeleri Ara...",
+    "searchTags": "Etiketleri ara...",
+    "searchTasks": "Görevleri ara..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Bilgiyi gizle",
+    "aboutTasks": "Görevler Hakkında",
+    "hideSearch": "Aramayı gizle",
+    "searchTasks": "Görevleri Ara",
+    "aboutInbox": "Gelen Kutusu Hakkında",
+    "collapseInfoPanel": "Bilgi panelini daralt",
+    "showTasksInformation": "Görev bilgilerini göster",
+    "collapseSearchPanel": "Arama panelini daralt",
+    "showSearchInput": "Arama girişini göster",
+    "showInboxInformation": "Gelen kutusu bilgilerini göster"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Kimlik doğrulama gerekli",
+      "userNotFound": "Kullanıcı bulunamadı",
+      "authenticationError": "Kimlik doğrulama hatası",
+      "internalServerError": "Sunucu iç hatası",
+      "invalidLoginParameters": "Geçersiz giriş parametreleri.",
+      "invalidCredentials": "Geçersiz kimlik bilgileri",
+      "couldNotLogout": "Çıkış yapılamadı",
+      "loggedOutSuccessfully": "Başarıyla çıkış yapıldı",
+      "contentRequired": "İçerik gereklidir",
+      "inboxItemNotFound": "Gelen kutusu öğesi bulunamadı.",
+      "inboxItemDeleted": "Gelen kutusu öğesi başarıyla silindi",
+      "contentRequiredString": "İçerik gereklidir ve bir dize olmalıdır",
+      "problemCreatingInboxItem": "Gelen kutusu öğesi oluşturulurken bir sorun oluştu.",
+      "problemUpdatingInboxItem": "Gelen kutusu öğesi güncellenirken bir sorun oluştu.",
+      "problemDeletingInboxItem": "Gelen kutusu öğesi silinirken bir sorun oluştu.",
+      "problemProcessingInboxItem": "Gelen kutusu öğesi işlenirken bir sorun oluştu.",
+      "invalidOrderColumn": "Geçersiz sipariş sütunu belirtildi.",
+      "taskNotFound": "Görev bulunamadı.",
+      "taskNameRequired": "Görev adı gereklidir.",
+      "invalidProject": "Geçersiz proje.",
+      "unableToUpdateTask": "Görevi güncelleyemiyorum",
+      "taskDeleted": "Görev başarıyla silindi",
+      "failedToGenerateRecurringTasks": "Tekrarlayan görevleri oluşturma başarısız oldu",
+      "failedToUpdateTodayFlag": "Görev bugünkü bayrağı güncelleme başarısız oldu",
+      "noImageProvided": "Hiçbir resim dosyası sağlanmadı",
+      "failedToUploadImage": "Resmi yükleme başarısız oldu",
+      "projectNotFound": "Proje bulunamadı",
+      "projectNameRequired": "Proje adı gereklidir",
+      "projectDeleted": "Proje başarıyla silindi",
+      "noteNotFound": "Not bulunamadı.",
+      "noteDeleted": "Not başarıyla silindi.",
+      "profileNotFound": "Profil bulunamadı.",
+      "passwordTooShort": "Şifre en az 6 karakter olmalıdır",
+      "currentPasswordIncorrect": "Mevcut şifre yanlış",
+      "failedToUpdateProfile": "Profil güncellenemedi.",
+      "passwordChangeRequired": "Mevcut şifre ve yeni şifre gereklidir",
+      "passwordChangedSuccessfully": "Şifre başarıyla değiştirildi",
+      "failedToUpdateTaskSummary": "Görev özeti ayarlarını güncelleyemedik.",
+      "frequencyRequired": "Frekans gereklidir.",
+      "invalidFrequency": "Geçersiz frekans değeri.",
+      "failedToStartTelegramPolling": "Telegram anketi başlatılamadı.",
+      "failedToStopTelegramPolling": "Telegram anketi durdurulamadı.",
+      "invalidTelegramTokenFormat": "Geçersiz Telegram bot token formatı.",
+      "invalidBotToken": "Geçersiz bot token veya bot erişilemez.",
+      "chatIdRequired": "Sohbet ID'si gereklidir.",
+      "areaNotFound": "Alan bulunamadı veya mevcut kullanıcıya ait değil.",
+      "areaNameRequired": "Alan adı gereklidir.",
+      "tagNotFound": "Etiket bulunamadı",
+      "tagNameRequired": "Etiket adı gereklidir",
+      "tagDeleted": "Etiket başarıyla silindi",
+      "demoModeGoogleCalendar": "Demo modu: Google Takvim entegrasyonu simüle edildi",
+      "failedToGenerateAuthUrl": "Yetkilendirme URL'si oluşturulamadı",
+      "authCodeNotProvided": "Yetkilendirme kodu sağlanmadı",
+      "failedToCheckCalendarStatus": "Takvim durumu kontrol edilemedi",
+      "failedToFetchCalendarEvents": "Takvim etkinlikleri alınamadı",
+      "googleCalendarDisconnected": "Google Takvim bağlantısı kesildi",
+      "failedToDisconnectCalendar": "Takvim bağlantısını kesmekte başarısız olundu",
+      "urlParameterRequired": "URL parametresi gereklidir",
+      "couldNotExtractMetadata": "Meta veriler çıkarılamadı",
+      "textParameterRequired": "Metin parametresi gereklidir",
+      "notFound": "Bulunamadı",
+      "resourceNotFound": "İstenen kaynak bulunamadı."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 tududi'ye hoş geldiniz!\n\nKişisel görev yönetim botunuz artık bağlı ve yardımcı olmaya hazır!\n\n📝 Bana herhangi bir mesaj gönderin, ben de bunu tududi gelen kutunuza bir öğe olarak ekleyeceğim.\n\n✨ Komutlar:\n• /help - Yardım bilgilerini göster\n• /start - Hoş geldin mesajını göster\n• Sadece herhangi bir metin yazın - Bunu gelen kutusu öğesi olarak ekle\n\nHaydi organize olalım! 🚀",
+    "helpMessage": "📋 tududi Bot Yardımı\n\nBana herhangi bir metin mesajı gönderin, ben de bunu tududi gelen kutunuza bir öğe olarak ekleyeceğim.\n\nKomutlar:\n/start - Hoş geldin mesajı\n/help - Bu yardım mesajını göster\n\nSadece öğenizi yazın, geri kalanını ben hallederim!",
+    "commandProcessed": "Komut başarıyla işlendi",
+    "messageProcessed": "Mesaj başarıyla işlendi",
+    "failedToAddToInbox": "❌ Gelen kutusuna eklenemedi: {{error}}"
   }
 }

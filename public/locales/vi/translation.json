@@ -38,7 +38,14 @@
     "nextActions": "Các Hành động Tiếp theo",
     "inbox": "Hộp thư đến",
     "completed": "Đã hoàn thành",
-    "allTasks": "Tất cả Công việc"
+    "allTasks": "Tất cả Công việc",
+    "addInboxAriaLabel": "Thêm mục Hộp thư đến",
+    "addInboxTitle": "Thêm mục Hộp thư đến",
+    "addProjectAriaLabel": "Thêm Dự án",
+    "addProjectTitle": "Thêm Dự án",
+    "addNoteAriaLabel": "Thêm Ghi chú",
+    "addNoteTitle": "Thêm Ghi chú",
+    "createNew": "Tạo mới"
   },
   "navigation": {
     "home": "Trang chủ",
@@ -128,7 +135,14 @@
       "priority": "Độ ưu tiên",
       "dueDate": "Ngày đến hạn",
       "none": "Không có"
-    }
+    },
+    "justNow": "Vừa xong",
+    "minutesAgo": "{{minutes}} phút trước",
+    "hoursAgo": "{{hours}} giờ trước",
+    "daysAgo": "{{days}} ngày trước",
+    "loadingTimeline": "Đang tải dòng thời gian...",
+    "timelineWillAppear": "Dòng thời gian sẽ xuất hiện sau khi lưu",
+    "noActivity": "Chưa có hoạt động nào"
   },
   "profile": {
     "settings": "Cài đặt hồ sơ",
@@ -264,7 +278,14 @@
     "aiProductivityFeatures": "Tính năng AI & Năng suất",
     "botSetup": "Cài đặt Bot",
     "passwordChangeNote": "Các thay đổi mật khẩu sẽ được lưu khi bạn nhấn \"Lưu thay đổi\" ở dưới cùng của biểu mẫu.",
-    "passwordChangeOptional": "Để trống các trường mật khẩu để cập nhật các cài đặt khác mà không thay đổi mật khẩu của bạn."
+    "passwordChangeOptional": "Để trống các trường mật khẩu để cập nhật các cài đặt khác mà không thay đổi mật khẩu của bạn.",
+    "bulgarian": "Tiếng Bulgaria",
+    "danish": "Tiếng Đan Mạch",
+    "finnish": "Tiếng Phần Lan",
+    "norwegian": "Tiếng Na Uy",
+    "polish": "Tiếng Ba Lan",
+    "slovenian": "Tiếng Slovenia",
+    "swedish": "Thụy Điển"
   },
   "productivity": {
     "stalledProjects": "Dự án Đang Tạm Dừng",
@@ -419,7 +440,9 @@
     "task": "Công việc",
     "project": "Dự án",
     "note": "Ghi chú",
-    "area": "Khu vực"
+    "area": "Khu vực",
+    "inbox": "Hộp thư đến",
+    "tag": "Thẻ"
   },
   "sort": {
     "due_date": "Ngày đến hạn",
@@ -438,7 +461,9 @@
     "inProgress": "Đang tiến hành",
     "done": "Đã hoàn thành",
     "archived": "Đã lưu trữ",
-    "unknown": "Không xác định"
+    "unknown": "Không xác định",
+    "telegramConnected": "Telegram đã kết nối và đang kiểm tra",
+    "telegramConnectionProblem": "Vấn đề kết nối Telegram"
   },
   "project": {
     "name": "Tên Dự Án",
@@ -669,7 +694,13 @@
     "thirdWeek": "Tuần thứ ba",
     "fourthWeek": "Tuần thứ tư",
     "lastWeek": "Tuần cuối cùng",
-    "days": "ngày"
+    "days": "ngày",
+    "loadingParentSettings": "Đang tải cài đặt lặp lại của tác vụ cha...",
+    "recurringTaskInstance": "Phiên bản Tác vụ Lặp lại",
+    "inheritedSettingsMessage": "Tác vụ này được tạo ra từ một tác vụ lặp lại. Các cài đặt lặp lại bên dưới được kế thừa từ tác vụ gốc và không thể chỉnh sửa ở đây.",
+    "cancelEdit": "Hủy chỉnh sửa",
+    "editParentRecurrence": "Chỉnh sửa Lặp lại của Tác vụ Cha",
+    "parentEditWarning": "⚠️ Bạn đang chỉnh sửa cài đặt lặp lại của tác vụ cha. Những thay đổi sẽ ảnh hưởng đến tất cả các phiên bản tương lai của tác vụ lặp lại này."
   },
   "weekdays": {
     "sunday": "Chủ nhật",
@@ -729,5 +760,111 @@
     "low": "Thấp",
     "time": "Thời gian",
     "allDay": "Cả ngày"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Trang không tìm thấy",
+      "message": "Trang bạn đang tìm kiếm không tồn tại."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Chụp nhanh Hộp thư đến",
+    "userMenu": "Menu Người dùng",
+    "collapseSidebar": "Thu gọn Thanh bên",
+    "expandSidebar": "Mở rộng Thanh bên"
+  },
+  "upload": {
+    "uploading": "Đang tải lên..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Tìm kiếm dự án...",
+    "searchTags": "Tìm kiếm thẻ...",
+    "searchTasks": "Tìm kiếm nhiệm vụ..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Ẩn thông tin",
+    "aboutTasks": "Về Nhiệm vụ",
+    "hideSearch": "Ẩn tìm kiếm",
+    "searchTasks": "Tìm kiếm Nhiệm vụ",
+    "aboutInbox": "Về Hộp thư đến",
+    "collapseInfoPanel": "Thu gọn bảng thông tin",
+    "showTasksInformation": "Hiển thị thông tin nhiệm vụ",
+    "collapseSearchPanel": "Thu gọn bảng tìm kiếm",
+    "showSearchInput": "Hiển thị ô tìm kiếm",
+    "showInboxInformation": "Hiển thị thông tin hộp thư đến"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Cần xác thực",
+      "userNotFound": "Không tìm thấy người dùng",
+      "authenticationError": "Lỗi xác thực",
+      "internalServerError": "Lỗi máy chủ nội bộ",
+      "invalidLoginParameters": "Thông số đăng nhập không hợp lệ.",
+      "invalidCredentials": "Thông tin xác thực không hợp lệ",
+      "couldNotLogout": "Không thể đăng xuất",
+      "loggedOutSuccessfully": "Đăng xuất thành công",
+      "contentRequired": "Nội dung là bắt buộc",
+      "inboxItemNotFound": "Không tìm thấy mục trong hộp thư đến.",
+      "inboxItemDeleted": "Mục trong hộp thư đến đã được xóa thành công",
+      "contentRequiredString": "Nội dung là bắt buộc và phải là một chuỗi",
+      "problemCreatingInboxItem": "Đã có vấn đề khi tạo mục trong hộp thư đến.",
+      "problemUpdatingInboxItem": "Đã có vấn đề khi cập nhật mục trong hộp thư đến.",
+      "problemDeletingInboxItem": "Đã có vấn đề khi xóa mục trong hộp thư đến.",
+      "problemProcessingInboxItem": "Đã có vấn đề khi xử lý mục trong hộp thư đến.",
+      "invalidOrderColumn": "Cột thứ tự chỉ định không hợp lệ.",
+      "taskNotFound": "Không tìm thấy nhiệm vụ.",
+      "taskNameRequired": "Tên nhiệm vụ là bắt buộc.",
+      "invalidProject": "Dự án không hợp lệ.",
+      "unableToUpdateTask": "Không thể cập nhật nhiệm vụ",
+      "taskDeleted": "Nhiệm vụ đã được xóa thành công",
+      "failedToGenerateRecurringTasks": "Không thể tạo nhiệm vụ lặp lại",
+      "failedToUpdateTodayFlag": "Không thể cập nhật cờ nhiệm vụ hôm nay",
+      "noImageProvided": "Không có tệp hình ảnh nào được cung cấp",
+      "failedToUploadImage": "Không thể tải lên hình ảnh",
+      "projectNotFound": "Không tìm thấy dự án",
+      "projectNameRequired": "Tên dự án là bắt buộc",
+      "projectDeleted": "Dự án đã được xóa thành công",
+      "noteNotFound": "Không tìm thấy ghi chú.",
+      "noteDeleted": "Ghi chú đã được xóa thành công.",
+      "profileNotFound": "Không tìm thấy hồ sơ.",
+      "passwordTooShort": "Mật khẩu phải có ít nhất 6 ký tự",
+      "currentPasswordIncorrect": "Mật khẩu hiện tại không chính xác",
+      "failedToUpdateProfile": "Cập nhật hồ sơ không thành công.",
+      "passwordChangeRequired": "Mật khẩu hiện tại và mật khẩu mới là bắt buộc",
+      "passwordChangedSuccessfully": "Mật khẩu đã được thay đổi thành công",
+      "failedToUpdateTaskSummary": "Cập nhật cài đặt tóm tắt nhiệm vụ không thành công.",
+      "frequencyRequired": "Tần suất là bắt buộc.",
+      "invalidFrequency": "Giá trị tần suất không hợp lệ.",
+      "failedToStartTelegramPolling": "Khởi động việc lấy dữ liệu Telegram không thành công.",
+      "failedToStopTelegramPolling": "Dừng việc lấy dữ liệu Telegram không thành công.",
+      "invalidTelegramTokenFormat": "Định dạng mã thông báo bot Telegram không hợp lệ.",
+      "invalidBotToken": "Mã thông báo bot không hợp lệ hoặc bot không thể truy cập.",
+      "chatIdRequired": "ID trò chuyện là bắt buộc.",
+      "areaNotFound": "Khu vực không tìm thấy hoặc không thuộc về người dùng hiện tại.",
+      "areaNameRequired": "Tên khu vực là bắt buộc.",
+      "tagNotFound": "Không tìm thấy thẻ",
+      "tagNameRequired": "Tên thẻ là bắt buộc",
+      "tagDeleted": "Thẻ đã được xóa thành công",
+      "demoModeGoogleCalendar": "Chế độ demo: Tích hợp Google Calendar đã được mô phỏng",
+      "failedToGenerateAuthUrl": "Không thể tạo URL xác thực",
+      "authCodeNotProvided": "Mã xác thực không được cung cấp",
+      "failedToCheckCalendarStatus": "Không thể kiểm tra trạng thái lịch",
+      "failedToFetchCalendarEvents": "Không thể lấy sự kiện lịch",
+      "googleCalendarDisconnected": "Google Calendar đã bị ngắt kết nối",
+      "failedToDisconnectCalendar": "Không thể ngắt kết nối lịch",
+      "urlParameterRequired": "Tham số URL là bắt buộc",
+      "couldNotExtractMetadata": "Không thể trích xuất siêu dữ liệu",
+      "textParameterRequired": "Tham số văn bản là bắt buộc",
+      "notFound": "Không tìm thấy",
+      "resourceNotFound": "Tài nguyên yêu cầu không thể được tìm thấy."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Chào mừng bạn đến với tududi!\n\nBot quản lý tác vụ cá nhân của bạn hiện đã được kết nối và sẵn sàng giúp đỡ!\n\n📝 Chỉ cần gửi cho tôi bất kỳ tin nhắn nào và tôi sẽ thêm nó vào hộp thư tududi của bạn như một mục.\n\n✨ Lệnh:\n• /help - Hiển thị thông tin trợ giúp\n• /start - Hiển thị tin nhắn chào mừng\n• Chỉ cần gõ bất kỳ văn bản nào - Thêm nó như một mục trong hộp thư\n\nHãy cùng tổ chức nào! 🚀",
+    "helpMessage": "📋 Trợ giúp Bot tududi\n\nGửi cho tôi bất kỳ tin nhắn văn bản nào và tôi sẽ thêm nó vào hộp thư tududi của bạn như một mục trong hộp thư.\n\nCác lệnh:\n/start - Tin nhắn chào mừng\n/help - Hiển thị tin nhắn trợ giúp này\n\nChỉ cần gõ mục của bạn và tôi sẽ lo phần còn lại!",
+    "commandProcessed": "Lệnh đã được xử lý thành công",
+    "messageProcessed": "Tin nhắn đã được xử lý thành công",
+    "failedToAddToInbox": "❌ Không thể thêm vào hộp thư: {{error}}"
   }
 }

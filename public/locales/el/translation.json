@@ -38,7 +38,14 @@
     "addAreaAriaLabel": "Προσθήκη Περιοχής",
     "addAreaTitle": "Προσθήκη Περιοχής",
     "addTagAriaLabel": "Προσθήκη Ετικέτας",
-    "addTagTitle": "Προσθήκη Ετικέτας"
+    "addTagTitle": "Προσθήκη Ετικέτας",
+    "addInboxAriaLabel": "Προσθήκη Στοιχείου Εισερχομένων",
+    "addInboxTitle": "Προσθήκη Στοιχείου Εισερχομένων",
+    "addProjectAriaLabel": "Προσθήκη Έργου",
+    "addProjectTitle": "Προσθήκη Έργου",
+    "addNoteAriaLabel": "Προσθήκη Σημείωσης",
+    "addNoteTitle": "Προσθήκη Σημείωσης",
+    "createNew": "Δημιουργία Νέου"
   },
   "navigation": {
     "home": "Αρχική",
@@ -272,7 +279,9 @@
     "task": "Εργασία",
     "project": "Έργο",
     "note": "Σημείωση",
-    "area": "Περιοχή"
+    "area": "Περιοχή",
+    "inbox": "Εισερχόμενα",
+    "tag": "Ετικέτα"
   },
   "tasks": {
     "title": "Εργασίες",
@@ -321,7 +330,14 @@
       "priority": "Προτεραιότητα",
       "dueDate": "Ημερομηνία λήξης",
       "none": "Καμία"
-    }
+    },
+    "justNow": "Μόλις τώρα",
+    "minutesAgo": "{{minutes}} λεπτά πριν",
+    "hoursAgo": "{{hours}} ώρες πριν",
+    "daysAgo": "{{days}} ημέρες πριν",
+    "loadingTimeline": "Φόρτωση χρονοδιαγράμματος...",
+    "timelineWillAppear": "Το χρονοδιάγραμμα θα εμφανιστεί μετά την αποθήκευση",
+    "noActivity": "Δεν υπάρχει δραστηριότητα ακόμη"
   },
   "projects": {
     "loading": "Φόρτωση έργων...",
@@ -507,7 +523,9 @@
     "inProgress": "Σε Εξέλιξη",
     "done": "Ολοκληρώθηκε",
     "archived": "Αρχειοθετημένο",
-    "unknown": "Άγνωστο"
+    "unknown": "Άγνωστο",
+    "telegramConnected": "Το Telegram είναι συνδεδεμένο και αναζητά",
+    "telegramConnectionProblem": "Πρόβλημα σύνδεσης με το Telegram"
   },
   "task": {
     "labels": {
@@ -672,7 +690,13 @@
     "thirdWeek": "Τρίτη εβδομάδα",
     "fourthWeek": "Τέταρτη εβδομάδα",
     "lastWeek": "Τελευταία εβδομάδα",
-    "days": "ημέρες"
+    "days": "ημέρες",
+    "loadingParentSettings": "Φόρτωση ρυθμίσεων επανάληψης γονικής εργασίας...",
+    "recurringTaskInstance": "Επαναλαμβανόμενη Εργασία",
+    "inheritedSettingsMessage": "Αυτή η εργασία δημιουργήθηκε από μια επαναλαμβανόμενη εργασία. Οι ρυθμίσεις επαναλαμβανόμενης εργασίας που εμφανίζονται παρακάτω κληρονομούνται από την αρχική εργασία και δεν μπορούν να επεξεργαστούν εδώ.",
+    "cancelEdit": "Ακύρωση Επεξεργασίας",
+    "editParentRecurrence": "Επεξεργασία Γονικής Επαναληπτικής Εργασίας",
+    "parentEditWarning": "⚠️ Επεξεργάζεστε τις ρυθμίσεις επαναληπτικής εργασίας της γονικής εργασίας. Οι αλλαγές θα επηρεάσουν όλες τις μελλοντικές περιπτώσεις αυτής της επαναλαμβανόμενης εργασίας."
   },
   "weekdays": {
     "monday": "Δευ",
@@ -742,5 +766,111 @@
     "low": "Χαμηλή",
     "time": "Ώρα",
     "allDay": "Όλη μέρα"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Η Σελίδα Δεν Βρέθηκε",
+      "message": "Η σελίδα που ψάχνετε δεν υπάρχει."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Γρήγορη Καταγραφή Εισερχομένων",
+    "userMenu": "Μενού Χρήστη",
+    "collapseSidebar": "Σύμπτυξη Πλαϊνής Μπάρας",
+    "expandSidebar": "Επέκταση Πλαϊνής Μπάρας"
+  },
+  "upload": {
+    "uploading": "Ανέβασμα..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Αναζήτηση έργων...",
+    "searchTags": "Αναζήτηση ετικετών...",
+    "searchTasks": "Αναζήτηση εργασιών..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Απόκρυψη πληροφοριών",
+    "aboutTasks": "Σχετικά με τις Εργασίες",
+    "hideSearch": "Απόκρυψη αναζήτησης",
+    "searchTasks": "Αναζήτηση Εργασιών",
+    "aboutInbox": "Σχετικά με τα Εισερχόμενα",
+    "collapseInfoPanel": "Σύμπτυξη πίνακα πληροφοριών",
+    "showTasksInformation": "Εμφάνιση πληροφοριών εργασιών",
+    "collapseSearchPanel": "Σύμπτυξη πίνακα αναζήτησης",
+    "showSearchInput": "Εμφάνιση εισόδου αναζήτησης",
+    "showInboxInformation": "Εμφάνιση πληροφοριών εισερχομένων"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Απαιτείται αυθεντικοποίηση",
+      "userNotFound": "Ο χρήστης δεν βρέθηκε",
+      "authenticationError": "Σφάλμα αυθεντικοποίησης",
+      "internalServerError": "Εσωτερικό σφάλμα διακομιστή",
+      "invalidLoginParameters": "Μη έγκυρες παράμετροι σύνδεσης.",
+      "invalidCredentials": "Μη έγκυρα διαπιστευτήρια",
+      "couldNotLogout": "Δεν ήταν δυνατή η αποσύνδεση",
+      "loggedOutSuccessfully": "Αποσυνδέθηκε επιτυχώς",
+      "contentRequired": "Απαιτείται περιεχόμενο",
+      "inboxItemNotFound": "Το στοιχείο εισερχομένων δεν βρέθηκε.",
+      "inboxItemDeleted": "Το στοιχείο εισερχομένων διαγράφηκε επιτυχώς",
+      "contentRequiredString": "Απαιτείται περιεχόμενο και πρέπει να είναι μια συμβολοσειρά",
+      "problemCreatingInboxItem": "Υπήρξε πρόβλημα κατά τη δημιουργία του στοιχείου εισερχομένων.",
+      "problemUpdatingInboxItem": "Υπήρξε πρόβλημα κατά την ενημέρωση του στοιχείου εισερχομένων.",
+      "problemDeletingInboxItem": "Υπήρξε πρόβλημα κατά τη διαγραφή του στοιχείου εισερχομένων.",
+      "problemProcessingInboxItem": "Υπήρξε πρόβλημα κατά την επεξεργασία του στοιχείου εισερχομένων.",
+      "invalidOrderColumn": "Καθορίστηκε μη έγκυρη στήλη παραγγελίας.",
+      "taskNotFound": "Η εργασία δεν βρέθηκε.",
+      "taskNameRequired": "Απαιτείται όνομα εργασίας.",
+      "invalidProject": "Μη έγκυρο έργο.",
+      "unableToUpdateTask": "Αδυναμία ενημέρωσης της εργασίας.",
+      "taskDeleted": "Η εργασία διαγράφηκε με επιτυχία.",
+      "failedToGenerateRecurringTasks": "Αποτυχία δημιουργίας επαναλαμβανόμενων εργασιών.",
+      "failedToUpdateTodayFlag": "Αποτυχία ενημέρωσης της σημαίας σήμερα για την εργασία.",
+      "noImageProvided": "Δεν παρέχεται αρχείο εικόνας.",
+      "failedToUploadImage": "Αποτυχία μεταφόρτωσης εικόνας.",
+      "projectNotFound": "Το έργο δεν βρέθηκε.",
+      "projectNameRequired": "Απαιτείται όνομα έργου.",
+      "projectDeleted": "Το έργο διαγράφηκε με επιτυχία.",
+      "noteNotFound": "Η σημείωση δεν βρέθηκε.",
+      "noteDeleted": "Η σημείωση διαγράφηκε με επιτυχία.",
+      "profileNotFound": "Το προφίλ δεν βρέθηκε.",
+      "passwordTooShort": "Ο κωδικός πρόσβασης πρέπει να έχει τουλάχιστον 6 χαρακτήρες.",
+      "currentPasswordIncorrect": "Ο τρέχων κωδικός πρόσβασης είναι λανθασμένος.",
+      "failedToUpdateProfile": "Αποτυχία ενημέρωσης του προφίλ.",
+      "passwordChangeRequired": "Απαιτείται τρέχων κωδικός πρόσβασης και νέος κωδικός πρόσβασης",
+      "passwordChangedSuccessfully": "Ο κωδικός πρόσβασης άλλαξε επιτυχώς",
+      "failedToUpdateTaskSummary": "Αποτυχία ενημέρωσης ρυθμίσεων περιλήψεων εργασιών.",
+      "frequencyRequired": "Η συχνότητα είναι απαραίτητη.",
+      "invalidFrequency": "Μη έγκυρη τιμή συχνότητας.",
+      "failedToStartTelegramPolling": "Αποτυχία εκκίνησης της ανάγνωσης Telegram.",
+      "failedToStopTelegramPolling": "Αποτυχία διακοπής της ανάγνωσης Telegram.",
+      "invalidTelegramTokenFormat": "Μη έγκυρη μορφή κωδικού Telegram bot.",
+      "invalidBotToken": "Μη έγκυρος κωδικός bot ή bot μη προσβάσιμο.",
+      "chatIdRequired": "Απαιτείται το Chat ID.",
+      "areaNotFound": "Η περιοχή δεν βρέθηκε ή δεν ανήκει στον τρέχοντα χρήστη.",
+      "areaNameRequired": "Απαιτείται το όνομα περιοχής.",
+      "tagNotFound": "Η ετικέτα δεν βρέθηκε",
+      "tagNameRequired": "Απαιτείται το όνομα ετικέτας",
+      "tagDeleted": "Η ετικέτα διαγράφηκε επιτυχώς",
+      "demoModeGoogleCalendar": "Λειτουργία επίδειξης: Προσομοίωση ενσωμάτωσης Google Calendar",
+      "failedToGenerateAuthUrl": "Αποτυχία δημιουργίας URL εξουσιοδότησης",
+      "authCodeNotProvided": "Ο κωδικός εξουσιοδότησης δεν παρέχεται",
+      "failedToCheckCalendarStatus": "Αποτυχία ελέγχου κατάστασης ημερολογίου",
+      "failedToFetchCalendarEvents": "Αποτυχία ανάκτησης γεγονότων ημερολογίου",
+      "googleCalendarDisconnected": "Αποσυνδέθηκε το Google Calendar",
+      "failedToDisconnectCalendar": "Αποτυχία αποσύνδεσης του ημερολογίου",
+      "urlParameterRequired": "Απαιτείται παράμετρος URL",
+      "couldNotExtractMetadata": "Δεν ήταν δυνατή η εξαγωγή μεταδεδομένων",
+      "textParameterRequired": "Απαιτείται παράμετρος κειμένου",
+      "notFound": "Δεν βρέθηκε",
+      "resourceNotFound": "Ο ζητούμενος πόρος δεν μπόρεσε να βρεθεί."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Καλώς ήρθατε στο tududi!\n\nΟ προσωπικός σας βοηθός διαχείρισης εργασιών είναι τώρα συνδεδεμένος και έτοιμος να βοηθήσει!\n\n📝 Απλά στείλτε μου οποιοδήποτε μήνυμα και θα το προσθέσω στο εισερχόμενο σας tududi ως στοιχείο.\n\n✨ Εντολές:\n• /help - Εμφάνιση πληροφοριών βοήθειας\n• /start - Εμφάνιση μηνύματος καλωσορίσματος\n• Απλά πληκτρολογήστε οποιοδήποτε κείμενο - Προσθέστε το ως στοιχείο εισερχομένων\n\nΑς οργανωθούμε! 🚀",
+    "helpMessage": "📋 Βοήθεια Bot tududi\n\nΣτείλτε μου οποιοδήποτε μήνυμα κειμένου και θα το προσθέσω στο εισερχόμενο σας tududi ως στοιχείο εισερχομένων.\n\nΕντολές:\n/start - Μήνυμα καλωσορίσματος\n/help - Εμφάνιση αυτού του μηνύματος βοήθειας\n\nΑπλά πληκτρολογήστε το στοιχείο σας και θα φροντίσω για τα υπόλοιπα!",
+    "commandProcessed": "Η εντολή επεξεργάστηκε επιτυχώς",
+    "messageProcessed": "Το μήνυμα επεξεργάστηκε επιτυχώς",
+    "failedToAddToInbox": "❌ Αποτυχία προσθήκης στο εισερχόμενο: {{error}}"
   }
 }

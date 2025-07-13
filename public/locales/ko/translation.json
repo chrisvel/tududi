@@ -38,7 +38,14 @@
     "nextActions": "다음 작업",
     "inbox": "받은 편지함",
     "completed": "완료됨",
-    "allTasks": "모든 작업"
+    "allTasks": "모든 작업",
+    "addInboxAriaLabel": "받은 편지함 항목 추가",
+    "addInboxTitle": "받은 편지함 항목 추가",
+    "addProjectAriaLabel": "프로젝트 추가",
+    "addProjectTitle": "프로젝트 추가",
+    "addNoteAriaLabel": "메모 추가",
+    "addNoteTitle": "메모 추가",
+    "createNew": "새로 만들기"
   },
   "navigation": {
     "home": "홈",
@@ -128,7 +135,14 @@
       "priority": "우선순위",
       "dueDate": "마감일",
       "none": "없음"
-    }
+    },
+    "justNow": "방금",
+    "minutesAgo": "{{minutes}}분 전",
+    "hoursAgo": "{{hours}}시간 전",
+    "daysAgo": "{{days}}일 전",
+    "loadingTimeline": "타임라인 로딩 중...",
+    "timelineWillAppear": "저장 후 타임라인이 나타납니다",
+    "noActivity": "아직 활동이 없습니다"
   },
   "profile": {
     "settings": "프로필 설정",
@@ -426,7 +440,9 @@
     "task": "작업",
     "project": "프로젝트",
     "note": "노트",
-    "area": "영역"
+    "area": "영역",
+    "inbox": "받은 편지함",
+    "tag": "태그"
   },
   "sort": {
     "due_date": "마감일",
@@ -445,7 +461,9 @@
     "inProgress": "진행 중",
     "done": "완료",
     "archived": "보관됨",
-    "unknown": "알 수 없음"
+    "unknown": "알 수 없음",
+    "telegramConnected": "텔레그램 연결됨 및 폴링 중",
+    "telegramConnectionProblem": "텔레그램 연결 문제"
   },
   "project": {
     "name": "프로젝트 이름",
@@ -676,7 +694,13 @@
     "thirdWeek": "세 번째 주",
     "fourthWeek": "네 번째 주",
     "lastWeek": "마지막 주",
-    "days": "일"
+    "days": "일",
+    "loadingParentSettings": "부모 작업 반복 설정 로딩 중...",
+    "recurringTaskInstance": "반복 작업 인스턴스",
+    "inheritedSettingsMessage": "이 작업은 반복 작업에서 생성되었습니다. 아래에 표시된 반복 설정은 원래 작업에서 상속된 것이며 여기에서 수정할 수 없습니다.",
+    "cancelEdit": "수정 취소",
+    "editParentRecurrence": "상위 반복 수정",
+    "parentEditWarning": "⚠️ 상위 작업의 반복 설정을 수정하고 있습니다. 변경 사항은 이 반복 작업의 모든 미래 인스턴스에 영향을 미칩니다."
   },
   "weekdays": {
     "sunday": "일요일",
@@ -736,5 +760,111 @@
     "low": "낮음",
     "time": "시간",
     "allDay": "종일"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - 페이지를 찾을 수 없습니다",
+      "message": "찾고 있는 페이지가 존재하지 않습니다."
+    }
+  },
+  "navbar": {
+    "appName": "투두디",
+    "quickInboxCapture": "빠른 인박스 캡처",
+    "userMenu": "사용자 메뉴",
+    "collapseSidebar": "사이드바 축소",
+    "expandSidebar": "사이드바 확장"
+  },
+  "upload": {
+    "uploading": "업로드 중..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "프로젝트 검색...",
+    "searchTags": "태그 검색...",
+    "searchTasks": "작업 검색..."
+  },
+  "ariaLabels": {
+    "hideInfo": "정보 숨기기",
+    "aboutTasks": "작업에 대하여",
+    "hideSearch": "검색 숨기기",
+    "searchTasks": "작업 검색",
+    "aboutInbox": "인박스에 대하여",
+    "collapseInfoPanel": "정보 패널 축소",
+    "showTasksInformation": "작업 정보 표시",
+    "collapseSearchPanel": "검색 패널 축소",
+    "showSearchInput": "검색 입력 표시",
+    "showInboxInformation": "받은 편지함 정보 표시"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "인증이 필요합니다",
+      "userNotFound": "사용자를 찾을 수 없습니다",
+      "authenticationError": "인증 오류",
+      "internalServerError": "내부 서버 오류",
+      "invalidLoginParameters": "잘못된 로그인 매개변수입니다.",
+      "invalidCredentials": "잘못된 자격 증명",
+      "couldNotLogout": "로그아웃할 수 없습니다",
+      "loggedOutSuccessfully": "성공적으로 로그아웃되었습니다",
+      "contentRequired": "내용이 필요합니다",
+      "inboxItemNotFound": "받은 편지함 항목을 찾을 수 없습니다.",
+      "inboxItemDeleted": "받은 편지함 항목이 성공적으로 삭제되었습니다",
+      "contentRequiredString": "내용이 필요하며 문자열이어야 합니다",
+      "problemCreatingInboxItem": "받은 편지함 항목을 생성하는 데 문제가 발생했습니다.",
+      "problemUpdatingInboxItem": "받은 편지함 항목을 업데이트하는 데 문제가 발생했습니다.",
+      "problemDeletingInboxItem": "받은 편지함 항목을 삭제하는 데 문제가 발생했습니다.",
+      "problemProcessingInboxItem": "받은 편지함 항목을 처리하는 데 문제가 발생했습니다.",
+      "invalidOrderColumn": "잘못된 주문 열이 지정되었습니다.",
+      "taskNotFound": "작업을 찾을 수 없습니다.",
+      "taskNameRequired": "작업 이름이 필요합니다.",
+      "invalidProject": "잘못된 프로젝트입니다.",
+      "unableToUpdateTask": "작업을 업데이트할 수 없습니다.",
+      "taskDeleted": "작업이 성공적으로 삭제되었습니다.",
+      "failedToGenerateRecurringTasks": "정기 작업 생성에 실패했습니다.",
+      "failedToUpdateTodayFlag": "작업 오늘 플래그 업데이트에 실패했습니다.",
+      "noImageProvided": "제공된 이미지 파일이 없습니다.",
+      "failedToUploadImage": "이미지 업로드에 실패했습니다.",
+      "projectNotFound": "프로젝트를 찾을 수 없습니다.",
+      "projectNameRequired": "프로젝트 이름이 필요합니다.",
+      "projectDeleted": "프로젝트가 성공적으로 삭제되었습니다.",
+      "noteNotFound": "노트를 찾을 수 없습니다.",
+      "noteDeleted": "노트가 성공적으로 삭제되었습니다.",
+      "profileNotFound": "프로필을 찾을 수 없습니다.",
+      "passwordTooShort": "비밀번호는 최소 6자 이상이어야 합니다.",
+      "currentPasswordIncorrect": "현재 비밀번호가 올바르지 않습니다.",
+      "failedToUpdateProfile": "프로필 업데이트에 실패했습니다.",
+      "passwordChangeRequired": "현재 비밀번호와 새 비밀번호가 필요합니다.",
+      "passwordChangedSuccessfully": "비밀번호가 성공적으로 변경되었습니다.",
+      "failedToUpdateTaskSummary": "작업 요약 설정을 업데이트하는 데 실패했습니다.",
+      "frequencyRequired": "주기가 필요합니다.",
+      "invalidFrequency": "유효하지 않은 주기 값입니다.",
+      "failedToStartTelegramPolling": "텔레그램 폴링을 시작하는 데 실패했습니다.",
+      "failedToStopTelegramPolling": "텔레그램 폴링을 중지하는 데 실패했습니다.",
+      "invalidTelegramTokenFormat": "유효하지 않은 텔레그램 봇 토큰 형식입니다.",
+      "invalidBotToken": "유효하지 않은 봇 토큰이거나 봇에 접근할 수 없습니다.",
+      "chatIdRequired": "채팅 ID가 필요합니다.",
+      "areaNotFound": "영역을 찾을 수 없거나 현재 사용자에게 속하지 않습니다.",
+      "areaNameRequired": "영역 이름이 필요합니다.",
+      "tagNotFound": "태그를 찾을 수 없습니다.",
+      "tagNameRequired": "태그 이름이 필요합니다.",
+      "tagDeleted": "태그가 성공적으로 삭제되었습니다.",
+      "demoModeGoogleCalendar": "데모 모드: 구글 캘린더 통합이 시뮬레이션되었습니다.",
+      "failedToGenerateAuthUrl": "인증 URL을 생성하는 데 실패했습니다.",
+      "authCodeNotProvided": "인증 코드가 제공되지 않았습니다.",
+      "failedToCheckCalendarStatus": "캘린더 상태를 확인하는 데 실패했습니다.",
+      "failedToFetchCalendarEvents": "캘린더 이벤트를 가져오는 데 실패했습니다.",
+      "googleCalendarDisconnected": "구글 캘린더 연결이 끊어졌습니다",
+      "failedToDisconnectCalendar": "캘린더 연결 해제에 실패했습니다",
+      "urlParameterRequired": "URL 매개변수가 필요합니다",
+      "couldNotExtractMetadata": "메타데이터를 추출할 수 없습니다",
+      "textParameterRequired": "텍스트 매개변수가 필요합니다",
+      "notFound": "찾을 수 없습니다",
+      "resourceNotFound": "요청한 리소스를 찾을 수 없습니다."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 tududi에 오신 것을 환영합니다!\n\n당신의 개인 작업 관리 봇이 이제 연결되어 도와줄 준비가 되었습니다!\n\n📝 저에게 아무 메시지나 보내주시면, 그것을 tududi 수신함에 항목으로 추가하겠습니다.\n\n✨ 명령어:\n• /help - 도움말 정보 표시\n• /start - 환영 메시지 표시\n• 아무 텍스트를 입력하세요 - 수신함 항목으로 추가\n\n정리해봅시다! 🚀",
+    "helpMessage": "📋 tududi 봇 도움말\n\n저에게 아무 텍스트 메시지를 보내주시면, 그것을 tududi 수신함에 항목으로 추가하겠습니다.\n\n명령어:\n/start - 환영 메시지\n/help - 이 도움말 메시지 표시\n\n당신의 항목을 입력하면 나머지는 제가 처리하겠습니다!",
+    "commandProcessed": "명령이 성공적으로 처리되었습니다",
+    "messageProcessed": "메시지가 성공적으로 처리되었습니다",
+    "failedToAddToInbox": "❌ 수신함에 추가하는 데 실패했습니다: {{error}}"
   }
 }

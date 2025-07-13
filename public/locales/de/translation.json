@@ -38,7 +38,14 @@
     "addAreaAriaLabel": "Bereich hinzufügen",
     "addAreaTitle": "Bereich hinzufügen",
     "addTagAriaLabel": "Tag hinzufügen",
-    "addTagTitle": "Tag hinzufügen"
+    "addTagTitle": "Tag hinzufügen",
+    "addInboxAriaLabel": "Inbox-Element hinzufügen",
+    "addInboxTitle": "Inbox-Element hinzufügen",
+    "addProjectAriaLabel": "Projekt hinzufügen",
+    "addProjectTitle": "Projekt hinzufügen",
+    "addNoteAriaLabel": "Notiz hinzufügen",
+    "addNoteTitle": "Notiz hinzufügen",
+    "createNew": "Neu erstellen"
   },
   "navigation": {
     "home": "Startseite",
@@ -128,7 +135,14 @@
       "priority": "Priorität",
       "dueDate": "Fälligkeitsdatum",
       "none": "Keine"
-    }
+    },
+    "justNow": "Gerade eben",
+    "minutesAgo": "{{minutes}}m her",
+    "hoursAgo": "{{hours}}h her",
+    "daysAgo": "{{days}}d her",
+    "loadingTimeline": "Zeitachse wird geladen...",
+    "timelineWillAppear": "Die Zeitachse wird nach dem Speichern angezeigt",
+    "noActivity": "Noch keine Aktivität"
   },
   "forms": {
     "title": "Titel",
@@ -295,7 +309,13 @@
     "thirdWeek": "Dritte Woche",
     "fourthWeek": "Vierte Woche",
     "lastWeek": "Letzte Woche",
-    "days": "Tage"
+    "days": "Tage",
+    "loadingParentSettings": "Lade Einstellungen zur Wiederholung der übergeordneten Aufgabe...",
+    "recurringTaskInstance": "Wiederkehrende Aufgabeninstanz",
+    "inheritedSettingsMessage": "Diese Aufgabe wurde aus einer wiederkehrenden Aufgabe generiert. Die unten angezeigten Wiederholungseinstellungen stammen von der ursprünglichen Aufgabe und können hier nicht bearbeitet werden.",
+    "cancelEdit": "Bearbeitung abbrechen",
+    "editParentRecurrence": "Elternwiederholung bearbeiten",
+    "parentEditWarning": "⚠️ Sie bearbeiten die Wiederholungseinstellungen der übergeordneten Aufgabe. Änderungen wirken sich auf alle zukünftigen Instanzen dieser wiederkehrenden Aufgabe aus."
   },
   "weekdays": {
     "sunday": "Sonntag",
@@ -629,7 +649,9 @@
     "task": "Aufgabe",
     "project": "Projekt",
     "note": "Notiz",
-    "area": "Bereich"
+    "area": "Bereich",
+    "inbox": "Posteingang",
+    "tag": "Tag"
   },
   "sort": {
     "due_date": "Fälligkeitsdatum",
@@ -648,7 +670,9 @@
     "inProgress": "In Bearbeitung",
     "done": "Erledigt",
     "archived": "Archiviert",
-    "unknown": "Unbekannt"
+    "unknown": "Unbekannt",
+    "telegramConnected": "Telegram verbunden und abfragt",
+    "telegramConnectionProblem": "Telegram-Verbindungsproblem"
   },
   "dateIndicators": {
     "today": "HEUTE",
@@ -745,5 +769,111 @@
     "complete": "Pomodoro abgeschlossen!",
     "completeMessage": "Gute Arbeit! Zeit für eine Pause.",
     "done": "Fertig"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Seite nicht gefunden",
+      "message": "Die von Ihnen gesuchte Seite existiert nicht."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Schnelle Inbox-Erfassung",
+    "userMenu": "Benutzermenü",
+    "collapseSidebar": "Seitenleiste einklappen",
+    "expandSidebar": "Seitenleiste erweitern"
+  },
+  "upload": {
+    "uploading": "Hochladen..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Projekte suchen...",
+    "searchTags": "Tags suchen...",
+    "searchTasks": "Aufgaben suchen..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Info ausblenden",
+    "aboutTasks": "Über Aufgaben",
+    "hideSearch": "Suche ausblenden",
+    "searchTasks": "Aufgaben suchen",
+    "aboutInbox": "Über Inbox",
+    "collapseInfoPanel": "Info-Panel einklappen",
+    "showTasksInformation": "Aufgabeninformationen anzeigen",
+    "collapseSearchPanel": "Suchpanel einklappen",
+    "showSearchInput": "Suchfeld anzeigen",
+    "showInboxInformation": "Posteingangsinformationen anzeigen"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Authentifizierung erforderlich",
+      "userNotFound": "Benutzer nicht gefunden",
+      "authenticationError": "Authentifizierungsfehler",
+      "internalServerError": "Interner Serverfehler",
+      "invalidLoginParameters": "Ungültige Anmeldeparameter.",
+      "invalidCredentials": "Ungültige Anmeldeinformationen",
+      "couldNotLogout": "Abmeldung konnte nicht durchgeführt werden",
+      "loggedOutSuccessfully": "Erfolgreich abgemeldet",
+      "contentRequired": "Inhalt ist erforderlich",
+      "inboxItemNotFound": "Posteingangsartikel nicht gefunden.",
+      "inboxItemDeleted": "Posteingangsartikel erfolgreich gelöscht",
+      "contentRequiredString": "Inhalt ist erforderlich und muss eine Zeichenfolge sein",
+      "problemCreatingInboxItem": "Es gab ein Problem beim Erstellen des Posteingangsartikels.",
+      "problemUpdatingInboxItem": "Es gab ein Problem beim Aktualisieren des Posteingangsartikels.",
+      "problemDeletingInboxItem": "Es gab ein Problem beim Löschen des Posteingangsartikels.",
+      "problemProcessingInboxItem": "Es gab ein Problem bei der Verarbeitung des Posteingangsartikels.",
+      "invalidOrderColumn": "Ungültige Bestellspalte angegeben.",
+      "taskNotFound": "Aufgabe nicht gefunden.",
+      "taskNameRequired": "Aufgabenname ist erforderlich.",
+      "invalidProject": "Ungültiges Projekt.",
+      "unableToUpdateTask": "Aufgabe kann nicht aktualisiert werden.",
+      "taskDeleted": "Aufgabe erfolgreich gelöscht.",
+      "failedToGenerateRecurringTasks": "Fehler beim Erzeugen wiederkehrender Aufgaben.",
+      "failedToUpdateTodayFlag": "Fehler beim Aktualisieren des Heute-Flags der Aufgabe.",
+      "noImageProvided": "Es wurde keine Bilddatei bereitgestellt.",
+      "failedToUploadImage": "Fehler beim Hochladen des Bildes.",
+      "projectNotFound": "Projekt nicht gefunden.",
+      "projectNameRequired": "Projektname ist erforderlich.",
+      "projectDeleted": "Projekt erfolgreich gelöscht.",
+      "noteNotFound": "Notiz nicht gefunden.",
+      "noteDeleted": "Notiz erfolgreich gelöscht.",
+      "profileNotFound": "Profil nicht gefunden.",
+      "passwordTooShort": "Das Passwort muss mindestens 6 Zeichen lang sein.",
+      "currentPasswordIncorrect": "Das aktuelle Passwort ist falsch.",
+      "failedToUpdateProfile": "Fehler beim Aktualisieren des Profils.",
+      "passwordChangeRequired": "Aktuelles Passwort und neues Passwort sind erforderlich",
+      "passwordChangedSuccessfully": "Passwort erfolgreich geändert",
+      "failedToUpdateTaskSummary": "Fehler beim Aktualisieren der Aufgabenübersichtseinstellungen.",
+      "frequencyRequired": "Frequenz ist erforderlich.",
+      "invalidFrequency": "Ungültiger Frequenzwert.",
+      "failedToStartTelegramPolling": "Fehler beim Starten der Telegram-Abfrage.",
+      "failedToStopTelegramPolling": "Fehler beim Stoppen der Telegram-Abfrage.",
+      "invalidTelegramTokenFormat": "Ungültiges Format des Telegram-Bot-Tokens.",
+      "invalidBotToken": "Ungültiges Bot-Token oder Bot nicht erreichbar.",
+      "chatIdRequired": "Chat-ID ist erforderlich.",
+      "areaNotFound": "Bereich nicht gefunden oder gehört nicht zum aktuellen Benutzer.",
+      "areaNameRequired": "Bereichsname ist erforderlich.",
+      "tagNotFound": "Tag nicht gefunden",
+      "tagNameRequired": "Tag-Name ist erforderlich",
+      "tagDeleted": "Tag erfolgreich gelöscht",
+      "demoModeGoogleCalendar": "Demomodus: Google Kalender-Integration simuliert",
+      "failedToGenerateAuthUrl": "Fehler beim Generieren der Autorisierungs-URL",
+      "authCodeNotProvided": "Autorisierungscode nicht bereitgestellt",
+      "failedToCheckCalendarStatus": "Fehler beim Überprüfen des Kalenderstatus",
+      "failedToFetchCalendarEvents": "Fehler beim Abrufen der Kalenderereignisse",
+      "googleCalendarDisconnected": "Google Kalender getrennt",
+      "failedToDisconnectCalendar": "Trennen des Kalenders fehlgeschlagen",
+      "urlParameterRequired": "URL-Parameter ist erforderlich",
+      "couldNotExtractMetadata": "Metadaten konnten nicht extrahiert werden",
+      "textParameterRequired": "Textparameter ist erforderlich",
+      "notFound": "Nicht gefunden",
+      "resourceNotFound": "Die angeforderte Ressource konnte nicht gefunden werden."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Willkommen bei tududi!\n\nIhr persönlicher Aufgabenmanagement-Bot ist jetzt verbunden und bereit zu helfen!\n\n📝 Senden Sie mir einfach eine Nachricht und ich füge sie als Element zu Ihrem tududi-Posteingang hinzu.\n\n✨ Befehle:\n• /help - Hilfeinformationen anzeigen\n• /start - Willkommensnachricht anzeigen\n• Geben Sie einfach einen beliebigen Text ein - Fügen Sie ihn als Posteingangselement hinzu\n\nLass uns organisiert werden! 🚀",
+    "helpMessage": "📋 tududi Bot Hilfe\n\nSenden Sie mir eine beliebige Textnachricht und ich füge sie als Element zu Ihrem tududi-Posteingang hinzu.\n\nBefehle:\n/start - Willkommensnachricht\n/help - Diese Hilfenachricht anzeigen\n\nGeben Sie einfach Ihr Element ein und ich kümmere mich um den Rest!",
+    "commandProcessed": "Befehl erfolgreich verarbeitet",
+    "messageProcessed": "Nachricht erfolgreich verarbeitet",
+    "failedToAddToInbox": "❌ Hinzufügen zum Posteingang fehlgeschlagen: {{error}}"
   }
 }
