@@ -24,13 +24,31 @@ const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const languages: LanguageOption[] = [
+        { code: 'ar', name: t('profile.arabic'), flag: '🇸🇦' },
+        { code: 'bg', name: t('profile.bulgarian'), flag: '🇧🇬' },
+        { code: 'zh', name: t('profile.chinese'), flag: '🇨🇳' },
+        { code: 'da', name: t('profile.danish'), flag: '🇩🇰' },
         { code: 'de', name: t('profile.deutsch'), flag: '🇩🇪' },
+        { code: 'nl', name: t('profile.dutch'), flag: '🇳🇱' },
         { code: 'en', name: t('profile.english'), flag: '🇺🇸' },
+        { code: 'fi', name: t('profile.finnish'), flag: '🇫🇮' },
+        { code: 'fr', name: t('profile.french'), flag: '🇫🇷' },
         { code: 'el', name: t('profile.greek'), flag: '🇬🇷' },
+        { code: 'id', name: t('profile.indonesian'), flag: '🇮🇩' },
         { code: 'it', name: t('profile.italian'), flag: '🇮🇹' },
         { code: 'jp', name: t('profile.japanese'), flag: '🇯🇵' },
+        { code: 'ko', name: t('profile.korean'), flag: '🇰🇷' },
+        { code: 'no', name: t('profile.norwegian'), flag: '🇳🇴' },
+        { code: 'pl', name: t('profile.polish'), flag: '🇵🇱' },
+        { code: 'pt', name: t('profile.portuguese'), flag: '🇵🇹' },
+        { code: 'ro', name: t('profile.romanian'), flag: '🇷🇴' },
+        { code: 'ru', name: t('profile.russian'), flag: '🇷🇺' },
+        { code: 'sl', name: t('profile.slovenian'), flag: '🇸🇮' },
         { code: 'es', name: t('profile.spanish'), flag: '🇪🇸' },
+        { code: 'sv', name: t('profile.swedish'), flag: '🇸🇪' },
+        { code: 'tr', name: t('profile.turkish'), flag: '🇹🇷' },
         { code: 'ua', name: t('profile.ukrainian'), flag: '🇺🇦' },
+        { code: 'vi', name: t('profile.vietnamese'), flag: '🇻🇳' },
     ].sort((a, b) => a.name.localeCompare(b.name));
 
     const selectedLanguage = languages.find(lang => lang.code === value) || languages[0];

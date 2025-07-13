@@ -17,7 +17,8 @@
     "area": "Περιοχή",
     "status": "Κατάσταση",
     "saving": "Αποθήκευση...",
-    "none": "Κανένα"
+    "none": "Κανένα",
+    "settings": "Ρυθμίσεις"
   },
   "sidebar": {
     "dashboard": "Πίνακας Ελέγχου",
@@ -66,7 +67,19 @@
     "worseThanYesterday": "{{percentage}}% λιγότερα από χθες",
     "sameAsAverage": "Ίδια με τον μέσο όρο",
     "betterThanAverage": "{{percentage}}% περισσότερα από τον μέσο όρο",
-    "worseThanAverage": "{{percentage}}% λιγότερα από τον μέσο όρο"
+    "worseThanAverage": "{{percentage}}% λιγότερα από τον μέσο όρο",
+    "metrics": "Μετρήσεις",
+    "showMetrics": "Εμφάνιση Μετρήσεων",
+    "hideMetrics": "Απόκρυψη Μετρήσεων",
+    "insights": "Επισημάνσεις",
+    "showInsights": "Εμφάνιση Επισημάνσεων",
+    "hideInsights": "Απόκρυψη Επισημάνσεων",
+    "intelligence": "Έξυπνες Συμβουλές",
+    "showIntelligence": "Εμφάνιση Έξυπνων Συμβουλών",
+    "hideIntelligence": "Απόκρυψη Έξυπνων Συμβουλών",
+    "completed": "Ολοκληρωμένα",
+    "showCompleted": "Εμφάνιση Ολοκληρωμένων Εργασιών",
+    "hideCompleted": "Απόκρυψη Ολοκληρωμένων Εργασιών"
   },
   "auth": {
     "login": "Σύνδεση",
@@ -100,8 +113,6 @@
     "languagePreference": "Προτίμηση Γλώσσας",
     "personalInfo": "Προσωπικές Πληροφορίες",
     "notifications": "Ειδοποιήσεις",
-    "title": "Ρυθμίσεις Προφίλ",
-    "language": "Γλώσσα",
     "appearance": "Εμφάνιση",
     "lightMode": "Φωτεινό Θέμα",
     "darkMode": "Σκοτεινό Θέμα",
@@ -160,12 +171,6 @@
     "nextTaskSuggestion": "Πρόταση Επόμενης Εργασίας",
     "nextTaskSuggestionDescription": "Αυτόματη πρόταση της καλύτερης επόμενης εργασίας για δουλειά όταν δεν έχετε τίποτα σε εξέλιξη, δίνοντας προτεραιότητα σε εργασίες που λήγουν σήμερα, μετά σε προτεινόμενες εργασίες από τη σελίδα Σήμερα.",
     "enableNextTaskSuggestion": "Ενεργοποίηση Προτάσεων Επόμενης Εργασίας",
-    "productivityAssistant": "Βοηθός Παραγωγικότητας",
-    "productivityAssistantDescription": "Εμφάνιση πληροφοριών παραγωγικότητας που βοηθούν στον εντοπισμό σταματημένων έργων, ασαφών εργασιών και βελτιώσεων ροής εργασίας στη σελίδα Σήμερα.",
-    "enableProductivityAssistant": "Ενεργοποίηση Πληροφοριών Παραγωγικότητας",
-    "nextTaskSuggestion": "Πρόταση Επόμενης Εργασίας",
-    "nextTaskSuggestionDescription": "Αυτόματη πρόταση της καλύτερης επόμενης εργασίας για δουλειά όταν δεν έχετε τίποτα σε εξέλιξη, δίνοντας προτεραιότητα σε εργασίες που λήγουν σήμερα, μετά σε προτεινόμενες εργασίες από τη σελίδα Σήμερα.",
-    "enableNextTaskSuggestion": "Ενεργοποίηση Προτάσεων Επόμενης Εργασίας",
     "nextActionPrompt": "Ποια είναι η επόμενη συγκεκριμένη ενέργεια για αυτό το έργο;",
     "nextActionPlaceholder": "π.χ., Καλέστε τον πελάτη για ραντεβού, Αναζητήστε ανταγωνιστές online, Δημιουργήστε φάκελο έργου...",
     "addNextAction": "Προσθέστε Επόμενη Ενέργεια",
@@ -195,7 +200,47 @@
     "changingPassword": "Αλλαγή κωδικού...",
     "accountSettings": "Λογαριασμός & Προτιμήσεις",
     "aiProductivityFeatures": "Χαρακτηριστικά A.I. & Παραγωγικότητας",
-    "botSetup": "Ρύθμιση Bot"
+    "botSetup": "Ρύθμιση Bot",
+    "settings": "Ρυθμίσεις Προφίλ",
+    "light": "Φωτεινό",
+    "dark": "Σκοτεινό",
+    "settingUp": "Ρύθμιση...",
+    "telegramSetupSuccess": "Ο bot του Telegram \"{{botName}}\" ρυθμίστηκε επιτυχώς!",
+    "telegramSetupFailed": "Αποτυχία ρύθμισης του bot του Telegram.",
+    "invalidTelegramToken": "Μη έγκυρη μορφή token του bot του Telegram.",
+    "telegramInstructions": "Πηγαίνετε στο https://t.me/{{botUsername}} και ξεκινήστε να συνομιλείτε με το bot σας για να το συνδέσετε με τον λογαριασμό σας στο tududi.",
+    "botConfigured": "Ο bot ρυθμίστηκε επιτυχώς!",
+    "botUsername": "Όνομα Χρήστη Bot:",
+    "pollingStatus": "Κατάσταση Polling:",
+    "pollingActive": "Ενεργό - Λήψη μηνυμάτων",
+    "pollingInactive": "Ανενεργό - Δεν λαμβάνει μηνύματα",
+    "pollingStarted": "Ξεκίνησε το polling του Telegram",
+    "pollingStopped": "Σταμάτησε το polling του Telegram",
+    "pollingError": "Σφάλμα διαχείρισης του polling του Telegram",
+    "startPollingFailed": "Αποτυχία έναρξης polling",
+    "stopPollingFailed": "Αποτυχία διακοπής polling",
+    "testTelegramMessage": "Δοκιμή Telegram",
+    "testMessageSent": "Το δοκιμαστικό μήνυμα στάλθηκε επιτυχώς!",
+    "testMessageFailed": "Αποτυχία αποστολής δοκιμαστικού μηνύματος.",
+    "testMessageError": "Σφάλμα κατά την αποστολή δοκιμαστικού μηνύματος.",
+    "french": "Γαλλικά",
+    "russian": "Ρωσικά",
+    "turkish": "Τουρκικά",
+    "korean": "Κορεατικά",
+    "vietnamese": "Βιετναμέζικα",
+    "arabic": "Αραβικά",
+    "dutch": "Ολλανδικά",
+    "romanian": "Ρουμανικά",
+    "chinese": "Κινεζικά",
+    "portuguese": "Πορτογαλικά",
+    "indonesian": "Ινδονησιακά",
+    "bulgarian": "Βουλγαρικά",
+    "danish": "Δανικά",
+    "finnish": "Φινλανδικά",
+    "norwegian": "Νορβηγικά",
+    "polish": "Πολωνικά",
+    "slovenian": "Σλοβενικά",
+    "swedish": "Σουηδικά"
   },
   "errors": {
     "required": "Αυτό το πεδίο είναι υποχρεωτικό",
@@ -216,7 +261,11 @@
     "failedToSaveArea": "Αποτυχία αποθήκευσης περιοχής.",
     "projectCreationFailed": "Αποτυχία δημιουργίας έργου.",
     "projectNameRequired": "Το όνομα έργου είναι υποχρεωτικό.",
-    "projectSaveFailed": "Αποτυχία αποθήκευσης έργου."
+    "projectSaveFailed": "Αποτυχία αποθήκευσης έργου.",
+    "minLength": "Το ελάχιστο μήκος είναι {{length}} χαρακτήρες",
+    "maxLength": "Το μέγιστο μήκος είναι {{length}} χαρακτήρες",
+    "serverError": "Σφάλμα διακομιστή, παρακαλώ δοκιμάστε ξανά αργότερα",
+    "networkError": "Σφάλμα δικτύου, παρακαλώ ελέγξτε τη σύνδεσή σας"
   },
   "dropdown": {
     "createNew": "Δημιουργία Νέου",
@@ -246,7 +295,9 @@
     "addToPlanHint": "Χρησιμοποιήστε τα εικονίδια ημερολογίου δίπλα στις εργασίες για να τις προσθέσετε στο σημερινό σας σχέδιο",
     "blankSlateHint": "Ξεκινήστε δημιουργώντας μια νέα εργασία ή αλλάζοντας τα φίλτρα σας.",
     "addToToday": "Προσθήκη στο σημερινό σχέδιο",
-    "removeFromToday": "Αφαίρεση από το σημερινό σχέδιο"
+    "removeFromToday": "Αφαίρεση από το σημερινό σχέδιο",
+    "setInProgress": "Ορισμός ως 'Σε Εξέλιξη'",
+    "setNotStarted": "Ορισμός ως 'Δεν Έχει Ξεκινήσει'"
   },
   "timeline": {
     "activityTimeline": "Χρονοδιάγραμμα Δραστηριότητας",
@@ -372,10 +423,6 @@
     "createTag": "Δημιουργία Ετικέτας",
     "createProject": "Δημιουργία Έργου",
     "updateProject": "Ενημέρωση Έργου",
-    "deleteProject": {
-      "title": "Διαγραφή Έργου",
-      "message": "Είστε σίγουροι ότι θέλετε να διαγράψετε το έργο \"{{projectName}}\";"
-    },
     "deleteArea": {
       "title": "Διαγραφή Περιοχής",
       "message": "Είστε σίγουροι ότι θέλετε να διαγράψετε την περιοχή \"{{areaName}}\";"
@@ -433,7 +480,21 @@
         "completionBased": "Επανάληψη μετά την ολοκλήρωση"
       },
       "recurrenceSettings": "Ρυθμίσεις Επανάληψης",
-      "completionBasedHelp": "Αν είναι ενεργοποιημένο, η επόμενη εργασία θα δημιουργηθεί με βάση την ημερομηνία ολοκλήρωσης αντί της ημερομηνίας λήξης"
+      "completionBasedHelp": "Αν είναι ενεργοποιημένο, η επόμενη εργασία θα δημιουργηθεί με βάση την ημερομηνία ολοκλήρωσης αντί της ημερομηνίας λήξης",
+      "dueDatePlaceholder": "Επιλέξτε ημερομηνία λήξης",
+      "endDatePlaceholder": "Επιλέξτε ημερομηνία λήξης",
+      "nameHelper": {
+        "title": "Κάντε το πιο περιγραφικό!",
+        "suggestion": "Δοκιμάστε να προσθέσετε περισσότερες λεπτομέρειες όπως \"Κλήση στον οδοντίατρο για να κανονίσετε ραντεβού καθαρισμού\" αντί για απλά \"Κλήση στον οδοντίατρο\"",
+        "short": "Κάντε το πιο περιγραφικό!",
+        "noVerb": "Προσθέστε ένα ρήμα δράσης!",
+        "vague": "Να είστε πιο συγκεκριμένοι!"
+      },
+      "suggestions": {
+        "short": "Προσπαθήστε να είστε πιο συγκεκριμένοι σχετικά με το τι πρέπει να γίνει",
+        "noVerb": "Ποια συγκεκριμένη ενέργεια πρέπει να κάνετε; Δοκιμάστε να ξεκινήσετε με ένα ρήμα.",
+        "vague": "Δοκιμάστε να ξεκινήσετε με ένα ρήμα δράσης όπως \"Καλέστε\", \"Γράψτε\", \"Προγραμματίστε\", ή \"Έρευνα\""
+      }
     }
   },
   "priority": {
@@ -473,15 +534,27 @@
       "short": "Προσπαθήστε να είστε πιο συγκεκριμένοι για το τι πρέπει να γίνει",
       "noVerb": "Ποια συγκεκριμένη ενέργεια πρέπει να κάνετε; Δοκιμάστε να ξεκινήσετε με ένα ρήμα.",
       "vague": "Δοκιμάστε να ξεκινήσετε με ένα ρήμα ενέργειας όπως \"Καλέστε\", \"Γράψτε\", \"Προγραμματίστε\" ή \"Αναζητήστε\""
-    }
+    },
+    "updateSuccess": "Η εργασία ενημερώθηκε επιτυχώς",
+    "updateError": "Αποτυχία ενημέρωσης της εργασίας",
+    "deleteSuccess": "Η εργασία διαγράφηκε επιτυχώς",
+    "deleteError": "Αποτυχία διαγραφής της εργασίας",
+    "startedSuccessfully": "Η εργασία ξεκίνησε επιτυχώς!",
+    "created": "Εργασία",
+    "createdSuccessfully": "δημιουργήθηκε επιτυχώς!",
+    "updated": "Εργασία",
+    "updatedSuccessfully": "ενημερώθηκε επιτυχώς!",
+    "deleted": "Εργασία",
+    "deletedSuccessfully": "διαγράφηκε επιτυχώς!"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
     "short": "d MMM yyyy",
     "monthYear": "MMMM yyyy",
     "dayMonth": "d MMMM",
-    "time": "H:mm",
-    "dateTime": "d MMM yyyy, H:mm"
+    "time": "HH:mm",
+    "dateTime": "d MMM yyyy, HH:mm",
+    "todayHeader": "dddd, d MMMM yyyy"
   },
   "dateIndicators": {
     "today": "ΣΗΜΕΡΑ",
@@ -517,7 +590,18 @@
     "createNote": "Δημιουργία Σημείωσης",
     "convertTo": "Μετατροπή σε",
     "deleteConfirmTitle": "Διαγραφή Αντικειμένου",
-    "deleteConfirmMessage": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το αντικείμενο από τα εισερχόμενα; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί."
+    "deleteConfirmMessage": "Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτό το αντικείμενο από τα εισερχόμενα; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+    "saveToInbox": "Αποθήκευση στα Εισερχόμενα",
+    "itemProcessed": "Το αντικείμενο επεξεργάστηκε",
+    "itemDeleted": "Το αντικείμενο διαγράφηκε",
+    "itemUpdated": "Το αντικείμενο ενημερώθηκε",
+    "newTelegramItem": "Νέο αντικείμενο από το Telegram: {{content}}",
+    "newItem": "Προστέθηκε νέο αντικείμενο στο εισερχόμενο: {{content}}",
+    "multipleNewItems": "Προστέθηκαν {{count}} νέα αντικείμενα",
+    "loadError": "Αποτυχία φόρτωσης αντικειμένων εισερχομένων",
+    "processError": "Αποτυχία επεξεργασίας αντικειμένου εισερχομένων",
+    "deleteError": "Αποτυχία διαγραφής αντικειμένου εισερχομένων",
+    "contentRequired": "Το περιεχόμενο δεν μπορεί να είναι κενό"
   },
   "success": {
     "noteUpdated": "Η σημείωση ενημερώθηκε με επιτυχία!",
@@ -587,16 +671,17 @@
     "secondWeek": "Δεύτερη εβδομάδα",
     "thirdWeek": "Τρίτη εβδομάδα",
     "fourthWeek": "Τέταρτη εβδομάδα",
-    "lastWeek": "Τελευταία εβδομάδα"
+    "lastWeek": "Τελευταία εβδομάδα",
+    "days": "ημέρες"
   },
   "weekdays": {
-    "sunday": "Κυριακή",
-    "monday": "Δευτέρα",
-    "tuesday": "Τρίτη",
-    "wednesday": "Τετάρτη",
-    "thursday": "Πέμπτη",
-    "friday": "Παρασκευή",
-    "saturday": "Σάββατο"
+    "monday": "Δευ",
+    "tuesday": "Τρι",
+    "wednesday": "Τετ",
+    "thursday": "Πεμ",
+    "friday": "Παρ",
+    "saturday": "Σαβ",
+    "sunday": "Κυρ"
   },
   "project": {
     "name": "Όνομα Έργου",
@@ -657,23 +742,5 @@
     "low": "Χαμηλή",
     "time": "Ώρα",
     "allDay": "Όλη μέρα"
-  },
-  "weekdays": {
-    "monday": "Δευ",
-    "tuesday": "Τρι",
-    "wednesday": "Τετ",
-    "thursday": "Πεμ",
-    "friday": "Παρ",
-    "saturday": "Σαβ",
-    "sunday": "Κυρ"
-  },
-  "dateFormats": {
-    "long": "EEEE, d MMMM yyyy",
-    "short": "d MMM yyyy",
-    "monthYear": "MMMM yyyy",
-    "dayMonth": "d MMMM",
-    "time": "HH:mm",
-    "dateTime": "d MMM yyyy, HH:mm",
-    "todayHeader": "dddd, d MMMM yyyy"
   }
 }

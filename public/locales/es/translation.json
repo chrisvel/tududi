@@ -17,7 +17,8 @@
     "area": "Área",
     "status": "Estado",
     "saving": "Guardando...",
-    "none": "Ninguno"
+    "none": "Ninguno",
+    "settings": "Configuraciones"
   },
   "sidebar": {
     "dashboard": "Tablero",
@@ -66,7 +67,19 @@
     "worseThanYesterday": "{{percentage}}% menos que ayer",
     "sameAsAverage": "Igual que el promedio",
     "betterThanAverage": "{{percentage}}% más que el promedio",
-    "worseThanAverage": "{{percentage}}% menos que el promedio"
+    "worseThanAverage": "{{percentage}}% menos que el promedio",
+    "metrics": "Métricas",
+    "showMetrics": "Mostrar Métricas",
+    "hideMetrics": "Ocultar Métricas",
+    "insights": "Perspectivas",
+    "showInsights": "Mostrar Perspectivas",
+    "hideInsights": "Ocultar Perspectivas",
+    "intelligence": "Inteligencia",
+    "showIntelligence": "Mostrar Sugerencias de Inteligencia",
+    "hideIntelligence": "Ocultar Sugerencias de Inteligencia",
+    "completed": "Completado",
+    "showCompleted": "Mostrar Tareas Completadas",
+    "hideCompleted": "Ocultar Tareas Completadas"
   },
   "auth": {
     "login": "Iniciar Sesión",
@@ -151,7 +164,6 @@
     "accountSettings": "Cuenta y Preferencias",
     "aiProductivityFeatures": "Funciones de IA y Productividad",
     "botSetup": "Configuración del Bot",
-    "successMessage": "¡Perfil actualizado con éxito!",
     "pollingNote": "El sondeo verifica periódicamente nuevos mensajes de Telegram y los agrega a tu bandeja de entrada.",
     "pollingDescription": "El sondeo verifica periódicamente nuevos mensajes de Telegram y los agrega a tu bandeja de entrada.",
     "startPolling": "Iniciar Sondeo",
@@ -163,7 +175,72 @@
     "setupTelegram": "Configurar Telegram",
     "setupTelegramLower": "configurar telegram",
     "passwordChangeNote": "Los cambios de contraseña se guardarán cuando hagas clic en \"Guardar Cambios\" en la parte inferior del formulario.",
-    "passwordChangeOptional": "Deja los campos de contraseña vacíos para actualizar otras configuraciones sin cambiar tu contraseña."
+    "passwordChangeOptional": "Deja los campos de contraseña vacíos para actualizar otras configuraciones sin cambiar tu contraseña.",
+    "settings": "Configuraciones de Perfil",
+    "lightMode": "Modo Claro",
+    "darkMode": "Modo Oscuro",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "languageChangedNote": "Los cambios de idioma se aplican inmediatamente",
+    "languageChanging": "Cambiando idioma...",
+    "telegramIntegration": "Integración de Telegram",
+    "telegramDescription": "Conecta tu cuenta de tududi a un bot de Telegram para agregar elementos a tu bandeja de entrada a través de mensajes de Telegram.",
+    "telegramBotToken": "Token del Bot de Telegram",
+    "telegramTokenDescription": "Crea un bot con @BotFather en Telegram y pega el token aquí.",
+    "telegramConnected": "¡Tu cuenta de Telegram está conectada! Envía mensajes a tu bot para agregar elementos a tu bandeja de entrada de tududi.",
+    "settingUp": "Configurando...",
+    "telegramSetupSuccess": "Bot de Telegram \"{{botName}}\" configurado exitosamente!",
+    "telegramSetupFailed": "Falló la configuración del bot de Telegram.",
+    "invalidTelegramToken": "Formato de token del bot de Telegram inválido.",
+    "telegramInstructions": "Ve a https://t.me/{{botUsername}} y comienza a chatear con tu bot para conectarlo a tu cuenta de tududi.",
+    "botConfigured": "¡Bot configurado exitosamente!",
+    "botUsername": "Nombre de Usuario del Bot:",
+    "pollingStatus": "Estado de Sondeo:",
+    "pollingActive": "Activo - Recibiendo mensajes",
+    "pollingInactive": "Inactivo - No recibiendo mensajes",
+    "pollingStarted": "Sondeo de Telegram iniciado",
+    "pollingStopped": "Sondeo de Telegram detenido",
+    "pollingError": "Error al gestionar el sondeo de Telegram",
+    "startPollingFailed": "Falló al iniciar el sondeo",
+    "stopPollingFailed": "Falló al detener el sondeo",
+    "testTelegramMessage": "Probar Telegram",
+    "testMessageSent": "¡Mensaje de prueba enviado exitosamente!",
+    "testMessageFailed": "Falló al enviar el mensaje de prueba.",
+    "testMessageError": "Error al enviar el mensaje de prueba.",
+    "taskSummaryNotifications": "Notificaciones de Resumen de Tareas",
+    "taskSummaryDescription": "Reciba resúmenes regulares de sus tareas a través de Telegram. Esta función requiere que la integración de Telegram esté configurada.",
+    "enableTaskSummaries": "Habilitar Resúmenes de Tareas",
+    "summaryFrequency": "Frecuencia de resumen",
+    "summaryFrequencyDescription": "Elija con qué frecuencia desea recibir resúmenes de tareas",
+    "sendTestSummary": "Enviar resumen de prueba",
+    "frequency": {
+      "1h": "1 hora",
+      "2h": "2 horas",
+      "4h": "4 horas",
+      "8h": "8 horas",
+      "12h": "12 horas",
+      "daily": "1 día",
+      "weekly": "1 semana"
+    },
+    "frequencyHelp": "Elija con qué frecuencia desea recibir resúmenes de tareas",
+    "french": "Francés",
+    "russian": "Ruso",
+    "turkish": "Turco",
+    "korean": "Coreano",
+    "vietnamese": "Vietnamita",
+    "arabic": "Árabe",
+    "dutch": "Holandés",
+    "romanian": "Rumano",
+    "chinese": "Chino",
+    "portuguese": "Portugués",
+    "indonesian": "Indonesio",
+    "bulgarian": "Búlgaro",
+    "danish": "Danés",
+    "finnish": "Finlandés",
+    "norwegian": "Noruego",
+    "polish": "Polaco",
+    "slovenian": "Esloveno",
+    "swedish": "Sueco"
   },
   "errors": {
     "required": "Este campo es obligatorio",
@@ -180,7 +257,15 @@
     "failedToSaveNote": "Error al guardar la nota.",
     "projectCreationFailed": "Error al crear el proyecto.",
     "projectNameRequired": "El nombre del proyecto es obligatorio.",
-    "projectSaveFailed": "Error al guardar el proyecto."
+    "projectSaveFailed": "Error al guardar el proyecto.",
+    "minLength": "La longitud mínima es de {{length}} caracteres",
+    "maxLength": "La longitud máxima es de {{length}} caracteres",
+    "serverError": "Error del servidor, por favor intente de nuevo más tarde",
+    "networkError": "Error de red, por favor verifique su conexión",
+    "areaNameRequired": "Se requiere el nombre del área.",
+    "failedToSaveArea": "No se pudo guardar el área.",
+    "tagNameRequired": "Se requiere el nombre de la etiqueta.",
+    "failedToSaveTag": "No se pudo guardar la etiqueta."
   },
   "dropdown": {
     "createNew": "Crear Nuevo",
@@ -206,7 +291,13 @@
     "addToPlanHint": "Usa los iconos + junto a las tareas sugeridas para añadirlas a tu plan de hoy",
     "blankSlateHint": "Comience creando una nueva tarea o cambiando sus filtros.",
     "addToToday": "Añadir al plan de hoy",
-    "removeFromToday": "Eliminar del plan de hoy"
+    "removeFromToday": "Eliminar del plan de hoy",
+    "weeklyCompletions": "Progreso Semanal",
+    "taskCompleted": "tarea completada",
+    "tasksCompleted": "tareas completadas",
+    "metrics": "Métricas",
+    "setInProgress": "Establecer en progreso",
+    "setNotStarted": "Establecer como no iniciado"
   },
   "timeline": {
     "activityTimeline": "Línea de Tiempo de Actividad",
@@ -289,6 +380,28 @@
     "deleteProject": {
       "title": "Eliminar Proyecto",
       "message": "¿Estás seguro de que quieres eliminar el proyecto \"{{projectName}}\"?"
+    },
+    "deleteTask": {
+      "title": "Eliminar Tarea",
+      "confirmation": "¿Está seguro de que desea eliminar esta tarea? Esta acción no se puede deshacer."
+    },
+    "areaCreation": "Crear Nueva Área",
+    "areaEdit": "Editar Área",
+    "updateArea": "Actualizar Área",
+    "createArea": "Crear Área",
+    "updateTag": "Actualizar Etiqueta",
+    "createTag": "Crear Etiqueta",
+    "deleteTag": {
+      "title": "Eliminar Etiqueta",
+      "message": "¿Está seguro de que desea eliminar la etiqueta \"{{tagName}}\"?"
+    },
+    "deleteArea": {
+      "title": "Eliminar Área",
+      "message": "¿Está seguro de que desea eliminar el área \"{{areaName}}\"?"
+    },
+    "deleteNote": {
+      "title": "Eliminar Nota",
+      "message": "¿Está seguro de que desea eliminar la nota \"{{noteTitle}}\"?"
     }
   },
   "forms": {
@@ -339,7 +452,21 @@
       "creatingProject": "Creando...",
       "createProject": "+ Crear",
       "recurrenceSettings": "Configuración de Recurrencia",
-      "completionBasedHelp": "Si está marcado, la siguiente tarea se creará basándose en la fecha de finalización en lugar de la fecha de vencimiento"
+      "completionBasedHelp": "Si está marcado, la siguiente tarea se creará basándose en la fecha de finalización en lugar de la fecha de vencimiento",
+      "dueDatePlaceholder": "Seleccionar fecha de vencimiento",
+      "endDatePlaceholder": "Seleccionar fecha de finalización",
+      "nameHelper": {
+        "title": "¡Hazlo más descriptivo!",
+        "suggestion": "Intenta agregar más detalles como \"Llamar al dentista para programar una cita de limpieza\" en lugar de simplemente \"Llamar al dentista\"",
+        "short": "¡Hazlo más descriptivo!",
+        "noVerb": "¡Añade un verbo de acción!",
+        "vague": "¡Sé más específico!"
+      },
+      "suggestions": {
+        "short": "Intenta ser más específico sobre lo que necesita hacerse",
+        "noVerb": "¿Qué acción específica necesitas tomar? Intenta comenzar con un verbo.",
+        "vague": "Intenta comenzar con un verbo de acción como \"Llamar\", \"Escribir\", \"Programar\", o \"Investigar\""
+      }
     }
   },
   "dateFormats": {
@@ -377,7 +504,14 @@
     "unknown": "Desconocido"
   },
   "project": {
-    "name": "Nombre del Proyecto"
+    "name": "Nombre del Proyecto",
+    "projectImage": "Imagen del Proyecto",
+    "uploadImageHint": "Sube una imagen para tu proyecto (máx. 5MB)",
+    "browseImage": "Examinar Imagen",
+    "noNotes": "No hay notas para este proyecto.",
+    "deleteProject": "Eliminar Proyecto",
+    "showCompleted": "Mostrar Completados",
+    "createSuccess": "¡Proyecto creado exitosamente!"
   },
   "task": {
     "labels": {
@@ -399,7 +533,18 @@
     "nameHelper": {
       "title": "¡Hazlo más descriptivo!",
       "suggestion": "Intenta agregar más detalles como \"Llamar al dentista para programar cita de limpieza\" en lugar de solo \"Llamar dentista\""
-    }
+    },
+    "updateSuccess": "Tarea actualizada con éxito",
+    "updateError": "Error al actualizar la tarea",
+    "deleteSuccess": "Tarea eliminada con éxito",
+    "deleteError": "Error al eliminar la tarea",
+    "startedSuccessfully": "¡Tarea iniciada con éxito!",
+    "created": "Tarea",
+    "createdSuccessfully": "creada con éxito!",
+    "updated": "Tarea",
+    "updatedSuccessfully": "actualizada con éxito!",
+    "deleted": "Tarea",
+    "deletedSuccessfully": "eliminada con éxito!"
   },
   "dateIndicators": {
     "today": "HOY",
@@ -514,26 +659,17 @@
     "secondWeek": "Segunda semana",
     "thirdWeek": "Tercera semana",
     "fourthWeek": "Cuarta semana",
-    "lastWeek": "Última semana"
+    "lastWeek": "Última semana",
+    "days": "días"
   },
   "weekdays": {
-    "sunday": "Domingo",
-    "monday": "Lunes",
-    "tuesday": "Martes",
-    "wednesday": "Miércoles",
-    "thursday": "Jueves",
-    "friday": "Viernes",
-    "saturday": "Sábado"
-  },
-  "project": {
-    "name": "Nombre del Proyecto",
-    "projectImage": "Imagen del Proyecto",
-    "uploadImageHint": "Sube una imagen para tu proyecto (máx. 5MB)",
-    "browseImage": "Examinar Imagen",
-    "noNotes": "No hay notas para este proyecto.",
-    "deleteProject": "Eliminar Proyecto",
-    "showCompleted": "Mostrar Completados",
-    "createSuccess": "¡Proyecto creado exitosamente!"
+    "monday": "Lun",
+    "tuesday": "Mar",
+    "wednesday": "Mié",
+    "thursday": "Jue",
+    "friday": "Vie",
+    "saturday": "Sáb",
+    "sunday": "Dom"
   },
   "pomodoro": {
     "play": "Reproducir",
@@ -585,13 +721,21 @@
     "time": "Tiempo",
     "allDay": "Todo el día"
   },
-  "weekdays": {
-    "monday": "Lun",
-    "tuesday": "Mar",
-    "wednesday": "Mié",
-    "thursday": "Jue",
-    "friday": "Vie",
-    "saturday": "Sáb",
-    "sunday": "Dom"
+  "productivity": {
+    "stalledProjects": "Proyectos Estancados",
+    "stalledProjectsDesc": "Estos proyectos no tienen tareas o acciones",
+    "needsNextAction": "Proyectos Necesitan Próxima Acción",
+    "needsNextActionDesc": "Estos proyectos han completado tareas pero no tienen próxima acción",
+    "tasksAreProjects": "Tareas que Parecen Proyectos",
+    "tasksAreProjectsDesc": "Estas tareas podrían necesitar ser desglosadas",
+    "vagueTasks": "Tareas sin Acción Clara",
+    "vagueTasksDesc": "Estas tareas necesitan verbos de acción más claros",
+    "staleTasks": "Tareas Obsoletas",
+    "staleTasksDesc": "Tareas no actualizadas en {{days}} días",
+    "stuckProjects": "Proyectos Atascados",
+    "stuckProjectsDesc": "Proyectos no actualizados recientemente",
+    "issuesFound": "Se encontraron {{count}} problema(s) de productividad que necesitan atención",
+    "reviewItems": "Haga clic para revisar y mejorar su flujo de trabajo",
+    "suggestion": "Haga clic en cualquier elemento de arriba para abrirlo y hacer mejoras."
   }
 }
