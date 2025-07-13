@@ -574,29 +574,30 @@ const TasksToday: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Today Progress Bar - integrated with header */}
-                        {todaySettings.showProgressBar &&
-                            todayProgress.total > 0 && (
-                                <div className="mb-1">
-                                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
-                                        <div
-                                            className="h-1 rounded-full transition-all duration-500 ease-out bg-gradient-to-r from-blue-400 via-blue-500 to-blue-700"
-                                            style={{
-                                                width: `${todayProgress.percentage}%`,
-                                            }}
-                                        ></div>
-                                    </div>
-                                    {/* Daily Quote */}
-                                    {todaySettings.showDailyQuote &&
-                                        dailyQuote && (
-                                            <div className="mt-2">
-                                                <p className="text-s text-gray-400 dark:text-gray-500 font-light text-left">
-                                                    {dailyQuote}
-                                                </p>
-                                            </div>
-                                        )}
+                        {/* Today Progress Bar and Daily Quote */}
+                        <div className="mb-1">
+                            {/* Progress Bar - always show when setting is enabled */}
+                            {todaySettings.showProgressBar && (
+                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 mb-2">
+                                    <div
+                                        className="h-1 rounded-full transition-all duration-500 ease-out bg-gradient-to-r from-blue-400 via-blue-500 to-blue-700"
+                                        style={{
+                                            width: `${todayProgress.percentage}%`,
+                                        }}
+                                    ></div>
                                 </div>
                             )}
+                            
+                            {/* Daily Quote - show independently of progress bar */}
+                            {todaySettings.showDailyQuote &&
+                                dailyQuote && (
+                                    <div className="mt-2">
+                                        <p className="text-s text-gray-400 dark:text-gray-500 font-light text-left">
+                                            {dailyQuote}
+                                        </p>
+                                    </div>
+                                )}
+                        </div>
                     </div>
                 </div>
 
