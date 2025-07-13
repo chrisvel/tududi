@@ -298,6 +298,35 @@ const containsUrl = (text) => {
 };
 
 /**
+ * Check if text should be treated as long content
+ * @param {string} text - Text to check
+ * @returns {boolean} True if text is considered long
+ */
+const isLongText = (text) => {
+    if (!text) return false;
+
+    const trimmed = text.trim();
+
+    // Consider it long if:
+    // 1. More than 100 characters
+    // 2. Contains multiple sentences (2+ periods)
+    // 3. Contains line breaks
+    // 4. Contains more than 15 words
+
+    const charCount = trimmed.length;
+    const sentenceCount = (trimmed.match(/[.!?]+/g) || []).length;
+    const hasLineBreaks = /[\r\n]/.test(trimmed);
+    const wordCount = trimmed.split(/\s+/).length;
+
+    return (
+        charCount > 100 ||
+        sentenceCount >= 2 ||
+        hasLineBreaks ||
+        wordCount > 15
+    );
+};
+
+/**
  * Generate suggestion for an inbox item using rules engine
  * @param {string} content - Original content
  * @param {string[]} tags - Parsed tags
@@ -386,6 +415,7 @@ module.exports = {
     isActionVerb,
     startsWithVerb,
     containsUrl,
+    isLongText,
 
     // Parsing functions
     parseHashtags,
