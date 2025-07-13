@@ -866,5 +866,17 @@
     "commandProcessed": "명령이 성공적으로 처리되었습니다",
     "messageProcessed": "메시지가 성공적으로 처리되었습니다",
     "failedToAddToInbox": "❌ 수신함에 추가하는 데 실패했습니다: {{error}}"
+  },
+  "about": {
+    "title": "정보",
+    "version": "버전",
+    "description": "계층적 조직, 다국어 지원 및 텔레그램 통합이 포함된 자체 호스팅 작업 관리. 생산성 애호가를 위해 사랑으로 만들어졌습니다.",
+    "madeWithLove": "사랑으로 만들어짐",
+    "appreciation": "tududi를 사용해 주셔서 감사합니다! 여러분의 지원은 이 프로젝트를 지속 가능하게 하고 성장시키는 데 도움이 됩니다. 유용하다고 생각되면 개발 지원을 고려해 주세요.",
+    "supportDevelopment": "개발 지원",
+    "community": "커뮤니티",
+    "viewOnGitHub": "GitHub에서 보기",
+    "license": "개인 사용을 위한 라이센스",
+    "builtBy": "제작자"
   }
 }

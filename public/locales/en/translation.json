@@ -866,5 +866,17 @@
     "commandProcessed": "Command processed successfully",
     "messageProcessed": "Message processed successfully",
     "failedToAddToInbox": "❌ Failed to add to inbox: {{error}}"
+  },
+  "about": {
+    "title": "About",
+    "version": "Version",
+    "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration. Built with love for productivity enthusiasts.",
+    "madeWithLove": "Made with love",
+    "appreciation": "Thank you for using tududi! Your support helps keep this project alive and growing. If you find it useful, consider supporting the development.",
+    "supportDevelopment": "Support Development",
+    "community": "Community",
+    "viewOnGitHub": "View on GitHub",
+    "license": "Licensed for personal use",
+    "builtBy": "Built by"
   }
 }

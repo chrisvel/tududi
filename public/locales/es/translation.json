@@ -867,5 +867,17 @@
     "commandProcessed": "Comando procesado con éxito",
     "messageProcessed": "Mensaje procesado con éxito",
     "failedToAddToInbox": "❌ Error al agregar a la bandeja de entrada: {{error}}"
+  },
+  "about": {
+    "title": "Acerca de",
+    "version": "Versión",
+    "description": "Gestión de tareas autohospedada con organización jerárquica, soporte multilingüe e integración con Telegram. Construido con amor para los entusiastas de la productividad.",
+    "madeWithLove": "Hecho con amor",
+    "appreciation": "¡Gracias por usar tududi! Su apoyo ayuda a mantener este proyecto vivo y en crecimiento. Si lo encuentra útil, considere apoyar el desarrollo.",
+    "supportDevelopment": "Apoyar el Desarrollo",
+    "community": "Comunidad",
+    "viewOnGitHub": "Ver en GitHub",
+    "license": "Licenciado para uso personal",
+    "builtBy": "Construido por"
   }
 }

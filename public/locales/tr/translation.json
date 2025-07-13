@@ -866,5 +866,17 @@
     "commandProcessed": "Komut başarıyla işlendi",
     "messageProcessed": "Mesaj başarıyla işlendi",
     "failedToAddToInbox": "❌ Gelen kutusuna eklenemedi: {{error}}"
+  },
+  "about": {
+    "title": "Hakkında",
+    "version": "Sürüm",
+    "description": "Hiyerarşik organizasyon, çok dilli destek ve Telegram entegrasyonu ile kendi sunucunuzda barındırılan görev yönetimi. Üretkenlik tutkunları için sevgiyle inşa edildi.",
+    "madeWithLove": "Sevgiyle yapıldı",
+    "appreciation": "tududi'yi kullandığınız için teşekkür ederiz! Desteğiniz bu projenin yaşamasına ve büyümesine yardımcı oluyor. Eğer faydalı buluyorsanız, geliştirmeyi desteklemeyi düşünün.",
+    "supportDevelopment": "Geliştirmeyi Destekle",
+    "community": "Topluluk",
+    "viewOnGitHub": "GitHub'da Görüntüle",
+    "license": "Kişisel kullanım için lisanslı",
+    "builtBy": "Yapan"
   }
 }

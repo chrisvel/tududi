@@ -866,5 +866,17 @@
     "commandProcessed": "Komento käsitelty onnistuneesti",
     "messageProcessed": "Viesti käsitelty onnistuneesti",
     "failedToAddToInbox": "❌ Lisääminen postilaatikkoon epäonnistui: {{error}}"
+  },
+  "about": {
+    "title": "Tietoa",
+    "version": "Versio",
+    "description": "Itse isännöity tehtävienhallinta hierarkkisella organisaatiolla, monikielisellä tuella ja Telegram-integraatiolla. Rakennettu rakkaudella tuottavuuden ystäville.",
+    "madeWithLove": "Rakennettu rakkaudella",
+    "appreciation": "Kiitos, että käytät tududia! Tuki auttaa pitämään tämän projektin elävänä ja kasvavana. Jos löydät sen hyödylliseksi, harkitse kehityksen tukemista.",
+    "supportDevelopment": "Tukee kehitystä",
+    "community": "Yhteisö",
+    "viewOnGitHub": "Näytä GitHubissa",
+    "license": "Lisensoitu henkilökohtaiseen käyttöön",
+    "builtBy": "Rakentanut"
   }
 }

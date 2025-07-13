@@ -194,7 +194,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                                 aria-label="Create New"
                             >
                                 <PlusIcon className="h-6 w-6 flex-shrink-0 transition-transform duration-300 ease-out group-hover:rotate-90" />
-                                <span className="ml-2 text-sm font-medium whitespace-nowrap opacity-0 max-w-0 overflow-hidden group-hover:opacity-100 group-hover:max-w-[100px] transition-all duration-300 ease-out transform translate-x-[-10px] group-hover:translate-x-0">
+                                <span className="ml-2 text-sm font-medium whitespace-nowrap opacity-0 max-w-0 overflow-hidden group-hover:opacity-100 group-hover:max-w-[120px] transition-all duration-300 ease-out transform translate-x-[-10px] group-hover:translate-x-0">
                                     {t('dropdown.createNew', 'Create new')}
                                 </span>
                             </button>

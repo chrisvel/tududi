@@ -875,5 +875,17 @@
     "commandProcessed": "Befehl erfolgreich verarbeitet",
     "messageProcessed": "Nachricht erfolgreich verarbeitet",
     "failedToAddToInbox": "❌ Hinzufügen zum Posteingang fehlgeschlagen: {{error}}"
+  },
+  "about": {
+    "title": "Über",
+    "version": "Version",
+    "description": "Selbstgehostetes Aufgabenmanagement mit hierarchischer Organisation, Mehrsprachigkeit und Telegram-Integration. Mit Liebe für Produktivitätsenthusiasten entwickelt.",
+    "madeWithLove": "Mit Liebe gemacht",
+    "appreciation": "Danke, dass Sie tududi verwenden! Ihre Unterstützung hilft, dieses Projekt am Leben zu erhalten und wachsen zu lassen. Wenn Sie es nützlich finden, ziehen Sie in Betracht, die Entwicklung zu unterstützen.",
+    "supportDevelopment": "Entwicklung unterstützen",
+    "community": "Gemeinschaft",
+    "viewOnGitHub": "Auf GitHub ansehen",
+    "license": "Lizenz für die persönliche Nutzung",
+    "builtBy": "Hergestellt von"
   }
 }

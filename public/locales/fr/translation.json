@@ -866,5 +866,17 @@
     "commandProcessed": "Commande traitée avec succès",
     "messageProcessed": "Message traité avec succès",
     "failedToAddToInbox": "❌ Échec de l'ajout à la boîte de réception : {{error}}"
+  },
+  "about": {
+    "title": "À propos",
+    "version": "Version",
+    "description": "Gestion des tâches auto-hébergée avec organisation hiérarchique, support multilingue et intégration Telegram. Construit avec amour pour les passionnés de productivité.",
+    "madeWithLove": "Fait avec amour",
+    "appreciation": "Merci d'utiliser tududi ! Votre soutien aide à maintenir ce projet vivant et en croissance. Si vous le trouvez utile, envisagez de soutenir le développement.",
+    "supportDevelopment": "Soutenir le développement",
+    "community": "Communauté",
+    "viewOnGitHub": "Voir sur GitHub",
+    "license": "Licence pour usage personnel",
+    "builtBy": "Construit par"
   }
 }

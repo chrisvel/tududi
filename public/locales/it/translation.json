@@ -867,5 +867,17 @@
     "commandProcessed": "Comando elaborato con successo",
     "messageProcessed": "Messaggio elaborato con successo",
     "failedToAddToInbox": "❌ Impossibile aggiungere alla casella di posta: {{error}}"
+  },
+  "about": {
+    "title": "Informazioni",
+    "version": "Versione",
+    "description": "Gestione delle attività self-hosted con organizzazione gerarchica, supporto multilingue e integrazione con Telegram. Costruito con amore per gli appassionati di produttività.",
+    "madeWithLove": "Fatto con amore",
+    "appreciation": "Grazie per utilizzare tududi! Il tuo supporto aiuta a mantenere vivo e in crescita questo progetto. Se lo trovi utile, considera di supportare lo sviluppo.",
+    "supportDevelopment": "Supporta lo sviluppo",
+    "community": "Comunità",
+    "viewOnGitHub": "Visualizza su GitHub",
+    "license": "Licenza per uso personale",
+    "builtBy": "Creato da"
   }
 }

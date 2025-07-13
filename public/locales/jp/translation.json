@@ -866,5 +866,17 @@
     "commandProcessed": "コマンドが正常に処理されました",
     "messageProcessed": "メッセージが正常に処理されました",
     "failedToAddToInbox": "❌ 受信トレイに追加できませんでした: {{error}}"
+  },
+  "about": {
+    "title": "概要",
+    "version": "バージョン",
+    "description": "階層的な組織、マルチランゲージサポート、Telegram統合を備えたセルフホステッドのタスク管理。生産性愛好者のために愛を込めて作られました。",
+    "madeWithLove": "愛を込めて作られました",
+    "appreciation": "tududiをご利用いただきありがとうございます！あなたのサポートがこのプロジェクトを生かし、成長させる手助けになります。役立つと思ったら、開発を支援することを検討してください。",
+    "supportDevelopment": "開発を支援する",
+    "community": "コミュニティ",
+    "viewOnGitHub": "GitHubで見る",
+    "license": "個人使用のためのライセンス",
+    "builtBy": "作成者"
   }
 }

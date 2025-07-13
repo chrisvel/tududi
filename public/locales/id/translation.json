@@ -866,5 +866,17 @@
     "commandProcessed": "Perintah diproses dengan sukses",
     "messageProcessed": "Pesan diproses dengan sukses",
     "failedToAddToInbox": "❌ Gagal menambah ke kotak masuk: {{error}}"
+  },
+  "about": {
+    "title": "Tentang",
+    "version": "Versi",
+    "description": "Manajemen tugas yang dihosting sendiri dengan organisasi hierarkis, dukungan multi-bahasa, dan integrasi Telegram. Dibangun dengan cinta untuk para penggemar produktivitas.",
+    "madeWithLove": "Dibuat dengan cinta",
+    "appreciation": "Terima kasih telah menggunakan tududi! Dukungan Anda membantu menjaga proyek ini tetap hidup dan berkembang. Jika Anda merasa ini berguna, pertimbangkan untuk mendukung pengembangannya.",
+    "supportDevelopment": "Dukung Pengembangan",
+    "community": "Komunitas",
+    "viewOnGitHub": "Lihat di GitHub",
+    "license": "Lisensi untuk penggunaan pribadi",
+    "builtBy": "Dibangun oleh"
   }
 }
