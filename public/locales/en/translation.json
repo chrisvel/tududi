@@ -141,6 +141,7 @@
     "japanese": "Japanese",
     "ukrainian": "Ukrainian",
     "deutsch": "German",
+    "italian": "Italian",
     "title": "Profile Settings",
     "appearance": "Appearance",
     "lightMode": "Light Mode",
@@ -434,7 +435,8 @@
     "uploadImageHint": "Upload an image for your project (max 5MB)",
     "browseImage": "Browse Image",
     "noNotes": "No notes for this project.",
-    "deleteProject": "Delete Project"
+    "deleteProject": "Delete Project",
+    "createSuccess": "Project created successfully!"
   },
   "errors": {
     "required": "This field is required",
@@ -496,7 +498,8 @@
     "monthYear": "MMMM yyyy",
     "dayMonth": "MMMM d",
     "time": "h:mm a",
-    "dateTime": "MMM d, yyyy h:mm a"
+    "dateTime": "MMM d, yyyy h:mm a",
+    "todayHeader": "dddd, MMMM do, yyyy"
   },
   "dateIndicators": {
     "today": "TODAY",

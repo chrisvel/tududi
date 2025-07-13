@@ -42,7 +42,7 @@ i18nInstance
         fallbackLng: 'en',
         debug: false,
         load: 'languageOnly',
-        supportedLngs: ['en', 'es', 'el', 'jp', 'ua', 'de'],
+        supportedLngs: ['en', 'es', 'el', 'jp', 'ua', 'de', 'it'],
         nonExplicitSupportedLngs: true,
         resources: devResources,
         detection: {
