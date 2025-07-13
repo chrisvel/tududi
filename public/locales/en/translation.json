@@ -33,6 +33,13 @@
     "addAreaTitle": "Add Area",
     "addTagAriaLabel": "Add Tag",
     "addTagTitle": "Add Tag",
+    "addInboxAriaLabel": "Add Inbox Item",
+    "addInboxTitle": "Add Inbox Item",
+    "addProjectAriaLabel": "Add Project",
+    "addProjectTitle": "Add Project",
+    "addNoteAriaLabel": "Add Note",
+    "addNoteTitle": "Add Note",
+    "createNew": "Create New",
     "today": "Today",
     "upcoming": "Upcoming",
     "nextActions": "Next Actions",
@@ -112,6 +119,13 @@
     "hideActivityTimeline": "Hide Activity Timeline",
     "hideTimeline": "Hide Timeline",
     "failedToLoad": "Failed to load timeline",
+    "justNow": "Just now",
+    "minutesAgo": "{{minutes}}m ago",
+    "hoursAgo": "{{hours}}h ago",
+    "daysAgo": "{{days}}d ago",
+    "loadingTimeline": "Loading timeline...",
+    "timelineWillAppear": "Timeline will appear after saving",
+    "noActivity": "No activity yet",
     "events": {
       "taskCreated": "Task created",
       "statusChanged": "Status changed",
@@ -423,10 +437,12 @@
   },
   "dropdown": {
     "createNew": "Create New",
+    "inbox": "Inbox",
     "task": "Task",
     "project": "Project",
     "note": "Note",
-    "area": "Area"
+    "area": "Area",
+    "tag": "Tag"
   },
   "sort": {
     "due_date": "Due Date",
@@ -445,7 +461,9 @@
     "inProgress": "In Progress",
     "done": "Done",
     "archived": "Archived",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "telegramConnected": "Telegram connected and polling",
+    "telegramConnectionProblem": "Telegram connection problem"
   },
   "project": {
     "name": "Project Name",
@@ -676,7 +694,13 @@
     "thirdWeek": "Third week",
     "fourthWeek": "Fourth week",
     "lastWeek": "Last week",
-    "days": "days"
+    "days": "days",
+    "loadingParentSettings": "Loading parent task recurrence settings...",
+    "recurringTaskInstance": "Recurring Task Instance",
+    "inheritedSettingsMessage": "This task was generated from a recurring task. The recurrence settings shown below are inherited from the original task and cannot be edited here.",
+    "cancelEdit": "Cancel Edit",
+    "editParentRecurrence": "Edit Parent Recurrence",
+    "parentEditWarning": "⚠️ You are editing the parent task's recurrence settings. Changes will affect all future instances of this recurring task."
   },
   "weekdays": {
     "sunday": "Sunday",
@@ -736,5 +760,111 @@
     "low": "Low",
     "time": "Time",
     "allDay": "All day"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Page Not Found",
+      "message": "The page you're looking for doesn't exist."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Quick Inbox Capture",
+    "userMenu": "User Menu",
+    "collapseSidebar": "Collapse Sidebar",
+    "expandSidebar": "Expand Sidebar"
+  },
+  "upload": {
+    "uploading": "Uploading..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Search projects...",
+    "searchTags": "Search tags...",
+    "searchTasks": "Search tasks..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Hide info",
+    "aboutTasks": "About Tasks",
+    "hideSearch": "Hide search",
+    "searchTasks": "Search Tasks",
+    "aboutInbox": "About Inbox",
+    "collapseInfoPanel": "Collapse info panel",
+    "showTasksInformation": "Show tasks information",
+    "collapseSearchPanel": "Collapse search panel",
+    "showSearchInput": "Show search input",
+    "showInboxInformation": "Show inbox information"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Authentication required",
+      "userNotFound": "User not found",
+      "authenticationError": "Authentication error",
+      "internalServerError": "Internal server error",
+      "invalidLoginParameters": "Invalid login parameters.",
+      "invalidCredentials": "Invalid credentials",
+      "couldNotLogout": "Could not log out",
+      "loggedOutSuccessfully": "Logged out successfully",
+      "contentRequired": "Content is required",
+      "inboxItemNotFound": "Inbox item not found.",
+      "inboxItemDeleted": "Inbox item successfully deleted",
+      "contentRequiredString": "Content is required and must be a string",
+      "problemCreatingInboxItem": "There was a problem creating the inbox item.",
+      "problemUpdatingInboxItem": "There was a problem updating the inbox item.",
+      "problemDeletingInboxItem": "There was a problem deleting the inbox item.",
+      "problemProcessingInboxItem": "There was a problem processing the inbox item.",
+      "invalidOrderColumn": "Invalid order column specified.",
+      "taskNotFound": "Task not found.",
+      "taskNameRequired": "Task name is required.",
+      "invalidProject": "Invalid project.",
+      "unableToUpdateTask": "Unable to update task",
+      "taskDeleted": "Task successfully deleted",
+      "failedToGenerateRecurringTasks": "Failed to generate recurring tasks",
+      "failedToUpdateTodayFlag": "Failed to update task today flag",
+      "noImageProvided": "No image file provided",
+      "failedToUploadImage": "Failed to upload image",
+      "projectNotFound": "Project not found",
+      "projectNameRequired": "Project name is required",
+      "projectDeleted": "Project successfully deleted",
+      "noteNotFound": "Note not found.",
+      "noteDeleted": "Note deleted successfully.",
+      "profileNotFound": "Profile not found.",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "currentPasswordIncorrect": "Current password is incorrect",
+      "failedToUpdateProfile": "Failed to update profile.",
+      "passwordChangeRequired": "Current password and new password are required",
+      "passwordChangedSuccessfully": "Password changed successfully",
+      "failedToUpdateTaskSummary": "Failed to update task summary settings.",
+      "frequencyRequired": "Frequency is required.",
+      "invalidFrequency": "Invalid frequency value.",
+      "failedToStartTelegramPolling": "Failed to start Telegram polling.",
+      "failedToStopTelegramPolling": "Failed to stop Telegram polling.",
+      "invalidTelegramTokenFormat": "Invalid Telegram bot token format.",
+      "invalidBotToken": "Invalid bot token or bot not accessible.",
+      "chatIdRequired": "Chat ID is required.",
+      "areaNotFound": "Area not found or doesn't belong to the current user.",
+      "areaNameRequired": "Area name is required.",
+      "tagNotFound": "Tag not found",
+      "tagNameRequired": "Tag name is required",
+      "tagDeleted": "Tag successfully deleted",
+      "demoModeGoogleCalendar": "Demo mode: Google Calendar integration simulated",
+      "failedToGenerateAuthUrl": "Failed to generate authorization URL",
+      "authCodeNotProvided": "Authorization code not provided",
+      "failedToCheckCalendarStatus": "Failed to check calendar status",
+      "failedToFetchCalendarEvents": "Failed to fetch calendar events",
+      "googleCalendarDisconnected": "Google Calendar disconnected",
+      "failedToDisconnectCalendar": "Failed to disconnect calendar",
+      "urlParameterRequired": "URL parameter is required",
+      "couldNotExtractMetadata": "Could not extract metadata",
+      "textParameterRequired": "Text parameter is required",
+      "notFound": "Not Found",
+      "resourceNotFound": "The requested resource could not be found."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Welcome to tududi!\n\nYour personal task management bot is now connected and ready to help!\n\n📝 Simply send me any message and I'll add it to your tududi inbox as an item.\n\n✨ Commands:\n• /help - Show help information\n• /start - Show welcome message\n• Just type any text - Add it as an inbox item\n\nLet's get organized! 🚀",
+    "helpMessage": "📋 tududi Bot Help\n\nSend me any text message and I'll add it to your tududi inbox as an inbox item.\n\nCommands:\n/start - Welcome message\n/help - Show this help message\n\nJust type your item and I'll take care of the rest!",
+    "commandProcessed": "Command processed successfully",
+    "messageProcessed": "Message processed successfully",
+    "failedToAddToInbox": "❌ Failed to add to inbox: {{error}}"
   }
 }

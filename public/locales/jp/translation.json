@@ -38,7 +38,14 @@
     "addAreaAriaLabel": "エリアを追加",
     "addAreaTitle": "エリアを追加",
     "addTagAriaLabel": "タグを追加",
-    "addTagTitle": "タグを追加"
+    "addTagTitle": "タグを追加",
+    "addInboxAriaLabel": "受信トレイアイテムを追加",
+    "addInboxTitle": "受信トレイアイテムを追加",
+    "addProjectAriaLabel": "プロジェクトを追加",
+    "addProjectTitle": "プロジェクトを追加",
+    "addNoteAriaLabel": "ノートを追加",
+    "addNoteTitle": "ノートを追加",
+    "createNew": "新規作成"
   },
   "navigation": {
     "home": "ホーム",
@@ -128,7 +135,14 @@
       "priority": "優先度",
       "dueDate": "期限",
       "none": "なし"
-    }
+    },
+    "justNow": "たった今",
+    "minutesAgo": "{{minutes}}分前",
+    "hoursAgo": "{{hours}}時間前",
+    "daysAgo": "{{days}}日前",
+    "loadingTimeline": "タイムラインを読み込み中...",
+    "timelineWillAppear": "保存後にタイムラインが表示されます",
+    "noActivity": "まだアクティビティはありません"
   },
   "profile": {
     "taskIntelligence": "タスクインテリジェンス",
@@ -409,7 +423,9 @@
     "task": "タスク",
     "project": "プロジェクト",
     "note": "ノート",
-    "area": "エリア"
+    "area": "エリア",
+    "inbox": "受信トレイ",
+    "tag": "タグ"
   },
   "sort": {
     "due_date": "期限日",
@@ -562,7 +578,13 @@
     "thirdWeek": "第3週",
     "fourthWeek": "第4週",
     "lastWeek": "最終週",
-    "days": "日"
+    "days": "日",
+    "loadingParentSettings": "親タスクの繰り返し設定を読み込み中...",
+    "recurringTaskInstance": "繰り返しタスクインスタンス",
+    "inheritedSettingsMessage": "このタスクは定期的なタスクから生成されました。以下に示す定期設定は元のタスクから継承されており、ここでは編集できません。",
+    "cancelEdit": "編集をキャンセル",
+    "editParentRecurrence": "親の定期設定を編集",
+    "parentEditWarning": "⚠️ あなたは親タスクの定期設定を編集しています。変更はこの定期タスクの今後のすべてのインスタンスに影響します。"
   },
   "weekdays": {
     "monday": "月",
@@ -712,7 +734,9 @@
     "inProgress": "進行中",
     "done": "完了",
     "archived": "アーカイブ",
-    "unknown": "不明"
+    "unknown": "不明",
+    "telegramConnected": "Telegramが接続され、ポーリング中",
+    "telegramConnectionProblem": "Telegram接続の問題"
   },
   "dateIndicators": {
     "today": "今日",
@@ -736,5 +760,111 @@
     "complete": "ポモドーロ完了！",
     "completeMessage": "素晴らしい仕事！休憩時間です。",
     "done": "完了"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - ページが見つかりません",
+      "message": "お探しのページは存在しません。"
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "クイックインボックスキャプチャ",
+    "userMenu": "ユーザーメニュー",
+    "collapseSidebar": "サイドバーを折りたたむ",
+    "expandSidebar": "サイドバーを展開"
+  },
+  "upload": {
+    "uploading": "アップロード中..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "プロジェクトを検索...",
+    "searchTags": "タグを検索...",
+    "searchTasks": "タスクを検索..."
+  },
+  "ariaLabels": {
+    "hideInfo": "情報を隠す",
+    "aboutTasks": "タスクについて",
+    "hideSearch": "検索を隠す",
+    "searchTasks": "タスクを検索",
+    "aboutInbox": "インボックスについて",
+    "collapseInfoPanel": "情報パネルを折りたたむ",
+    "showTasksInformation": "タスク情報を表示",
+    "collapseSearchPanel": "検索パネルを折りたたむ",
+    "showSearchInput": "検索入力を表示",
+    "showInboxInformation": "受信トレイ情報を表示"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "認証が必要です",
+      "userNotFound": "ユーザーが見つかりません",
+      "authenticationError": "認証エラー",
+      "internalServerError": "内部サーバーエラー",
+      "invalidLoginParameters": "無効なログインパラメータです。",
+      "invalidCredentials": "無効な資格情報",
+      "couldNotLogout": "ログアウトできませんでした",
+      "loggedOutSuccessfully": "正常にログアウトしました",
+      "contentRequired": "コンテンツが必要です",
+      "inboxItemNotFound": "受信トレイアイテムが見つかりません。",
+      "inboxItemDeleted": "受信トレイアイテムが正常に削除されました",
+      "contentRequiredString": "コンテンツが必要であり、文字列である必要があります",
+      "problemCreatingInboxItem": "受信トレイアイテムの作成中に問題が発生しました。",
+      "problemUpdatingInboxItem": "受信トレイアイテムの更新中に問題が発生しました。",
+      "problemDeletingInboxItem": "受信トレイアイテムの削除中に問題が発生しました。",
+      "problemProcessingInboxItem": "受信トレイアイテムの処理中に問題が発生しました。",
+      "invalidOrderColumn": "無効な順序列が指定されました。",
+      "taskNotFound": "タスクが見つかりません。",
+      "taskNameRequired": "タスク名は必須です。",
+      "invalidProject": "無効なプロジェクトです。",
+      "unableToUpdateTask": "タスクを更新できません。",
+      "taskDeleted": "タスクが正常に削除されました。",
+      "failedToGenerateRecurringTasks": "定期的なタスクの生成に失敗しました。",
+      "failedToUpdateTodayFlag": "タスクの今日フラグの更新に失敗しました。",
+      "noImageProvided": "画像ファイルが提供されていません。",
+      "failedToUploadImage": "画像のアップロードに失敗しました。",
+      "projectNotFound": "プロジェクトが見つかりません。",
+      "projectNameRequired": "プロジェクト名は必須です。",
+      "projectDeleted": "プロジェクトが正常に削除されました。",
+      "noteNotFound": "ノートが見つかりません。",
+      "noteDeleted": "ノートが正常に削除されました。",
+      "profileNotFound": "プロフィールが見つかりません。",
+      "passwordTooShort": "パスワードは6文字以上でなければなりません。",
+      "currentPasswordIncorrect": "現在のパスワードが正しくありません。",
+      "failedToUpdateProfile": "プロフィールの更新に失敗しました。",
+      "passwordChangeRequired": "現在のパスワードと新しいパスワードが必要です",
+      "passwordChangedSuccessfully": "パスワードが正常に変更されました",
+      "failedToUpdateTaskSummary": "タスクの概要設定の更新に失敗しました。",
+      "frequencyRequired": "頻度が必要です。",
+      "invalidFrequency": "無効な頻度の値です。",
+      "failedToStartTelegramPolling": "Telegramのポーリングの開始に失敗しました。",
+      "failedToStopTelegramPolling": "Telegramのポーリングの停止に失敗しました。",
+      "invalidTelegramTokenFormat": "無効なTelegramボットトークンの形式です。",
+      "invalidBotToken": "無効なボットトークンまたはボットにアクセスできません。",
+      "chatIdRequired": "チャットIDが必要です。",
+      "areaNotFound": "エリアが見つからないか、現在のユーザーに属していません。",
+      "areaNameRequired": "エリア名が必要です。",
+      "tagNotFound": "タグが見つかりません",
+      "tagNameRequired": "タグ名が必要です",
+      "tagDeleted": "タグが正常に削除されました",
+      "demoModeGoogleCalendar": "デモモード：Googleカレンダー統合がシミュレートされました",
+      "failedToGenerateAuthUrl": "認証URLの生成に失敗しました",
+      "authCodeNotProvided": "認証コードが提供されていません",
+      "failedToCheckCalendarStatus": "カレンダーのステータス確認に失敗しました",
+      "failedToFetchCalendarEvents": "カレンダーイベントの取得に失敗しました",
+      "googleCalendarDisconnected": "Google カレンダーが切断されました",
+      "failedToDisconnectCalendar": "カレンダーの切断に失敗しました",
+      "urlParameterRequired": "URL パラメータが必要です",
+      "couldNotExtractMetadata": "メタデータを抽出できませんでした",
+      "textParameterRequired": "テキストパラメータが必要です",
+      "notFound": "見つかりません",
+      "resourceNotFound": "要求されたリソースが見つかりませんでした。"
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 tududi へようこそ！\n\nあなたの個人的なタスク管理ボットが接続され、助ける準備ができました！\n\n📝 どんなメッセージでも送信してください。tududi の受信トレイにアイテムとして追加します。\n\n✨ コマンド:\n• /help - ヘルプ情報を表示\n• /start - ウェルカムメッセージを表示\n• ただテキストを入力 - 受信トレイアイテムとして追加\n\n整理を始めましょう！🚀",
+    "helpMessage": "📋 tududi ボット ヘルプ\n\nどんなテキストメッセージでも送信してください。tududi の受信トレイにアイテムとして追加します。\n\nコマンド:\n/start - ウェルカムメッセージ\n/help - このヘルプメッセージを表示\n\nアイテムを入力するだけで、残りは私が処理します！",
+    "commandProcessed": "コマンドが正常に処理されました",
+    "messageProcessed": "メッセージが正常に処理されました",
+    "failedToAddToInbox": "❌ 受信トレイに追加できませんでした: {{error}}"
   }
 }

@@ -38,7 +38,14 @@
     "nextActions": "Volgende Acties",
     "inbox": "Inbox",
     "completed": "Voltooid",
-    "allTasks": "Alle Taken"
+    "allTasks": "Alle Taken",
+    "addInboxAriaLabel": "Voeg Inbox-item toe",
+    "addInboxTitle": "Voeg Inbox-item toe",
+    "addProjectAriaLabel": "Voeg Project toe",
+    "addProjectTitle": "Voeg Project toe",
+    "addNoteAriaLabel": "Voeg Notitie toe",
+    "addNoteTitle": "Voeg Notitie toe",
+    "createNew": "Maak Nieuw"
   },
   "navigation": {
     "home": "Home",
@@ -128,7 +135,14 @@
       "priority": "Prioriteit",
       "dueDate": "Vervaldatum",
       "none": "Geen"
-    }
+    },
+    "justNow": "Net nu",
+    "minutesAgo": "{{minutes}}m geleden",
+    "hoursAgo": "{{hours}}u geleden",
+    "daysAgo": "{{days}}d geleden",
+    "loadingTimeline": "Tijdlijn laden...",
+    "timelineWillAppear": "Tijdlijn verschijnt na opslaan",
+    "noActivity": "Nog geen activiteit"
   },
   "profile": {
     "settings": "Profielinstellingen",
@@ -426,7 +440,9 @@
     "task": "Taak",
     "project": "Project",
     "note": "Opmerking",
-    "area": "Gebied"
+    "area": "Gebied",
+    "inbox": "Inbox",
+    "tag": "Label"
   },
   "sort": {
     "due_date": "Vervaldatum",
@@ -445,7 +461,9 @@
     "inProgress": "Bezig",
     "done": "Klaar",
     "archived": "Gearchiveerd",
-    "unknown": "Onbekend"
+    "unknown": "Onbekend",
+    "telegramConnected": "Telegram verbonden en aan het polleren",
+    "telegramConnectionProblem": "Probleem met Telegram-verbinding"
   },
   "project": {
     "name": "Projectnaam",
@@ -676,7 +694,13 @@
     "thirdWeek": "Derde week",
     "fourthWeek": "Vierde week",
     "lastWeek": "Laatste week",
-    "days": "dagen"
+    "days": "dagen",
+    "loadingParentSettings": "Ouder taak herhalingsinstellingen laden...",
+    "recurringTaskInstance": "Herhalende Taakinstantie",
+    "inheritedSettingsMessage": "Deze taak is gegenereerd vanuit een terugkerende taak. De hieronder weergegeven terugkerende instellingen zijn geërfd van de oorspronkelijke taak en kunnen hier niet worden bewerkt.",
+    "cancelEdit": "Annuleer Bewerking",
+    "editParentRecurrence": "Bewerk Ouder Terugkeer",
+    "parentEditWarning": "⚠️ U bewerkt de terugkerende instellingen van de oudertaak. Wijzigingen hebben invloed op alle toekomstige instanties van deze terugkerende taak."
   },
   "weekdays": {
     "sunday": "Zondag",
@@ -736,5 +760,111 @@
     "low": "Laag",
     "time": "Tijd",
     "allDay": "De hele dag"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Pagina Niet Gevonden",
+      "message": "De pagina waar u naar op zoek bent, bestaat niet."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Snelle Inbox Vastlegging",
+    "userMenu": "Gebruikersmenu",
+    "collapseSidebar": "Vouw Zijbalk In",
+    "expandSidebar": "Vouw Zijbalk Uit"
+  },
+  "upload": {
+    "uploading": "Uploaden..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Zoek projecten...",
+    "searchTags": "Zoek tags...",
+    "searchTasks": "Zoek taken..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Verberg info",
+    "aboutTasks": "Over Taken",
+    "hideSearch": "Verberg zoekopdracht",
+    "searchTasks": "Zoek Taken",
+    "aboutInbox": "Over Inbox",
+    "collapseInfoPanel": "Vouw informatiepaneel in",
+    "showTasksInformation": "Toon takeninformatie",
+    "collapseSearchPanel": "Vouw zoekpaneel in",
+    "showSearchInput": "Toon zoekinvoer",
+    "showInboxInformation": "Toon inboxinformatie"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Authenticatie vereist",
+      "userNotFound": "Gebruiker niet gevonden",
+      "authenticationError": "Authenticatie fout",
+      "internalServerError": "Interne serverfout",
+      "invalidLoginParameters": "Ongeldige inlogparameters.",
+      "invalidCredentials": "Ongeldige inloggegevens",
+      "couldNotLogout": "Kon niet uitloggen",
+      "loggedOutSuccessfully": "Succesvol uitgelogd",
+      "contentRequired": "Inhoud is vereist",
+      "inboxItemNotFound": "Inboxitem niet gevonden.",
+      "inboxItemDeleted": "Inboxitem succesvol verwijderd",
+      "contentRequiredString": "Inhoud is vereist en moet een string zijn",
+      "problemCreatingInboxItem": "Er was een probleem bij het aanmaken van het inboxitem.",
+      "problemUpdatingInboxItem": "Er was een probleem bij het bijwerken van het inboxitem.",
+      "problemDeletingInboxItem": "Er was een probleem bij het verwijderen van het inboxitem.",
+      "problemProcessingInboxItem": "Er was een probleem met het verwerken van het inboxitem.",
+      "invalidOrderColumn": "Ongeldige volgorde kolom opgegeven.",
+      "taskNotFound": "Taak niet gevonden.",
+      "taskNameRequired": "Taaknaam is vereist.",
+      "invalidProject": "Ongeldig project.",
+      "unableToUpdateTask": "Kan taak niet bijwerken.",
+      "taskDeleted": "Taak succesvol verwijderd.",
+      "failedToGenerateRecurringTasks": "Mislukt om terugkerende taken te genereren.",
+      "failedToUpdateTodayFlag": "Mislukt om de vandaag-vlag van de taak bij te werken.",
+      "noImageProvided": "Geen afbeeldingsbestand opgegeven.",
+      "failedToUploadImage": "Mislukt om afbeelding te uploaden.",
+      "projectNotFound": "Project niet gevonden.",
+      "projectNameRequired": "Projectnaam is vereist.",
+      "projectDeleted": "Project succesvol verwijderd.",
+      "noteNotFound": "Notitie niet gevonden.",
+      "noteDeleted": "Notitie succesvol verwijderd.",
+      "profileNotFound": "Profiel niet gevonden.",
+      "passwordTooShort": "Wachtwoord moet minimaal 6 tekens zijn.",
+      "currentPasswordIncorrect": "Huidig wachtwoord is onjuist.",
+      "failedToUpdateProfile": "Mislukt om profiel bij te werken.",
+      "passwordChangeRequired": "Huidig wachtwoord en nieuw wachtwoord zijn vereist",
+      "passwordChangedSuccessfully": "Wachtwoord succesvol gewijzigd",
+      "failedToUpdateTaskSummary": "Het is niet gelukt om de instellingen voor de taakoverzicht bij te werken.",
+      "frequencyRequired": "Frequentie is vereist.",
+      "invalidFrequency": "Ongeldige frequentiewaarde.",
+      "failedToStartTelegramPolling": "Het is niet gelukt om Telegram polling te starten.",
+      "failedToStopTelegramPolling": "Het is niet gelukt om Telegram polling te stoppen.",
+      "invalidTelegramTokenFormat": "Ongeldig Telegram bot token formaat.",
+      "invalidBotToken": "Ongeldig bot token of bot niet toegankelijk.",
+      "chatIdRequired": "Chat ID is vereist.",
+      "areaNotFound": "Gebied niet gevonden of behoort niet tot de huidige gebruiker.",
+      "areaNameRequired": "Gebiedsnaam is vereist.",
+      "tagNotFound": "Tag niet gevonden",
+      "tagNameRequired": "Tagnaam is vereist",
+      "tagDeleted": "Tag succesvol verwijderd",
+      "demoModeGoogleCalendar": "Demomodus: Google Calendar-integratie gesimuleerd",
+      "failedToGenerateAuthUrl": "Het is niet gelukt om de autorisatie-URL te genereren",
+      "authCodeNotProvided": "Autorisatiecode niet opgegeven",
+      "failedToCheckCalendarStatus": "Het is niet gelukt om de status van de kalender te controleren",
+      "failedToFetchCalendarEvents": "Het is niet gelukt om kalender evenementen op te halen",
+      "googleCalendarDisconnected": "Google Agenda losgekoppeld",
+      "failedToDisconnectCalendar": "Mislukt om agenda los te koppelen",
+      "urlParameterRequired": "URL-parameter is vereist",
+      "couldNotExtractMetadata": "Metadata kon niet worden geëxtraheerd",
+      "textParameterRequired": "Tekstparameter is vereist",
+      "notFound": "Niet Gevonden",
+      "resourceNotFound": "De opgevraagde bron kon niet worden gevonden."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Welkom bij tududi!\n\nJe persoonlijke taakbeheerbot is nu verbonden en klaar om te helpen!\n\n📝 Stuur me gewoon een bericht en ik voeg het toe aan je tududi-inbox als een item.\n\n✨ Commando's:\n• /help - Toon hulpinformatie\n• /start - Toon welkomstbericht\n• Typ gewoon enige tekst - Voeg het toe als een inboxitem\n\nLaten we ons organiseren! 🚀",
+    "helpMessage": "📋 tududi Bot Hulp\n\nStuur me een tekstbericht en ik voeg het toe aan je tududi-inbox als een inboxitem.\n\nCommando's:\n/start - Welkomstbericht\n/help - Toon dit hulpbericht\n\nTyp gewoon je item en ik zorg voor de rest!",
+    "commandProcessed": "Commando succesvol verwerkt",
+    "messageProcessed": "Bericht succesvol verwerkt",
+    "failedToAddToInbox": "❌ Mislukt om toe te voegen aan inbox: {{error}}"
   }
 }

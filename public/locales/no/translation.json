@@ -38,7 +38,14 @@
     "nextActions": "Neste handlinger",
     "inbox": "Innboks",
     "completed": "Fullført",
-    "allTasks": "Alle oppgaver"
+    "allTasks": "Alle oppgaver",
+    "addInboxAriaLabel": "Legg til innboks-element",
+    "addInboxTitle": "Legg til innboks-element",
+    "addProjectAriaLabel": "Legg til prosjekt",
+    "addProjectTitle": "Legg til prosjekt",
+    "addNoteAriaLabel": "Legg til notat",
+    "addNoteTitle": "Legg til notat",
+    "createNew": "Opprett ny"
   },
   "navigation": {
     "home": "Hjem",
@@ -128,7 +135,14 @@
       "priority": "Prioritet",
       "dueDate": "Forfallsdato",
       "none": "Ingen"
-    }
+    },
+    "justNow": "Akkurat nå",
+    "minutesAgo": "{{minutes}}m siden",
+    "hoursAgo": "{{hours}}t siden",
+    "daysAgo": "{{days}}d siden",
+    "loadingTimeline": "Laster tidslinje...",
+    "timelineWillAppear": "Tidslinjen vil vises etter lagring",
+    "noActivity": "Ingen aktivitet ennå"
   },
   "profile": {
     "settings": "Profilinnstillinger",
@@ -426,7 +440,9 @@
     "task": "Oppgave",
     "project": "Prosjekt",
     "note": "Notat",
-    "area": "Område"
+    "area": "Område",
+    "inbox": "Innboks",
+    "tag": "Tagg"
   },
   "sort": {
     "due_date": "Forfallsdato",
@@ -445,7 +461,9 @@
     "inProgress": "Pågår",
     "done": "Ferdig",
     "archived": "Arkivert",
-    "unknown": "Ukjent"
+    "unknown": "Ukjent",
+    "telegramConnected": "Telegram tilkoblet og henter data",
+    "telegramConnectionProblem": "Telegram tilkoblingsproblem"
   },
   "project": {
     "name": "Prosjektnavn",
@@ -676,7 +694,13 @@
     "thirdWeek": "Tredje uke",
     "fourthWeek": "Fjerde uke",
     "lastWeek": "Siste uke",
-    "days": "dager"
+    "days": "dager",
+    "loadingParentSettings": "Laster innstillinger for gjentakende oppgave...",
+    "recurringTaskInstance": "Gjentakende oppgaveinstans",
+    "inheritedSettingsMessage": "Denne oppgaven ble generert fra en gjentakende oppgave. Innstillingene for gjentakelse som vises nedenfor er arvet fra den opprinnelige oppgaven og kan ikke redigeres her.",
+    "cancelEdit": "Avbryt redigering",
+    "editParentRecurrence": "Rediger overordnet gjentakelse",
+    "parentEditWarning": "⚠️ Du redigerer innstillingene for gjentakelse av den overordnede oppgaven. Endringer vil påvirke alle fremtidige instanser av denne gjentakende oppgaven."
   },
   "weekdays": {
     "sunday": "Søndag",
@@ -736,5 +760,111 @@
     "low": "Lav",
     "time": "Tid",
     "allDay": "Hele dagen"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Side ikke funnet",
+      "message": "Siden du leter etter eksisterer ikke."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Rask innboksopptak",
+    "userMenu": "Brukermeny",
+    "collapseSidebar": "Lukk sidepanel",
+    "expandSidebar": "Utvid sidepanel"
+  },
+  "upload": {
+    "uploading": "Laster opp..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Søk prosjekter...",
+    "searchTags": "Søk etter merkelapper...",
+    "searchTasks": "Søk oppgaver..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Skjul info",
+    "aboutTasks": "Om oppgaver",
+    "hideSearch": "Skjul søk",
+    "searchTasks": "Søk oppgaver",
+    "aboutInbox": "Om innboks",
+    "collapseInfoPanel": "Kollaps info-panel",
+    "showTasksInformation": "Vis oppgaveinformasjon",
+    "collapseSearchPanel": "Kollaps søk-panel",
+    "showSearchInput": "Vis søkefelt",
+    "showInboxInformation": "Vis innboksinformasjon"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Autentisering kreves",
+      "userNotFound": "Bruker ikke funnet",
+      "authenticationError": "Autentiseringsfeil",
+      "internalServerError": "Intern serverfeil",
+      "invalidLoginParameters": "Ugyldige påloggingsparametere.",
+      "invalidCredentials": "Ugyldige legitimasjon",
+      "couldNotLogout": "Kunne ikke logge ut",
+      "loggedOutSuccessfully": "Logget ut med suksess",
+      "contentRequired": "Innhold er påkrevd",
+      "inboxItemNotFound": "Innboks-element ikke funnet.",
+      "inboxItemDeleted": "Innboks-elementet ble slettet med suksess",
+      "contentRequiredString": "Innhold er påkrevd og må være en streng",
+      "problemCreatingInboxItem": "Det oppstod et problem med å opprette innboks-elementet.",
+      "problemUpdatingInboxItem": "Det oppstod et problem med å oppdatere innboks-elementet.",
+      "problemDeletingInboxItem": "Det oppstod et problem med å slette innboks-elementet.",
+      "problemProcessingInboxItem": "Det oppstod et problem med å behandle innboks-elementet.",
+      "invalidOrderColumn": "Ugyldig bestillingskolonne spesifisert.",
+      "taskNotFound": "Oppgave ikke funnet.",
+      "taskNameRequired": "Oppgavenavn er påkrevd.",
+      "invalidProject": "Ugyldig prosjekt.",
+      "unableToUpdateTask": "Kan ikke oppdatere oppgaven",
+      "taskDeleted": "Oppgaven ble slettet.",
+      "failedToGenerateRecurringTasks": "Kunne ikke generere gjentakende oppgaver",
+      "failedToUpdateTodayFlag": "Kunne ikke oppdatere dagens flagg for oppgaven",
+      "noImageProvided": "Ingen bildefil gitt",
+      "failedToUploadImage": "Kunne ikke laste opp bildet",
+      "projectNotFound": "Prosjekt ikke funnet",
+      "projectNameRequired": "Prosjektnavn er påkrevd",
+      "projectDeleted": "Prosjektet ble slettet.",
+      "noteNotFound": "Notat ikke funnet.",
+      "noteDeleted": "Notatet ble slettet.",
+      "profileNotFound": "Profil ikke funnet.",
+      "passwordTooShort": "Passordet må være minst 6 tegn",
+      "currentPasswordIncorrect": "Nåværende passord er feil",
+      "failedToUpdateProfile": "Kunne ikke oppdatere profilen.",
+      "passwordChangeRequired": "Nåværende passord og nytt passord er påkrevd",
+      "passwordChangedSuccessfully": "Passordet ble endret med suksess",
+      "failedToUpdateTaskSummary": "Kunne ikke oppdatere innstillingene for oppgaveoppsummering.",
+      "frequencyRequired": "Frekvens er påkrevd.",
+      "invalidFrequency": "Ugyldig frekvensverdi.",
+      "failedToStartTelegramPolling": "Kunne ikke starte Telegram polling.",
+      "failedToStopTelegramPolling": "Kunne ikke stoppe Telegram polling.",
+      "invalidTelegramTokenFormat": "Ugyldig format for Telegram-bot-token.",
+      "invalidBotToken": "Ugyldig bot-token eller bot er ikke tilgjengelig.",
+      "chatIdRequired": "Chat-ID er påkrevd.",
+      "areaNotFound": "Område ikke funnet eller tilhører ikke den nåværende brukeren.",
+      "areaNameRequired": "Områdenavn er påkrevd.",
+      "tagNotFound": "Tagg ikke funnet",
+      "tagNameRequired": "Taggnavn er påkrevd",
+      "tagDeleted": "Tagg ble slettet med suksess",
+      "demoModeGoogleCalendar": "Demomodus: Google Kalender-integrasjon simulert",
+      "failedToGenerateAuthUrl": "Kunne ikke generere autorisasjons-URL",
+      "authCodeNotProvided": "Autorisasjonskode ikke oppgitt",
+      "failedToCheckCalendarStatus": "Kunne ikke sjekke kalenderstatus",
+      "failedToFetchCalendarEvents": "Kunne ikke hente kalenderhendelser",
+      "googleCalendarDisconnected": "Google Kalender frakoblet",
+      "failedToDisconnectCalendar": "Kunne ikke frakoble kalender",
+      "urlParameterRequired": "URL-parameter er påkrevd",
+      "couldNotExtractMetadata": "Kunne ikke hente ut metadata",
+      "textParameterRequired": "Tekstparameter er påkrevd",
+      "notFound": "Ikke funnet",
+      "resourceNotFound": "Den forespurte ressursen kunne ikke bli funnet."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Velkommen til tududi!\n\nDin personlige oppgavehåndteringsbot er nå koblet til og klar til å hjelpe!\n\n📝 Bare send meg en hvilken som helst melding, så legger jeg den til din tududi innboks som et element.\n\n✨ Kommandoer:\n• /help - Vis hjelpeinformasjon\n• /start - Vis velkomstmelding\n• Bare skriv inn hvilken som helst tekst - Legg den til som et innbokselement\n\nLa oss bli organiserte! 🚀",
+    "helpMessage": "📋 tududi Bot Hjelp\n\nSend meg en hvilken som helst tekstmelding, så legger jeg den til din tududi innboks som et innbokselement.\n\nKommandoer:\n/start - Velkomstmelding\n/help - Vis denne hjelpebeskjeden\n\nBare skriv inn elementet ditt, så tar jeg meg av resten!",
+    "commandProcessed": "Kommando behandlet vellykket",
+    "messageProcessed": "Beskjed behandlet vellykket",
+    "failedToAddToInbox": "❌ Kunne ikke legge til i innboksen: {{error}}"
   }
 }

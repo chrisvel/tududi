@@ -38,7 +38,14 @@
     "nextActions": "Tindakan Selanjutnya",
     "inbox": "Kotak Masuk",
     "completed": "Selesai",
-    "allTasks": "Semua Tugas"
+    "allTasks": "Semua Tugas",
+    "addInboxAriaLabel": "Tambahkan Item Kotak Masuk",
+    "addInboxTitle": "Tambahkan Item Kotak Masuk",
+    "addProjectAriaLabel": "Tambahkan Proyek",
+    "addProjectTitle": "Tambahkan Proyek",
+    "addNoteAriaLabel": "Tambahkan Catatan",
+    "addNoteTitle": "Tambahkan Catatan",
+    "createNew": "Buat Baru"
   },
   "navigation": {
     "home": "Beranda",
@@ -128,7 +135,14 @@
       "priority": "Prioritas",
       "dueDate": "Tanggal jatuh tempo",
       "none": "Tidak ada"
-    }
+    },
+    "justNow": "Baru saja",
+    "minutesAgo": "{{minutes}}m yang lalu",
+    "hoursAgo": "{{hours}}j yang lalu",
+    "daysAgo": "{{days}}h yang lalu",
+    "loadingTimeline": "Memuat garis waktu...",
+    "timelineWillAppear": "Garis waktu akan muncul setelah disimpan",
+    "noActivity": "Belum ada aktivitas"
   },
   "profile": {
     "settings": "Pengaturan Profil",
@@ -426,7 +440,9 @@
     "task": "Tugas",
     "project": "Proyek",
     "note": "Catatan",
-    "area": "Area"
+    "area": "Area",
+    "inbox": "Kotak Masuk",
+    "tag": "Tag"
   },
   "sort": {
     "due_date": "Tanggal Jatuh Tempo",
@@ -445,7 +461,9 @@
     "inProgress": "Dalam Proses",
     "done": "Selesai",
     "archived": "Arsip",
-    "unknown": "Tidak Diketahui"
+    "unknown": "Tidak Diketahui",
+    "telegramConnected": "Telegram terhubung dan memeriksa",
+    "telegramConnectionProblem": "Masalah koneksi Telegram"
   },
   "project": {
     "name": "Nama Proyek",
@@ -676,7 +694,13 @@
     "thirdWeek": "Minggu ketiga",
     "fourthWeek": "Minggu keempat",
     "lastWeek": "Minggu terakhir",
-    "days": "hari"
+    "days": "hari",
+    "loadingParentSettings": "Memuat pengaturan pengulangan tugas induk...",
+    "recurringTaskInstance": "Instansi Tugas Berulang",
+    "inheritedSettingsMessage": "Tugas ini dihasilkan dari tugas berulang. Pengaturan pengulangan yang ditunjukkan di bawah ini diwarisi dari tugas asli dan tidak dapat diedit di sini.",
+    "cancelEdit": "Batalkan Edit",
+    "editParentRecurrence": "Edit Pengulangan Induk",
+    "parentEditWarning": "⚠️ Anda sedang mengedit pengaturan pengulangan tugas induk. Perubahan akan mempengaruhi semua instance masa depan dari tugas berulang ini."
   },
   "weekdays": {
     "sunday": "Minggu",
@@ -736,5 +760,111 @@
     "low": "Rendah",
     "time": "Waktu",
     "allDay": "Sepanjang hari"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Halaman Tidak Ditemukan",
+      "message": "Halaman yang Anda cari tidak ada."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Tangkap Kotak Masuk Cepat",
+    "userMenu": "Menu Pengguna",
+    "collapseSidebar": "Sembunyikan Sidebar",
+    "expandSidebar": "Perluas Sidebar"
+  },
+  "upload": {
+    "uploading": "Mengunggah..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Cari proyek...",
+    "searchTags": "Cari tag...",
+    "searchTasks": "Cari tugas..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Sembunyikan info",
+    "aboutTasks": "Tentang Tugas",
+    "hideSearch": "Sembunyikan pencarian",
+    "searchTasks": "Cari Tugas",
+    "aboutInbox": "Tentang Kotak Masuk",
+    "collapseInfoPanel": "Tutup panel informasi",
+    "showTasksInformation": "Tampilkan informasi tugas",
+    "collapseSearchPanel": "Tutup panel pencarian",
+    "showSearchInput": "Tampilkan input pencarian",
+    "showInboxInformation": "Tampilkan informasi kotak masuk"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Autentikasi diperlukan",
+      "userNotFound": "Pengguna tidak ditemukan",
+      "authenticationError": "Kesalahan autentikasi",
+      "internalServerError": "Kesalahan server internal",
+      "invalidLoginParameters": "Parameter login tidak valid.",
+      "invalidCredentials": "Kredensial tidak valid",
+      "couldNotLogout": "Tidak dapat keluar",
+      "loggedOutSuccessfully": "Berhasil keluar",
+      "contentRequired": "Konten diperlukan",
+      "inboxItemNotFound": "Item kotak masuk tidak ditemukan.",
+      "inboxItemDeleted": "Item kotak masuk berhasil dihapus",
+      "contentRequiredString": "Konten diperlukan dan harus berupa string",
+      "problemCreatingInboxItem": "Terjadi masalah saat membuat item kotak masuk.",
+      "problemUpdatingInboxItem": "Terjadi masalah saat memperbarui item kotak masuk.",
+      "problemDeletingInboxItem": "Terjadi masalah saat menghapus item kotak masuk.",
+      "problemProcessingInboxItem": "Terjadi masalah saat memproses item kotak masuk.",
+      "invalidOrderColumn": "Kolom urutan yang ditentukan tidak valid.",
+      "taskNotFound": "Tugas tidak ditemukan.",
+      "taskNameRequired": "Nama tugas diperlukan.",
+      "invalidProject": "Proyek tidak valid.",
+      "unableToUpdateTask": "Tidak dapat memperbarui tugas",
+      "taskDeleted": "Tugas berhasil dihapus",
+      "failedToGenerateRecurringTasks": "Gagal menghasilkan tugas berulang",
+      "failedToUpdateTodayFlag": "Gagal memperbarui tanda tugas hari ini",
+      "noImageProvided": "Tidak ada file gambar yang disediakan",
+      "failedToUploadImage": "Gagal mengunggah gambar",
+      "projectNotFound": "Proyek tidak ditemukan",
+      "projectNameRequired": "Nama proyek diperlukan",
+      "projectDeleted": "Proyek berhasil dihapus",
+      "noteNotFound": "Catatan tidak ditemukan.",
+      "noteDeleted": "Catatan berhasil dihapus.",
+      "profileNotFound": "Profil tidak ditemukan.",
+      "passwordTooShort": "Kata sandi harus terdiri dari setidaknya 6 karakter",
+      "currentPasswordIncorrect": "Kata sandi saat ini salah",
+      "failedToUpdateProfile": "Gagal memperbarui profil.",
+      "passwordChangeRequired": "Kata sandi saat ini dan kata sandi baru diperlukan",
+      "passwordChangedSuccessfully": "Kata sandi berhasil diubah",
+      "failedToUpdateTaskSummary": "Gagal memperbarui pengaturan ringkasan tugas.",
+      "frequencyRequired": "Frekuensi diperlukan.",
+      "invalidFrequency": "Nilai frekuensi tidak valid.",
+      "failedToStartTelegramPolling": "Gagal memulai polling Telegram.",
+      "failedToStopTelegramPolling": "Gagal menghentikan polling Telegram.",
+      "invalidTelegramTokenFormat": "Format token bot Telegram tidak valid.",
+      "invalidBotToken": "Token bot tidak valid atau bot tidak dapat diakses.",
+      "chatIdRequired": "ID obrolan diperlukan.",
+      "areaNotFound": "Area tidak ditemukan atau tidak milik pengguna saat ini.",
+      "areaNameRequired": "Nama area diperlukan.",
+      "tagNotFound": "Tag tidak ditemukan",
+      "tagNameRequired": "Nama tag diperlukan",
+      "tagDeleted": "Tag berhasil dihapus",
+      "demoModeGoogleCalendar": "Mode demo: integrasi Google Calendar disimulasikan",
+      "failedToGenerateAuthUrl": "Gagal menghasilkan URL otorisasi",
+      "authCodeNotProvided": "Kode otorisasi tidak disediakan",
+      "failedToCheckCalendarStatus": "Gagal memeriksa status kalender",
+      "failedToFetchCalendarEvents": "Gagal mengambil acara kalender",
+      "googleCalendarDisconnected": "Google Calendar terputus",
+      "failedToDisconnectCalendar": "Gagal memutuskan kalender",
+      "urlParameterRequired": "Parameter URL diperlukan",
+      "couldNotExtractMetadata": "Tidak dapat mengekstrak metadata",
+      "textParameterRequired": "Parameter teks diperlukan",
+      "notFound": "Tidak Ditemukan",
+      "resourceNotFound": "Sumber yang diminta tidak dapat ditemukan."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Selamat datang di tududi!\n\nBot manajemen tugas pribadi Anda sekarang terhubung dan siap membantu!\n\n📝 Cukup kirimkan saya pesan apa pun dan saya akan menambahkannya ke kotak masuk tududi Anda sebagai item.\n\n✨ Perintah:\n• /help - Tampilkan informasi bantuan\n• /start - Tampilkan pesan sambutan\n• Cukup ketik teks apa pun - Tambahkan sebagai item kotak masuk\n\nMari kita terorganisir! 🚀",
+    "helpMessage": "📋 Bantuan Bot tududi\n\nKirimkan saya pesan teks apa pun dan saya akan menambahkannya ke kotak masuk tududi Anda sebagai item kotak masuk.\n\nPerintah:\n/start - Pesan sambutan\n/help - Tampilkan pesan bantuan ini\n\nCukup ketik item Anda dan saya akan mengurus sisanya!",
+    "commandProcessed": "Perintah diproses dengan sukses",
+    "messageProcessed": "Pesan diproses dengan sukses",
+    "failedToAddToInbox": "❌ Gagal menambah ke kotak masuk: {{error}}"
   }
 }

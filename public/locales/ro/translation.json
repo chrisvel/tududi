@@ -38,7 +38,14 @@
     "nextActions": "Acțiuni Următoare",
     "inbox": "Inbox",
     "completed": "Finalizate",
-    "allTasks": "Toate Sarcinile"
+    "allTasks": "Toate Sarcinile",
+    "addInboxAriaLabel": "Adaugă element în Inbox",
+    "addInboxTitle": "Adaugă element în Inbox",
+    "addProjectAriaLabel": "Adaugă Proiect",
+    "addProjectTitle": "Adaugă Proiect",
+    "addNoteAriaLabel": "Adaugă Notă",
+    "addNoteTitle": "Adaugă Notă",
+    "createNew": "Creează Nou"
   },
   "navigation": {
     "home": "Acasă",
@@ -128,7 +135,14 @@
       "priority": "Prioritate",
       "dueDate": "Data limită",
       "none": "Niciunul"
-    }
+    },
+    "justNow": "Chiar acum",
+    "minutesAgo": "{{minutes}}m în urmă",
+    "hoursAgo": "{{hours}}h în urmă",
+    "daysAgo": "{{days}}z în urmă",
+    "loadingTimeline": "Se încarcă cronologia...",
+    "timelineWillAppear": "Cronologia va apărea după salvare",
+    "noActivity": "Nicio activitate încă"
   },
   "profile": {
     "settings": "Setări profil",
@@ -264,7 +278,14 @@
     "aiProductivityFeatures": "Funcții AI și de Productivitate",
     "botSetup": "Configurare Bot",
     "passwordChangeNote": "Schimbările de parolă vor fi salvate când faceți clic pe \"Salvați modificările\" la baza formularului.",
-    "passwordChangeOptional": "Lăsați câmpurile pentru parolă goale pentru a actualiza alte setări fără a schimba parola."
+    "passwordChangeOptional": "Lăsați câmpurile pentru parolă goale pentru a actualiza alte setări fără a schimba parola.",
+    "bulgarian": "Bulgară",
+    "danish": "Daneză",
+    "finnish": "Finlandeză",
+    "norwegian": "Norvegiană",
+    "polish": "Poloneză",
+    "slovenian": "Slovenă",
+    "swedish": "Suedeză"
   },
   "productivity": {
     "stalledProjects": "Proiecte Blocate",
@@ -419,7 +440,9 @@
     "task": "Sarcină",
     "project": "Proiect",
     "note": "Notă",
-    "area": "Domeniu"
+    "area": "Domeniu",
+    "inbox": "Inbox",
+    "tag": "Etichetă"
   },
   "sort": {
     "due_date": "Data Limită",
@@ -438,7 +461,9 @@
     "inProgress": "În Desfășurare",
     "done": "Finalizat",
     "archived": "Arhivat",
-    "unknown": "Necunoscut"
+    "unknown": "Necunoscut",
+    "telegramConnected": "Telegram conectat și polling",
+    "telegramConnectionProblem": "Problemă de conectare Telegram"
   },
   "project": {
     "name": "Numele Proiectului",
@@ -669,7 +694,13 @@
     "thirdWeek": "A treia săptămână",
     "fourthWeek": "A patra săptămână",
     "lastWeek": "Ultima săptămână",
-    "days": "zile"
+    "days": "zile",
+    "loadingParentSettings": "Se încarcă setările de recurență ale sarcinii părinte...",
+    "recurringTaskInstance": "Instanță de sarcină recurentă",
+    "inheritedSettingsMessage": "Această sarcină a fost generată dintr-o sarcină recurentă. Setările de recurență afișate mai jos sunt moștenite din sarcina originală și nu pot fi editate aici.",
+    "cancelEdit": "Anulează Editarea",
+    "editParentRecurrence": "Editează Recurența Părinte",
+    "parentEditWarning": "⚠️ Editezi setările de recurență ale sarcinii părinte. Modificările vor afecta toate instanțele viitoare ale acestei sarcini recurente."
   },
   "weekdays": {
     "sunday": "Duminică",
@@ -729,5 +760,111 @@
     "low": "Scăzut",
     "time": "Timp",
     "allDay": "Toată ziua"
+  },
+  "pages": {
+    "notFound": {
+      "title": "404 - Pagina Nu A Fost Găsită",
+      "message": "Pagina pe care o cauți nu există."
+    }
+  },
+  "navbar": {
+    "appName": "tududi",
+    "quickInboxCapture": "Captură Rapidă a Inbox-ului",
+    "userMenu": "Meniu Utilizator",
+    "collapseSidebar": "Colapsează Bara Laterală",
+    "expandSidebar": "Extinde Bara Laterală"
+  },
+  "upload": {
+    "uploading": "Se Încarcă..."
+  },
+  "searchPlaceholders": {
+    "searchProjects": "Caută proiecte...",
+    "searchTags": "Caută etichete...",
+    "searchTasks": "Caută sarcini..."
+  },
+  "ariaLabels": {
+    "hideInfo": "Ascunde informațiile",
+    "aboutTasks": "Despre Sarcini",
+    "hideSearch": "Ascunde căutarea",
+    "searchTasks": "Caută Sarcini",
+    "aboutInbox": "Despre Inbox",
+    "collapseInfoPanel": "Colapsează panoul de informații",
+    "showTasksInformation": "Afișează informațiile despre sarcini",
+    "collapseSearchPanel": "Colapsare panou de căutare",
+    "showSearchInput": "Afișare câmp de căutare",
+    "showInboxInformation": "Afișare informații despre inbox"
+  },
+  "api": {
+    "errors": {
+      "authenticationRequired": "Autentificare necesară",
+      "userNotFound": "Utilizatorul nu a fost găsit",
+      "authenticationError": "Eroare de autentificare",
+      "internalServerError": "Eroare internă a serverului",
+      "invalidLoginParameters": "Parametrii de autentificare invalizi.",
+      "invalidCredentials": "Credențiale invalide",
+      "couldNotLogout": "Nu s-a putut deconecta",
+      "loggedOutSuccessfully": "Deconectare reușită",
+      "contentRequired": "Conținutul este necesar",
+      "inboxItemNotFound": "Elementul din inbox nu a fost găsit.",
+      "inboxItemDeleted": "Elementul din inbox a fost șters cu succes",
+      "contentRequiredString": "Conținutul este necesar și trebuie să fie un șir",
+      "problemCreatingInboxItem": "A apărut o problemă la crearea elementului din inbox.",
+      "problemUpdatingInboxItem": "A apărut o problemă la actualizarea elementului din inbox.",
+      "problemDeletingInboxItem": "A apărut o problemă la ștergerea elementului din inbox.",
+      "problemProcessingInboxItem": "A apărut o problemă la procesarea elementului din inbox.",
+      "invalidOrderColumn": "Coloana de ordine specificată este invalidă.",
+      "taskNotFound": "Task-ul nu a fost găsit.",
+      "taskNameRequired": "Numele task-ului este necesar.",
+      "invalidProject": "Proiect invalid.",
+      "unableToUpdateTask": "Imposibil de actualizat task-ul",
+      "taskDeleted": "Task-ul a fost șters cu succes",
+      "failedToGenerateRecurringTasks": "Generarea task-urilor recurente a eșuat",
+      "failedToUpdateTodayFlag": "Actualizarea steagului de astăzi pentru task a eșuat",
+      "noImageProvided": "Niciun fișier imagine furnizat",
+      "failedToUploadImage": "Încărcarea imaginii a eșuat",
+      "projectNotFound": "Proiectul nu a fost găsit",
+      "projectNameRequired": "Numele proiectului este necesar",
+      "projectDeleted": "Proiectul a fost șters cu succes",
+      "noteNotFound": "Notă nu a fost găsită.",
+      "noteDeleted": "Notă ștearsă cu succes.",
+      "profileNotFound": "Profilul nu a fost găsit.",
+      "passwordTooShort": "Parola trebuie să aibă cel puțin 6 caractere",
+      "currentPasswordIncorrect": "Parola curentă este incorectă",
+      "failedToUpdateProfile": "Actualizarea profilului a eșuat.",
+      "passwordChangeRequired": "Parola curentă și parola nouă sunt necesare",
+      "passwordChangedSuccessfully": "Parola a fost schimbată cu succes",
+      "failedToUpdateTaskSummary": "Actualizarea setărilor rezumatului sarcinii a eșuat.",
+      "frequencyRequired": "Frecvența este necesară.",
+      "invalidFrequency": "Valoare frecvență invalidă.",
+      "failedToStartTelegramPolling": "Eșec la pornirea polling-ului Telegram.",
+      "failedToStopTelegramPolling": "Eșec la oprirea polling-ului Telegram.",
+      "invalidTelegramTokenFormat": "Format invalid pentru token-ul bot-ului Telegram.",
+      "invalidBotToken": "Token invalid pentru bot sau bot inaccesibil.",
+      "chatIdRequired": "ID-ul chat-ului este necesar.",
+      "areaNotFound": "Zona nu a fost găsită sau nu aparține utilizatorului curent.",
+      "areaNameRequired": "Numele zonei este necesar.",
+      "tagNotFound": "Eticheta nu a fost găsită",
+      "tagNameRequired": "Numele etichetei este necesar",
+      "tagDeleted": "Eticheta a fost ștearsă cu succes",
+      "demoModeGoogleCalendar": "Mod demo: integrarea Google Calendar simulată",
+      "failedToGenerateAuthUrl": "Eșec la generarea URL-ului de autorizare",
+      "authCodeNotProvided": "Codul de autorizare nu a fost furnizat",
+      "failedToCheckCalendarStatus": "Eșec la verificarea stării calendarului",
+      "failedToFetchCalendarEvents": "Eșec la obținerea evenimentelor din calendar",
+      "googleCalendarDisconnected": "Google Calendar deconectat",
+      "failedToDisconnectCalendar": "Eșec la deconectarea calendarului",
+      "urlParameterRequired": "Parametrul URL este necesar",
+      "couldNotExtractMetadata": "Nu s-au putut extrage metadatele",
+      "textParameterRequired": "Parametrul text este necesar",
+      "notFound": "Nu a fost găsit",
+      "resourceNotFound": "Resursa solicitată nu a putut fi găsită."
+    }
+  },
+  "telegram": {
+    "welcomeMessage": "🎉 Bun venit la tududi!\n\nBotul tău personal de gestionare a sarcinilor este acum conectat și gata să ajute!\n\n📝 Pur și simplu trimite-mi orice mesaj și îl voi adăuga în inbox-ul tău tududi ca un element.\n\n✨ Comenzi:\n• /help - Afișează informații de ajutor\n• /start - Afișează mesajul de bun venit\n• Scrie orice text - Adaugă-l ca un element în inbox\n\nSă ne organizăm! 🚀",
+    "helpMessage": "📋 Ajutor Bot tududi\n\nTrimite-mi orice mesaj text și îl voi adăuga în inbox-ul tău tududi ca un element în inbox.\n\nComenzi:\n/start - Mesaj de bun venit\n/help - Afișează acest mesaj de ajutor\n\nScrie doar elementul tău și mă voi ocupa de rest!",
+    "commandProcessed": "Comanda procesată cu succes",
+    "messageProcessed": "Mesaj procesat cu succes",
+    "failedToAddToInbox": "❌ Nu s-a reușit adăugarea în inbox: {{error}}"
   }
 }
