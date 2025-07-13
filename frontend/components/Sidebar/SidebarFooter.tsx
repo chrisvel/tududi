@@ -9,6 +9,7 @@ import {
     Squares2X2Icon,
     TagIcon,
     InboxIcon,
+    CogIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Icons/TelegramIcon';
 import { useTranslation } from 'react-i18next';
@@ -255,8 +256,6 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                                 </div>
                             )}
                             
-<<<<<<< Updated upstream
-=======
                             {/* Admin Link */}
                             <Link
                                 to="/admin"
@@ -267,7 +266,6 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                                 <CogIcon className="h-5 w-5" />
                             </Link>
                             
->>>>>>> Stashed changes
                             {/* Dark Mode Toggle */}
                             <button
                                 onClick={toggleDarkMode}
