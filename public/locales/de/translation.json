@@ -7,7 +7,18 @@
     "create": "Erstellen",
     "submit": "Absenden",
     "close": "Schließen",
-    "loading": "Wird geladen..."
+    "loading": "Wird geladen...",
+    "back": "Zurück",
+    "next": "Weiter",
+    "appLoading": "Anwendung wird geladen... Bitte warten.",
+    "completed": "Abgeschlossen",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "area": "Bereich",
+    "status": "Status",
+    "saving": "Speichern...",
+    "settings": "Einstellungen",
+    "none": "Keine"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -23,7 +34,11 @@
     "nextActions": "Nächste Aktionen",
     "inbox": "Eingang",
     "completed": "Abgeschlossen",
-    "allTasks": "Alle Aufgaben"
+    "allTasks": "Alle Aufgaben",
+    "addAreaAriaLabel": "Bereich hinzufügen",
+    "addAreaTitle": "Bereich hinzufügen",
+    "addTagAriaLabel": "Tag hinzufügen",
+    "addTagTitle": "Tag hinzufügen"
   },
   "navigation": {
     "home": "Startseite",
@@ -52,7 +67,19 @@
     "worseThanYesterday": "{{percentage}}% weniger als gestern",
     "sameAsAverage": "Gleich wie der Durchschnitt",
     "betterThanAverage": "{{percentage}}% mehr als der Durchschnitt",
-    "worseThanAverage": "{{percentage}}% weniger als der Durchschnitt"
+    "worseThanAverage": "{{percentage}}% weniger als der Durchschnitt",
+    "metrics": "Metriken",
+    "showMetrics": "Metriken anzeigen",
+    "hideMetrics": "Metriken ausblenden",
+    "insights": "Einblicke",
+    "showInsights": "Einblicke anzeigen",
+    "hideInsights": "Einblicke ausblenden",
+    "intelligence": "Intelligenz",
+    "showIntelligence": "Intelligenzvorschläge anzeigen",
+    "hideIntelligence": "Intelligenzvorschläge ausblenden",
+    "completed": "Abgeschlossen",
+    "showCompleted": "Abgeschlossene Aufgaben anzeigen",
+    "hideCompleted": "Abgeschlossene Aufgaben ausblenden"
   },
   "tasks": {
     "title": "Aufgaben",
@@ -65,7 +92,19 @@
     "addToPlanHint": "Verwende die Kalendersymbole neben den Aufgaben, um sie zu deinem heutigen Plan hinzuzufügen",
     "blankSlateHint": "Beginnen Sie mit der Erstellung einer neuen Aufgabe oder ändern Sie Ihre Filter.",
     "addToToday": "Zu heutigem Plan hinzufügen",
-    "removeFromToday": "Aus heutigem Plan entfernen"
+    "removeFromToday": "Aus heutigem Plan entfernen",
+    "today": "Heute",
+    "stale": "Veraltet",
+    "suggested": "Vorgeschlagen",
+    "weeklyCompletions": "Wöchentlicher Fortschritt",
+    "taskCompleted": "Aufgabe abgeschlossen",
+    "tasksCompleted": "Aufgaben abgeschlossen",
+    "noTasksAvailable": "Keine Aufgaben verfügbar.",
+    "searchPlaceholder": "Aufgaben suchen...",
+    "addNewTask": "Neue Aufgabe hinzufügen",
+    "metrics": "Metriken",
+    "setInProgress": "In Bearbeitung setzen",
+    "setNotStarted": "Auf nicht begonnen setzen"
   },
   "timeline": {
     "activityTimeline": "Aktivitätsverlauf",
@@ -107,15 +146,54 @@
         "monthDay": "Tag des Monats",
         "weekOfMonth": "Woche des Monats",
         "recurrenceEndDate": "Enddatum (optional)",
-        "completionBased": "Nach Abschluss wiederholen"
+        "completionBased": "Nach Abschluss wiederholen",
+        "tags": "Tags",
+        "project": "Projekt",
+        "status": "Status",
+        "priority": "Priorität",
+        "dueDate": "Fälligkeitsdatum",
+        "note": "Notiz"
       },
       "recurrenceSettings": "Wiederholungseinstellungen",
-      "completionBasedHelp": "Falls aktiviert, wird die nächste Aufgabe basierend auf dem Abschlussdatum statt dem Fälligkeitsdatum erstellt"
+      "completionBasedHelp": "Falls aktiviert, wird die nächste Aufgabe basierend auf dem Abschlussdatum statt dem Fälligkeitsdatum erstellt",
+      "namePlaceholder": "Aufgabenname hinzufügen",
+      "projectSearchPlaceholder": "Suchen oder erstellen Sie ein Projekt...",
+      "noMatchingProjects": "Keine passenden Projekte",
+      "creatingProject": "Erstellen...",
+      "createProject": "+ Erstellen",
+      "dueDatePlaceholder": "Fälligkeitsdatum auswählen",
+      "endDatePlaceholder": "Enddatum auswählen",
+      "nameHelper": {
+        "title": "Machen Sie es beschreibender!",
+        "suggestion": "Versuchen Sie, mehr Details hinzuzufügen wie \"Rufen Sie den Zahnarzt an, um einen Reinigungstermin zu vereinbaren\" statt nur \"Rufen Sie den Zahnarzt an\"",
+        "short": "Machen Sie es beschreibender!",
+        "noVerb": "Fügen Sie ein Aktionsverb hinzu!",
+        "vague": "Seien Sie spezifischer!"
+      },
+      "suggestions": {
+        "short": "Versuchen Sie, genauer zu beschreiben, was getan werden muss",
+        "noVerb": "Welche spezifische Aktion müssen Sie durchführen? Versuchen Sie, mit einem Verb zu beginnen.",
+        "vague": "Versuchen Sie, mit einem Aktionsverb wie \"Anrufen\", \"Schreiben\", \"Planen\" oder \"Forschen\" zu beginnen"
+      }
     },
     "noteTitle": "Notiz-Titel",
     "noteContent": "Notiz-Inhalt",
     "noteTitlePlaceholder": "Notiz-Titel eingeben",
-    "noteContentPlaceholder": "Notiz-Inhalt eingeben"
+    "noteContentPlaceholder": "Notiz-Inhalt eingeben",
+    "dueDate": "Fälligkeitsdatum",
+    "priority": "Priorität",
+    "status": "Status",
+    "assignedTo": "Zugewiesen an",
+    "category": "Kategorie",
+    "areaName": "Bereichsname",
+    "areaDescription": "Bereichsbeschreibung",
+    "areaNamePlaceholder": "Bereichsname eingeben",
+    "areaDescriptionPlaceholder": "Bereichsbeschreibung eingeben",
+    "tagName": "Tag-Name",
+    "tagNamePlaceholder": "Tag-Name eingeben",
+    "tagInputPlaceholder": "Tippen, um ein Tag hinzuzufügen",
+    "createTagOption": "+ Erstellen \"{{tagName}}\"",
+    "removeTagAriaLabel": "Tag {{tagName}} entfernen"
   },
   "modals": {
     "updateNote": "Notiz aktualisieren",
@@ -128,6 +206,31 @@
     "deleteProject": {
       "title": "Projekt löschen",
       "message": "Sind Sie sicher, dass Sie das Projekt \"{{projectName}}\" löschen möchten?"
+    },
+    "confirmDelete": "Sind Sie sicher, dass Sie löschen möchten?",
+    "taskCreation": "Neue Aufgabe erstellen",
+    "taskEdit": "Aufgabe bearbeiten",
+    "deleteTask": {
+      "title": "Aufgabe löschen",
+      "confirmation": "Sind Sie sicher, dass Sie diese Aufgabe löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+    },
+    "areaCreation": "Neuen Bereich erstellen",
+    "areaEdit": "Bereich bearbeiten",
+    "updateArea": "Bereich aktualisieren",
+    "createArea": "Bereich erstellen",
+    "updateTag": "Tag aktualisieren",
+    "createTag": "Tag erstellen",
+    "deleteTag": {
+      "title": "Tag löschen",
+      "message": "Sind Sie sicher, dass Sie den Tag \"{{tagName}}\" löschen möchten?"
+    },
+    "deleteArea": {
+      "title": "Bereich löschen",
+      "message": "Sind Sie sicher, dass Sie den Bereich \"{{areaName}}\" löschen möchten?"
+    },
+    "deleteNote": {
+      "title": "Notiz löschen",
+      "message": "Sind Sie sicher, dass Sie die Notiz \"{{noteTitle}}\" löschen möchten?"
     }
   },
   "errors": {
@@ -136,21 +239,49 @@
     "failedToSaveNote": "Fehler beim Speichern der Notiz.",
     "projectCreationFailed": "Projekt konnte nicht erstellt werden.",
     "projectNameRequired": "Projektname ist erforderlich.",
-    "projectSaveFailed": "Projekt konnte nicht gespeichert werden."
+    "projectSaveFailed": "Projekt konnte nicht gespeichert werden.",
+    "required": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Ungültige E-Mail-Adresse",
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "minLength": "Mindestlänge beträgt {{length}} Zeichen",
+    "maxLength": "Maximale Länge beträgt {{length}} Zeichen",
+    "serverError": "Serverfehler, bitte versuchen Sie es später erneut",
+    "networkError": "Netzwerkfehler, bitte überprüfen Sie Ihre Verbindung",
+    "somethingWentWrong": "Etwas ist schief gelaufen, bitte versuchen Sie es erneut",
+    "taskFetch": "Fehler beim Abrufen von Aufgaben.",
+    "projectFetch": "Fehler beim Abrufen von Projekten.",
+    "taskCreate": "Fehler beim Erstellen der Aufgabe.",
+    "taskUpdate": "Fehler beim Aktualisieren der Aufgabe.",
+    "taskDelete": "Fehler beim Löschen der Aufgabe.",
+    "areaNameRequired": "Bereichsname ist erforderlich.",
+    "failedToSaveArea": "Speichern des Bereichs fehlgeschlagen.",
+    "tagNameRequired": "Tag-Name ist erforderlich.",
+    "failedToSaveTag": "Speichern des Tags fehlgeschlagen."
   },
   "success": {
     "noteUpdated": "Notiz erfolgreich aktualisiert!",
     "noteCreated": "Notiz erfolgreich erstellt!",
     "projectCreated": "Projekt erfolgreich erstellt!",
     "projectDeleted": "Projekt erfolgreich gelöscht!",
-    "nextActionAdded": "Nächste Aktion erfolgreich hinzugefügt!"
+    "nextActionAdded": "Nächste Aktion erfolgreich hinzugefügt!",
+    "areaUpdated": "Bereich erfolgreich aktualisiert!",
+    "areaCreated": "Bereich erfolgreich erstellt!",
+    "tagUpdated": "Tag erfolgreich aktualisiert!",
+    "tagCreated": "Tag erfolgreich erstellt!",
+    "taskCreated": "Aufgabe erfolgreich erstellt!",
+    "taskUpdated": "Aufgabe erfolgreich aktualisiert!",
+    "taskDeleted": "Aufgabe erfolgreich gelöscht!"
   },
   "notes": {
     "title": "Notizen",
     "loading": "Notizen werden geladen...",
     "error": "Fehler beim Laden der Notizen",
     "noNotesFound": "Keine Notizen gefunden",
-    "searchPlaceholder": "Notizen durchsuchen..."
+    "searchPlaceholder": "Notizen durchsuchen...",
+    "deleteNoteAriaLabel": "Notiz {{noteTitle}} löschen",
+    "deleteNoteTitle": "Notiz {{noteTitle}} löschen",
+    "editNoteAriaLabel": "Notiz {{noteTitle}} bearbeiten",
+    "editNoteTitle": "Notiz {{noteTitle}} bearbeiten"
   },
   "recurrence": {
     "none": "Keine",
@@ -163,7 +294,8 @@
     "secondWeek": "Zweite Woche",
     "thirdWeek": "Dritte Woche",
     "fourthWeek": "Vierte Woche",
-    "lastWeek": "Letzte Woche"
+    "lastWeek": "Letzte Woche",
+    "days": "Tage"
   },
   "weekdays": {
     "sunday": "Sonntag",
@@ -178,16 +310,38 @@
     "title": "Posteingang",
     "empty": "Ihr Posteingang ist leer",
     "emptyDescription": "Erfassen Sie schnell Gedanken und Ideen mit dem ⚡ Symbol in der oberen Navigationsleiste oder dem + Button in der Seitenleiste",
-    "description": "Der Posteingang ist der Ort, an dem sich alle unkategorisierten Aufgaben befinden. Aufgaben, die keinem Projekt zugewiesen wurden oder kein Fälligkeitsdatum haben, werden hier angezeigt. Dies ist Ihr 'Gedankendeponie'-Bereich, in dem Sie schnell Aufgaben notieren und später organisieren können."
+    "description": "Der Posteingang ist der Ort, an dem sich alle unkategorisierten Aufgaben befinden. Aufgaben, die keinem Projekt zugewiesen wurden oder kein Fälligkeitsdatum haben, werden hier angezeigt. Dies ist Ihr 'Gedankendeponie'-Bereich, in dem Sie schnell Aufgaben notieren und später organisieren können.",
+    "captureThought": "Fassen Sie Ihren Gedanken zusammen...",
+    "saveToInbox": "In Posteingang speichern",
+    "itemAdded": "Element zum Posteingang hinzugefügt",
+    "itemProcessed": "Element verarbeitet",
+    "itemDeleted": "Element gelöscht",
+    "itemUpdated": "Element aktualisiert",
+    "newTelegramItem": "Neues Element von Telegram: {{content}}",
+    "newItem": "Neues Element zum Posteingang hinzugefügt: {{content}}",
+    "multipleNewItems": "{{count}} weitere neue Elemente hinzugefügt",
+    "loadError": "Fehler beim Laden der Posteingangselemente",
+    "addError": "Fehler beim Hinzufügen des Posteingangselements",
+    "processError": "Fehler bei der Verarbeitung des Posteingangselements",
+    "deleteError": "Fehler beim Löschen des Posteingangselements",
+    "updateError": "Fehler bei der Aktualisierung des Posteingangselements",
+    "contentRequired": "Inhalt darf nicht leer sein",
+    "createTask": "Aufgabe erstellen",
+    "createProject": "Projekt erstellen",
+    "createNote": "Notiz erstellen",
+    "convertTo": "Umwandeln in",
+    "unprocessedItems": "Sie haben {{count}} Element(e) in Ihrem Posteingang",
+    "processNow": "Jetzt verarbeiten",
+    "deleteConfirmTitle": "Element löschen",
+    "deleteConfirmMessage": "Sind Sie sicher, dass Sie dieses Element aus Ihrem Posteingang löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
   },
   "project": {
-    "name": "Projektname",
     "projectImage": "Projektbild",
     "uploadImageHint": "Laden Sie ein Bild für Ihr Projekt hoch (max. 5MB)",
     "browseImage": "Bild durchsuchen",
+    "name": "Projektname",
     "noNotes": "Keine Notizen für dieses Projekt.",
     "deleteProject": "Projekt löschen",
-    "showCompleted": "Abgeschlossene anzeigen",
     "createSuccess": "Projekt erfolgreich erstellt!"
   },
   "profile": {
@@ -197,7 +351,7 @@
     "timezone": "Zeitzone",
     "english": "Englisch",
     "spanish": "Spanisch",
-    "greek": "Griechisch", 
+    "greek": "Griechisch",
     "ukrainian": "Ukrainisch",
     "deutsch": "Deutsch",
     "japanese": "Japanisch",
@@ -213,7 +367,7 @@
     "setupTelegram": "Telegram einrichten",
     "setupTelegramLower": "telegram einrichten",
     "passwordChangeNote": "Passwort-Änderungen werden gespeichert, wenn Sie unten im Formular auf \"Änderungen speichern\" klicken.",
-    "passwordChangeOptional": "Lassen Sie die Passwort-Felder leer, um andere Einstellungen zu aktualisieren, ohne Ihr Passwort zu ändern."
+    "passwordChangeOptional": "Lassen Sie die Passwort-Felder leer, um andere Einstellungen zu aktualisieren, ohne Ihr Passwort zu ändern.",
     "taskIntelligence": "Aufgaben-Intelligenz",
     "taskIntelligenceDescription": "Erhalten Sie hilfreiche Vorschläge, um Ihre Aufgabennamen beschreibender und umsetzbarer zu machen.",
     "enableTaskIntelligence": "Aufgaben-Intelligenz-Assistent aktivieren",
@@ -260,7 +414,78 @@
     "accountSettings": "Konto & Einstellungen",
     "aiProductivityFeatures": "KI & Produktivitätsfunktionen",
     "botSetup": "Bot-Einrichtung",
-    "successMessage": "Profil erfolgreich aktualisiert!"
+    "successMessage": "Profil erfolgreich aktualisiert!",
+    "settings": "Profil Einstellungen",
+    "theme": "Thema",
+    "notifications": "Benachrichtigungen",
+    "lightMode": "Heller Modus",
+    "darkMode": "Dunkler Modus",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "saveChanges": "Änderungen speichern",
+    "languageChangedNote": "Sprachänderungen werden sofort angewendet",
+    "languageChanging": "Sprache ändern...",
+    "languagePreference": "Spracheinstellung",
+    "personalInfo": "Persönliche Informationen",
+    "errorMessage": "Profilaktualisierung fehlgeschlagen",
+    "telegramIntegration": "Telegram-Integration",
+    "telegramDescription": "Verbinden Sie Ihr tududi-Konto mit einem Telegram-Bot, um Elemente über Telegram-Nachrichten zu Ihrem Posteingang hinzuzufügen.",
+    "telegramBotToken": "Telegram Bot Token",
+    "telegramTokenDescription": "Erstellen Sie einen Bot mit @BotFather auf Telegram und fügen Sie das Token hier ein.",
+    "telegramConnected": "Ihr Telegram-Konto ist verbunden! Senden Sie Nachrichten an Ihren Bot, um Elemente zu Ihrem tududi-Posteingang hinzuzufügen.",
+    "settingUp": "Einrichtung...",
+    "telegramSetupSuccess": "Telegram-Bot \"{{botName}}\" erfolgreich konfiguriert!",
+    "telegramSetupFailed": "Einrichtung des Telegram-Bots fehlgeschlagen.",
+    "invalidTelegramToken": "Ungültiges Format des Telegram-Bot-Tokens.",
+    "telegramInstructions": "Gehen Sie zu https://t.me/{{botUsername}} und beginnen Sie, mit Ihrem Bot zu chatten, um ihn mit Ihrem tududi-Konto zu verbinden.",
+    "botConfigured": "Bot erfolgreich konfiguriert!",
+    "botUsername": "Bot-Benutzername:",
+    "pollingStatus": "Abfragestatus:",
+    "pollingActive": "Aktiv - Empfängt Nachrichten",
+    "pollingInactive": "Inaktiv - Empfängt keine Nachrichten",
+    "pollingStarted": "Telegram-Abfrage gestartet",
+    "pollingStopped": "Telegram-Abfrage gestoppt",
+    "pollingError": "Fehler bei der Verwaltung der Telegram-Abfrage",
+    "startPollingFailed": "Start der Abfrage fehlgeschlagen",
+    "stopPollingFailed": "Stop der Abfrage fehlgeschlagen",
+    "testTelegramMessage": "Telegram testen",
+    "testMessageSent": "Testnachricht erfolgreich gesendet!",
+    "testMessageFailed": "Fehler beim Senden der Testnachricht.",
+    "testMessageError": "Fehler beim Senden der Testnachricht.",
+    "taskSummaryNotifications": "Aufgabenzusammenfassungsbenachrichtigungen",
+    "taskSummaryDescription": "Erhalten Sie regelmäßige Zusammenfassungen Ihrer Aufgaben über Telegram. Diese Funktion erfordert eine eingerichtete Telegram-Integration.",
+    "enableTaskSummaries": "Aufgabenzusammenfassungen aktivieren",
+    "summaryFrequency": "Häufigkeit der Zusammenfassung",
+    "summaryFrequencyDescription": "Wählen Sie, wie oft Sie Aufgabenzusammenfassungen erhalten möchten",
+    "sendTestSummary": "Testzusammenfassung senden",
+    "frequency": {
+      "1h": "1 Stunde",
+      "2h": "2 Stunden",
+      "4h": "4 Stunden",
+      "8h": "8 Stunden",
+      "12h": "12 Stunden",
+      "daily": "1 Tag",
+      "weekly": "1 Woche"
+    },
+    "frequencyHelp": "Wählen Sie, wie oft Sie Aufgabenzusammenfassungen erhalten möchten",
+    "french": "Französisch",
+    "russian": "Russisch",
+    "turkish": "Türkisch",
+    "korean": "Koreanisch",
+    "vietnamese": "Vietnamesisch",
+    "arabic": "Arabisch",
+    "dutch": "Niederländisch",
+    "romanian": "Rumänisch",
+    "chinese": "Chinesisch",
+    "portuguese": "Portugiesisch",
+    "indonesian": "Indonesisch",
+    "bulgarian": "Bulgarisch",
+    "danish": "Dänisch",
+    "finnish": "Finnisch",
+    "norwegian": "Norwegisch",
+    "polish": "Polnisch",
+    "slovenian": "Slowenisch",
+    "swedish": "Schwedisch"
   },
   "nextTask": {
     "suggestion": "Da nichts in Bearbeitung ist, wie wäre es, mit diesem zu beginnen",
@@ -279,12 +504,31 @@
     "nameHelper": {
       "title": "Machen Sie es beschreibender!",
       "suggestion": "Versuchen Sie, mehr Details hinzuzufügen wie \"Zahnarzt anrufen um Reinigungstermin zu vereinbaren\" anstatt nur \"Zahnarzt anrufen\""
-    }
-  },
-  "project": {
-    "projectImage": "Projektbild",
-    "uploadImageHint": "Laden Sie ein Bild für Ihr Projekt hoch (max. 5MB)",
-    "browseImage": "Bild durchsuchen"
+    },
+    "labels": {
+      "tags": "Tags",
+      "project": "Projekt",
+      "status": "Status",
+      "priority": "Priorität",
+      "dueDate": "Fälligkeitsdatum",
+      "note": "Notiz"
+    },
+    "create": "Erstellen",
+    "addTaskName": "Aufgabenname hinzufügen",
+    "createSuccess": "Aufgabe erfolgreich erstellt",
+    "createError": "Fehler beim Erstellen der Aufgabe",
+    "saveAsTask": "Als Aufgabe speichern",
+    "updateSuccess": "Aufgabe erfolgreich aktualisiert",
+    "updateError": "Fehler bei der Aktualisierung der Aufgabe",
+    "deleteSuccess": "Aufgabe erfolgreich gelöscht",
+    "deleteError": "Fehler beim Löschen der Aufgabe",
+    "startedSuccessfully": "Aufgabe erfolgreich gestartet!",
+    "created": "Aufgabe",
+    "createdSuccessfully": "erfolgreich erstellt!",
+    "updated": "Aufgabe",
+    "updatedSuccessfully": "erfolgreich aktualisiert!",
+    "deleted": "Aufgabe",
+    "deletedSuccessfully": "erfolgreich gelöscht!"
   },
   "calendar": {
     "month": "Monat",
@@ -344,6 +588,162 @@
     "time": "HH:mm",
     "dateTime": "d. MMM yyyy, HH:mm",
     "todayHeader": "dddd, d. MMMM yyyy"
+  },
+  "productivity": {
+    "stalledProjects": "Stagnierende Projekte",
+    "stalledProjectsDesc": "Diese Projekte haben keine Aufgaben oder Aktionen",
+    "needsNextAction": "Projekte benötigen nächste Aktion",
+    "needsNextActionDesc": "Diese Projekte haben abgeschlossene Aufgaben, aber keine nächste Aktion",
+    "tasksAreProjects": "Aufgaben, die wie Projekte aussehen",
+    "tasksAreProjectsDesc": "Diese Aufgaben müssen möglicherweise aufgeteilt werden",
+    "vagueTasks": "Aufgaben ohne klare Aktion",
+    "vagueTasksDesc": "Diese Aufgaben benötigen klarere Aktionsverben",
+    "staleTasks": "Veraltete Aufgaben",
+    "staleTasksDesc": "Aufgaben, die in {{days}} Tagen nicht aktualisiert wurden",
+    "stuckProjects": "Festgefahrene Projekte",
+    "stuckProjectsDesc": "Projekte, die kürzlich nicht aktualisiert wurden",
+    "issuesFound": "Gefunden {{count}} Produktivitätsproblem(e), die Aufmerksamkeit benötigen",
+    "reviewItems": "Klicken Sie, um Ihre Arbeitsabläufe zu überprüfen und zu verbessern",
+    "suggestion": "Klicken Sie auf einen der oben genannten Punkte, um ihn zu öffnen und Verbesserungen vorzunehmen."
+  },
+  "auth": {
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "forgotPassword": "Passwort vergessen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "username": "Benutzername",
+    "signup": "Anmelden",
+    "signin": "Einloggen",
+    "signout": "Ausloggen",
+    "resetPassword": "Passwort zurücksetzen",
+    "newPassword": "Neues Passwort",
+    "rememberMe": "Erinnere dich an mich",
+    "loginSuccess": "Anmeldung erfolgreich",
+    "loginFailed": "Anmeldung fehlgeschlagen",
+    "logoutSuccess": "Abmeldung erfolgreich"
+  },
+  "dropdown": {
+    "createNew": "Neu erstellen",
+    "task": "Aufgabe",
+    "project": "Projekt",
+    "note": "Notiz",
+    "area": "Bereich"
+  },
+  "sort": {
+    "due_date": "Fälligkeitsdatum",
+    "name": "Name",
+    "priority": "Priorität",
+    "status": "Status",
+    "created_at": "Erstellt am"
+  },
+  "priority": {
+    "low": "Niedrig",
+    "medium": "Mittel",
+    "high": "Hoch"
+  },
+  "status": {
+    "notStarted": "Nicht begonnen",
+    "inProgress": "In Bearbeitung",
+    "done": "Erledigt",
+    "archived": "Archiviert",
+    "unknown": "Unbekannt"
+  },
+  "dateIndicators": {
+    "today": "HEUTE",
+    "tomorrow": "MORGEN",
+    "yesterday": "GESTERN"
+  },
+  "taskViews": {
+    "project": {
+      "withName": "Sie betrachten derzeit alle Aufgaben, die mit dem Projekt \"{{projectName}}\" verknüpft sind. Sie können Aufgaben innerhalb dieses Projekts organisieren, ihre Priorität festlegen und ihren Abschluss verfolgen. Nutzen Sie diesen Raum, um sich auf die Aufgaben zu konzentrieren, die speziell zu diesem Projekt gehören.",
+      "noName": "Sie betrachten Aufgaben für ein bestimmtes Projekt. Nutzen Sie diesen Raum, um Aufgaben zu verwalten und zu verfolgen, die mit diesem Projekt verbunden sind."
+    },
+    "today": "Dies sind die Aufgaben, die heute fällig sind oder die Sie für sofortige Aufmerksamkeit geplant haben. Nutzen Sie diese Ansicht, um sich auf das zu konzentrieren, was heute erledigt werden muss. Markieren Sie Aufgaben als erledigt, aktualisieren Sie ihren Status oder passen Sie ihre Fälligkeitsdaten bei Bedarf an.",
+    "inbox": "Der Posteingang ist der Ort, an dem alle nicht kategorisierten Aufgaben leben. Aufgaben, die keinem Projekt zugewiesen wurden oder kein Fälligkeitsdatum haben, werden hier angezeigt. Dies ist Ihr Bereich für \"Gehirn-Dump\", in dem Sie schnell Aufgaben notieren und später organisieren können.",
+    "next": "Diese Ansicht zeigt alle Aufgaben, die in naher Zukunft bearbeitet werden können. Diese Aufgaben sind bereit, als nächstes bearbeitet zu werden und haben keine langfristigen Fristen. Es ist ein guter Ort, um sich zu konzentrieren, wenn Sie schnelle Fortschritte bei den Aufgaben machen möchten.",
+    "upcoming": "Diese Ansicht hebt Aufgaben hervor, die für die kommende Woche geplant sind. Sie hilft Ihnen, sich vorzubereiten und Fristen einzuhalten, indem sie Ihnen einen Überblick über die Arbeit gibt, die Sie in naher Zukunft erledigen müssen. Aufgaben mit Fälligkeitsdaten innerhalb der nächsten 7 Tage werden hier angezeigt.",
+    "someday": "Die Ansicht \"Someday\" ist für Aufgaben gedacht, die nicht dringend sind und kein spezifisches Fälligkeitsdatum haben. Dies sind Aufgaben, die Sie vielleicht irgendwann erledigen möchten, aber sie sind derzeit keine Priorität. Nutzen Sie diesen Bereich, um Ideen oder langfristige Ziele im Auge zu behalten.",
+    "completed": "Hier können Sie alle Aufgaben sehen, die Sie abgeschlossen haben. Es ist eine großartige Möglichkeit, Ihre Leistungen zu überprüfen und über die erledigte Arbeit nachzudenken. Sie können auch Aufgaben finden, die möglicherweise aus dem Archiv geholt oder in Zukunft referenziert werden müssen.",
+    "allTasks": "Sie betrachten alle Aufgaben. Dies beinhaltet Aufgaben aus verschiedenen Projekten, Aufgaben ohne spezifische Fälligkeitsdaten und Aufgaben mit unterschiedlichen Prioritätsstufen. Nutzen Sie diese Ansicht für einen Gesamtüberblick über alles auf Ihrer To-Do-Liste."
+  },
+  "note": {
+    "title": "Titel",
+    "content": "Inhalt",
+    "titlePlaceholder": "Notiztitel eingeben",
+    "contentPlaceholder": "Notizinhalt eingeben",
+    "project": "Verwandtes Projekt (Optional)",
+    "createSuccess": "Notiz erfolgreich erstellt",
+    "createError": "Fehler beim Erstellen der Notiz"
+  },
+  "projects": {
+    "loading": "Projekte laden...",
+    "error": "Fehler beim Laden der Projekte",
+    "searchPlaceholder": "Projekte suchen...",
+    "title": "Projekte",
+    "noProjectsFound": "Keine Projekte gefunden",
+    "cardViewAriaLabel": "Kartenansicht",
+    "listViewAriaLabel": "Listenansicht",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "metrics": "Projekte",
+    "filters": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "all": "Alle",
+      "allAreas": "Alle Bereiche"
+    }
+  },
+  "projectItem": {
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "completion": "Fertigstellung",
+    "completionPercentage": "{{percentage}}% abgeschlossen",
+    "toggleDropdownMenu": "Dropdown-Menü umschalten",
+    "projectInitials": "Projektinitialen"
+  },
+  "areas": {
+    "title": "Bereiche",
+    "noAreasFound": "Keine Bereiche gefunden",
+    "editAreaAriaLabel": "Bereich {{name}} bearbeiten",
+    "editAreaTitle": "Bereich {{name}} bearbeiten",
+    "deleteAreaAriaLabel": "Bereich {{name}} löschen",
+    "deleteAreaTitle": "Bereich {{name}} löschen",
+    "addArea": "Bereich hinzufügen",
+    "loading": "Bereichsdetails laden...",
+    "error": "Fehler beim Laden der Bereichsdetails.",
+    "notFound": "Bereich nicht gefunden.",
+    "details": "Bereichsdetails",
+    "viewProjects": "Projekte in {{name}} anzeigen"
+  },
+  "tags": {
+    "loading": "Tags laden...",
+    "searchPlaceholder": "Tags suchen...",
+    "title": "Tags",
+    "noTagsFound": "Keine Tags gefunden",
+    "editTagAriaLabel": "Tag {{tagName}} bearbeiten",
+    "editTagTitle": "Tag {{tagName}} bearbeiten",
+    "deleteTagAriaLabel": "Tag {{tagName}} löschen",
+    "deleteTagTitle": "Tag {{tagName}} löschen",
+    "error": "Fehler beim Abrufen des Tags.",
+    "notFound": "Tag nicht gefunden.",
+    "details": "Tag-Details",
+    "name": "Name",
+    "status": "Status",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "viewTasksWithTag": "Aufgaben mit diesem Tag anzeigen",
+    "typeToAdd": "Geben Sie ein, um ein Tag hinzuzufügen",
+    "noItemsWithTag": "Keine Elemente mit diesem Tag gefunden"
+  },
+  "pomodoro": {
+    "play": "Abspielen",
+    "pause": "Pause",
+    "reset": "Zurücksetzen",
+    "close": "Schließen",
+    "complete": "Pomodoro abgeschlossen!",
+    "completeMessage": "Gute Arbeit! Zeit für eine Pause.",
+    "done": "Fertig"
   }
 }
-
