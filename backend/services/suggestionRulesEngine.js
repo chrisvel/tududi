@@ -18,14 +18,19 @@ class SuggestionRulesEngine {
      */
     loadRules() {
         try {
-            const rulesPath = path.join(__dirname, '../config/suggestion-rules.json');
+            const rulesPath = path.join(
+                __dirname,
+                '../config/suggestion-rules.json'
+            );
             const rulesData = fs.readFileSync(rulesPath, 'utf8');
             const config = JSON.parse(rulesData);
-            
+
             if (!config.rules || !Array.isArray(config.rules)) {
-                throw new Error('Invalid rules configuration: rules property must be an array');
+                throw new Error(
+                    'Invalid rules configuration: rules property must be an array'
+                );
             }
-            
+
             this.rules = config.rules.sort((a, b) => b.priority - a.priority); // Higher priority first
             console.log(`Loaded ${this.rules.length} suggestion rules`);
         } catch (error) {
@@ -52,50 +57,124 @@ class SuggestionRulesEngine {
 
         switch (type) {
             case 'has_project':
-                return value ? context.parsed_projects.length > 0 : context.parsed_projects.length === 0;
+                return value
+                    ? context.parsed_projects.length > 0
+                    : context.parsed_projects.length === 0;
 
             case 'has_tag':
-                return context.parsed_tags.some(tag => tag.toLowerCase() === value.toLowerCase());
+                return context.parsed_tags.some(
+                    (tag) => tag.toLowerCase() === value.toLowerCase()
+                );
 
             case 'starts_with_verb':
-                return value ? InboxProcessingService.startsWithVerb(context.cleaned_content) : !InboxProcessingService.startsWithVerb(context.cleaned_content);
+                return value
+                    ? InboxProcessingService.startsWithVerb(
+                          context.cleaned_content
+                      )
+                    : !InboxProcessingService.startsWithVerb(
+                          context.cleaned_content
+                      );
 
             case 'contains_url':
-                return value ? InboxProcessingService.containsUrl(context.content) : !InboxProcessingService.containsUrl(context.content);
+                return value
+                    ? InboxProcessingService.containsUrl(context.content)
+                    : !InboxProcessingService.containsUrl(context.content);
 
             case 'contains_keywords':
                 if (!Array.isArray(value)) return false;
                 const contentLower = context.content.toLowerCase();
-                return value.some(keyword => contentLower.includes(keyword.toLowerCase()));
+                return value.some((keyword) =>
+                    contentLower.includes(keyword.toLowerCase())
+                );
 
             case 'text_length':
-                const wordCount = context.cleaned_content.split(/\s+/).filter(word => word.length > 0).length;
+                const wordCount = context.cleaned_content
+                    .split(/\s+/)
+                    .filter((word) => word.length > 0).length;
                 return this.compareNumbers(wordCount, value, operator);
 
             case 'tag_count':
-                return this.compareNumbers(context.parsed_tags.length, value, operator);
+                return this.compareNumbers(
+                    context.parsed_tags.length,
+                    value,
+                    operator
+                );
 
             case 'project_name_matches':
-                return context.parsed_projects.some(project => project.toLowerCase() === value.toLowerCase());
+                return context.parsed_projects.some(
+                    (project) => project.toLowerCase() === value.toLowerCase()
+                );
 
             case 'contains_time_reference':
-                const timeKeywords = ['tomorrow', 'today', 'yesterday', 'deadline', 'due', 'schedule', 'appointment', 'by', 'before', 'after', 'next week', 'this week', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                const timeKeywords = [
+                    'tomorrow',
+                    'today',
+                    'yesterday',
+                    'deadline',
+                    'due',
+                    'schedule',
+                    'appointment',
+                    'by',
+                    'before',
+                    'after',
+                    'next week',
+                    'this week',
+                    'monday',
+                    'tuesday',
+                    'wednesday',
+                    'thursday',
+                    'friday',
+                    'saturday',
+                    'sunday',
+                ];
                 const contentLowerTime = context.content.toLowerCase();
-                const hasTimeRef = timeKeywords.some(keyword => contentLowerTime.includes(keyword.toLowerCase()));
+                const hasTimeRef = timeKeywords.some((keyword) =>
+                    contentLowerTime.includes(keyword.toLowerCase())
+                );
                 return value ? hasTimeRef : !hasTimeRef;
 
             case 'is_question':
-                const questionWords = ['what', 'when', 'where', 'who', 'why', 'how', 'which', 'can', 'could', 'would', 'should', 'will', 'do', 'does', 'did', 'is', 'are', 'was', 'were'];
+                const questionWords = [
+                    'what',
+                    'when',
+                    'where',
+                    'who',
+                    'why',
+                    'how',
+                    'which',
+                    'can',
+                    'could',
+                    'would',
+                    'should',
+                    'will',
+                    'do',
+                    'does',
+                    'did',
+                    'is',
+                    'are',
+                    'was',
+                    'were',
+                ];
                 const contentLowerQuestion = context.content.toLowerCase();
                 const endsWithQuestion = context.content.trim().endsWith('?');
-                const startsWithQuestionWord = questionWords.some(word => contentLowerQuestion.startsWith(word + ' '));
-                const isQuestionText = endsWithQuestion || startsWithQuestionWord;
+                const startsWithQuestionWord = questionWords.some((word) =>
+                    contentLowerQuestion.startsWith(word + ' ')
+                );
+                const isQuestionText =
+                    endsWithQuestion || startsWithQuestionWord;
                 return value ? isQuestionText : !isQuestionText;
 
             case 'contains_priority_keywords':
                 if (!Array.isArray(value)) return false;
                 const contentLowerPriority = context.content.toLowerCase();
-                return value.some(keyword => contentLowerPriority.includes(keyword.toLowerCase()));
+                return value.some((keyword) =>
+                    contentLowerPriority.includes(keyword.toLowerCase())
+                );
+
+            case 'is_long_text':
+                return value
+                    ? InboxProcessingService.isLongText(context.content)
+                    : !InboxProcessingService.isLongText(context.content);
 
             default:
                 console.warn(`Unknown condition type: ${type}`);
@@ -112,12 +191,18 @@ class SuggestionRulesEngine {
      */
     compareNumbers(actual, expected, operator) {
         switch (operator) {
-            case 'gt': return actual > expected;
-            case 'lt': return actual < expected;
-            case 'eq': return actual === expected;
-            case 'gte': return actual >= expected;
-            case 'lte': return actual <= expected;
-            default: return actual === expected;
+            case 'gt':
+                return actual > expected;
+            case 'lt':
+                return actual < expected;
+            case 'eq':
+                return actual === expected;
+            case 'gte':
+                return actual >= expected;
+            case 'lte':
+                return actual <= expected;
+            default:
+                return actual === expected;
         }
     }
 
@@ -129,11 +214,15 @@ class SuggestionRulesEngine {
      */
     evaluateConditions(conditions, context) {
         if (conditions.and) {
-            return conditions.and.every(condition => this.evaluateCondition(condition, context));
+            return conditions.and.every((condition) =>
+                this.evaluateCondition(condition, context)
+            );
         }
 
         if (conditions.or) {
-            return conditions.or.some(condition => this.evaluateCondition(condition, context));
+            return conditions.or.some((condition) =>
+                this.evaluateCondition(condition, context)
+            );
         }
 
         // Single condition
@@ -158,7 +247,7 @@ class SuggestionRulesEngine {
             content,
             parsed_tags,
             parsed_projects,
-            cleaned_content
+            cleaned_content,
         };
 
         // Collect all matching rules and combine their suggestions
@@ -183,7 +272,7 @@ class SuggestionRulesEngine {
             type: primaryRule.action.suggested_type,
             reason: primaryRule.action.suggested_reason,
             rule_id: primaryRule.id,
-            rule_name: primaryRule.name
+            rule_name: primaryRule.name,
         };
 
         // Combine suggestions from all matching rules
@@ -193,7 +282,10 @@ class SuggestionRulesEngine {
 
         for (const rule of matchingRules) {
             // Collect tags from all matching rules
-            if (rule.action.suggested_tags && Array.isArray(rule.action.suggested_tags)) {
+            if (
+                rule.action.suggested_tags &&
+                Array.isArray(rule.action.suggested_tags)
+            ) {
                 allSuggestedTags.push(...rule.action.suggested_tags);
             }
 
@@ -204,7 +296,10 @@ class SuggestionRulesEngine {
 
             // Use highest priority rule's due date (first in sorted order)
             if (!combinedDueDate && rule.action.suggested_due_date) {
-                combinedDueDate = this.parseDueDate(rule.action.suggested_due_date, context);
+                combinedDueDate = this.parseDueDate(
+                    rule.action.suggested_due_date,
+                    context
+                );
             }
         }
 
@@ -239,7 +334,7 @@ class SuggestionRulesEngine {
      * @returns {object|null} Rule object or null if not found
      */
     getRuleById(id) {
-        return this.rules.find(rule => rule.id === id) || null;
+        return this.rules.find((rule) => rule.id === id) || null;
     }
 
     /**
@@ -254,7 +349,7 @@ class SuggestionRulesEngine {
         }
 
         const now = new Date();
-        
+
         if (dueDateConfig.type === 'relative') {
             switch (dueDateConfig.value) {
                 case 'today':
@@ -271,30 +366,32 @@ class SuggestionRulesEngine {
                     return null;
             }
         }
-        
+
         if (dueDateConfig.type === 'extracted') {
             // Try to extract date from content using simple patterns
             const content = context.content.toLowerCase();
-            
+
             if (content.includes('today')) {
                 return now.toISOString().split('T')[0];
             }
-            
+
             if (content.includes('tomorrow')) {
                 const tomorrow = new Date(now);
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 return tomorrow.toISOString().split('T')[0];
             }
-            
+
             // Look for "by friday", "next monday", etc.
-            const dayMatches = content.match(/(by|next)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/);
+            const dayMatches = content.match(
+                /(by|next)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/
+            );
             if (dayMatches) {
                 const dayName = dayMatches[2];
                 const targetDay = this.getNextWeekday(dayName);
                 return targetDay.toISOString().split('T')[0];
             }
         }
-        
+
         return null;
     }
 
@@ -304,17 +401,25 @@ class SuggestionRulesEngine {
      * @returns {Date} Next occurrence of that day
      */
     getNextWeekday(dayName) {
-        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const days = [
+            'sunday',
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+        ];
         const targetDay = days.indexOf(dayName.toLowerCase());
-        
+
         const now = new Date();
         const currentDay = now.getDay();
-        
+
         let daysToAdd = targetDay - currentDay;
         if (daysToAdd <= 0) {
             daysToAdd += 7; // Next week
         }
-        
+
         const result = new Date(now);
         result.setDate(result.getDate() + daysToAdd);
         return result;
