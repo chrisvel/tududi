@@ -866,5 +866,17 @@
     "commandProcessed": "Commando succesvol verwerkt",
     "messageProcessed": "Bericht succesvol verwerkt",
     "failedToAddToInbox": "❌ Mislukt om toe te voegen aan inbox: {{error}}"
+  },
+  "about": {
+    "title": "Over",
+    "version": "Versie",
+    "description": "Zelf-gehoste taakbeheer met hiërarchische organisatie, meertalige ondersteuning en Telegram-integratie. Gebouwd met liefde voor productiviteitsliefhebbers.",
+    "madeWithLove": "Gemaakt met liefde",
+    "appreciation": "Bedankt voor het gebruik van tududi! Jouw steun helpt dit project levend en groeiend te houden. Als je het nuttig vindt, overweeg dan om de ontwikkeling te steunen.",
+    "supportDevelopment": "Steun de ontwikkeling",
+    "community": "Gemeenschap",
+    "viewOnGitHub": "Bekijk op GitHub",
+    "license": "Gelicenseerd voor persoonlijk gebruik",
+    "builtBy": "Gebouwd door"
   }
 }

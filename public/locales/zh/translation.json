@@ -866,5 +866,17 @@
     "commandProcessed": "命令处理成功",
     "messageProcessed": "消息处理成功",
     "failedToAddToInbox": "❌ 添加到收件箱失败：{{error}}"
+  },
+  "about": {
+    "title": "关于",
+    "version": "版本",
+    "description": "自托管的任务管理，具有层级组织、多语言支持和Telegram集成。为生产力爱好者倾注热情而构建。",
+    "madeWithLove": "用爱构建",
+    "appreciation": "感谢您使用tududi！您的支持帮助这个项目持续发展。如果您觉得它有用，请考虑支持开发。",
+    "supportDevelopment": "支持开发",
+    "community": "社区",
+    "viewOnGitHub": "在GitHub上查看",
+    "license": "个人使用许可证",
+    "builtBy": "构建者"
   }
 }

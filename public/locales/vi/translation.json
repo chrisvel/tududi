@@ -866,5 +866,17 @@
     "commandProcessed": "Lệnh đã được xử lý thành công",
     "messageProcessed": "Tin nhắn đã được xử lý thành công",
     "failedToAddToInbox": "❌ Không thể thêm vào hộp thư: {{error}}"
+  },
+  "about": {
+    "title": "Giới thiệu",
+    "version": "Phiên bản",
+    "description": "Quản lý tác vụ tự lưu trữ với tổ chức phân cấp, hỗ trợ đa ngôn ngữ và tích hợp Telegram. Được xây dựng với tình yêu dành cho những người đam mê năng suất.",
+    "madeWithLove": "Được làm với tình yêu",
+    "appreciation": "Cảm ơn bạn đã sử dụng tududi! Sự hỗ trợ của bạn giúp giữ cho dự án này sống động và phát triển. Nếu bạn thấy nó hữu ích, hãy xem xét hỗ trợ phát triển.",
+    "supportDevelopment": "Hỗ trợ phát triển",
+    "community": "Cộng đồng",
+    "viewOnGitHub": "Xem trên GitHub",
+    "license": "Cấp phép cho sử dụng cá nhân",
+    "builtBy": "Được xây dựng bởi"
   }
 }

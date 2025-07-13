@@ -866,5 +866,17 @@
     "commandProcessed": "Ukaz je bil uspešno obdelan",
     "messageProcessed": "Sporočilo je bilo uspešno obdelano",
     "failedToAddToInbox": "❌ Dodajanje v vhodno mapo ni uspelo: {{error}}"
+  },
+  "about": {
+    "title": "O",
+    "version": "Različica",
+    "description": "Samostojno upravljanje nalog z hierarhično organizacijo, podporo za več jezikov in integracijo s Telegramom. Zgrajeno z ljubeznijo do navdušencev nad produktivnostjo.",
+    "madeWithLove": "Zgrajeno z ljubeznijo",
+    "appreciation": "Hvala, da uporabljate tududi! Vaša podpora pomaga ohranjati ta projekt živ in rastoč. Če ga najdete koristnega, razmislite o podpori razvoju.",
+    "supportDevelopment": "Podprite razvoj",
+    "community": "Skupnost",
+    "viewOnGitHub": "Poglej na GitHubu",
+    "license": "Licencirano za osebno uporabo",
+    "builtBy": "Zgrajeno od"
   }
 }

@@ -6,6 +6,7 @@ import {
     BoltIcon,
     InboxIcon,
 } from '@heroicons/react/24/solid';
+import { EnvelopeIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import PomodoroTimer from './Shared/PomodoroTimer';
 
@@ -175,8 +176,14 @@ const Navbar: React.FC<NavbarProps> = ({
                         {isDropdownOpen && (
                             <div
                                 ref={dropdownRef}
-                                className="absolute right-0 top-16 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 border border-gray-200 dark:border-gray-700"
+                                className="absolute right-0 top-full mt-2 min-w-48 w-max bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 border border-gray-200 dark:border-gray-700"
                             >
+                                {currentUser?.email && (
+                                    <div className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600 flex items-center">
+                                        <EnvelopeIcon className="h-4 w-4 mr-2" />
+                                        {currentUser.email}
+                                    </div>
+                                )}
                                 <Link
                                     to="/profile"
                                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
