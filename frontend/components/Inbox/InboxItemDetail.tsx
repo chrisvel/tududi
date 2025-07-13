@@ -371,9 +371,20 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         >
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-2 gap-2">
                 <div className="flex-1">
-                    <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
-                        {cleanedContent || item.content}
-                    </p>
+                    {item.title && item.title.trim() ? (
+                        <div className="space-y-2">
+                            <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-300 break-words">
+                                {item.title}
+                            </h4>
+                            <p className="text-sm text-gray-700 dark:text-gray-400 break-words line-clamp-2">
+                                {cleanedContent || item.content}
+                            </p>
+                        </div>
+                    ) : (
+                        <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words line-clamp-2">
+                            {cleanedContent || item.content}
+                        </p>
+                    )}
 
                     {/* Tags and Projects display - TaskHeader style */}
                     {(hashtags.length > 0 || projectRefs.length > 0) && (

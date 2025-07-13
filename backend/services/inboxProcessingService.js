@@ -280,6 +280,55 @@ class InboxProcessingService {
     }
 
     /**
+     * Check if text should be treated as long content
+     * @param {string} text - Text to check
+     * @returns {boolean} True if text is considered long
+     */
+    static isLongText(text) {
+        if (!text) return false;
+        
+        const trimmed = text.trim();
+        
+        // Consider it long if:
+        // 1. More than 100 characters
+        // 2. Contains multiple sentences (2+ periods)
+        // 3. Contains line breaks
+        // 4. Contains more than 15 words
+        
+        const charCount = trimmed.length;
+        const sentenceCount = (trimmed.match(/[.!?]+/g) || []).length;
+        const hasLineBreaks = /[\r\n]/.test(trimmed);
+        const wordCount = trimmed.split(/\s+/).length;
+        
+        return charCount > 100 || sentenceCount >= 2 || hasLineBreaks || wordCount > 15;
+    }
+
+    /**
+     * Generate a title from long text content
+     * @param {string} content - Long text content
+     * @returns {string} Generated title
+     */
+    static generateTitle(content) {
+        if (!content) return 'Inbox Item';
+        
+        const trimmed = content.trim();
+        
+        // Try to extract first sentence as title
+        const firstSentence = trimmed.split(/[.!?]/)[0].trim();
+        
+        if (firstSentence && firstSentence.length <= 60) {
+            return firstSentence;
+        }
+        
+        // If first sentence is too long, take first 50 characters and add ellipsis
+        if (trimmed.length > 50) {
+            return trimmed.substring(0, 50).trim() + '...';
+        }
+        
+        return trimmed;
+    }
+
+    /**
      * Process inbox item content and generate metadata
      * @param {string} content - Inbox item content
      * @returns {object} Processing results
@@ -290,15 +339,33 @@ class InboxProcessingService {
         const projects = this.parseProjectRefs(content);
         const cleanedContent = this.cleanTextFromTagsAndProjects(content);
         
+        // Check if this is long text and handle title generation
+        const isLong = this.isLongText(content);
+        let title = null;
+        let finalContent = content;
+        
+        if (isLong) {
+            // For long text, generate a title and keep full content
+            title = this.generateTitle(cleanedContent || content);
+            finalContent = content;
+        } else {
+            // For short text, don't set a title (use content field for display)
+            title = null;
+            finalContent = content; // Keep original content for backward compatibility
+        }
+        
         // Generate suggestion
         const suggestion = this.generateSuggestion(content, tags, projects, cleanedContent);
         
         return {
+            title: title,
+            content: finalContent,
             parsed_tags: tags,
             parsed_projects: projects,
             cleaned_content: cleanedContent,
             suggested_type: suggestion.type,
-            suggested_reason: suggestion.reason
+            suggested_reason: suggestion.reason,
+            is_long_text: isLong
         };
     }
 }

@@ -22,6 +22,7 @@ interface InboxModalProps {
     onSave: (task: Task) => Promise<void>;
     onSaveNote?: (note: Note) => Promise<void>; // For note creation
     initialText?: string;
+    initialTitle?: string; // For editing items that already have a title
     editMode?: boolean;
     onEdit?: (text: string) => Promise<void>;
     onConvertToTask?: () => Promise<void>; // Called when editing item gets converted to task
@@ -34,6 +35,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
     onSave,
     onSaveNote,
     initialText = '',
+    initialTitle = '',
     editMode = false,
     onEdit,
     onConvertToTask,
@@ -46,6 +48,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const [isSaving, setIsSaving] = useState(false);
     const { showSuccessToast, showErrorToast } = useToast();
     const nameInputRef = useRef<HTMLInputElement>(null);
+    const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
     const [saveMode, setSaveMode] = useState<'task' | 'inbox'>('inbox');
     const {
         tagsStore: { tags, setTags },
@@ -66,14 +69,62 @@ const InboxModal: React.FC<InboxModalProps> = ({
     
     // Real-time text analysis state
     const [analysisResult, setAnalysisResult] = useState<{
+        title?: string;
+        content?: string;
         parsed_tags: string[];
         parsed_projects: string[];
         cleaned_content: string;
         suggested_type: 'task' | 'note' | null;
         suggested_reason: string | null;
+        is_long_text?: boolean;
     } | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const analysisTimeoutRef = useRef<NodeJS.Timeout>();
+    const lastAnalysisRef = useRef<string>('');
+    
+    // State for handling long text with separate title and content
+    const [isLongText, setIsLongText] = useState(false);
+    const [titleText, setTitleText] = useState('');
+    const [contentText, setContentText] = useState('');
+
+    // Helper function to detect if text should be treated as long content
+    const detectLongText = (text: string): boolean => {
+        if (!text) return false;
+        
+        const trimmed = text.trim();
+        const charCount = trimmed.length;
+        const sentenceCount = (trimmed.match(/[.!?]+/g) || []).length;
+        const hasLineBreaks = /[\r\n]/.test(trimmed);
+        const wordCount = trimmed.split(/\s+/).length;
+        
+        return charCount > 100 || sentenceCount >= 2 || hasLineBreaks || wordCount > 15;
+    };
+
+    // Helper function to generate a title from content locally
+    const generateTitleFromContent = (content: string): string => {
+        if (!content) return '';
+        
+        const trimmed = content.trim();
+        
+        // Try to extract first sentence as title
+        const firstSentence = trimmed.split(/[.!?]/)[0].trim();
+        
+        if (firstSentence && firstSentence.length <= 60) {
+            return firstSentence;
+        }
+        
+        // If first sentence is too long, take first 50 characters and add ellipsis
+        if (trimmed.length > 50) {
+            return trimmed.substring(0, 50).trim() + '...';
+        }
+        
+        return trimmed;
+    };
+
+    // Handler for title input in long text mode
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTitleText(e.target.value);
+    };
 
     // Dispatch global modal events to hide floating + button
 
@@ -468,11 +519,43 @@ const InboxModal: React.FC<InboxModalProps> = ({
         };
     }, [isOpen]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const newText = e.target.value;
         const newCursorPosition = e.target.selectionStart || 0;
 
-        setInputText(newText);
+        // Only check for mode switching on significant changes to avoid constant switching
+        const shouldBeLongText = detectLongText(newText);
+        
+        if (shouldBeLongText && !isLongText && newText.length > 50) {
+            // Only switch to long text mode if we have substantial content
+            setIsLongText(true);
+            setContentText(newText);
+            // Auto-generate title from content
+            const generatedTitle = generateTitleFromContent(newText);
+            setTitleText(generatedTitle);
+            setInputText(''); // Clear the original input
+        } else if (!shouldBeLongText && isLongText && newText.length < 30) {
+            // Only switch back if content becomes very short
+            setIsLongText(false);
+            setInputText(newText);
+            setTitleText('');
+            setContentText('');
+        } else if (isLongText) {
+            // Update content in long text mode
+            setContentText(newText);
+            // Only auto-regenerate title occasionally to avoid performance issues
+            if (newText.length % 20 === 0 || newText.endsWith('.') || newText.endsWith('!') || newText.endsWith('?')) {
+                const currentGeneratedTitle = generateTitleFromContent(contentText);
+                if (!titleText || titleText === currentGeneratedTitle || titleText.endsWith('...')) {
+                    const newGeneratedTitle = generateTitleFromContent(newText);
+                    setTitleText(newGeneratedTitle);
+                }
+            }
+        } else {
+            // Update input in short text mode
+            setInputText(newText);
+        }
+
         setCursorPosition(newCursorPosition);
 
         // Check if user is typing a hashtag
@@ -483,50 +566,60 @@ const InboxModal: React.FC<InboxModalProps> = ({
         const projectQuery = getCurrentProjectQuery(newText, newCursorPosition);
         setCurrentProjectQuery(projectQuery);
 
-        // Only show suggestions if hashtag/project is at start or end
-        if ((newText.charAt(newCursorPosition - 1) === '#' || hashtagQuery) && hashtagQuery !== '') {
+        // Show tag suggestions if we just typed # or if we have a hashtag query
+        if (newText.charAt(newCursorPosition - 1) === '#' || (hashtagQuery && hashtagQuery.length > 0)) {
             // Hide project suggestions when showing tag suggestions
             setShowProjectSuggestions(false);
             setFilteredProjects([]);
 
-            // Filter tags based on current query
+            // Filter tags based on current query (show all if query is empty)
             const filtered = tags
-                .filter((tag) =>
-                    tag.name
+                .filter((tag) => {
+                    if (!hashtagQuery || hashtagQuery === '') {
+                        return true; // Show all tags when just typed #
+                    }
+                    return tag.name
                         .toLowerCase()
-                        .startsWith(hashtagQuery.toLowerCase())
-                )
-                .slice(0, 5); // Limit to 5 suggestions
+                        .startsWith(hashtagQuery.toLowerCase());
+                })
+                .slice(0, 3); // Limit to 3 suggestions for performance
 
-            // Calculate dropdown position
-            const position = calculateDropdownPosition(
-                e.target,
-                newCursorPosition
-            );
-            setDropdownPosition(position);
+            // Calculate dropdown position (for input elements only - textareas will still show suggestions)
+            if (e.target instanceof HTMLInputElement) {
+                const position = calculateDropdownPosition(
+                    e.target,
+                    newCursorPosition
+                );
+                setDropdownPosition(position);
+            }
 
             setFilteredTags(filtered);
             setShowTagSuggestions(true);
-        } else if ((newText.charAt(newCursorPosition - 1) === '+' || projectQuery) && projectQuery !== '') {
+        } else if (newText.charAt(newCursorPosition - 1) === '+' || (projectQuery && projectQuery.length > 0)) {
             // Hide tag suggestions when showing project suggestions
             setShowTagSuggestions(false);
             setFilteredTags([]);
 
-            // Filter projects based on current query
+            // Filter projects based on current query (show all if query is empty)
             const filtered = projects
-                .filter((project) =>
-                    project.name
+                .filter((project) => {
+                    if (!projectQuery || projectQuery === '') {
+                        return true; // Show all projects when just typed +
+                    }
+                    return project.name
                         .toLowerCase()
-                        .includes(projectQuery.toLowerCase())
-                )
-                .slice(0, 5); // Limit to 5 suggestions
+                        .includes(projectQuery.toLowerCase());
+                })
+                .slice(0, 3); // Limit to 3 suggestions for performance
 
-            // Calculate dropdown position
-            const position = calculateDropdownPosition(
-                e.target,
-                newCursorPosition
-            );
-            setDropdownPosition(position);
+            // Calculate dropdown position (for input elements only - textareas will still show suggestions)
+            if (e.target instanceof HTMLInputElement) {
+                const position = calculateDropdownPosition(
+                    e.target,
+                    newCursorPosition
+                );
+                setDropdownPosition(position);
+            }
 
             setFilteredProjects(filtered);
             setShowProjectSuggestions(true);
@@ -539,13 +632,19 @@ const InboxModal: React.FC<InboxModalProps> = ({
     };
 
     // Helper function to get all tags including auto-detected bookmark
-    const getAllTags = (text: string): string[] => {
+    const getAllTags = (text?: string): string[] => {
+        // Use the appropriate text if not provided
+        const textToUse = text || (isLongText ? contentText : inputText);
+        
+        // Return empty array if no text available
+        if (!textToUse) return [];
+        
         // Use analysis result if available, otherwise fall back to local parsing
         if (analysisResult) {
             const explicitTags = analysisResult.parsed_tags;
             
             // Auto-add bookmark if text contains URL or backend suggests URL note
-            const isUrlContent = isUrl(text.trim()) || analysisResult.suggested_reason === 'url_detected';
+            const isUrlContent = isUrl(textToUse.trim()) || analysisResult.suggested_reason === 'url_detected';
             if (isUrlContent) {
                 const hasBookmarkTag = explicitTags.some(tag => tag.toLowerCase() === 'bookmark');
                 if (!hasBookmarkTag) {
@@ -557,10 +656,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
         }
         
         // Fallback to local parsing
-        const explicitTags = parseHashtags(text);
+        const explicitTags = parseHashtags(textToUse);
         
         // Auto-add bookmark if text contains URL and bookmark tag isn't already present
-        if (isUrl(text.trim())) {
+        if (isUrl(textToUse.trim())) {
             const hasBookmarkTag = explicitTags.some(tag => tag.toLowerCase() === 'bookmark');
             if (!hasBookmarkTag) {
                 return [...explicitTags, 'bookmark'];
@@ -571,25 +670,37 @@ const InboxModal: React.FC<InboxModalProps> = ({
     };
 
     // Helper function to get all project references
-    const getAllProjects = (text: string): string[] => {
+    const getAllProjects = (text?: string): string[] => {
+        // Use the appropriate text if not provided
+        const textToUse = text || (isLongText ? contentText : inputText);
+        
+        // Return empty array if no text available
+        if (!textToUse) return [];
+        
         // Use analysis result if available, otherwise fall back to local parsing
         if (analysisResult) {
             return analysisResult.parsed_projects;
         }
         
         // Fallback to local parsing
-        return parseProjectRefs(text);
+        return parseProjectRefs(textToUse);
     };
 
     // Helper function to get cleaned content
-    const getCleanedContent = (text: string): string => {
+    const getCleanedContent = (text?: string): string => {
+        // Use the appropriate text if not provided
+        const textToUse = text || (isLongText ? contentText : inputText);
+        
+        // Return empty string if no text available
+        if (!textToUse) return '';
+        
         // Use analysis result if available, otherwise fall back to local cleaning
         if (analysisResult) {
-            return analysisResult.cleaned_content;
+            return analysisResult.cleaned_content || '';
         }
         
         // Fallback to local cleaning (simplified version)
-        return text.replace(/#[a-zA-Z0-9_-]+/g, '').replace(/\+\S+/g, '').trim();
+        return textToUse.replace(/#[a-zA-Z0-9_-]+/g, '').replace(/\+\S+/g, '').trim();
     };
 
     // Helper function to get suggestion
@@ -645,6 +756,16 @@ const InboxModal: React.FC<InboxModalProps> = ({
             if (response.ok) {
                 const result = await response.json();
                 setAnalysisResult(result);
+                
+                // If we got a title from the analysis and we're in long text mode
+                // Only update if we don't have a user-modified title or if the backend title is significantly different
+                if (result.title && result.is_long_text && isLongText) {
+                    const currentGeneratedTitle = generateTitleFromContent(isLongText ? contentText : inputText);
+                    // Update title if: no title exists, title matches auto-generated (user hasn't modified), or backend has better title
+                    if (!titleText || titleText === currentGeneratedTitle || titleText.endsWith('...')) {
+                        setTitleText(result.title);
+                    }
+                }
             } else {
                 console.error('Failed to analyze text:', response.statusText);
                 setAnalysisResult(null);
@@ -663,26 +784,72 @@ const InboxModal: React.FC<InboxModalProps> = ({
             clearTimeout(analysisTimeoutRef.current);
         }
 
+        // Use the appropriate text based on mode
+        const textToAnalyze = isLongText ? contentText : inputText;
+
         analysisTimeoutRef.current = setTimeout(() => {
-            analyzeText(inputText);
-        }, 300); // 300ms debounce
+            if (textToAnalyze.trim() && textToAnalyze !== lastAnalysisRef.current) {
+                lastAnalysisRef.current = textToAnalyze;
+                analyzeText(textToAnalyze);
+            }
+        }, 1000); // 1000ms debounce - reduced frequency
 
         return () => {
             if (analysisTimeoutRef.current) {
                 clearTimeout(analysisTimeoutRef.current);
             }
         };
-    }, [inputText, analyzeText]);
+    }, [inputText, contentText, isLongText, analyzeText]);
+
+    // Initialize state when modal opens or initialText/initialTitle changes
+    useEffect(() => {
+        if (isOpen) {
+            if (initialText) {
+                // Check if this is an existing item with a title (long text item)
+                if (initialTitle && initialTitle.trim()) {
+                    // This is a long text item being edited
+                    setIsLongText(true);
+                    setContentText(initialText);
+                    setTitleText(initialTitle);
+                    setInputText('');
+                } else {
+                    // Check if this should be long text based on content
+                    const shouldBeLongText = detectLongText(initialText);
+                    if (shouldBeLongText) {
+                        setIsLongText(true);
+                        setContentText(initialText);
+                        // Auto-generate title for new long text
+                        const generatedTitle = generateTitleFromContent(initialText);
+                        setTitleText(generatedTitle);
+                        setInputText('');
+                    } else {
+                        // For short text, use the simple input mode
+                        setIsLongText(false);
+                        setInputText(initialText);
+                        setContentText('');
+                        setTitleText('');
+                    }
+                }
+            } else {
+                // Reset all state for new items
+                setIsLongText(false);
+                setInputText('');
+                setContentText('');
+                setTitleText('');
+            }
+        }
+    }, [isOpen, initialText, initialTitle]);
 
     // Handle tag suggestion selection
     const handleTagSelect = (tagName: string) => {
-        const beforeCursor = inputText.substring(0, cursorPosition);
-        const afterCursor = inputText.substring(cursorPosition);
+        const currentText = isLongText ? contentText : inputText;
+        const beforeCursor = currentText.substring(0, cursorPosition);
+        const afterCursor = currentText.substring(cursorPosition);
         const hashtagMatch = beforeCursor.match(/#([a-zA-Z0-9_]*)$/);
 
         if (hashtagMatch) {
             const hashtagStart = beforeCursor.lastIndexOf('#');
-            const textBeforeHashtag = inputText.substring(0, hashtagStart).trim();
+            const textBeforeHashtag = currentText.substring(0, hashtagStart).trim();
             const textAfterCursor = afterCursor.trim();
             
             // Check if we're at the very end, very beginning, or in a consecutive group at start
@@ -704,19 +871,35 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 const newText =
                     beforeCursor.replace(/#([a-zA-Z0-9_]*)$/, `#${tagName}`) +
                     afterCursor;
-                setInputText(newText);
+                
+                if (isLongText) {
+                    setContentText(newText);
+                } else {
+                    setInputText(newText);
+                }
+                
                 setShowTagSuggestions(false);
                 setFilteredTags([]);
 
-                // Focus back on input and set cursor position
+                // Focus back on the appropriate input and set cursor position
                 setTimeout(() => {
-                    if (nameInputRef.current) {
+                    if (!isLongText && nameInputRef.current) {
                         nameInputRef.current.focus();
                         const newCursorPos = beforeCursor.replace(
                             /#([a-zA-Z0-9_]*)$/,
                             `#${tagName}`
                         ).length;
                         nameInputRef.current.setSelectionRange(
+                            newCursorPos,
+                            newCursorPos
+                        );
+                    } else if (isLongText && contentTextareaRef.current) {
+                        contentTextareaRef.current.focus();
+                        const newCursorPos = beforeCursor.replace(
+                            /#([a-zA-Z0-9_]*)$/,
+                            `#${tagName}`
+                        ).length;
+                        contentTextareaRef.current.setSelectionRange(
                             newCursorPos,
                             newCursorPos
                         );
@@ -728,14 +911,15 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
     // Handle project suggestion selection
     const handleProjectSelect = (projectName: string) => {
-        const beforeCursor = inputText.substring(0, cursorPosition);
-        const afterCursor = inputText.substring(cursorPosition);
+        const currentText = isLongText ? contentText : inputText;
+        const beforeCursor = currentText.substring(0, cursorPosition);
+        const afterCursor = currentText.substring(cursorPosition);
         // Match both quoted and unquoted project references
         const projectMatch = beforeCursor.match(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/);
 
         if (projectMatch) {
             const projectStart = beforeCursor.lastIndexOf('+');
-            const textBeforeProject = inputText.substring(0, projectStart).trim();
+            const textBeforeProject = currentText.substring(0, projectStart).trim();
             const textAfterCursor = afterCursor.trim();
             
             // Check if we're at the very end, very beginning, or in a consecutive group at start
@@ -762,19 +946,35 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 const newText =
                     beforeCursor.replace(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/, `+${formattedProjectName}`) +
                     afterCursor;
-                setInputText(newText);
+                
+                if (isLongText) {
+                    setContentText(newText);
+                } else {
+                    setInputText(newText);
+                }
+                
                 setShowProjectSuggestions(false);
                 setFilteredProjects([]);
 
-                // Focus back on input and set cursor position
+                // Focus back on the appropriate input and set cursor position
                 setTimeout(() => {
-                    if (nameInputRef.current) {
+                    if (!isLongText && nameInputRef.current) {
                         nameInputRef.current.focus();
                         const newCursorPos = beforeCursor.replace(
                             /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/,
                             `+${formattedProjectName}`
                         ).length;
                         nameInputRef.current.setSelectionRange(
+                            newCursorPos,
+                            newCursorPos
+                        );
+                    } else if (isLongText && contentTextareaRef.current) {
+                        contentTextareaRef.current.focus();
+                        const newCursorPos = beforeCursor.replace(
+                            /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/,
+                            `+${formattedProjectName}`
+                        ).length;
+                        contentTextareaRef.current.setSelectionRange(
                             newCursorPos,
                             newCursorPos
                         );
@@ -850,7 +1050,11 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
     const handleSubmit = useCallback(async (forceInbox = false) => {
         console.log('HandleSubmit called with forceInbox:', forceInbox);
-        if (!inputText.trim() || isSaving) return;
+        
+        // Get the current text based on mode
+        const currentText = isLongText ? contentText : inputText;
+        
+        if (!currentText.trim() || isSaving) return;
 
         setIsSaving(true);
 
@@ -860,10 +1064,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
             if (analysisResult?.suggested_type === 'task' && !forceInbox) {
                 console.log('Taking task creation path');
                 // Auto-convert to task using the same logic as convert to task action
-                await createMissingTags(inputText.trim());
-                await createMissingProjects(inputText.trim());
+                await createMissingTags(currentText.trim());
+                await createMissingProjects(currentText.trim());
                 
-                const cleanedText = getCleanedContent(inputText.trim());
+                const cleanedText = getCleanedContent(currentText.trim());
                 
                 // Convert parsed tags to Tag objects
                 const taskTags = analysisResult.parsed_tags.map((tagName) => {
@@ -920,10 +1124,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
             if (analysisResult?.suggested_type === 'note' && !forceInbox) {
                 console.log('Taking note creation path');
                 // Auto-convert to note using similar logic
-                await createMissingTags(inputText.trim());
-                await createMissingProjects(inputText.trim());
+                await createMissingTags(currentText.trim());
+                await createMissingProjects(currentText.trim());
                 
-                const cleanedText = getCleanedContent(inputText.trim());
+                const cleanedText = getCleanedContent(currentText.trim());
                 
                 // Convert parsed tags to Tag objects and include bookmark tag
                 const hashtagTags = analysisResult.parsed_tags.map((tagName) => {
@@ -934,7 +1138,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 });
 
                 // Add bookmark tag for URLs or when suggested reason is url_detected
-                const isUrlContent = isUrl(inputText.trim()) || analysisResult.suggested_reason === 'url_detected';
+                const isUrlContent = isUrl(currentText.trim()) || analysisResult.suggested_reason === 'url_detected';
                 const bookmarkTag = isUrlContent ? [{ name: 'bookmark' }] : [];
                 
                 // Make sure we don't duplicate bookmark tag if it's already in parsed tags
@@ -990,7 +1194,9 @@ const InboxModal: React.FC<InboxModalProps> = ({
             
             if (editMode && onEdit) {
                 // For edit mode, store the original text with tags/projects
-                await onEdit(inputText.trim());
+                // Use the appropriate text based on the current mode
+                const textToSave = isLongText ? contentText : inputText;
+                await onEdit(textToSave.trim());
                 setIsClosing(true);
                 setTimeout(() => {
                     onClose();
@@ -1003,10 +1209,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
             if (effectiveSaveMode === 'task') {
                 // For task mode, create missing tags and projects, then clean the text
-                await createMissingTags(inputText.trim());
-                await createMissingProjects(inputText.trim());
+                await createMissingTags(currentText.trim());
+                await createMissingProjects(currentText.trim());
                 
-                const cleanedText = cleanTextFromTagsAndProjects(inputText.trim());
+                const cleanedText = cleanTextFromTagsAndProjects(currentText.trim());
                 const newTask: Task = {
                     name: cleanedText,
                     status: 'not_started',
@@ -1016,6 +1222,9 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     await onSave(newTask);
                     showSuccessToast(t('task.createSuccess'));
                     setInputText('');
+                    setContentText('');
+                    setTitleText('');
+                    setIsLongText(false);
                     handleClose();
                 } catch (error: any) {
                     // If it's an auth error, don't show error toast (user will be redirected)
@@ -1029,7 +1238,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 try {
                     // For inbox mode, store the original text with tags/projects
                     // Tags and projects will be created and assigned when the item is processed later
-                    await createInboxItemWithStore(inputText.trim());
+                    await createInboxItemWithStore(currentText.trim());
 
                     showSuccessToast(t('inbox.itemAdded'));
 
@@ -1161,254 +1370,237 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     <div className="w-full p-6 px-8">
                         <div className="flex flex-col sm:flex-row sm:items-center relative">
                             <div className="relative flex-1">
-                                <input
-                                    ref={nameInputRef}
-                                    type="text"
-                                    name="text"
-                                    value={inputText}
-                                    onChange={handleChange}
-                                    onSelect={(e) => {
-                                        const pos =
-                                            e.currentTarget.selectionStart || 0;
-                                        setCursorPosition(pos);
-                                        // Update dropdown position if showing suggestions
-                                        if (showTagSuggestions || showProjectSuggestions) {
-                                            const position =
-                                                calculateDropdownPosition(
-                                                    e.currentTarget,
-                                                    pos
-                                                );
-                                            setDropdownPosition(position);
-                                        }
-                                    }}
-                                    onKeyUp={(e) => {
-                                        const pos =
-                                            e.currentTarget.selectionStart || 0;
-                                        setCursorPosition(pos);
-                                        // Update dropdown position if showing suggestions
-                                        if (showTagSuggestions || showProjectSuggestions) {
-                                            const position =
-                                                calculateDropdownPosition(
-                                                    e.currentTarget,
-                                                    pos
-                                                );
-                                            setDropdownPosition(position);
-                                        }
-                                    }}
-                                    onClick={(e) => {
-                                        const pos =
-                                            e.currentTarget.selectionStart || 0;
-                                        setCursorPosition(pos);
-                                        // Update dropdown position if showing suggestions
-                                        if (showTagSuggestions || showProjectSuggestions) {
-                                            const position =
-                                                calculateDropdownPosition(
-                                                    e.currentTarget,
-                                                    pos
-                                                );
-                                            setDropdownPosition(position);
-                                        }
-                                    }}
-                                    required
-                                    className="w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white focus:outline-none shadow-sm py-2"
-                                    placeholder={t('inbox.captureThought')}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' && !e.shiftKey && !isSaving) {
-                                            // If suggestions are showing and there are filtered options, let the user navigate
-                                            if ((showTagSuggestions && filteredTags.length > 0) || 
-                                                (showProjectSuggestions && filteredProjects.length > 0)) {
-                                                // Don't submit, let the user select from suggestions
-                                                return;
+                                {!isLongText ? (
+                                    <input
+                                        ref={nameInputRef}
+                                        type="text"
+                                        name="text"
+                                        value={inputText}
+                                        onChange={handleChange}
+                                        onSelect={(e) => {
+                                            const pos =
+                                                e.currentTarget.selectionStart || 0;
+                                            setCursorPosition(pos);
+                                            // Update dropdown position if showing suggestions
+                                            if (showTagSuggestions || showProjectSuggestions) {
+                                                const position =
+                                                    calculateDropdownPosition(
+                                                        e.currentTarget,
+                                                        pos
+                                                    );
+                                                setDropdownPosition(position);
                                             }
+                                        }}
+                                        onKeyUp={(e) => {
+                                            const pos =
+                                                e.currentTarget.selectionStart || 0;
+                                            setCursorPosition(pos);
+                                            // Update dropdown position if showing suggestions
+                                            if (showTagSuggestions || showProjectSuggestions) {
+                                                const position =
+                                                    calculateDropdownPosition(
+                                                        e.currentTarget,
+                                                        pos
+                                                    );
+                                                setDropdownPosition(position);
+                                            }
+                                        }}
+                                        onClick={(e) => {
+                                            const pos =
+                                                e.currentTarget.selectionStart || 0;
+                                            setCursorPosition(pos);
+                                            // Update dropdown position if showing suggestions
+                                            if (showTagSuggestions || showProjectSuggestions) {
+                                                const position =
+                                                    calculateDropdownPosition(
+                                                        e.currentTarget,
+                                                        pos
+                                                    );
+                                                setDropdownPosition(position);
+                                            }
+                                        }}
+                                        required
+                                        className="w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white focus:outline-none shadow-sm py-2"
+                                        placeholder={t('inbox.captureThought')}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey && !isSaving) {
+                                                // If suggestions are showing and there are filtered options, let the user navigate
+                                                if ((showTagSuggestions && filteredTags.length > 0) || 
+                                                    (showProjectSuggestions && filteredProjects.length > 0)) {
+                                                    // Don't submit, let the user select from suggestions
+                                                    return;
+                                                }
+                                                
+                                                // Otherwise, submit the form
+                                                e.preventDefault();
+                                                handleSubmit();
+                                            }
+                                        }}
+                                    />
+                                ) : (
+                                    <div className="space-y-3">
+                                        <input
+                                            type="text"
+                                            name="title"
+                                            value={titleText}
+                                            onChange={handleTitleChange}
+                                            required
+                                            className="w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white focus:outline-none shadow-sm py-2 border-b border-gray-200 dark:border-gray-600"
+                                            placeholder={t('inbox.titlePlaceholder', 'Title for this item...')}
+                                        />
+                                        <div className="relative">
+                                            <textarea
+                                                ref={contentTextareaRef}
+                                                name="content"
+                                                value={contentText}
+                                                onChange={handleChange}
+                                                onSelect={(e) => {
+                                                    const pos = e.currentTarget.selectionStart || 0;
+                                                    setCursorPosition(pos);
+                                                }}
+                                                onKeyUp={(e) => {
+                                                    const pos = e.currentTarget.selectionStart || 0;
+                                                    setCursorPosition(pos);
+                                                }}
+                                                onClick={(e) => {
+                                                    const pos = e.currentTarget.selectionStart || 0;
+                                                    setCursorPosition(pos);
+                                                }}
+                                                rows={6}
+                                                className="w-full text-base dark:bg-gray-800 text-black dark:text-white focus:outline-none shadow-sm py-2 resize-y min-h-[150px]"
+                                                placeholder={t('inbox.contentPlaceholder', 'Enter your detailed content here...')}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && !e.shiftKey && !isSaving) {
+                                                        // If suggestions are showing and there are filtered options, let the user navigate
+                                                        if ((showTagSuggestions && filteredTags.length > 0) || 
+                                                            (showProjectSuggestions && filteredProjects.length > 0)) {
+                                                            // Don't submit, let the user select from suggestions
+                                                            return;
+                                                        }
+                                                    }
+                                                }}
+                                            />
                                             
-                                            // Otherwise, submit the form
-                                            e.preventDefault();
-                                            handleSubmit();
-                                        }
-                                    }}
-                                />
+                                            {/* Tag/Project suggestions for textarea */}
+                                            {isLongText && showTagSuggestions && filteredTags.length > 0 && (
+                                                <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50 min-w-[120px] max-w-[200px]">
+                                                    {filteredTags.map((tag, index) => (
+                                                        <button
+                                                            key={tag.id || index}
+                                                            onClick={() => handleTagSelect(tag.name)}
+                                                            className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md"
+                                                        >
+                                                            #{tag.name}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            
+                                            {isLongText && showProjectSuggestions && filteredProjects.length > 0 && (
+                                                <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50 min-w-[120px] max-w-[200px]">
+                                                    {filteredProjects.map((project, index) => (
+                                                        <button
+                                                            key={project.id || index}
+                                                            onClick={() => handleProjectSelect(project.name)}
+                                                            className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md"
+                                                        >
+                                                            +{project.name}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
 
-                                {/* Tags display like TaskItem */}
-                                {inputText &&
-                                    getAllTags(inputText).length > 0 && (
-                                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
-                                            <TagIcon className="h-3 w-3 mr-1" />
-                                            <div className="flex flex-wrap gap-1">
-                                                {getAllTags(inputText).map(
-                                                    (tagName, index) => {
-                                                        const tag = tags.find(
-                                                            (t) =>
-                                                                t.name.toLowerCase() ===
-                                                                tagName.toLowerCase()
-                                                        );
-
-                                                        if (tag) {
-                                                            return (
-                                                                <span
-                                                                    key={index}
-                                                                    className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 rounded text-blue-600 dark:text-blue-400"
-                                                                >
-                                                                    <Link
-                                                                        to={`/tag/${encodeURIComponent(tag.name)}`}
-                                                                        className="hover:underline"
-                                                                        onClick={(
-                                                                            e
-                                                                        ) =>
-                                                                            e.stopPropagation()
-                                                                        }
-                                                                    >
-                                                                        {tagName}
-                                                                    </Link>
-                                                                    <button
-                                                                        onClick={() => removeTagFromText(tagName)}
-                                                                        className="h-3 w-3 text-blue-400 hover:text-red-500 transition-colors"
-                                                                        title="Remove tag"
-                                                                    >
-                                                                        <XMarkIcon className="h-3 w-3" />
-                                                                    </button>
-                                                                </span>
-                                                            );
-                                                        } else {
-                                                            return (
-                                                                <span
-                                                                    key={index}
-                                                                    className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 dark:bg-orange-900/20 rounded text-orange-500 dark:text-orange-400"
-                                                                >
-                                                                    {tagName}
-                                                                    <button
-                                                                        onClick={() => removeTagFromText(tagName)}
-                                                                        className="h-3 w-3 text-orange-400 hover:text-red-500 transition-colors"
-                                                                        title="Remove tag"
-                                                                    >
-                                                                        <XMarkIcon className="h-3 w-3" />
-                                                                    </button>
-                                                                </span>
-                                                            );
-                                                        }
-                                                    }
-                                                )}
+                                {/* Display detected tags and projects */}
+                                {(inputText || contentText) && (getAllTags().length > 0 || getAllProjects().length > 0) && (
+                                    <div className="mt-3 space-y-2">
+                                        {/* Tags display */}
+                                        {getAllTags().length > 0 && (
+                                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 flex-wrap gap-1">
+                                                <TagIcon className="h-3 w-3 mr-1" />
+                                                <div className="flex flex-wrap gap-1">
+                                                    {getAllTags().map((tagName, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="px-2 py-1 bg-blue-50 dark:bg-blue-900/20 rounded text-blue-600 dark:text-blue-400 text-xs"
+                                                        >
+                                                            {tagName}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
-
-                                {/* Projects display like TaskItem */}
-                                {inputText &&
-                                    getAllProjects(inputText).length > 0 && (
-                                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
-                                            <FolderIcon className="h-3 w-3 mr-1" />
-                                            <div className="flex flex-wrap gap-1">
-                                                {getAllProjects(inputText).map(
-                                                    (projectName, index) => {
-                                                        const project = projects.find(
-                                                            (p) =>
-                                                                p.name.toLowerCase() ===
-                                                                projectName.toLowerCase()
-                                                        );
-
-                                                        if (project) {
-                                                            return (
-                                                                <span
-                                                                    key={index}
-                                                                    className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 dark:bg-green-900/20 rounded text-green-600 dark:text-green-400"
-                                                                >
-                                                                    <Link
-                                                                        to={`/projects?project=${encodeURIComponent(project.name)}`}
-                                                                        className="hover:underline"
-                                                                        onClick={(
-                                                                            e
-                                                                        ) =>
-                                                                            e.stopPropagation()
-                                                                        }
-                                                                    >
-                                                                        {projectName}
-                                                                    </Link>
-                                                                    <button
-                                                                        onClick={() => removeProjectFromText(projectName)}
-                                                                        className="h-3 w-3 text-green-400 hover:text-red-500 transition-colors"
-                                                                        title="Remove project"
-                                                                    >
-                                                                        <XMarkIcon className="h-3 w-3" />
-                                                                    </button>
-                                                                </span>
-                                                            );
-                                                        } else {
-                                                            return (
-                                                                <span
-                                                                    key={index}
-                                                                    className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 dark:bg-orange-900/20 rounded text-orange-500 dark:text-orange-400"
-                                                                >
-                                                                    {projectName}
-                                                                    <button
-                                                                        onClick={() => removeProjectFromText(projectName)}
-                                                                        className="h-3 w-3 text-orange-400 hover:text-red-500 transition-colors"
-                                                                        title="Remove project"
-                                                                    >
-                                                                        <XMarkIcon className="h-3 w-3" />
-                                                                    </button>
-                                                                </span>
-                                                            );
-                                                        }
-                                                    }
-                                                )}
+                                        )}
+                                        
+                                        {/* Projects display */}
+                                        {getAllProjects().length > 0 && (
+                                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 flex-wrap gap-1">
+                                                <FolderIcon className="h-3 w-3 mr-1" />
+                                                <div className="flex flex-wrap gap-1">
+                                                    {getAllProjects().map((projectName, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className="px-2 py-1 bg-green-50 dark:bg-green-900/20 rounded text-green-600 dark:text-green-400 text-xs"
+                                                        >
+                                                            {projectName}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
+                                )}
 
-                                {/* Tag Suggestions Dropdown */}
-                                {showTagSuggestions &&
-                                    filteredTags.length > 0 && (
-                                        <div
-                                            className="absolute bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50"
-                                            style={{
-                                                left: `${dropdownPosition.left}px`,
-                                                top: `${dropdownPosition.top + 4}px`,
-                                                minWidth: '120px',
-                                                maxWidth: '200px',
-                                            }}
-                                        >
-                                            {filteredTags.map((tag, index) => (
-                                                <button
-                                                    key={tag.id || index}
-                                                    onClick={() =>
-                                                        handleTagSelect(
-                                                            tag.name
-                                                        )
-                                                    }
-                                                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md"
-                                                >
-                                                    #{tag.name}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
+                                {/* Tag Suggestions Dropdown - only for short text mode */}
+                                {!isLongText && showTagSuggestions && filteredTags.length > 0 && (
+                                    <div
+                                        className="absolute bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50"
+                                        style={{
+                                            left: `${dropdownPosition.left}px`,
+                                            top: `${dropdownPosition.top + 4}px`,
+                                            minWidth: '120px',
+                                            maxWidth: '200px',
+                                        }}
+                                    >
+                                        {filteredTags.map((tag, index) => (
+                                            <button
+                                                key={tag.id || index}
+                                                onClick={() =>
+                                                    handleTagSelect(tag.name)
+                                                }
+                                                className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md"
+                                            >
+                                                #{tag.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
 
-                                {/* Project Suggestions Dropdown */}
-                                {showProjectSuggestions &&
-                                    filteredProjects.length > 0 && (
-                                        <div
-                                            className="absolute bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50"
-                                            style={{
-                                                left: `${dropdownPosition.left}px`,
-                                                top: `${dropdownPosition.top + 4}px`,
-                                                minWidth: '120px',
-                                                maxWidth: '200px',
-                                            }}
-                                        >
-                                            {filteredProjects.map((project, index) => (
-                                                <button
-                                                    key={project.id || index}
-                                                    onClick={() =>
-                                                        handleProjectSelect(
-                                                            project.name
-                                                        )
-                                                    }
-                                                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md"
-                                                >
-                                                    +{project.name}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
+                                {/* Project Suggestions Dropdown - only for short text mode */}
+                                {!isLongText && showProjectSuggestions && filteredProjects.length > 0 && (
+                                    <div
+                                        className="absolute bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50"
+                                        style={{
+                                            left: `${dropdownPosition.left}px`,
+                                            top: `${dropdownPosition.top + 4}px`,
+                                            minWidth: '120px',
+                                            maxWidth: '200px',
+                                        }}
+                                    >
+                                        {filteredProjects.map((project, index) => (
+                                            <button
+                                                key={project.id || index}
+                                                onClick={() =>
+                                                    handleProjectSelect(project.name)
+                                                }
+                                                className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md"
+                                            >
+                                                +{project.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
 
                                 {/* Intelligent Suggestion */}
                                 {(() => {
@@ -1454,9 +1646,9 @@ const InboxModal: React.FC<InboxModalProps> = ({
                             <button
                                 type="button"
                                 onClick={() => handleSubmit(false)} // Explicitly allow intelligent suggestions
-                                disabled={!inputText.trim() || isSaving}
+                                disabled={!(isLongText ? contentText.trim() : inputText.trim()) || isSaving}
                                 className={`mt-4 sm:mt-0 sm:ml-4 inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none ${
-                                    inputText.trim() && !isSaving
+                                    (isLongText ? contentText.trim() : inputText.trim()) && !isSaving
                                         ? 'bg-blue-600 hover:bg-blue-700'
                                         : 'bg-blue-400 cursor-not-allowed'
                                 }`}

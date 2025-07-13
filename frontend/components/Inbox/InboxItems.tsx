@@ -508,8 +508,16 @@ const InboxItems: React.FC = () => {
                         onSave={handleSaveTask}
                         onSaveNote={handleSaveNote}
                         initialText={
-                            inboxItems.find((item) => item.id === itemToEdit)
-                                ?.content || ''
+                            (() => {
+                                const item = inboxItems.find((item) => item.id === itemToEdit);
+                                return item?.content || '';
+                            })()
+                        }
+                        initialTitle={
+                            (() => {
+                                const item = inboxItems.find((item) => item.id === itemToEdit);
+                                return item?.title || '';
+                            })()
                         }
                         editMode={true}
                         onEdit={handleSaveEditedItem}

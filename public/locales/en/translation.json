@@ -506,6 +506,8 @@
     "emptyDescription": "Capture thoughts and ideas quickly using the ⚡ icon in the top navbar or the + button in the sidebar",
     "description": "Inbox is where all uncategorized tasks are located. Tasks that have not been assigned to a project or don't have a due date will appear here. This is your 'brain dump' area where you can quickly note down tasks and organize them later.",
     "captureThought": "Capture your thought...",
+    "titlePlaceholder": "Title for this item...",
+    "contentPlaceholder": "Enter your detailed content here...",
     "saveToInbox": "Save to Inbox",
     "itemAdded": "Item added to inbox",
     "itemProcessed": "Item processed",

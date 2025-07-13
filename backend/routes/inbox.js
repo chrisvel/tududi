@@ -41,10 +41,19 @@ router.post('/inbox', async (req, res) => {
         // Ensure source is never null/undefined
         const finalSource = source && source.trim() ? source.trim() : 'manual';
 
+        // Process the content to determine title and analyze text
+        const processingResult = InboxProcessingService.processInboxItem(content.trim());
+
         const item = await InboxItem.create({
-            content: content.trim(),
+            title: processingResult.title,
+            content: processingResult.content,
             source: finalSource,
             user_id: req.session.userId,
+            suggested_type: processingResult.suggested_type,
+            suggested_reason: processingResult.suggested_reason,
+            parsed_tags: processingResult.parsed_tags,
+            parsed_projects: processingResult.parsed_projects,
+            cleaned_content: processingResult.cleaned_content,
         });
 
         res.status(201).json(item);
@@ -96,10 +105,23 @@ router.patch('/inbox/:id', async (req, res) => {
             return res.status(404).json({ error: 'Inbox item not found.' });
         }
 
-        const { content, status } = req.body;
+        const { content, title, status } = req.body;
         const updateData = {};
 
-        if (content !== undefined) updateData.content = content;
+        // If content is being updated, reprocess it
+        if (content !== undefined) {
+            const processingResult = InboxProcessingService.processInboxItem(content);
+            updateData.title = processingResult.title;
+            updateData.content = processingResult.content;
+            updateData.suggested_type = processingResult.suggested_type;
+            updateData.suggested_reason = processingResult.suggested_reason;
+            updateData.parsed_tags = processingResult.parsed_tags;
+            updateData.parsed_projects = processingResult.parsed_projects;
+            updateData.cleaned_content = processingResult.cleaned_content;
+        }
+
+        // Allow manual title override
+        if (title !== undefined) updateData.title = title;
         if (status !== undefined) updateData.status = status;
 
         await item.update(updateData);
