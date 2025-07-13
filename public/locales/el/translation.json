@@ -54,6 +54,8 @@
     "showMetrics": "Εμφάνιση Μετρικών",
     "showProductivity": "Εμφάνιση Στοιχείων Παραγωγικότητας",
     "showIntelligence": "Εμφάνιση Προτάσεων Ευφυίας",
+    "showNextTaskSuggestion": "Πρόταση Επόμενης Εργασίας",
+    "showSuggestions": "Εμφάνιση Προτεινόμενων",
     "showDueToday": "Εμφάνιση Εργασιών που Λήγουν Σήμερα",
     "showCompleted": "Εμφάνιση Ολοκληρωμένων Εργασιών"
   },

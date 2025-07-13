@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Note } from '../../entities/Note';
 import { Area } from '../../entities/Area';
 import { useTelegramStatus } from '../../contexts/TelegramStatusContext';
+import { Link } from 'react-router-dom';
 
 interface SidebarFooterProps {
     currentUser: { email: string };
@@ -254,6 +255,19 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                                 </div>
                             )}
                             
+<<<<<<< Updated upstream
+=======
+                            {/* Admin Link */}
+                            <Link
+                                to="/admin"
+                                className="flex items-center justify-center focus:outline-none text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg px-2 py-1 transition-colors duration-200"
+                                aria-label="Admin"
+                                title="Rules Engine Admin"
+                            >
+                                <CogIcon className="h-5 w-5" />
+                            </Link>
+                            
+>>>>>>> Stashed changes
                             {/* Dark Mode Toggle */}
                             <button
                                 onClick={toggleDarkMode}
