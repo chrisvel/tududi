@@ -275,6 +275,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
         setDropdownOpen(false);
     };
 
+    const handleShowAllProjects = () => {
+        setNewProjectName('');
+        setFilteredProjects(projects);
+        setDropdownOpen(!dropdownOpen);
+    };
+
     const handleCreateProject = async () => {
         if (newProjectName.trim() !== '') {
             setIsCreatingProject(true);
@@ -513,6 +519,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                             isCreatingProject={
                                                                 isCreatingProject
                                                             }
+                                                            onShowAllProjects={
+                                                                handleShowAllProjects
+                                                            }
+                                                            allProjects={projects}
                                                         />
                                                     </div>
                                                 )}
