@@ -398,7 +398,8 @@
     "tagNamePlaceholder": "タグ名を入力",
     "tagInputPlaceholder": "タグを追加するために入力",
     "createTagOption": "+ 「{{tagName}}」を作成",
-    "removeTagAriaLabel": "タグ{{tagName}}を削除"
+    "removeTagAriaLabel": "タグ{{tagName}}を削除",
+    "projectDescriptionPlaceholder": "プロジェクトの説明を入力してください"
   },
   "auth": {
     "login": "ログイン",
@@ -635,7 +636,8 @@
   },
   "task": {
     "suggestions": {
-      "short": "何をする必要があるかについて、より具体的に記述してください"
+      "short": "何をする必要があるかについて、より具体的に記述してください",
+      "noVerb": "どの具体的なアクションを取る必要がありますか？動詞から始めてみてください。"
     },
     "nameHelper": {
       "title": "もっと詳しく記述しましょう！",

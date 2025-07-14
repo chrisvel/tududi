@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Ange taggnamn",
     "tagInputPlaceholder": "Skriv för att lägga till en tagg",
     "createTagOption": "+ Skapa \"{{tagName}}\"",
-    "removeTagAriaLabel": "Ta bort tagg {{tagName}}"
+    "removeTagAriaLabel": "Ta bort tagg {{tagName}}",
+    "projectDescriptionPlaceholder": "Ange projektbeskrivning"
   },
   "auth": {
     "login": "Logga in",
@@ -604,7 +605,8 @@
     "deleted": "Uppgift",
     "deletedSuccessfully": "borttagen framgångsrikt!",
     "suggestions": {
-      "short": "Försök att vara mer specifik om vad som behöver göras"
+      "short": "Försök att vara mer specifik om vad som behöver göras",
+      "noVerb": "Vilken specifik åtgärd behöver du vidta? Försök börja med ett verb."
     },
     "nameHelper": {
       "title": "Gör den mer beskrivande!",

@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Введите название тега",
     "tagInputPlaceholder": "Введите, чтобы добавить тег",
     "createTagOption": "+ Создать \"{{tagName}}\"",
-    "removeTagAriaLabel": "Удалить тег {{tagName}}"
+    "removeTagAriaLabel": "Удалить тег {{tagName}}",
+    "projectDescriptionPlaceholder": "Введите описание проекта"
   },
   "auth": {
     "login": "Войти",
@@ -604,7 +605,8 @@
     "deleted": "Задача",
     "deletedSuccessfully": "успешно удалена!",
     "suggestions": {
-      "short": "Попробуйте быть более конкретным в том, что нужно сделать"
+      "short": "Попробуйте быть более конкретным в том, что нужно сделать",
+      "noVerb": "Какое конкретное действие вам нужно предпринять? Попробуйте начать с глагола."
     },
     "nameHelper": {
       "title": "Сделайте это более описательным!",

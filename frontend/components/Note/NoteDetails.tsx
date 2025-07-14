@@ -5,6 +5,7 @@ import {
     TrashIcon,
     TagIcon,
     DocumentTextIcon,
+    FolderIcon,
 } from '@heroicons/react/24/solid';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
@@ -144,9 +145,45 @@ const NoteDetails: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
                         <DocumentTextIcon className="h-6 w-6 text-xl mr-2" />
-                        <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
-                            {note.title}
-                        </h2>
+                        <div className="flex flex-col">
+                            <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
+                                {note.title}
+                            </h2>
+                            {/* Project and Tags under title */}
+                            {((note.project || note.Project) ||
+                                (note.tags && note.tags.length > 0) ||
+                                (note.Tags && note.Tags.length > 0)) && (
+                                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    {(note.project || note.Project) && (
+                                        <div className="flex items-center">
+                                            <FolderIcon className="h-3 w-3 mr-1" />
+                                            <Link
+                                                to={`/project/${(note.project || note.Project)?.id}`}
+                                                className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+                                            >
+                                                {(note.project || note.Project)?.name}
+                                            </Link>
+                                        </div>
+                                    )}
+                                    {(note.project || note.Project) &&
+                                        ((note.tags && note.tags.length > 0) ||
+                                            (note.Tags && note.Tags.length > 0)) && (
+                                            <span className="mx-2">•</span>
+                                        )}
+                                    {((note.tags && note.tags.length > 0) ||
+                                        (note.Tags && note.Tags.length > 0)) && (
+                                        <div className="flex items-center">
+                                            <TagIcon className="h-3 w-3 mr-1" />
+                                            <span>
+                                                {(note.tags || note.Tags || [])
+                                                    .map((tag) => tag.name)
+                                                    .join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
                     {/* Action Buttons */}
                     <div className="flex space-x-2">
@@ -168,67 +205,6 @@ const NoteDetails: React.FC = () => {
                         </button>
                     </div>
                 </div>
-                {/* Tags and Project */}
-                {(note.tags && note.tags.length > 0) ||
-                (note.Tags && note.Tags.length > 0) ||
-                note.project ||
-                note.Project ? (
-                    <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg p-4 mb-6">
-                        {/* Note Tags */}
-                        {((note.tags && note.tags.length > 0) ||
-                            (note.Tags && note.Tags.length > 0)) && (
-                            <div className="mb-4">
-                                <div className="flex items-start">
-                                    <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3 mt-0.5" />
-                                    <div className="flex-1">
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">
-                                            Tags:
-                                        </span>
-                                        <div className="flex flex-wrap gap-2 mt-1">
-                                            {(note.tags || note.Tags || []).map(
-                                                (tag) => (
-                                                    <button
-                                                        key={tag.id}
-                                                        onClick={() =>
-                                                            navigate(
-                                                                `/tag/${encodeURIComponent(tag.name)}`
-                                                            )
-                                                        }
-                                                        className="flex items-center space-x-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-xs"
-                                                    >
-                                                        <TagIcon className="h-3 w-3" />
-                                                        <span>{tag.name}</span>
-                                                    </button>
-                                                )
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {/* Note Project */}
-                        {(note.project || note.Project) && (
-                            <div
-                                className={
-                                    (note.tags && note.tags.length > 0) ||
-                                    (note.Tags && note.Tags.length > 0)
-                                        ? 'mt-4'
-                                        : ''
-                                }
-                            >
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                    Project
-                                </h3>
-                                <Link
-                                    to={`/project/${(note.project || note.Project)?.id}`}
-                                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                                >
-                                    {(note.project || note.Project)?.name}
-                                </Link>
-                            </div>
-                        )}
-                    </div>
-                ) : null}
                 {/* Note Content */}
                 <div className="mb-6 bg-white dark:bg-gray-900 shadow-md rounded-lg p-6">
                     <MarkdownRenderer content={note.content} />

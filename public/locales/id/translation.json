@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Masukkan nama tag",
     "tagInputPlaceholder": "Ketik untuk menambahkan tag",
     "createTagOption": "+ Buat \"{{tagName}}\"",
-    "removeTagAriaLabel": "Hapus tag {{tagName}}"
+    "removeTagAriaLabel": "Hapus tag {{tagName}}",
+    "projectDescriptionPlaceholder": "Masukkan deskripsi proyek"
   },
   "auth": {
     "login": "Masuk",
@@ -604,7 +605,8 @@
     "deleted": "Tugas",
     "deletedSuccessfully": "berhasil dihapus!",
     "suggestions": {
-      "short": "Cobalah untuk lebih spesifik tentang apa yang perlu dilakukan"
+      "short": "Cobalah untuk lebih spesifik tentang apa yang perlu dilakukan",
+      "noVerb": "Apa tindakan spesifik yang perlu Anda ambil? Cobalah mulai dengan kata kerja."
     },
     "nameHelper": {
       "title": "Buat lebih deskriptif!",

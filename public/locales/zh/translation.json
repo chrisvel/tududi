@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "输入标签名称",
     "tagInputPlaceholder": "输入以添加标签",
     "createTagOption": "+ 创建 \"{{tagName}}\"",
-    "removeTagAriaLabel": "移除标签 {{tagName}}"
+    "removeTagAriaLabel": "移除标签 {{tagName}}",
+    "projectDescriptionPlaceholder": "输入项目描述"
   },
   "auth": {
     "login": "登录",
@@ -604,7 +605,8 @@
     "deleted": "任务",
     "deletedSuccessfully": "成功删除！",
     "suggestions": {
-      "short": "尽量更具体地说明需要完成的任务"
+      "short": "尽量更具体地说明需要完成的任务",
+      "noVerb": "您需要采取什么具体行动？尝试以动词开头。"
     },
     "nameHelper": {
       "title": "让它更具描述性！",

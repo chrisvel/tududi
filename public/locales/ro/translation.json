@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Introduceți numele etichetei",
     "tagInputPlaceholder": "Scrieți pentru a adăuga o etichetă",
     "createTagOption": "+ Creați \"{{tagName}}\"",
-    "removeTagAriaLabel": "Eliminați eticheta {{tagName}}"
+    "removeTagAriaLabel": "Eliminați eticheta {{tagName}}",
+    "projectDescriptionPlaceholder": "Introduceți descrierea proiectului"
   },
   "auth": {
     "login": "Conectare",
@@ -604,7 +605,8 @@
     "deleted": "Sarcină",
     "deletedSuccessfully": "ștearsă cu succes!",
     "suggestions": {
-      "short": "Încercați să fiți mai specific cu privire la ceea ce trebuie făcut"
+      "short": "Încercați să fiți mai specific cu privire la ceea ce trebuie făcut",
+      "noVerb": "Ce acțiune specifică trebuie să întreprindeți? Încercați să începeți cu un verb."
     },
     "nameHelper": {
       "title": "Faceți-l mai descriptiv!",

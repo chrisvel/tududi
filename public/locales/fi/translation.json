@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Syötä tunnisteen nimi",
     "tagInputPlaceholder": "Kirjoita lisätäksesi tunniste",
     "createTagOption": "+ Luo \"{{tagName}}\"",
-    "removeTagAriaLabel": "Poista tunniste {{tagName}}"
+    "removeTagAriaLabel": "Poista tunniste {{tagName}}",
+    "projectDescriptionPlaceholder": "Syötä projektin kuvaus"
   },
   "auth": {
     "login": "Kirjaudu",
@@ -604,7 +605,8 @@
     "deleted": "Tehtävä",
     "deletedSuccessfully": "poistettiin onnistuneesti!",
     "suggestions": {
-      "short": "Yritä olla tarkempi siitä, mitä on tehtävä"
+      "short": "Yritä olla tarkempi siitä, mitä on tehtävä",
+      "noVerb": "Mitä erityistä toimintoa sinun tarvitsee tehdä? Yritä aloittaa verbillä."
     },
     "nameHelper": {
       "title": "Tee siitä kuvaavampi!",

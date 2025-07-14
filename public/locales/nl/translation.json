@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Voer de tagnaam in",
     "tagInputPlaceholder": "Typ om een tag toe te voegen",
     "createTagOption": "+ Maak \"{{tagName}}\"",
-    "removeTagAriaLabel": "Verwijder tag {{tagName}}"
+    "removeTagAriaLabel": "Verwijder tag {{tagName}}",
+    "projectDescriptionPlaceholder": "Voer projectbeschrijving in"
   },
   "auth": {
     "login": "Inloggen",
@@ -604,7 +605,8 @@
     "deleted": "Taak",
     "deletedSuccessfully": "succesvol verwijderd!",
     "suggestions": {
-      "short": "Probeer specifieker te zijn over wat er gedaan moet worden"
+      "short": "Probeer specifieker te zijn over wat er gedaan moet worden",
+      "noVerb": "Welke specifieke actie moet je ondernemen? Probeer te beginnen met een werkwoord."
     },
     "nameHelper": {
       "title": "Maak het beschrijvender!",

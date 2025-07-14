@@ -207,7 +207,8 @@
     "tagNamePlaceholder": "Tag-Name eingeben",
     "tagInputPlaceholder": "Tippen, um ein Tag hinzuzufügen",
     "createTagOption": "+ Erstellen \"{{tagName}}\"",
-    "removeTagAriaLabel": "Tag {{tagName}} entfernen"
+    "removeTagAriaLabel": "Tag {{tagName}} entfernen",
+    "projectDescriptionPlaceholder": "Projektbeschreibung eingeben"
   },
   "modals": {
     "updateNote": "Notiz aktualisieren",
@@ -519,7 +520,8 @@
   },
   "task": {
     "suggestions": {
-      "short": "Versuchen Sie, spezifischer zu beschreiben, was getan werden muss"
+      "short": "Versuchen Sie, spezifischer zu beschreiben, was getan werden muss",
+      "noVerb": "Welche spezifische Handlung müssen Sie durchführen? Versuchen Sie, mit einem Verb zu beginnen."
     },
     "nameHelper": {
       "title": "Machen Sie es beschreibender!",

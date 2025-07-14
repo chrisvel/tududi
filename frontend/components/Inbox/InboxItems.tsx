@@ -134,10 +134,12 @@ const InboxItems: React.FC = () => {
         };
     }, [t, showSuccessToast]); // Include dependencies that are actually used
 
-    const handleProcessItem = async (id: number) => {
+    const handleProcessItem = async (id: number, showToast: boolean = true) => {
         try {
             await processInboxItemWithStore(id);
-            showSuccessToast(t('inbox.itemProcessed'));
+            if (showToast) {
+                showSuccessToast(t('inbox.itemProcessed'));
+            }
         } catch (error) {
             console.error('Failed to process inbox item:', error);
             showErrorToast(t('inbox.processError'));
@@ -263,7 +265,7 @@ const InboxItems: React.FC = () => {
 
             // Process the inbox item after successful task creation
             if (currentConversionItemId !== null) {
-                await handleProcessItem(currentConversionItemId);
+                await handleProcessItem(currentConversionItemId, false);
                 setCurrentConversionItemId(null);
             }
 
@@ -281,7 +283,7 @@ const InboxItems: React.FC = () => {
 
             // Process the inbox item after successful project creation
             if (currentConversionItemId !== null) {
-                await handleProcessItem(currentConversionItemId);
+                await handleProcessItem(currentConversionItemId, false);
                 setCurrentConversionItemId(null);
             }
 
@@ -320,7 +322,7 @@ const InboxItems: React.FC = () => {
 
             // Process the inbox item after successful note creation
             if (currentConversionItemId !== null) {
-                await handleProcessItem(currentConversionItemId);
+                await handleProcessItem(currentConversionItemId, false);
                 setCurrentConversionItemId(null);
             }
 

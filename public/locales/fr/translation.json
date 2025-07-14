@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Entrez le nom de l'étiquette",
     "tagInputPlaceholder": "Tapez pour ajouter une étiquette",
     "createTagOption": "+ Créer \"{{tagName}}\"",
-    "removeTagAriaLabel": "Supprimer l'étiquette {{tagName}}"
+    "removeTagAriaLabel": "Supprimer l'étiquette {{tagName}}",
+    "projectDescriptionPlaceholder": "Entrez la description du projet"
   },
   "auth": {
     "login": "Connexion",
@@ -604,7 +605,8 @@
     "deleted": "Tâche",
     "deletedSuccessfully": "supprimée avec succès !",
     "suggestions": {
-      "short": "Essayez d'être plus spécifique sur ce qui doit être fait"
+      "short": "Essayez d'être plus spécifique sur ce qui doit être fait",
+      "noVerb": "Quelle action spécifique devez-vous entreprendre ? Essayez de commencer par un verbe."
     },
     "nameHelper": {
       "title": "Rendez-le plus descriptif !",

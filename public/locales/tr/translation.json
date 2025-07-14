@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Etiket adını girin",
     "tagInputPlaceholder": "Etiket eklemek için yazın",
     "createTagOption": "+ \"{{tagName}}\" oluştur",
-    "removeTagAriaLabel": "Etiketi kaldır {{tagName}}"
+    "removeTagAriaLabel": "Etiketi kaldır {{tagName}}",
+    "projectDescriptionPlaceholder": "Proje açıklamasını girin"
   },
   "auth": {
     "login": "Giriş Yap",
@@ -604,7 +605,8 @@
     "deleted": "Görev",
     "deletedSuccessfully": "başarıyla silindi!",
     "suggestions": {
-      "short": "Ne yapılması gerektiği konusunda daha spesifik olmaya çalışın"
+      "short": "Ne yapılması gerektiği konusunda daha spesifik olmaya çalışın",
+      "noVerb": "Hangi spesifik eylemi gerçekleştirmeniz gerekiyor? Bir fiil ile başlamayı deneyin."
     },
     "nameHelper": {
       "title": "Daha açıklayıcı hale getirin!",
