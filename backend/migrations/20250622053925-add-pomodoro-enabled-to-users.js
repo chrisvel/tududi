@@ -1,13 +1,19 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
+const { safeAddColumns } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.addColumn('users', 'pomodoro_enabled', {
-            type: Sequelize.BOOLEAN,
-            allowNull: false,
-            defaultValue: true,
-        });
+        await safeAddColumns(queryInterface, 'users', [
+            {
+                name: 'pomodoro_enabled',
+                definition: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: true,
+                },
+            },
+        ]);
     },
 
     async down(queryInterface, Sequelize) {
