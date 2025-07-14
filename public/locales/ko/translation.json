@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "태그 이름을 입력하세요",
     "tagInputPlaceholder": "태그 추가를 위해 입력하세요",
     "createTagOption": "+ \"{{tagName}}\" 생성",
-    "removeTagAriaLabel": "태그 {{tagName}} 제거"
+    "removeTagAriaLabel": "태그 {{tagName}} 제거",
+    "projectDescriptionPlaceholder": "프로젝트 설명을 입력하세요"
   },
   "auth": {
     "login": "로그인",
@@ -604,7 +605,8 @@
     "deleted": "작업",
     "deletedSuccessfully": "성공적으로 삭제되었습니다!",
     "suggestions": {
-      "short": "무엇을 해야 하는지 더 구체적으로 작성해 보세요"
+      "short": "무엇을 해야 하는지 더 구체적으로 작성해 보세요",
+      "noVerb": "어떤 특정한 행동을 취해야 하나요? 동사로 시작해 보세요."
     },
     "nameHelper": {
       "title": "더 설명적으로 만들어 보세요!",

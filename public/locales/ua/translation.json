@@ -233,7 +233,8 @@
     "tagNamePlaceholder": "Введіть назву тегу",
     "tagInputPlaceholder": "Введіть, щоб додати тег",
     "createTagOption": "+ Створити \"{{tagName}}\"",
-    "removeTagAriaLabel": "Видалити тег {{tagName}}"
+    "removeTagAriaLabel": "Видалити тег {{tagName}}",
+    "projectDescriptionPlaceholder": "Введіть опис проекту"
   },
   "nextTask": {
     "suggestion": "Оскільки нічого не виконується, як щодо початку з",
@@ -545,7 +546,8 @@
   },
   "task": {
     "suggestions": {
-      "short": "Спробуйте бути більш конкретними щодо того, що потрібно зробити"
+      "short": "Спробуйте бути більш конкретними щодо того, що потрібно зробити",
+      "noVerb": "Яку конкретну дію вам потрібно вжити? Спробуйте почати з дієслова."
     },
     "nameHelper": {
       "title": "Зробіть це більш описовим!",

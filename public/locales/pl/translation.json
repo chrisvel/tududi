@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Wprowadź nazwę tagu",
     "tagInputPlaceholder": "Wpisz, aby dodać tag",
     "createTagOption": "+ Utwórz \"{{tagName}}\"",
-    "removeTagAriaLabel": "Usuń tag {{tagName}}"
+    "removeTagAriaLabel": "Usuń tag {{tagName}}",
+    "projectDescriptionPlaceholder": "Wprowadź opis projektu"
   },
   "auth": {
     "login": "Zaloguj się",
@@ -604,7 +605,8 @@
     "deleted": "Zadanie",
     "deletedSuccessfully": "usunięte pomyślnie!",
     "suggestions": {
-      "short": "Spróbuj być bardziej szczegółowy w tym, co należy zrobić"
+      "short": "Spróbuj być bardziej szczegółowy w tym, co należy zrobić",
+      "noVerb": "Jaką konkretną akcję musisz podjąć? Spróbuj zacząć od czasownika."
     },
     "nameHelper": {
       "title": "Uczyń to bardziej opisowym!",

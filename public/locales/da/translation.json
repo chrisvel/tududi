@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Indtast tag navn",
     "tagInputPlaceholder": "Skriv for at tilføje et tag",
     "createTagOption": "+ Opret \"{{tagName}}\"",
-    "removeTagAriaLabel": "Fjern tag {{tagName}}"
+    "removeTagAriaLabel": "Fjern tag {{tagName}}",
+    "projectDescriptionPlaceholder": "Indtast projektbeskrivelse"
   },
   "auth": {
     "login": "Log ind",
@@ -604,7 +605,8 @@
     "deleted": "Opgave",
     "deletedSuccessfully": "slettet med succes!",
     "suggestions": {
-      "short": "Prøv at være mere specifik omkring, hvad der skal gøres"
+      "short": "Prøv at være mere specifik omkring, hvad der skal gøres",
+      "noVerb": "Hvilken specifik handling skal du udføre? Prøv at starte med et verbum."
     },
     "nameHelper": {
       "title": "Gør det mere beskrivende!",

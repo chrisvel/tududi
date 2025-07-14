@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Digite o nome da tag",
     "tagInputPlaceholder": "Digite para adicionar uma tag",
     "createTagOption": "+ Criar \"{{tagName}}\"",
-    "removeTagAriaLabel": "Remover tag {{tagName}}"
+    "removeTagAriaLabel": "Remover tag {{tagName}}",
+    "projectDescriptionPlaceholder": "Digite a descrição do projeto"
   },
   "auth": {
     "login": "Entrar",
@@ -604,7 +605,8 @@
     "deleted": "Tarefa",
     "deletedSuccessfully": "excluída com sucesso!",
     "suggestions": {
-      "short": "Tente ser mais específico sobre o que precisa ser feito"
+      "short": "Tente ser mais específico sobre o que precisa ser feito",
+      "noVerb": "Qual ação específica você precisa realizar? Tente começar com um verbo."
     },
     "nameHelper": {
       "title": "Torne-o mais descritivo!",

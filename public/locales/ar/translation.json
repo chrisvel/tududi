@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "أدخل اسم الوسم",
     "tagInputPlaceholder": "اكتب لإضافة وسم",
     "createTagOption": "+ إنشاء \"{{tagName}}\"",
-    "removeTagAriaLabel": "إزالة الوسم {{tagName}}"
+    "removeTagAriaLabel": "إزالة الوسم {{tagName}}",
+    "projectDescriptionPlaceholder": "أدخل وصف المشروع"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -604,7 +605,8 @@
     "deleted": "مهمة",
     "deletedSuccessfully": "تم حذفها بنجاح!",
     "suggestions": {
-      "short": "حاول أن تكون أكثر تحديدًا بشأن ما يجب القيام به"
+      "short": "حاول أن تكون أكثر تحديدًا بشأن ما يجب القيام به",
+      "noVerb": "ما الإجراء المحدد الذي تحتاج إلى اتخاذه؟ حاول البدء بفعل."
     },
     "nameHelper": {
       "title": "اجعلها أكثر وصفًا!",

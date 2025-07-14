@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Nhập tên thẻ",
     "tagInputPlaceholder": "Gõ để thêm thẻ",
     "createTagOption": "+ Tạo \"{{tagName}}\"",
-    "removeTagAriaLabel": "Xóa thẻ {{tagName}}"
+    "removeTagAriaLabel": "Xóa thẻ {{tagName}}",
+    "projectDescriptionPlaceholder": "Nhập mô tả dự án"
   },
   "auth": {
     "login": "Đăng Nhập",
@@ -604,7 +605,8 @@
     "deleted": "Nhiệm vụ",
     "deletedSuccessfully": "đã được xóa thành công!",
     "suggestions": {
-      "short": "Cố gắng cụ thể hơn về những gì cần làm"
+      "short": "Cố gắng cụ thể hơn về những gì cần làm",
+      "noVerb": "Bạn cần thực hiện hành động cụ thể nào? Hãy thử bắt đầu bằng một động từ."
     },
     "nameHelper": {
       "title": "Hãy làm cho nó mô tả hơn!",

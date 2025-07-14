@@ -605,7 +605,8 @@
     "deleted": "Task",
     "deletedSuccessfully": "deleted successfully!",
     "suggestions": {
-      "short": "Try to be more specific about what needs to be done"
+      "short": "Try to be more specific about what needs to be done",
+      "noVerb": "What specific action do you need to take? Try starting with a verb."
     },
     "nameHelper": {
       "title": "Make it more descriptive!",

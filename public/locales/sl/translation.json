@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Vnesite ime oznake",
     "tagInputPlaceholder": "Vtipkajte za dodajanje oznake",
     "createTagOption": "+ Ustvari \"{{tagName}}\"",
-    "removeTagAriaLabel": "Odstrani oznako {{tagName}}"
+    "removeTagAriaLabel": "Odstrani oznako {{tagName}}",
+    "projectDescriptionPlaceholder": "Vnesite opis projekta"
   },
   "auth": {
     "login": "Prijava",
@@ -604,7 +605,8 @@
     "deleted": "Naloga",
     "deletedSuccessfully": "uspešno izbrisano!",
     "suggestions": {
-      "short": "Poskusite biti bolj specifični glede tega, kaj je treba narediti"
+      "short": "Poskusite biti bolj specifični glede tega, kaj je treba narediti",
+      "noVerb": "Katero specifično dejanje morate izvesti? Poskusite začeti z glagolom."
     },
     "nameHelper": {
       "title": "Naredite ga bolj opisnega!",

@@ -415,7 +415,8 @@
     "tagNamePlaceholder": "Skriv inn tagnavn",
     "tagInputPlaceholder": "Skriv for å legge til en tag",
     "createTagOption": "+ Opprett \"{{tagName}}\"",
-    "removeTagAriaLabel": "Fjern tag {{tagName}}"
+    "removeTagAriaLabel": "Fjern tag {{tagName}}",
+    "projectDescriptionPlaceholder": "Skriv inn prosjektbeskrivelse"
   },
   "auth": {
     "login": "Logg inn",
@@ -604,7 +605,8 @@
     "deleted": "Oppgave",
     "deletedSuccessfully": "slettet vellykket!",
     "suggestions": {
-      "short": "Prøv å være mer spesifikk om hva som må gjøres"
+      "short": "Prøv å være mer spesifikk om hva som må gjøres",
+      "noVerb": "Hvilken spesifikk handling må du ta? Prøv å starte med et verb."
     },
     "nameHelper": {
       "title": "Gjør det mer beskrivende!",

@@ -483,7 +483,8 @@
         "noVerb": "¿Qué acción específica necesitas tomar? Intenta comenzar con un verbo.",
         "vague": "Intenta comenzar con un verbo de acción como \"Llamar\", \"Escribir\", \"Programar\", o \"Investigar\""
       }
-    }
+    },
+    "projectDescriptionPlaceholder": "Ingrese la descripción del proyecto"
   },
   "dateFormats": {
     "long": "EEEE, d 'de' MMMM 'de' yyyy",
@@ -546,7 +547,8 @@
     "createError": "Error al crear tarea",
     "saveAsTask": "Guardar como Tarea",
     "suggestions": {
-      "short": "Trata de ser más específico acerca de lo que necesita hacerse"
+      "short": "Trata de ser más específico acerca de lo que necesita hacerse",
+      "noVerb": "¿Qué acción específica necesita realizar? Intente comenzar con un verbo."
     },
     "nameHelper": {
       "title": "¡Hazlo más descriptivo!",
