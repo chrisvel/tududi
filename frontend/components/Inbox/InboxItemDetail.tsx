@@ -56,6 +56,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         suggested_tags?: string[];
         suggested_due_date?: string;
     } | null>(null);
+    const [removedSuggestedTags, setRemovedSuggestedTags] = useState<string[]>([]);
 
     // Helper function to parse hashtags from text (consecutive groups anywhere)
     const parseHashtags = (text: string): string[] => {
@@ -266,6 +267,19 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         return result;
     };
 
+    // Helper function to get filtered suggested tags (excluding user-removed ones)
+    const getFilteredSuggestedTags = (): string[] => {
+        if (!analysisResult?.suggested_tags) return [];
+        return analysisResult.suggested_tags.filter(tag => 
+            !removedSuggestedTags.includes(tag.toLowerCase())
+        );
+    };
+
+    // Helper function to remove a suggested tag
+    const removeSuggestedTag = (tagName: string) => {
+        setRemovedSuggestedTags(prev => [...prev, tagName.toLowerCase()]);
+    };
+
     // Analyze the inbox item content for intelligent suggestions
     useEffect(() => {
         const analyzeItem = async () => {
@@ -289,6 +303,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         };
 
         analyzeItem();
+    }, [item.content]);
+
+    // Reset removed suggested tags when content changes
+    useEffect(() => {
+        setRemovedSuggestedTags([]);
     }, [item.content]);
 
     const hashtags = parseHashtags(item.content);
@@ -317,10 +336,10 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 analysisResult = await response.json();
             }
 
-            // Combine explicit tags with suggested tags from analysis
+            // Combine explicit tags with filtered suggested tags from analysis
             const allTagNames = [
                 ...hashtags,
-                ...(analysisResult?.suggested_tags || [])
+                ...getFilteredSuggestedTags()
             ];
             
             // Remove duplicates (case-insensitive)
@@ -506,10 +525,10 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             console.error('Error analyzing inbox item for note:', error);
         }
 
-        // Combine explicit tags with suggested tags from analysis
+        // Combine explicit tags with filtered suggested tags from analysis
         const allTagNames = [
             ...hashtags,
-            ...(analysisResult?.suggested_tags || [])
+            ...getFilteredSuggestedTags()
         ];
         
         // Remove duplicates (case-insensitive)
@@ -588,19 +607,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 <div className="flex-1">
                     {/* Display title for long text, otherwise show cleaned content */}
                     {item.title && isLongText ? (
-                        <div>
-                            <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
-                                {item.title}
-                            </p>
-                            <details className="mt-2">
-                                <summary className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
-                                    Show full content
-                                </summary>
-                                <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                                    {item.content}
-                                </div>
-                            </details>
-                        </div>
+                        <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
+                            {item.title}
+                        </p>
                     ) : (
                         <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
                             {cleanedContent || item.content}
@@ -609,10 +618,10 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
                     {/* Enhanced metadata display with intelligent analysis */}
                     {(() => {
-                        // Combine explicit and suggested tags
+                        // Combine explicit and filtered suggested tags
                         const allTags = [
                             ...hashtags,
-                            ...(analysisResult?.suggested_tags || [])
+                            ...getFilteredSuggestedTags()
                         ];
                         const uniqueTags = [...new Set(allTags)]; // Remove duplicates
 
@@ -650,7 +659,34 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                 {uniqueTags.length > 0 && (
                                     <div className="flex items-center">
                                         <TagIcon className="h-3 w-3 mr-1" />
-                                        <span>{uniqueTags.join(', ')}</span>
+                                        <div className="flex flex-wrap gap-1">
+                                            {uniqueTags.map((tag) => {
+                                                const isExplicit = hashtags.includes(tag);
+                                                const isSuggested = !isExplicit && analysisResult?.suggested_tags?.includes(tag);
+                                                
+                                                return (
+                                                    <span 
+                                                        key={tag}
+                                                        className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
+                                                            isExplicit 
+                                                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' 
+                                                                : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                                                        }`}
+                                                    >
+                                                        {tag}
+                                                        {isSuggested && (
+                                                            <button
+                                                                onClick={() => removeSuggestedTag(tag)}
+                                                                className="ml-1 text-gray-400 hover:text-red-500 focus:outline-none"
+                                                                title="Remove suggested tag"
+                                                            >
+                                                                ×
+                                                            </button>
+                                                        )}
+                                                    </span>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 )}
 
