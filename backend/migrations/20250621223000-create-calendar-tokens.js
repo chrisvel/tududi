@@ -33,6 +33,7 @@ module.exports = {
             },
             token_type: {
                 type: Sequelize.STRING,
+                allowNull: true,
                 defaultValue: 'Bearer',
             },
             expires_at: {
@@ -59,14 +60,12 @@ module.exports = {
             },
         });
 
-        // Add unique index for user_id + provider combination
         await queryInterface.addIndex('calendar_tokens', {
             fields: ['user_id', 'provider'],
             unique: true,
             name: 'calendar_tokens_user_provider_unique',
         });
 
-        // Add index for faster lookups by user_id
         await queryInterface.addIndex('calendar_tokens', {
             fields: ['user_id'],
             name: 'calendar_tokens_user_id_index',
