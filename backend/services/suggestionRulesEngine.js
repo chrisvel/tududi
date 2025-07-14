@@ -176,6 +176,11 @@ class SuggestionRulesEngine {
                     ? InboxProcessingService.isLongText(context.content)
                     : !InboxProcessingService.isLongText(context.content);
 
+            case 'contains_code':
+                return value
+                    ? InboxProcessingService.containsCode(context.content)
+                    : !InboxProcessingService.containsCode(context.content);
+
             default:
                 console.warn(`Unknown condition type: ${type}`);
                 return false;
@@ -274,6 +279,7 @@ class SuggestionRulesEngine {
             rule_id: primaryRule.id,
             rule_name: primaryRule.name,
         };
+
 
         // Combine suggestions from all matching rules
         const allSuggestedTags = [];

@@ -1,7 +1,10 @@
 const express = require('express');
 const { Tag, Task, Note, Project, sequelize } = require('../models');
+<<<<<<< HEAD
 const { extractUidFromSlug } = require('../utils/slug-utils');
 const { validateTagName } = require('../utils/validation');
+=======
+>>>>>>> 2fefb49b (Add experimental support for code snippets)
 const router = express.Router();
 const _ = require('lodash');
 
@@ -10,7 +13,7 @@ router.get('/tags', async (req, res) => {
     try {
         const tags = await Tag.findAll({
             where: { user_id: req.currentUser.id },
-            attributes: ['id', 'name', 'uid'],
+            attributes: ['id', 'name'],
             order: [['name', 'ASC']],
         });
         res.json(tags);
@@ -20,27 +23,28 @@ router.get('/tags', async (req, res) => {
     }
 });
 
-// GET /api/tag/:identifier (supports both ID, name, and uid-slug)
-router.get('/tag', async (req, res) => {
+// GET /api/tag/:identifier (supports both ID and name)
+router.get('/tag/:identifier', async (req, res) => {
     try {
-        const { id, uid, name } = req.query;
+        const identifier = req.params.identifier;
+        let whereClause;
 
-        let whereClause = {
-            user_id: req.currentUser.id,
-        };
-        if (!_.isEmpty(id)) {
-            whereClause.id = parseInt(id, 10);
-        }
-        if (!_.isEmpty(uid)) {
-            whereClause.uid = uid;
-        }
-        if (!_.isEmpty(name)) {
-            whereClause.name = decodeURIComponent(name);
+        // Check if identifier is a number (ID) or string (name)
+        if (/^\d+$/.test(identifier)) {
+            // It's a numeric ID
+            whereClause = {
+                id: parseInt(identifier),
+                user_id: req.currentUser.id,
+            };
+        } else {
+            // It's a tag name - decode URI component to handle special characters
+            const tagName = decodeURIComponent(identifier);
+            whereClause = { name: tagName, user_id: req.currentUser.id };
         }
 
         const tag = await Tag.findOne({
             where: whereClause,
-            attributes: ['name', 'uid'],
+            attributes: ['id', 'name'],
         });
 
         if (!tag) {
@@ -59,19 +63,17 @@ router.post('/tag', async (req, res) => {
     try {
         const { name } = req.body;
 
-        const validation = validateTagName(name);
-        if (!validation.valid) {
-            return res.status(400).json({ error: validation.error });
+        if (!name || !name.trim()) {
+            return res.status(400).json({ error: 'Tag name is required' });
         }
 
         const tag = await Tag.create({
-            name: validation.name,
+            name: name.trim(),
             user_id: req.currentUser.id,
         });
 
         res.status(201).json({
             id: tag.id,
-            uid: tag.uid, // Explicitly include uid
             name: tag.name,
         });
     } catch (error) {
@@ -111,12 +113,11 @@ router.patch('/tag/:identifier', async (req, res) => {
 
         const { name } = req.body;
 
-        const validation = validateTagName(name);
-        if (!validation.valid) {
-            return res.status(400).json({ error: validation.error });
+        if (!name || !name.trim()) {
+            return res.status(400).json({ error: 'Tag name is required' });
         }
 
-        await tag.update({ name: validation.name });
+        await tag.update({ name: name.trim() });
 
         res.json({
             id: tag.id,

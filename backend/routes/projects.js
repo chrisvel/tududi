@@ -1,8 +1,6 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const { getConfig } = require('../config/config');
-const config = getConfig();
 const fs = require('fs');
 const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
 const { Op } = require('sequelize');
@@ -26,7 +24,7 @@ const formatDate = (date) => {
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadDir = path.join(config.uploadPath, 'projects');
+        const uploadDir = path.join(__dirname, '../uploads/projects');
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
@@ -62,42 +60,24 @@ const upload = multer({
 async function updateProjectTags(project, tagsData, userId) {
     if (!tagsData) return;
 
-    // Validate and filter tag names
-    const validTagNames = [];
-    const invalidTags = [];
+    const tagNames = tagsData
+        .map((tag) => tag.name)
+        .filter((name) => name && name.trim())
+        .filter((name, index, arr) => arr.indexOf(name) === index); // unique
 
-    for (const tag of tagsData) {
-        const validation = validateTagName(tag.name);
-        if (validation.valid) {
-            // Check for duplicates
-            if (!validTagNames.includes(validation.name)) {
-                validTagNames.push(validation.name);
-            }
-        } else {
-            invalidTags.push({ name: tag.name, error: validation.error });
-        }
-    }
-
-    // If there are invalid tags, throw an error
-    if (invalidTags.length > 0) {
-        throw new Error(
-            `Invalid tag names: ${invalidTags.map((t) => `"${t.name}" (${t.error})`).join(', ')}`
-        );
-    }
-
-    if (validTagNames.length === 0) {
+    if (tagNames.length === 0) {
         await project.setTags([]);
         return;
     }
 
     // Find existing tags
     const existingTags = await Tag.findAll({
-        where: { user_id: userId, name: validTagNames },
+        where: { user_id: userId, name: tagNames },
     });
 
     // Create new tags
     const existingTagNames = existingTags.map((tag) => tag.name);
-    const newTagNames = validTagNames.filter(
+    const newTagNames = tagNames.filter(
         (name) => !existingTagNames.includes(name)
     );
 
@@ -137,7 +117,7 @@ router.get('/projects', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const { active, pin_to_sidebar, area_id, area } = req.query;
+        const { active, pin_to_sidebar, area_id } = req.query;
 
         let whereClause = { user_id: req.session.userId };
 
@@ -155,21 +135,8 @@ router.get('/projects', async (req, res) => {
             whereClause.pin_to_sidebar = false;
         }
 
-        // Filter by area - support both numeric area_id and uid-slug area
-        if (area && area !== '') {
-            // Extract uid from uid-slug format
-            const uid = extractUidFromSlug(area);
-            if (uid) {
-                const areaRecord = await Area.findOne({
-                    where: { uid: uid, user_id: req.session.userId },
-                    attributes: ['id'],
-                });
-                if (areaRecord) {
-                    whereClause.area_id = areaRecord.id;
-                }
-            }
-        } else if (area_id && area_id !== '') {
-            // Legacy support for numeric area_id
+        // Filter by area
+        if (area_id && area_id !== '') {
             whereClause.area_id = area_id;
         }
 
@@ -188,7 +155,7 @@ router.get('/projects', async (req, res) => {
                 },
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'uid'],
+                    attributes: ['id', 'name'],
                     through: { attributes: [] },
                 },
             ],
@@ -264,28 +231,11 @@ router.get('/project/:uidSlug', async (req, res) => {
                 {
                     model: Task,
                     required: false,
-                    where: {
-                        parent_task_id: null,
-                        // Include ALL tasks regardless of status for client-side filtering
-                    },
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name', 'uid'],
+                            attributes: ['id', 'name'],
                             through: { attributes: [] },
-                            required: false,
-                        },
-                        {
-                            model: Task,
-                            as: 'Subtasks',
-                            include: [
-                                {
-                                    model: Tag,
-                                    attributes: ['id', 'name', 'uid'],
-                                    through: { attributes: [] },
-                                    required: false,
-                                },
-                            ],
                             required: false,
                         },
                     ],
@@ -300,18 +250,11 @@ router.get('/project/:uidSlug', async (req, res) => {
                         'created_at',
                         'updated_at',
                     ],
-                    include: [
-                        {
-                            model: Tag,
-                            attributes: ['id', 'name', 'uid'],
-                            through: { attributes: [] },
-                        },
-                    ],
                 },
                 { model: Area, required: false, attributes: ['id', 'name'] },
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'uid'],
+                    attributes: ['id', 'name'],
                     through: { attributes: [] },
                 },
             ],
@@ -329,30 +272,15 @@ router.get('/project/:uidSlug', async (req, res) => {
                   const normalizedTask = {
                       ...task,
                       tags: task.Tags || [], // Normalize Tags to tags for each task
-                      subtasks: task.Subtasks || [], // Normalize Subtasks to subtasks for each task
                       due_date: task.due_date
                           ? typeof task.due_date === 'string'
                               ? task.due_date.split('T')[0]
                               : task.due_date.toISOString().split('T')[0]
                           : null,
                   };
-                  // Remove the original Tags and Subtasks properties to avoid confusion
-                  delete normalizedTask.Tags;
-                  delete normalizedTask.Subtasks;
-                  return normalizedTask;
-              })
-            : [];
-
-        // Normalize note data to match frontend expectations
-        const normalizedNotes = projectJson.Notes
-            ? projectJson.Notes.map((note) => {
-                  const normalizedNote = {
-                      ...note,
-                      tags: note.Tags || [], // Normalize Tags to tags for each note
-                  };
                   // Remove the original Tags property to avoid confusion
-                  delete normalizedNote.Tags;
-                  return normalizedNote;
+                  delete normalizedTask.Tags;
+                  return normalizedTask;
               })
             : [];
 
@@ -360,7 +288,7 @@ router.get('/project/:uidSlug', async (req, res) => {
             ...projectJson,
             tags: projectJson.Tags || [], // Normalize Tags to tags
             Tasks: normalizedTasks, // Keep as Tasks (capital T) to match expected structure
-            Notes: normalizedNotes, // Include normalized notes with tags
+            Notes: projectJson.Notes || [], // Include notes
             due_date_at: formatDate(project.due_date_at),
         };
 
@@ -382,7 +310,6 @@ router.post('/project', async (req, res) => {
             name,
             description,
             area_id,
-            active,
             priority,
             due_date_at,
             image_url,
@@ -405,7 +332,7 @@ router.post('/project', async (req, res) => {
             name: name.trim(),
             description: description || '',
             area_id: area_id || null,
-            active: active !== undefined ? active : true,
+            active: true,
             pin_to_sidebar: false,
             priority: priority || null,
             due_date_at: due_date_at || null,
@@ -492,7 +419,7 @@ router.patch('/project/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'uid'],
+                    attributes: ['id', 'name'],
                     through: { attributes: [] },
                 },
             ],

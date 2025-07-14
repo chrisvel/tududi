@@ -16,15 +16,20 @@ const requireAdmin = (req, res, next) => {
 // GET /api/admin/rules - Get all suggestion rules
 router.get('/admin/rules', requireAdmin, async (req, res) => {
     try {
-        const rulesPath = path.join(__dirname, '../config/suggestion-rules.json');
+        const rulesPath = path.join(
+            __dirname,
+            '../config/suggestion-rules.json'
+        );
         const rulesData = fs.readFileSync(rulesPath, 'utf8');
         const config = JSON.parse(rulesData);
-        
+
         res.json({
             rules: config.rules || [],
             condition_types: config.condition_types || {},
             total_rules: (config.rules || []).length,
-            rules_by_priority: (config.rules || []).sort((a, b) => b.priority - a.priority)
+            rules_by_priority: (config.rules || []).sort(
+                (a, b) => b.priority - a.priority
+            ),
         });
     } catch (error) {
         console.error('Error loading rules:', error);
@@ -35,27 +40,33 @@ router.get('/admin/rules', requireAdmin, async (req, res) => {
 // GET /api/admin/rules/stats - Get rules statistics
 router.get('/admin/rules/stats', requireAdmin, async (req, res) => {
     try {
-        const rulesPath = path.join(__dirname, '../config/suggestion-rules.json');
+        const rulesPath = path.join(
+            __dirname,
+            '../config/suggestion-rules.json'
+        );
         const rulesData = fs.readFileSync(rulesPath, 'utf8');
         const config = JSON.parse(rulesData);
         const rules = config.rules || [];
-        
+
         // Calculate statistics
         const stats = {
             total_rules: rules.length,
-            task_rules: rules.filter(r => r.action.suggested_type === 'task').length,
-            note_rules: rules.filter(r => r.action.suggested_type === 'note').length,
+            task_rules: rules.filter((r) => r.action.suggested_type === 'task')
+                .length,
+            note_rules: rules.filter((r) => r.action.suggested_type === 'note')
+                .length,
             priority_distribution: {},
             condition_types_used: {},
-            most_common_reasons: {}
+            most_common_reasons: {},
         };
-        
+
         // Priority distribution
-        rules.forEach(rule => {
+        rules.forEach((rule) => {
             const priority = rule.priority;
-            stats.priority_distribution[priority] = (stats.priority_distribution[priority] || 0) + 1;
+            stats.priority_distribution[priority] =
+                (stats.priority_distribution[priority] || 0) + 1;
         });
-        
+
         // Condition types used
         const countConditionTypes = (conditions) => {
             if (conditions.and) {
@@ -63,16 +74,18 @@ router.get('/admin/rules/stats', requireAdmin, async (req, res) => {
             } else if (conditions.or) {
                 conditions.or.forEach(countConditionTypes);
             } else if (conditions.type) {
-                stats.condition_types_used[conditions.type] = (stats.condition_types_used[conditions.type] || 0) + 1;
+                stats.condition_types_used[conditions.type] =
+                    (stats.condition_types_used[conditions.type] || 0) + 1;
             }
         };
-        
-        rules.forEach(rule => {
+
+        rules.forEach((rule) => {
             countConditionTypes(rule.conditions);
             const reason = rule.action.suggested_reason;
-            stats.most_common_reasons[reason] = (stats.most_common_reasons[reason] || 0) + 1;
+            stats.most_common_reasons[reason] =
+                (stats.most_common_reasons[reason] || 0) + 1;
         });
-        
+
         res.json(stats);
     } catch (error) {
         console.error('Error calculating rules stats:', error);
@@ -84,21 +97,21 @@ router.get('/admin/rules/stats', requireAdmin, async (req, res) => {
 router.post('/admin/rules/test', requireAdmin, async (req, res) => {
     try {
         const { text, rule_id } = req.body;
-        
+
         if (!text) {
             return res.status(400).json({ error: 'Text is required' });
         }
-        
+
         const InboxProcessingService = require('../services/inboxProcessingService');
         const result = InboxProcessingService.processInboxItem(text);
-        
+
         // If rule_id is specified, check if that specific rule matched
         let rule_matched = false;
         if (rule_id) {
             // This would require extending the rules engine to return which rule matched
             // For now, we'll just return the general result
         }
-        
+
         res.json({
             input: text,
             result: {
@@ -106,9 +119,9 @@ router.post('/admin/rules/test', requireAdmin, async (req, res) => {
                 parsed_projects: result.parsed_projects,
                 cleaned_content: result.cleaned_content,
                 suggested_type: result.suggested_type,
-                suggested_reason: result.suggested_reason
+                suggested_reason: result.suggested_reason,
             },
-            rule_matched: rule_matched
+            rule_matched: rule_matched,
         });
     } catch (error) {
         console.error('Error testing rule:', error);

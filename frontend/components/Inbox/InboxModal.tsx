@@ -13,6 +13,7 @@ import { XMarkIcon, TagIcon, FolderIcon, ExclamationTriangleIcon, CalendarIcon }
 import { useStore } from '../../store/useStore';
 import { Link } from 'react-router-dom';
 import { isUrl } from '../../utils/urlService';
+import MarkdownRenderer from '../Shared/MarkdownRenderer';
 // import UrlPreview from "../Shared/UrlPreview";
 // import { UrlTitleResult } from "../../utils/urlService";
 
@@ -94,6 +95,81 @@ const InboxModal: React.FC<InboxModalProps> = ({
         return text.trim().length > LONG_TEXT_THRESHOLD;
     };
 
+    // Helper function to check if text contains code
+    const containsCode = (text: string): boolean => {
+        if (!text) return false;
+        
+        // Check if analysis result indicates code
+        if (analysisResult?.suggested_reason === 'code_snippet_detected') {
+            return true;
+        }
+        
+        // Check if analysis result has code tag
+        if (analysisResult?.suggested_tags?.includes('code')) {
+            return true;
+        }
+        
+        // For immediate feedback before analysis, use basic detection
+        const trimmed = text.trim();
+        
+        // Strong code indicators that are unlikely to be in regular text
+        const strongCodePatterns = [
+            /```[\s\S]*?```/,  // Code blocks
+            /\b(function|const|let|var)\s+\w+\s*[=(]/,  // Variable/function declarations
+            /\w+\s*\([^)]*\)\s*\{/,  // Function calls with braces
+            /console\.(log|error|warn|info)/,  // Console methods
+            /\b(SELECT|INSERT|UPDATE|DELETE)\s+.*FROM\b/i,  // SQL statements
+            /^(git|npm|yarn|docker)\s+\w+/m,  // Command line tools
+            /\/\/.*\n.*[{}();]/,  // Comments followed by code-like syntax
+            /\{[^}]*;[^}]*\}/,  // Code blocks with semicolons inside
+            /<[^>]+>/,  // HTML tags
+        ];
+        
+        return strongCodePatterns.some(pattern => pattern.test(trimmed));
+    };
+
+    // Helper function to format code with basic indentation and line breaks
+    const formatCode = (code: string): string => {
+        if (!code || code.includes('\n')) {
+            return code; // Already formatted or empty
+        }
+        
+        // Add line breaks after common code patterns
+        let formatted = code
+            // Add line breaks after semicolons (but not in strings)
+            .replace(/;(?=(?:[^"]*"[^"]*")*[^"]*$)/g, ';\n')
+            // Add line breaks after opening braces
+            .replace(/\{(?=(?:[^"]*"[^"]*")*[^"]*$)/g, '{\n')
+            // Add line breaks before closing braces
+            .replace(/\}(?=(?:[^"]*"[^"]*")*[^"]*$)/g, '\n}')
+            // Add line breaks after commas in appropriate contexts
+            .replace(/,(?=(?:[^"]*"[^"]*")*[^"]*$)(?=.*[{}])/g, ',\n');
+        
+        // Simple indentation (2 spaces per level)
+        const lines = formatted.split('\n');
+        let indentLevel = 0;
+        const indentedLines = lines.map(line => {
+            const trimmed = line.trim();
+            if (!trimmed) return '';
+            
+            // Decrease indent for closing braces
+            if (trimmed.startsWith('}')) {
+                indentLevel = Math.max(0, indentLevel - 1);
+            }
+            
+            const indentedLine = '  '.repeat(indentLevel) + trimmed;
+            
+            // Increase indent for opening braces
+            if (trimmed.endsWith('{')) {
+                indentLevel++;
+            }
+            
+            return indentedLine;
+        });
+        
+        return indentedLines.join('\n');
+    };
+
     // Helper function to generate title from content
     const generateTitleFromContent = (content: string): string => {
         const cleanText = content.trim();
@@ -102,7 +178,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
             return cleanText;
         }
         
-        let title = cleanText.substring(0, TITLE_MAX_LENGTH);
+        const title = cleanText.substring(0, TITLE_MAX_LENGTH);
         
         const sentenceEnd = title.lastIndexOf('. ');
         if (sentenceEnd > TITLE_MAX_LENGTH * 0.5) {
@@ -771,16 +847,23 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
         const projectName = analysisResult.parsed_projects[0] || null;
         const type = analysisResult.suggested_type;
+        
 
         if (type === 'note') {
             // Check if this is a URL (bookmark) note
             const isUrlNote = analysisResult.suggested_reason === 'url_detected';
+            // Check if this is a code snippet
+            const isCodeSnippet = analysisResult.suggested_reason === 'code_snippet_detected';
             let message: string;
             
             if (isUrlNote) {
                 message = projectName 
                     ? `This item will be saved as a bookmark note for ${projectName}.`
                     : 'This item will be saved as a bookmark note.';
+            } else if (isCodeSnippet) {
+                message = projectName
+                    ? `This item looks like a code snippet for ${projectName}.`
+                    : `This item looks like a code snippet.`;
             } else {
                 message = projectName
                     ? `This item will be saved for later processing as it looks like a note for ${projectName}.`
@@ -1016,7 +1099,6 @@ const InboxModal: React.FC<InboxModalProps> = ({
     };
 
     const handleSubmit = useCallback(async (forceInbox = false) => {
-        console.log('HandleSubmit called with forceInbox:', forceInbox);
         
         // Get the content to work with (fullContent for long text, inputText for short text)
         const contentToSubmit = showLongTextMode ? fullContent : inputText;
@@ -1028,9 +1110,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
         try {
             // Check if suggestions are present first, even in edit mode (unless forced to inbox mode)
-            console.log('Checking task suggestion:', { suggestedType: analysisResult?.suggested_type, forceInbox });
             if (analysisResult?.suggested_type === 'task' && !forceInbox) {
-                console.log('Taking task creation path');
                 // Auto-convert to task using the same logic as convert to task action
                 await createMissingTags(contentToSubmit.trim());
                 await createMissingProjects(contentToSubmit.trim());
@@ -1108,9 +1188,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
             }
             
             // Check if it's a note suggestion (bookmark + project) (unless forced to inbox mode)
-            console.log('Checking note suggestion:', { suggestedType: analysisResult?.suggested_type, forceInbox });
             if (analysisResult?.suggested_type === 'note' && !forceInbox) {
-                console.log('Taking note creation path');
                 // Auto-convert to note using similar logic
                 await createMissingTags(contentToSubmit.trim());
                 await createMissingProjects(contentToSubmit.trim());
@@ -1179,7 +1257,6 @@ const InboxModal: React.FC<InboxModalProps> = ({
                         return;
                     } else {
                         // If no note creation handler, fall back to inbox mode
-                        console.log('No note creation handler, falling back to inbox');
                     }
                 } catch (error: any) {
                     console.error('Error in note creation flow:', error);
@@ -1251,18 +1328,18 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 };
                 try {
                     await onSave(newTask);
-                        showSuccessToast(t('task.createSuccess'));
-                        setInputText('');
-                        handleClose();
-                    } catch (error: any) {
-                        // If it's an auth error, don't show error toast (user will be redirected)
-                        if (isAuthError(error)) {
-                            return;
-                        }
-                        throw error;
+                    showSuccessToast(t('task.createSuccess'));
+                    setInputText('');
+                    handleClose();
+                } catch (error: any) {
+                    // If it's an auth error, don't show error toast (user will be redirected)
+                    if (isAuthError(error)) {
+                        return;
                     }
-                } else {
-                    try {
+                    throw error;
+                }
+            } else {
+                try {
                     // For inbox mode, store the text with current tags/projects (after user modifications)
                     // This ensures removed tags stay removed and added tags are preserved
                     const contentWithCurrentTags = getContentWithCurrentTagsAndProjects(contentToSubmit.trim());
@@ -1386,7 +1463,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 ref={modalRef}
                 className={`relative bg-white dark:bg-gray-800 border-0 sm:border border-gray-200 dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full h-full sm:h-auto sm:max-w-2xl md:max-w-3xl transform transition-transform duration-300 ${
                     isClosing ? 'scale-95' : 'scale-100'
-                } flex flex-col`}
+                } flex flex-col overflow-hidden`}
             >
                 {/* Close button - only visible on mobile */}
                 <button
@@ -1468,6 +1545,25 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                     }}
                                 />
 
+                                {/* Code preview for regular input text */}
+                                {!showLongTextMode && containsCode(inputText) && (
+                                    <div className="mt-3 border-t border-gray-200 dark:border-gray-700 pt-3">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center">
+                                            <svg className="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                            </svg>
+                                            Code Preview
+                                        </div>
+                                        <div className="max-h-48 overflow-y-auto overflow-x-hidden border border-gray-200 dark:border-gray-700 rounded-md">
+                                            <div className="inbox-code-preview">
+                                                <MarkdownRenderer content={inputText.includes('```') ? inputText : `\`\`\`
+${formatCode(inputText)}
+\`\`\``} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Long text content area */}
                                 {showLongTextMode && (
                                     <div className="mt-4">
@@ -1483,6 +1579,25 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                             className="w-full h-32 p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-y focus:outline-none"
                                             placeholder="Enter your full content here..."
                                         />
+                                        
+                                        {/* Code preview for long text mode */}
+                                        {containsCode(fullContent) && (
+                                            <div className="mt-3 border-t border-gray-200 dark:border-gray-700 pt-3">
+                                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center">
+                                                    <svg className="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                    </svg>
+                                                    Code Preview
+                                                </div>
+                                                <div className="max-h-48 overflow-y-auto overflow-x-hidden border border-gray-200 dark:border-gray-700 rounded-md">
+                                                    <div className="inbox-code-preview">
+                                                        <MarkdownRenderer content={fullContent.includes('```') ? fullContent : `\`\`\`
+${formatCode(fullContent)}
+\`\`\``} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -1758,14 +1873,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                     </div>
                                                     <div className="flex-1">
                                                         <div className="text-xs text-purple-700 dark:text-purple-300 mb-3">
-                                                            {suggestion.type === 'task' 
-                                                                ? (suggestion.projectName 
-                                                                    ? `This item looks like a task and will be created under project ${suggestion.projectName}.`
-                                                                    : 'This item looks like a task.')
-                                                                : (suggestion.projectName
-                                                                    ? `This item looks like a note${analysisResult?.suggested_reason === 'url_detected' ? ' (bookmark)' : ''} for ${suggestion.projectName}.`
-                                                                    : `This item looks like a note${analysisResult?.suggested_reason === 'url_detected' ? ' (bookmark)' : ''}.`)
-                                                            }
+                                                            {suggestion.message}
                                                         </div>
                                                         <div className="flex items-center gap-2 text-xs">
                                                             <button

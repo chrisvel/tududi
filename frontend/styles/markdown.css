@@ -12,6 +12,32 @@
   line-height: 1.5;
 }
 
+/* Inbox code preview specific styles */
+.inbox-code-preview {
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+.inbox-code-preview pre {
+  margin: 0 !important;
+  overflow-x: auto !important;
+  white-space: pre !important;
+  word-wrap: normal !important;
+  max-width: 100% !important;
+  font-size: 0.75rem !important; /* Smaller font size */
+  line-height: 1.4 !important;
+}
+
+.inbox-code-preview pre code {
+  white-space: pre !important;
+  word-wrap: normal !important;
+  display: block !important;
+  padding: 1.25rem !important; /* Restore original padding for proper indentation */
+  font-size: 0.75rem !important; /* Keep smaller font size */
+  line-height: 1.4 !important;
+}
+
 .hljs-comment,
 .hljs-quote {
   color: #6a737d !important;
@@ -275,6 +301,20 @@
 .markdown-content tbody {
   display: table;
   width: 100%;
+}
+
+/* Dark mode styles for inbox code preview */
+.dark .inbox-code-preview pre code {
+  background: #0d1117 !important;
+  color: #e6edf3 !important;
+  font-size: 0.75rem !important;
+  line-height: 1.4 !important;
+  white-space: pre !important;
+  word-wrap: normal !important;
+  word-break: normal !important;
+  width: max-content !important;
+  min-width: 100% !important;
+  max-width: none !important;
 }
 
 @media (max-width: 768px) {

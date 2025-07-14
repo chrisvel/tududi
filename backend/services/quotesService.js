@@ -11,7 +11,8 @@ const createDefaultQuotes = () => [
 ];
 
 // get quotes file path
-const getQuotesFilePath = () => path.join(__dirname, '../../public/locales/en/quotes.json');
+const getQuotesFilePath = () =>
+    path.join(__dirname, '../../public/locales/en/quotes.json');
 
 // Side effect function to check if file exists
 const fileExists = (filePath) => fs.existsSync(filePath);
