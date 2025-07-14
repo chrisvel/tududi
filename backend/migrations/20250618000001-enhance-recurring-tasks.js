@@ -3,10 +3,8 @@
 module.exports = {
     async up(queryInterface, Sequelize) {
         try {
-            // Get current table schema
             const tableInfo = await queryInterface.describeTable('tasks');
 
-            // Define columns to add
             const columnsToAdd = [
                 {
                     name: 'recurrence_weekday',
@@ -22,8 +20,7 @@ module.exports = {
                     definition: {
                         type: Sequelize.INTEGER,
                         allowNull: true,
-                        comment:
-                            'Day of month (1-31) for monthly recurrence, -1 for last day',
+                        comment: 'Day of month (1-31) for monthly recurrence',
                     },
                 },
                 {
@@ -32,7 +29,7 @@ module.exports = {
                         type: Sequelize.INTEGER,
                         allowNull: true,
                         comment:
-                            'Week of month (1-5) for monthly weekday recurrence',
+                            'Week of month (1-4, -1=last) for monthly recurrence',
                     },
                 },
                 {
@@ -47,7 +44,6 @@ module.exports = {
                 },
             ];
 
-            // Add only missing columns
             for (const column of columnsToAdd) {
                 if (!(column.name in tableInfo)) {
                     await queryInterface.addColumn(
@@ -58,7 +54,6 @@ module.exports = {
                 }
             }
 
-            // Add index if it doesn't exist
             try {
                 const indexes = await queryInterface.showIndex('tasks');
                 const indexExists = indexes.some(
@@ -76,7 +71,7 @@ module.exports = {
                 }
             } catch (indexError) {
                 console.log(
-                    'Could not check or add index:',
+                    'Could not check or add index for recurrence lookup:',
                     indexError.message
                 );
             }
@@ -87,13 +82,11 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-        // Remove the added columns
         await queryInterface.removeColumn('tasks', 'recurrence_weekday');
         await queryInterface.removeColumn('tasks', 'recurrence_month_day');
         await queryInterface.removeColumn('tasks', 'recurrence_week_of_month');
         await queryInterface.removeColumn('tasks', 'completion_based');
 
-        // Remove the index
         await queryInterface.removeIndex(
             'tasks',
             'idx_tasks_recurrence_lookup'

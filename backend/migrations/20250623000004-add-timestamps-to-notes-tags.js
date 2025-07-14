@@ -1,25 +1,27 @@
 'use strict';
 
+const { safeAddColumns } = require('../utils/migration-utils');
+
 module.exports = {
     async up(queryInterface, Sequelize) {
-        // Add created_at and updated_at columns to notes_tags table
-        try {
-            await queryInterface.addColumn('notes_tags', 'created_at', {
-                type: Sequelize.DATE,
-                allowNull: false,
-                defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-            });
-
-            await queryInterface.addColumn('notes_tags', 'updated_at', {
-                type: Sequelize.DATE,
-                allowNull: false,
-                defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-            });
-
-            console.log('Successfully added timestamps to notes_tags table');
-        } catch (error) {
-            console.error('Error adding timestamps to notes_tags:', error);
-        }
+        await safeAddColumns(queryInterface, 'notes_tags', [
+            {
+                name: 'created_at',
+                definition: {
+                    type: Sequelize.DATE,
+                    allowNull: false,
+                    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+                },
+            },
+            {
+                name: 'updated_at',
+                definition: {
+                    type: Sequelize.DATE,
+                    allowNull: false,
+                    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+                },
+            },
+        ]);
     },
 
     async down(queryInterface, Sequelize) {

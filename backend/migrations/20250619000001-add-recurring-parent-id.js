@@ -3,10 +3,8 @@
 module.exports = {
     up: async (queryInterface, Sequelize) => {
         try {
-            // Get current table schema
             const tableInfo = await queryInterface.describeTable('tasks');
 
-            // Add column if it doesn't exist
             if (!('recurring_parent_id' in tableInfo)) {
                 await queryInterface.addColumn('tasks', 'recurring_parent_id', {
                     type: Sequelize.INTEGER,
@@ -20,7 +18,6 @@ module.exports = {
                 });
             }
 
-            // Add index if it doesn't exist
             try {
                 const indexes = await queryInterface.showIndex('tasks');
                 const indexExists = indexes.some((index) =>
@@ -46,7 +43,7 @@ module.exports = {
         }
     },
 
-    down: async (queryInterface, Sequelize) => {
+    down: async (queryInterface) => {
         await queryInterface.removeIndex('tasks', ['recurring_parent_id']);
         await queryInterface.removeColumn('tasks', 'recurring_parent_id');
     },
