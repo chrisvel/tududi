@@ -50,16 +50,17 @@ RUN apk add --no-cache --virtual .runtime-deps \
 # Set working directory
 WORKDIR /app
 
+# Copy backend
+COPY ./backend/ /app/backend/
+RUN chmod +x /app/backend/cmd/start.sh
+
 # Copy frontend
+RUN rm -rf /app/backend/dist
 COPY --from=builder --chown=app:app /app/dist ./backend/dist
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
 
 # Copy backend dependencies
 COPY --from=builder --chown=app:app /app/backend/node_modules ./backend/node_modules
-
-# Copy backend
-COPY ./backend/ /app/backend/
-RUN chmod +x /app/backend/cmd/start.sh
 
 # Create necessary directories
 RUN mkdir -p /app/backend/db /app/backend/certs && \
