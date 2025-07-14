@@ -851,16 +851,42 @@
         
         /* Responsive */
         @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+            
+            /* Header */
+            nav {
+                padding: 15px 0;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .logo-icon svg {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            /* Hero */
             .hero {
-                padding: 140px 0 80px;
+                padding: 120px 0 60px;
+                text-align: center;
             }
             
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 2.2rem;
+                margin-bottom: 20px;
             }
             
             .hero p {
-                font-size: 1.1rem;
+                font-size: 1rem;
+                margin-bottom: 30px;
             }
             
             .hero-buttons {
@@ -873,28 +899,182 @@
                 width: 100%;
                 max-width: 280px;
                 text-align: center;
+                padding: 12px 20px;
+                font-size: 0.95rem;
             }
             
+            .hero-image {
+                max-width: 100%;
+                margin-bottom: 30px;
+            }
+            
+            /* Sections */
             .section-header h2 {
-                font-size: 2.2rem;
+                font-size: 2rem;
+                margin-bottom: 12px;
             }
             
+            .section-header p {
+                font-size: 0.95rem;
+            }
+            
+            /* Features */
             .features-grid {
                 grid-template-columns: 1fr;
-                gap: 24px;
+                gap: 20px;
             }
             
+            .feature-card {
+                padding: 20px;
+                text-align: center;
+            }
+            
+            .feature-card h3 {
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+            }
+            
+            .feature-card p {
+                font-size: 0.9rem;
+            }
+            
+            /* Testimonials */
+            .testimonials {
+                padding: 50px 0;
+            }
+            
+            .testimonial-card {
+                padding: 25px 20px !important;
+                flex-direction: column;
+                gap: 20px !important;
+                text-align: center;
+                height: auto !important;
+                background: rgba(255, 255, 255, 0.95) !important;
+                backdrop-filter: blur(10px) !important;
+            }
+            
+            .testimonial-card blockquote {
+                font-size: 1.1rem !important;
+                order: 2;
+                color: #2d3748 !important;
+                font-weight: 500;
+                line-height: 1.5;
+                margin: 0 !important;
+            }
+            
+            .testimonial-card > div:first-child {
+                font-size: 2.5rem !important;
+                order: 1;
+            }
+            
+            .testimonial-card > div:last-child {
+                order: 3;
+                justify-content: center;
+                color: #4a5568 !important;
+                font-weight: 600;
+            }
+            
+            /* Languages */
+            .languages-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+            }
+            
+            .language-item {
+                padding: 10px;
+            }
+            
+            .language-flag {
+                font-size: 1.5rem;
+            }
+            
+            .language-name {
+                font-size: 0.8rem;
+            }
+            
+            /* Screenshots */
             .screenshots-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
             }
             
-            .nav-links {
-                display: none;
+            /* Installation */
+            .installation-steps {
+                gap: 30px;
             }
             
-            .theme-switch {
-                margin-left: 0;
-                margin-top: 20px;
+            .step {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .step-number {
+                margin: 0 auto 15px;
+            }
+            
+            .step-content h3 {
+                font-size: 1.1rem;
+                word-wrap: break-word;
+            }
+            
+            .step-content p {
+                font-size: 0.9rem;
+            }
+            
+            .step-content code {
+                font-size: 0.8rem;
+                word-break: break-all;
+                white-space: pre-wrap;
+                overflow-wrap: break-word;
+            }
+            
+            .step-content div {
+                margin: 10px 0;
+                overflow: hidden;
+            }
+            
+            .step-content h4 {
+                font-size: 1rem !important;
+                word-wrap: break-word;
+            }
+            
+            .step-content ul {
+                text-align: left;
+                padding-left: 15px !important;
+            }
+            
+            .step-content li {
+                font-size: 0.85rem;
+                margin-bottom: 8px;
+                word-wrap: break-word;
+            }
+            
+            .step-content strong {
+                word-wrap: break-word;
+                display: inline-block;
+                max-width: 100%;
+            }
+            
+            /* CTA */
+            .cta h2 {
+                font-size: 2rem;
+            }
+            
+            .cta p {
+                font-size: 0.95rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                gap: 12px;
+                align-items: center;
+            }
+            
+            .cta-buttons a {
+                width: 100%;
+                max-width: 280px;
+                text-align: center;
             }
         }
     </style>
@@ -1047,6 +1227,81 @@
             </div>
         </div>
     </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials" style="padding: 80px 0; background: var(--gradient-elegant); position: relative; overflow: hidden;">
+        <style>
+            @keyframes testimonialFade {
+                0% { opacity: 0; transform: translateY(20px); }
+                10% { opacity: 1; transform: translateY(0); }
+                75% { opacity: 1; transform: translateY(0); }
+                85% { opacity: 0; transform: translateY(-20px); }
+                100% { opacity: 0; transform: translateY(-20px); }
+            }
+            
+            .testimonial-card {
+                animation: testimonialFade 20s infinite;
+                position: absolute;
+                width: 100%;
+                opacity: 0;
+            }
+            
+            .testimonial-card:nth-child(1) { animation-delay: 0s; }
+            .testimonial-card:nth-child(2) { animation-delay: 4s; }
+            .testimonial-card:nth-child(3) { animation-delay: 8s; }
+            .testimonial-card:nth-child(4) { animation-delay: 12s; }
+            .testimonial-card:nth-child(5) { animation-delay: 16s; }
+        </style>
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 60 60\" width=\"60\" height=\"60\"><defs><pattern id=\"testimonial-pattern\" x=\"0\" y=\"0\" width=\"60\" height=\"60\" patternUnits=\"userSpaceOnUse\"><circle cx=\"30\" cy=\"30\" r=\"1.5\" fill=\"rgba(255,255,255,0.1)\"/></pattern></defs><rect width=\"60\" height=\"60\" fill=\"url(%23testimonial-pattern)\"/></svg>') repeat; opacity: 0.3;"></div>
+        <div class="container" style="position: relative; z-index: 1;">
+            <div class="section-header" style="text-align: center; margin-bottom: 60px;">
+                <h2 style="color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 16px;">What Users Are Saying</h2>
+                <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.1rem;">Join hundreds of satisfied users who have transformed their productivity with tududi</p>
+            </div>
+            <div style="position: relative; max-width: 900px; margin: 0 auto; height: 120px; display: flex; align-items: center;">
+                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="font-size: 3rem; flex-shrink: 0;">💎</div>
+                    <blockquote style="color: white; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center;">"This may be the perfect to-do management tool available."</blockquote>
+                    <div style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8); flex-shrink: 0;">
+                        <i class="fab fa-github" style="font-size: 1.2rem;"></i>
+                        <span style="font-weight: 500;">GitHub</span>
+                    </div>
+                </div>
+                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="font-size: 3rem; flex-shrink: 0;">❤️</div>
+                    <blockquote style="color: white; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center;">"I stumbled across this and love it"</blockquote>
+                    <div style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8); flex-shrink: 0;">
+                        <i class="fab fa-medium" style="font-size: 1.2rem;"></i>
+                        <span style="font-weight: 500;">Medium</span>
+                    </div>
+                </div>
+                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="font-size: 3rem; flex-shrink: 0;">⚡</div>
+                    <blockquote style="color: white; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center;">"Looks somewhat like super productivity"</blockquote>
+                    <div style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8); flex-shrink: 0;">
+                        <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
+                        <span style="font-weight: 500;">Reddit</span>
+                    </div>
+                </div>
+                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="font-size: 3rem; flex-shrink: 0;">✨</div>
+                    <blockquote style="color: white; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center;">"Why does this look so good?"</blockquote>
+                    <div style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8); flex-shrink: 0;">
+                        <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
+                        <span style="font-weight: 500;">Reddit</span>
+                    </div>
+                </div>
+                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="font-size: 3rem; flex-shrink: 0;">🎉</div>
+                    <blockquote style="color: white; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center;">"This is amazing"</blockquote>
+                    <div style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8); flex-shrink: 0;">
+                        <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
+                        <span style="font-weight: 500;">Reddit</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <section class="languages" id="languages">
         <div class="container">
@@ -1182,6 +1437,7 @@
             </div>
         </div>
     </section>
+
 
 
     <section class="installation" id="installation">
