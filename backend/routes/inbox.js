@@ -32,7 +32,7 @@ router.post('/inbox', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const { content, source } = req.body;
+        const { content, source, title } = req.body;
 
         if (!content || !content.trim()) {
             return res.status(400).json({ error: 'Content is required' });
@@ -41,11 +41,18 @@ router.post('/inbox', async (req, res) => {
         // Ensure source is never null/undefined
         const finalSource = source && source.trim() ? source.trim() : 'manual';
 
-        const item = await InboxItem.create({
+        const itemData = {
             content: content.trim(),
             source: finalSource,
             user_id: req.session.userId,
-        });
+        };
+
+        // Add title if provided
+        if (title && title.trim()) {
+            itemData.title = title.trim();
+        }
+
+        const item = await InboxItem.create(itemData);
 
         res.status(201).json(item);
     } catch (error) {
@@ -96,11 +103,12 @@ router.patch('/inbox/:id', async (req, res) => {
             return res.status(404).json({ error: 'Inbox item not found.' });
         }
 
-        const { content, status } = req.body;
+        const { content, status, title } = req.body;
         const updateData = {};
 
         if (content !== undefined) updateData.content = content;
         if (status !== undefined) updateData.status = status;
+        if (title !== undefined) updateData.title = title;
 
         await item.update(updateData);
         res.json(item);
