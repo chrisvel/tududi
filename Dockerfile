@@ -11,15 +11,19 @@ RUN apk add --no-cache --virtual .build-deps \
 
 WORKDIR /app
 
+COPY package.json package-lock.json ./
+
+# Install all dependencies (frontend and backend)
+RUN npm install --no-audit --no-fund
+
+# Copy source code
 COPY . ./
 
 # Build frontend
-RUN npm install --no-audit --no-fund
-RUN NODE_ENV=production npm run build
-# Install backend dependencies
-RUN cd backend && npm install --no-audit --no-fund
+RUN NODE_ENV=production npm run frontend:build
+
 # Run backend tests
-RUN cd backend && DOCKER_BUILD=1 npm test
+RUN DOCKER_BUILD=1 npm run backend:test
 # Cleanup
 RUN npm cache clean --force && \
     rm -rf ~/.npm /tmp/* && \
@@ -59,8 +63,8 @@ RUN rm -rf /app/backend/dist
 COPY --from=builder --chown=app:app /app/dist ./backend/dist
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
 
-# Copy backend dependencies
-COPY --from=builder --chown=app:app /app/backend/node_modules ./backend/node_modules
+# Copy all dependencies (now in root)
+COPY --from=builder --chown=app:app /app/node_modules ./node_modules
 
 # Create necessary directories
 RUN mkdir -p /app/backend/db /app/backend/certs && \

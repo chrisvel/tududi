@@ -258,13 +258,8 @@ To install `tududi`, follow these steps:
    ```
 3. Install the required dependencies:
    ```bash
-   # Install frontend dependencies
+   # Install all dependencies (frontend and backend)
    npm install
-   
-   # Install backend dependencies
-   cd backend
-   npm install
-   cd ..
    ```
 
 ### 🔒 SSL Setup (Optional)
@@ -288,8 +283,6 @@ For HTTPS support, create SSL certificates:
 The database will be automatically initialized when you start the Express backend. For manual database operations:
 
 ```bash
-cd backend
-
 # Initialize database (creates tables, drops existing data)
 npm run db:init
 
@@ -304,8 +297,6 @@ npm run db:reset
 
 # Check database status and connection
 npm run db:status
-
-cd ..
 ```
 
 ### 🔄 Database Migrations
@@ -313,8 +304,6 @@ cd ..
 For schema changes, use Sequelize migrations (similar to Rails/Ruby migrations):
 
 ```bash
-cd backend
-
 # Create a new migration
 npm run migration:create add-description-to-tasks
 
@@ -329,8 +318,6 @@ npm run migration:undo
 
 # Rollback all migrations
 npm run migration:undo:all
-
-cd ..
 ```
 
 #### Creating a New Migration Example:
@@ -360,9 +347,7 @@ export TUDUDI_SESSION_SECRET=$(openssl rand -hex 64)
 
 Or create a user manually:
 ```bash
-cd backend
 npm run user:create dev@example.com password123
-cd ..
 ```
 
 #### Default Development Credentials
@@ -377,15 +362,14 @@ To start the application for development:
 
 1. **Start the Express backend** (in one terminal):
    ```bash
-   cd backend
-   npm run dev    # Development mode with auto-reload
-   # Or: npm start  # Production mode
+   npm run backend:dev    # Development mode with auto-reload
+   # Or: npm run backend:start  # Production mode
    ```
    The backend will run on `http://localhost:3001`
 
 2. **Start the frontend development server** (in another terminal):
    ```bash
-   npm run dev
+   npm run frontend:dev
    ```
    The frontend will run on `http://localhost:8080`
 
@@ -405,12 +389,10 @@ To run tests:
 
 ```bash
 # Backend tests
-cd backend
-npm test
+npm run backend:test
 
 # Frontend tests  
-cd ..
-npm test
+npm run frontend:test
 ```
 
 #### Test Coverage
