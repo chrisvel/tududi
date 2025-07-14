@@ -22,11 +22,14 @@ router.get('/tag/:identifier', async (req, res) => {
     try {
         const identifier = req.params.identifier;
         let whereClause;
-        
+
         // Check if identifier is a number (ID) or string (name)
         if (/^\d+$/.test(identifier)) {
             // It's a numeric ID
-            whereClause = { id: parseInt(identifier), user_id: req.currentUser.id };
+            whereClause = {
+                id: parseInt(identifier),
+                user_id: req.currentUser.id,
+            };
         } else {
             // It's a tag name - decode URI component to handle special characters
             const tagName = decodeURIComponent(identifier);
@@ -80,11 +83,14 @@ router.patch('/tag/:identifier', async (req, res) => {
     try {
         const identifier = req.params.identifier;
         let whereClause;
-        
+
         // Check if identifier is a number (ID) or string (name)
         if (/^\d+$/.test(identifier)) {
             // It's a numeric ID
-            whereClause = { id: parseInt(identifier), user_id: req.currentUser.id };
+            whereClause = {
+                id: parseInt(identifier),
+                user_id: req.currentUser.id,
+            };
         } else {
             // It's a tag name - decode URI component to handle special characters
             const tagName = decodeURIComponent(identifier);
@@ -126,11 +132,14 @@ router.delete('/tag/:identifier', async (req, res) => {
     try {
         const identifier = req.params.identifier;
         let whereClause;
-        
+
         // Check if identifier is a number (ID) or string (name)
         if (/^\d+$/.test(identifier)) {
             // It's a numeric ID
-            whereClause = { id: parseInt(identifier), user_id: req.currentUser.id };
+            whereClause = {
+                id: parseInt(identifier),
+                user_id: req.currentUser.id,
+            };
         } else {
             // It's a tag name - decode URI component to handle special characters
             const tagName = decodeURIComponent(identifier);

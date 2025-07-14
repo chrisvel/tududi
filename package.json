@@ -11,7 +11,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "clean": "rimraf dist",
-    "build": "npm run clean && tsc --noEmit && webpack --config webpack.config.js",
+    "build": "tsc --noEmit && webpack --config webpack.config.js",
     "start": "tsc --noEmit && webpack serve --config webpack.config.js",
     "dev": "webpack serve --config webpack.config.js --hot",
     "lint": "eslint 'frontend/**/*.{js,jsx,ts,tsx}'",
