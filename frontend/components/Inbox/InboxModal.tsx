@@ -42,6 +42,9 @@ const InboxModal: React.FC<InboxModalProps> = ({
 }) => {
     const { t } = useTranslation();
     const [inputText, setInputText] = useState<string>(initialText);
+    const [fullContent, setFullContent] = useState<string>('');
+    const [generatedTitle, setGeneratedTitle] = useState<string>('');
+    const [showLongTextMode, setShowLongTextMode] = useState<boolean>(false);
     const modalRef = useRef<HTMLDivElement>(null);
     const [isClosing, setIsClosing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -65,6 +68,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
     });
     // const [urlPreview, setUrlPreview] = useState<UrlTitleResult | null>(null);
     
+    
     // Real-time text analysis state
     const [analysisResult, setAnalysisResult] = useState<{
         parsed_tags: string[];
@@ -80,6 +84,38 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const analysisTimeoutRef = useRef<NodeJS.Timeout>();
     const lastSuggestedTagsRef = useRef<string[]>([]);
+
+    // Long text handling constants
+    const LONG_TEXT_THRESHOLD = 150;
+    const TITLE_MAX_LENGTH = 80;
+
+    // Helper function to check if text is considered long
+    const isLongText = (text: string): boolean => {
+        return text.trim().length > LONG_TEXT_THRESHOLD;
+    };
+
+    // Helper function to generate title from content
+    const generateTitleFromContent = (content: string): string => {
+        const cleanText = content.trim();
+        
+        if (cleanText.length <= TITLE_MAX_LENGTH) {
+            return cleanText;
+        }
+        
+        let title = cleanText.substring(0, TITLE_MAX_LENGTH);
+        
+        const sentenceEnd = title.lastIndexOf('. ');
+        if (sentenceEnd > TITLE_MAX_LENGTH * 0.5) {
+            return title.substring(0, sentenceEnd + 1).trim();
+        }
+        
+        const lastSpace = title.lastIndexOf(' ');
+        if (lastSpace > TITLE_MAX_LENGTH * 0.7) {
+            return title.substring(0, lastSpace).trim() + '...';
+        }
+        
+        return title.trim() + '...';
+    };
 
     // Dispatch global modal events to hide floating + button
 
@@ -250,10 +286,29 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
     // Helper function to remove a tag from the input text
     const removeTagFromText = (tagToRemove: string) => {
+        // First, remove from actual text if it exists as a hashtag
         const words = inputText.trim().split(/\s+/);
         const filteredWords = words.filter(word => word !== `#${tagToRemove}`);
         const newText = filteredWords.join(' ').trim();
         setInputText(newText);
+        
+        // Also remove from suggested tags if it's a suggested tag
+        if (analysisResult && analysisResult.suggested_tags) {
+            const updatedSuggestedTags = analysisResult.suggested_tags.filter(
+                tag => tag.toLowerCase() !== tagToRemove.toLowerCase()
+            );
+            // Update analysis result to remove the suggested tag
+            setAnalysisResult({
+                ...analysisResult,
+                suggested_tags: updatedSuggestedTags
+            });
+        }
+        
+        // Remove from lastSuggestedTagsRef to prevent it from coming back
+        lastSuggestedTagsRef.current = lastSuggestedTagsRef.current.filter(
+            tag => tag.toLowerCase() !== tagToRemove.toLowerCase()
+        );
+        
         if (nameInputRef.current) {
             nameInputRef.current.focus();
         }
@@ -287,7 +342,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
     // Helper function to remove due date keywords from the input text
     const removeDueDateFromText = () => {
         const currentText = inputText;
-        let newText = currentText
+        const newText = currentText
             .replace(/\b(today|tomorrow)\b/gi, '')
             .replace(/\b(by|next)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/gi, '')
             .replace(/\s+/g, ' ')
@@ -402,7 +457,16 @@ const InboxModal: React.FC<InboxModalProps> = ({
         if (isOpen && nameInputRef.current) {
             nameInputRef.current.focus();
         }
-    }, [isOpen]);
+        
+        // Check if initial text is long and set up long text mode immediately
+        if (isOpen && initialText && isLongText(initialText)) {
+            const title = generateTitleFromContent(initialText);
+            setGeneratedTitle(title);
+            setFullContent(initialText);
+            setShowLongTextMode(true);
+            setInputText(title); // Show title in input field
+        }
+    }, [isOpen, initialText]);
 
     // Load projects when modal opens
     useEffect(() => {
@@ -440,6 +504,23 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
         setInputText(newText);
         setCursorPosition(newCursorPosition);
+
+        // Check if we need to switch to long text mode
+        if (!showLongTextMode && isLongText(newText)) {
+            const title = generateTitleFromContent(newText);
+            setGeneratedTitle(title);
+            setFullContent(newText);
+            setShowLongTextMode(true);
+            setInputText(title); // Show title in input field
+        } else if (showLongTextMode && !isLongText(newText)) {
+            // Switch back to normal mode if text becomes short
+            setShowLongTextMode(false);
+            setFullContent('');
+            setGeneratedTitle('');
+        } else if (showLongTextMode) {
+            // Update full content if in long text mode
+            setFullContent(newText);
+        }
 
         // Check if user is typing a hashtag
         const hashtagQuery = getCurrentHashtagQuery(newText, newCursorPosition);
@@ -653,6 +734,35 @@ const InboxModal: React.FC<InboxModalProps> = ({
         return text.replace(/#[a-zA-Z0-9_-]+/g, '').replace(/\+\S+/g, '').trim();
     };
 
+    // Helper function to build content with current tags and projects for saving
+    const getContentWithCurrentTagsAndProjects = (text: string): string => {
+        // Start with cleaned content
+        const cleanedText = getCleanedContent(text);
+        
+        // Get current tags and projects as they appear in the UI (after user removals)
+        const currentTags = getAllTags(text);
+        const currentProjects = getAllProjects(text);
+        
+        // Build the content with hashtags and project references
+        let result = cleanedText;
+        
+        // Add hashtags for current tags
+        if (currentTags.length > 0) {
+            const tagString = currentTags.map(tag => `#${tag}`).join(' ');
+            result = result ? `${result} ${tagString}` : tagString;
+        }
+        
+        // Add project references for current projects
+        if (currentProjects.length > 0) {
+            const projectString = currentProjects.map(project => 
+                project.includes(' ') ? `+"${project}"` : `+${project}`
+            ).join(' ');
+            result = result ? `${result} ${projectString}` : projectString;
+        }
+        
+        return result.trim();
+    };
+
     // Helper function to get suggestion
     const getSuggestion = (): { type: 'note' | 'task' | null; message: string | null; projectName: string | null } => {
         if (!analysisResult || !analysisResult.suggested_type) {
@@ -740,8 +850,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
             clearTimeout(analysisTimeoutRef.current);
         }
 
+        const textToAnalyze = showLongTextMode ? fullContent : inputText;
+        
         analysisTimeoutRef.current = setTimeout(() => {
-            analyzeText(inputText);
+            analyzeText(textToAnalyze);
         }, 300); // 300ms debounce
 
         return () => {
@@ -749,7 +861,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 clearTimeout(analysisTimeoutRef.current);
             }
         };
-    }, [inputText, analyzeText]);
+    }, [inputText, fullContent, showLongTextMode, analyzeText]);
 
     // Handle tag suggestion selection
     const handleTagSelect = (tagName: string) => {
@@ -905,7 +1017,12 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
     const handleSubmit = useCallback(async (forceInbox = false) => {
         console.log('HandleSubmit called with forceInbox:', forceInbox);
-        if (!inputText.trim() || isSaving) return;
+        
+        // Get the content to work with (fullContent for long text, inputText for short text)
+        const contentToSubmit = showLongTextMode ? fullContent : inputText;
+        const titleToSubmit = showLongTextMode ? generatedTitle : undefined;
+        
+        if (!contentToSubmit.trim() || isSaving) return;
 
         setIsSaving(true);
 
@@ -915,10 +1032,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
             if (analysisResult?.suggested_type === 'task' && !forceInbox) {
                 console.log('Taking task creation path');
                 // Auto-convert to task using the same logic as convert to task action
-                await createMissingTags(inputText.trim());
-                await createMissingProjects(inputText.trim());
+                await createMissingTags(contentToSubmit.trim());
+                await createMissingProjects(contentToSubmit.trim());
                 
-                const cleanedText = getCleanedContent(inputText.trim());
+                const cleanedText = getCleanedContent(contentToSubmit.trim());
                 
                 // Convert parsed tags to Tag objects and include suggested tags from rules engine
                 const allTagNames = [
@@ -953,12 +1070,12 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 }
 
                 // Get priority from text or use suggested priority from rules engine
-                const textPriority = analysisResult?.parsed_priority || parsePriority(inputText.trim());
+                const textPriority = analysisResult?.parsed_priority || parsePriority(contentToSubmit.trim());
                 const suggestedPriority = analysisResult?.suggested_priority;
                 const finalPriority = textPriority || suggestedPriority || 'medium';
 
                 // Get due date from analysis result or parse from text
-                const dueDate = analysisResult?.suggested_due_date || getDueDate(inputText.trim());
+                const dueDate = analysisResult?.suggested_due_date || getDueDate(contentToSubmit.trim());
 
                 const newTask: Task = {
                     name: cleanedText,
@@ -995,10 +1112,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
             if (analysisResult?.suggested_type === 'note' && !forceInbox) {
                 console.log('Taking note creation path');
                 // Auto-convert to note using similar logic
-                await createMissingTags(inputText.trim());
-                await createMissingProjects(inputText.trim());
+                await createMissingTags(contentToSubmit.trim());
+                await createMissingProjects(contentToSubmit.trim());
                 
-                const cleanedText = getCleanedContent(inputText.trim());
+                const cleanedText = getCleanedContent(contentToSubmit.trim());
                 
                 // Convert parsed tags to Tag objects and include suggested tags from rules engine
                 const allTagNames = [
@@ -1019,7 +1136,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 });
 
                 // Add bookmark tag for URLs or when suggested reason is url_detected
-                const isUrlContent = isUrl(inputText.trim()) || analysisResult.suggested_reason === 'url_detected';
+                const isUrlContent = isUrl(contentToSubmit.trim()) || analysisResult.suggested_reason === 'url_detected';
                 const bookmarkTag = isUrlContent ? [{ name: 'bookmark' }] : [];
                 
                 // Make sure we don't duplicate bookmark tag if it's already in parsed tags
@@ -1041,8 +1158,8 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 }
 
                 const newNote: Note = {
-                    title: cleanedText || inputText.trim(),
-                    content: inputText.trim(),
+                    title: cleanedText || titleToSubmit || contentToSubmit.trim(),
+                    content: contentToSubmit.trim(),
                     tags: taskTags,
                     project_id: projectId,
                 };
@@ -1072,35 +1189,68 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     throw error;
                 }
             }
+            
+            if (editMode && onEdit) {
+                // For edit mode, store the text with current tags/projects (after user modifications)
+                const contentWithCurrentTags = getContentWithCurrentTagsAndProjects(contentToSubmit.trim());
+                await onEdit(contentWithCurrentTags);
+                setIsClosing(true);
+                setTimeout(() => {
+                    onClose();
+                    setIsClosing(false);
+                }, 300);
+                return; // Exit early to prevent creating duplicates
+            }
 
-                if (editMode && onEdit) {
-                    // For edit mode, store the original text with tags/projects
-                    await onEdit(inputText.trim());
-                    setIsClosing(true);
-                    setTimeout(() => {
-                        onClose();
-                        setIsClosing(false);
-                    }, 300);
-                    return; // Exit early to prevent creating duplicates
+            const effectiveSaveMode = saveMode;
+
+            if (effectiveSaveMode === 'task') {
+                // For task mode, create missing tags and projects, then clean the text
+                await createMissingTags(contentToSubmit.trim());
+                await createMissingProjects(contentToSubmit.trim());
+                
+                const cleanedText = cleanTextFromTagsAndProjects(contentToSubmit.trim());
+                
+                // Get priority from text (fallback mode doesn't have analysis result)
+                const textPriority = parsePriority(contentToSubmit.trim());
+                const finalPriority = textPriority || 'medium';
+                
+                // Get all tags (explicit hashtags in this fallback mode)
+                const allTagNames = getAllTags(contentToSubmit.trim());
+                const taskTags = allTagNames.map((tagName) => {
+                    const existingTag = tags.find(
+                        (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
+                    );
+                    return existingTag || { name: tagName };
+                });
+
+                // Find the project to assign (use first project reference if any)
+                const allProjects = getAllProjects(contentToSubmit.trim());
+                let projectId = undefined;
+                if (allProjects.length > 0) {
+                    const projectName = allProjects[0];
+                    const matchingProject = projects.find(
+                        (project) => project.name.toLowerCase() === projectName.toLowerCase()
+                    );
+                    if (matchingProject) {
+                        projectId = matchingProject.id;
+                    }
                 }
 
-                const effectiveSaveMode = saveMode;
-
-                if (effectiveSaveMode === 'task') {
-                    // For task mode, create missing tags and projects, then clean the text
-                    await createMissingTags(inputText.trim());
-                    await createMissingProjects(inputText.trim());
-
-                    const cleanedText = cleanTextFromTagsAndProjects(
-                        inputText.trim()
-                    );
-                    const newTask: Task = {
-                        name: cleanedText,
-                        status: 'not_started',
-                        completed_at: null,
-                    };
-                    try {
-                        await onSave(newTask);
+                // Get due date from text parsing
+                const dueDate = getDueDate(contentToSubmit.trim());
+                
+                const newTask: Task = {
+                    name: cleanedText,
+                    status: 'not_started',
+                    priority: finalPriority as 'low' | 'medium' | 'high',
+                    tags: taskTags,
+                    project_id: projectId,
+                    due_date: dueDate || undefined,
+                    completed_at: null,
+                };
+                try {
+                    await onSave(newTask);
                         showSuccessToast(t('task.createSuccess'));
                         setInputText('');
                         handleClose();
@@ -1113,35 +1263,39 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     }
                 } else {
                     try {
-                        // For inbox mode, store the original text with tags/projects
-                        // Tags and projects will be created and assigned when the item is processed later
-                        await createInboxItemWithStore(inputText.trim());
+                    // For inbox mode, store the text with current tags/projects (after user modifications)
+                    // This ensures removed tags stay removed and added tags are preserved
+                    const contentWithCurrentTags = getContentWithCurrentTagsAndProjects(contentToSubmit.trim());
+                    await createInboxItemWithStore(contentWithCurrentTags);
 
-                        showSuccessToast(t('inbox.itemAdded'));
+                    showSuccessToast(t('inbox.itemAdded'));
 
-                        handleClose();
-                    } catch (error) {
-                        console.error('Failed to create inbox item:', error);
-                        showErrorToast(t('inbox.addError'));
-                        setIsSaving(false);
-                    }
+                    handleClose();
+                } catch (error) {
+                    console.error('Failed to create inbox item:', error);
+                    showErrorToast(t('inbox.addError'));
+                    setIsSaving(false);
                 }
-            } catch (error) {
-                console.error('Failed to save:', error);
-                if (editMode) {
-                    showErrorToast(t('inbox.updateError'));
-                } else {
-                    showErrorToast(
-                        saveMode === 'task'
-                            ? t('task.createError')
-                            : t('inbox.addError')
-                    );
-                }
-            } finally {
-                setIsSaving(false);
             }
+        } catch (error) {
+            console.error('Failed to save:', error);
+            if (editMode) {
+                showErrorToast(t('inbox.updateError'));
+            } else {
+                showErrorToast(
+                    saveMode === 'task'
+                        ? t('task.createError')
+                        : t('inbox.addError')
+                );
+            }
+        } finally {
+            setIsSaving(false);
+        }
     }, [
         inputText,
+        fullContent,
+        showLongTextMode,
+        generatedTitle,
         isSaving,
         editMode,
         onEdit,
@@ -1314,13 +1468,31 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                     }}
                                 />
 
+                                {/* Long text content area */}
+                                {showLongTextMode && (
+                                    <div className="mt-4">
+                                        <textarea
+                                            value={fullContent}
+                                            onChange={(e) => {
+                                                setFullContent(e.target.value);
+                                                // Update title if content changes
+                                                const newTitle = generateTitleFromContent(e.target.value);
+                                                setGeneratedTitle(newTitle);
+                                                setInputText(newTitle);
+                                            }}
+                                            className="w-full h-32 p-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-y focus:outline-none"
+                                            placeholder="Enter your full content here..."
+                                        />
+                                    </div>
+                                )}
+
                                 {/* Tags display like TaskItem */}
-                                {inputText &&
-                                    getAllTags(inputText).length > 0 && (
+                                {(showLongTextMode ? fullContent : inputText) &&
+                                    getAllTags(showLongTextMode ? fullContent : inputText).length > 0 && (
                                         <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
                                             <TagIcon className="h-3 w-3 mr-1" />
                                             <div className="flex flex-wrap gap-1">
-                                                {getAllTags(inputText).map(
+                                                {getAllTags(showLongTextMode ? fullContent : inputText).map(
                                                     (tagName, index) => {
                                                         const tag = tags.find(
                                                             (t) =>
@@ -1378,12 +1550,12 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                     )}
 
                                 {/* Projects display like TaskItem */}
-                                {inputText &&
-                                    getAllProjects(inputText).length > 0 && (
+                                {(showLongTextMode ? fullContent : inputText) &&
+                                    getAllProjects(showLongTextMode ? fullContent : inputText).length > 0 && (
                                         <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
                                             <FolderIcon className="h-3 w-3 mr-1" />
                                             <div className="flex flex-wrap gap-1">
-                                                {getAllProjects(inputText).map(
+                                                {getAllProjects(showLongTextMode ? fullContent : inputText).map(
                                                     (projectName, index) => {
                                                         const project = projects.find(
                                                             (p) =>
@@ -1441,19 +1613,19 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                     )}
 
                                 {/* Priority display like TaskItem */}
-                                {inputText && getPriority(inputText) && (
+                                {(showLongTextMode ? fullContent : inputText) && getPriority(showLongTextMode ? fullContent : inputText) && (
                                     <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
                                         <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
                                         <span
                                             className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
-                                                getPriority(inputText) === 'high'
+                                                getPriority(showLongTextMode ? fullContent : inputText) === 'high'
                                                     ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
-                                                    : getPriority(inputText) === 'medium'
+                                                    : getPriority(showLongTextMode ? fullContent : inputText) === 'medium'
                                                     ? 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400'
                                                     : 'bg-gray-50 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400'
                                             }`}
                                         >
-                                            {getPriority(inputText) && (getPriority(inputText)!.charAt(0).toUpperCase() + getPriority(inputText)!.slice(1))} Priority
+                                            {getPriority(showLongTextMode ? fullContent : inputText) && (getPriority(showLongTextMode ? fullContent : inputText)!.charAt(0).toUpperCase() + getPriority(showLongTextMode ? fullContent : inputText)!.slice(1))} Priority
                                             {analysisResult?.parsed_priority && (
                                                 <button
                                                     onClick={removePriorityFromText}
@@ -1468,12 +1640,12 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                 )}
 
                                 {/* Due Date display like TaskItem */}
-                                {inputText && getDueDate(inputText) && (
+                                {(showLongTextMode ? fullContent : inputText) && getDueDate(showLongTextMode ? fullContent : inputText) && (
                                     <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
                                         <CalendarIcon className="h-3 w-3 mr-1" />
                                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded text-xs font-medium">
                                             Due: {(() => {
-                                                const dueDate = getDueDate(inputText);
+                                                const dueDate = getDueDate(showLongTextMode ? fullContent : inputText);
                                                 if (!dueDate) return '';
                                                 
                                                 const date = new Date(dueDate);
@@ -1500,7 +1672,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                 }
                                             })()}
                                             {/* Only show remove button if due date was parsed from text (not suggested) */}
-                                            {parseDueDate(inputText) && (
+                                            {parseDueDate(showLongTextMode ? fullContent : inputText) && (
                                                 <button
                                                     onClick={removeDueDateFromText}
                                                     className="h-3 w-3 ml-1 text-blue-400 hover:text-red-500 transition-colors"
@@ -1619,7 +1791,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                                 disabled={isSaving}
                                                                 className="text-purple-600 dark:text-purple-400 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                                                             >
-                                                                Add to Inbox
+                                                                Save to Inbox
                                                             </button>
                                                         </div>
                                                     </div>
@@ -1637,9 +1809,9 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                 <button
                                     type="button"
                                     onClick={() => handleSubmit(false)}
-                                    disabled={!inputText.trim() || isSaving}
+                                    disabled={!(showLongTextMode ? fullContent.trim() : inputText.trim()) || isSaving}
                                     className={`mt-4 sm:mt-0 sm:ml-4 inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none ${
-                                        inputText.trim() && !isSaving
+                                        (showLongTextMode ? fullContent.trim() : inputText.trim()) && !isSaving
                                             ? 'bg-blue-600 hover:bg-blue-700'
                                             : 'bg-blue-400 cursor-not-allowed'
                                     }`}

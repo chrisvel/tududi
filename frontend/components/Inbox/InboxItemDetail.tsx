@@ -294,6 +294,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const hashtags = parseHashtags(item.content);
     const projectRefs = parseProjectRefs(item.content);
     const cleanedContent = cleanTextFromTagsAndProjects(item.content);
+    const LONG_TEXT_THRESHOLD = 150; // Characters threshold for considering text as "long"
+    const isLongText = item.content.trim().length > LONG_TEXT_THRESHOLD;
+    
 
 
 
@@ -583,9 +586,26 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         >
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-2 gap-2">
                 <div className="flex-1">
-                    <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
-                        {cleanedContent || item.content}
-                    </p>
+                    {/* Display title for long text, otherwise show cleaned content */}
+                    {item.title && isLongText ? (
+                        <div>
+                            <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
+                                {item.title}
+                            </p>
+                            <details className="mt-2">
+                                <summary className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
+                                    Show full content
+                                </summary>
+                                <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                                    {item.content}
+                                </div>
+                            </details>
+                        </div>
+                    ) : (
+                        <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
+                            {cleanedContent || item.content}
+                        </p>
+                    )}
 
                     {/* Enhanced metadata display with intelligent analysis */}
                     {(() => {
