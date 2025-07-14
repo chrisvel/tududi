@@ -27,10 +27,21 @@ mkdir -p certs
 DB_FILE="db/production.sqlite3"
 [ "$NODE_ENV" = "development" ] && DB_FILE="db/development.sqlite3"
 
+# Check if database exists and create/authenticate
 if [ ! -f "$DB_FILE" ]; then
+  echo "🔧 Creating new database..."
   node -e "require(\"./models\").sequelize.sync({force:true}).then(()=>{console.log(\"✅ DB ready\");process.exit(0)}).catch(e=>{console.error(\"❌\",e.message);process.exit(1)})"
 else
+  echo "🔍 Checking database connection..."
   node -e "require(\"./models\").sequelize.authenticate().then(()=>{console.log(\"✅ DB OK\");process.exit(0)}).catch(e=>{console.error(\"❌\",e.message);process.exit(1)})"
+fi
+
+# Run database migrations automatically
+echo "🔄 Running database migrations..."
+if npx sequelize-cli db:migrate --config config/database.js; then
+  echo "✅ Migrations completed successfully"
+else
+  echo "⚠️  Migration failed, but continuing startup (may be expected for new installations)"
 fi
 
 if [ -n "$TUDUDI_USER_EMAIL" ] && [ -n "$TUDUDI_USER_PASSWORD" ]; then
