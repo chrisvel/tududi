@@ -2,43 +2,88 @@
 
 module.exports = {
     async up(queryInterface, Sequelize) {
-        // Add new fields to support enhanced recurring task functionality
-        await queryInterface.addColumn('tasks', 'recurrence_weekday', {
-            type: Sequelize.INTEGER,
-            allowNull: true,
-            comment:
-                'Day of week (0=Sunday, 1=Monday, ..., 6=Saturday) for weekly recurrence',
-        });
+        try {
+            // Get current table schema
+            const tableInfo = await queryInterface.describeTable('tasks');
 
-        await queryInterface.addColumn('tasks', 'recurrence_month_day', {
-            type: Sequelize.INTEGER,
-            allowNull: true,
-            comment:
-                'Day of month (1-31) for monthly recurrence, -1 for last day',
-        });
+            // Define columns to add
+            const columnsToAdd = [
+                {
+                    name: 'recurrence_weekday',
+                    definition: {
+                        type: Sequelize.INTEGER,
+                        allowNull: true,
+                        comment:
+                            'Day of week (0=Sunday, 1=Monday, ..., 6=Saturday) for weekly recurrence',
+                    },
+                },
+                {
+                    name: 'recurrence_month_day',
+                    definition: {
+                        type: Sequelize.INTEGER,
+                        allowNull: true,
+                        comment:
+                            'Day of month (1-31) for monthly recurrence, -1 for last day',
+                    },
+                },
+                {
+                    name: 'recurrence_week_of_month',
+                    definition: {
+                        type: Sequelize.INTEGER,
+                        allowNull: true,
+                        comment:
+                            'Week of month (1-5) for monthly weekday recurrence',
+                    },
+                },
+                {
+                    name: 'completion_based',
+                    definition: {
+                        type: Sequelize.BOOLEAN,
+                        allowNull: false,
+                        defaultValue: false,
+                        comment:
+                            'Whether recurrence is based on completion date (true) or due date (false)',
+                    },
+                },
+            ];
 
-        await queryInterface.addColumn('tasks', 'recurrence_week_of_month', {
-            type: Sequelize.INTEGER,
-            allowNull: true,
-            comment: 'Week of month (1-5) for monthly weekday recurrence',
-        });
-
-        await queryInterface.addColumn('tasks', 'completion_based', {
-            type: Sequelize.BOOLEAN,
-            allowNull: false,
-            defaultValue: false,
-            comment:
-                'Whether recurrence is based on completion date (true) or due date (false)',
-        });
-
-        // Add index for efficient recurring task queries
-        await queryInterface.addIndex(
-            'tasks',
-            ['recurrence_type', 'last_generated_date'],
-            {
-                name: 'idx_tasks_recurrence_lookup',
+            // Add only missing columns
+            for (const column of columnsToAdd) {
+                if (!(column.name in tableInfo)) {
+                    await queryInterface.addColumn(
+                        'tasks',
+                        column.name,
+                        column.definition
+                    );
+                }
             }
-        );
+
+            // Add index if it doesn't exist
+            try {
+                const indexes = await queryInterface.showIndex('tasks');
+                const indexExists = indexes.some(
+                    (index) => index.name === 'idx_tasks_recurrence_lookup'
+                );
+
+                if (!indexExists) {
+                    await queryInterface.addIndex(
+                        'tasks',
+                        ['recurrence_type', 'last_generated_date'],
+                        {
+                            name: 'idx_tasks_recurrence_lookup',
+                        }
+                    );
+                }
+            } catch (indexError) {
+                console.log(
+                    'Could not check or add index:',
+                    indexError.message
+                );
+            }
+        } catch (error) {
+            console.log('Migration error:', error.message);
+            throw error;
+        }
     },
 
     async down(queryInterface, Sequelize) {
