@@ -1,16 +1,19 @@
 'use strict';
 
+const { safeAddColumns } = require('../utils/migration-utils');
+
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.addColumn(
-            'users',
-            'auto_suggest_next_actions_enabled',
+        await safeAddColumns(queryInterface, 'users', [
             {
-                type: Sequelize.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-            }
-        );
+                name: 'auto_suggest_next_actions_enabled',
+                definition: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false,
+                    defaultValue: false,
+                },
+            },
+        ]);
     },
 
     down: async (queryInterface, Sequelize) => {

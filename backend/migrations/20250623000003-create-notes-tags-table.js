@@ -2,7 +2,7 @@
 
 module.exports = {
     async up(queryInterface, Sequelize) {
-        // Check if notes_tags table exists
+
         const tables = await queryInterface.showAllTables();
         if (!tables.includes('notes_tags')) {
             await queryInterface.createTable('notes_tags', {
@@ -34,7 +34,6 @@ module.exports = {
                 },
             });
 
-            // Add unique index
             await queryInterface.addIndex('notes_tags', ['note_id', 'tag_id'], {
                 unique: true,
                 name: 'notes_tags_unique_idx',
