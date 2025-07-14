@@ -4,8 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "node app.js",
-        "dev": "nodemon app.js",
+        "start": "./cmd/start.sh",
+        "start:dev": "nodemon app.js",
         "test": "cross-env NODE_ENV=test jest",
         "test:watch": "cross-env NODE_ENV=test jest --watch",
         "test:coverage": "cross-env NODE_ENV=test jest --coverage",
