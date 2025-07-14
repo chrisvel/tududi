@@ -22,10 +22,54 @@ export const fetchInboxItems = async (): Promise<InboxItem[]> => {
     return result;
 };
 
+// Helper function to check if text is considered long
+const isLongText = (text: string, threshold: number = 150): boolean => {
+    return text.trim().length > threshold;
+};
+
+// Helper function to generate title from content
+const generateTitleFromContent = (content: string, maxLength: number = 80): string => {
+    const cleanText = content.trim();
+    
+    // If text is short enough, use it as is
+    if (cleanText.length <= maxLength) {
+        return cleanText;
+    }
+    
+    // For long text, try to find a natural break point
+    const title = cleanText.substring(0, maxLength);
+    
+    // Try to break at sentence end
+    const sentenceEnd = title.lastIndexOf('. ');
+    if (sentenceEnd > maxLength * 0.5) {
+        return title.substring(0, sentenceEnd + 1).trim();
+    }
+    
+    // Try to break at word boundary
+    const lastSpace = title.lastIndexOf(' ');
+    if (lastSpace > maxLength * 0.7) {
+        return title.substring(0, lastSpace).trim() + '...';
+    }
+    
+    // Fallback: truncate with ellipsis
+    return title.trim() + '...';
+};
+
 export const createInboxItem = async (
     content: string,
     source?: string
 ): Promise<InboxItem> => {
+    // Generate title for long text
+    const title = isLongText(content) ? generateTitleFromContent(content) : undefined;
+    
+    const body: any = { content };
+    if (source) {
+        body.source = source;
+    }
+    if (title) {
+        body.title = title;
+    }
+
     const response = await fetch('/api/inbox', {
         method: 'POST',
         credentials: 'include',
@@ -33,7 +77,7 @@ export const createInboxItem = async (
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
-        body: JSON.stringify(source ? { content, source } : { content }),
+        body: JSON.stringify(body),
     });
 
     await handleAuthResponse(response, 'Failed to create inbox item.');
@@ -44,6 +88,14 @@ export const updateInboxItem = async (
     itemId: number,
     content: string
 ): Promise<InboxItem> => {
+    // Generate title for long text updates
+    const title = isLongText(content) ? generateTitleFromContent(content) : undefined;
+    
+    const body: any = { content };
+    if (title) {
+        body.title = title;
+    }
+
     const response = await fetch(`/api/inbox/${itemId}`, {
         method: 'PATCH',
         credentials: 'include',
@@ -51,7 +103,7 @@ export const updateInboxItem = async (
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify(body),
     });
 
     await handleAuthResponse(response, 'Failed to update inbox item.');

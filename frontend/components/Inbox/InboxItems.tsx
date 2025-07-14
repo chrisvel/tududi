@@ -30,6 +30,7 @@ const InboxItems: React.FC = () => {
 
     // Access store data
     const { inboxItems, isLoading } = useStore((state) => state.inboxStore);
+    
 
     // Modal states
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);

@@ -200,8 +200,7 @@
             },
             "action": {
                 "suggested_type": "note",
-                "suggested_reason": "long_text_content",
-                "suggested_tags": ["notes"]
+                "suggested_reason": "long_text_content"
             }
         }
     ],
