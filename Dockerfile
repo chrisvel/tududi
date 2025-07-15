@@ -24,21 +24,20 @@ RUN NODE_ENV=production npm run frontend:build
 
 # Run backend tests
 RUN DOCKER_BUILD=1 npm run backend:test
+
 # Cleanup
 RUN npm cache clean --force && \
     rm -rf ~/.npm /tmp/* && \
     apk del .build-deps
+
 
 ####################
 # Production stage #
 ####################
 FROM node:20-alpine AS production
 
-# Set build-time and runtime UID/GID (default 1001)
-ARG APP_UID=1001
-ARG APP_GID=1001
-ENV APP_UID=${APP_UID}
-ENV APP_GID=${APP_GID}
+ENV APP_UID=1001
+ENV APP_GID=1001
 
 RUN addgroup -g ${APP_GID} -S app && \
     adduser -S app -u ${APP_UID} -G app
@@ -47,7 +46,9 @@ RUN apk add --no-cache --virtual .runtime-deps \
     sqlite \
     openssl \
     curl \
-    dumb-init && \
+    procps-ng \
+    dumb-init \
+    su-exec && \
     rm -rf /var/cache/apk/* /tmp/* && \
     rm -rf /usr/share/man /usr/share/doc /usr/share/info
 
@@ -58,13 +59,15 @@ WORKDIR /app
 COPY ./backend/ /app/backend/
 RUN chmod +x /app/backend/cmd/start.sh
 
+COPY ./scripts/docker-entrypoint.sh /app/scripts/docker-entrypoint.sh
+RUN chmod +x /app/scripts/docker-entrypoint.sh
+
 # Copy frontend
 RUN rm -rf /app/backend/dist
 COPY --from=builder --chown=app:app /app/dist ./backend/dist
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
-
-# Copy all dependencies (now in root)
 COPY --from=builder --chown=app:app /app/node_modules ./node_modules
+COPY --from=builder --chown=app:app /app/package.json /app/
 
 # Create necessary directories
 RUN mkdir -p /app/backend/db /app/backend/certs && \
@@ -72,13 +75,11 @@ RUN mkdir -p /app/backend/db /app/backend/certs && \
 
 # Cleanup
 RUN apk del --no-cache .runtime-deps sqlite openssl curl && \
-    apk add --no-cache sqlite-libs openssl curl dumb-init && \
+    apk add --no-cache sqlite-libs openssl curl dumb-init su-exec && \
     rm -rf /usr/local/lib/node_modules/npm/docs /usr/local/lib/node_modules/npm/man && \
     rm -rf /root/.npm /tmp/* /var/tmp/* /var/cache/apk/*
 
 VOLUME ["/app/backend/db"]
-
-USER app
 
 EXPOSE 3002
 
@@ -92,11 +93,8 @@ ENV NODE_ENV=production \
     DISABLE_TELEGRAM=false \
     DISABLE_SCHEDULER=false
 
-# Docker healthcheck
 HEALTHCHECK --interval=60s --timeout=3s --start-period=10s --retries=2 \
     CMD curl -sf http://localhost:3002/api/health || exit 1
 
-# Use dumb-init for proper signal handling
-ENTRYPOINT ["dumb-init", "--"]
 WORKDIR /app/backend
-CMD ["/app/backend/cmd/start.sh"]
+ENTRYPOINT ["/app/scripts/docker-entrypoint.sh"]

@@ -5,11 +5,7 @@ smart recurring tasks, and seamless Telegram integration. Get focused, stay prod
 
 ![Light Mode Screenshot](screenshots/all-light.png)
 
-![Dark Mode Screenshot](screenshots/all-dark.png)
-
-![Light Mobile Screenshot](screenshots/mobile-all-light.png)
-
-![Dark Mobile Screenshot](screenshots/mobile-all-dark.png)
+More screenshots [here](#screenshots).
 
 ## 🚀 How It Works
 
@@ -104,6 +100,7 @@ The following environment variables are used to configure tududi:
 - `TUDUDI_SESSION_SECRET` - Session encryption key (generate with `openssl rand -hex 64`)
 
 #### Optional Variables:
+- `PUID`, `GUID` - Run with specified user and group ID (instead of defaults 1001/1001)
 - `TUDUDI_INTERNAL_SSL_ENABLED` - Set to 'true' if using HTTPS internally (default: false)
 - `TUDUDI_ALLOWED_ORIGINS` - Controls CORS access for different deployment scenarios:
   - Not set: Only allows localhost origins
@@ -139,6 +136,8 @@ docker run \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
   -e TUDUDI_INTERNAL_SSL_ENABLED=false \
   -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:3002 \
+  -e PUID=1001 \
+  -e GUID=1001 \
   -v ~/tududi_db:/app/backend/db \
   -v ~/tududi_uploads:/app/backend/uploads \
   -p 3002:3002 \
@@ -443,6 +442,15 @@ Join the tududi community:
 - **[BreachHarbor](https://breachharbor.com)** - Cybersecurity suite for digital asset protection  
 - **[Hevetra](https://hevetra.com)** - Digital tracking for child health milestones
 
+# Screenshots
+
+![Light Mode Screenshot](screenshots/all-light.png)
+
+![Dark Mode Screenshot](screenshots/all-dark.png)
+
+![Light Mobile Screenshot](screenshots/mobile-all-light.png)
+
+![Dark Mobile Screenshot](screenshots/mobile-all-dark.png)
 ---
 
 README created by [Chris Veleris](https://github.com/chrisvel) for `tududi`.
