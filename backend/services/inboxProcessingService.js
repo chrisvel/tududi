@@ -13,27 +13,50 @@ class InboxProcessingService {
      */
     static isActionVerb(word) {
         if (!word || typeof word !== 'string') return false;
-        
+
         try {
             const doc = nlp(word.toLowerCase());
             const verbs = doc.verbs();
-            
+
             if (verbs.length === 0) return false;
-            
+
             // Check if it's an action verb (not auxiliary/linking verbs when used alone)
             const text = verbs.text().toLowerCase();
-            
+
             // Allow "do" when it's part of an action phrase like "do something"
             if (text === 'do') {
                 // Check the original word context to see if it's followed by a noun/action
                 return true; // For now, allow "do" - could refine this logic later
             }
-            
-            const auxiliaryVerbs = ['be', 'is', 'am', 'are', 'was', 'were', 'being', 'been', 
-                                   'have', 'has', 'had', 'having', 'does', 'did', 'doing',
-                                   'will', 'would', 'shall', 'should', 'may', 'might', 'can', 
-                                   'could', 'must', 'ought'];
-            
+
+            const auxiliaryVerbs = [
+                'be',
+                'is',
+                'am',
+                'are',
+                'was',
+                'were',
+                'being',
+                'been',
+                'have',
+                'has',
+                'had',
+                'having',
+                'does',
+                'did',
+                'doing',
+                'will',
+                'would',
+                'shall',
+                'should',
+                'may',
+                'might',
+                'can',
+                'could',
+                'must',
+                'ought',
+            ];
+
             return !auxiliaryVerbs.includes(text);
         } catch (error) {
             console.error('Error checking verb:', error);
@@ -51,11 +74,11 @@ class InboxProcessingService {
         let currentToken = '';
         let inQuotes = false;
         let i = 0;
-        
+
         while (i < text.length) {
             const char = text[i];
-            
-            if (char === '"' && (i === 0 || text[i-1] === '+')) {
+
+            if (char === '"' && (i === 0 || text[i - 1] === '+')) {
                 // Start of a quoted string after +
                 inQuotes = true;
                 currentToken += char;
@@ -75,12 +98,12 @@ class InboxProcessingService {
             }
             i++;
         }
-        
+
         // Add final token
         if (currentToken) {
             tokens.push(currentToken);
         }
-        
+
         return tokens;
     }
 
@@ -92,11 +115,11 @@ class InboxProcessingService {
     static parseHashtags(text) {
         const trimmedText = text.trim();
         const matches = [];
-        
+
         // Split text into words
         const words = trimmedText.split(/\s+/);
         if (words.length === 0) return matches;
-        
+
         // Find all consecutive groups of tags/projects
         let i = 0;
         while (i < words.length) {
@@ -104,27 +127,35 @@ class InboxProcessingService {
             if (words[i].startsWith('#') || words[i].startsWith('+')) {
                 // Found start of a group, collect all consecutive tags/projects
                 let groupEnd = i;
-                while (groupEnd < words.length && (words[groupEnd].startsWith('#') || words[groupEnd].startsWith('+'))) {
+                while (
+                    groupEnd < words.length &&
+                    (words[groupEnd].startsWith('#') ||
+                        words[groupEnd].startsWith('+'))
+                ) {
                     groupEnd++;
                 }
-                
+
                 // Process all hashtags in this group
                 for (let j = i; j < groupEnd; j++) {
                     if (words[j].startsWith('#')) {
                         const tagName = words[j].substring(1);
-                        if (tagName && /^[a-zA-Z0-9_-]+$/.test(tagName) && !matches.includes(tagName)) {
+                        if (
+                            tagName &&
+                            /^[a-zA-Z0-9_-]+$/.test(tagName) &&
+                            !matches.includes(tagName)
+                        ) {
                             matches.push(tagName);
                         }
                     }
                 }
-                
+
                 // Skip to end of this group
                 i = groupEnd;
             } else {
                 i++;
             }
         }
-        
+
         return matches;
     }
 
@@ -136,10 +167,10 @@ class InboxProcessingService {
     static parseProjectRefs(text) {
         const trimmedText = text.trim();
         const matches = [];
-        
+
         // Tokenize the text handling quoted strings properly
         const tokens = this.tokenizeText(trimmedText);
-        
+
         // Find consecutive groups of tags/projects
         let i = 0;
         while (i < tokens.length) {
@@ -147,33 +178,40 @@ class InboxProcessingService {
             if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
                 // Found start of a group, collect all consecutive tags/projects
                 let groupEnd = i;
-                while (groupEnd < tokens.length && (tokens[groupEnd].startsWith('#') || tokens[groupEnd].startsWith('+'))) {
+                while (
+                    groupEnd < tokens.length &&
+                    (tokens[groupEnd].startsWith('#') ||
+                        tokens[groupEnd].startsWith('+'))
+                ) {
                     groupEnd++;
                 }
-                
+
                 // Process all project references in this group
                 for (let j = i; j < groupEnd; j++) {
                     if (tokens[j].startsWith('+')) {
                         let projectName = tokens[j].substring(1);
-                        
+
                         // Handle quoted project names
-                        if (projectName.startsWith('"') && projectName.endsWith('"')) {
+                        if (
+                            projectName.startsWith('"') &&
+                            projectName.endsWith('"')
+                        ) {
                             projectName = projectName.slice(1, -1);
                         }
-                        
+
                         if (projectName && !matches.includes(projectName)) {
                             matches.push(projectName);
                         }
                     }
                 }
-                
+
                 // Skip to end of this group
                 i = groupEnd;
             } else {
                 i++;
             }
         }
-        
+
         return matches;
     }
 
@@ -186,13 +224,16 @@ class InboxProcessingService {
         const trimmedText = text.trim();
         const tokens = this.tokenizeText(trimmedText);
         const cleanedTokens = [];
-        
+
         let i = 0;
         while (i < tokens.length) {
             // Check if current token starts a tag/project group
             if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
                 // Skip this entire consecutive group
-                while (i < tokens.length && (tokens[i].startsWith('#') || tokens[i].startsWith('+'))) {
+                while (
+                    i < tokens.length &&
+                    (tokens[i].startsWith('#') || tokens[i].startsWith('+'))
+                ) {
                     i++;
                 }
             } else {
@@ -201,7 +242,7 @@ class InboxProcessingService {
                 i++;
             }
         }
-        
+
         return cleanedTokens.join(' ').trim();
     }
 
@@ -212,11 +253,11 @@ class InboxProcessingService {
      */
     static startsWithVerb(text) {
         if (!text.trim()) return false;
-        
+
         try {
             const firstWord = text.trim().split(/\s+/)[0];
             if (!firstWord) return false;
-            
+
             return this.isActionVerb(firstWord);
         } catch (error) {
             console.error('Error checking if text starts with verb:', error);
@@ -244,38 +285,40 @@ class InboxProcessingService {
      */
     static generateSuggestion(content, tags, projects, cleanedContent) {
         const hasProject = projects.length > 0;
-        const hasBookmarkTag = tags.some(tag => tag.toLowerCase() === 'bookmark');
+        const hasBookmarkTag = tags.some(
+            (tag) => tag.toLowerCase() === 'bookmark'
+        );
         const textStartsWithVerb = this.startsWithVerb(cleanedContent);
         const containsUrl = this.containsUrl(content);
-        
+
         if (!hasProject) {
             return { type: null, reason: null };
         }
-        
+
         // Suggest note for bookmark items with project (explicit bookmark tag)
         if (hasBookmarkTag) {
             return {
                 type: 'note',
-                reason: 'bookmark_tag'
+                reason: 'bookmark_tag',
             };
         }
-        
+
         // Suggest note for URLs with project (auto-bookmark)
         if (containsUrl) {
             return {
                 type: 'note',
-                reason: 'url_detected'
+                reason: 'url_detected',
             };
         }
-        
+
         // Suggest task for items with project that start with a verb
         if (textStartsWithVerb) {
             return {
                 type: 'task',
-                reason: 'verb_detected'
+                reason: 'verb_detected',
             };
         }
-        
+
         return { type: null, reason: null };
     }
 
@@ -289,16 +332,21 @@ class InboxProcessingService {
         const tags = this.parseHashtags(content);
         const projects = this.parseProjectRefs(content);
         const cleanedContent = this.cleanTextFromTagsAndProjects(content);
-        
+
         // Generate suggestion
-        const suggestion = this.generateSuggestion(content, tags, projects, cleanedContent);
-        
+        const suggestion = this.generateSuggestion(
+            content,
+            tags,
+            projects,
+            cleanedContent
+        );
+
         return {
             parsed_tags: tags,
             parsed_projects: projects,
             cleaned_content: cleanedContent,
             suggested_type: suggestion.type,
-            suggested_reason: suggestion.reason
+            suggested_reason: suggestion.reason,
         };
     }
 }

@@ -3,7 +3,6 @@
 module.exports = {
     async up(queryInterface, Sequelize) {
         try {
-
             const tableInfo = await queryInterface.describeTable('users');
 
             const columnsToAdd = [
@@ -41,7 +40,6 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-
         await queryInterface.removeColumn(
             'users',
             'productivity_assistant_enabled'

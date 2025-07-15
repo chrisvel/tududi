@@ -103,7 +103,7 @@ const NoteDetails: React.FC = () => {
                 name,
                 priority: 'medium',
             });
-            setProjects(prev => [...prev, newProject]);
+            setProjects((prev) => [...prev, newProject]);
             return newProject;
         } catch (error) {
             console.error('Error creating project:', error);
@@ -150,7 +150,8 @@ const NoteDetails: React.FC = () => {
                                 {note.title}
                             </h2>
                             {/* Project and Tags under title */}
-                            {((note.project || note.Project) ||
+                            {(note.project ||
+                                note.Project ||
                                 (note.tags && note.tags.length > 0) ||
                                 (note.Tags && note.Tags.length > 0)) && (
                                 <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -161,17 +162,24 @@ const NoteDetails: React.FC = () => {
                                                 to={`/project/${(note.project || note.Project)?.id}`}
                                                 className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
                                             >
-                                                {(note.project || note.Project)?.name}
+                                                {
+                                                    (
+                                                        note.project ||
+                                                        note.Project
+                                                    )?.name
+                                                }
                                             </Link>
                                         </div>
                                     )}
                                     {(note.project || note.Project) &&
                                         ((note.tags && note.tags.length > 0) ||
-                                            (note.Tags && note.Tags.length > 0)) && (
+                                            (note.Tags &&
+                                                note.Tags.length > 0)) && (
                                             <span className="mx-2">•</span>
                                         )}
                                     {((note.tags && note.tags.length > 0) ||
-                                        (note.Tags && note.Tags.length > 0)) && (
+                                        (note.Tags &&
+                                            note.Tags.length > 0)) && (
                                         <div className="flex items-center">
                                             <TagIcon className="h-3 w-3 mr-1" />
                                             <span>

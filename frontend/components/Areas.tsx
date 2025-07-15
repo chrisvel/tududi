@@ -109,9 +109,7 @@ const Areas: React.FC = () => {
                 {/* Areas Header */}
                 <div className="flex items-center mb-8">
                     <Squares2X2Icon className="h-6 w-6 mr-2" />
-                    <h2 className="text-2xl font-light">
-                        {t('areas.title')}
-                    </h2>
+                    <h2 className="text-2xl font-light">{t('areas.title')}</h2>
                 </div>
 
                 {/* Areas List */}

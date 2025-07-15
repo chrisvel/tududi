@@ -5,7 +5,10 @@ interface TelegramIconProps {
     title?: string;
 }
 
-const TelegramIcon: React.FC<TelegramIconProps> = ({ className = "h-5 w-5", title }) => {
+const TelegramIcon: React.FC<TelegramIconProps> = ({
+    className = 'h-5 w-5',
+    title,
+}) => {
     return (
         <svg
             className={className}

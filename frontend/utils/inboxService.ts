@@ -88,7 +88,9 @@ export const deleteInboxItem = async (itemId: number): Promise<void> => {
 let lastCheckTimestamp = Date.now();
 
 // Store-aware functions
-export const loadInboxItemsToStore = async (isInitialLoad: boolean = false): Promise<void> => {
+export const loadInboxItemsToStore = async (
+    isInitialLoad: boolean = false
+): Promise<void> => {
     const inboxStore = useStore.getState().inboxStore;
     // Only show loading for initial load, not for polling
     if (isInitialLoad && inboxStore.inboxItems.length === 0) {

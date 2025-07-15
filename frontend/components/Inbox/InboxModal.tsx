@@ -63,7 +63,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
         top: 0,
     });
     // const [urlPreview, setUrlPreview] = useState<UrlTitleResult | null>(null);
-    
+
     // Real-time text analysis state
     const [analysisResult, setAnalysisResult] = useState<{
         parsed_tags: string[];
@@ -81,11 +81,11 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const parseHashtags = (text: string): string[] => {
         const trimmedText = text.trim();
         const matches: string[] = [];
-        
+
         // Split text into words
         const words = trimmedText.split(/\s+/);
         if (words.length === 0) return matches;
-        
+
         // Find all consecutive groups of tags/projects
         let i = 0;
         while (i < words.length) {
@@ -93,27 +93,35 @@ const InboxModal: React.FC<InboxModalProps> = ({
             if (words[i].startsWith('#') || words[i].startsWith('+')) {
                 // Found start of a group, collect all consecutive tags/projects
                 let groupEnd = i;
-                while (groupEnd < words.length && (words[groupEnd].startsWith('#') || words[groupEnd].startsWith('+'))) {
+                while (
+                    groupEnd < words.length &&
+                    (words[groupEnd].startsWith('#') ||
+                        words[groupEnd].startsWith('+'))
+                ) {
                     groupEnd++;
                 }
-                
+
                 // Process all hashtags in this group
                 for (let j = i; j < groupEnd; j++) {
                     if (words[j].startsWith('#')) {
                         const tagName = words[j].substring(1);
-                        if (tagName && /^[a-zA-Z0-9_-]+$/.test(tagName) && !matches.includes(tagName)) {
+                        if (
+                            tagName &&
+                            /^[a-zA-Z0-9_-]+$/.test(tagName) &&
+                            !matches.includes(tagName)
+                        ) {
                             matches.push(tagName);
                         }
                     }
                 }
-                
+
                 // Skip to end of this group
                 i = groupEnd;
             } else {
                 i++;
             }
         }
-        
+
         return matches;
     };
 
@@ -121,10 +129,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const parseProjectRefs = (text: string): string[] => {
         const trimmedText = text.trim();
         const matches: string[] = [];
-        
+
         // Tokenize the text handling quoted strings properly
         const tokens = tokenizeText(trimmedText);
-        
+
         // Find consecutive groups of tags/projects
         let i = 0;
         while (i < tokens.length) {
@@ -132,47 +140,54 @@ const InboxModal: React.FC<InboxModalProps> = ({
             if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
                 // Found start of a group, collect all consecutive tags/projects
                 let groupEnd = i;
-                while (groupEnd < tokens.length && (tokens[groupEnd].startsWith('#') || tokens[groupEnd].startsWith('+'))) {
+                while (
+                    groupEnd < tokens.length &&
+                    (tokens[groupEnd].startsWith('#') ||
+                        tokens[groupEnd].startsWith('+'))
+                ) {
                     groupEnd++;
                 }
-                
+
                 // Process all project references in this group
                 for (let j = i; j < groupEnd; j++) {
                     if (tokens[j].startsWith('+')) {
                         let projectName = tokens[j].substring(1);
-                        
+
                         // Handle quoted project names
-                        if (projectName.startsWith('"') && projectName.endsWith('"')) {
+                        if (
+                            projectName.startsWith('"') &&
+                            projectName.endsWith('"')
+                        ) {
                             projectName = projectName.slice(1, -1);
                         }
-                        
+
                         if (projectName && !matches.includes(projectName)) {
                             matches.push(projectName);
                         }
                     }
                 }
-                
+
                 // Skip to end of this group
                 i = groupEnd;
             } else {
                 i++;
             }
         }
-        
+
         return matches;
     };
-    
+
     // Helper function to tokenize text handling quoted strings
     const tokenizeText = (text: string): string[] => {
         const tokens: string[] = [];
         let currentToken = '';
         let inQuotes = false;
         let i = 0;
-        
+
         while (i < text.length) {
             const char = text[i];
-            
-            if (char === '"' && (i === 0 || text[i-1] === '+')) {
+
+            if (char === '"' && (i === 0 || text[i - 1] === '+')) {
                 // Start of a quoted string after +
                 inQuotes = true;
                 currentToken += char;
@@ -192,12 +207,12 @@ const InboxModal: React.FC<InboxModalProps> = ({
             }
             i++;
         }
-        
+
         // Add final token
         if (currentToken) {
             tokens.push(currentToken);
         }
-        
+
         return tokens;
     };
 
@@ -206,33 +221,36 @@ const InboxModal: React.FC<InboxModalProps> = ({
         const beforeCursor = text.substring(0, position);
         const afterCursor = text.substring(position);
         const hashtagMatch = beforeCursor.match(/#([a-zA-Z0-9_]*)$/);
-        
+
         if (!hashtagMatch) return '';
-        
+
         // Check if hashtag is at start or end position
         const hashtagStart = beforeCursor.lastIndexOf('#');
         const textBeforeHashtag = text.substring(0, hashtagStart).trim();
         const textAfterCursor = afterCursor.trim();
-        
+
         // Check if we're at the very end (no text after cursor)
         if (textAfterCursor === '') {
             return hashtagMatch[1];
         }
-        
+
         // Check if we're at the very beginning
         if (textBeforeHashtag === '') {
             return hashtagMatch[1];
         }
-        
+
         // Check if we're in a consecutive group of tags/projects at the beginning
-        const wordsBeforeHashtag = textBeforeHashtag.split(/\s+/).filter(word => word.length > 0);
-        const allWordsAreTagsOrProjects = wordsBeforeHashtag.every(word => 
-            word.startsWith('#') || word.startsWith('+'));
-        
+        const wordsBeforeHashtag = textBeforeHashtag
+            .split(/\s+/)
+            .filter((word) => word.length > 0);
+        const allWordsAreTagsOrProjects = wordsBeforeHashtag.every(
+            (word) => word.startsWith('#') || word.startsWith('+')
+        );
+
         if (allWordsAreTagsOrProjects) {
             return hashtagMatch[1];
         }
-        
+
         return '';
     };
 
@@ -241,44 +259,51 @@ const InboxModal: React.FC<InboxModalProps> = ({
         const beforeCursor = text.substring(0, position);
         const afterCursor = text.substring(position);
         // Match both quoted and unquoted project references
-        const projectMatch = beforeCursor.match(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/);
-        
+        const projectMatch = beforeCursor.match(
+            /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/
+        );
+
         if (!projectMatch) return '';
-        
+
         // Get the project name (from quoted or unquoted match)
         const projectQuery = projectMatch[1] || projectMatch[2] || '';
-        
+
         // Check if project ref is at start or end position
         const projectStart = beforeCursor.lastIndexOf('+');
         const textBeforeProject = text.substring(0, projectStart).trim();
         const textAfterCursor = afterCursor.trim();
-        
+
         // Check if we're at the very end (no text after cursor)
         if (textAfterCursor === '') {
             return projectQuery;
         }
-        
+
         // Check if we're at the very beginning
         if (textBeforeProject === '') {
             return projectQuery;
         }
-        
+
         // Check if we're in a consecutive group of tags/projects at the beginning
-        const wordsBeforeProject = textBeforeProject.split(/\s+/).filter(word => word.length > 0);
-        const allWordsAreTagsOrProjects = wordsBeforeProject.every(word => 
-            word.startsWith('#') || word.startsWith('+'));
-        
+        const wordsBeforeProject = textBeforeProject
+            .split(/\s+/)
+            .filter((word) => word.length > 0);
+        const allWordsAreTagsOrProjects = wordsBeforeProject.every(
+            (word) => word.startsWith('#') || word.startsWith('+')
+        );
+
         if (allWordsAreTagsOrProjects) {
             return projectQuery;
         }
-        
+
         return '';
     };
 
     // Helper function to remove a tag from the input text
     const removeTagFromText = (tagToRemove: string) => {
         const words = inputText.trim().split(/\s+/);
-        const filteredWords = words.filter(word => word !== `#${tagToRemove}`);
+        const filteredWords = words.filter(
+            (word) => word !== `#${tagToRemove}`
+        );
         const newText = filteredWords.join(' ').trim();
         setInputText(newText);
         if (nameInputRef.current) {
@@ -289,7 +314,9 @@ const InboxModal: React.FC<InboxModalProps> = ({
     // Helper function to remove a project from the input text
     const removeProjectFromText = (projectToRemove: string) => {
         const words = inputText.trim().split(/\s+/);
-        const filteredWords = words.filter(word => word !== `+${projectToRemove}`);
+        const filteredWords = words.filter(
+            (word) => word !== `+${projectToRemove}`
+        );
         const newText = filteredWords.join(' ').trim();
         setInputText(newText);
         if (nameInputRef.current) {
@@ -349,36 +376,47 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
         if (hashtagMatch) {
             const hashtagStart = beforeCursor.lastIndexOf('#');
-            const textBeforeHashtag = inputText.substring(0, hashtagStart).trim();
+            const textBeforeHashtag = inputText
+                .substring(0, hashtagStart)
+                .trim();
             const textAfterCursor = afterCursor.trim();
-            
+
             // Check if we're at the very end, very beginning, or in a consecutive group at start
             let showDropdown = false;
-            
+
             if (textAfterCursor === '' || textBeforeHashtag === '') {
                 showDropdown = true;
             } else {
                 // Check if we're in a consecutive group of tags/projects at the beginning
-                const wordsBeforeHashtag = textBeforeHashtag.split(/\s+/).filter(word => word.length > 0);
-                const allWordsAreTagsOrProjects = wordsBeforeHashtag.every(word => 
-                    word.startsWith('#') || word.startsWith('+'));
+                const wordsBeforeHashtag = textBeforeHashtag
+                    .split(/\s+/)
+                    .filter((word) => word.length > 0);
+                const allWordsAreTagsOrProjects = wordsBeforeHashtag.every(
+                    (word) => word.startsWith('#') || word.startsWith('+')
+                );
                 if (allWordsAreTagsOrProjects) {
                     showDropdown = true;
                 }
             }
-            
+
             if (showDropdown) {
                 // Create temp element for text up to hashtag start
                 const tempToHashtag = document.createElement('span');
                 tempToHashtag.style.visibility = 'hidden';
                 tempToHashtag.style.position = 'absolute';
                 tempToHashtag.style.fontSize = getComputedStyle(input).fontSize;
-                tempToHashtag.style.fontFamily = getComputedStyle(input).fontFamily;
-                tempToHashtag.style.fontWeight = getComputedStyle(input).fontWeight;
-                tempToHashtag.textContent = inputText.substring(0, hashtagStart);
+                tempToHashtag.style.fontFamily =
+                    getComputedStyle(input).fontFamily;
+                tempToHashtag.style.fontWeight =
+                    getComputedStyle(input).fontWeight;
+                tempToHashtag.textContent = inputText.substring(
+                    0,
+                    hashtagStart
+                );
 
                 document.body.appendChild(tempToHashtag);
-                const hashtagOffset = tempToHashtag.getBoundingClientRect().width;
+                const hashtagOffset =
+                    tempToHashtag.getBoundingClientRect().width;
                 document.body.removeChild(tempToHashtag);
 
                 return {
@@ -390,36 +428,47 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
         if (projectMatch) {
             const projectStart = beforeCursor.lastIndexOf('+');
-            const textBeforeProject = inputText.substring(0, projectStart).trim();
+            const textBeforeProject = inputText
+                .substring(0, projectStart)
+                .trim();
             const textAfterCursor = afterCursor.trim();
-            
+
             // Check if we're at the very end, very beginning, or in a consecutive group at start
             let showDropdown = false;
-            
+
             if (textAfterCursor === '' || textBeforeProject === '') {
                 showDropdown = true;
             } else {
                 // Check if we're in a consecutive group of tags/projects at the beginning
-                const wordsBeforeProject = textBeforeProject.split(/\s+/).filter(word => word.length > 0);
-                const allWordsAreTagsOrProjects = wordsBeforeProject.every(word => 
-                    word.startsWith('#') || word.startsWith('+'));
+                const wordsBeforeProject = textBeforeProject
+                    .split(/\s+/)
+                    .filter((word) => word.length > 0);
+                const allWordsAreTagsOrProjects = wordsBeforeProject.every(
+                    (word) => word.startsWith('#') || word.startsWith('+')
+                );
                 if (allWordsAreTagsOrProjects) {
                     showDropdown = true;
                 }
             }
-            
+
             if (showDropdown) {
                 // Create temp element for text up to project start
                 const tempToProject = document.createElement('span');
                 tempToProject.style.visibility = 'hidden';
                 tempToProject.style.position = 'absolute';
                 tempToProject.style.fontSize = getComputedStyle(input).fontSize;
-                tempToProject.style.fontFamily = getComputedStyle(input).fontFamily;
-                tempToProject.style.fontWeight = getComputedStyle(input).fontWeight;
-                tempToProject.textContent = inputText.substring(0, projectStart);
+                tempToProject.style.fontFamily =
+                    getComputedStyle(input).fontFamily;
+                tempToProject.style.fontWeight =
+                    getComputedStyle(input).fontWeight;
+                tempToProject.textContent = inputText.substring(
+                    0,
+                    projectStart
+                );
 
                 document.body.appendChild(tempToProject);
-                const projectOffset = tempToProject.getBoundingClientRect().width;
+                const projectOffset =
+                    tempToProject.getBoundingClientRect().width;
                 document.body.removeChild(tempToProject);
 
                 return {
@@ -444,7 +493,9 @@ const InboxModal: React.FC<InboxModalProps> = ({
             const loadProjects = async () => {
                 try {
                     const projectsData = await fetchProjects();
-                    setProjects(Array.isArray(projectsData) ? projectsData : []);
+                    setProjects(
+                        Array.isArray(projectsData) ? projectsData : []
+                    );
                 } catch (error) {
                     console.error('Failed to load projects:', error);
                     setProjects([]);
@@ -484,7 +535,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
         setCurrentProjectQuery(projectQuery);
 
         // Only show suggestions if hashtag/project is at start or end
-        if ((newText.charAt(newCursorPosition - 1) === '#' || hashtagQuery) && hashtagQuery !== '') {
+        if (
+            (newText.charAt(newCursorPosition - 1) === '#' || hashtagQuery) &&
+            hashtagQuery !== ''
+        ) {
             // Hide project suggestions when showing tag suggestions
             setShowProjectSuggestions(false);
             setFilteredProjects([]);
@@ -507,7 +561,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
             setFilteredTags(filtered);
             setShowTagSuggestions(true);
-        } else if ((newText.charAt(newCursorPosition - 1) === '+' || projectQuery) && projectQuery !== '') {
+        } else if (
+            (newText.charAt(newCursorPosition - 1) === '+' || projectQuery) &&
+            projectQuery !== ''
+        ) {
             // Hide tag suggestions when showing project suggestions
             setShowTagSuggestions(false);
             setFilteredTags([]);
@@ -543,30 +600,36 @@ const InboxModal: React.FC<InboxModalProps> = ({
         // Use analysis result if available, otherwise fall back to local parsing
         if (analysisResult) {
             const explicitTags = analysisResult.parsed_tags;
-            
+
             // Auto-add bookmark if text contains URL or backend suggests URL note
-            const isUrlContent = isUrl(text.trim()) || analysisResult.suggested_reason === 'url_detected';
+            const isUrlContent =
+                isUrl(text.trim()) ||
+                analysisResult.suggested_reason === 'url_detected';
             if (isUrlContent) {
-                const hasBookmarkTag = explicitTags.some(tag => tag.toLowerCase() === 'bookmark');
+                const hasBookmarkTag = explicitTags.some(
+                    (tag) => tag.toLowerCase() === 'bookmark'
+                );
                 if (!hasBookmarkTag) {
                     return [...explicitTags, 'bookmark'];
                 }
             }
-            
+
             return explicitTags;
         }
-        
+
         // Fallback to local parsing
         const explicitTags = parseHashtags(text);
-        
+
         // Auto-add bookmark if text contains URL and bookmark tag isn't already present
         if (isUrl(text.trim())) {
-            const hasBookmarkTag = explicitTags.some(tag => tag.toLowerCase() === 'bookmark');
+            const hasBookmarkTag = explicitTags.some(
+                (tag) => tag.toLowerCase() === 'bookmark'
+            );
             if (!hasBookmarkTag) {
                 return [...explicitTags, 'bookmark'];
             }
         }
-        
+
         return explicitTags;
     };
 
@@ -576,7 +639,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
         if (analysisResult) {
             return analysisResult.parsed_projects;
         }
-        
+
         // Fallback to local parsing
         return parseProjectRefs(text);
     };
@@ -587,13 +650,20 @@ const InboxModal: React.FC<InboxModalProps> = ({
         if (analysisResult) {
             return analysisResult.cleaned_content;
         }
-        
+
         // Fallback to local cleaning (simplified version)
-        return text.replace(/#[a-zA-Z0-9_-]+/g, '').replace(/\+\S+/g, '').trim();
+        return text
+            .replace(/#[a-zA-Z0-9_-]+/g, '')
+            .replace(/\+\S+/g, '')
+            .trim();
     };
 
     // Helper function to get suggestion
-    const getSuggestion = (): { type: 'note' | 'task' | null; message: string | null; projectName: string | null } => {
+    const getSuggestion = (): {
+        type: 'note' | 'task' | null;
+        message: string | null;
+        projectName: string | null;
+    } => {
         if (!analysisResult || !analysisResult.suggested_type) {
             return { type: null, message: null, projectName: null };
         }
@@ -603,21 +673,22 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
         if (type === 'note') {
             // Check if this is a URL (bookmark) note
-            const isUrlNote = analysisResult.suggested_reason === 'url_detected';
-            const message = isUrlNote 
+            const isUrlNote =
+                analysisResult.suggested_reason === 'url_detected';
+            const message = isUrlNote
                 ? `This item will be saved as a bookmark note for ${projectName}.`
                 : `This item will be saved for later processing as it looks like a note for ${projectName}.`;
-            
+
             return {
                 type: 'note',
                 message,
-                projectName
+                projectName,
             };
         } else if (type === 'task') {
             return {
                 type: 'task',
                 message: `This item looks like a task and will be created under project ${projectName}.`,
-                projectName
+                projectName,
             };
         }
 
@@ -682,24 +753,29 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
         if (hashtagMatch) {
             const hashtagStart = beforeCursor.lastIndexOf('#');
-            const textBeforeHashtag = inputText.substring(0, hashtagStart).trim();
+            const textBeforeHashtag = inputText
+                .substring(0, hashtagStart)
+                .trim();
             const textAfterCursor = afterCursor.trim();
-            
+
             // Check if we're at the very end, very beginning, or in a consecutive group at start
             let allowReplacement = false;
-            
+
             if (textAfterCursor === '' || textBeforeHashtag === '') {
                 allowReplacement = true;
             } else {
                 // Check if we're in a consecutive group of tags/projects at the beginning
-                const wordsBeforeHashtag = textBeforeHashtag.split(/\s+/).filter(word => word.length > 0);
-                const allWordsAreTagsOrProjects = wordsBeforeHashtag.every(word => 
-                    word.startsWith('#') || word.startsWith('+'));
+                const wordsBeforeHashtag = textBeforeHashtag
+                    .split(/\s+/)
+                    .filter((word) => word.length > 0);
+                const allWordsAreTagsOrProjects = wordsBeforeHashtag.every(
+                    (word) => word.startsWith('#') || word.startsWith('+')
+                );
                 if (allWordsAreTagsOrProjects) {
                     allowReplacement = true;
                 }
             }
-            
+
             if (allowReplacement) {
                 const newText =
                     beforeCursor.replace(/#([a-zA-Z0-9_]*)$/, `#${tagName}`) +
@@ -731,37 +807,46 @@ const InboxModal: React.FC<InboxModalProps> = ({
         const beforeCursor = inputText.substring(0, cursorPosition);
         const afterCursor = inputText.substring(cursorPosition);
         // Match both quoted and unquoted project references
-        const projectMatch = beforeCursor.match(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/);
+        const projectMatch = beforeCursor.match(
+            /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/
+        );
 
         if (projectMatch) {
             const projectStart = beforeCursor.lastIndexOf('+');
-            const textBeforeProject = inputText.substring(0, projectStart).trim();
+            const textBeforeProject = inputText
+                .substring(0, projectStart)
+                .trim();
             const textAfterCursor = afterCursor.trim();
-            
+
             // Check if we're at the very end, very beginning, or in a consecutive group at start
             let allowReplacement = false;
-            
+
             if (textAfterCursor === '' || textBeforeProject === '') {
                 allowReplacement = true;
             } else {
                 // Check if we're in a consecutive group of tags/projects at the beginning
-                const wordsBeforeProject = textBeforeProject.split(/\s+/).filter(word => word.length > 0);
-                const allWordsAreTagsOrProjects = wordsBeforeProject.every(word => 
-                    word.startsWith('#') || word.startsWith('+'));
+                const wordsBeforeProject = textBeforeProject
+                    .split(/\s+/)
+                    .filter((word) => word.length > 0);
+                const allWordsAreTagsOrProjects = wordsBeforeProject.every(
+                    (word) => word.startsWith('#') || word.startsWith('+')
+                );
                 if (allWordsAreTagsOrProjects) {
                     allowReplacement = true;
                 }
             }
-            
+
             if (allowReplacement) {
                 // Automatically add quotes if project name contains spaces
-                const formattedProjectName = projectName.includes(' ') 
-                    ? `"${projectName}"` 
+                const formattedProjectName = projectName.includes(' ')
+                    ? `"${projectName}"`
                     : projectName;
-                
+
                 const newText =
-                    beforeCursor.replace(/\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/, `+${formattedProjectName}`) +
-                    afterCursor;
+                    beforeCursor.replace(
+                        /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/,
+                        `+${formattedProjectName}`
+                    ) + afterCursor;
                 setInputText(newText);
                 setShowProjectSuggestions(false);
                 setFilteredProjects([]);
@@ -789,13 +874,16 @@ const InboxModal: React.FC<InboxModalProps> = ({
         const trimmedText = text.trim();
         const tokens = tokenizeText(trimmedText);
         const cleanedTokens: string[] = [];
-        
+
         let i = 0;
         while (i < tokens.length) {
             // Check if current token starts a tag/project group
             if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
                 // Skip this entire consecutive group
-                while (i < tokens.length && (tokens[i].startsWith('#') || tokens[i].startsWith('+'))) {
+                while (
+                    i < tokens.length &&
+                    (tokens[i].startsWith('#') || tokens[i].startsWith('+'))
+                ) {
                     i++;
                 }
             } else {
@@ -804,7 +892,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 i++;
             }
         }
-        
+
         return cleanedTokens.join(' ').trim();
     };
 
@@ -831,249 +919,296 @@ const InboxModal: React.FC<InboxModalProps> = ({
     // Create missing projects automatically
     const createMissingProjects = async (text: string): Promise<void> => {
         const projectsInText = getAllProjects(text);
-        const existingProjectNames = projects.map((project) => project.name.toLowerCase());
+        const existingProjectNames = projects.map((project) =>
+            project.name.toLowerCase()
+        );
         const missingProjects = projectsInText.filter(
-            (projectName) => !existingProjectNames.includes(projectName.toLowerCase())
+            (projectName) =>
+                !existingProjectNames.includes(projectName.toLowerCase())
         );
 
         for (const projectName of missingProjects) {
             try {
-                const newProject = await createProject({ name: projectName, active: true });
+                const newProject = await createProject({
+                    name: projectName,
+                    active: true,
+                });
                 // Update the local projects state
                 setProjects([...projects, newProject]);
             } catch (error) {
-                console.error(`Failed to create project "${projectName}":`, error);
+                console.error(
+                    `Failed to create project "${projectName}":`,
+                    error
+                );
                 // Don't fail the entire operation if project creation fails
             }
         }
     };
 
-    const handleSubmit = useCallback(async (forceInbox = false) => {
-        console.log('HandleSubmit called with forceInbox:', forceInbox);
-        if (!inputText.trim() || isSaving) return;
+    const handleSubmit = useCallback(
+        async (forceInbox = false) => {
+            console.log('HandleSubmit called with forceInbox:', forceInbox);
+            if (!inputText.trim() || isSaving) return;
 
-        setIsSaving(true);
+            setIsSaving(true);
 
-        try {
-            // Check if suggestions are present first, even in edit mode (unless forced to inbox mode)
-            console.log('Checking task suggestion:', { suggestedType: analysisResult?.suggested_type, forceInbox });
-            if (analysisResult?.suggested_type === 'task' && !forceInbox) {
-                console.log('Taking task creation path');
-                // Auto-convert to task using the same logic as convert to task action
-                await createMissingTags(inputText.trim());
-                await createMissingProjects(inputText.trim());
-                
-                const cleanedText = getCleanedContent(inputText.trim());
-                
-                // Convert parsed tags to Tag objects
-                const taskTags = analysisResult.parsed_tags.map((tagName) => {
-                    // Find existing tag or create a placeholder for new tag
-                    const existingTag = tags.find(
-                        (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
-                    );
-                    return existingTag || { name: tagName };
+            try {
+                // Check if suggestions are present first, even in edit mode (unless forced to inbox mode)
+                console.log('Checking task suggestion:', {
+                    suggestedType: analysisResult?.suggested_type,
+                    forceInbox,
                 });
+                if (analysisResult?.suggested_type === 'task' && !forceInbox) {
+                    console.log('Taking task creation path');
+                    // Auto-convert to task using the same logic as convert to task action
+                    await createMissingTags(inputText.trim());
+                    await createMissingProjects(inputText.trim());
 
-                // Find the project to assign (use first project reference if any)
-                let projectId = undefined;
-                if (analysisResult.parsed_projects.length > 0) {
-                    // Look for an existing project with the first project reference name
-                    const projectName = analysisResult.parsed_projects[0];
-                    const matchingProject = projects.find(
-                        (project) => project.name.toLowerCase() === projectName.toLowerCase()
-                    );
-                    if (matchingProject) {
-                        projectId = matchingProject.id;
-                    }
-                }
+                    const cleanedText = getCleanedContent(inputText.trim());
 
-                const newTask: Task = {
-                    name: cleanedText,
-                    status: 'not_started',
-                    priority: 'medium',
-                    tags: taskTags,
-                    project_id: projectId,
-                };
-
-                try {
-                    await onSave(newTask);
-                    showSuccessToast(t('task.createSuccess'));
-                    
-                    // If in edit mode, we need to mark the original inbox item as processed
-                    if (editMode && onConvertToTask) {
-                        await onConvertToTask();
-                    }
-                    
-                    setInputText('');
-                    handleClose();
-                    return;
-                } catch (error: any) {
-                    if (isAuthError(error)) {
-                        return;
-                    }
-                    throw error;
-                }
-            }
-            
-            // Check if it's a note suggestion (bookmark + project) (unless forced to inbox mode)
-            console.log('Checking note suggestion:', { suggestedType: analysisResult?.suggested_type, forceInbox });
-            if (analysisResult?.suggested_type === 'note' && !forceInbox) {
-                console.log('Taking note creation path');
-                // Auto-convert to note using similar logic
-                await createMissingTags(inputText.trim());
-                await createMissingProjects(inputText.trim());
-                
-                const cleanedText = getCleanedContent(inputText.trim());
-                
-                // Convert parsed tags to Tag objects and include bookmark tag
-                const hashtagTags = analysisResult.parsed_tags.map((tagName) => {
-                    const existingTag = tags.find(
-                        (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
-                    );
-                    return existingTag || { name: tagName };
-                });
-
-                // Add bookmark tag for URLs or when suggested reason is url_detected
-                const isUrlContent = isUrl(inputText.trim()) || analysisResult.suggested_reason === 'url_detected';
-                const bookmarkTag = isUrlContent ? [{ name: 'bookmark' }] : [];
-                
-                // Make sure we don't duplicate bookmark tag if it's already in parsed tags
-                const hasBookmarkInParsed = hashtagTags.some(tag => tag.name.toLowerCase() === 'bookmark');
-                const finalBookmarkTag = hasBookmarkInParsed ? [] : bookmarkTag;
-                
-                const taskTags = [...hashtagTags, ...finalBookmarkTag];
-
-                // Find the project to assign
-                let projectId = undefined;
-                if (analysisResult.parsed_projects.length > 0) {
-                    const projectName = analysisResult.parsed_projects[0];
-                    const matchingProject = projects.find(
-                        (project) => project.name.toLowerCase() === projectName.toLowerCase()
-                    );
-                    if (matchingProject) {
-                        projectId = matchingProject.id;
-                    }
-                }
-
-                const newNote: Note = {
-                    title: cleanedText || inputText.trim(),
-                    content: inputText.trim(),
-                    tags: taskTags,
-                    project_id: projectId,
-                };
-
-                try {
-                    if (onSaveNote) {
-                        await onSaveNote(newNote);
-                        showSuccessToast(t('note.createSuccess', 'Note created successfully'));
-                        
-                        // If in edit mode, we need to mark the original inbox item as processed
-                        if (editMode && onConvertToNote) {
-                            await onConvertToNote();
+                    // Convert parsed tags to Tag objects
+                    const taskTags = analysisResult.parsed_tags.map(
+                        (tagName) => {
+                            // Find existing tag or create a placeholder for new tag
+                            const existingTag = tags.find(
+                                (tag) =>
+                                    tag.name.toLowerCase() ===
+                                    tagName.toLowerCase()
+                            );
+                            return existingTag || { name: tagName };
                         }
-                        
+                    );
+
+                    // Find the project to assign (use first project reference if any)
+                    let projectId = undefined;
+                    if (analysisResult.parsed_projects.length > 0) {
+                        // Look for an existing project with the first project reference name
+                        const projectName = analysisResult.parsed_projects[0];
+                        const matchingProject = projects.find(
+                            (project) =>
+                                project.name.toLowerCase() ===
+                                projectName.toLowerCase()
+                        );
+                        if (matchingProject) {
+                            projectId = matchingProject.id;
+                        }
+                    }
+
+                    const newTask: Task = {
+                        name: cleanedText,
+                        status: 'not_started',
+                        priority: 'medium',
+                        tags: taskTags,
+                        project_id: projectId,
+                    };
+
+                    try {
+                        await onSave(newTask);
+                        showSuccessToast(t('task.createSuccess'));
+
+                        // If in edit mode, we need to mark the original inbox item as processed
+                        if (editMode && onConvertToTask) {
+                            await onConvertToTask();
+                        }
+
                         setInputText('');
                         handleClose();
                         return;
-                    } else {
-                        // If no note creation handler, fall back to inbox mode
-                        console.log('No note creation handler, falling back to inbox');
+                    } catch (error: any) {
+                        if (isAuthError(error)) {
+                            return;
+                        }
+                        throw error;
                     }
-                } catch (error: any) {
-                    console.error('Error in note creation flow:', error);
-                    if (isAuthError(error)) {
-                        return;
+                }
+
+                // Check if it's a note suggestion (bookmark + project) (unless forced to inbox mode)
+                console.log('Checking note suggestion:', {
+                    suggestedType: analysisResult?.suggested_type,
+                    forceInbox,
+                });
+                if (analysisResult?.suggested_type === 'note' && !forceInbox) {
+                    console.log('Taking note creation path');
+                    // Auto-convert to note using similar logic
+                    await createMissingTags(inputText.trim());
+                    await createMissingProjects(inputText.trim());
+
+                    const cleanedText = getCleanedContent(inputText.trim());
+
+                    // Convert parsed tags to Tag objects and include bookmark tag
+                    const hashtagTags = analysisResult.parsed_tags.map(
+                        (tagName) => {
+                            const existingTag = tags.find(
+                                (tag) =>
+                                    tag.name.toLowerCase() ===
+                                    tagName.toLowerCase()
+                            );
+                            return existingTag || { name: tagName };
+                        }
+                    );
+
+                    // Add bookmark tag for URLs or when suggested reason is url_detected
+                    const isUrlContent =
+                        isUrl(inputText.trim()) ||
+                        analysisResult.suggested_reason === 'url_detected';
+                    const bookmarkTag = isUrlContent
+                        ? [{ name: 'bookmark' }]
+                        : [];
+
+                    // Make sure we don't duplicate bookmark tag if it's already in parsed tags
+                    const hasBookmarkInParsed = hashtagTags.some(
+                        (tag) => tag.name.toLowerCase() === 'bookmark'
+                    );
+                    const finalBookmarkTag = hasBookmarkInParsed
+                        ? []
+                        : bookmarkTag;
+
+                    const taskTags = [...hashtagTags, ...finalBookmarkTag];
+
+                    // Find the project to assign
+                    let projectId = undefined;
+                    if (analysisResult.parsed_projects.length > 0) {
+                        const projectName = analysisResult.parsed_projects[0];
+                        const matchingProject = projects.find(
+                            (project) =>
+                                project.name.toLowerCase() ===
+                                projectName.toLowerCase()
+                        );
+                        if (matchingProject) {
+                            projectId = matchingProject.id;
+                        }
                     }
-                    throw error;
-                }
-            }
-            
-            if (editMode && onEdit) {
-                // For edit mode, store the original text with tags/projects
-                await onEdit(inputText.trim());
-                setIsClosing(true);
-                setTimeout(() => {
-                    onClose();
-                    setIsClosing(false);
-                }, 300);
-                return; // Exit early to prevent creating duplicates
-            }
 
-            const effectiveSaveMode = saveMode;
+                    const newNote: Note = {
+                        title: cleanedText || inputText.trim(),
+                        content: inputText.trim(),
+                        tags: taskTags,
+                        project_id: projectId,
+                    };
 
-            if (effectiveSaveMode === 'task') {
-                // For task mode, create missing tags and projects, then clean the text
-                await createMissingTags(inputText.trim());
-                await createMissingProjects(inputText.trim());
-                
-                const cleanedText = cleanTextFromTagsAndProjects(inputText.trim());
-                const newTask: Task = {
-                    name: cleanedText,
-                    status: 'not_started',
-                };
+                    try {
+                        if (onSaveNote) {
+                            await onSaveNote(newNote);
+                            showSuccessToast(
+                                t(
+                                    'note.createSuccess',
+                                    'Note created successfully'
+                                )
+                            );
 
-                try {
-                    await onSave(newTask);
-                    showSuccessToast(t('task.createSuccess'));
-                    setInputText('');
-                    handleClose();
-                } catch (error: any) {
-                    // If it's an auth error, don't show error toast (user will be redirected)
-                    if (isAuthError(error)) {
-                        return;
+                            // If in edit mode, we need to mark the original inbox item as processed
+                            if (editMode && onConvertToNote) {
+                                await onConvertToNote();
+                            }
+
+                            setInputText('');
+                            handleClose();
+                            return;
+                        } else {
+                            // If no note creation handler, fall back to inbox mode
+                            console.log(
+                                'No note creation handler, falling back to inbox'
+                            );
+                        }
+                    } catch (error: any) {
+                        console.error('Error in note creation flow:', error);
+                        if (isAuthError(error)) {
+                            return;
+                        }
+                        throw error;
                     }
-                    throw error;
                 }
-            } else {
-                console.log('Taking inbox creation path');
-                try {
-                    // For inbox mode, store the original text with tags/projects
-                    // Tags and projects will be created and assigned when the item is processed later
-                    await createInboxItemWithStore(inputText.trim());
 
-                    showSuccessToast(t('inbox.itemAdded'));
-
-                    handleClose();
-                } catch (error) {
-                    console.error('Failed to create inbox item:', error);
-                    showErrorToast(t('inbox.addError'));
-                    setIsSaving(false);
+                if (editMode && onEdit) {
+                    // For edit mode, store the original text with tags/projects
+                    await onEdit(inputText.trim());
+                    setIsClosing(true);
+                    setTimeout(() => {
+                        onClose();
+                        setIsClosing(false);
+                    }, 300);
+                    return; // Exit early to prevent creating duplicates
                 }
+
+                const effectiveSaveMode = saveMode;
+
+                if (effectiveSaveMode === 'task') {
+                    // For task mode, create missing tags and projects, then clean the text
+                    await createMissingTags(inputText.trim());
+                    await createMissingProjects(inputText.trim());
+
+                    const cleanedText = cleanTextFromTagsAndProjects(
+                        inputText.trim()
+                    );
+                    const newTask: Task = {
+                        name: cleanedText,
+                        status: 'not_started',
+                    };
+
+                    try {
+                        await onSave(newTask);
+                        showSuccessToast(t('task.createSuccess'));
+                        setInputText('');
+                        handleClose();
+                    } catch (error: any) {
+                        // If it's an auth error, don't show error toast (user will be redirected)
+                        if (isAuthError(error)) {
+                            return;
+                        }
+                        throw error;
+                    }
+                } else {
+                    console.log('Taking inbox creation path');
+                    try {
+                        // For inbox mode, store the original text with tags/projects
+                        // Tags and projects will be created and assigned when the item is processed later
+                        await createInboxItemWithStore(inputText.trim());
+
+                        showSuccessToast(t('inbox.itemAdded'));
+
+                        handleClose();
+                    } catch (error) {
+                        console.error('Failed to create inbox item:', error);
+                        showErrorToast(t('inbox.addError'));
+                        setIsSaving(false);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to save:', error);
+                if (editMode) {
+                    showErrorToast(t('inbox.updateError'));
+                } else {
+                    showErrorToast(
+                        saveMode === 'task'
+                            ? t('task.createError')
+                            : t('inbox.addError')
+                    );
+                }
+            } finally {
+                setIsSaving(false);
             }
-        } catch (error) {
-            console.error('Failed to save:', error);
-            if (editMode) {
-                showErrorToast(t('inbox.updateError'));
-            } else {
-                showErrorToast(
-                    saveMode === 'task'
-                        ? t('task.createError')
-                        : t('inbox.addError')
-                );
-            }
-        } finally {
-            setIsSaving(false);
-        }
-    }, [
-        inputText,
-        isSaving,
-        editMode,
-        onEdit,
-        saveMode,
-        onSave,
-        showSuccessToast,
-        showErrorToast,
-        t,
-        onClose,
-        tags,
-        setTags,
-        projects,
-        setProjects,
-        analysisResult,
-        createMissingTags,
-        createMissingProjects,
-        getCleanedContent,
-    ]);
+        },
+        [
+            inputText,
+            isSaving,
+            editMode,
+            onEdit,
+            saveMode,
+            onSave,
+            showSuccessToast,
+            showErrorToast,
+            t,
+            onClose,
+            tags,
+            setTags,
+            projects,
+            setProjects,
+            analysisResult,
+            createMissingTags,
+            createMissingProjects,
+            getCleanedContent,
+        ]
+    );
 
     const handleClose = useCallback(() => {
         setIsClosing(true);
@@ -1172,7 +1307,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                             e.currentTarget.selectionStart || 0;
                                         setCursorPosition(pos);
                                         // Update dropdown position if showing suggestions
-                                        if (showTagSuggestions || showProjectSuggestions) {
+                                        if (
+                                            showTagSuggestions ||
+                                            showProjectSuggestions
+                                        ) {
                                             const position =
                                                 calculateDropdownPosition(
                                                     e.currentTarget,
@@ -1186,7 +1324,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                             e.currentTarget.selectionStart || 0;
                                         setCursorPosition(pos);
                                         // Update dropdown position if showing suggestions
-                                        if (showTagSuggestions || showProjectSuggestions) {
+                                        if (
+                                            showTagSuggestions ||
+                                            showProjectSuggestions
+                                        ) {
                                             const position =
                                                 calculateDropdownPosition(
                                                     e.currentTarget,
@@ -1200,7 +1341,10 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                             e.currentTarget.selectionStart || 0;
                                         setCursorPosition(pos);
                                         // Update dropdown position if showing suggestions
-                                        if (showTagSuggestions || showProjectSuggestions) {
+                                        if (
+                                            showTagSuggestions ||
+                                            showProjectSuggestions
+                                        ) {
                                             const position =
                                                 calculateDropdownPosition(
                                                     e.currentTarget,
@@ -1213,14 +1357,22 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                     className="w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white focus:outline-none shadow-sm py-2"
                                     placeholder={t('inbox.captureThought')}
                                     onKeyDown={(e) => {
-                                        if (e.key === 'Enter' && !e.shiftKey && !isSaving) {
+                                        if (
+                                            e.key === 'Enter' &&
+                                            !e.shiftKey &&
+                                            !isSaving
+                                        ) {
                                             // If suggestions are showing and there are filtered options, let the user navigate
-                                            if ((showTagSuggestions && filteredTags.length > 0) || 
-                                                (showProjectSuggestions && filteredProjects.length > 0)) {
+                                            if (
+                                                (showTagSuggestions &&
+                                                    filteredTags.length > 0) ||
+                                                (showProjectSuggestions &&
+                                                    filteredProjects.length > 0)
+                                            ) {
                                                 // Don't submit, let the user select from suggestions
                                                 return;
                                             }
-                                            
+
                                             // Otherwise, submit the form
                                             e.preventDefault();
                                             handleSubmit();
@@ -1257,10 +1409,16 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                                             e.stopPropagation()
                                                                         }
                                                                     >
-                                                                        {tagName}
+                                                                        {
+                                                                            tagName
+                                                                        }
                                                                     </Link>
                                                                     <button
-                                                                        onClick={() => removeTagFromText(tagName)}
+                                                                        onClick={() =>
+                                                                            removeTagFromText(
+                                                                                tagName
+                                                                            )
+                                                                        }
                                                                         className="h-3 w-3 text-blue-400 hover:text-red-500 transition-colors"
                                                                         title="Remove tag"
                                                                     >
@@ -1276,7 +1434,11 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                                 >
                                                                     {tagName}
                                                                     <button
-                                                                        onClick={() => removeTagFromText(tagName)}
+                                                                        onClick={() =>
+                                                                            removeTagFromText(
+                                                                                tagName
+                                                                            )
+                                                                        }
                                                                         className="h-3 w-3 text-orange-400 hover:text-red-500 transition-colors"
                                                                         title="Remove tag"
                                                                     >
@@ -1299,11 +1461,12 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                             <div className="flex flex-wrap gap-1">
                                                 {getAllProjects(inputText).map(
                                                     (projectName, index) => {
-                                                        const project = projects.find(
-                                                            (p) =>
-                                                                p.name.toLowerCase() ===
-                                                                projectName.toLowerCase()
-                                                        );
+                                                        const project =
+                                                            projects.find(
+                                                                (p) =>
+                                                                    p.name.toLowerCase() ===
+                                                                    projectName.toLowerCase()
+                                                            );
 
                                                         if (project) {
                                                             return (
@@ -1320,10 +1483,16 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                                             e.stopPropagation()
                                                                         }
                                                                     >
-                                                                        {projectName}
+                                                                        {
+                                                                            projectName
+                                                                        }
                                                                     </Link>
                                                                     <button
-                                                                        onClick={() => removeProjectFromText(projectName)}
+                                                                        onClick={() =>
+                                                                            removeProjectFromText(
+                                                                                projectName
+                                                                            )
+                                                                        }
                                                                         className="h-3 w-3 text-green-400 hover:text-red-500 transition-colors"
                                                                         title="Remove project"
                                                                     >
@@ -1337,9 +1506,15 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                                     key={index}
                                                                     className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 dark:bg-orange-900/20 rounded text-orange-500 dark:text-orange-400"
                                                                 >
-                                                                    {projectName}
+                                                                    {
+                                                                        projectName
+                                                                    }
                                                                     <button
-                                                                        onClick={() => removeProjectFromText(projectName)}
+                                                                        onClick={() =>
+                                                                            removeProjectFromText(
+                                                                                projectName
+                                                                            )
+                                                                        }
                                                                         className="h-3 w-3 text-orange-400 hover:text-red-500 transition-colors"
                                                                         title="Remove project"
                                                                     >
@@ -1394,32 +1569,41 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                 maxWidth: '200px',
                                             }}
                                         >
-                                            {filteredProjects.map((project, index) => (
-                                                <button
-                                                    key={project.id || index}
-                                                    onClick={() =>
-                                                        handleProjectSelect(
-                                                            project.name
-                                                        )
-                                                    }
-                                                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md"
-                                                >
-                                                    +{project.name}
-                                                </button>
-                                            ))}
+                                            {filteredProjects.map(
+                                                (project, index) => (
+                                                    <button
+                                                        key={
+                                                            project.id || index
+                                                        }
+                                                        onClick={() =>
+                                                            handleProjectSelect(
+                                                                project.name
+                                                            )
+                                                        }
+                                                        className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md"
+                                                    >
+                                                        +{project.name}
+                                                    </button>
+                                                )
+                                            )}
                                         </div>
                                     )}
 
                                 {/* Intelligent Suggestion */}
                                 {(() => {
                                     const suggestion = getSuggestion();
-                                    return suggestion.type && suggestion.message ? (
+                                    return suggestion.type &&
+                                        suggestion.message ? (
                                         <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-md">
                                             <div className="flex items-start justify-between">
                                                 <div className="flex items-start flex-1">
                                                     <div className="text-purple-600 dark:text-purple-400 mr-2 mt-0.5">
                                                         {/* AI Stars Icon */}
-                                                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                                                        <svg
+                                                            className="h-4 w-4"
+                                                            fill="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
                                                             <path d="M12 2l2.09 6.26L20 10.27l-5.91 2.01L12 18.54l-2.09-6.26L4 10.27l5.91-2.01L12 2z" />
                                                             <path d="M8 1l1.18 3.52L12 5.64l-2.82.96L8 10.12l-1.18-3.52L4 5.64l2.82-.96L8 1z" />
                                                             <path d="M20 14l.79 2.37L23 17.45l-2.21.75L20 20.57l-.79-2.37L17 17.45l2.21-.75L20 14z" />
@@ -1430,15 +1614,22 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                             {suggestion.message}
                                                         </p>
                                                         <div className="flex items-center gap-2 text-xs">
-                                                            <span className="text-gray-600 dark:text-gray-400">or</span>
+                                                            <span className="text-gray-600 dark:text-gray-400">
+                                                                or
+                                                            </span>
                                                             <button
                                                                 onClick={() => {
-                                                                    setSaveMode('inbox');
-                                                                    handleSubmit(true); // Pass true to force inbox mode
+                                                                    setSaveMode(
+                                                                        'inbox'
+                                                                    );
+                                                                    handleSubmit(
+                                                                        true
+                                                                    ); // Pass true to force inbox mode
                                                                 }}
                                                                 className="text-purple-600 dark:text-purple-400 hover:underline"
                                                             >
-                                                                save as inbox item instead
+                                                                save as inbox
+                                                                item instead
                                                             </button>
                                                         </div>
                                                     </div>

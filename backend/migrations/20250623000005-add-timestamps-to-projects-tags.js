@@ -4,7 +4,6 @@ const { safeCreateTable, safeAddColumns } = require('../utils/migration-utils');
 
 module.exports = {
     async up(queryInterface, Sequelize) {
-
         const tableExists = await queryInterface
             .showAllTables()
             .then((tables) => tables.includes('projects_tags'));
@@ -49,7 +48,6 @@ module.exports = {
                 name: 'projects_tags_pkey',
             });
         } else {
-
             await safeAddColumns(queryInterface, 'projects_tags', [
                 {
                     name: 'created_at',
@@ -72,12 +70,9 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-
         try {
             await queryInterface.removeColumn('projects_tags', 'created_at');
             await queryInterface.removeColumn('projects_tags', 'updated_at');
-        } catch (error) {
-
-        }
+        } catch (error) {}
     },
 };

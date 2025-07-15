@@ -522,7 +522,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                             onShowAllProjects={
                                                                 handleShowAllProjects
                                                             }
-                                                            allProjects={projects}
+                                                            allProjects={
+                                                                projects
+                                                            }
                                                         />
                                                     </div>
                                                 )}

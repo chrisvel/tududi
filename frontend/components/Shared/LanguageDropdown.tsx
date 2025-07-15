@@ -51,17 +51,22 @@ const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
         { code: 'vi', name: t('profile.vietnamese'), flag: '🇻🇳' },
     ].sort((a, b) => a.name.localeCompare(b.name));
 
-    const selectedLanguage = languages.find(lang => lang.code === value) || languages[0];
+    const selectedLanguage =
+        languages.find((lang) => lang.code === value) || languages[0];
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
                 setIsOpen(false);
             }
         };
 
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     const handleSelect = (languageCode: string) => {
@@ -88,15 +93,15 @@ const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
                     <span className="text-sm">{selectedLanguage.flag}</span>
                     <span>{selectedLanguage.name}</span>
                 </div>
-                <ChevronDownIcon 
+                <ChevronDownIcon
                     className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
                         isOpen ? 'rotate-180' : ''
-                    }`} 
+                    }`}
                 />
             </button>
 
             {isOpen && (
-                <div 
+                <div
                     className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-auto"
                     role="listbox"
                 >
@@ -108,8 +113,8 @@ const LanguageDropdown: React.FC<LanguageDropdownProps> = ({
                             role="option"
                             aria-selected={value === language.code}
                             className={`w-full px-3 py-2 text-left flex items-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-150 ${
-                                value === language.code 
-                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
+                                value === language.code
+                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
                                     : 'text-gray-900 dark:text-gray-100'
                             }`}
                         >

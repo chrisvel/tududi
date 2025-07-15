@@ -350,19 +350,29 @@ const TasksToday: React.FC = () => {
 
                         // Store profile settings
                         const currentProfileSettings = {
-                            productivity_assistant_enabled: userData.productivity_assistant_enabled === true,
-                            next_task_suggestion_enabled: userData.next_task_suggestion_enabled === true,
+                            productivity_assistant_enabled:
+                                userData.productivity_assistant_enabled ===
+                                true,
+                            next_task_suggestion_enabled:
+                                userData.next_task_suggestion_enabled === true,
                         };
                         setProfileSettings(currentProfileSettings);
 
                         // Sync with profile AI & productivity features
                         // If profile has productivity assistant enabled, sync the setting
-                        if (userData.productivity_assistant_enabled !== undefined) {
-                            settings.showProductivity = userData.productivity_assistant_enabled;
+                        if (
+                            userData.productivity_assistant_enabled !==
+                            undefined
+                        ) {
+                            settings.showProductivity =
+                                userData.productivity_assistant_enabled;
                         }
-                        // If profile has next task suggestion enabled, sync the setting  
-                        if (userData.next_task_suggestion_enabled !== undefined) {
-                            settings.showNextTaskSuggestion = userData.next_task_suggestion_enabled;
+                        // If profile has next task suggestion enabled, sync the setting
+                        if (
+                            userData.next_task_suggestion_enabled !== undefined
+                        ) {
+                            settings.showNextTaskSuggestion =
+                                userData.next_task_suggestion_enabled;
                         }
 
                         // Ensure progress bar is always enabled
@@ -546,11 +556,13 @@ const TasksToday: React.FC = () => {
                                 <div className="relative">
                                     <button
                                         onClick={() =>
-                                            setIsSettingsEnabled(!isSettingsEnabled)
+                                            setIsSettingsEnabled(
+                                                !isSettingsEnabled
+                                            )
                                         }
                                         className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800${
-                                            isSettingsEnabled 
-                                                ? ' bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' 
+                                            isSettingsEnabled
+                                                ? ' bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
                                                 : ' text-gray-600 dark:text-gray-400'
                                         }`}
                                         title={t(
@@ -587,16 +599,15 @@ const TasksToday: React.FC = () => {
                                     ></div>
                                 </div>
                             )}
-                            
+
                             {/* Daily Quote - show independently of progress bar */}
-                            {todaySettings.showDailyQuote &&
-                                dailyQuote && (
-                                    <div className="mt-2">
-                                        <p className="text-s text-gray-400 dark:text-gray-500 font-light text-left">
-                                            {dailyQuote}
-                                        </p>
-                                    </div>
-                                )}
+                            {todaySettings.showDailyQuote && dailyQuote && (
+                                <div className="mt-2">
+                                    <p className="text-s text-gray-400 dark:text-gray-500 font-light text-left">
+                                        {dailyQuote}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -604,7 +615,10 @@ const TasksToday: React.FC = () => {
                 {/* Metrics Section - Always reserve space to prevent layout shift */}
                 {!isSettingsLoaded ? (
                     // Invisible placeholder that reserves the exact same space
-                    <div className="mb-2 opacity-0 pointer-events-none" aria-hidden="true">
+                    <div
+                        className="mb-2 opacity-0 pointer-events-none"
+                        aria-hidden="true"
+                    >
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-32"></div>
                             <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-32"></div>
@@ -762,23 +776,34 @@ const TasksToday: React.FC = () => {
                 {/* Productivity Assistant - Conditionally Rendered */}
                 {!isSettingsLoaded ? (
                     // Invisible placeholder for productivity assistant
-                    <div className="mb-4 opacity-0 pointer-events-none" aria-hidden="true">
+                    <div
+                        className="mb-4 opacity-0 pointer-events-none"
+                        aria-hidden="true"
+                    >
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-24"></div>
                     </div>
-                ) : (todaySettings.showProductivity && productivityAssistantEnabled && profileSettings.productivity_assistant_enabled === true) ? (
-                        <ProductivityAssistant
-                            tasks={localTasks}
-                            projects={localProjects}
-                        />
+                ) : todaySettings.showProductivity &&
+                  productivityAssistantEnabled &&
+                  profileSettings.productivity_assistant_enabled === true ? (
+                    <ProductivityAssistant
+                        tasks={localTasks}
+                        projects={localProjects}
+                    />
                 ) : null}
 
                 {/* Next Task Suggestion - At top of tasks section */}
                 {!isSettingsLoaded ? (
                     // Invisible placeholder for next task suggestion
-                    <div className="mb-4 opacity-0 pointer-events-none" aria-hidden="true">
+                    <div
+                        className="mb-4 opacity-0 pointer-events-none"
+                        aria-hidden="true"
+                    >
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-20"></div>
                     </div>
-                ) : (todaySettings.showNextTaskSuggestion && nextTaskSuggestionEnabled && showNextTaskSuggestion && profileSettings.next_task_suggestion_enabled === true) ? (
+                ) : todaySettings.showNextTaskSuggestion &&
+                  nextTaskSuggestionEnabled &&
+                  showNextTaskSuggestion &&
+                  profileSettings.next_task_suggestion_enabled === true ? (
                     <div className="mb-4">
                         <NextTaskSuggestion
                             metrics={{
@@ -803,14 +828,17 @@ const TasksToday: React.FC = () => {
                     onToggleToday={handleToggleToday}
                 />
 
-
                 {/* Suggested Tasks - Separate setting */}
                 {!isSettingsLoaded ? (
                     // Invisible placeholder for suggestions
-                    <div className="mt-2 opacity-0 pointer-events-none" aria-hidden="true">
+                    <div
+                        className="mt-2 opacity-0 pointer-events-none"
+                        aria-hidden="true"
+                    >
                         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-4 h-20"></div>
                     </div>
-                ) : (todaySettings.showSuggestions && metrics.suggested_tasks.length > 0) ? (
+                ) : todaySettings.showSuggestions &&
+                  metrics.suggested_tasks.length > 0 ? (
                     <div className="mt-2 mb-6">
                         <div
                             className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
@@ -843,7 +871,8 @@ const TasksToday: React.FC = () => {
                 ) : null}
 
                 {/* Due Today Tasks - Conditionally Rendered */}
-                {isSettingsLoaded && todaySettings.showDueToday &&
+                {isSettingsLoaded &&
+                    todaySettings.showDueToday &&
                     metrics.tasks_due_today.length > 0 && (
                         <div className="mb-6">
                             <h3 className="text-xl font-medium mt-6 mb-2">
@@ -860,7 +889,8 @@ const TasksToday: React.FC = () => {
                     )}
 
                 {/* Completed Tasks - Conditionally Rendered */}
-                {isSettingsLoaded && todaySettings.showCompleted &&
+                {isSettingsLoaded &&
+                    todaySettings.showCompleted &&
                     metrics.tasks_completed_today.length > 0 && (
                         <div className="mb-6">
                             <div

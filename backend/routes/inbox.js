@@ -176,7 +176,9 @@ router.post('/inbox/analyze-text', async (req, res) => {
         const { content } = req.body;
 
         if (!content || typeof content !== 'string') {
-            return res.status(400).json({ error: 'Content is required and must be a string' });
+            return res
+                .status(400)
+                .json({ error: 'Content is required and must be a string' });
         }
 
         // Process the text using the inbox processing service

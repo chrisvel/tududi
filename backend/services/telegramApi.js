@@ -2,7 +2,7 @@
 async function getBotInfo(token) {
     return new Promise((resolve, reject) => {
         const url = `https://api.telegram.org/bot${token}/getMe`;
-        
+
         const options = {
             method: 'GET',
             headers: {
@@ -12,18 +12,21 @@ async function getBotInfo(token) {
 
         const req = require('https').request(url, options, (res) => {
             let data = '';
-            
+
             res.on('data', (chunk) => {
                 data += chunk;
             });
-            
+
             res.on('end', () => {
                 try {
                     const response = JSON.parse(data);
                     if (response.ok) {
                         resolve(response.result);
                     } else {
-                        console.error('Telegram API error:', response.description);
+                        console.error(
+                            'Telegram API error:',
+                            response.description
+                        );
                         resolve(null);
                     }
                 } catch (error) {

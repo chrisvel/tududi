@@ -15,7 +15,6 @@ import {
     ChevronDownIcon,
     ChevronDoubleDownIcon,
     MagnifyingGlassIcon,
-    ChevronUpIcon,
 } from '@heroicons/react/24/solid';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -270,7 +269,6 @@ const Tasks: React.FC = () => {
         task.name.toLowerCase().includes(taskSearchQuery.toLowerCase())
     );
 
-
     return (
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
@@ -302,13 +300,29 @@ const Tasks: React.FC = () => {
                             onClick={() => setIsInfoExpanded((v) => !v)}
                             className={`flex items-center hover:bg-blue-100/50 dark:hover:bg-blue-800/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg${isInfoExpanded ? ' bg-blue-50/70 dark:bg-blue-900/20' : ''} p-2`}
                             aria-expanded={isInfoExpanded}
-                            aria-label={isInfoExpanded ? 'Collapse info panel' : 'Show tasks information'}
+                            aria-label={
+                                isInfoExpanded
+                                    ? 'Collapse info panel'
+                                    : 'Show tasks information'
+                            }
                             title={isInfoExpanded ? 'Hide info' : 'About Tasks'}
                         >
-                            <svg className="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                            <svg
+                                className="h-5 w-5 text-blue-500"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                                />
                             </svg>
-                            <span className="sr-only">{isInfoExpanded ? 'Hide info' : 'About Tasks'}</span>
+                            <span className="sr-only">
+                                {isInfoExpanded ? 'Hide info' : 'About Tasks'}
+                            </span>
                         </button>
                         <button
                             onClick={() => setIsSearchExpanded((v) => !v)}
@@ -318,11 +332,23 @@ const Tasks: React.FC = () => {
                                     : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
                             }`}
                             aria-expanded={isSearchExpanded}
-                            aria-label={isSearchExpanded ? 'Collapse search panel' : 'Show search input'}
-                            title={isSearchExpanded ? 'Hide search' : 'Search Tasks'}
+                            aria-label={
+                                isSearchExpanded
+                                    ? 'Collapse search panel'
+                                    : 'Show search input'
+                            }
+                            title={
+                                isSearchExpanded
+                                    ? 'Hide search'
+                                    : 'Search Tasks'
+                            }
                         >
                             <MagnifyingGlassIcon className="h-5 w-5 text-gray-300 dark:text-gray-200" />
-                            <span className="sr-only">{isSearchExpanded ? 'Hide search' : 'Search Tasks'}</span>
+                            <span className="sr-only">
+                                {isSearchExpanded
+                                    ? 'Hide search'
+                                    : 'Search Tasks'}
+                            </span>
                         </button>
                         <div
                             className="relative inline-block text-left"
@@ -390,9 +416,12 @@ const Tasks: React.FC = () => {
                 </div>
 
                 {/* Info/description section with large info icon, collapsible */}
-                <div className={`transition-all duration-300 ease-in-out ${
-                    isInfoExpanded ? 'max-h-96 opacity-100 mb-6' : 'max-h-0 opacity-0 mb-0'
-                } overflow-hidden`}
+                <div
+                    className={`transition-all duration-300 ease-in-out ${
+                        isInfoExpanded
+                            ? 'max-h-96 opacity-100 mb-6'
+                            : 'max-h-0 opacity-0 mb-0'
+                    } overflow-hidden`}
                 >
                     <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-lg px-6 py-5 flex items-start gap-4">
                         <div className="flex-shrink-0">
@@ -419,9 +448,12 @@ const Tasks: React.FC = () => {
                 </div>
 
                 {/* Search input section, collapsible */}
-                <div className={`transition-all duration-300 ease-in-out ${
-                    isSearchExpanded ? 'max-h-24 opacity-100 mb-4' : 'max-h-0 opacity-0 mb-0'
-                } overflow-hidden`}
+                <div
+                    className={`transition-all duration-300 ease-in-out ${
+                        isSearchExpanded
+                            ? 'max-h-24 opacity-100 mb-4'
+                            : 'max-h-0 opacity-0 mb-0'
+                    } overflow-hidden`}
                 >
                     <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
@@ -465,14 +497,30 @@ const Tasks: React.FC = () => {
                         ) : (
                             <div className="flex justify-center items-center mt-4">
                                 <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
-                                    <svg className="h-20 w-20 text-gray-400 opacity-30 mb-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                                    <svg
+                                        className="h-20 w-20 text-gray-400 opacity-30 mb-6"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="1.5"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                                        />
                                     </svg>
                                     <p className="text-2xl font-light text-center text-gray-600 dark:text-gray-300 mb-2">
-                                        {t('tasks.noTasksAvailable', 'No tasks available.')}
+                                        {t(
+                                            'tasks.noTasksAvailable',
+                                            'No tasks available.'
+                                        )}
                                     </p>
                                     <p className="text-base text-center text-gray-400 dark:text-gray-400">
-                                        {t('tasks.blankSlateHint', 'Start by creating a new task or changing your filters.')}
+                                        {t(
+                                            'tasks.blankSlateHint',
+                                            'Start by creating a new task or changing your filters.'
+                                        )}
                                     </p>
                                 </div>
                             </div>
