@@ -1,36 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Calendar as BigCalendar, momentLocalizer, Views, View } from 'react-big-calendar';
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
+import moment from 'moment';
 import TaskModal from './Task/TaskModal';
 import { Task } from '../entities/Task';
 import { Project } from '../entities/Project';
 import { deleteTask } from '../utils/tasksService';
 import {
-    ChevronLeftIcon,
-    ChevronRightIcon,
     CalendarIcon,
     XMarkIcon,
     ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
-import { format, addWeeks, addDays } from 'date-fns';
-import { el, enUS, es, ja, uk, de } from 'date-fns/locale';
-import CalendarMonthView from './Calendar/CalendarMonthView';
-import CalendarWeekView from './Calendar/CalendarWeekView';
-import CalendarDayView from './Calendar/CalendarDayView';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+import '../styles/calendar.css';
 
-const getLocale = (language: string) => {
+// Setup the localizer for react-big-calendar
+const localizer = momentLocalizer(moment);
+
+// Create drag and drop calendar
+const DnDCalendar = withDragAndDrop(BigCalendar);
+
+const getMomentLocale = (language: string) => {
     switch (language) {
-        case 'el':
-            return el;
         case 'es':
-            return es;
-        case 'jp':
-            return ja;
-        case 'ua':
-            return uk;
+            return 'es';
         case 'de':
-            return de;
+            return 'de';
+        case 'fr':
+            return 'fr';
+        case 'it':
+            return 'it';
+        case 'jp':
+            return 'ja';
+        case 'zh':
+            return 'zh-cn';
         default:
-            return enUS;
+            return 'en';
     }
 };
 
@@ -40,72 +47,34 @@ interface CalendarEvent {
     start: Date;
     end: Date;
     type: 'task' | 'event' | 'google';
-    color?: string;
+    resource?: Task;
+    priority?: 'low' | 'medium' | 'high';
+    status?: string;
+    isOverdue?: boolean;
 }
 
-interface GoogleCalendarStatus {
-    connected: boolean;
-    email?: string;
-}
 
 const Calendar: React.FC = () => {
     const { t, i18n } = useTranslation();
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [view, setView] = useState<'month' | 'week' | 'day'>('month');
-    const [googleStatus, setGoogleStatus] = useState<GoogleCalendarStatus>({
-        connected: false,
-    });
-    const [isConnecting, setIsConnecting] = useState(false);
-    const [isDemoMode, setIsDemoMode] = useState(false);
+    const [view, setView] = useState<View>(Views.MONTH);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [isLoadingTasks, setIsLoadingTasks] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-    const [allTasks, setAllTasks] = useState<any[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [isEventDetailModalOpen, setIsEventDetailModalOpen] = useState(false);
 
-    // Dispatch global modal events
+    // Set moment locale based on current language
+    const momentLocale = getMomentLocale(i18n.language);
+    moment.locale(momentLocale);
 
-    const locale = getLocale(i18n.language);
-
-    // Load Google Calendar status and tasks on component mount
+    // Load tasks and projects on component mount
     useEffect(() => {
-        checkGoogleCalendarStatus();
         loadTasks();
         loadProjects();
-
-        // Check URL parameters for demo mode
-        const urlParams = new URLSearchParams(window.location.search);
-        if (
-            urlParams.get('demo') === 'true' &&
-            urlParams.get('connected') === 'true'
-        ) {
-            setGoogleStatus({ connected: true, email: 'demo@example.com' });
-            setIsDemoMode(true);
-            // Clean up URL
-            window.history.replaceState(
-                {},
-                document.title,
-                window.location.pathname
-            );
-        }
     }, []);
 
-    const checkGoogleCalendarStatus = async () => {
-        try {
-            const response = await fetch('/api/calendar/status', {
-                credentials: 'include',
-            });
-            if (response.ok) {
-                const status = await response.json();
-                setGoogleStatus(status);
-                setIsDemoMode(status.demo || false);
-            }
-        } catch (error) {
-            console.error('Error checking Google Calendar status:', error);
-        }
-    };
 
     const loadTasks = async () => {
         setIsLoadingTasks(true);
@@ -129,10 +98,16 @@ const Calendar: React.FC = () => {
                     tasks = [];
                 }
 
-                // Store the original tasks for later reference
-                setAllTasks(tasks);
-
                 const taskEvents = convertTasksToEvents(tasks);
+                console.log('Loaded tasks from API:', tasks.length);
+                console.log('Tasks with due dates:', tasks.filter((t: any) => t.due_date).length);
+                console.log('Converted to calendar events:', taskEvents.length);
+                console.log('Calendar events:', taskEvents.map(e => ({ 
+                    id: e.id, 
+                    title: e.title, 
+                    start: e.start?.toDateString(),
+                    due_date: e.resource?.due_date 
+                })));
                 setEvents(taskEvents);
             } else {
                 console.error('Failed to load tasks, status:', response.status);
@@ -146,6 +121,11 @@ const Calendar: React.FC = () => {
 
     const convertTasksToEvents = (tasks: any[]): CalendarEvent[] => {
         const taskEvents: CalendarEvent[] = [];
+        const now = new Date();
+        now.setHours(0, 0, 0, 0); // Start of today for consistent comparison
+        const threeDaysFromNow = new Date(now.getTime() + (3 * 24 * 60 * 60 * 1000));
+        const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000)); // Show overdue tasks from last 30 days
+        const thirtyDaysFromNow = new Date(now.getTime() + (30 * 24 * 60 * 60 * 1000)); // Show upcoming tasks for next 30 days
 
         if (!Array.isArray(tasks)) {
             console.error('convertTasksToEvents received non-array:', tasks);
@@ -153,50 +133,37 @@ const Calendar: React.FC = () => {
         }
 
         tasks.forEach((task) => {
-            // Add tasks with due dates
+            // Only show tasks with due dates that are expiring (due within 3 days) or overdue
             if (task.due_date) {
                 const dueDate = new Date(task.due_date);
-                const taskEvent = {
-                    id: `task-${task.id}`,
-                    title: task.name || task.title || `Task ${task.id}`,
-                    start: dueDate,
-                    end: new Date(dueDate.getTime() + 60 * 60 * 1000), // 1 hour duration
-                    type: 'task' as const,
-                    color: task.completed_at ? '#22c55e' : '#ef4444', // Green if completed, red if not
-                };
-                taskEvents.push(taskEvent);
-            }
-
-            // Add tasks scheduled for today (if they don't have due_date)
-            if (!task.due_date && task.created_at) {
-                const createdDate = new Date(task.created_at);
-                const today = new Date();
-
-                // Show tasks created today on the calendar
-                if (createdDate.toDateString() === today.toDateString()) {
-                    const taskEvent = {
-                        id: `task-created-${task.id}`,
-                        title: `📝 ${task.name || task.title || `Task ${task.id}`}`,
-                        start: createdDate,
-                        end: new Date(createdDate.getTime() + 30 * 60 * 1000), // 30 min duration
+                dueDate.setHours(0, 0, 0, 0); // Normalize for comparison
+                const isWithinDisplayWindow = dueDate >= thirtyDaysAgo && dueDate <= thirtyDaysFromNow; // Show tasks within 30 days past/future
+                const isOverdue = dueDate < now; // Overdue tasks (highlight these)
+                const isUpcoming = dueDate <= threeDaysFromNow && dueDate >= now; // Due within next 3 days (highlight these)
+                
+                console.log(`Task ${task.id} (${task.name}): due_date=${task.due_date}, dueDate=${dueDate.toDateString()}, isWithinDisplayWindow=${isWithinDisplayWindow}, isOverdue=${isOverdue}, isUpcoming=${isUpcoming}`);
+                
+                // Show all tasks within 30-day window
+                if (isWithinDisplayWindow) {
+                    // For all-day events, start and end should be the same date
+                    // React Big Calendar handles all-day events differently
+                    const eventDate = new Date(dueDate);
+                    eventDate.setHours(0, 0, 0, 0);
+                    
+                    const taskEvent: CalendarEvent = {
+                        id: `task-${task.id}`,
+                        title: task.name || task.title || `Task ${task.id}`,
+                        start: eventDate,
+                        end: eventDate, // Same date for all-day events
                         type: 'task' as const,
-                        color: task.completed_at ? '#22c55e' : '#3b82f6', // Green if completed, blue if not
+                        resource: task,
+                        priority: task.priority || 'medium',
+                        status: task.status,
+                        isOverdue: isOverdue,
                     };
                     taskEvents.push(taskEvent);
+                    console.log(`Added task event: ${task.name} on ${eventDate.toDateString()}`);
                 }
-            }
-
-            // Always add tasks to calendar for easier debugging
-            if (!task.due_date && !task.created_at) {
-                const taskEvent = {
-                    id: `task-fallback-${task.id}`,
-                    title: `📌 ${task.name || task.title || `Task ${task.id}`}`,
-                    start: new Date(), // Today
-                    end: new Date(Date.now() + 30 * 60 * 1000), // 30 min duration
-                    type: 'task' as const,
-                    color: task.completed_at ? '#22c55e' : '#8b5cf6', // Green if completed, purple if not
-                };
-                taskEvents.push(taskEvent);
             }
         });
 
@@ -217,125 +184,145 @@ const Calendar: React.FC = () => {
         }
     };
 
-    const connectGoogleCalendar = async () => {
-        if (isConnecting) return;
 
-        setIsConnecting(true);
-        try {
-            const response = await fetch('/api/calendar/auth', {
-                credentials: 'include',
-            });
-            if (response.ok) {
-                const result = await response.json();
-                if (result.demo) {
-                    // Demo mode - simulate connection
-                    setGoogleStatus({
-                        connected: true,
-                        email: 'demo@example.com',
-                    });
-                    setIsDemoMode(true);
-                } else {
-                    // Real Google OAuth - redirect to auth URL
-                    window.location.href = result.authUrl;
-                }
-            } else {
-                throw new Error('Failed to get authorization URL');
-            }
-        } catch (error) {
-            console.error('Error connecting to Google Calendar:', error);
-            alert(t('calendar.connectionError'));
-        } finally {
-            setIsConnecting(false);
+    const handleSelectEvent = (event: any) => {
+        if (event.type === 'task' && event.resource) {
+            // Convert task to proper Task entity format for TaskModal
+            const taskEntity: Task = {
+                ...event.resource,
+                name: event.resource.name || `Task ${event.resource.id}`,
+                priority: event.resource.priority || 'medium',
+                status: event.resource.status || 'not_started',
+                tags: event.resource.tags || [],
+                note: event.resource.note || '',
+                due_date: event.resource.due_date,
+                created_at: event.resource.created_at,
+                completed_at: event.resource.completed_at,
+                project_id: event.resource.project_id,
+            };
+
+            setSelectedTask(taskEntity);
+            setIsEventDetailModalOpen(true);
         }
     };
 
-    const disconnectGoogleCalendar = async () => {
-        try {
-            if (isDemoMode) {
-                // Demo mode - just update local state
-                setGoogleStatus({ connected: false });
-                setIsDemoMode(false);
-                return;
-            }
-
-            // Real disconnect API call
-            const response = await fetch('/api/calendar/disconnect', {
-                method: 'POST',
-                credentials: 'include',
-            });
-            if (response.ok) {
-                setGoogleStatus({ connected: false });
-            } else {
-                throw new Error('Failed to disconnect');
-            }
-        } catch (error) {
-            console.error('Error disconnecting Google Calendar:', error);
-            alert(t('calendar.disconnectionError'));
-        }
+    const handleSelectSlot = ({ start }: { start: Date }) => {
+        // Handle slot selection for future functionality
+        console.log('Selected slot:', start);
     };
 
-    const navigate = (direction: 'prev' | 'next') => {
-        setCurrentDate((prev) => {
-            if (view === 'month') {
-                const newDate = new Date(prev);
-                if (direction === 'prev') {
-                    newDate.setMonth(prev.getMonth() - 1);
-                } else {
-                    newDate.setMonth(prev.getMonth() + 1);
+    const handleNavigate = (newDate: Date) => {
+        setCurrentDate(newDate);
+    };
+
+    const handleViewChange = (newView: View) => {
+        setView(newView);
+    };
+
+    const handleEventDrop = async ({ event, start, end, allDay }: any) => {
+        if (event.type === 'task' && event.resource) {
+            try {
+                console.log('Full drop event data:', { event, start, end, allDay });
+                console.log('Original task due date:', event.resource.due_date);
+                console.log('New start date:', start);
+                console.log('New start date string:', start.toString());
+                console.log('New start date toDateString:', start.toDateString());
+                console.log('New start date toISOString:', start.toISOString());
+                
+                // Convert to local date string to avoid timezone issues
+                const year = start.getFullYear();
+                const month = String(start.getMonth() + 1).padStart(2, '0');
+                const day = String(start.getDate()).padStart(2, '0');
+                const newDueDate = `${year}-${month}-${day}`;
+                
+                console.log('Timezone offset (minutes):', start.getTimezoneOffset());
+                console.log('Calculated date components:', { year, month, day });
+                console.log(`Updating task ${event.resource.id} due date from ${event.resource.due_date} to:`, newDueDate);
+                
+                // Check if the date actually changed
+                if (event.resource.due_date === newDueDate) {
+                    console.log('Date unchanged, skipping update');
+                    return;
                 }
-                return newDate;
-            } else if (view === 'week') {
-                return direction === 'prev'
-                    ? addWeeks(prev, -1)
-                    : addWeeks(prev, 1);
-            } else {
-                // day
-                return direction === 'prev'
-                    ? addDays(prev, -1)
-                    : addDays(prev, 1);
-            }
-        });
-    };
-
-    const goToToday = () => {
-        setCurrentDate(new Date());
-    };
-
-    const handleDateClick = () => {
-        // Date click handler - can be used for future functionality
-    };
-
-    const handleEventClick = (event: CalendarEvent) => {
-        // Handle task events
-        if (event.type === 'task') {
-            // Extract task ID from event ID
-            const taskId = event.id.replace(/^task(-created|-fallback)?-/, '');
-            const task = allTasks.find((t) => t.id.toString() === taskId);
-
-            if (task) {
-                // Convert task to proper Task entity format for TaskModal
-                const taskEntity: Task = {
-                    ...task,
-                    name: task.name || task.title || `Task ${task.id}`,
-                    // Ensure all required Task properties are present
-                    priority: task.priority || 'medium',
-                    status: task.status || 'not_started',
-                    tags: task.tags || [],
-                    note: task.note || task.description || '',
-                    due_date: task.due_date,
-                    created_at: task.created_at,
-                    completed_at: task.completed_at,
-                    project_id: task.project_id,
+                
+                // Update the task's due date
+                const updatedTask = {
+                    ...event.resource,
+                    due_date: newDueDate,
                 };
 
-                setSelectedTask(taskEntity);
-                setIsEventDetailModalOpen(true);
+                const response = await fetch(`/api/task/${event.resource.id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(updatedTask),
+                });
+
+                if (response.ok) {
+                    const updatedTaskData = await response.json();
+                    console.log('Task updated successfully:', updatedTaskData);
+                    
+                    // Check if the new date is still within our display window (30 days past/future)
+                    const now = new Date();
+                    now.setHours(0, 0, 0, 0); // Start of today
+                    const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+                    const thirtyDaysFromNow = new Date(now.getTime() + (30 * 24 * 60 * 60 * 1000));
+                    const newDate = new Date(start);
+                    newDate.setHours(0, 0, 0, 0); // Normalize for comparison
+                    const isStillInWindow = newDate >= thirtyDaysAgo && newDate <= thirtyDaysFromNow;
+                    
+                    console.log('Window check:', {
+                        now: now.toDateString(),
+                        thirtyDaysAgo: thirtyDaysAgo.toDateString(),
+                        thirtyDaysFromNow: thirtyDaysFromNow.toDateString(),
+                        newDate: newDate.toDateString(),
+                        isStillInWindow
+                    });
+                    
+                    if (isStillInWindow) {
+                        // Update the events state immediately for better UX
+                        const newEventDate = new Date(start);
+                        newEventDate.setHours(0, 0, 0, 0);
+                        
+                        setEvents(prevEvents => 
+                            prevEvents.map(e => 
+                                e.id === event.id 
+                                    ? { 
+                                        ...e, 
+                                        start: newEventDate,
+                                        end: newEventDate, // Same date for all-day events
+                                        resource: e.resource ? { ...e.resource, due_date: newDueDate } : undefined
+                                      } as CalendarEvent
+                                    : e
+                            )
+                        );
+                    } else {
+                        // Task moved outside expiring window, remove it from view
+                        setEvents(prevEvents => prevEvents.filter(e => e.id !== event.id));
+                    }
+                    
+                    // Refresh from server immediately to ensure consistency
+                    console.log('Refreshing calendar data...');
+                    loadTasks();
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.error('Failed to update task due date:', response.status, errorData);
+                    // Refresh to revert the visual change
+                    loadTasks();
+                }
+            } catch (error) {
+                console.error('Error updating task due date:', error);
+                // Refresh to revert the visual change
+                loadTasks();
             }
         }
     };
 
-    const handleTimeSlotClick = () => {
-        // Time slot click handler - can be used for future functionality
+    const handleEventResize = async ({ event, start }: any) => {
+        // For all-day events, we only care about the start date
+        handleEventDrop({ event, start });
     };
 
     const handleEditTask = () => {
@@ -343,11 +330,7 @@ const Calendar: React.FC = () => {
         setIsTaskModalOpen(true);
     };
 
-    const handleTaskSave = (updatedTask: Task) => {
-        // Update the task in allTasks
-        setAllTasks((prev) =>
-            prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
-        );
+    const handleTaskSave = () => {
         // Refresh calendar
         loadTasks();
         // Close modal
@@ -358,8 +341,6 @@ const Calendar: React.FC = () => {
     const handleTaskDelete = async (taskId: number) => {
         try {
             await deleteTask(taskId);
-            // Remove task from allTasks
-            setAllTasks((prev) => prev.filter((t) => t.id !== taskId));
             // Refresh calendar
             loadTasks();
             // Close modal
@@ -392,64 +373,74 @@ const Calendar: React.FC = () => {
         }
     };
 
+    // Custom styling for events based on priority and status
+    const eventStyleGetter = (event: any) => {
+        let backgroundColor = '#3b82f6'; // Default blue
+        let borderColor = '#2563eb';
+        
+        if (event.isOverdue) {
+            backgroundColor = '#ef4444'; // Red for overdue
+            borderColor = '#dc2626';
+        } else if (event.priority === 'high') {
+            backgroundColor = '#f59e0b'; // Amber for high priority
+            borderColor = '#d97706';
+        } else if (event.priority === 'low') {
+            backgroundColor = '#10b981'; // Emerald for low priority
+            borderColor = '#059669';
+        }
+
+        return {
+            style: {
+                backgroundColor,
+                borderColor,
+                border: `2px solid ${borderColor}`,
+                borderRadius: '4px',
+                opacity: 0.9,
+                color: 'white',
+                fontWeight: '500',
+                fontSize: '12px',
+            },
+        };
+    };
+
+    // Custom messages for the calendar
+    const messages = useMemo(() => ({
+        allDay: t('calendar.allDay', 'All Day'),
+        previous: t('calendar.previous', 'Previous'),
+        next: t('calendar.next', 'Next'),
+        today: t('calendar.today', 'Today'),
+        month: t('calendar.month', 'Month'),
+        week: t('calendar.week', 'Week'),
+        day: t('calendar.day', 'Day'),
+        agenda: t('calendar.agenda', 'Agenda'),
+        date: t('calendar.date', 'Date'),
+        time: t('calendar.time', 'Time'),
+        event: t('calendar.event', 'Event'),
+        noEventsInRange: t('calendar.noEventsInRange', 'No expiring tasks in this date range.'),
+        showMore: (total: number) => t('calendar.showMore', `+${total} more`),
+    }), [t]);
+
     return (
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-6xl">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-4">
-                        <h2 className="text-2xl font-light flex items-center">
+                        <h2 className="text-2xl font-light flex items-center text-gray-900 dark:text-gray-100">
                             <CalendarIcon className="h-6 w-6 mr-2" />
                             {t('sidebar.calendar')}
                         </h2>
                         <span className="text-lg text-gray-600 dark:text-gray-400">
-                            {format(currentDate, 'MMMM yyyy', { locale })}
+                            {moment(currentDate).format('MMMM YYYY')}
                         </span>
                     </div>
-
-                    <div className="flex items-center space-x-2">
-                        {/* View selector */}
-                        <div className="flex rounded-lg border border-gray-300 dark:border-gray-600">
-                            {['month', 'week', 'day'].map((viewType) => (
-                                <button
-                                    key={viewType}
-                                    onClick={() =>
-                                        setView(
-                                            viewType as 'month' | 'week' | 'day'
-                                        )
-                                    }
-                                    className={`px-3 py-1 text-sm font-medium capitalize ${
-                                        view === viewType
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                                    } ${viewType === 'month' ? 'rounded-l-lg' : ''} ${viewType === 'day' ? 'rounded-r-lg' : ''}`}
-                                >
-                                    {t(`calendar.${viewType}`)}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Navigation */}
-                        <button
-                            onClick={() => navigate('prev')}
-                            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-                        >
-                            <ChevronLeftIcon className="h-5 w-5" />
-                        </button>
-
-                        <button
-                            onClick={goToToday}
-                            className="px-3 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                        >
-                            {t('calendar.today')}
-                        </button>
-
-                        <button
-                            onClick={() => navigate('next')}
-                            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-                        >
-                            <ChevronRightIcon className="h-5 w-5" />
-                        </button>
+                    
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {t('calendar.showingRelevantTasks', 'Showing tasks within 30 days past and future')}
+                        <br />
+                        <span className="text-xs">
+                            {t('calendar.dragToUpdate', 'Drag tasks to update due dates')}
+                        </span>
                     </div>
                 </div>
 
@@ -460,82 +451,39 @@ const Calendar: React.FC = () => {
                     </div>
                 )}
 
-                {/* Calendar view */}
-                {view === 'month' && (
-                    <CalendarMonthView
-                        currentDate={currentDate}
-                        events={events}
-                        onDateClick={handleDateClick}
-                        onEventClick={handleEventClick}
-                    />
-                )}
-
-                {view === 'week' && (
-                    <CalendarWeekView
-                        currentDate={currentDate}
-                        events={events}
-                        onDateClick={handleDateClick}
-                        onEventClick={handleEventClick}
-                        onTimeSlotClick={handleTimeSlotClick}
-                    />
-                )}
-
-                {view === 'day' && (
-                    <CalendarDayView
-                        currentDate={currentDate}
-                        events={events}
-                        onEventClick={handleEventClick}
-                        onTimeSlotClick={handleTimeSlotClick}
-                    />
-                )}
-
-                {/* Google Calendar Integration Panel */}
-                <div className="mt-6 bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-                    <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-gray-100">
-                        {t('calendar.googleIntegration')}
-                    </h3>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                {isDemoMode
-                                    ? 'Demo mode: Google Calendar integration simulated for testing purposes.'
-                                    : t('calendar.googleDescription')}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-500">
-                                {t('calendar.googleStatus')}:
-                                {googleStatus.connected ? (
-                                    <span className="text-green-500 ml-1">
-                                        {t('calendar.connected')}
-                                        {googleStatus.email &&
-                                            ` (${googleStatus.email})`}
-                                    </span>
-                                ) : (
-                                    <span className="text-red-500 ml-1">
-                                        {t('calendar.notConnected')}
-                                    </span>
-                                )}
-                            </p>
-                        </div>
-                        {googleStatus.connected ? (
-                            <button
-                                onClick={disconnectGoogleCalendar}
-                                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                            >
-                                {t('calendar.disconnectGoogle')}
-                            </button>
-                        ) : (
-                            <button
-                                onClick={connectGoogleCalendar}
-                                disabled={isConnecting}
-                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
-                            >
-                                {isConnecting
-                                    ? t('calendar.connecting')
-                                    : t('calendar.connectGoogle')}
-                            </button>
-                        )}
+                {/* React Big Calendar with Drag & Drop */}
+                <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+                    <div className="calendar-container">
+                        <DnDCalendar
+                            localizer={localizer}
+                            events={events}
+                            startAccessor={(event: any) => event.start}
+                            endAccessor={(event: any) => event.end}
+                            titleAccessor={(event: any) => event.title}
+                            allDayAccessor={() => true}
+                            style={{ height: 600 }}
+                            view={view}
+                            date={currentDate}
+                            onNavigate={handleNavigate}
+                            onView={handleViewChange}
+                            onSelectEvent={handleSelectEvent}
+                            onSelectSlot={handleSelectSlot}
+                            onEventDrop={handleEventDrop}
+                            onEventResize={handleEventResize}
+                            selectable
+                            resizable
+                            eventPropGetter={eventStyleGetter}
+                            messages={messages}
+                            views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
+                            popup
+                            showMultiDayTimes
+                            step={30}
+                            timeslots={2}
+                            dragFromOutsideItem={() => ({})}
+                        />
                     </div>
                 </div>
+
 
                 {/* Event Details Modal */}
                 {selectedTask && (
@@ -585,7 +533,8 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({
     onEditTask,
 }) => {
     const { t, i18n } = useTranslation();
-    const locale = getLocale(i18n.language);
+    const momentLocale = getMomentLocale(i18n.language);
+    moment.locale(momentLocale);
 
     if (!isOpen) return null;
 
@@ -642,9 +591,7 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({
                                 {t('calendar.dueDate')}
                             </label>
                             <p className="text-gray-900 dark:text-gray-100">
-                                {format(new Date(task.due_date), 'PPP', {
-                                    locale: locale,
-                                })}
+                                {moment(task.due_date).format('LL')}
                             </p>
                         </div>
                     )}
@@ -702,9 +649,7 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({
                                 {t('calendar.created')}
                             </label>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {format(new Date(task.created_at), 'PPp', {
-                                    locale: locale,
-                                })}
+                                {moment(task.created_at).format('LLL')}
                             </p>
                         </div>
                     )}
