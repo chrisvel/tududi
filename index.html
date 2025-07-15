@@ -433,10 +433,48 @@
             z-index: 1;
         }
         
+        .mobile-overlay {
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 180px;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            z-index: 2;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+        
+        .mobile-overlay-light {
+            display: block;
+        }
+        
+        .mobile-overlay-dark {
+            display: none;
+        }
+        
+        [data-theme="dark"] .mobile-overlay-light {
+            display: none;
+        }
+        
+        [data-theme="dark"] .mobile-overlay-dark {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-overlay {
+                width: 120px;
+                bottom: -10px;
+                right: -10px;
+            }
+        }
+        
         .hero-image {
             max-width: 100%;
             width: 100%;
-            border-radius: 16px;
+            border-radius: 8px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             margin: 0 auto;
             transition: all 0.3s ease;
@@ -671,7 +709,7 @@
         }
         
         .screenshot {
-            border-radius: 10px;
+            border-radius: 6px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
@@ -1217,12 +1255,19 @@
         <div class="container">
             <div class="hero-content">
                 <h1>Productivity Made Simple</h1>
-                <h2 class="hero-subtitle">Scattered thoughts to structured action</h2>
-                <p>Join <span id="github-stars" style="font-size: 1.2em; font-weight: bold;">hundreds of</span> users who stay organized with smart task management that adapts to their workflow.</p>
+                <div style="height: 20px;"></div>
+                <p>Join hundreds of users who stay organized with smart task management that adapts to their workflow.</p>
+                <div class="github-stars-display" style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; color: rgba(255, 255, 255, 0.8);">
+                    <i class="fab fa-github" style="font-size: 1.1rem;"></i>
+                    <span id="github-stars" style="font-weight: 800;">Loading...</span>
+                    <span>stars</span>
+                </div>
                 <div class="hero-spacer"></div>
                 <div class="hero-image-container">
                     <img src="screenshots/all-light.png" alt="tududi - Light Mode Interface" class="hero-image hero-image-light">
                     <img src="screenshots/all-dark.png" alt="tududi - Dark Mode Interface" class="hero-image hero-image-dark">
+                    <img src="screenshots/mobile-all-light.png" alt="tududi - Mobile Light Mode" class="mobile-overlay mobile-overlay-light">
+                    <img src="screenshots/mobile-all-dark.png" alt="tududi - Mobile Dark Mode" class="mobile-overlay mobile-overlay-dark">
                 </div>
                 <div class="hero-buttons">
                     <a href="https://github.com/chrisvel/tududi" class="primary-button">View on GitHub</a>
@@ -1727,13 +1772,25 @@
         const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
         const savedTheme = localStorage.getItem('theme');
         
-        // If saved theme is dark or system prefers dark and no saved preference
-        if (savedTheme === 'dark' || (!savedTheme && prefersDarkScheme.matches)) {
-            document.body.setAttribute('data-theme', 'dark');
-            themeToggle.checked = true;
-            document.querySelector('.theme-switch-label i').classList.remove('fa-moon');
-            document.querySelector('.theme-switch-label i').classList.add('fa-sun');
+        // Initialize theme based on preference
+        function initializeTheme() {
+            const shouldUseDark = savedTheme === 'dark' || (!savedTheme && prefersDarkScheme.matches);
+            
+            if (shouldUseDark) {
+                document.body.setAttribute('data-theme', 'dark');
+                themeToggle.checked = true;
+                document.querySelector('.theme-switch-label i').classList.remove('fa-moon');
+                document.querySelector('.theme-switch-label i').classList.add('fa-sun');
+            } else {
+                document.body.removeAttribute('data-theme');
+                themeToggle.checked = false;
+                document.querySelector('.theme-switch-label i').classList.remove('fa-sun');
+                document.querySelector('.theme-switch-label i').classList.add('fa-moon');
+            }
         }
+        
+        // Initialize theme on page load
+        initializeTheme();
         
         // Theme toggle event listener
         themeToggle.addEventListener('change', function() {
@@ -1750,6 +1807,14 @@
             }
         });
         
+        // Listen for system theme changes
+        prefersDarkScheme.addEventListener('change', function() {
+            // Only update if user hasn't set a manual preference
+            if (!localStorage.getItem('theme')) {
+                initializeTheme();
+            }
+        });
+        
         // Fetch GitHub stars
         async function fetchGitHubStars() {
             try {
@@ -1757,19 +1822,10 @@
                 const data = await response.json();
                 const stars = data.stargazers_count;
                 
-                let starsText = '';
-                if (stars >= 1000) {
-                    starsText = `${Math.floor(stars / 1000)}k+`;
-                } else if (stars >= 100) {
-                    starsText = `${stars}+`;
-                } else {
-                    starsText = 'hundreds of';
-                }
-                
-                document.getElementById('github-stars').textContent = starsText;
+                document.getElementById('github-stars').textContent = stars.toLocaleString();
             } catch (error) {
                 console.log('GitHub API error:', error);
-                // Keep default text if API fails
+                document.getElementById('github-stars').textContent = '100+';
             }
         }
         
