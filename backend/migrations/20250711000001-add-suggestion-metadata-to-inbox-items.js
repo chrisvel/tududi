@@ -10,7 +10,7 @@ module.exports = {
                 definition: {
                     type: Sequelize.STRING,
                     allowNull: true,
-                    comment: 'AI suggested item type: task, note, or null'
+                    comment: 'AI suggested item type: task, note, or null',
                 },
             },
             {
@@ -18,7 +18,8 @@ module.exports = {
                 definition: {
                     type: Sequelize.STRING,
                     allowNull: true,
-                    comment: 'Reason for suggestion: verb_detected, bookmark_tag, etc.'
+                    comment:
+                        'Reason for suggestion: verb_detected, bookmark_tag, etc.',
                 },
             },
             {
@@ -26,7 +27,7 @@ module.exports = {
                 definition: {
                     type: Sequelize.JSON,
                     allowNull: true,
-                    comment: 'Array of parsed hashtags from content'
+                    comment: 'Array of parsed hashtags from content',
                 },
             },
             {
@@ -34,7 +35,7 @@ module.exports = {
                 definition: {
                     type: Sequelize.JSON,
                     allowNull: true,
-                    comment: 'Array of parsed project references from content'
+                    comment: 'Array of parsed project references from content',
                 },
             },
             {
@@ -42,7 +43,7 @@ module.exports = {
                 definition: {
                     type: Sequelize.STRING,
                     allowNull: true,
-                    comment: 'Content with tags and project references removed'
+                    comment: 'Content with tags and project references removed',
                 },
             },
         ]);
@@ -54,5 +55,5 @@ module.exports = {
         await queryInterface.removeColumn('inbox_items', 'parsed_tags');
         await queryInterface.removeColumn('inbox_items', 'parsed_projects');
         await queryInterface.removeColumn('inbox_items', 'cleaned_content');
-    }
+    },
 };

@@ -433,12 +433,13 @@ router.put('/profile/today-settings', async (req, res) => {
             profileUpdates.productivity_assistant_enabled = showProductivity;
         }
         if (showNextTaskSuggestion !== undefined) {
-            profileUpdates.next_task_suggestion_enabled = showNextTaskSuggestion;
+            profileUpdates.next_task_suggestion_enabled =
+                showNextTaskSuggestion;
         }
 
-        await user.update({ 
+        await user.update({
             today_settings: todaySettings,
-            ...profileUpdates
+            ...profileUpdates,
         });
 
         res.json({

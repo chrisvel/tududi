@@ -62,13 +62,25 @@ module.exports = {
         await safeAddIndex(queryInterface, 'task_events', ['user_id']);
         await safeAddIndex(queryInterface, 'task_events', ['event_type']);
         await safeAddIndex(queryInterface, 'task_events', ['created_at']);
-        await safeAddIndex(queryInterface, 'task_events', ['task_id', 'event_type']);
-        await safeAddIndex(queryInterface, 'task_events', ['task_id', 'created_at']);
+        await safeAddIndex(queryInterface, 'task_events', [
+            'task_id',
+            'event_type',
+        ]);
+        await safeAddIndex(queryInterface, 'task_events', [
+            'task_id',
+            'created_at',
+        ]);
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.removeIndex('task_events', ['task_id', 'created_at']);
-        await queryInterface.removeIndex('task_events', ['task_id', 'event_type']);
+        await queryInterface.removeIndex('task_events', [
+            'task_id',
+            'created_at',
+        ]);
+        await queryInterface.removeIndex('task_events', [
+            'task_id',
+            'event_type',
+        ]);
         await queryInterface.removeIndex('task_events', ['created_at']);
         await queryInterface.removeIndex('task_events', ['event_type']);
         await queryInterface.removeIndex('task_events', ['user_id']);

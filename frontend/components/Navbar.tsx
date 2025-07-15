@@ -118,7 +118,9 @@ const Navbar: React.FC<NavbarProps> = ({
         <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md h-16">
             <div className="h-full flex items-center">
                 {/* Sidebar-width area with logo and hamburger */}
-                <div className={`${isSidebarOpen ? 'w-full sm:w-72' : 'w-16'} flex items-center ${isSidebarOpen ? 'sm:justify-center' : 'sm:justify-start'} transition-all duration-300 ease-in-out px-4 relative`}>
+                <div
+                    className={`${isSidebarOpen ? 'w-full sm:w-72' : 'w-16'} flex items-center ${isSidebarOpen ? 'sm:justify-center' : 'sm:justify-start'} transition-all duration-300 ease-in-out px-4 relative`}
+                >
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                         className={`flex items-center focus:outline-none text-gray-500 dark:text-gray-500 ${isSidebarOpen ? 'sm:absolute sm:left-4' : 'sm:relative'}`}
@@ -130,7 +132,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     >
                         <Bars3Icon className="h-6 mt-1 w-6" />
                     </button>
-                    
+
                     <Link
                         to="/"
                         className={`flex items-center no-underline text-gray-900 dark:text-white ml-2 ${isSidebarOpen ? 'sm:ml-0' : 'sm:ml-2'}`}

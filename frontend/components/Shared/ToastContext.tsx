@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import {
+    CheckCircleIcon,
+    ExclamationTriangleIcon,
+} from '@heroicons/react/24/outline';
 
 interface Toast {
     id: number;
@@ -20,25 +23,28 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     const [toasts, setToasts] = useState<Toast[]>([]);
 
     const removeToast = useCallback((id: number) => {
-        setToasts(prev => prev.filter(toast => toast.id !== id));
+        setToasts((prev) => prev.filter((toast) => toast.id !== id));
     }, []);
 
     const showSuccessToast = useCallback(
         (message: string | React.ReactNode) => {
             const id = Date.now() + Math.random();
             const newToast: Toast = { id, message, type: 'success' };
-            setToasts(prev => [...prev, newToast]);
+            setToasts((prev) => [...prev, newToast]);
             setTimeout(() => removeToast(id), 4000);
         },
         [removeToast]
     );
 
-    const showErrorToast = useCallback((message: string | React.ReactNode) => {
-        const id = Date.now() + Math.random();
-        const newToast: Toast = { id, message, type: 'error' };
-        setToasts(prev => [...prev, newToast]);
-        setTimeout(() => removeToast(id), 4000);
-    }, [removeToast]);
+    const showErrorToast = useCallback(
+        (message: string | React.ReactNode) => {
+            const id = Date.now() + Math.random();
+            const newToast: Toast = { id, message, type: 'error' };
+            setToasts((prev) => [...prev, newToast]);
+            setTimeout(() => removeToast(id), 4000);
+        },
+        [removeToast]
+    );
 
     return (
         <ToastContext.Provider value={{ showSuccessToast, showErrorToast }}>

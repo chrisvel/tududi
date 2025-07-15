@@ -42,11 +42,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
     onCreateProject,
 }) => {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState<Note>(note || {
-        title: '',
-        content: '',
-        tags: [],
-    });
+    const [formData, setFormData] = useState<Note>(
+        note || {
+            title: '',
+            content: '',
+            tags: [],
+        }
+    );
     const [tags, setTags] = useState<string[]>(
         note?.tags?.map((tag) => tag.name) || []
     );
@@ -106,17 +108,18 @@ const NoteModal: React.FC<NoteModalProps> = ({
                 setError(null);
 
                 // Initialize project name from note - exactly like TaskModal
-                const projectIdToFind = note?.project?.id || note?.Project?.id || note?.project_id;
-                
+                const projectIdToFind =
+                    note?.project?.id || note?.Project?.id || note?.project_id;
+
                 const currentProject = memoizedProjects.find(
                     (project) => project.id === projectIdToFind
                 );
                 setNewProjectName(currentProject ? currentProject.name : '');
-                
+
                 // Auto-expand sections if they have content from existing note or always for editing
                 const shouldExpandTags = tagNames.length > 0 || !!note.id; // Expand if has tags OR editing existing note
                 const shouldExpandProject = !!currentProject || !!note.id; // Expand if has project OR editing existing note
-                
+
                 setExpandedSections({
                     tags: shouldExpandTags,
                     project: shouldExpandProject,
@@ -366,7 +369,9 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                         type="text"
                                                         id="noteTitle"
                                                         name="title"
-                                                        value={formData.title || ''}
+                                                        value={
+                                                            formData.title || ''
+                                                        }
                                                         onChange={handleChange}
                                                         required
                                                         className="block w-full text-xl font-semibold bg-transparent text-black dark:text-white border-none focus:outline-none shadow-sm py-2"
@@ -436,7 +441,8 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             id="noteContent"
                                                             name="content"
                                                             value={
-                                                                formData.content || ''
+                                                                formData.content ||
+                                                                ''
                                                             }
                                                             onChange={
                                                                 handleChange
@@ -502,15 +508,34 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             )}
                                                         </h3>
                                                         <ProjectDropdown
-                                                            projectName={newProjectName || ''}
-                                                            onProjectSearch={handleProjectSearch}
-                                                            dropdownOpen={dropdownOpen}
-                                                            filteredProjects={filteredProjects}
-                                                            onProjectSelection={handleProjectSelection}
-                                                            onCreateProject={handleCreateProject}
-                                                            isCreatingProject={isCreatingProject}
-                                                            onShowAllProjects={handleShowAllProjects}
-                                                            allProjects={memoizedProjects}
+                                                            projectName={
+                                                                newProjectName ||
+                                                                ''
+                                                            }
+                                                            onProjectSearch={
+                                                                handleProjectSearch
+                                                            }
+                                                            dropdownOpen={
+                                                                dropdownOpen
+                                                            }
+                                                            filteredProjects={
+                                                                filteredProjects
+                                                            }
+                                                            onProjectSelection={
+                                                                handleProjectSelection
+                                                            }
+                                                            onCreateProject={
+                                                                handleCreateProject
+                                                            }
+                                                            isCreatingProject={
+                                                                isCreatingProject
+                                                            }
+                                                            onShowAllProjects={
+                                                                handleShowAllProjects
+                                                            }
+                                                            allProjects={
+                                                                memoizedProjects
+                                                            }
                                                         />
                                                     </div>
                                                 )}

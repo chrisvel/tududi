@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -22,7 +22,6 @@ import { useStore } from '../store/useStore';
 import { createProject, fetchProjects } from '../utils/projectsService';
 
 const Notes: React.FC = () => {
-
     const { t } = useTranslation();
     const [notes, setNotes] = useState<Note[]>([]);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
@@ -35,10 +34,6 @@ const Notes: React.FC = () => {
     // Get projects from store
     const projects = useStore((state) => state.projectsStore.projects);
     const { setProjects } = useStore((state) => state.projectsStore);
-
-    // Memoize projects to ensure stable reference
-    const memoizedProjects = useMemo(() => projects || [], [projects]);
-
 
     const [isError, setIsError] = useState(false);
     const [hoveredNoteId, setHoveredNoteId] = useState<number | null>(null);
@@ -157,9 +152,7 @@ const Notes: React.FC = () => {
                 {/* Notes Header */}
                 <div className="flex items-center mb-8">
                     <BookOpenIcon className="h-6 w-6 mr-2" />
-                    <h2 className="text-2xl font-light">
-                        {t('notes.title')}
-                    </h2>
+                    <h2 className="text-2xl font-light">{t('notes.title')}</h2>
                 </div>
 
                 {/* Search Bar with Icon */}

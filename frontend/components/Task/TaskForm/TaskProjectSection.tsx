@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Project } from '../../../entities/Project';
 import ProjectDropdown from '../../Shared/ProjectDropdown';
 
@@ -26,8 +25,6 @@ const TaskProjectSection: React.FC<TaskProjectSectionProps> = ({
     onShowAllProjects,
     allProjects,
 }) => {
-    const { t } = useTranslation();
-
     return (
         <ProjectDropdown
             projectName={newProjectName}

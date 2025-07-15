@@ -234,7 +234,13 @@ router.get('/project/:id', async (req, res) => {
                 {
                     model: Note,
                     required: false,
-                    attributes: ['id', 'title', 'content', 'created_at', 'updated_at'],
+                    attributes: [
+                        'id',
+                        'title',
+                        'content',
+                        'created_at',
+                        'updated_at',
+                    ],
                 },
                 { model: Area, required: false, attributes: ['id', 'name'] },
                 {
@@ -250,19 +256,25 @@ router.get('/project/:id', async (req, res) => {
         }
 
         const projectJson = project.toJSON();
-        
+
         // Normalize task data to match frontend expectations
-        const normalizedTasks = projectJson.Tasks ? projectJson.Tasks.map(task => {
-            const normalizedTask = {
-                ...task,
-                tags: task.Tags || [], // Normalize Tags to tags for each task
-                due_date: task.due_date ? (typeof task.due_date === 'string' ? task.due_date.split('T')[0] : task.due_date.toISOString().split('T')[0]) : null
-            };
-            // Remove the original Tags property to avoid confusion
-            delete normalizedTask.Tags;
-            return normalizedTask;
-        }) : [];
-        
+        const normalizedTasks = projectJson.Tasks
+            ? projectJson.Tasks.map((task) => {
+                  const normalizedTask = {
+                      ...task,
+                      tags: task.Tags || [], // Normalize Tags to tags for each task
+                      due_date: task.due_date
+                          ? typeof task.due_date === 'string'
+                              ? task.due_date.split('T')[0]
+                              : task.due_date.toISOString().split('T')[0]
+                          : null,
+                  };
+                  // Remove the original Tags property to avoid confusion
+                  delete normalizedTask.Tags;
+                  return normalizedTask;
+              })
+            : [];
+
         const result = {
             ...projectJson,
             tags: projectJson.Tags || [], // Normalize Tags to tags

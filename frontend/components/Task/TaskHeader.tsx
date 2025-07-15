@@ -339,7 +339,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                               'tasks.removeFromToday',
                                               'Remove from today plan'
                                           )
-                                        : t('tasks.addToToday', 'Add to today plan')
+                                        : t(
+                                              'tasks.addToToday',
+                                              'Add to today plan'
+                                          )
                                 }
                             >
                                 {task.today ? (

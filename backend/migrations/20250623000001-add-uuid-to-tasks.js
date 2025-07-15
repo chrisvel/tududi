@@ -5,7 +5,6 @@ const { safeAddColumns, safeAddIndex } = require('../utils/migration-utils');
 
 module.exports = {
     async up(queryInterface, Sequelize) {
-
         await safeAddColumns(queryInterface, 'tasks', [
             {
                 name: 'uuid',
@@ -36,7 +35,6 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-
         await queryInterface.removeIndex('tasks', 'tasks_uuid_unique');
 
         await queryInterface.removeColumn('tasks', 'uuid');

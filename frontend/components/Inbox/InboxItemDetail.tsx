@@ -48,11 +48,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const parseHashtags = (text: string): string[] => {
         const trimmedText = text.trim();
         const matches: string[] = [];
-        
+
         // Split text into words
         const words = trimmedText.split(/\s+/);
         if (words.length === 0) return matches;
-        
+
         // Find all consecutive groups of tags/projects
         let i = 0;
         while (i < words.length) {
@@ -60,27 +60,35 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             if (words[i].startsWith('#') || words[i].startsWith('+')) {
                 // Found start of a group, collect all consecutive tags/projects
                 let groupEnd = i;
-                while (groupEnd < words.length && (words[groupEnd].startsWith('#') || words[groupEnd].startsWith('+'))) {
+                while (
+                    groupEnd < words.length &&
+                    (words[groupEnd].startsWith('#') ||
+                        words[groupEnd].startsWith('+'))
+                ) {
                     groupEnd++;
                 }
-                
+
                 // Process all hashtags in this group
                 for (let j = i; j < groupEnd; j++) {
                     if (words[j].startsWith('#')) {
                         const tagName = words[j].substring(1);
-                        if (tagName && /^[a-zA-Z0-9_-]+$/.test(tagName) && !matches.includes(tagName)) {
+                        if (
+                            tagName &&
+                            /^[a-zA-Z0-9_-]+$/.test(tagName) &&
+                            !matches.includes(tagName)
+                        ) {
                             matches.push(tagName);
                         }
                     }
                 }
-                
+
                 // Skip to end of this group
                 i = groupEnd;
             } else {
                 i++;
             }
         }
-        
+
         return matches;
     };
 
@@ -88,10 +96,10 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const parseProjectRefs = (text: string): string[] => {
         const trimmedText = text.trim();
         const matches: string[] = [];
-        
+
         // Tokenize the text handling quoted strings properly
         const tokens = tokenizeText(trimmedText);
-        
+
         // Find consecutive groups of tags/projects
         let i = 0;
         while (i < tokens.length) {
@@ -99,47 +107,54 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
                 // Found start of a group, collect all consecutive tags/projects
                 let groupEnd = i;
-                while (groupEnd < tokens.length && (tokens[groupEnd].startsWith('#') || tokens[groupEnd].startsWith('+'))) {
+                while (
+                    groupEnd < tokens.length &&
+                    (tokens[groupEnd].startsWith('#') ||
+                        tokens[groupEnd].startsWith('+'))
+                ) {
                     groupEnd++;
                 }
-                
+
                 // Process all project references in this group
                 for (let j = i; j < groupEnd; j++) {
                     if (tokens[j].startsWith('+')) {
                         let projectName = tokens[j].substring(1);
-                        
+
                         // Handle quoted project names
-                        if (projectName.startsWith('"') && projectName.endsWith('"')) {
+                        if (
+                            projectName.startsWith('"') &&
+                            projectName.endsWith('"')
+                        ) {
                             projectName = projectName.slice(1, -1);
                         }
-                        
+
                         if (projectName && !matches.includes(projectName)) {
                             matches.push(projectName);
                         }
                     }
                 }
-                
+
                 // Skip to end of this group
                 i = groupEnd;
             } else {
                 i++;
             }
         }
-        
+
         return matches;
     };
-    
+
     // Helper function to tokenize text handling quoted strings
     const tokenizeText = (text: string): string[] => {
         const tokens: string[] = [];
         let currentToken = '';
         let inQuotes = false;
         let i = 0;
-        
+
         while (i < text.length) {
             const char = text[i];
-            
-            if (char === '"' && (i === 0 || text[i-1] === '+')) {
+
+            if (char === '"' && (i === 0 || text[i - 1] === '+')) {
                 // Start of a quoted string after +
                 inQuotes = true;
                 currentToken += char;
@@ -159,12 +174,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             }
             i++;
         }
-        
+
         // Add final token
         if (currentToken) {
             tokens.push(currentToken);
         }
-        
+
         return tokens;
     };
 
@@ -173,13 +188,16 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         const trimmedText = text.trim();
         const tokens = tokenizeText(trimmedText);
         const cleanedTokens: string[] = [];
-        
+
         let i = 0;
         while (i < tokens.length) {
             // Check if current token starts a tag/project group
             if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
                 // Skip this entire consecutive group
-                while (i < tokens.length && (tokens[i].startsWith('#') || tokens[i].startsWith('+'))) {
+                while (
+                    i < tokens.length &&
+                    (tokens[i].startsWith('#') || tokens[i].startsWith('+'))
+                ) {
                     i++;
                 }
             } else {
@@ -188,15 +206,13 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 i++;
             }
         }
-        
+
         return cleanedTokens.join(' ').trim();
     };
 
     const hashtags = parseHashtags(item.content);
     const projectRefs = parseProjectRefs(item.content);
     const cleanedContent = cleanTextFromTagsAndProjects(item.content);
-
-
 
     const handleConvertToTask = () => {
         // Convert hashtags to Tag objects
@@ -214,7 +230,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             // Look for an existing project with the first project reference name
             const projectName = projectRefs[0];
             const matchingProject = projects.find(
-                (project) => project.name.toLowerCase() === projectName.toLowerCase()
+                (project) =>
+                    project.name.toLowerCase() === projectName.toLowerCase()
             );
             if (matchingProject) {
                 projectId = matchingProject.id;
@@ -321,29 +338,30 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         const tagObjects = [...hashtagTags, ...bookmarkTag];
 
         // Use cleaned content for note title if no URL title was extracted
-        const finalTitle = title === content ? (cleanedContent || item.content) : title;
+        const finalTitle =
+            title === content ? cleanedContent || item.content : title;
         const finalContent = cleanedContent || item.content;
-        
+
         // Find the project to assign (use first project reference if any)
         let projectId = undefined;
         if (projectRefs.length > 0) {
             // Look for an existing project with the first project reference name
             const projectName = projectRefs[0];
             const matchingProject = projects.find(
-                (project) => project.name.toLowerCase() === projectName.toLowerCase()
+                (project) =>
+                    project.name.toLowerCase() === projectName.toLowerCase()
             );
             if (matchingProject) {
                 projectId = matchingProject.id;
             }
         }
-        
+
         const newNote: Note = {
             title: finalTitle,
             content: finalContent,
             tags: tagObjects,
             project_id: projectId,
         };
-        
 
         if (item.id !== undefined) {
             openNoteModal(newNote, item.id);
@@ -385,12 +403,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                     <span>{projectRefs.join(', ')}</span>
                                 </div>
                             )}
-                            
+
                             {/* Add spacing between project and tags */}
                             {projectRefs.length > 0 && hashtags.length > 0 && (
                                 <span className="mx-2">•</span>
                             )}
-                            
+
                             {/* Tags display */}
                             {hashtags.length > 0 && (
                                 <div className="flex items-center">
@@ -400,7 +418,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                             )}
                         </div>
                     )}
-
                 </div>
 
                 <div className="flex items-center justify-start space-x-1 shrink-0">

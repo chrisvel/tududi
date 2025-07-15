@@ -41,59 +41,78 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                 const dropdownElement = dropdownRef.current;
                 if (dropdownElement) {
                     // Find the input field to keep it visible
-                    const inputElement = dropdownElement.parentElement?.querySelector('input');
-                    
+                    const inputElement =
+                        dropdownElement.parentElement?.querySelector('input');
+
                     // Find the appropriate scroll container (modal or window)
-                    const modalScrollContainer = dropdownElement.closest('.absolute.inset-0.overflow-y-auto');
-                    
+                    const modalScrollContainer = dropdownElement.closest(
+                        '.absolute.inset-0.overflow-y-auto'
+                    );
+
                     if (modalScrollContainer && inputElement) {
                         // We're inside a modal - scroll the modal container
-                        const containerRect = modalScrollContainer.getBoundingClientRect();
-                        const dropdownRect = dropdownElement.getBoundingClientRect();
+                        const containerRect =
+                            modalScrollContainer.getBoundingClientRect();
+                        const dropdownRect =
+                            dropdownElement.getBoundingClientRect();
                         const inputRect = inputElement.getBoundingClientRect();
-                        
+
                         // Only scroll if dropdown extends below the visible area
                         if (dropdownRect.bottom > containerRect.bottom - 50) {
                             // Calculate very conservative scroll - prioritize keeping input visible
-                            const inputDistanceFromTop = inputRect.top - containerRect.top;
+                            const inputDistanceFromTop =
+                                inputRect.top - containerRect.top;
                             const minInputVisible = 60; // Keep at least 60px of input visible
-                            
+
                             // Only scroll if we can maintain input visibility
                             if (inputDistanceFromTop > minInputVisible) {
-                                const maxAllowedScroll = inputDistanceFromTop - minInputVisible;
-                                const neededScroll = dropdownRect.bottom - containerRect.bottom + 30;
-                                const scrollAmount = Math.min(maxAllowedScroll, neededScroll);
-                                
+                                const maxAllowedScroll =
+                                    inputDistanceFromTop - minInputVisible;
+                                const neededScroll =
+                                    dropdownRect.bottom -
+                                    containerRect.bottom +
+                                    30;
+                                const scrollAmount = Math.min(
+                                    maxAllowedScroll,
+                                    neededScroll
+                                );
+
                                 if (scrollAmount > 0) {
                                     modalScrollContainer.scrollBy({
                                         top: scrollAmount,
-                                        behavior: 'smooth'
+                                        behavior: 'smooth',
                                     });
                                 }
                             }
                         }
                     } else if (inputElement) {
                         // We're not in a modal - scroll the window
-                        const dropdownRect = dropdownElement.getBoundingClientRect();
+                        const dropdownRect =
+                            dropdownElement.getBoundingClientRect();
                         const inputRect = inputElement.getBoundingClientRect();
                         const viewportHeight = window.innerHeight;
-                        
+
                         // Only scroll if dropdown extends below the viewport
                         if (dropdownRect.bottom > viewportHeight - 50) {
                             // Calculate very conservative scroll - prioritize keeping input visible
                             const inputDistanceFromTop = inputRect.top;
                             const minInputVisible = 60; // Keep at least 60px of input visible
-                            
+
                             // Only scroll if we can maintain input visibility
                             if (inputDistanceFromTop > minInputVisible) {
-                                const maxAllowedScroll = inputDistanceFromTop - minInputVisible;
-                                const neededScroll = dropdownRect.bottom - viewportHeight + 30;
-                                const scrollAmount = Math.min(maxAllowedScroll, neededScroll);
-                                
+                                const maxAllowedScroll =
+                                    inputDistanceFromTop - minInputVisible;
+                                const neededScroll =
+                                    dropdownRect.bottom - viewportHeight + 30;
+                                const scrollAmount = Math.min(
+                                    maxAllowedScroll,
+                                    neededScroll
+                                );
+
                                 if (scrollAmount > 0) {
                                     window.scrollBy({
                                         top: scrollAmount,
-                                        behavior: 'smooth'
+                                        behavior: 'smooth',
                                     });
                                 }
                             }
@@ -109,10 +128,13 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
             <div className="relative">
                 <input
                     type="text"
-                    placeholder={placeholder || t(
-                        'forms.task.projectSearchPlaceholder',
-                        'Search or create a project...'
-                    )}
+                    placeholder={
+                        placeholder ||
+                        t(
+                            'forms.task.projectSearchPlaceholder',
+                            'Search or create a project...'
+                        )
+                    }
                     value={projectName}
                     onChange={onProjectSearch}
                     disabled={disabled}
@@ -124,7 +146,9 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                     onClick={onShowAllProjects}
                     disabled={disabled}
                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label={dropdownOpen ? "Hide projects" : "Show all projects"}
+                    aria-label={
+                        dropdownOpen ? 'Hide projects' : 'Show all projects'
+                    }
                 >
                     {dropdownOpen ? (
                         <ChevronUpIcon className="h-5 w-5" />
@@ -134,14 +158,16 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                 </button>
             </div>
             {dropdownOpen && (
-                <div 
+                <div
                     ref={dropdownRef}
                     className="absolute mt-1 bg-white dark:bg-gray-800 shadow-lg rounded-md w-full z-50 border border-gray-200 dark:border-gray-700"
                 >
                     {(() => {
                         // Show filtered projects if user is typing, otherwise show all projects
-                        const projectsToShow = projectName ? filteredProjects : allProjects;
-                        
+                        const projectsToShow = projectName
+                            ? filteredProjects
+                            : allProjects;
+
                         return projectsToShow.length > 0 ? (
                             projectsToShow.map((project) => (
                                 <button
@@ -155,10 +181,12 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                             ))
                         ) : (
                             <div className="px-4 py-2 text-gray-500 dark:text-gray-400">
-                                {projectName 
-                                    ? t('forms.task.noMatchingProjects', 'No matching projects')
-                                    : 'No projects available'
-                                }
+                                {projectName
+                                    ? t(
+                                          'forms.task.noMatchingProjects',
+                                          'No matching projects'
+                                      )
+                                    : 'No projects available'}
                             </div>
                         );
                     })()}

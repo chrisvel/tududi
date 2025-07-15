@@ -34,11 +34,8 @@ const TagDetails: React.FC = () => {
     // State for ProjectItem components
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
     const [hoveredNoteId, setHoveredNoteId] = useState<number | null>(null);
-    const [, setProjectToDelete] = useState<Project | null>(
-        null
-    );
-    const [, setIsConfirmDialogOpen] =
-        useState<boolean>(false);
+    const [, setProjectToDelete] = useState<Project | null>(null);
+    const [, setIsConfirmDialogOpen] = useState<boolean>(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -141,17 +138,18 @@ const TagDetails: React.FC = () => {
     const handleToggleToday = async (taskId: number) => {
         try {
             // Use the proper service function that includes auth
-            const { toggleTaskToday } = await import('../../utils/tasksService');
+            const { toggleTaskToday } = await import(
+                '../../utils/tasksService'
+            );
             const updatedTask = await toggleTaskToday(taskId);
-            
+
             setTasks((prevTasks) =>
                 prevTasks.map((task) =>
                     task.id === taskId
                         ? {
                               ...task,
                               today: updatedTask.today,
-                              today_move_count:
-                                  updatedTask.today_move_count,
+                              today_move_count: updatedTask.today_move_count,
                           }
                         : task
                 )

@@ -120,26 +120,34 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
             icon: ChartBarIcon,
         },
         // Only show productivity option if enabled in profile
-        ...(profileSettings?.productivity_assistant_enabled === true ? [{
-            key: 'showProductivity' as keyof typeof localSettings,
-            label: t('settings.showProductivity', 'Show Productivity Insights'),
-            icon: LightBulbIcon,
-        }] : []),
+        ...(profileSettings?.productivity_assistant_enabled === true
+            ? [
+                  {
+                      key: 'showProductivity' as keyof typeof localSettings,
+                      label: t(
+                          'settings.showProductivity',
+                          'Show Productivity Insights'
+                      ),
+                      icon: LightBulbIcon,
+                  },
+              ]
+            : []),
         // Only show next task suggestion option if enabled in profile
-        ...(profileSettings?.next_task_suggestion_enabled === true ? [{
-            key: 'showNextTaskSuggestion' as keyof typeof localSettings,
-            label: t(
-                'settings.showNextTaskSuggestion',
-                'Next Task Suggestion'
-            ),
-            icon: SparklesIcon,
-        }] : []),
+        ...(profileSettings?.next_task_suggestion_enabled === true
+            ? [
+                  {
+                      key: 'showNextTaskSuggestion' as keyof typeof localSettings,
+                      label: t(
+                          'settings.showNextTaskSuggestion',
+                          'Next Task Suggestion'
+                      ),
+                      icon: SparklesIcon,
+                  },
+              ]
+            : []),
         {
             key: 'showSuggestions',
-            label: t(
-                'settings.showSuggestions',
-                'Show Suggested'
-            ),
+            label: t('settings.showSuggestions', 'Show Suggested'),
             icon: ListBulletIcon,
         },
         {

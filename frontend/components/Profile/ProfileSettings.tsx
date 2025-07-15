@@ -337,9 +337,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ token: profile.telegram_bot_token }),
+                        body: JSON.stringify({
+                            token: profile.telegram_bot_token,
+                        }),
                     });
-                    
+
                     if (setupResponse.ok) {
                         const setupData = await setupResponse.json();
                         if (setupData.bot) {
@@ -347,23 +349,26 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 username: setupData.bot.username,
                                 first_name: setupData.bot.first_name,
                                 chat_url: `https://t.me/${setupData.bot.username}`,
-                                polling_status: null
+                                polling_status: null,
                             });
                         }
                     }
 
                     // Also fetch and auto-start polling status
-                    const pollingResponse = await fetch('/api/telegram/polling-status', {
-                        credentials: 'include',
-                        headers: {
-                            Accept: 'application/json',
-                        },
-                    });
-                    
+                    const pollingResponse = await fetch(
+                        '/api/telegram/polling-status',
+                        {
+                            credentials: 'include',
+                            headers: {
+                                Accept: 'application/json',
+                            },
+                        }
+                    );
+
                     if (pollingResponse.ok) {
                         const pollingData = await pollingResponse.json();
                         setIsPolling(pollingData.status?.running || false);
-                        
+
                         // Auto-start polling if not running
                         if (!pollingData.status?.running) {
                             setTimeout(() => {
@@ -446,11 +451,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
             const data = await response.json();
             setTelegramSetupStatus('success');
-            
+
             // Extract bot info properly
             const bot = data.bot;
             let botDisplayName = 'Bot';
-            
+
             if (bot) {
                 if (bot.first_name && bot.username) {
                     botDisplayName = `${bot.first_name} (@${bot.username})`;
@@ -460,7 +465,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     botDisplayName = `@${bot.username}`;
                 }
             }
-            
+
             showSuccessToast(
                 t(
                     'profile.telegramSetupSuccess',
@@ -474,7 +479,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     username: data.bot.username,
                     first_name: data.bot.first_name,
                     chat_url: `https://t.me/${data.bot.username}`,
-                    polling_status: null
+                    polling_status: null,
                 });
                 setIsPolling(true);
 
@@ -486,7 +491,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify({ chatId: profile.telegram_chat_id }),
+                            body: JSON.stringify({
+                                chatId: profile.telegram_chat_id,
+                            }),
                         });
                     } catch (error) {
                         console.error('Error sending welcome message:', error);
@@ -498,7 +505,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         handleStartPolling();
                     }, 1000);
                 }
-                
+
                 // Dispatch status change event
                 dispatchTelegramStatusChange('healthy');
             }
@@ -525,7 +532,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             const data = await response.json();
             setIsPolling(true);
             showSuccessToast(t('profile.pollingStarted'));
-            
+
             // Dispatch status change event
             dispatchTelegramStatusChange('healthy');
 
@@ -560,7 +567,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             showSuccessToast(
                 t('profile.pollingStopped', 'Polling stopped successfully.')
             );
-            
+
             // Dispatch status change event
             dispatchTelegramStatusChange('problem');
 
@@ -832,7 +839,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <div className="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
                                     <button
                                         type="button"
-                                        onClick={() => setFormData(prev => ({ ...prev, appearance: 'light' }))}
+                                        onClick={() =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                appearance: 'light',
+                                            }))
+                                        }
                                         className={`flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors ${
                                             formData.appearance === 'light'
                                                 ? 'bg-blue-500 text-white'
@@ -844,7 +856,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setFormData(prev => ({ ...prev, appearance: 'dark' }))}
+                                        onClick={() =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                appearance: 'dark',
+                                            }))
+                                        }
                                         className={`flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors ${
                                             formData.appearance === 'dark'
                                                 ? 'bg-blue-500 text-white'
@@ -864,7 +881,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <LanguageDropdown
                                     value={formData.language || 'en'}
                                     onChange={(languageCode) => {
-                                        setFormData(prev => ({ ...prev, language: languageCode }));
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            language: languageCode,
+                                        }));
                                     }}
                                 />
                             </div>
@@ -1414,7 +1434,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     </div>
                                 )}
 
-                                {(telegramBotInfo || profile?.telegram_bot_token) && (
+                                {(telegramBotInfo ||
+                                    profile?.telegram_bot_token) && (
                                     <div className="p-2 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded text-blue-800 dark:text-blue-200">
                                         <p className="font-medium mb-2">
                                             {t(
@@ -1540,23 +1561,44 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                               'Setup Telegram'
                                           )}
                                 </button>
-                                
+
                                 {/* Status indicator */}
                                 {telegramSetupStatus === 'success' && (
                                     <div className="mt-2 flex items-center text-green-600 dark:text-green-400">
-                                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                        <svg
+                                            className="w-5 h-5 mr-2"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clipRule="evenodd"
+                                            />
                                         </svg>
-                                        <span className="text-sm font-medium">Bot configured successfully!</span>
+                                        <span className="text-sm font-medium">
+                                            Bot configured successfully!
+                                        </span>
                                     </div>
                                 )}
-                                
+
                                 {telegramSetupStatus === 'error' && (
                                     <div className="mt-2 flex items-center text-red-600 dark:text-red-400">
-                                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                        <svg
+                                            className="w-5 h-5 mr-2"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clipRule="evenodd"
+                                            />
                                         </svg>
-                                        <span className="text-sm font-medium">Setup failed. Please check your token.</span>
+                                        <span className="text-sm font-medium">
+                                            Setup failed. Please check your
+                                            token.
+                                        </span>
                                     </div>
                                 )}
                             </div>

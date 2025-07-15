@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 import { Note } from '../../entities/Note';
 import { Area } from '../../entities/Area';
 import { useTelegramStatus } from '../../contexts/TelegramStatusContext';
-import { Link } from 'react-router-dom';
 
 interface SidebarFooterProps {
     currentUser: { email: string };
@@ -241,20 +240,24 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                         <div className="flex items-center space-x-2">
                             {/* Telegram Status Indicator */}
                             {telegramStatus !== 'none' && (
-                                <div 
+                                <div
                                     className="flex items-center justify-center"
-                                    title={telegramStatus === 'healthy' ? 'Telegram connected and polling' : 'Telegram connection problem'}
+                                    title={
+                                        telegramStatus === 'healthy'
+                                            ? 'Telegram connected and polling'
+                                            : 'Telegram connection problem'
+                                    }
                                 >
-                                    <TelegramIcon 
+                                    <TelegramIcon
                                         className={`h-5 w-5 ${
-                                            telegramStatus === 'healthy' 
-                                                ? 'text-green-500' 
+                                            telegramStatus === 'healthy'
+                                                ? 'text-green-500'
                                                 : 'text-red-500'
-                                        }`} 
+                                        }`}
                                     />
                                 </div>
                             )}
-                            
+
                             {/* Dark Mode Toggle */}
                             <button
                                 onClick={toggleDarkMode}

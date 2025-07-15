@@ -2,7 +2,6 @@
 
 module.exports = {
     async up(queryInterface, Sequelize) {
-
         const tables = await queryInterface.showAllTables();
         if (!tables.includes('notes_tags')) {
             await queryInterface.createTable('notes_tags', {
