@@ -26,7 +26,7 @@
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --gradient-primary: linear-gradient(135deg, #e6a968 0%, #d49958 100%);
+            --gradient-primary: linear-gradient(135deg, #faf8f5 0%, #f5f2ee 100%);
             --gradient-elegant: linear-gradient(135deg, #f0b575 0%, #e0a465 100%);
             --gradient-surface: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
         }
@@ -48,7 +48,7 @@
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
-            --gradient-primary: linear-gradient(135deg, #e6a968 0%, #d49958 100%);
+            --gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
             --gradient-elegant: linear-gradient(135deg, #f0b575 0%, #e0a465 100%);
             --gradient-surface: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
         }
@@ -326,13 +326,62 @@
             font-size: 3.5rem;
             font-weight: 800;
             margin-bottom: 16px;
-            color: white;
+            color: #1e293b;
             line-height: 1.1;
             letter-spacing: -0.02em;
             position: relative;
             z-index: 1;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             animation: fadeInUp 0.8s ease-out;
+        }
+        
+        [data-theme="dark"] .hero h1 {
+            color: white;
+        }
+        
+        [data-theme="dark"] .hero p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        [data-theme="dark"] .github-stars-display {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        [data-theme="dark"] .testimonials .section-header h2 {
+            color: white !important;
+        }
+        
+        [data-theme="dark"] .testimonials .section-header p {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .testimonial-quote {
+            color: #2d3748;
+        }
+        
+        .testimonial-source {
+            color: #4a5568;
+        }
+        
+        [data-theme="dark"] .testimonial-quote {
+            color: white !important;
+        }
+        
+        [data-theme="dark"] .testimonial-source {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="dark"] .testimonial-card {
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
         }
         
         .hero-subtitle {
@@ -351,7 +400,7 @@
         
         .hero p {
             font-size: 1.3rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: #4a5568;
             margin-bottom: 40px;
             max-width: 600px;
             margin-left: auto;
@@ -404,6 +453,16 @@
         .secondary-button:hover {
             background-color: var(--primary-color);
             color: white;
+        }
+        
+        [data-theme="dark"] .secondary-button {
+            border: 2px solid white;
+            color: white;
+        }
+        
+        [data-theme="dark"] .secondary-button:hover {
+            background-color: white;
+            color: var(--primary-color);
         }
 
         .video-container {
@@ -1257,7 +1316,7 @@
                 <h1>Productivity Made Simple</h1>
                 <div style="height: 20px;"></div>
                 <p>Join hundreds of users who stay organized with smart task management that adapts to their workflow.</p>
-                <div class="github-stars-display" style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; color: rgba(255, 255, 255, 0.8);">
+                <div class="github-stars-display" style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; color: #4a5568;">
                     <i class="fab fa-github" style="font-size: 1.1rem;"></i>
                     <span id="github-stars" style="font-weight: 800;">Loading...</span>
                     <span>stars</span>
@@ -1278,13 +1337,13 @@
     </section>
 
     <!-- Testimonials Section -->
-    <section class="testimonials" style="padding: 80px 0; background: var(--gradient-elegant); position: relative; overflow: hidden;">
+    <section class="testimonials" style="padding: 80px 0; background: var(--gradient-primary); position: relative; overflow: hidden;">
         <style>
             @keyframes testimonialFade {
                 0% { opacity: 0; transform: translateY(20px); }
-                10% { opacity: 1; transform: translateY(0); }
-                75% { opacity: 1; transform: translateY(0); }
-                85% { opacity: 0; transform: translateY(-20px); }
+                5% { opacity: 1; transform: translateY(0); }
+                15% { opacity: 1; transform: translateY(0); }
+                20% { opacity: 0; transform: translateY(-20px); }
                 100% { opacity: 0; transform: translateY(-20px); }
             }
             
@@ -1304,46 +1363,46 @@
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22 width=%2260%22 height=%2260%22%3E%3Cdefs%3E%3Cpattern id=%22testimonial-pattern%22 x=%220%22 y=%220%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22%3E%3Ccircle cx=%2230%22 cy=%2230%22 r=%221.5%22 fill=%22rgba(255,255,255,0.1)%22/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=%2260%22 height=%2260%22 fill=%22url(%23testimonial-pattern)%22/%3E%3C/svg%3E') repeat; opacity: 0.3;"></div>
         <div class="container" style="position: relative; z-index: 1;">
             <div class="section-header" style="text-align: center; margin-bottom: 60px;">
-                <h2 style="color: #2d3748; font-size: 2.5rem; font-weight: 700; margin-bottom: 16px;">What Users Are Saying</h2>
+                <h2 style="color: #1e293b; font-size: 2.5rem; font-weight: 700; margin-bottom: 16px;">What Users Are Saying</h2>
                 <p style="color: #4a5568; font-size: 1.1rem;">Join hundreds of satisfied users who have transformed their productivity with <strong>tududi</strong></p>
             </div>
             <div style="position: relative; max-width: 900px; margin: 0 auto; height: 120px; display: flex; align-items: center;">
-                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                <div class="testimonial-card" style="border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px;">
                     <div style="font-size: 3rem; flex-shrink: 0;">💎</div>
-                    <blockquote style="color: #2d3748; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"This may be the perfect to-do management tool available."</blockquote>
-                    <div style="display: flex; align-items: center; gap: 10px; color: #4a5568; flex-shrink: 0;">
+                    <blockquote class="testimonial-quote" style="font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"This may be the perfect to-do management tool available."</blockquote>
+                    <div class="testimonial-source" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
                         <i class="fab fa-github" style="font-size: 1.2rem;"></i>
                         <span style="font-weight: 500;">GitHub</span>
                     </div>
                 </div>
-                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                <div class="testimonial-card" style="border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px;">
                     <div style="font-size: 3rem; flex-shrink: 0;">❤️</div>
-                    <blockquote style="color: #2d3748; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"I stumbled across this and love it"</blockquote>
-                    <div style="display: flex; align-items: center; gap: 10px; color: #4a5568; flex-shrink: 0;">
+                    <blockquote class="testimonial-quote" style="font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"I stumbled across this and love it"</blockquote>
+                    <div class="testimonial-source" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
                         <i class="fab fa-medium" style="font-size: 1.2rem;"></i>
                         <span style="font-weight: 500;">Medium</span>
                     </div>
                 </div>
-                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                <div class="testimonial-card" style="border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px;">
                     <div style="font-size: 3rem; flex-shrink: 0;">⚡</div>
-                    <blockquote style="color: #2d3748; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"Looks somewhat like super productivity"</blockquote>
-                    <div style="display: flex; align-items: center; gap: 10px; color: #4a5568; flex-shrink: 0;">
+                    <blockquote class="testimonial-quote" style="font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"Looks somewhat like super productivity"</blockquote>
+                    <div class="testimonial-source" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
                         <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
                         <span style="font-weight: 500;">Reddit</span>
                     </div>
                 </div>
-                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                <div class="testimonial-card" style="border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px;">
                     <div style="font-size: 3rem; flex-shrink: 0;">✨</div>
-                    <blockquote style="color: #2d3748; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"Why does this look so good?"</blockquote>
-                    <div style="display: flex; align-items: center; gap: 10px; color: #4a5568; flex-shrink: 0;">
+                    <blockquote class="testimonial-quote" style="font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"Why does this look so good?"</blockquote>
+                    <div class="testimonial-source" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
                         <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
                         <span style="font-weight: 500;">Reddit</span>
                     </div>
                 </div>
-                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                <div class="testimonial-card" style="border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px;">
                     <div style="font-size: 3rem; flex-shrink: 0;">🎉</div>
-                    <blockquote style="color: #2d3748; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"This is amazing"</blockquote>
-                    <div style="display: flex; align-items: center; gap: 10px; color: #4a5568; flex-shrink: 0;">
+                    <blockquote class="testimonial-quote" style="font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"This is amazing"</blockquote>
+                    <div class="testimonial-source" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
                         <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
                         <span style="font-weight: 500;">Reddit</span>
                     </div>
