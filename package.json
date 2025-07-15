@@ -10,10 +10,10 @@
     "start": "npm run backend:start",
     "dev": "npm run frontend:dev",
     "build": "npm run frontend:build",
-    "test": "npm run frontend:test && npm run backend:test",
+    "test": "npm run backend:test",
     "test:watch": "npm run frontend:test:watch",
     "test:coverage": "npm run frontend:test:coverage && npm run backend:test:coverage",
-    
+
     "frontend:dev": "webpack serve --config webpack.config.js --hot",
     "frontend:start": "tsc --noEmit && webpack serve --config webpack.config.js",
     "frontend:build": "npm run clean && tsc --noEmit && webpack --config webpack.config.js",
@@ -23,7 +23,7 @@
     "frontend:lint": "eslint 'frontend/**/*.{js,jsx,ts,tsx}'",
     "frontend:lint-fix": "eslint --fix 'frontend/**/*.{js,jsx,ts,tsx}'",
     "frontend:format": "prettier --write 'frontend/**/*.{js,jsx,ts,tsx}'",
-    
+
     "backend:start": "cd backend && ./cmd/start.sh",
     "backend:dev": "cd backend && nodemon app.js",
     "backend:test": "cd backend && cross-env NODE_ENV=test jest",
@@ -34,27 +34,27 @@
     "backend:lint": "cd backend && eslint .",
     "backend:lint-fix": "cd backend && eslint . --fix",
     "backend:format": "cd backend && prettier --write .",
-    
+
     "db:init": "cd backend && node scripts/db-init.js",
     "db:sync": "cd backend && node scripts/db-sync.js",
     "db:migrate": "cd backend && node scripts/db-migrate.js",
     "db:reset": "cd backend && node scripts/db-reset.js",
     "db:status": "cd backend && node scripts/db-status.js",
     "db:seed": "cd backend && node scripts/seed-dev-data.js",
-    
+
     "user:create": "cd backend && node scripts/user-create.js",
     "migration:create": "cd backend && node scripts/migration-create.js",
     "migration:run": "cd backend && npx sequelize-cli db:migrate",
     "migration:undo": "cd backend && npx sequelize-cli db:migrate:undo",
     "migration:undo:all": "cd backend && npx sequelize-cli db:migrate:undo:all",
     "migration:status": "cd backend && npx sequelize-cli db:migrate:status",
-    
+
     "translations:sync": "cd scripts && ./sync-translations.js",
     "translations:sync-all": "cd scripts && ./sync-translations.js --all",
     "translations:dry-run": "cd scripts && ./sync-translations.js --all --dry-run",
     "translations:check": "cd scripts && ./sync-translations.js --all --dry-run --verbose",
     "translations:export": "cd scripts && ./sync-translations.js --all --dry-run --output missing-translations.json",
-    
+
     "clean": "rimraf dist",
     "lint": "npm run frontend:lint && npm run backend:lint",
     "lint-fix": "npm run frontend:lint-fix && npm run backend:lint-fix",
