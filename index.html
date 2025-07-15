@@ -1277,11 +1277,86 @@
         </div>
     </section>
 
+    <!-- Testimonials Section -->
+    <section class="testimonials" style="padding: 80px 0; background: var(--gradient-elegant); position: relative; overflow: hidden;">
+        <style>
+            @keyframes testimonialFade {
+                0% { opacity: 0; transform: translateY(20px); }
+                10% { opacity: 1; transform: translateY(0); }
+                75% { opacity: 1; transform: translateY(0); }
+                85% { opacity: 0; transform: translateY(-20px); }
+                100% { opacity: 0; transform: translateY(-20px); }
+            }
+            
+            .testimonial-card {
+                animation: testimonialFade 20s infinite;
+                position: absolute;
+                width: 100%;
+                opacity: 0;
+            }
+            
+            .testimonial-card:nth-child(1) { animation-delay: 0s; }
+            .testimonial-card:nth-child(2) { animation-delay: 4s; }
+            .testimonial-card:nth-child(3) { animation-delay: 8s; }
+            .testimonial-card:nth-child(4) { animation-delay: 12s; }
+            .testimonial-card:nth-child(5) { animation-delay: 16s; }
+        </style>
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22 width=%2260%22 height=%2260%22%3E%3Cdefs%3E%3Cpattern id=%22testimonial-pattern%22 x=%220%22 y=%220%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22%3E%3Ccircle cx=%2230%22 cy=%2230%22 r=%221.5%22 fill=%22rgba(255,255,255,0.1)%22/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=%2260%22 height=%2260%22 fill=%22url(%23testimonial-pattern)%22/%3E%3C/svg%3E') repeat; opacity: 0.3;"></div>
+        <div class="container" style="position: relative; z-index: 1;">
+            <div class="section-header" style="text-align: center; margin-bottom: 60px;">
+                <h2 style="color: #2d3748; font-size: 2.5rem; font-weight: 700; margin-bottom: 16px;">What Users Are Saying</h2>
+                <p style="color: #4a5568; font-size: 1.1rem;">Join hundreds of satisfied users who have transformed their productivity with <strong>tududi</strong></p>
+            </div>
+            <div style="position: relative; max-width: 900px; margin: 0 auto; height: 120px; display: flex; align-items: center;">
+                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="font-size: 3rem; flex-shrink: 0;">💎</div>
+                    <blockquote style="color: #2d3748; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"This may be the perfect to-do management tool available."</blockquote>
+                    <div style="display: flex; align-items: center; gap: 10px; color: #4a5568; flex-shrink: 0;">
+                        <i class="fab fa-github" style="font-size: 1.2rem;"></i>
+                        <span style="font-weight: 500;">GitHub</span>
+                    </div>
+                </div>
+                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="font-size: 3rem; flex-shrink: 0;">❤️</div>
+                    <blockquote style="color: #2d3748; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"I stumbled across this and love it"</blockquote>
+                    <div style="display: flex; align-items: center; gap: 10px; color: #4a5568; flex-shrink: 0;">
+                        <i class="fab fa-medium" style="font-size: 1.2rem;"></i>
+                        <span style="font-weight: 500;">Medium</span>
+                    </div>
+                </div>
+                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="font-size: 3rem; flex-shrink: 0;">⚡</div>
+                    <blockquote style="color: #2d3748; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"Looks somewhat like super productivity"</blockquote>
+                    <div style="display: flex; align-items: center; gap: 10px; color: #4a5568; flex-shrink: 0;">
+                        <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
+                        <span style="font-weight: 500;">Reddit</span>
+                    </div>
+                </div>
+                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="font-size: 3rem; flex-shrink: 0;">✨</div>
+                    <blockquote style="color: #2d3748; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"Why does this look so good?"</blockquote>
+                    <div style="display: flex; align-items: center; gap: 10px; color: #4a5568; flex-shrink: 0;">
+                        <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
+                        <span style="font-weight: 500;">Reddit</span>
+                    </div>
+                </div>
+                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="font-size: 3rem; flex-shrink: 0;">🎉</div>
+                    <blockquote style="color: #2d3748; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center; font-weight: 600;">"This is amazing"</blockquote>
+                    <div style="display: flex; align-items: center; gap: 10px; color: #4a5568; flex-shrink: 0;">
+                        <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
+                        <span style="font-weight: 500;">Reddit</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="features" id="features">
         <div class="container">
             <div class="section-header">
                 <h2>Powerful Features for Modern Productivity</h2>
-                <p>tududi combines the simplicity of personal task management with the power of professional project organization. Built for individuals and teams who value privacy, control, and efficiency.</p>
+                <p><strong>tududi</strong> combines the simplicity of personal task management with the power of professional project organization. Built for individuals and teams who value privacy, control, and efficiency.</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card">
@@ -1378,87 +1453,12 @@
             </div>
         </div>
     </section>
-    
-    <!-- Testimonials Section -->
-    <section class="testimonials" style="padding: 80px 0; background: var(--gradient-elegant); position: relative; overflow: hidden;">
-        <style>
-            @keyframes testimonialFade {
-                0% { opacity: 0; transform: translateY(20px); }
-                10% { opacity: 1; transform: translateY(0); }
-                75% { opacity: 1; transform: translateY(0); }
-                85% { opacity: 0; transform: translateY(-20px); }
-                100% { opacity: 0; transform: translateY(-20px); }
-            }
-            
-            .testimonial-card {
-                animation: testimonialFade 20s infinite;
-                position: absolute;
-                width: 100%;
-                opacity: 0;
-            }
-            
-            .testimonial-card:nth-child(1) { animation-delay: 0s; }
-            .testimonial-card:nth-child(2) { animation-delay: 4s; }
-            .testimonial-card:nth-child(3) { animation-delay: 8s; }
-            .testimonial-card:nth-child(4) { animation-delay: 12s; }
-            .testimonial-card:nth-child(5) { animation-delay: 16s; }
-        </style>
-        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22 width=%2260%22 height=%2260%22%3E%3Cdefs%3E%3Cpattern id=%22testimonial-pattern%22 x=%220%22 y=%220%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22%3E%3Ccircle cx=%2230%22 cy=%2230%22 r=%221.5%22 fill=%22rgba(255,255,255,0.1)%22/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=%2260%22 height=%2260%22 fill=%22url(%23testimonial-pattern)%22/%3E%3C/svg%3E') repeat; opacity: 0.3;"></div>
-        <div class="container" style="position: relative; z-index: 1;">
-            <div class="section-header" style="text-align: center; margin-bottom: 60px;">
-                <h2 style="color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 16px;">What Users Are Saying</h2>
-                <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.1rem;">Join hundreds of satisfied users who have transformed their productivity with tududi</p>
-            </div>
-            <div style="position: relative; max-width: 900px; margin: 0 auto; height: 120px; display: flex; align-items: center;">
-                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <div style="font-size: 3rem; flex-shrink: 0;">💎</div>
-                    <blockquote style="color: white; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center;">"This may be the perfect to-do management tool available."</blockquote>
-                    <div style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8); flex-shrink: 0;">
-                        <i class="fab fa-github" style="font-size: 1.2rem;"></i>
-                        <span style="font-weight: 500;">GitHub</span>
-                    </div>
-                </div>
-                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <div style="font-size: 3rem; flex-shrink: 0;">❤️</div>
-                    <blockquote style="color: white; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center;">"I stumbled across this and love it"</blockquote>
-                    <div style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8); flex-shrink: 0;">
-                        <i class="fab fa-medium" style="font-size: 1.2rem;"></i>
-                        <span style="font-weight: 500;">Medium</span>
-                    </div>
-                </div>
-                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <div style="font-size: 3rem; flex-shrink: 0;">⚡</div>
-                    <blockquote style="color: white; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center;">"Looks somewhat like super productivity"</blockquote>
-                    <div style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8); flex-shrink: 0;">
-                        <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
-                        <span style="font-weight: 500;">Reddit</span>
-                    </div>
-                </div>
-                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <div style="font-size: 3rem; flex-shrink: 0;">✨</div>
-                    <blockquote style="color: white; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center;">"Why does this look so good?"</blockquote>
-                    <div style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8); flex-shrink: 0;">
-                        <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
-                        <span style="font-weight: 500;">Reddit</span>
-                    </div>
-                </div>
-                <div class="testimonial-card" style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 16px; padding: 30px; display: flex; align-items: center; gap: 25px; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <div style="font-size: 3rem; flex-shrink: 0;">🎉</div>
-                    <blockquote style="color: white; font-size: 1.2rem; line-height: 1.6; margin: 0; font-style: italic; flex: 1; text-align: center;">"This is amazing"</blockquote>
-                    <div style="display: flex; align-items: center; gap: 10px; color: rgba(255, 255, 255, 0.8); flex-shrink: 0;">
-                        <i class="fab fa-reddit" style="font-size: 1.2rem;"></i>
-                        <span style="font-weight: 500;">Reddit</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <section class="languages" id="languages">
         <div class="container">
             <div class="section-header">
                 <h2>🌍 Global Language Support</h2>
-                <p>tududi speaks your language! Available in 24 languages with full localization support, making productivity accessible to users worldwide.</p>
+                <p><strong>tududi</strong> speaks your language! Available in 24 languages with full localization support, making productivity accessible to users worldwide.</p>
             </div>
             <div class="languages-grid">
                 <div class="language-item">
@@ -1570,7 +1570,7 @@
         <div class="container">
             <div class="section-header">
                 <h2>Clean, Intuitive Interface</h2>
-                <p>Experience tududi's thoughtfully designed interface that adapts to your workflow. Dark and light themes, responsive design, and distraction-free focus on what matters most.</p>
+                <p>Experience <strong>tududi's</strong> thoughtfully designed interface that adapts to your workflow. Dark and light themes, responsive design, and distraction-free focus on what matters most.</p>
             </div>
             <div class="screenshots-grid">
                 <div class="screenshot">
@@ -1595,7 +1595,7 @@
         <div class="container">
             <div class="section-header">
                 <h2>Easy Self-Hosted Setup</h2>
-                <p>Deploy tududi in minutes with Docker. No complex configuration, no external dependencies - just pull, configure, and run. Your data stays completely under your control.</p>
+                <p>Deploy <strong>tududi</strong> in minutes with Docker. No complex configuration, no external dependencies - just pull, configure, and run. Your data stays completely under your control.</p>
             </div>
             <div class="installation-steps">
                 <div class="step">
@@ -1658,7 +1658,7 @@
     <section class="cta">
         <div class="container">
             <h2>Take Control of Your Productivity</h2>
-            <p>Join thousands of users who've chosen privacy and control over their task management. Start your self-hosted tududi instance today and experience distraction-free productivity.</p>
+            <p>Join thousands of users who've chosen privacy and control over their task management. Start your self-hosted <strong>tududi</strong> instance today and experience distraction-free productivity.</p>
             <div class="cta-buttons">
                 <a href="https://github.com/chrisvel/tududi" class="cta-white">View on GitHub</a>
                 <a href="https://github.com/chrisvel/tududi/issues" class="cta-outline">Report Issues</a>
@@ -1669,8 +1669,8 @@
     <section class="installation" style="padding: 60px 0; background-color: var(--bg-color);">
         <div class="container">
             <div class="section-header">
-                <h2>Join the tududi Community</h2>
-                <p>Connect with other users, get support, share ideas, and stay updated with the latest developments. Our community is here to help you get the most out of tududi.</p>
+                <h2>Join the <strong>tududi</strong> Community</h2>
+                <p>Connect with other users, get support, share ideas, and stay updated with the latest developments. Our community is here to help you get the most out of <strong>tududi</strong>.</p>
             </div>
             <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 40px;">
                 <a href="https://discord.gg/fkbeJ9CmcH" style="display: inline-block;">
@@ -1759,7 +1759,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 tududi. All rights reserved.</p>
+                <p>&copy; 2025 <strong>tududi</strong>. All rights reserved.</p>
             </div>
         </div>
     </footer>
