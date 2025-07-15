@@ -287,7 +287,7 @@
         
         /* Hero Section */
         .hero {
-            padding: 180px 0 120px;
+            padding: 220px 0 120px;
             text-align: center;
             background: var(--gradient-primary);
             position: relative;
@@ -325,7 +325,7 @@
         .hero h1 {
             font-size: 3.5rem;
             font-weight: 800;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             color: white;
             line-height: 1.1;
             letter-spacing: -0.02em;
@@ -333,6 +333,20 @@
             z-index: 1;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 24px;
+            font-style: italic;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+        
+        .hero-spacer {
+            height: 40px;
         }
         
         .hero p {
@@ -427,6 +441,22 @@
             margin: 0 auto;
             transition: all 0.3s ease;
             animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+        
+        .hero-image-light {
+            display: block;
+        }
+        
+        .hero-image-dark {
+            display: none;
+        }
+        
+        [data-theme="dark"] .hero-image-light {
+            display: none;
+        }
+        
+        [data-theme="dark"] .hero-image-dark {
+            display: block;
         }
         
         /* Features */
@@ -915,13 +945,22 @@
             
             /* Hero */
             .hero {
-                padding: 120px 0 60px;
+                padding: 150px 0 60px;
                 text-align: center;
             }
             
             .hero h1 {
                 font-size: 2.2rem;
+                margin-bottom: 12px;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
                 margin-bottom: 20px;
+            }
+            
+            .hero-spacer {
+                height: 25px;
             }
             
             .hero p {
@@ -1177,11 +1216,14 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
+                <h1>Productivity Made Simple</h1>
+                <h2 class="hero-subtitle">Scattered thoughts to structured action</h2>
+                <p>Join <span id="github-stars" style="font-size: 1.2em; font-weight: bold;">hundreds of</span> users who stay organized with smart task management that adapts to their workflow.</p>
+                <div class="hero-spacer"></div>
                 <div class="hero-image-container">
-                    <img src="screenshots/all-dark.png" alt="tududi - Dark Mode Interface" class="hero-image">
+                    <img src="screenshots/all-light.png" alt="tududi - Light Mode Interface" class="hero-image hero-image-light">
+                    <img src="screenshots/all-dark.png" alt="tududi - Dark Mode Interface" class="hero-image hero-image-dark">
                 </div>
-                <h1>Task Management Made Simple</h1>
-                <p>tududi is the self-hosted task management tool that puts you in control. Organize your life and projects with a clear, hierarchical structure, smart recurring tasks, and seamless Telegram integration. Get focused, stay productive, and keep your data private.</p>
                 <div class="hero-buttons">
                     <a href="https://github.com/chrisvel/tududi" class="primary-button">View on GitHub</a>
                     <a href="#installation" class="secondary-button">Quick Install</a>
@@ -1707,6 +1749,32 @@
                 document.querySelector('.theme-switch-label i').classList.add('fa-moon');
             }
         });
+        
+        // Fetch GitHub stars
+        async function fetchGitHubStars() {
+            try {
+                const response = await fetch('https://api.github.com/repos/chrisvel/tududi');
+                const data = await response.json();
+                const stars = data.stargazers_count;
+                
+                let starsText = '';
+                if (stars >= 1000) {
+                    starsText = `${Math.floor(stars / 1000)}k+`;
+                } else if (stars >= 100) {
+                    starsText = `${stars}+`;
+                } else {
+                    starsText = 'hundreds of';
+                }
+                
+                document.getElementById('github-stars').textContent = starsText;
+            } catch (error) {
+                console.log('GitHub API error:', error);
+                // Keep default text if API fails
+            }
+        }
+        
+        // Fetch stars when page loads
+        fetchGitHubStars();
         
         // Mobile menu toggle functionality
         function toggleMobileMenu() {
