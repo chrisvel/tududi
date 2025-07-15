@@ -849,6 +849,10 @@
             color: var(--primary-color);
         }
         
+        .mobile-menu-toggle {
+            display: none;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -871,6 +875,42 @@
             
             .nav-links {
                 display: none;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: var(--card-bg);
+                border-bottom: 1px solid var(--border-color);
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
+                box-shadow: var(--shadow-lg);
+                z-index: 1000;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: var(--text-color);
+                cursor: pointer;
+                padding: 5px;
+            }
+            
+            .nav-links a {
+                padding: 10px 15px;
+                border-radius: 8px;
+                text-align: center;
+            }
+            
+            .theme-switch {
+                justify-content: center;
+                margin: 10px 0;
             }
             
             /* Hero */
@@ -926,16 +966,37 @@
             
             .feature-card {
                 padding: 20px;
-                text-align: center;
+                text-align: left;
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto 1fr;
+                gap: 15px 15px;
+                align-items: start;
+            }
+            
+            .feature-icon {
+                grid-row: 1 / 3;
+                grid-column: 1;
+                margin-bottom: 0;
+                align-self: start;
+                margin-top: 3px;
             }
             
             .feature-card h3 {
+                grid-row: 1;
+                grid-column: 2;
                 font-size: 1.1rem;
-                margin-bottom: 10px;
+                margin: 0;
+                align-self: start;
             }
             
             .feature-card p {
+                grid-row: 2;
+                grid-column: 2;
                 font-size: 0.9rem;
+                margin: 0;
+                line-height: 1.4;
+                align-self: start;
             }
             
             /* Testimonials */
@@ -1092,6 +1153,9 @@
                     </div>
                     <span>tududi</span>
                 </div>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <ul class="nav-links">
                     <li><a href="#features">Features</a></li>
                     <li><a href="#languages">Languages</a></li>
@@ -1642,6 +1706,32 @@
                 document.querySelector('.theme-switch-label i').classList.remove('fa-sun');
                 document.querySelector('.theme-switch-label i').classList.add('fa-moon');
             }
+        });
+        
+        // Mobile menu toggle functionality
+        function toggleMobileMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+            
+            const menuIcon = document.querySelector('.mobile-menu-toggle i');
+            if (navLinks.classList.contains('active')) {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+            } else {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+        }
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                const navLinks = document.querySelector('.nav-links');
+                const menuIcon = document.querySelector('.mobile-menu-toggle i');
+                navLinks.classList.remove('active');
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            });
         });
     </script>
 </body>
