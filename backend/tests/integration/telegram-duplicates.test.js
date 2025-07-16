@@ -16,8 +16,6 @@ describe('Telegram Duplicate Prevention Integration Tests', () => {
             logMessages.push(args.join(' '));
             originalConsoleLog(...args);
         };
-
-        await sequelize.sync({ force: true });
     });
 
     beforeEach(async () => {
@@ -46,7 +44,6 @@ describe('Telegram Duplicate Prevention Integration Tests', () => {
 
     afterAll(async () => {
         console.log = originalConsoleLog;
-        await sequelize.close();
     });
 
     describe('Database-level Duplicate Prevention', () => {
