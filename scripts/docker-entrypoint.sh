@@ -45,6 +45,7 @@ if [ "$CURRENT_UID" != "$PUID" ] || [ "$CURRENT_GID" != "$PGID" ]; then
     mkdir -p /app/backend/db /app/backend/certs
     chown -R app:$TARGET_GROUP /app/backend/db /app/backend/certs
     chmod 770 /app/backend/db /app/backend/certs
+    chmod 660 "$DB_FILE"
 
     echo "User configuration completed"
 else
