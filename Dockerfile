@@ -56,10 +56,10 @@ RUN apk add --no-cache --virtual .runtime-deps \
 WORKDIR /app
 
 # Copy backend
-COPY ./backend/ /app/backend/
+COPY --chown=app:app ./backend/ /app/backend/
 RUN chmod +x /app/backend/cmd/start.sh
 
-COPY ./scripts/docker-entrypoint.sh /app/scripts/docker-entrypoint.sh
+COPY --chown=app:app ./scripts/docker-entrypoint.sh /app/scripts/docker-entrypoint.sh
 RUN chmod +x /app/scripts/docker-entrypoint.sh
 
 # Copy frontend
@@ -70,8 +70,7 @@ COPY --from=builder --chown=app:app /app/node_modules ./node_modules
 COPY --from=builder --chown=app:app /app/package.json /app/
 
 # Create necessary directories
-RUN mkdir -p /app/backend/db /app/backend/certs && \
-    chown -R app:app /app
+RUN mkdir -p /app/backend/db /app/backend/certs
 
 # Cleanup
 RUN apk del --no-cache .runtime-deps sqlite openssl curl && \
