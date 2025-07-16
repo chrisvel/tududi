@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Task } from '../../../entities/Task';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { fetchSubtasks } from '../../../utils/tasksService';
@@ -32,11 +31,13 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
     const subtasksSectionRef = useRef<HTMLDivElement>(null);
     const addInputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        if (parentTaskId && subtasks.length === 0) {
-            loadExistingSubtasks();
-        }
-    }, [parentTaskId, subtasks.length]);
+    // Remove the automatic reloading when subtasks.length === 0
+    // This was causing deleted subtasks to reappear
+    // useEffect(() => {
+    //     if (parentTaskId && subtasks.length === 0) {
+    //         loadExistingSubtasks();
+    //     }
+    // }, [parentTaskId, subtasks.length]);
 
     useEffect(() => {
         // Scroll to bottom when section is mounted (opened)
@@ -56,7 +57,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                 isNew: false,
             }));
             onSubtasksChange(subtaskData);
-        } catch (error) {
+        } catch {
             // Handle silently or show error if needed
         } finally {
             setIsLoading(false);

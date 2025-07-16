@@ -126,11 +126,19 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         }
     };
 
+    // Check if task has metadata (project, tags, due_date, recurrence_type)
+    const hasMetadata = (
+        (project && !hideProjectName) ||
+        (task.tags && task.tags.length > 0) ||
+        task.due_date ||
+        (task.recurrence_type && task.recurrence_type !== 'none')
+    );
+
     return (
-        <div className="py-2 px-4 cursor-pointer group" onClick={onTaskClick}>
+        <div className={`${hasMetadata ? 'py-2' : 'py-3'} px-4 cursor-pointer group`} onClick={onTaskClick}>
             {/* Full view (md and larger) */}
             <div className="hidden md:flex flex-col md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center space-x-4 mb-2 md:mb-0">
+                <div className="flex items-center space-x-3 mb-2 md:mb-0">
                     <TaskPriorityIcon
                         priority={task.priority}
                         status={task.status}
@@ -285,8 +293,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         </button>
                     )}
 
-                    {/* Show Subtasks Controls */}
-                    {hasSubtasks && (
+                    {/* Show Subtasks Controls - Hide for completed tasks */}
+                    {hasSubtasks && !(task.status === 'done' || task.status === 2) && (
                         <button
                             onClick={(e) => {
                                 console.log('Subtasks button clicked', e);
@@ -455,8 +463,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             </button>
                         )}
 
-                        {/* Show Subtasks Controls - Mobile */}
-                        {hasSubtasks && (
+                        {/* Show Subtasks Controls - Mobile - Hide for completed tasks */}
+                        {hasSubtasks && !(task.status === 'done' || task.status === 2) && (
                             <button
                                 onClick={(e) => {
                                     console.log('Subtasks button clicked (mobile)', e);
@@ -526,7 +534,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                 onTaskClick(e, subtask);
                             }}
                         >
-                            <div className="px-3 py-1.5 flex items-center justify-between">
+                            <div className="px-3 py-2.5 flex items-center justify-between">
                                 {/* Left side - Task info */}
                                 <div className="flex items-center space-x-2 flex-1 min-w-0">
                                     <TaskPriorityIcon
@@ -634,9 +642,8 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
                 subtasks={subtasks}
                 onTaskClick={(e, task) => {
                     e.stopPropagation();
-                    if (props.onSubtaskClick) {
-                        props.onSubtaskClick(task);
-                    }
+                    // Handle subtask click - could be extended with custom logic
+                    console.log('Subtask clicked:', task);
                 }}
             />
         </>
