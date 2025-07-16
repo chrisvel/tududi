@@ -608,6 +608,36 @@ router.get('/task/:id', async (req, res) => {
     }
 });
 
+// GET /api/task/:id/subtasks
+router.get('/task/:id/subtasks', async (req, res) => {
+    try {
+        const subtasks = await Task.findAll({
+            where: {
+                parent_task_id: req.params.id,
+                user_id: req.currentUser.id,
+            },
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] },
+                },
+                { model: Project, attributes: ['name'], required: false },
+            ],
+            order: [['created_at', 'ASC']],
+        });
+
+        const serializedSubtasks = await Promise.all(
+            subtasks.map((subtask) => serializeTask(subtask))
+        );
+
+        res.json(serializedSubtasks);
+    } catch (error) {
+        console.error('Error fetching subtasks:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // POST /api/task
 router.post('/task', async (req, res) => {
     try {
@@ -618,8 +648,10 @@ router.post('/task', async (req, res) => {
             status,
             note,
             project_id,
+            parent_task_id,
             tags,
             Tags,
+            subtasks,
             today,
             recurrence_type,
             recurrence_interval,
@@ -683,8 +715,37 @@ router.post('/task', async (req, res) => {
             taskAttributes.project_id = project_id;
         }
 
+        // Handle parent task assignment
+        if (parent_task_id && parent_task_id.toString().trim()) {
+            const parentTask = await Task.findOne({
+                where: { id: parent_task_id, user_id: req.currentUser.id },
+            });
+            if (!parentTask) {
+                return res.status(400).json({ error: 'Invalid parent task.' });
+            }
+            taskAttributes.parent_task_id = parent_task_id;
+        }
+
         const task = await Task.create(taskAttributes);
         await updateTaskTags(task, tagsData, req.currentUser.id);
+
+        // Handle subtasks creation
+        if (subtasks && Array.isArray(subtasks)) {
+            const subtaskPromises = subtasks
+                .filter(subtask => subtask.name && subtask.name.trim())
+                .map(subtask => Task.create({
+                    name: subtask.name.trim(),
+                    parent_task_id: task.id,
+                    user_id: req.currentUser.id,
+                    priority: Task.PRIORITY.MEDIUM,
+                    status: Task.STATUS.NOT_STARTED,
+                    today: false,
+                    recurrence_type: 'none',
+                    completion_based: false,
+                }));
+            
+            await Promise.all(subtaskPromises);
+        }
 
         // Log task creation event
         try {
@@ -747,8 +808,10 @@ router.patch('/task/:id', async (req, res) => {
             note,
             due_date,
             project_id,
+            parent_task_id,
             tags,
             Tags,
+            subtasks,
             today,
             recurrence_type,
             recurrence_interval,
@@ -927,8 +990,86 @@ router.patch('/task/:id', async (req, res) => {
             taskAttributes.project_id = null;
         }
 
+        // Handle parent task assignment
+        if (parent_task_id && parent_task_id.toString().trim()) {
+            const parentTask = await Task.findOne({
+                where: { id: parent_task_id, user_id: req.currentUser.id },
+            });
+            if (!parentTask) {
+                return res.status(400).json({ error: 'Invalid parent task.' });
+            }
+            taskAttributes.parent_task_id = parent_task_id;
+        } else if (parent_task_id === null || parent_task_id === '') {
+            taskAttributes.parent_task_id = null;
+        }
+
         await task.update(taskAttributes);
         await updateTaskTags(task, tagsData, req.currentUser.id);
+
+        // Handle subtasks updates
+        if (subtasks && Array.isArray(subtasks)) {
+            // Delete existing subtasks that are not in the new list
+            const existingSubtasks = await Task.findAll({
+                where: { parent_task_id: task.id, user_id: req.currentUser.id },
+            });
+
+            const subtasksToKeep = subtasks.filter((s) => s.id && !s.isNew);
+            const subtasksToDelete = existingSubtasks.filter(
+                (existing) =>
+                    !subtasksToKeep.find((keep) => keep.id === existing.id)
+            );
+
+            // Delete removed subtasks
+            if (subtasksToDelete.length > 0) {
+                await Task.destroy({
+                    where: {
+                        id: subtasksToDelete.map((s) => s.id),
+                        user_id: req.currentUser.id,
+                    },
+                });
+            }
+
+            // Update edited subtasks
+            const editedSubtasks = subtasks.filter(
+                (s) => s.isEdited && s.id && s.name && s.name.trim()
+            );
+            if (editedSubtasks.length > 0) {
+                const updatePromises = editedSubtasks.map((subtask) =>
+                    Task.update(
+                        { name: subtask.name.trim() },
+                        {
+                            where: {
+                                id: subtask.id,
+                                user_id: req.currentUser.id,
+                            },
+                        }
+                    )
+                );
+
+                await Promise.all(updatePromises);
+            }
+
+            // Create new subtasks
+            const newSubtasks = subtasks.filter(
+                (s) => s.isNew && s.name && s.name.trim()
+            );
+            if (newSubtasks.length > 0) {
+                const subtaskPromises = newSubtasks.map((subtask) =>
+                    Task.create({
+                        name: subtask.name.trim(),
+                        parent_task_id: task.id,
+                        user_id: req.currentUser.id,
+                        priority: Task.PRIORITY.MEDIUM,
+                        status: Task.STATUS.NOT_STARTED,
+                        today: false,
+                        recurrence_type: 'none',
+                        completion_based: false,
+                    })
+                );
+
+                await Promise.all(subtaskPromises);
+            }
+        }
 
         // Log task update events
         try {
