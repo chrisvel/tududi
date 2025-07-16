@@ -14,9 +14,6 @@ if (
 const environment = process.env.NODE_ENV;
 const production = process.env.NODE_ENV === 'production';
 const projectRootPath = path.join(__dirname, '..'); // backend root path
-const dbDir = process.env.DATABASE_URL
-    ? process.env.DATABASE_URL.replace('sqlite:///', '')
-    : path.join(projectRootPath, 'db');
 
 const credentials = {
     google: {
@@ -40,9 +37,9 @@ const config = {
               'http://127.0.0.1:9292',
           ],
 
-    dbDir,
-
-    dbFile: path.join(dbDir, `${environment}.sqlite3`),
+    dbFile:
+        process.env.DB_FILE ||
+        path.join(projectRootPath, 'db', `${environment}.sqlite3`),
 
     disableScheduler: process.env.DISABLE_SCHEDULER === 'true',
 
@@ -72,6 +69,6 @@ const config = {
         production && process.env.TUDUDI_INTERNAL_SSL_ENABLED === 'true',
 };
 
-// Configuration logging removed for cleaner test output
+console.log(`Using database file '${config.dbFile}'`);
 
 module.exports = config;
