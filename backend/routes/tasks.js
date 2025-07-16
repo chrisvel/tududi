@@ -13,8 +13,11 @@ async function serializeTask(task) {
         task.id
     );
 
+    // Remove subtasks from the serialized task
+    const { Subtasks, ...taskWithoutSubtasks } = taskJson;
+
     return {
-        ...taskJson,
+        ...taskWithoutSubtasks,
         tags: taskJson.Tags || [],
         due_date: task.due_date
             ? task.due_date.toISOString().split('T')[0]
@@ -55,6 +58,113 @@ async function updateTaskTags(task, tagsData, userId) {
     // Set all tags to task
     const allTags = [...existingTags, ...createdTags];
     await task.setTags(allTags);
+}
+
+// Helper function to check if all subtasks are done and update parent task
+async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
+    try {
+        // Get all subtasks for the parent task
+        const subtasks = await Task.findAll({
+            where: {
+                parent_task_id: parentTaskId,
+                user_id: userId,
+            },
+        });
+
+        // Check if all subtasks are done
+        const allSubtasksDone = subtasks.length > 0 && subtasks.every(subtask => 
+            subtask.status === Task.STATUS.DONE || subtask.status === 'done'
+        );
+
+        if (allSubtasksDone) {
+            // Update parent task to done
+            await Task.update(
+                {
+                    status: Task.STATUS.DONE,
+                    completed_at: new Date(),
+                },
+                {
+                    where: {
+                        id: parentTaskId,
+                        user_id: userId,
+                    },
+                }
+            );
+        }
+    } catch (error) {
+        console.error('Error checking parent task completion:', error);
+    }
+}
+
+// Helper function to undone parent task when subtask gets undone
+async function undoneParentTaskIfNeeded(parentTaskId, userId) {
+    try {
+        // Get parent task
+        const parentTask = await Task.findOne({
+            where: {
+                id: parentTaskId,
+                user_id: userId,
+            },
+        });
+
+        // If parent is done, undone it
+        if (parentTask && (parentTask.status === Task.STATUS.DONE || parentTask.status === 'done')) {
+            await Task.update(
+                {
+                    status: Task.STATUS.NOT_STARTED,
+                    completed_at: null,
+                },
+                {
+                    where: {
+                        id: parentTaskId,
+                        user_id: userId,
+                    },
+                }
+            );
+        }
+    } catch (error) {
+        console.error('Error undoing parent task:', error);
+    }
+}
+
+// Helper function to complete all subtasks when parent is done
+async function completeAllSubtasks(parentTaskId, userId) {
+    try {
+        await Task.update(
+            {
+                status: Task.STATUS.DONE,
+                completed_at: new Date(),
+            },
+            {
+                where: {
+                    parent_task_id: parentTaskId,
+                    user_id: userId,
+                },
+            }
+        );
+    } catch (error) {
+        console.error('Error completing all subtasks:', error);
+    }
+}
+
+// Helper function to undone all subtasks when parent is undone
+async function undoneAllSubtasks(parentTaskId, userId) {
+    try {
+        await Task.update(
+            {
+                status: Task.STATUS.NOT_STARTED,
+                completed_at: null,
+            },
+            {
+                where: {
+                    parent_task_id: parentTaskId,
+                    user_id: userId,
+                },
+            }
+        );
+    } catch (error) {
+        console.error('Error undoing all subtasks:', error);
+    }
 }
 
 // Filter tasks by parameters
@@ -1282,6 +1392,26 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
         }
 
         await task.update(updateData);
+
+        // Handle parent-child task completion logic
+        if (task.parent_task_id) {
+            if (newStatus === Task.STATUS.DONE) {
+                // When subtask is done, check if parent should be done
+                await checkAndUpdateParentTaskCompletion(task.parent_task_id, req.currentUser.id);
+            } else {
+                // When subtask is undone, undone parent if it was done
+                await undoneParentTaskIfNeeded(task.parent_task_id, req.currentUser.id);
+            }
+        } else {
+            // This is a parent task
+            if (newStatus === Task.STATUS.DONE) {
+                // When parent is done, complete all subtasks
+                await completeAllSubtasks(task.id, req.currentUser.id);
+            } else {
+                // When parent is undone, undone all subtasks
+                await undoneAllSubtasks(task.id, req.currentUser.id);
+            }
+        }
 
         // Handle recurring task completion
         let nextTask = null;

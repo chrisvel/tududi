@@ -48,7 +48,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                 onTaskClick(e, subtask);
                             }}
                         >
-                            <div className="px-4 py-3 flex items-center justify-between">
+                            <div className="px-4 py-2.5 flex items-center justify-between">
                                 <div className="flex items-center space-x-2 flex-1 min-w-0">
                                     {subtask.status === 'done' || subtask.status === 2 ? (
                                         <div 
@@ -106,15 +106,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                     </span>
                                 </div>
                                 <div className="flex items-center space-x-1">
-                                    {subtask.status === 'done' || subtask.status === 2 ? (
-                                        <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-                                            ✓
-                                        </span>
-                                    ) : subtask.status === 'in_progress' || subtask.status === 1 ? (
-                                        <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-                                            ▶
-                                        </span>
-                                    ) : null}
+                                    {/* Right side status indicators removed */}
                                 </div>
                             </div>
                         </div>
@@ -129,7 +121,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
     );
 };
 import TaskModal from './TaskModal';
-import { toggleTaskCompletion, fetchSubtasks } from '../../utils/tasksService';
+import { toggleTaskCompletion, fetchSubtasks, fetchTaskById } from '../../utils/tasksService';
 import { isTaskOverdue } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 
@@ -154,6 +146,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const [subtaskModalOpen, setSubtaskModalOpen] = useState(false);
     const [selectedSubtask, setSelectedSubtask] = useState<Task | null>(null);
     const [projectList, setProjectList] = useState<Project[]>(projects);
+    const [parentTaskModalOpen, setParentTaskModalOpen] = useState(false);
+    const [parentTask, setParentTask] = useState<Task | null>(null);
     
     // Subtasks state
     const [showSubtasks, setShowSubtasks] = useState(false);
@@ -172,20 +166,21 @@ const TaskItem: React.FC<TaskItemProps> = ({
     
     const completionPercentage = calculateCompletionPercentage();
 
+    // Helper function to check if task has subtasks
+    const checkSubtasks = async () => {
+        if (!task.id) return;
+        
+        try {
+            const subtasksData = await fetchSubtasks(task.id);
+            setHasSubtasks(subtasksData.length > 0);
+        } catch (error) {
+            console.error('Error fetching subtasks:', error);
+            setHasSubtasks(false);
+        }
+    };
+
     // Check if task has subtasks on mount
     useEffect(() => {
-        const checkSubtasks = async () => {
-            if (!task.id) return;
-            
-            try {
-                const subtasksData = await fetchSubtasks(task.id);
-                setHasSubtasks(subtasksData.length > 0);
-            } catch (error) {
-                console.error('Error fetching subtasks:', error);
-                setHasSubtasks(false);
-            }
-        };
-        
         checkSubtasks();
     }, [task.id]);
 
@@ -225,15 +220,32 @@ const TaskItem: React.FC<TaskItemProps> = ({
         setIsModalOpen(true);
     };
 
-    const handleSubtaskClick = (subtask: Task) => {
-        setSelectedSubtask(subtask);
-        setSubtaskModalOpen(true);
+    const handleSubtaskClick = async (subtask: Task) => {
+        // If subtask has a parent_task_id, open the parent task with subtasks focus
+        if (subtask.parent_task_id) {
+            try {
+                const parentTask = await fetchTaskById(subtask.parent_task_id);
+                setParentTask(parentTask);
+                setParentTaskModalOpen(true);
+            } catch (error) {
+                console.error('Error fetching parent task:', error);
+                // Fall back to opening the subtask itself
+                setSelectedSubtask(subtask);
+                setSubtaskModalOpen(true);
+            }
+        } else {
+            // If no parent_task_id, open the subtask itself
+            setSelectedSubtask(subtask);
+            setSubtaskModalOpen(true);
+        }
     };
 
     const handleSubtaskSave = async (updatedSubtask: Task) => {
         await onTaskUpdate(updatedSubtask);
         setSubtaskModalOpen(false);
         setSelectedSubtask(null);
+        // Refresh subtasks check after saving
+        await checkSubtasks();
     };
 
     const handleSubtaskDelete = async () => {
@@ -241,12 +253,34 @@ const TaskItem: React.FC<TaskItemProps> = ({
             await onTaskDelete(selectedSubtask.id);
             setSubtaskModalOpen(false);
             setSelectedSubtask(null);
+            // Refresh subtasks check after deleting
+            await checkSubtasks();
+        }
+    };
+
+    const handleParentTaskSave = async (updatedParentTask: Task) => {
+        await onTaskUpdate(updatedParentTask);
+        setParentTaskModalOpen(false);
+        setParentTask(null);
+        // Refresh subtasks check after saving
+        await checkSubtasks();
+    };
+
+    const handleParentTaskDelete = async () => {
+        if (parentTask && parentTask.id) {
+            await onTaskDelete(parentTask.id);
+            setParentTaskModalOpen(false);
+            setParentTask(null);
+            // Refresh subtasks check after deleting
+            await checkSubtasks();
         }
     };
 
     const handleSave = async (updatedTask: Task) => {
         await onTaskUpdate(updatedTask);
         setIsModalOpen(false);
+        // Refresh subtasks check after saving
+        await checkSubtasks();
     };
 
     const handleDelete = async () => {
@@ -310,7 +344,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1 relative overflow-hidden transition-all duration-200 ease-in-out ${
                     isInProgress
                         ? 'border-2 border-green-400/60 dark:border-green-500/60'
-                        : 'border-2 border-gray-50 dark:border-gray-800'
+                        : 'md:dark:border-2 md:dark:border-gray-800'
                 }`}
             >
                 <TaskHeader
@@ -329,7 +363,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 
                 {/* Progress bar at bottom of parent task */}
                 {subtasks.length > 0 && (
-                    <div className={`absolute bottom-0 left-0 right-0 h-1 transition-all duration-300 ease-in-out ${
+                    <div className={`absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-300 ease-in-out overflow-hidden rounded-b-lg ${
                         showSubtasks ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'
                     }`}>
                         <div className="w-full h-full bg-gray-200 dark:bg-gray-700">
@@ -342,17 +376,20 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 )}
             </div>
 
-            <SubtasksDisplay
-                showSubtasks={showSubtasks}
-                loadingSubtasks={loadingSubtasks}
-                subtasks={subtasks}
-                onTaskClick={(e, task) => {
-                    e.stopPropagation();
-                    handleSubtaskClick(task);
-                }}
-                onTaskUpdate={onTaskUpdate}
-                loadSubtasks={loadSubtasks}
-            />
+            {/* Hide subtasks display for completed tasks */}
+            {!(task.status === 'done' || task.status === 2) && (
+                <SubtasksDisplay
+                    showSubtasks={showSubtasks}
+                    loadingSubtasks={loadingSubtasks}
+                    subtasks={subtasks}
+                    onTaskClick={(e, task) => {
+                        e.stopPropagation();
+                        handleSubtaskClick(task);
+                    }}
+                    onTaskUpdate={onTaskUpdate}
+                    loadSubtasks={loadSubtasks}
+                />
+            )}
 
             <TaskModal
                 isOpen={isModalOpen}
@@ -376,6 +413,22 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onDelete={handleSubtaskDelete}
                     projects={projectList}
                     onCreateProject={handleCreateProject}
+                />
+            )}
+
+            {parentTask && (
+                <TaskModal
+                    isOpen={parentTaskModalOpen}
+                    onClose={() => {
+                        setParentTaskModalOpen(false);
+                        setParentTask(null);
+                    }}
+                    task={parentTask}
+                    onSave={handleParentTaskSave}
+                    onDelete={handleParentTaskDelete}
+                    projects={projectList}
+                    onCreateProject={handleCreateProject}
+                    autoFocusSubtasks={true}
                 />
             )}
         </>

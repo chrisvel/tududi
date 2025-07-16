@@ -41,6 +41,7 @@ interface TaskModalProps {
     projects: Project[];
     onCreateProject: (name: string) => Promise<Project>;
     onEditParentTask?: (parentTask: Task) => void;
+    autoFocusSubtasks?: boolean;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -52,6 +53,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     projects,
     onCreateProject,
     onEditParentTask,
+    autoFocusSubtasks,
 }) => {
     const {
         tagsStore: { tags: availableTags },
@@ -76,6 +78,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         useState(true);
     const [isTimelineExpanded, setIsTimelineExpanded] = useState(false);
     const [subtasks, setSubtasks] = useState<Array<{id?: number; name: string; isNew?: boolean}>>([]);
+    const [subtasksLoaded, setSubtasksLoaded] = useState(false);
 
     // Collapsible section states
     const [expandedSections, setExpandedSections] = useState({
@@ -195,6 +198,20 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
         fetchTaskIntelligenceSetting();
     }, [isOpen]);
+
+    // Auto-focus on subtasks section when modal opens
+    useEffect(() => {
+        if (isOpen && autoFocusSubtasks) {
+            // Small delay to ensure modal is fully rendered
+            setTimeout(() => {
+                setExpandedSections(prev => ({
+                    ...prev,
+                    subtasks: true
+                }));
+                scrollToSubtasksSection();
+            }, 100);
+        }
+    }, [isOpen, autoFocusSubtasks]);
 
     const handleEditParent = () => {
         if (parentTask && onEditParentTask) {
@@ -414,9 +431,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
         };
     }, [isOpen]);
 
-    // Load existing subtasks when modal opens
+    // Load existing subtasks when modal opens (only if not already loaded)
     useEffect(() => {
-        if (isOpen && task.id) {
+        if (isOpen && task.id && !subtasksLoaded) {
             const loadExistingSubtasks = async () => {
                 try {
                     const existingSubtasks = await fetchSubtasks(task.id!);
@@ -426,9 +443,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                         isNew: false,
                     }));
                     setSubtasks(subtaskData);
-                } catch (error) {
+                    setSubtasksLoaded(true);
+                } catch {
                     // Handle silently - don't show error for this
                     setSubtasks([]);
+                    setSubtasksLoaded(true);
                 }
             };
             
@@ -436,8 +455,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
         } else if (!isOpen) {
             // Reset subtasks when modal closes
             setSubtasks([]);
+            setSubtasksLoaded(false);
         }
-    }, [isOpen, task.id]);
+    }, [isOpen, task.id, subtasksLoaded]);
 
     if (!isOpen) return null;
 
