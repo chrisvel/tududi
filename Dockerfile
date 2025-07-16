@@ -23,7 +23,7 @@ COPY . ./
 RUN NODE_ENV=production npm run frontend:build
 
 # Run backend tests
-RUN DOCKER_BUILD=1 npm run backend:test
+RUN npm run backend:test
 
 # Cleanup
 RUN npm cache clean --force && \
