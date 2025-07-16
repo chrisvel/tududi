@@ -1,9 +1,6 @@
 #!/bin/sh
 set -eu
 
-DB_FILE="db/production.sqlite3"
-[ "$NODE_ENV" = "development" ] && DB_FILE="db/development.sqlite3"
-
 # Check if database exists and create/authenticate
 if [ ! -f "$DB_FILE" ]; then
   echo "Creating new database..."

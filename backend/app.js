@@ -10,7 +10,8 @@ const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { sequelize } = require('./models');
 const { initializeTelegramPolling } = require('./services/telegramInitializer');
 const taskScheduler = require('./services/taskScheduler');
-const config = require('./config/config');
+const { setConfig, getConfig } = require('./config/config');
+const config = getConfig();
 
 const app = express();
 

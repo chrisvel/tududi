@@ -1,6 +1,9 @@
-// Set test environment before importing models
-process.env.NODE_ENV = 'test';
+// This file is run once per each Jest worker,
+// so changing the DB in the beginning of this file
+// works.
 
+const testId = require('crypto').randomBytes(4).toString('hex');
+process.env.DB_FILE = `/tmp/test-${testId}.sqlite3`;
 const { sequelize } = require('../../models');
 
 beforeAll(async () => {

@@ -1,11 +1,12 @@
 require('dotenv').config();
 const path = require('path');
-const config = require('./config');
+const { setConfig, getConfig } = require('../config/config');
+const config = getConfig();
 
 module.exports = {
     development: {
         dialect: 'sqlite',
-        storage: path.join(config.dbDir, 'development.sqlite3'),
+        storage: config.dbFile,
         logging: console.log,
         define: {
             timestamps: true,
@@ -16,7 +17,7 @@ module.exports = {
     },
     test: {
         dialect: 'sqlite',
-        storage: path.join(config.dbDir, 'test.sqlite3'),
+        storage: config.dbFile,
         logging: false,
         define: {
             timestamps: true,
@@ -27,7 +28,7 @@ module.exports = {
     },
     production: {
         dialect: 'sqlite',
-        storage: path.join(config.dbDir, 'production.sqlite3'),
+        storage: config.dbFile,
         logging: false,
         define: {
             timestamps: true,

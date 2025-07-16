@@ -1,6 +1,7 @@
 const telegramPoller = require('./telegramPoller');
 const { User } = require('../models');
-const config = require('../config/config');
+const { setConfig, getConfig } = require('../config/config');
+const config = getConfig();
 
 async function initializeTelegramPolling() {
     if (config.environment === 'test' || config.disableTelegram) {

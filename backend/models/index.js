@@ -1,6 +1,7 @@
 const { Sequelize } = require('sequelize');
 const path = require('path');
-const config = require('../config/config');
+const { getConfig } = require('../config/config');
+const config = getConfig();
 
 // Database configuration
 let dbConfig;
