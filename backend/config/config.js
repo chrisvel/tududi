@@ -67,6 +67,9 @@ const config = {
 
     sslEnabled:
         production && process.env.TUDUDI_INTERNAL_SSL_ENABLED === 'true',
+
+    uploadLocation:
+        process.env.UPLOAD_LOCATION || path.join(projectRootPath, 'uploads'),
 };
 
 console.log(`Using database file '${config.dbFile}'`);

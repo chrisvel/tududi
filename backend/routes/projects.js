@@ -1,6 +1,8 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const { getConfig } = require('../config/config');
+const config = getConfig();
 const fs = require('fs');
 const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
 const { Op } = require('sequelize');
@@ -21,7 +23,10 @@ const formatDate = (date) => {
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadDir = path.join(__dirname, '../uploads/projects');
+        const uploadDir = path.join(
+            config.uploadLocation,
+            '../uploads/projects'
+        );
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
