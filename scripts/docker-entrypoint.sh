@@ -50,6 +50,12 @@ if [ "$CURRENT_UID" != "$PUID" ] || [ "$CURRENT_GID" != "$PGID" ]; then
     echo "User configuration completed"
 else
     echo "No user configuration needed"
+    echo "Fixing ownership of application directories..."
+    chown -R "${PUID}:${PGID}" /app/backend
+    mkdir -p /app/backend/db /app/backend/certs
+    chown -R "${PUID}:${PGID}" /app/backend/db /app/backend/certs
+    chmod 770 /app/backend/db /app/backend/certs
+    chmod 660 "$DB_FILE"
 fi
 
 # Drop privileges and execute the original start script
