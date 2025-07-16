@@ -13,7 +13,7 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
     onToggleCompletion,
 }) => {
     const getIconColor = () => {
-        if (status === 'done' || status === 2) return 'text-green-500';
+        if (status === 'done' || status === 2 || status === 'archived' || status === 3) return 'text-green-500';
 
         // Handle both string and numeric priority values
         let priorityStr = priority;
@@ -45,7 +45,7 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
         }
     };
 
-    if (status === 'done' || status === 2) {
+    if (status === 'done' || status === 2 || status === 'archived' || status === 3) {
         return (
             <CheckCircleIcon
                 className={`h-5 w-5 ${colorClass} cursor-pointer hover:scale-110 transition-transform`}

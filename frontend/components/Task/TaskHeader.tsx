@@ -294,8 +294,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         </button>
                     )}
 
-                    {/* Show Subtasks Controls - Hide for completed tasks */}
-                    {hasSubtasks && !(task.status === 'done' || task.status === 2) && (
+                    {/* Show Subtasks Controls */}
+                    {hasSubtasks && !(task.status === 'archived' || task.status === 3) && (
                         <button
                             onClick={(e) => {
                                 console.log('Subtasks button clicked', e);
@@ -465,8 +465,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             </button>
                         )}
 
-                        {/* Show Subtasks Controls - Mobile - Hide for completed tasks */}
-                        {hasSubtasks && !(task.status === 'done' || task.status === 2) && (
+                        {/* Show Subtasks Controls - Mobile */}
+                        {hasSubtasks && !(task.status === 'archived' || task.status === 3) && (
                             <button
                                 onClick={(e) => {
                                     console.log('Subtasks button clicked (mobile)', e);
@@ -544,7 +544,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                         status={subtask.status}
                                     />
                                     <span className={`text-sm flex-1 truncate ${
-                                        subtask.status === 'done' || subtask.status === 2
+                                        subtask.status === 'done' || subtask.status === 2 || subtask.status === 'archived' || subtask.status === 3
                                             ? 'text-gray-500 dark:text-gray-400 line-through'
                                             : 'text-gray-900 dark:text-gray-100'
                                     }`}>
@@ -554,7 +554,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
 
                                 {/* Right side - Status indicator */}
                                 <div className="flex items-center space-x-1">
-                                    {subtask.status === 'done' || subtask.status === 2 ? (
+                                    {subtask.status === 'done' || subtask.status === 2 || subtask.status === 'archived' || subtask.status === 3 ? (
                                         <span className="text-xs text-green-600 dark:text-green-400">
                                             ✓
                                         </span>

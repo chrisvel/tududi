@@ -175,6 +175,7 @@ const fetchCompletedTodayTasks = async (userId, today, tomorrow) =>
         where: {
             user_id: userId,
             status: 2, // done
+            parent_task_id: null,
             updated_at: {
                 [Op.gte]: today,
                 [Op.lt]: tomorrow,
