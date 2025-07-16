@@ -525,6 +525,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         where: {
             user_id: userId,
             status: Task.STATUS.DONE,
+            parent_task_id: null,
             completed_at: {
                 [Op.between]: [todayStart, todayEnd],
             },
