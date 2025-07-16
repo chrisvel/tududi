@@ -17,6 +17,16 @@ echo "Runtime UID/GID Configuration"
 echo "Current: $CURRENT_UID:$CURRENT_GID"
 echo "Target:  $PUID:$PGID"
 
+# Function to set database file permissions if it exists
+set_db_file_permissions() {
+    if [ -f "$DB_FILE" ]; then
+        chmod 660 "$DB_FILE"
+        echo "Set database file permissions: $DB_FILE"
+    else
+        echo "Database file not found (first-time installation): $DB_FILE"
+    fi
+}
+
 # Only modify user/group if different from current
 if [ "$CURRENT_UID" != "$PUID" ] || [ "$CURRENT_GID" != "$PGID" ]; then
     echo "Configuring user permissions..."
@@ -45,7 +55,7 @@ if [ "$CURRENT_UID" != "$PUID" ] || [ "$CURRENT_GID" != "$PGID" ]; then
     mkdir -p /app/backend/db /app/backend/certs
     chown -R app:$TARGET_GROUP /app/backend/db /app/backend/certs
     chmod 770 /app/backend/db /app/backend/certs
-    chmod 660 "$DB_FILE"
+    set_db_file_permissions
 
     echo "User configuration completed"
 else
@@ -55,7 +65,7 @@ else
     mkdir -p /app/backend/db /app/backend/certs
     chown -R "${PUID}:${PGID}" /app/backend/db /app/backend/certs
     chmod 770 /app/backend/db /app/backend/certs
-    chmod 660 "$DB_FILE"
+    set_db_file_permissions
 fi
 
 # Drop privileges and execute the original start script
