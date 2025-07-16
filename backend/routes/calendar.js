@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { google } = require('googleapis');
 const { requireAuth } = require('../middleware/auth');
-const config = require('../config/config');
+const { setConfig, getConfig } = require('../config/config');
+const config = getConfig();
 
 // Google Calendar configuration
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];

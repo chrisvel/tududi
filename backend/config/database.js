@@ -1,6 +1,7 @@
 require('dotenv').config();
 const path = require('path');
-const config = require('./config');
+const { setConfig, getConfig } = require('../config/config');
+const config = getConfig();
 
 module.exports = {
     development: {

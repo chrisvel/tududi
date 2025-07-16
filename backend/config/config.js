@@ -71,4 +71,14 @@ const config = {
 
 console.log(`Using database file '${config.dbFile}'`);
 
-module.exports = config;
+function setConfig({ dbFile } = {}) {
+    if (dbFile != null) {
+        config.dbFile = dbFile;
+    }
+}
+
+function getConfig() {
+    return config;
+}
+
+module.exports = { setConfig, getConfig };
