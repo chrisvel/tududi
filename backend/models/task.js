@@ -124,6 +124,14 @@ module.exports = (sequelize) => {
                     key: 'id',
                 },
             },
+            parent_task_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'tasks',
+                    key: 'id',
+                },
+            },
             completed_at: {
                 type: DataTypes.DATE,
                 allowNull: true,
@@ -144,6 +152,9 @@ module.exports = (sequelize) => {
                 {
                     fields: ['last_generated_date'],
                 },
+                {
+                    fields: ['parent_task_id'],
+                },
             ],
         }
     );
@@ -159,6 +170,17 @@ module.exports = (sequelize) => {
         Task.hasMany(models.Task, {
             as: 'RecurringChildren',
             foreignKey: 'recurring_parent_id',
+        });
+
+        // Self-referencing association for subtasks
+        Task.belongsTo(models.Task, {
+            as: 'ParentTask',
+            foreignKey: 'parent_task_id',
+        });
+
+        Task.hasMany(models.Task, {
+            as: 'Subtasks',
+            foreignKey: 'parent_task_id',
         });
     };
 

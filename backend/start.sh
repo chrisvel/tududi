@@ -8,4 +8,4 @@ echo "  TUDUDI_USER_EMAIL=your_email@example.com"
 echo "  TUDUDI_USER_PASSWORD=your_password"
 echo ""
 
-NODE_ENV=development PORT=3002 npm start
+NODE_ENV=development PORT=3002 DB_FILE=db/development.sqlite3 npm start
