@@ -50,7 +50,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                         >
                             <div className="px-4 py-2.5 flex items-center justify-between">
                                 <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                    {subtask.status === 'done' || subtask.status === 2 ? (
+                                    {subtask.status === 'done' || subtask.status === 2 || subtask.status === 'archived' || subtask.status === 3 ? (
                                         <div 
                                             className="h-5 w-5 cursor-pointer hover:scale-110 transition-transform text-green-500 flex items-center justify-center"
                                             style={{ width: '16px', height: '16px' }}
@@ -98,7 +98,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                         />
                                     )}
                                     <span className={`text-base flex-1 truncate ${
-                                        subtask.status === 'done' || subtask.status === 2
+                                        subtask.status === 'done' || subtask.status === 2 || subtask.status === 'archived' || subtask.status === 3
                                             ? 'text-gray-500 dark:text-gray-400 line-through'
                                             : 'text-gray-900 dark:text-gray-100'
                                     }`}>
@@ -159,7 +159,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const calculateCompletionPercentage = () => {
         if (subtasks.length === 0) return 0;
         const completedCount = subtasks.filter(subtask => 
-            subtask.status === 'done' || subtask.status === 2
+            subtask.status === 'done' || subtask.status === 2 || subtask.status === 'archived' || subtask.status === 3
         ).length;
         return Math.round((completedCount / subtasks.length) * 100);
     };
@@ -376,8 +376,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 )}
             </div>
 
-            {/* Hide subtasks display for completed tasks */}
-            {!(task.status === 'done' || task.status === 2) && (
+            {/* Hide subtasks display for archived tasks */}
+            {!(task.status === 'archived' || task.status === 3) && (
                 <SubtasksDisplay
                     showSubtasks={showSubtasks}
                     loadingSubtasks={loadingSubtasks}
