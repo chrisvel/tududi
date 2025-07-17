@@ -109,7 +109,6 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         setEditingName('');
     };
 
-
     return (
         <div ref={subtasksSectionRef} className="space-y-3">
             {/* Existing Subtasks */}
@@ -128,15 +127,30 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                 <div className="px-3 py-2.5 flex items-center space-x-3">
                                     <div className="flex-shrink-0">
                                         <TaskPriorityIcon
-                                            priority={subtask.priority || 'medium'}
-                                            status={subtask.status || 'not_started'}
+                                            priority={
+                                                subtask.priority || 'medium'
+                                            }
+                                            status={
+                                                subtask.status || 'not_started'
+                                            }
                                             onToggleCompletion={async () => {
-                                                if (subtask.id && onSubtaskUpdate) {
+                                                if (
+                                                    subtask.id &&
+                                                    onSubtaskUpdate
+                                                ) {
                                                     try {
-                                                        const updatedSubtask = await toggleTaskCompletion(subtask.id);
-                                                        await onSubtaskUpdate(updatedSubtask);
+                                                        const updatedSubtask =
+                                                            await toggleTaskCompletion(
+                                                                subtask.id
+                                                            );
+                                                        await onSubtaskUpdate(
+                                                            updatedSubtask
+                                                        );
                                                     } catch (error) {
-                                                        console.error('Error toggling subtask completion:', error);
+                                                        console.error(
+                                                            'Error toggling subtask completion:',
+                                                            error
+                                                        );
                                                     }
                                                 }
                                             }}
@@ -174,15 +188,31 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                     <div className="flex items-center space-x-3 flex-1 min-w-0">
                                         <div className="flex-shrink-0">
                                             <TaskPriorityIcon
-                                                priority={subtask.priority || 'medium'}
-                                                status={subtask.status || 'not_started'}
+                                                priority={
+                                                    subtask.priority || 'medium'
+                                                }
+                                                status={
+                                                    subtask.status ||
+                                                    'not_started'
+                                                }
                                                 onToggleCompletion={async () => {
-                                                    if (subtask.id && onSubtaskUpdate) {
+                                                    if (
+                                                        subtask.id &&
+                                                        onSubtaskUpdate
+                                                    ) {
                                                         try {
-                                                            const updatedSubtask = await toggleTaskCompletion(subtask.id);
-                                                            await onSubtaskUpdate(updatedSubtask);
+                                                            const updatedSubtask =
+                                                                await toggleTaskCompletion(
+                                                                    subtask.id
+                                                                );
+                                                            await onSubtaskUpdate(
+                                                                updatedSubtask
+                                                            );
                                                         } catch (error) {
-                                                            console.error('Error toggling subtask completion:', error);
+                                                            console.error(
+                                                                'Error toggling subtask completion:',
+                                                                error
+                                                            );
                                                         }
                                                     }
                                                 }}
@@ -190,12 +220,20 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                         </div>
                                         <span
                                             className={`text-sm flex-1 truncate cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 ${
-                                                subtask.status === 'done' || subtask.status === 2 || subtask.status === 'archived' || subtask.status === 3
+                                                subtask.status === 'done' ||
+                                                subtask.status === 2 ||
+                                                subtask.status === 'archived' ||
+                                                subtask.status === 3
                                                     ? 'text-gray-500 dark:text-gray-400'
                                                     : 'text-gray-900 dark:text-gray-100'
                                             }`}
-                                            onClick={() => handleEditSubtask(index)}
-                                            title={t('actions.clickToEdit', 'Click to edit')}
+                                            onClick={() =>
+                                                handleEditSubtask(index)
+                                            }
+                                            title={t(
+                                                'actions.clickToEdit',
+                                                'Click to edit'
+                                            )}
                                         >
                                             {subtask.name}
                                             {(subtask as any)._isNew && (
@@ -212,7 +250,9 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                     </div>
                                     <button
                                         type="button"
-                                        onClick={() => handleDeleteSubtask(index)}
+                                        onClick={() =>
+                                            handleDeleteSubtask(index)
+                                        }
                                         className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400"
                                         title={t('actions.delete', 'Delete')}
                                     >

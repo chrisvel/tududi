@@ -403,13 +403,17 @@ const TasksToday: React.FC = () => {
             if (!updatedTask.id || !isMounted.current) return;
 
             // Check if this task exists in our current tasks list
-            const taskExists = localTasks.some(task => task.id === updatedTask.id);
-            
+            const taskExists = localTasks.some(
+                (task) => task.id === updatedTask.id
+            );
+
             if (taskExists) {
                 // Optimistically update the local state first
-                setLocalTasks(prevTasks => 
-                    prevTasks.map(task => 
-                        task.id === updatedTask.id ? { ...task, updated_at: new Date().toISOString() } : task
+                setLocalTasks((prevTasks) =>
+                    prevTasks.map((task) =>
+                        task.id === updatedTask.id
+                            ? { ...task, updated_at: new Date().toISOString() }
+                            : task
                     )
                 );
             }
@@ -419,7 +423,7 @@ const TasksToday: React.FC = () => {
                 if (taskExists) {
                     await updateTask(updatedTask.id, updatedTask);
                 }
-                
+
                 // For subtask updates, we don't need to refetch everything
                 // The task update timestamp change will trigger subtask refresh in TaskItem
             } catch (error) {

@@ -52,8 +52,12 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                 <div className="flex items-center space-x-3 flex-1 min-w-0">
                                     <div className="flex-shrink-0">
                                         <TaskPriorityIcon
-                                            priority={subtask.priority || 'medium'}
-                                            status={subtask.status || 'not_started'}
+                                            priority={
+                                                subtask.priority || 'medium'
+                                            }
+                                            status={
+                                                subtask.status || 'not_started'
+                                            }
                                             onToggleCompletion={async () => {
                                                 if (subtask.id) {
                                                     try {
@@ -61,9 +65,11 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                                             await toggleTaskCompletion(
                                                                 subtask.id
                                                             );
-                                                        
+
                                                         // Update the subtask in local state immediately
-                                                        onSubtaskUpdate(updatedSubtask);
+                                                        onSubtaskUpdate(
+                                                            updatedSubtask
+                                                        );
                                                     } catch (error) {
                                                         console.error(
                                                             'Error toggling subtask completion:',
@@ -380,9 +386,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onTaskUpdate={onTaskUpdate}
                     loadSubtasks={loadSubtasks}
                     onSubtaskUpdate={(updatedSubtask) => {
-                        setSubtasks(prev => 
-                            prev.map(st => 
-                                st.id === updatedSubtask.id ? updatedSubtask : st
+                        setSubtasks((prev) =>
+                            prev.map((st) =>
+                                st.id === updatedSubtask.id
+                                    ? updatedSubtask
+                                    : st
                             )
                         );
                     }}

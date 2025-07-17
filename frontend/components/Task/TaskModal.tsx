@@ -703,11 +703,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                             onSectionMount={
                                                                 scrollToSubtasksSection
                                                             }
-                                                            onSubtaskUpdate={async (updatedSubtask) => {
+                                                            onSubtaskUpdate={async (
+                                                                updatedSubtask
+                                                            ) => {
                                                                 // Update the subtask in the local state
-                                                                setSubtasks(prev => prev.map(st => 
-                                                                    st.id === updatedSubtask.id ? updatedSubtask : st
-                                                                ));
+                                                                setSubtasks(
+                                                                    (prev) =>
+                                                                        prev.map(
+                                                                            (
+                                                                                st
+                                                                            ) =>
+                                                                                st.id ===
+                                                                                updatedSubtask.id
+                                                                                    ? updatedSubtask
+                                                                                    : st
+                                                                        )
+                                                                );
                                                             }}
                                                         />
                                                     </div>
