@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { createInboxItemWithStore } from '../../utils/inboxService';
 import { isAuthError } from '../../utils/authUtils';
 import { createTag } from '../../utils/tagsService';
-import { fetchProjects, createProject } from '../../utils/projectsService';
+import { createProject } from '../../utils/projectsService';
 import { XMarkIcon, TagIcon, FolderIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { Link } from 'react-router-dom';
@@ -26,6 +26,7 @@ interface InboxModalProps {
     onEdit?: (text: string) => Promise<void>;
     onConvertToTask?: () => Promise<void>; // Called when editing item gets converted to task
     onConvertToNote?: () => Promise<void>; // Called when editing item gets converted to note
+    projects?: Project[]; // Projects passed as props to avoid duplicate API calls
 }
 
 const InboxModal: React.FC<InboxModalProps> = ({
@@ -38,6 +39,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
     onEdit,
     onConvertToTask,
     onConvertToNote,
+    projects: propProjects = [],
 }) => {
     const { t } = useTranslation();
     const [inputText, setInputText] = useState<string>(initialText);
@@ -54,7 +56,8 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const [filteredTags, setFilteredTags] = useState<Tag[]>([]);
     const [showProjectSuggestions, setShowProjectSuggestions] = useState(false);
     const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
-    const [projects, setProjects] = useState<Project[]>([]);
+    // Use projects from props instead of local state
+    const projects = propProjects;
     const [cursorPosition, setCursorPosition] = useState(0);
     const [, setCurrentHashtagQuery] = useState('');
     const [, setCurrentProjectQuery] = useState('');
@@ -488,23 +491,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
         }
     }, [isOpen]);
 
-    // Load projects when modal opens
-    useEffect(() => {
-        if (isOpen) {
-            const loadProjects = async () => {
-                try {
-                    const projectsData = await fetchProjects();
-                    setProjects(
-                        Array.isArray(projectsData) ? projectsData : []
-                    );
-                } catch (error) {
-                    console.error('Failed to load projects:', error);
-                    setProjects([]);
-                }
-            };
-            loadProjects();
-        }
-    }, [isOpen]);
+    // Projects are now passed as props, no need to load them
 
     // Prevent body scroll when modal is open
     useEffect(() => {
@@ -941,8 +928,8 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     name: projectName,
                     active: true,
                 });
-                // Update the local projects state
-                setProjects([...projects, newProject]);
+                // Projects are managed by the parent component through props
+                // No need to update local state
             } catch (error) {
                 console.error(
                     `Failed to create project "${projectName}":`,
@@ -1198,12 +1185,11 @@ const InboxModal: React.FC<InboxModalProps> = ({
             onClose,
             tags,
             setTags,
-            projects,
-            setProjects,
             analysisResult,
             createMissingTags,
             createMissingProjects,
             getCleanedContent,
+            projects,
         ]
     );
 

@@ -452,6 +452,7 @@ const Layout: React.FC<LayoutProps> = ({
                         isOpen={isTaskModalOpen}
                         onClose={closeTaskModal}
                         onSave={handleSaveTask}
+                        projects={projects}
                     />
                 ) : (
                     <TaskModal

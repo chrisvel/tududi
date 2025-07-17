@@ -57,6 +57,18 @@ interface TasksStore {
     setTasks: (tasks: Task[]) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
+    loadTasks: (query?: string) => Promise<void>;
+    createTask: (taskData: Task) => Promise<Task>;
+    updateTask: (taskId: number, taskData: Task) => Promise<Task>;
+    deleteTask: (taskId: number) => Promise<void>;
+    toggleTaskCompletion: (taskId: number) => Promise<Task>;
+    toggleTaskToday: (taskId: number) => Promise<Task>;
+    loadTaskById: (taskId: number) => Promise<Task>;
+    loadTaskByUuid: (uuid: string) => Promise<Task>;
+    loadSubtasks: (parentTaskId: number) => Promise<Task[]>;
+    addTask: (task: Task) => void;
+    removeTask: (taskId: number) => void;
+    updateTaskInStore: (updatedTask: Task) => void;
 }
 
 interface InboxStore {
@@ -263,6 +275,222 @@ export const useStore = create<StoreState>((set) => ({
             })),
         setError: (isError) =>
             set((state) => ({ tasksStore: { ...state.tasksStore, isError } })),
+        loadTasks: async (query = '') => {
+            const { fetchTasks } = await import('../utils/tasksService');
+            set((state) => ({
+                tasksStore: {
+                    ...state.tasksStore,
+                    isLoading: true,
+                    isError: false,
+                },
+            }));
+            try {
+                const { tasks } = await fetchTasks(query);
+                set((state) => ({
+                    tasksStore: { ...state.tasksStore, tasks, isLoading: false },
+                }));
+            } catch (error) {
+                console.error('loadTasks: Failed to load tasks:', error);
+                set((state) => ({
+                    tasksStore: {
+                        ...state.tasksStore,
+                        isError: true,
+                        isLoading: false,
+                    },
+                }));
+            }
+        },
+        createTask: async (taskData) => {
+            const { createTask } = await import('../utils/tasksService');
+            try {
+                const newTask = await createTask(taskData);
+                set((state) => ({
+                    tasksStore: {
+                        ...state.tasksStore,
+                        tasks: [newTask, ...state.tasksStore.tasks],
+                    },
+                }));
+                return newTask;
+            } catch (error) {
+                console.error('createTask: Failed to create task:', error);
+                set((state) => ({
+                    tasksStore: { ...state.tasksStore, isError: true },
+                }));
+                throw error;
+            }
+        },
+        updateTask: async (taskId, taskData) => {
+            const { updateTask } = await import('../utils/tasksService');
+            try {
+                const updatedTask = await updateTask(taskId, taskData);
+                set((state) => ({
+                    tasksStore: {
+                        ...state.tasksStore,
+                        tasks: state.tasksStore.tasks.map((task) =>
+                            task.id === taskId ? updatedTask : task
+                        ),
+                    },
+                }));
+                return updatedTask;
+            } catch (error) {
+                console.error('updateTask: Failed to update task:', error);
+                set((state) => ({
+                    tasksStore: { ...state.tasksStore, isError: true },
+                }));
+                throw error;
+            }
+        },
+        deleteTask: async (taskId) => {
+            const { deleteTask } = await import('../utils/tasksService');
+            try {
+                await deleteTask(taskId);
+                set((state) => ({
+                    tasksStore: {
+                        ...state.tasksStore,
+                        tasks: state.tasksStore.tasks.filter(
+                            (task) => task.id !== taskId
+                        ),
+                    },
+                }));
+            } catch (error) {
+                console.error('deleteTask: Failed to delete task:', error);
+                set((state) => ({
+                    tasksStore: { ...state.tasksStore, isError: true },
+                }));
+                throw error;
+            }
+        },
+        toggleTaskCompletion: async (taskId) => {
+            const { toggleTaskCompletion } = await import('../utils/tasksService');
+            try {
+                const updatedTask = await toggleTaskCompletion(taskId);
+                set((state) => ({
+                    tasksStore: {
+                        ...state.tasksStore,
+                        tasks: state.tasksStore.tasks.map((task) =>
+                            task.id === taskId ? updatedTask : task
+                        ),
+                    },
+                }));
+                return updatedTask;
+            } catch (error) {
+                console.error('toggleTaskCompletion: Failed to toggle task completion:', error);
+                set((state) => ({
+                    tasksStore: { ...state.tasksStore, isError: true },
+                }));
+                throw error;
+            }
+        },
+        toggleTaskToday: async (taskId) => {
+            const { toggleTaskToday } = await import('../utils/tasksService');
+            try {
+                const updatedTask = await toggleTaskToday(taskId);
+                set((state) => ({
+                    tasksStore: {
+                        ...state.tasksStore,
+                        tasks: state.tasksStore.tasks.map((task) =>
+                            task.id === taskId ? updatedTask : task
+                        ),
+                    },
+                }));
+                return updatedTask;
+            } catch (error) {
+                console.error('toggleTaskToday: Failed to toggle task today status:', error);
+                set((state) => ({
+                    tasksStore: { ...state.tasksStore, isError: true },
+                }));
+                throw error;
+            }
+        },
+        loadTaskById: async (taskId) => {
+            const { fetchTaskById } = await import('../utils/tasksService');
+            try {
+                const task = await fetchTaskById(taskId);
+                set((state) => ({
+                    tasksStore: {
+                        ...state.tasksStore,
+                        tasks: state.tasksStore.tasks.some((t) => t.id === taskId)
+                            ? state.tasksStore.tasks.map((t) => t.id === taskId ? task : t)
+                            : [task, ...state.tasksStore.tasks],
+                    },
+                }));
+                return task;
+            } catch (error) {
+                console.error('loadTaskById: Failed to load task:', error);
+                set((state) => ({
+                    tasksStore: { ...state.tasksStore, isError: true },
+                }));
+                throw error;
+            }
+        },
+        loadTaskByUuid: async (uuid) => {
+            const { fetchTaskByUuid } = await import('../utils/tasksService');
+            try {
+                const task = await fetchTaskByUuid(uuid);
+                set((state) => ({
+                    tasksStore: {
+                        ...state.tasksStore,
+                        tasks: state.tasksStore.tasks.some((t) => t.uuid === uuid)
+                            ? state.tasksStore.tasks.map((t) => t.uuid === uuid ? task : t)
+                            : [task, ...state.tasksStore.tasks],
+                    },
+                }));
+                return task;
+            } catch (error) {
+                console.error('loadTaskByUuid: Failed to load task:', error);
+                set((state) => ({
+                    tasksStore: { ...state.tasksStore, isError: true },
+                }));
+                throw error;
+            }
+        },
+        loadSubtasks: async (parentTaskId) => {
+            const { fetchSubtasks } = await import('../utils/tasksService');
+            try {
+                const subtasks = await fetchSubtasks(parentTaskId);
+                set((state) => ({
+                    tasksStore: {
+                        ...state.tasksStore,
+                        tasks: [
+                            ...state.tasksStore.tasks.filter(
+                                (task) => task.parent_task_id !== parentTaskId
+                            ),
+                            ...subtasks,
+                        ],
+                    },
+                }));
+                return subtasks;
+            } catch (error) {
+                console.error('loadSubtasks: Failed to load subtasks:', error);
+                set((state) => ({
+                    tasksStore: { ...state.tasksStore, isError: true },
+                }));
+                throw error;
+            }
+        },
+        addTask: (task) =>
+            set((state) => ({
+                tasksStore: {
+                    ...state.tasksStore,
+                    tasks: [task, ...state.tasksStore.tasks],
+                },
+            })),
+        removeTask: (taskId) =>
+            set((state) => ({
+                tasksStore: {
+                    ...state.tasksStore,
+                    tasks: state.tasksStore.tasks.filter((task) => task.id !== taskId),
+                },
+            })),
+        updateTaskInStore: (updatedTask) =>
+            set((state) => ({
+                tasksStore: {
+                    ...state.tasksStore,
+                    tasks: state.tasksStore.tasks.map((task) =>
+                        task.id === updatedTask.id ? updatedTask : task
+                    ),
+                },
+            })),
     },
     inboxStore: {
         inboxItems: [],
