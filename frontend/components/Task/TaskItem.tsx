@@ -33,13 +33,11 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                 </div>
             ) : subtasks.length > 0 ? (
                 subtasks.map((subtask) => (
-                    <div
-                        key={subtask.id}
-                        className="ml-12 group"
-                    >
+                    <div key={subtask.id} className="ml-12 group">
                         <div
                             className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 cursor-pointer transition-all duration-200 ${
-                                subtask.status === 'in_progress' || subtask.status === 1
+                                subtask.status === 'in_progress' ||
+                                subtask.status === 1
                                     ? 'border-green-400/60 dark:border-green-500/60'
                                     : 'border-gray-50 dark:border-gray-800'
                             }`}
@@ -50,58 +48,97 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                         >
                             <div className="px-4 py-2.5 flex items-center justify-between">
                                 <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                    {subtask.status === 'done' || subtask.status === 2 || subtask.status === 'archived' || subtask.status === 3 ? (
-                                        <div 
+                                    {subtask.status === 'done' ||
+                                    subtask.status === 2 ||
+                                    subtask.status === 'archived' ||
+                                    subtask.status === 3 ? (
+                                        <div
                                             className="h-5 w-5 cursor-pointer hover:scale-110 transition-transform text-green-500 flex items-center justify-center"
-                                            style={{ width: '16px', height: '16px' }}
+                                            style={{
+                                                width: '16px',
+                                                height: '16px',
+                                            }}
                                             onClick={async (e) => {
                                                 e.stopPropagation();
                                                 if (subtask.id) {
                                                     try {
-                                                        const updatedSubtask = await toggleTaskCompletion(subtask.id);
-                                                        await onTaskUpdate(updatedSubtask);
+                                                        const updatedSubtask =
+                                                            await toggleTaskCompletion(
+                                                                subtask.id
+                                                            );
+                                                        await onTaskUpdate(
+                                                            updatedSubtask
+                                                        );
                                                         // Refresh subtasks to show updated status
                                                         await loadSubtasks();
                                                     } catch (error) {
-                                                        console.error('Error toggling subtask completion:', error);
+                                                        console.error(
+                                                            'Error toggling subtask completion:',
+                                                            error
+                                                        );
                                                     }
                                                 }
                                             }}
                                         >
-                                            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            <svg
+                                                className="h-4 w-4"
+                                                fill="currentColor"
+                                                viewBox="0 0 20 20"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                    clipRule="evenodd"
+                                                />
                                             </svg>
                                         </div>
                                     ) : (
-                                        <div 
+                                        <div
                                             className={`h-5 w-5 cursor-pointer hover:scale-110 transition-transform border-2 border-current rounded-full flex-shrink-0 ${
                                                 subtask.priority === 'high'
                                                     ? 'text-red-500'
-                                                    : subtask.priority === 'medium'
-                                                    ? 'text-yellow-500'
-                                                    : 'text-gray-300'
+                                                    : subtask.priority ===
+                                                        'medium'
+                                                      ? 'text-yellow-500'
+                                                      : 'text-gray-300'
                                             }`}
-                                            style={{ width: '16px', height: '16px' }}
+                                            style={{
+                                                width: '16px',
+                                                height: '16px',
+                                            }}
                                             onClick={async (e) => {
                                                 e.stopPropagation();
                                                 if (subtask.id) {
                                                     try {
-                                                        const updatedSubtask = await toggleTaskCompletion(subtask.id);
-                                                        await onTaskUpdate(updatedSubtask);
+                                                        const updatedSubtask =
+                                                            await toggleTaskCompletion(
+                                                                subtask.id
+                                                            );
+                                                        await onTaskUpdate(
+                                                            updatedSubtask
+                                                        );
                                                         // Refresh subtasks to show updated status
                                                         await loadSubtasks();
                                                     } catch (error) {
-                                                        console.error('Error toggling subtask completion:', error);
+                                                        console.error(
+                                                            'Error toggling subtask completion:',
+                                                            error
+                                                        );
                                                     }
                                                 }
                                             }}
                                         />
                                     )}
-                                    <span className={`text-base flex-1 truncate ${
-                                        subtask.status === 'done' || subtask.status === 2 || subtask.status === 'archived' || subtask.status === 3
-                                            ? 'text-gray-500 dark:text-gray-400 line-through'
-                                            : 'text-gray-900 dark:text-gray-100'
-                                    }`}>
+                                    <span
+                                        className={`text-base flex-1 truncate ${
+                                            subtask.status === 'done' ||
+                                            subtask.status === 2 ||
+                                            subtask.status === 'archived' ||
+                                            subtask.status === 3
+                                                ? 'text-gray-500 dark:text-gray-400 line-through'
+                                                : 'text-gray-900 dark:text-gray-100'
+                                        }`}
+                                    >
                                         {subtask.name}
                                     </span>
                                 </div>
@@ -121,7 +158,11 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
     );
 };
 import TaskModal from './TaskModal';
-import { toggleTaskCompletion, fetchSubtasks, fetchTaskById } from '../../utils/tasksService';
+import {
+    toggleTaskCompletion,
+    fetchSubtasks,
+    fetchTaskById,
+} from '../../utils/tasksService';
 import { isTaskOverdue } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 
@@ -148,28 +189,32 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const [projectList, setProjectList] = useState<Project[]>(projects);
     const [parentTaskModalOpen, setParentTaskModalOpen] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
-    
+
     // Subtasks state
     const [showSubtasks, setShowSubtasks] = useState(false);
     const [subtasks, setSubtasks] = useState<Task[]>([]);
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
     const [hasSubtasks, setHasSubtasks] = useState(false);
-    
+
     // Calculate completion percentage
     const calculateCompletionPercentage = () => {
         if (subtasks.length === 0) return 0;
-        const completedCount = subtasks.filter(subtask => 
-            subtask.status === 'done' || subtask.status === 2 || subtask.status === 'archived' || subtask.status === 3
+        const completedCount = subtasks.filter(
+            (subtask) =>
+                subtask.status === 'done' ||
+                subtask.status === 2 ||
+                subtask.status === 'archived' ||
+                subtask.status === 3
         ).length;
         return Math.round((completedCount / subtasks.length) * 100);
     };
-    
+
     const completionPercentage = calculateCompletionPercentage();
 
     // Helper function to check if task has subtasks
     const checkSubtasks = async () => {
         if (!task.id) return;
-        
+
         try {
             const subtasksData = await fetchSubtasks(task.id);
             setHasSubtasks(subtasksData.length > 0);
@@ -186,7 +231,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     const loadSubtasks = async () => {
         if (!task.id) return;
-        
+
         setLoadingSubtasks(true);
         try {
             const subtasksData = await fetchSubtasks(task.id);
@@ -198,7 +243,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
             setLoadingSubtasks(false);
         }
     };
-    
+
     // Reload subtasks when showSubtasks changes to true
     useEffect(() => {
         if (showSubtasks && subtasks.length === 0) {
@@ -208,11 +253,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     const handleSubtasksToggle = async (e: React.MouseEvent) => {
         e.stopPropagation();
-        
+
         if (!showSubtasks && subtasks.length === 0) {
             await loadSubtasks();
         }
-        
+
         setShowSubtasks(!showSubtasks);
     };
 
@@ -360,14 +405,18 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     hasSubtasks={hasSubtasks}
                     onSubtasksToggle={handleSubtasksToggle}
                 />
-                
+
                 {/* Progress bar at bottom of parent task */}
                 {subtasks.length > 0 && (
-                    <div className={`absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-300 ease-in-out overflow-hidden rounded-b-lg ${
-                        showSubtasks ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'
-                    }`}>
+                    <div
+                        className={`absolute bottom-0 left-0 right-0 h-0.5 transition-all duration-300 ease-in-out overflow-hidden rounded-b-lg ${
+                            showSubtasks
+                                ? 'opacity-100 transform translate-y-0'
+                                : 'opacity-0 transform translate-y-2'
+                        }`}
+                    >
                         <div className="w-full h-full bg-gray-200 dark:bg-gray-700">
-                            <div 
+                            <div
                                 className="h-full bg-gradient-to-r from-green-400 via-green-500 to-green-600 transition-all duration-500 ease-out"
                                 style={{ width: `${completionPercentage}%` }}
                             />

@@ -46,7 +46,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 }) => {
     const { t } = useTranslation();
 
-
     const formatDueDate = (dueDate: string) => {
         const today = new Date().toISOString().split('T')[0];
         const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
@@ -85,7 +84,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                 return t('recurrence.recurring', 'Recurring');
         }
     };
-
 
     const handleTodayToggle = async (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent opening task modal
@@ -127,15 +125,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     };
 
     // Check if task has metadata (project, tags, due_date, recurrence_type)
-    const hasMetadata = (
+    const hasMetadata =
         (project && !hideProjectName) ||
         (task.tags && task.tags.length > 0) ||
         task.due_date ||
-        (task.recurrence_type && task.recurrence_type !== 'none')
-    );
+        (task.recurrence_type && task.recurrence_type !== 'none');
 
     return (
-        <div className={`${hasMetadata ? 'py-2' : 'py-3'} px-4 cursor-pointer group`} onClick={onTaskClick}>
+        <div
+            className={`${hasMetadata ? 'py-2' : 'py-3'} px-4 cursor-pointer group`}
+            onClick={onTaskClick}
+        >
             {/* Full view (md and larger) */}
             <div className="hidden md:flex flex-col md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center space-x-3 mb-2 md:mb-0">
@@ -295,28 +295,35 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     )}
 
                     {/* Show Subtasks Controls */}
-                    {hasSubtasks && !(task.status === 'archived' || task.status === 3) && (
-                        <button
-                            onClick={(e) => {
-                                console.log('Subtasks button clicked', e);
-                                if (onSubtasksToggle) {
-                                    onSubtasksToggle(e);
+                    {hasSubtasks &&
+                        !(task.status === 'archived' || task.status === 3) && (
+                            <button
+                                onClick={(e) => {
+                                    console.log('Subtasks button clicked', e);
+                                    if (onSubtasksToggle) {
+                                        onSubtasksToggle(e);
+                                    }
+                                }}
+                                className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                                    showSubtasks
+                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
+                                }`}
+                                title={
+                                    showSubtasks
+                                        ? t(
+                                              'tasks.hideSubtasks',
+                                              'Hide subtasks'
+                                          )
+                                        : t(
+                                              'tasks.showSubtasks',
+                                              'Show subtasks'
+                                          )
                                 }
-                            }}
-                            className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
-                                showSubtasks
-                                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800'
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
-                            }`}
-                            title={
-                                showSubtasks
-                                    ? t('tasks.hideSubtasks', 'Hide subtasks')
-                                    : t('tasks.showSubtasks', 'Show subtasks')
-                            }
-                        >
-                            <Squares2X2Icon className="h-3 w-3" />
-                        </button>
-                    )}
+                            >
+                                <Squares2X2Icon className="h-3 w-3" />
+                            </button>
+                        )}
                 </div>
             </div>
 
@@ -466,28 +473,40 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         )}
 
                         {/* Show Subtasks Controls - Mobile */}
-                        {hasSubtasks && !(task.status === 'archived' || task.status === 3) && (
-                            <button
-                                onClick={(e) => {
-                                    console.log('Subtasks button clicked (mobile)', e);
-                                    if (onSubtasksToggle) {
-                                        onSubtasksToggle(e);
+                        {hasSubtasks &&
+                            !(
+                                task.status === 'archived' || task.status === 3
+                            ) && (
+                                <button
+                                    onClick={(e) => {
+                                        console.log(
+                                            'Subtasks button clicked (mobile)',
+                                            e
+                                        );
+                                        if (onSubtasksToggle) {
+                                            onSubtasksToggle(e);
+                                        }
+                                    }}
+                                    className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                                        showSubtasks
+                                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800'
+                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
+                                    }`}
+                                    title={
+                                        showSubtasks
+                                            ? t(
+                                                  'tasks.hideSubtasks',
+                                                  'Hide subtasks'
+                                              )
+                                            : t(
+                                                  'tasks.showSubtasks',
+                                                  'Show subtasks'
+                                              )
                                     }
-                                }}
-                                className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
-                                    showSubtasks
-                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800'
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
-                                }`}
-                                title={
-                                    showSubtasks
-                                        ? t('tasks.hideSubtasks', 'Hide subtasks')
-                                        : t('tasks.showSubtasks', 'Show subtasks')
-                                }
-                            >
-                                <Squares2X2Icon className="h-3 w-3" />
-                            </button>
-                        )}
+                                >
+                                    <Squares2X2Icon className="h-3 w-3" />
+                                </button>
+                            )}
                     </div>
                 </div>
             </div>
@@ -521,13 +540,11 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                 </div>
             ) : subtasks.length > 0 ? (
                 subtasks.map((subtask) => (
-                    <div
-                        key={subtask.id}
-                        className="ml-[10%] group"
-                    >
+                    <div key={subtask.id} className="ml-[10%] group">
                         <div
                             className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 cursor-pointer transition-all duration-200 ${
-                                subtask.status === 'in_progress' || subtask.status === 1
+                                subtask.status === 'in_progress' ||
+                                subtask.status === 1
                                     ? 'border-green-400/60 dark:border-green-500/60'
                                     : 'border-gray-50 dark:border-gray-800'
                             }`}
@@ -543,18 +560,26 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                         priority={subtask.priority}
                                         status={subtask.status}
                                     />
-                                    <span className={`text-sm flex-1 truncate ${
-                                        subtask.status === 'done' || subtask.status === 2 || subtask.status === 'archived' || subtask.status === 3
-                                            ? 'text-gray-500 dark:text-gray-400 line-through'
-                                            : 'text-gray-900 dark:text-gray-100'
-                                    }`}>
+                                    <span
+                                        className={`text-sm flex-1 truncate ${
+                                            subtask.status === 'done' ||
+                                            subtask.status === 2 ||
+                                            subtask.status === 'archived' ||
+                                            subtask.status === 3
+                                                ? 'text-gray-500 dark:text-gray-400 line-through'
+                                                : 'text-gray-900 dark:text-gray-100'
+                                        }`}
+                                    >
                                         {subtask.name}
                                     </span>
                                 </div>
 
                                 {/* Right side - Status indicator */}
                                 <div className="flex items-center space-x-1">
-                                    {subtask.status === 'done' || subtask.status === 2 || subtask.status === 'archived' || subtask.status === 3 ? (
+                                    {subtask.status === 'done' ||
+                                    subtask.status === 2 ||
+                                    subtask.status === 'archived' ||
+                                    subtask.status === 3 ? (
                                         <span className="text-xs text-green-600 dark:text-green-400">
                                             ✓
                                         </span>
@@ -588,9 +613,13 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
     useEffect(() => {
         const checkSubtasks = async () => {
             if (!props.task.id) return;
-            
-            console.log('Checking subtasks for task:', props.task.id, props.task.name);
-            
+
+            console.log(
+                'Checking subtasks for task:',
+                props.task.id,
+                props.task.name
+            );
+
             try {
                 const subtasksData = await fetchSubtasks(props.task.id);
                 console.log('Subtasks data:', subtasksData);
@@ -600,13 +629,13 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
                 setHasSubtasks(false);
             }
         };
-        
+
         checkSubtasks();
     }, [props.task.id]);
 
     const loadSubtasks = async () => {
         if (!props.task.id) return;
-        
+
         setLoadingSubtasks(true);
         try {
             const subtasksData = await fetchSubtasks(props.task.id);
@@ -621,11 +650,11 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
 
     const handleSubtasksToggle = async (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent opening task modal
-        
+
         if (!showSubtasks && subtasks.length === 0) {
             await loadSubtasks();
         }
-        
+
         setShowSubtasks(!showSubtasks);
     };
 

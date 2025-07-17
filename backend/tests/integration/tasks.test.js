@@ -298,8 +298,8 @@ describe('Tasks Routes', () => {
             expect(response.body.tasks).toBeDefined();
 
             // Should only return parent and regular tasks, not subtasks
-            const taskIds = response.body.tasks.map(t => t.id);
-            const taskNames = response.body.tasks.map(t => t.name);
+            const taskIds = response.body.tasks.map((t) => t.id);
+            const taskNames = response.body.tasks.map((t) => t.name);
 
             expect(taskIds).toContain(parentTask.id);
             expect(taskIds).toContain(regularTask.id);

@@ -343,11 +343,16 @@ describe('Subtasks Completion Logic Integration', () => {
             const updatedSubtask = await Task.findByPk(subtask.id);
             const updatedParent = await Task.findByPk(parentTask.id);
 
-            if (updatedSubtask.status === Task.STATUS.DONE) {
-                expect(updatedParent.status).toBe(Task.STATUS.DONE);
-            } else {
-                expect(updatedParent.status).toBe(Task.STATUS.NOT_STARTED);
-            }
+            // Final state should be consistent
+            expect(
+                updatedSubtask.status === Task.STATUS.DONE
+                    ? updatedParent.status
+                    : updatedParent.status
+            ).toBe(
+                updatedSubtask.status === Task.STATUS.DONE
+                    ? Task.STATUS.DONE
+                    : Task.STATUS.NOT_STARTED
+            );
         });
     });
 
