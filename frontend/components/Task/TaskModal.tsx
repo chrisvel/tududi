@@ -77,9 +77,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] =
         useState(true);
     const [isTimelineExpanded, setIsTimelineExpanded] = useState(false);
-    const [subtasks, setSubtasks] = useState<
-        Array<{ id?: number; name: string; isNew?: boolean }>
-    >([]);
+    const [subtasks, setSubtasks] = useState<Task[]>([]);
     const [subtasksLoaded, setSubtasksLoaded] = useState(false);
 
     // Collapsible section states
@@ -441,12 +439,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             const loadExistingSubtasks = async () => {
                 try {
                     const existingSubtasks = await fetchSubtasks(task.id!);
-                    const subtaskData = existingSubtasks.map((subtask) => ({
-                        id: subtask.id,
-                        name: subtask.name,
-                        isNew: false,
-                    }));
-                    setSubtasks(subtaskData);
+                    setSubtasks(existingSubtasks);
                     setSubtasksLoaded(true);
                 } catch {
                     // Handle silently - don't show error for this
@@ -686,6 +679,23 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                             onSectionMount={
                                                                 scrollToSubtasksSection
                                                             }
+                                                            onSubtaskUpdate={async (
+                                                                updatedSubtask
+                                                            ) => {
+                                                                // Update the subtask in the local state
+                                                                setSubtasks(
+                                                                    (prev) =>
+                                                                        prev.map(
+                                                                            (
+                                                                                st
+                                                                            ) =>
+                                                                                st.id ===
+                                                                                updatedSubtask.id
+                                                                                    ? updatedSubtask
+                                                                                    : st
+                                                                        )
+                                                                );
+                                                            }}
                                                         />
                                                     </div>
                                                 )}
