@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
+import TaskPriorityIcon from './TaskPriorityIcon';
 
 // Import SubtasksDisplay component from TaskHeader
 interface SubtasksDisplayProps {
@@ -11,6 +12,7 @@ interface SubtasksDisplayProps {
     onTaskClick: (e: React.MouseEvent, task: Task) => void;
     onTaskUpdate: (task: Task) => Promise<void>;
     loadSubtasks: () => Promise<void>;
+    onSubtaskUpdate: (updatedSubtask: Task) => void;
 }
 
 const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
@@ -18,8 +20,8 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
     loadingSubtasks,
     subtasks,
     onTaskClick,
-    onTaskUpdate,
     loadSubtasks,
+    onSubtaskUpdate,
 }) => {
     const { t } = useTranslation();
 
@@ -47,95 +49,46 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                             }}
                         >
                             <div className="px-4 py-2.5 flex items-center justify-between">
-                                <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                    {subtask.status === 'done' ||
-                                    subtask.status === 2 ||
-                                    subtask.status === 'archived' ||
-                                    subtask.status === 3 ? (
-                                        <div
-                                            className="h-5 w-5 cursor-pointer hover:scale-110 transition-transform text-green-500 flex items-center justify-center"
-                                            style={{
-                                                width: '16px',
-                                                height: '16px',
-                                            }}
-                                            onClick={async (e) => {
-                                                e.stopPropagation();
+                                <div className="flex items-center space-x-3 flex-1 min-w-0">
+                                    <div className="flex-shrink-0">
+                                        <TaskPriorityIcon
+                                            priority={
+                                                subtask.priority || 'medium'
+                                            }
+                                            status={
+                                                subtask.status || 'not_started'
+                                            }
+                                            onToggleCompletion={async () => {
                                                 if (subtask.id) {
                                                     try {
                                                         const updatedSubtask =
                                                             await toggleTaskCompletion(
                                                                 subtask.id
                                                             );
-                                                        await onTaskUpdate(
+
+                                                        // Update the subtask in local state immediately
+                                                        onSubtaskUpdate(
                                                             updatedSubtask
                                                         );
-                                                        // Refresh subtasks to show updated status
-                                                        await loadSubtasks();
                                                     } catch (error) {
                                                         console.error(
                                                             'Error toggling subtask completion:',
                                                             error
                                                         );
-                                                    }
-                                                }
-                                            }}
-                                        >
-                                            <svg
-                                                className="h-4 w-4"
-                                                fill="currentColor"
-                                                viewBox="0 0 20 20"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
-                                        </div>
-                                    ) : (
-                                        <div
-                                            className={`h-5 w-5 cursor-pointer hover:scale-110 transition-transform border-2 border-current rounded-full flex-shrink-0 ${
-                                                subtask.priority === 'high'
-                                                    ? 'text-red-500'
-                                                    : subtask.priority ===
-                                                        'medium'
-                                                      ? 'text-yellow-500'
-                                                      : 'text-gray-300'
-                                            }`}
-                                            style={{
-                                                width: '16px',
-                                                height: '16px',
-                                            }}
-                                            onClick={async (e) => {
-                                                e.stopPropagation();
-                                                if (subtask.id) {
-                                                    try {
-                                                        const updatedSubtask =
-                                                            await toggleTaskCompletion(
-                                                                subtask.id
-                                                            );
-                                                        await onTaskUpdate(
-                                                            updatedSubtask
-                                                        );
-                                                        // Refresh subtasks to show updated status
+                                                        // Refresh subtasks on error
                                                         await loadSubtasks();
-                                                    } catch (error) {
-                                                        console.error(
-                                                            'Error toggling subtask completion:',
-                                                            error
-                                                        );
                                                     }
                                                 }
                                             }}
                                         />
-                                    )}
+                                    </div>
                                     <span
                                         className={`text-base flex-1 truncate ${
                                             subtask.status === 'done' ||
                                             subtask.status === 2 ||
                                             subtask.status === 'archived' ||
                                             subtask.status === 3
-                                                ? 'text-gray-500 dark:text-gray-400 line-through'
+                                                ? 'text-gray-500 dark:text-gray-400'
                                                 : 'text-gray-900 dark:text-gray-100'
                                         }`}
                                     >
@@ -224,10 +177,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
         }
     };
 
-    // Check if task has subtasks on mount
+    // Check if task has subtasks on mount and when task updates
     useEffect(() => {
         checkSubtasks();
-    }, [task.id]);
+    }, [task.id, task.updated_at]);
 
     const loadSubtasks = async () => {
         if (!task.id) return;
@@ -437,6 +390,15 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     }}
                     onTaskUpdate={onTaskUpdate}
                     loadSubtasks={loadSubtasks}
+                    onSubtaskUpdate={(updatedSubtask) => {
+                        setSubtasks((prev) =>
+                            prev.map((st) =>
+                                st.id === updatedSubtask.id
+                                    ? updatedSubtask
+                                    : st
+                            )
+                        );
+                    }}
                 />
             )}
 

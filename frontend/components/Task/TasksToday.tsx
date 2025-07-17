@@ -58,7 +58,7 @@ const TasksToday: React.FC = () => {
     // This prevents unnecessary re-renders from store updates
     const [localTasks, setLocalTasks] = useState<Task[]>([]);
     const [localProjects, setLocalProjects] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [isError, setIsError] = useState(false);
     const [dailyQuote, setDailyQuote] = useState<string>('');
     const [productivityAssistantEnabled, setProductivityAssistantEnabled] =
@@ -195,7 +195,6 @@ const TasksToday: React.FC = () => {
         const loadData = async () => {
             if (!isMounted.current) return;
 
-            setIsLoading(true);
             setIsError(false);
 
             try {
@@ -259,7 +258,7 @@ const TasksToday: React.FC = () => {
                 }
             } finally {
                 if (isMounted.current) {
-                    setIsLoading(false);
+                    setIsInitialLoading(false);
                 }
             }
 
@@ -403,38 +402,44 @@ const TasksToday: React.FC = () => {
         async (updatedTask: Task): Promise<void> => {
             if (!updatedTask.id || !isMounted.current) return;
 
-            setIsLoading(true);
-            try {
-                await updateTask(updatedTask.id, updatedTask);
-                // Refetch data to ensure consistency
-                const { tasks: updatedTasks, metrics } =
-                    await fetchTasks('?type=today');
+            // Check if this task exists in our current tasks list
+            const taskExists = localTasks.some(
+                (task) => task.id === updatedTask.id
+            );
 
-                if (isMounted.current) {
-                    setLocalTasks(updatedTasks);
-                    setMetrics(metrics);
-                    // Update store
-                    store.tasksStore.setTasks(updatedTasks);
+            if (taskExists) {
+                // Optimistically update the local state first
+                setLocalTasks((prevTasks) =>
+                    prevTasks.map((task) =>
+                        task.id === updatedTask.id
+                            ? { ...task, updated_at: new Date().toISOString() }
+                            : task
+                    )
+                );
+            }
+
+            try {
+                // Only make API call if the task actually changed
+                if (taskExists) {
+                    await updateTask(updatedTask.id, updatedTask);
                 }
+
+                // For subtask updates, we don't need to refetch everything
+                // The task update timestamp change will trigger subtask refresh in TaskItem
             } catch (error) {
                 console.error('Error updating task:', error);
                 if (isMounted.current) {
                     setIsError(true);
                 }
-            } finally {
-                if (isMounted.current) {
-                    setIsLoading(false);
-                }
             }
         },
-        [store.tasksStore]
+        [localTasks, store.tasksStore]
     );
 
     const handleTaskDelete = useCallback(
         async (taskId: number): Promise<void> => {
             if (!isMounted.current) return;
 
-            setIsLoading(true);
             try {
                 await deleteTask(taskId);
                 // Refetch data to ensure consistency
@@ -451,10 +456,6 @@ const TasksToday: React.FC = () => {
                 console.error('Error deleting task:', error);
                 if (isMounted.current) {
                     setIsError(true);
-                }
-            } finally {
-                if (isMounted.current) {
-                    setIsLoading(false);
                 }
             }
         },
@@ -510,8 +511,8 @@ const TasksToday: React.FC = () => {
         setTodaySettings(newSettings);
     };
 
-    // Show loading state until both data and settings are loaded
-    if ((isLoading && localTasks.length === 0) || !isSettingsLoaded) {
+    // Show loading state until both data and settings are loaded (only for initial load)
+    if (isInitialLoading || !isSettingsLoaded) {
         return (
             <div className="flex justify-center items-center h-64">
                 <p className="text-gray-500 dark:text-gray-400">

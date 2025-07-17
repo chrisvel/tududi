@@ -1,25 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
-
-interface SubtaskData {
-    id?: number;
-    name: string;
-    isNew?: boolean;
-    isEdited?: boolean;
-}
+import { Task } from '../../../entities/Task';
+import TaskPriorityIcon from '../TaskPriorityIcon';
+import { toggleTaskCompletion } from '../../../utils/tasksService';
 
 interface TaskSubtasksSectionProps {
     parentTaskId: number;
-    subtasks: SubtaskData[];
-    onSubtasksChange: (subtasks: SubtaskData[]) => void;
+    subtasks: Task[];
+    onSubtasksChange: (subtasks: Task[]) => void;
     onSectionMount?: () => void;
+    onSubtaskUpdate?: (subtask: Task) => Promise<void>;
 }
 
 const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
     subtasks,
     onSubtasksChange,
     onSectionMount,
+    onSubtaskUpdate,
 }) => {
     const [newSubtaskName, setNewSubtaskName] = useState('');
     const [isLoading] = useState(false);
@@ -50,10 +48,15 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
     const handleCreateSubtask = () => {
         if (!newSubtaskName.trim()) return;
 
-        const newSubtask: SubtaskData = {
+        const newSubtask: Task = {
             name: newSubtaskName.trim(),
-            isNew: true,
-        };
+            status: 'not_started',
+            priority: 'medium',
+            today: false,
+            parent_task_id: undefined, // Will be set when saved
+            // Mark as new for UI purposes
+            _isNew: true,
+        } as Task;
 
         onSubtasksChange([...subtasks, newSubtask]);
         setNewSubtaskName('');
@@ -85,11 +88,12 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         const updatedSubtasks = subtasks.map((subtask, index) => {
             if (index === editingIndex) {
                 const isNameChanged = subtask.name !== editingName.trim();
+                const isNew = (subtask as any)._isNew || false;
                 return {
                     ...subtask,
                     name: editingName.trim(),
-                    isNew: subtask.isNew || false,
-                    isEdited: !subtask.isNew && isNameChanged, // Mark as edited if it's existing and name changed
+                    _isNew: isNew,
+                    _isEdited: !isNew && isNameChanged, // Mark as edited if it's existing and name changed
                 };
             }
             return subtask;
@@ -105,16 +109,6 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         setEditingName('');
     };
 
-    const handleEditKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSaveEdit();
-        } else if (e.key === 'Escape') {
-            e.preventDefault();
-            handleCancelEdit();
-        }
-    };
-
     return (
         <div ref={subtasksSectionRef} className="space-y-3">
             {/* Existing Subtasks */}
@@ -123,21 +117,59 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                     {t('loading.subtasks', 'Loading subtasks...')}
                 </div>
             ) : subtasks.length > 0 ? (
-                <div className="space-y-2">
+                <div className="space-y-1">
                     {subtasks.map((subtask, index) => (
                         <div
                             key={subtask.id || index}
-                            className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-md"
+                            className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800"
                         >
                             {editingIndex === index ? (
-                                <div className="flex-1 flex items-center space-x-2">
+                                <div className="px-3 py-2.5 flex items-center space-x-3">
+                                    <div className="flex-shrink-0">
+                                        <TaskPriorityIcon
+                                            priority={
+                                                subtask.priority || 'medium'
+                                            }
+                                            status={
+                                                subtask.status || 'not_started'
+                                            }
+                                            onToggleCompletion={async () => {
+                                                if (
+                                                    subtask.id &&
+                                                    onSubtaskUpdate
+                                                ) {
+                                                    try {
+                                                        const updatedSubtask =
+                                                            await toggleTaskCompletion(
+                                                                subtask.id
+                                                            );
+                                                        await onSubtaskUpdate(
+                                                            updatedSubtask
+                                                        );
+                                                    } catch (error) {
+                                                        console.error(
+                                                            'Error toggling subtask completion:',
+                                                            error
+                                                        );
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </div>
                                     <input
                                         type="text"
                                         value={editingName}
                                         onChange={(e) =>
                                             setEditingName(e.target.value)
                                         }
-                                        onKeyPress={handleEditKeyPress}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleSaveEdit();
+                                            } else if (e.key === 'Escape') {
+                                                handleCancelEdit();
+                                            }
+                                        }}
                                         onBlur={handleSaveEdit}
                                         className="flex-1 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:text-white"
                                         autoFocus
@@ -152,35 +184,82 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                     </button>
                                 </div>
                             ) : (
-                                <span
-                                    className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer flex-1 hover:text-blue-600 dark:hover:text-blue-400"
-                                    onClick={() => handleEditSubtask(index)}
-                                    title={t(
-                                        'actions.clickToEdit',
-                                        'Click to edit'
-                                    )}
-                                >
-                                    {subtask.name}
-                                    {subtask.isNew && (
-                                        <span className="ml-2 text-xs text-blue-500 dark:text-blue-400">
-                                            (new)
+                                <div className="px-3 py-2.5 flex items-center justify-between">
+                                    <div className="flex items-center space-x-3 flex-1 min-w-0">
+                                        <div className="flex-shrink-0">
+                                            <TaskPriorityIcon
+                                                priority={
+                                                    subtask.priority || 'medium'
+                                                }
+                                                status={
+                                                    subtask.status ||
+                                                    'not_started'
+                                                }
+                                                onToggleCompletion={async () => {
+                                                    if (
+                                                        subtask.id &&
+                                                        onSubtaskUpdate
+                                                    ) {
+                                                        try {
+                                                            const updatedSubtask =
+                                                                await toggleTaskCompletion(
+                                                                    subtask.id
+                                                                );
+                                                            await onSubtaskUpdate(
+                                                                updatedSubtask
+                                                            );
+                                                        } catch (error) {
+                                                            console.error(
+                                                                'Error toggling subtask completion:',
+                                                                error
+                                                            );
+                                                        }
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                        <span
+                                            className={`text-sm flex-1 truncate cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 ${
+                                                subtask.status === 'done' ||
+                                                subtask.status === 2 ||
+                                                subtask.status === 'archived' ||
+                                                subtask.status === 3
+                                                    ? 'text-gray-500 dark:text-gray-400'
+                                                    : 'text-gray-900 dark:text-gray-100'
+                                            }`}
+                                            onClick={() =>
+                                                handleEditSubtask(index)
+                                            }
+                                            title={t(
+                                                'actions.clickToEdit',
+                                                'Click to edit'
+                                            )}
+                                        >
+                                            {subtask.name}
+                                            {(subtask as any)._isNew && (
+                                                <span className="ml-2 text-xs text-blue-500 dark:text-blue-400">
+                                                    (new)
+                                                </span>
+                                            )}
+                                            {(subtask as any)._isEdited && (
+                                                <span className="ml-2 text-xs text-orange-500 dark:text-orange-400">
+                                                    (edited)
+                                                </span>
+                                            )}
                                         </span>
-                                    )}
-                                    {subtask.isEdited && (
-                                        <span className="ml-2 text-xs text-orange-500 dark:text-orange-400">
-                                            (edited)
-                                        </span>
-                                    )}
-                                </span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            handleDeleteSubtask(index)
+                                        }
+                                        className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400"
+                                        title={t('actions.delete', 'Delete')}
+                                    >
+                                        <TrashIcon className="h-4 w-4" />
+                                    </button>
+                                </div>
                             )}
-                            <button
-                                type="button"
-                                onClick={() => handleDeleteSubtask(index)}
-                                className="p-1 text-red-500 hover:text-red-700 dark:hover:text-red-400"
-                                title={t('actions.delete', 'Delete')}
-                            >
-                                <TrashIcon className="h-4 w-4" />
-                            </button>
                         </div>
                     ))}
                 </div>
@@ -197,7 +276,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                     type="text"
                     value={newSubtaskName}
                     onChange={(e) => setNewSubtaskName(e.target.value)}
-                    onKeyPress={handleKeyPress}
+                    onKeyDown={handleKeyPress}
                     placeholder={t('subtasks.placeholder', 'Add a subtask...')}
                     className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                 />
