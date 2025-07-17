@@ -39,9 +39,9 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
     const scrollToBottom = () => {
         setTimeout(() => {
             if (subtasksSectionRef.current) {
-                subtasksSectionRef.current.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'end' 
+                subtasksSectionRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'end',
                 });
             }
         }, 100);
@@ -54,10 +54,10 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
             name: newSubtaskName.trim(),
             isNew: true,
         };
-        
+
         onSubtasksChange([...subtasks, newSubtask]);
         setNewSubtaskName('');
-        
+
         // Scroll to bottom after adding new subtask
         scrollToBottom();
     };
@@ -134,7 +134,9 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                     <input
                                         type="text"
                                         value={editingName}
-                                        onChange={(e) => setEditingName(e.target.value)}
+                                        onChange={(e) =>
+                                            setEditingName(e.target.value)
+                                        }
                                         onKeyPress={handleEditKeyPress}
                                         onBlur={handleSaveEdit}
                                         className="flex-1 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:text-white"
@@ -150,10 +152,13 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                     </button>
                                 </div>
                             ) : (
-                                <span 
+                                <span
                                     className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer flex-1 hover:text-blue-600 dark:hover:text-blue-400"
                                     onClick={() => handleEditSubtask(index)}
-                                    title={t('actions.clickToEdit', 'Click to edit')}
+                                    title={t(
+                                        'actions.clickToEdit',
+                                        'Click to edit'
+                                    )}
                                 >
                                     {subtask.name}
                                     {subtask.isNew && (
