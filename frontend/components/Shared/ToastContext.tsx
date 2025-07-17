@@ -81,7 +81,7 @@ const ToastComponent: React.FC<{
     return (
         <div
             className={`px-4 py-3 rounded-lg shadow-md text-white transition-all duration-300 ${
-                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+                type === 'success' ? 'bg-green-600' : 'bg-red-500'
             }`}
             style={style}
         >
