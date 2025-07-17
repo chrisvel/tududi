@@ -610,10 +610,10 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
     useEffect(() => {
         const hasSubtasksFromData =
             props.task.subtasks && props.task.subtasks.length > 0;
-        setHasSubtasks(hasSubtasksFromData);
+        setHasSubtasks(!!hasSubtasksFromData);
 
         // Set initial subtasks state if they are already loaded
-        if (hasSubtasksFromData) {
+        if (hasSubtasksFromData && props.task.subtasks) {
             setSubtasks(props.task.subtasks);
         }
     }, [props.task.id, props.task.subtasks]);
