@@ -260,4 +260,56 @@ describe('Tasks Routes', () => {
             expect(response.body.Tags.map((t) => t.name)).toContain('urgent');
         });
     });
+
+    describe('Subtasks filtering', () => {
+        it('should not include subtasks at first level when retrieving /tasks', async () => {
+            // Create a parent task
+            const parentTask = await Task.create({
+                name: 'Parent Task',
+                user_id: user.id,
+                status: 0,
+            });
+
+            // Create subtasks
+            const subtask1 = await Task.create({
+                name: 'Subtask 1',
+                user_id: user.id,
+                parent_task_id: parentTask.id,
+                status: 0,
+            });
+
+            const subtask2 = await Task.create({
+                name: 'Subtask 2',
+                user_id: user.id,
+                parent_task_id: parentTask.id,
+                status: 0,
+            });
+
+            // Create another regular task (not a subtask)
+            const regularTask = await Task.create({
+                name: 'Regular Task',
+                user_id: user.id,
+                status: 0,
+            });
+
+            const response = await agent.get('/api/tasks');
+
+            expect(response.status).toBe(200);
+            expect(response.body.tasks).toBeDefined();
+
+            // Should only return parent and regular tasks, not subtasks
+            const taskIds = response.body.tasks.map(t => t.id);
+            const taskNames = response.body.tasks.map(t => t.name);
+
+            expect(taskIds).toContain(parentTask.id);
+            expect(taskIds).toContain(regularTask.id);
+            expect(taskIds).not.toContain(subtask1.id);
+            expect(taskIds).not.toContain(subtask2.id);
+
+            expect(taskNames).toContain('Parent Task');
+            expect(taskNames).toContain('Regular Task');
+            expect(taskNames).not.toContain('Subtask 1');
+            expect(taskNames).not.toContain('Subtask 2');
+        });
+    });
 });

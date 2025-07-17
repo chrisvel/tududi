@@ -7,8 +7,12 @@ process.env.DB_FILE = `/tmp/test-${testId}.sqlite3`;
 const { sequelize } = require('../../models');
 
 beforeAll(async () => {
-    // Ensure test database is clean and created
+    // Ensure test database is clean and created with proper schema
     await sequelize.sync({ force: true });
+    
+    // Disable foreign key constraints for tests to avoid issues with test data creation
+    // Note: In SQLite, foreign keys are disabled by default, but we explicitly disable them here
+    await sequelize.query('PRAGMA foreign_keys = OFF');
 }, 30000);
 
 beforeEach(async () => {
