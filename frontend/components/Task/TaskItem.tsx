@@ -168,7 +168,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     useEffect(() => {
         const hasSubtasksFromData = task.subtasks && task.subtasks.length > 0;
         setHasSubtasks(hasSubtasksFromData);
-        
+
         // Set initial subtasks state if they are already loaded
         if (hasSubtasksFromData) {
             setSubtasks(task.subtasks);

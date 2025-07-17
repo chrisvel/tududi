@@ -189,7 +189,11 @@ export const useStore = create<StoreState>((set) => ({
             try {
                 const { tasks } = await fetchTasks(query);
                 set((state) => ({
-                    tasksStore: { ...state.tasksStore, tasks, isLoading: false },
+                    tasksStore: {
+                        ...state.tasksStore,
+                        tasks,
+                        isLoading: false,
+                    },
                 }));
             } catch (error) {
                 console.error('loadTasks: Failed to load tasks:', error);
@@ -263,7 +267,9 @@ export const useStore = create<StoreState>((set) => ({
             }
         },
         toggleTaskCompletion: async (taskId) => {
-            const { toggleTaskCompletion } = await import('../utils/tasksService');
+            const { toggleTaskCompletion } = await import(
+                '../utils/tasksService'
+            );
             try {
                 const updatedTask = await toggleTaskCompletion(taskId);
                 set((state) => ({
@@ -276,7 +282,10 @@ export const useStore = create<StoreState>((set) => ({
                 }));
                 return updatedTask;
             } catch (error) {
-                console.error('toggleTaskCompletion: Failed to toggle task completion:', error);
+                console.error(
+                    'toggleTaskCompletion: Failed to toggle task completion:',
+                    error
+                );
                 set((state) => ({
                     tasksStore: { ...state.tasksStore, isError: true },
                 }));
@@ -297,7 +306,10 @@ export const useStore = create<StoreState>((set) => ({
                 }));
                 return updatedTask;
             } catch (error) {
-                console.error('toggleTaskToday: Failed to toggle task today status:', error);
+                console.error(
+                    'toggleTaskToday: Failed to toggle task today status:',
+                    error
+                );
                 set((state) => ({
                     tasksStore: { ...state.tasksStore, isError: true },
                 }));
@@ -311,8 +323,12 @@ export const useStore = create<StoreState>((set) => ({
                 set((state) => ({
                     tasksStore: {
                         ...state.tasksStore,
-                        tasks: state.tasksStore.tasks.some((t) => t.id === taskId)
-                            ? state.tasksStore.tasks.map((t) => t.id === taskId ? task : t)
+                        tasks: state.tasksStore.tasks.some(
+                            (t) => t.id === taskId
+                        )
+                            ? state.tasksStore.tasks.map((t) =>
+                                  t.id === taskId ? task : t
+                              )
                             : [task, ...state.tasksStore.tasks],
                     },
                 }));
@@ -332,8 +348,12 @@ export const useStore = create<StoreState>((set) => ({
                 set((state) => ({
                     tasksStore: {
                         ...state.tasksStore,
-                        tasks: state.tasksStore.tasks.some((t) => t.uuid === uuid)
-                            ? state.tasksStore.tasks.map((t) => t.uuid === uuid ? task : t)
+                        tasks: state.tasksStore.tasks.some(
+                            (t) => t.uuid === uuid
+                        )
+                            ? state.tasksStore.tasks.map((t) =>
+                                  t.uuid === uuid ? task : t
+                              )
                             : [task, ...state.tasksStore.tasks],
                     },
                 }));
@@ -381,7 +401,9 @@ export const useStore = create<StoreState>((set) => ({
             set((state) => ({
                 tasksStore: {
                     ...state.tasksStore,
-                    tasks: state.tasksStore.tasks.filter((task) => task.id !== taskId),
+                    tasks: state.tasksStore.tasks.filter(
+                        (task) => task.id !== taskId
+                    ),
                 },
             })),
         updateTaskInStore: (updatedTask) =>
