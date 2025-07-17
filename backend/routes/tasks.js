@@ -72,9 +72,13 @@ async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
         });
 
         // Check if all subtasks are done
-        const allSubtasksDone = subtasks.length > 0 && subtasks.every(subtask => 
-            subtask.status === Task.STATUS.DONE || subtask.status === 'done'
-        );
+        const allSubtasksDone =
+            subtasks.length > 0 &&
+            subtasks.every(
+                (subtask) =>
+                    subtask.status === Task.STATUS.DONE ||
+                    subtask.status === 'done'
+            );
 
         if (allSubtasksDone) {
             // Update parent task to done
@@ -108,7 +112,11 @@ async function undoneParentTaskIfNeeded(parentTaskId, userId) {
         });
 
         // If parent is done, undone it
-        if (parentTask && (parentTask.status === Task.STATUS.DONE || parentTask.status === 'done')) {
+        if (
+            parentTask &&
+            (parentTask.status === Task.STATUS.DONE ||
+                parentTask.status === 'done')
+        ) {
             await Task.update(
                 {
                     status: Task.STATUS.NOT_STARTED,
@@ -169,9 +177,9 @@ async function undoneAllSubtasks(parentTaskId, userId) {
 
 // Filter tasks by parameters
 async function filterTasksByParams(params, userId) {
-    let whereClause = { 
+    let whereClause = {
         user_id: userId,
-        parent_task_id: null  // Exclude subtasks from main task lists
+        parent_task_id: null, // Exclude subtasks from main task lists
     };
     let includeClause = [
         { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
@@ -846,18 +854,20 @@ router.post('/task', async (req, res) => {
         // Handle subtasks creation
         if (subtasks && Array.isArray(subtasks)) {
             const subtaskPromises = subtasks
-                .filter(subtask => subtask.name && subtask.name.trim())
-                .map(subtask => Task.create({
-                    name: subtask.name.trim(),
-                    parent_task_id: task.id,
-                    user_id: req.currentUser.id,
-                    priority: Task.PRIORITY.MEDIUM,
-                    status: Task.STATUS.NOT_STARTED,
-                    today: false,
-                    recurrence_type: 'none',
-                    completion_based: false,
-                }));
-            
+                .filter((subtask) => subtask.name && subtask.name.trim())
+                .map((subtask) =>
+                    Task.create({
+                        name: subtask.name.trim(),
+                        parent_task_id: task.id,
+                        user_id: req.currentUser.id,
+                        priority: Task.PRIORITY.MEDIUM,
+                        status: Task.STATUS.NOT_STARTED,
+                        today: false,
+                        recurrence_type: 'none',
+                        completion_based: false,
+                    })
+                );
+
             await Promise.all(subtaskPromises);
         }
 
@@ -1401,10 +1411,16 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
         if (task.parent_task_id) {
             if (newStatus === Task.STATUS.DONE) {
                 // When subtask is done, check if parent should be done
-                await checkAndUpdateParentTaskCompletion(task.parent_task_id, req.currentUser.id);
+                await checkAndUpdateParentTaskCompletion(
+                    task.parent_task_id,
+                    req.currentUser.id
+                );
             } else {
                 // When subtask is undone, undone parent if it was done
-                await undoneParentTaskIfNeeded(task.parent_task_id, req.currentUser.id);
+                await undoneParentTaskIfNeeded(
+                    task.parent_task_id,
+                    req.currentUser.id
+                );
             }
         } else {
             // This is a parent task

@@ -77,7 +77,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] =
         useState(true);
     const [isTimelineExpanded, setIsTimelineExpanded] = useState(false);
-    const [subtasks, setSubtasks] = useState<Array<{id?: number; name: string; isNew?: boolean}>>([]);
+    const [subtasks, setSubtasks] = useState<
+        Array<{ id?: number; name: string; isNew?: boolean }>
+    >([]);
     const [subtasksLoaded, setSubtasksLoaded] = useState(false);
 
     // Collapsible section states
@@ -94,11 +96,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
     const scrollToSubtasksSection = () => {
         setTimeout(() => {
-            const subtasksSection = document.querySelector('[data-section="subtasks"]');
+            const subtasksSection = document.querySelector(
+                '[data-section="subtasks"]'
+            );
             if (subtasksSection) {
-                subtasksSection.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'end' 
+                subtasksSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'end',
                 });
             }
         }, 300); // Give time for section to expand
@@ -204,9 +208,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
         if (isOpen && autoFocusSubtasks) {
             // Small delay to ensure modal is fully rendered
             setTimeout(() => {
-                setExpandedSections(prev => ({
+                setExpandedSections((prev) => ({
                     ...prev,
-                    subtasks: true
+                    subtasks: true,
                 }));
                 scrollToSubtasksSection();
             }, 100);
@@ -316,10 +320,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
     };
 
     const handleSubmit = () => {
-        onSave({ 
-            ...formData, 
+        onSave({
+            ...formData,
             tags: tags.map((tag) => ({ name: tag })),
-            subtasks: subtasks
+            subtasks: subtasks,
         } as any);
         const taskLink = (
             <span>
@@ -437,7 +441,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             const loadExistingSubtasks = async () => {
                 try {
                     const existingSubtasks = await fetchSubtasks(task.id!);
-                    const subtaskData = existingSubtasks.map(subtask => ({
+                    const subtaskData = existingSubtasks.map((subtask) => ({
                         id: subtask.id,
                         name: subtask.name,
                         isNew: false,
@@ -450,7 +454,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     setSubtasksLoaded(true);
                 }
             };
-            
+
             loadExistingSubtasks();
         } else if (!isOpen) {
             // Reset subtasks when modal closes
@@ -661,7 +665,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 )}
 
                                                 {expandedSections.subtasks && (
-                                                    <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4" data-section="subtasks">
+                                                    <div
+                                                        className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4"
+                                                        data-section="subtasks"
+                                                    >
                                                         <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                                             {t(
                                                                 'forms.task.subtasks',
@@ -669,10 +676,16 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                             )}
                                                         </h3>
                                                         <TaskSubtasksSection
-                                                            parentTaskId={task.id!}
+                                                            parentTaskId={
+                                                                task.id!
+                                                            }
                                                             subtasks={subtasks}
-                                                            onSubtasksChange={setSubtasks}
-                                                            onSectionMount={scrollToSubtasksSection}
+                                                            onSubtasksChange={
+                                                                setSubtasks
+                                                            }
+                                                            onSectionMount={
+                                                                scrollToSubtasksSection
+                                                            }
                                                         />
                                                     </div>
                                                 )}
