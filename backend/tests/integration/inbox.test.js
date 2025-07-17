@@ -95,6 +95,50 @@ describe('Inbox Routes', () => {
             expect(response.body[0].status).toBe('added');
         });
 
+        it('should return inbox items ordered by created_at DESC (newest first)', async () => {
+            // Create additional items with slight delay to ensure different timestamps
+            const item1 = await InboxItem.create({
+                content: 'First item (oldest)',
+                status: 'added',
+                source: 'test',
+                user_id: user.id,
+            });
+
+            // Small delay to ensure different timestamps
+            await new Promise((resolve) => setTimeout(resolve, 10));
+
+            const item2 = await InboxItem.create({
+                content: 'Second item',
+                status: 'added',
+                source: 'test',
+                user_id: user.id,
+            });
+
+            await new Promise((resolve) => setTimeout(resolve, 10));
+
+            const item3 = await InboxItem.create({
+                content: 'Third item (newest)',
+                status: 'added',
+                source: 'test',
+                user_id: user.id,
+            });
+
+            const response = await agent.get('/api/inbox');
+
+            expect(response.status).toBe(200);
+            expect(response.body.length).toBe(4); // Including the item from beforeEach
+
+            // Check that items are ordered by newest first
+            expect(response.body[0].id).toBe(item3.id);
+            expect(response.body[1].id).toBe(item2.id);
+            expect(response.body[2].id).toBe(item1.id);
+
+            // Verify the content matches expected order
+            expect(response.body[0].content).toBe('Third item (newest)');
+            expect(response.body[1].content).toBe('Second item');
+            expect(response.body[2].content).toBe('First item (oldest)');
+        });
+
         it('should require authentication', async () => {
             const response = await request(app).get('/api/inbox');
 

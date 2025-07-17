@@ -118,6 +118,11 @@ async function filterTasksByParams(params, userId) {
 
     let orderClause = [['created_at', 'ASC']];
 
+    // Special ordering for inbox - newest items first
+    if (params.type === 'inbox') {
+        orderClause = [['created_at', 'DESC']];
+    }
+
     // Apply ordering
     if (params.order_by) {
         const [orderColumn, orderDirection = 'asc'] =
