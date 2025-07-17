@@ -20,7 +20,6 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
     loadingSubtasks,
     subtasks,
     onTaskClick,
-    onTaskUpdate,
     loadSubtasks,
     onSubtaskUpdate,
 }) => {
