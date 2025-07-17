@@ -15,7 +15,12 @@ import {
     Cog6ToothIcon,
     CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
-import { fetchTasks, updateTask, deleteTask, toggleTaskToday } from '../../utils/tasksService';
+import {
+    fetchTasks,
+    updateTask,
+    deleteTask,
+    toggleTaskToday,
+} from '../../utils/tasksService';
 import { fetchProjects } from '../../utils/projectsService';
 import { Task } from '../../entities/Task';
 import { useStore } from '../../store/useStore';
@@ -51,7 +56,6 @@ const TasksToday: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
     const [hasInitialized, setHasInitialized] = useState(false);
-    const projects = useStore((state) => state.projectsStore.projects);
 
     // Keep local state for UI-specific data
     const [localProjects, setLocalProjects] = useState<any[]>([]);
@@ -194,10 +198,19 @@ const TasksToday: React.FC = () => {
             }
 
             setIsLoading(true);
-            const { tasks: fetchedTasks, metrics: fetchedMetrics } = await fetchTasks('?type=today');
-            if (isMounted.current) {
-                setTasks(fetchedTasks);
-                setMetrics(fetchedMetrics);
+            try {
+                const { tasks: fetchedTasks, metrics: fetchedMetrics } =
+                    await fetchTasks('?type=today');
+                if (isMounted.current) {
+                    setTasks(fetchedTasks);
+                    setMetrics(fetchedMetrics);
+                    setIsError(false);
+                }
+            } catch (error) {
+                console.error('Failed to fetch tasks:', error);
+                if (isMounted.current) {
+                    setIsError(true);
+                }
             }
 
             // Load all profile settings in a single API call instead of multiple calls
@@ -210,11 +223,12 @@ const TasksToday: React.FC = () => {
                     if (isMounted.current) {
                         // Set productivity assistant setting
                         setProductivityAssistantEnabled(
-                            userData.productivity_assistant_enabled !== undefined
+                            userData.productivity_assistant_enabled !==
+                                undefined
                                 ? userData.productivity_assistant_enabled
                                 : true
                         );
-                        
+
                         // Set next task suggestion setting
                         setNextTaskSuggestionEnabled(
                             userData.next_task_suggestion_enabled !== undefined
@@ -227,9 +241,14 @@ const TasksToday: React.FC = () => {
                         if (userData.today_settings) {
                             if (typeof userData.today_settings === 'string') {
                                 try {
-                                    settings = JSON.parse(userData.today_settings);
+                                    settings = JSON.parse(
+                                        userData.today_settings
+                                    );
                                 } catch (error) {
-                                    console.error('Error parsing today_settings:', error);
+                                    console.error(
+                                        'Error parsing today_settings:',
+                                        error
+                                    );
                                     settings = null;
                                 }
                             } else {
@@ -252,18 +271,26 @@ const TasksToday: React.FC = () => {
                         // Store profile settings
                         const currentProfileSettings = {
                             productivity_assistant_enabled:
-                                userData.productivity_assistant_enabled === true,
+                                userData.productivity_assistant_enabled ===
+                                true,
                             next_task_suggestion_enabled:
                                 userData.next_task_suggestion_enabled === true,
                         };
                         setProfileSettings(currentProfileSettings);
 
                         // Sync with profile AI & productivity features
-                        if (userData.productivity_assistant_enabled !== undefined) {
-                            settings.showProductivity = userData.productivity_assistant_enabled;
+                        if (
+                            userData.productivity_assistant_enabled !==
+                            undefined
+                        ) {
+                            settings.showProductivity =
+                                userData.productivity_assistant_enabled;
                         }
-                        if (userData.next_task_suggestion_enabled !== undefined) {
-                            settings.showNextTaskSuggestion = userData.next_task_suggestion_enabled;
+                        if (
+                            userData.next_task_suggestion_enabled !== undefined
+                        ) {
+                            settings.showNextTaskSuggestion =
+                                userData.next_task_suggestion_enabled;
                         }
 
                         // Ensure progress bar is always enabled
@@ -293,7 +320,9 @@ const TasksToday: React.FC = () => {
                         ? projectsData
                         : [];
                     setLocalProjects(safeProjectsData);
-                    useStore.getState().projectsStore.setProjects(safeProjectsData);
+                    useStore
+                        .getState()
+                        .projectsStore.setProjects(safeProjectsData);
                 }
             } catch (error) {
                 console.error('Projects loading error:', error);
@@ -304,7 +333,7 @@ const TasksToday: React.FC = () => {
             }
 
             // Tasks will be loaded via the store's loadTasks method called earlier
-            
+
             // Load daily quote from translations
             try {
                 const response = await fetch(
@@ -370,24 +399,39 @@ const TasksToday: React.FC = () => {
     const handleTaskUpdate = useCallback(
         async (updatedTask: Task): Promise<void> => {
             if (!updatedTask.id || !isMounted.current) return;
-            
 
             // Helper function to update a task in an array
             const updateTaskInArray = (tasks: Task[]) =>
                 tasks.map((task) =>
                     task.id === updatedTask.id
-                        ? { ...task, ...updatedTask, updated_at: new Date().toISOString() }
+                        ? {
+                              ...task,
+                              ...updatedTask,
+                              updated_at: new Date().toISOString(),
+                          }
                         : task
                 );
 
             // Check if this task exists in any of our task lists
-            const taskExistsInLocal = tasks.some((task) => task.id === updatedTask.id);
-            const taskExistsInMetrics = 
-                (metrics.today_plan_tasks?.some((task) => task.id === updatedTask.id)) ||
-                metrics.suggested_tasks.some((task) => task.id === updatedTask.id) ||
-                metrics.tasks_due_today.some((task) => task.id === updatedTask.id) ||
-                metrics.tasks_in_progress.some((task) => task.id === updatedTask.id) ||
-                metrics.tasks_completed_today.some((task) => task.id === updatedTask.id);
+            const taskExistsInLocal = tasks.some(
+                (task) => task.id === updatedTask.id
+            );
+            const taskExistsInMetrics =
+                metrics.today_plan_tasks?.some(
+                    (task) => task.id === updatedTask.id
+                ) ||
+                metrics.suggested_tasks.some(
+                    (task) => task.id === updatedTask.id
+                ) ||
+                metrics.tasks_due_today.some(
+                    (task) => task.id === updatedTask.id
+                ) ||
+                metrics.tasks_in_progress.some(
+                    (task) => task.id === updatedTask.id
+                ) ||
+                metrics.tasks_completed_today.some(
+                    (task) => task.id === updatedTask.id
+                );
 
             // Update local task state
             if (taskExistsInLocal) {
@@ -397,11 +441,21 @@ const TasksToday: React.FC = () => {
             if (taskExistsInMetrics) {
                 setMetrics((prevMetrics) => ({
                     ...prevMetrics,
-                    today_plan_tasks: updateTaskInArray(prevMetrics.today_plan_tasks || []),
-                    suggested_tasks: updateTaskInArray(prevMetrics.suggested_tasks || []),
-                    tasks_due_today: updateTaskInArray(prevMetrics.tasks_due_today || []),
-                    tasks_in_progress: updateTaskInArray(prevMetrics.tasks_in_progress || []),
-                    tasks_completed_today: updateTaskInArray(prevMetrics.tasks_completed_today || []),
+                    today_plan_tasks: updateTaskInArray(
+                        prevMetrics.today_plan_tasks || []
+                    ),
+                    suggested_tasks: updateTaskInArray(
+                        prevMetrics.suggested_tasks || []
+                    ),
+                    tasks_due_today: updateTaskInArray(
+                        prevMetrics.tasks_due_today || []
+                    ),
+                    tasks_in_progress: updateTaskInArray(
+                        prevMetrics.tasks_in_progress || []
+                    ),
+                    tasks_completed_today: updateTaskInArray(
+                        prevMetrics.tasks_completed_today || []
+                    ),
                 }));
             }
 
@@ -426,9 +480,10 @@ const TasksToday: React.FC = () => {
 
             try {
                 await deleteTask(taskId);
-                
+
                 // Reload tasks to reflect the change
-                const { tasks: updatedTasks, metrics: updatedMetrics } = await fetchTasks('?type=today');
+                const { tasks: updatedTasks, metrics: updatedMetrics } =
+                    await fetchTasks('?type=today');
                 if (isMounted.current) {
                     setTasks(updatedTasks);
                     setMetrics(updatedMetrics);
@@ -446,9 +501,10 @@ const TasksToday: React.FC = () => {
 
             try {
                 await toggleTaskToday(taskId);
-                
+
                 // Reload tasks to reflect the change
-                const { tasks: updatedTasks, metrics: updatedMetrics } = await fetchTasks('?type=today');
+                const { tasks: updatedTasks, metrics: updatedMetrics } =
+                    await fetchTasks('?type=today');
                 if (isMounted.current) {
                     setTasks(updatedTasks);
                     setMetrics(updatedMetrics);

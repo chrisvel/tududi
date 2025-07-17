@@ -924,7 +924,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
         for (const projectName of missingProjects) {
             try {
-                const newProject = await createProject({
+                await createProject({
                     name: projectName,
                     active: true,
                 });

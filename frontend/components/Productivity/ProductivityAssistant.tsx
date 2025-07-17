@@ -17,7 +17,7 @@ import {
     updateTask,
     deleteTask,
 } from '../../utils/tasksService';
-import { fetchProjects, createProject } from '../../utils/projectsService';
+import { createProject } from '../../utils/projectsService';
 import { useToast } from '../Shared/ToastContext';
 import { getVagueTasks } from '../../utils/taskIntelligenceService';
 
