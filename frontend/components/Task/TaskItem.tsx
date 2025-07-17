@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';

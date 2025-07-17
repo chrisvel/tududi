@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
     CalendarDaysIcon,
     CalendarIcon,
@@ -140,7 +141,12 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             {project && !hideProjectName && (
                                 <div className="flex items-center">
                                     <FolderIcon className="h-3 w-3 mr-1" />
-                                    <span>{project.name}</span>
+                                    <Link
+                                        to={`/project/${project.id}`}
+                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                    >
+                                        {project.name}
+                                    </Link>
                                 </div>
                             )}
                             {project &&
@@ -153,9 +159,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 <div className="flex items-center">
                                     <TagIcon className="h-3 w-3 mr-1" />
                                     <span>
-                                        {task.tags
-                                            .map((tag) => tag.name)
-                                            .join(', ')}
+                                        {task.tags.map((tag, index) => (
+                                            <React.Fragment key={tag.name}>
+                                                <Link
+                                                    to={`/tag/${encodeURIComponent(tag.name)}`}
+                                                    className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                >
+                                                    {tag.name}
+                                                </Link>
+                                                {index < task.tags!.length - 1 && ', '}
+                                            </React.Fragment>
+                                        ))}
                                     </span>
                                 </div>
                             )}
@@ -289,16 +303,29 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             {project && !hideProjectName && (
                                 <div className="flex items-center">
                                     <FolderIcon className="h-3 w-3 mr-1" />
-                                    <span>{project.name}</span>
+                                    <Link
+                                        to={`/project/${project.id}`}
+                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                    >
+                                        {project.name}
+                                    </Link>
                                 </div>
                             )}
                             {task.tags && task.tags.length > 0 && (
                                 <div className="flex items-center">
                                     <TagIcon className="h-3 w-3 mr-1" />
                                     <span>
-                                        {task.tags
-                                            .map((tag) => tag.name)
-                                            .join(', ')}
+                                        {task.tags.map((tag, index) => (
+                                            <React.Fragment key={tag.name}>
+                                                <Link
+                                                    to={`/tag/${encodeURIComponent(tag.name)}`}
+                                                    className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                >
+                                                    {tag.name}
+                                                </Link>
+                                                {index < task.tags!.length - 1 && ', '}
+                                            </React.Fragment>
+                                        ))}
                                     </span>
                                 </div>
                             )}
