@@ -299,7 +299,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         !(task.status === 'archived' || task.status === 3) && (
                             <button
                                 onClick={(e) => {
-                                    console.log('Subtasks button clicked', e);
                                     if (onSubtasksToggle) {
                                         onSubtasksToggle(e);
                                     }
@@ -609,33 +608,27 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
     const [hasSubtasks, setHasSubtasks] = useState(false);
 
-    // Check if task has subtasks on mount
+    // Check if task has subtasks using included data
     useEffect(() => {
-        const checkSubtasks = async () => {
-            if (!props.task.id) return;
-
-            console.log(
-                'Checking subtasks for task:',
-                props.task.id,
-                props.task.name
-            );
-
-            try {
-                const subtasksData = await fetchSubtasks(props.task.id);
-                console.log('Subtasks data:', subtasksData);
-                setHasSubtasks(subtasksData.length > 0);
-            } catch (error) {
-                console.error('Error fetching subtasks:', error);
-                setHasSubtasks(false);
-            }
-        };
-
-        checkSubtasks();
-    }, [props.task.id]);
+        const hasSubtasksFromData = props.task.subtasks && props.task.subtasks.length > 0;
+        setHasSubtasks(hasSubtasksFromData);
+        
+        // Set initial subtasks state if they are already loaded
+        if (hasSubtasksFromData) {
+            setSubtasks(props.task.subtasks);
+        }
+    }, [props.task.id, props.task.subtasks]);
 
     const loadSubtasks = async () => {
         if (!props.task.id) return;
 
+        // If subtasks are already included in the task data, use them
+        if (props.task.subtasks && props.task.subtasks.length > 0) {
+            setSubtasks(props.task.subtasks);
+            return;
+        }
+
+        // Only fetch if not already included (fallback for older API responses)
         setLoadingSubtasks(true);
         try {
             const subtasksData = await fetchSubtasks(props.task.id);
