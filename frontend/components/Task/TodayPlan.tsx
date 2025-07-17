@@ -25,7 +25,33 @@ const TodayPlan: React.FC<TodayPlanProps> = ({
     // Handle undefined or null todayPlanTasks
     const safeTodayPlanTasks = todayPlanTasks || [];
 
-    if (safeTodayPlanTasks.length === 0) {
+    // Sort tasks to move in-progress tasks to the top
+    const sortedTasks = React.useMemo(() => {
+        if (safeTodayPlanTasks.length === 0) return [];
+        
+        return [...safeTodayPlanTasks].sort((a, b) => {
+            const aInProgress = a.status === 'in_progress' || a.status === 1;
+            const bInProgress = b.status === 'in_progress' || b.status === 1;
+            
+            // If both are in progress, sort by updated_at (recently updated to bottom)
+            if (aInProgress && bInProgress) {
+                // Recently updated tasks should be at the bottom of in-progress group
+                const aUpdated = new Date(a.updated_at || a.created_at || 0);
+                const bUpdated = new Date(b.updated_at || b.created_at || 0);
+                return aUpdated.getTime() - bUpdated.getTime(); // Older tasks first, newer to bottom
+            }
+            
+            // If both are not in progress, maintain original order
+            if (!aInProgress && !bInProgress) {
+                return 0;
+            }
+            
+            // Put in-progress tasks first
+            return aInProgress ? -1 : 1;
+        });
+    }, [safeTodayPlanTasks]);
+
+    if (sortedTasks.length === 0) {
         return (
             <>
                 <div className="flex justify-center items-center mt-4">
@@ -52,7 +78,7 @@ const TodayPlan: React.FC<TodayPlanProps> = ({
     return (
         <>
             <TaskList
-                tasks={safeTodayPlanTasks}
+                tasks={sortedTasks}
                 onTaskUpdate={onTaskUpdate}
                 onTaskDelete={onTaskDelete}
                 projects={projects}
