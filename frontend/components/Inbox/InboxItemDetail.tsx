@@ -402,34 +402,48 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                 <div className="flex items-center">
                                     <FolderIcon className="h-3 w-3 mr-1" />
                                     <span>
-                                        {projectRefs.map((projectRef, index) => {
-                                            // Find matching project
-                                            const matchingProject = projects.find(
-                                                (project) =>
-                                                    project.name.toLowerCase() === projectRef.toLowerCase()
-                                            );
-                                            
-                                            if (matchingProject) {
-                                                return (
-                                                    <React.Fragment key={projectRef}>
-                                                        <Link
-                                                            to={`/project/${matchingProject.id}`}
-                                                            className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                        {projectRefs.map(
+                                            (projectRef, index) => {
+                                                // Find matching project
+                                                const matchingProject =
+                                                    projects.find(
+                                                        (project) =>
+                                                            project.name.toLowerCase() ===
+                                                            projectRef.toLowerCase()
+                                                    );
+
+                                                if (matchingProject) {
+                                                    return (
+                                                        <React.Fragment
+                                                            key={projectRef}
                                                         >
-                                                            {projectRef}
-                                                        </Link>
-                                                        {index < projectRefs.length - 1 && ', '}
-                                                    </React.Fragment>
-                                                );
-                                            } else {
-                                                return (
-                                                    <React.Fragment key={projectRef}>
-                                                        <span>{projectRef}</span>
-                                                        {index < projectRefs.length - 1 && ', '}
-                                                    </React.Fragment>
-                                                );
+                                                            <Link
+                                                                to={`/project/${matchingProject.id}`}
+                                                                className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                            >
+                                                                {projectRef}
+                                                            </Link>
+                                                            {index <
+                                                                projectRefs.length -
+                                                                    1 && ', '}
+                                                        </React.Fragment>
+                                                    );
+                                                } else {
+                                                    return (
+                                                        <React.Fragment
+                                                            key={projectRef}
+                                                        >
+                                                            <span>
+                                                                {projectRef}
+                                                            </span>
+                                                            {index <
+                                                                projectRefs.length -
+                                                                    1 && ', '}
+                                                        </React.Fragment>
+                                                    );
+                                                }
                                             }
-                                        })}
+                                        )}
                                     </span>
                                 </div>
                             )}
@@ -453,7 +467,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                                     >
                                                         {hashtag}
                                                     </Link>
-                                                    {index < hashtags.length - 1 && ', '}
+                                                    {index <
+                                                        hashtags.length - 1 &&
+                                                        ', '}
                                                 </React.Fragment>
                                             );
                                         })}

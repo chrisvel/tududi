@@ -25,7 +25,7 @@ const TaskList: React.FC<TaskListProps> = ({
         <div className="task-list-container">
             {tasks.length > 0 ? (
                 tasks.map((task) => (
-                    <div 
+                    <div
                         key={task.id}
                         className="task-item-wrapper transition-all duration-200 ease-in-out"
                     >

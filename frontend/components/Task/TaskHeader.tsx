@@ -167,7 +167,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 >
                                                     {tag.name}
                                                 </Link>
-                                                {index < task.tags!.length - 1 && ', '}
+                                                {index <
+                                                    task.tags!.length - 1 &&
+                                                    ', '}
                                             </React.Fragment>
                                         ))}
                                     </span>
@@ -323,7 +325,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 >
                                                     {tag.name}
                                                 </Link>
-                                                {index < task.tags!.length - 1 && ', '}
+                                                {index <
+                                                    task.tags!.length - 1 &&
+                                                    ', '}
                                             </React.Fragment>
                                         ))}
                                     </span>
