@@ -61,6 +61,26 @@ TaskEvent.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 Task.hasMany(TaskEvent, { foreignKey: 'task_id', as: 'TaskEvents' });
 TaskEvent.belongsTo(Task, { foreignKey: 'task_id', as: 'Task' });
 
+// Task self-referencing associations for subtasks
+Task.belongsTo(Task, {
+    as: 'ParentTask',
+    foreignKey: 'parent_task_id',
+});
+Task.hasMany(Task, {
+    as: 'Subtasks',
+    foreignKey: 'parent_task_id',
+});
+
+// Task self-referencing associations for recurring tasks
+Task.belongsTo(Task, {
+    as: 'RecurringParent',
+    foreignKey: 'recurring_parent_id',
+});
+Task.hasMany(Task, {
+    as: 'RecurringChildren',
+    foreignKey: 'recurring_parent_id',
+});
+
 // Many-to-many associations
 Task.belongsToMany(Tag, {
     through: 'tasks_tags',

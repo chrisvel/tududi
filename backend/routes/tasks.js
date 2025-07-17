@@ -169,7 +169,10 @@ async function undoneAllSubtasks(parentTaskId, userId) {
 
 // Filter tasks by parameters
 async function filterTasksByParams(params, userId) {
-    let whereClause = { user_id: userId };
+    let whereClause = { 
+        user_id: userId,
+        parent_task_id: null  // Exclude subtasks from main task lists
+    };
     let includeClause = [
         { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
         { model: Project, attributes: ['name'], required: false },
