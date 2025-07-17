@@ -1370,29 +1370,52 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                     placeholder={t('inbox.captureThought')}
                                     onKeyDown={(e) => {
                                         // Handle dropdown navigation
-                                        if (showTagSuggestions && filteredTags.length > 0) {
+                                        if (
+                                            showTagSuggestions &&
+                                            filteredTags.length > 0
+                                        ) {
                                             if (e.key === 'ArrowDown') {
                                                 e.preventDefault();
-                                                setSelectedSuggestionIndex((prev) => 
-                                                    prev < filteredTags.length - 1 ? prev + 1 : 0
+                                                setSelectedSuggestionIndex(
+                                                    (prev) =>
+                                                        prev <
+                                                        filteredTags.length - 1
+                                                            ? prev + 1
+                                                            : 0
                                                 );
                                                 return;
                                             } else if (e.key === 'ArrowUp') {
                                                 e.preventDefault();
-                                                setSelectedSuggestionIndex((prev) => 
-                                                    prev > 0 ? prev - 1 : filteredTags.length - 1
+                                                setSelectedSuggestionIndex(
+                                                    (prev) =>
+                                                        prev > 0
+                                                            ? prev - 1
+                                                            : filteredTags.length -
+                                                              1
                                                 );
                                                 return;
                                             } else if (e.key === 'Tab') {
                                                 e.preventDefault();
-                                                const selectedTag = selectedSuggestionIndex >= 0 
-                                                    ? filteredTags[selectedSuggestionIndex]
-                                                    : filteredTags[0];
-                                                handleTagSelect(selectedTag.name);
+                                                const selectedTag =
+                                                    selectedSuggestionIndex >= 0
+                                                        ? filteredTags[
+                                                              selectedSuggestionIndex
+                                                          ]
+                                                        : filteredTags[0];
+                                                handleTagSelect(
+                                                    selectedTag.name
+                                                );
                                                 return;
-                                            } else if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
+                                            } else if (
+                                                e.key === 'Enter' &&
+                                                selectedSuggestionIndex >= 0
+                                            ) {
                                                 e.preventDefault();
-                                                handleTagSelect(filteredTags[selectedSuggestionIndex].name);
+                                                handleTagSelect(
+                                                    filteredTags[
+                                                        selectedSuggestionIndex
+                                                    ].name
+                                                );
                                                 return;
                                             } else if (e.key === 'Escape') {
                                                 e.preventDefault();
@@ -1402,47 +1425,79 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                 return;
                                             }
                                         }
-                                        
+
                                         // Handle project dropdown navigation
-                                        if (showProjectSuggestions && filteredProjects.length > 0) {
+                                        if (
+                                            showProjectSuggestions &&
+                                            filteredProjects.length > 0
+                                        ) {
                                             if (e.key === 'ArrowDown') {
                                                 e.preventDefault();
-                                                setSelectedSuggestionIndex((prev) => 
-                                                    prev < filteredProjects.length - 1 ? prev + 1 : 0
+                                                setSelectedSuggestionIndex(
+                                                    (prev) =>
+                                                        prev <
+                                                        filteredProjects.length -
+                                                            1
+                                                            ? prev + 1
+                                                            : 0
                                                 );
                                                 return;
                                             } else if (e.key === 'ArrowUp') {
                                                 e.preventDefault();
-                                                setSelectedSuggestionIndex((prev) => 
-                                                    prev > 0 ? prev - 1 : filteredProjects.length - 1
+                                                setSelectedSuggestionIndex(
+                                                    (prev) =>
+                                                        prev > 0
+                                                            ? prev - 1
+                                                            : filteredProjects.length -
+                                                              1
                                                 );
                                                 return;
                                             } else if (e.key === 'Tab') {
                                                 e.preventDefault();
-                                                const selectedProject = selectedSuggestionIndex >= 0 
-                                                    ? filteredProjects[selectedSuggestionIndex]
-                                                    : filteredProjects[0];
-                                                handleProjectSelect(selectedProject.name);
+                                                const selectedProject =
+                                                    selectedSuggestionIndex >= 0
+                                                        ? filteredProjects[
+                                                              selectedSuggestionIndex
+                                                          ]
+                                                        : filteredProjects[0];
+                                                handleProjectSelect(
+                                                    selectedProject.name
+                                                );
                                                 return;
-                                            } else if (e.key === 'Enter' && selectedSuggestionIndex >= 0) {
+                                            } else if (
+                                                e.key === 'Enter' &&
+                                                selectedSuggestionIndex >= 0
+                                            ) {
                                                 e.preventDefault();
-                                                handleProjectSelect(filteredProjects[selectedSuggestionIndex].name);
+                                                handleProjectSelect(
+                                                    filteredProjects[
+                                                        selectedSuggestionIndex
+                                                    ].name
+                                                );
                                                 return;
                                             } else if (e.key === 'Escape') {
                                                 e.preventDefault();
-                                                setShowProjectSuggestions(false);
+                                                setShowProjectSuggestions(
+                                                    false
+                                                );
                                                 setFilteredProjects([]);
                                                 setSelectedSuggestionIndex(-1);
                                                 return;
                                             }
                                         }
-                                        
+
                                         // Handle form submission
-                                        if (e.key === 'Enter' && !e.shiftKey && !isSaving) {
+                                        if (
+                                            e.key === 'Enter' &&
+                                            !e.shiftKey &&
+                                            !isSaving
+                                        ) {
                                             // If suggestions are showing and there are filtered options, don't submit
                                             if (
-                                                (showTagSuggestions && filteredTags.length > 0) ||
-                                                (showProjectSuggestions && filteredProjects.length > 0)
+                                                (showTagSuggestions &&
+                                                    filteredTags.length > 0) ||
+                                                (showProjectSuggestions &&
+                                                    filteredProjects.length > 0)
                                             ) {
                                                 // Don't submit, let the user select from suggestions
                                                 return;
@@ -1624,7 +1679,8 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                         )
                                                     }
                                                     className={`w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md ${
-                                                        selectedSuggestionIndex === index
+                                                        selectedSuggestionIndex ===
+                                                        index
                                                             ? 'bg-blue-100 dark:bg-blue-800'
                                                             : 'hover:bg-gray-100 dark:hover:bg-gray-600'
                                                     }`}
@@ -1659,7 +1715,8 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                             )
                                                         }
                                                         className={`w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md ${
-                                                            selectedSuggestionIndex === index
+                                                            selectedSuggestionIndex ===
+                                                            index
                                                                 ? 'bg-blue-100 dark:bg-blue-800'
                                                                 : 'hover:bg-gray-100 dark:hover:bg-gray-600'
                                                         }`}
