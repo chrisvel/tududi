@@ -51,7 +51,6 @@ const TasksToday: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
     const [hasInitialized, setHasInitialized] = useState(false);
-    const projects = useStore((state) => state.projectsStore.projects);
 
     // Keep local state for UI-specific data
     const [localProjects, setLocalProjects] = useState<any[]>([]);
@@ -194,10 +193,18 @@ const TasksToday: React.FC = () => {
             }
 
             setIsLoading(true);
-            const { tasks: fetchedTasks, metrics: fetchedMetrics } = await fetchTasks('?type=today');
-            if (isMounted.current) {
-                setTasks(fetchedTasks);
-                setMetrics(fetchedMetrics);
+            try {
+                const { tasks: fetchedTasks, metrics: fetchedMetrics } = await fetchTasks('?type=today');
+                if (isMounted.current) {
+                    setTasks(fetchedTasks);
+                    setMetrics(fetchedMetrics);
+                    setIsError(false);
+                }
+            } catch (error) {
+                console.error('Failed to fetch tasks:', error);
+                if (isMounted.current) {
+                    setIsError(true);
+                }
             }
 
             // Load all profile settings in a single API call instead of multiple calls

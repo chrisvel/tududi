@@ -19,13 +19,15 @@ async function serializeTask(task) {
     return {
         ...taskWithoutSubtasks,
         tags: taskJson.Tags || [],
-        subtasks: Subtasks ? Subtasks.map(subtask => ({
-            ...subtask,
-            tags: subtask.Tags || [],
-            due_date: subtask.due_date
-                ? subtask.due_date.toISOString().split('T')[0]
-                : null,
-        })) : [],
+        subtasks: Subtasks
+            ? Subtasks.map((subtask) => ({
+                  ...subtask,
+                  tags: subtask.Tags || [],
+                  due_date: subtask.due_date
+                      ? subtask.due_date.toISOString().split('T')[0]
+                      : null,
+              }))
+            : [],
         due_date: task.due_date
             ? task.due_date.toISOString().split('T')[0]
             : null,
