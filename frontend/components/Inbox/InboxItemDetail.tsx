@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
 import {
@@ -400,7 +401,50 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                             {projectRefs.length > 0 && (
                                 <div className="flex items-center">
                                     <FolderIcon className="h-3 w-3 mr-1" />
-                                    <span>{projectRefs.join(', ')}</span>
+                                    <span>
+                                        {projectRefs.map(
+                                            (projectRef, index) => {
+                                                // Find matching project
+                                                const matchingProject =
+                                                    projects.find(
+                                                        (project) =>
+                                                            project.name.toLowerCase() ===
+                                                            projectRef.toLowerCase()
+                                                    );
+
+                                                if (matchingProject) {
+                                                    return (
+                                                        <React.Fragment
+                                                            key={projectRef}
+                                                        >
+                                                            <Link
+                                                                to={`/project/${matchingProject.id}`}
+                                                                className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                            >
+                                                                {projectRef}
+                                                            </Link>
+                                                            {index <
+                                                                projectRefs.length -
+                                                                    1 && ', '}
+                                                        </React.Fragment>
+                                                    );
+                                                } else {
+                                                    return (
+                                                        <React.Fragment
+                                                            key={projectRef}
+                                                        >
+                                                            <span>
+                                                                {projectRef}
+                                                            </span>
+                                                            {index <
+                                                                projectRefs.length -
+                                                                    1 && ', '}
+                                                        </React.Fragment>
+                                                    );
+                                                }
+                                            }
+                                        )}
+                                    </span>
                                 </div>
                             )}
 
@@ -413,7 +457,23 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                             {hashtags.length > 0 && (
                                 <div className="flex items-center">
                                     <TagIcon className="h-3 w-3 mr-1" />
-                                    <span>{hashtags.join(', ')}</span>
+                                    <span>
+                                        {hashtags.map((hashtag, index) => {
+                                            return (
+                                                <React.Fragment key={hashtag}>
+                                                    <Link
+                                                        to={`/tag/${encodeURIComponent(hashtag)}`}
+                                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                    >
+                                                        {hashtag}
+                                                    </Link>
+                                                    {index <
+                                                        hashtags.length - 1 &&
+                                                        ', '}
+                                                </React.Fragment>
+                                            );
+                                        })}
+                                    </span>
                                 </div>
                             )}
                         </div>

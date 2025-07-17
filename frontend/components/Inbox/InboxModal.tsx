@@ -62,6 +62,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
         left: 0,
         top: 0,
     });
+    const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
     // const [urlPreview, setUrlPreview] = useState<UrlTitleResult | null>(null);
 
     // Real-time text analysis state
@@ -542,6 +543,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
             // Hide project suggestions when showing tag suggestions
             setShowProjectSuggestions(false);
             setFilteredProjects([]);
+            setSelectedSuggestionIndex(-1);
 
             // Filter tags based on current query
             const filtered = tags
@@ -561,6 +563,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
             setFilteredTags(filtered);
             setShowTagSuggestions(true);
+            setSelectedSuggestionIndex(-1);
         } else if (
             (newText.charAt(newCursorPosition - 1) === '+' || projectQuery) &&
             projectQuery !== ''
@@ -568,6 +571,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
             // Hide tag suggestions when showing project suggestions
             setShowTagSuggestions(false);
             setFilteredTags([]);
+            setSelectedSuggestionIndex(-1);
 
             // Filter projects based on current query
             const filtered = projects
@@ -587,11 +591,13 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
             setFilteredProjects(filtered);
             setShowProjectSuggestions(true);
+            setSelectedSuggestionIndex(-1);
         } else {
             setShowTagSuggestions(false);
             setFilteredTags([]);
             setShowProjectSuggestions(false);
             setFilteredProjects([]);
+            setSelectedSuggestionIndex(-1);
         }
     };
 
@@ -783,6 +789,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 setInputText(newText);
                 setShowTagSuggestions(false);
                 setFilteredTags([]);
+                setSelectedSuggestionIndex(-1);
 
                 // Focus back on input and set cursor position
                 setTimeout(() => {
@@ -850,6 +857,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 setInputText(newText);
                 setShowProjectSuggestions(false);
                 setFilteredProjects([]);
+                setSelectedSuggestionIndex(-1);
 
                 // Focus back on input and set cursor position
                 setTimeout(() => {
@@ -1231,9 +1239,11 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 if (showTagSuggestions) {
                     setShowTagSuggestions(false);
                     setFilteredTags([]);
+                    setSelectedSuggestionIndex(-1);
                 } else if (showProjectSuggestions) {
                     setShowProjectSuggestions(false);
                     setFilteredProjects([]);
+                    setSelectedSuggestionIndex(-1);
                 } else {
                     handleClose();
                 }
@@ -1253,9 +1263,11 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 if (showTagSuggestions) {
                     setShowTagSuggestions(false);
                     setFilteredTags([]);
+                    setSelectedSuggestionIndex(-1);
                 } else if (showProjectSuggestions) {
                     setShowProjectSuggestions(false);
                     setFilteredProjects([]);
+                    setSelectedSuggestionIndex(-1);
                 } else {
                     handleClose();
                 }
@@ -1357,12 +1369,130 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                     className="w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white focus:outline-none shadow-sm py-2"
                                     placeholder={t('inbox.captureThought')}
                                     onKeyDown={(e) => {
+                                        // Handle dropdown navigation
+                                        if (
+                                            showTagSuggestions &&
+                                            filteredTags.length > 0
+                                        ) {
+                                            if (e.key === 'ArrowDown') {
+                                                e.preventDefault();
+                                                setSelectedSuggestionIndex(
+                                                    (prev) =>
+                                                        prev <
+                                                        filteredTags.length - 1
+                                                            ? prev + 1
+                                                            : 0
+                                                );
+                                                return;
+                                            } else if (e.key === 'ArrowUp') {
+                                                e.preventDefault();
+                                                setSelectedSuggestionIndex(
+                                                    (prev) =>
+                                                        prev > 0
+                                                            ? prev - 1
+                                                            : filteredTags.length -
+                                                              1
+                                                );
+                                                return;
+                                            } else if (e.key === 'Tab') {
+                                                e.preventDefault();
+                                                const selectedTag =
+                                                    selectedSuggestionIndex >= 0
+                                                        ? filteredTags[
+                                                              selectedSuggestionIndex
+                                                          ]
+                                                        : filteredTags[0];
+                                                handleTagSelect(
+                                                    selectedTag.name
+                                                );
+                                                return;
+                                            } else if (
+                                                e.key === 'Enter' &&
+                                                selectedSuggestionIndex >= 0
+                                            ) {
+                                                e.preventDefault();
+                                                handleTagSelect(
+                                                    filteredTags[
+                                                        selectedSuggestionIndex
+                                                    ].name
+                                                );
+                                                return;
+                                            } else if (e.key === 'Escape') {
+                                                e.preventDefault();
+                                                setShowTagSuggestions(false);
+                                                setFilteredTags([]);
+                                                setSelectedSuggestionIndex(-1);
+                                                return;
+                                            }
+                                        }
+
+                                        // Handle project dropdown navigation
+                                        if (
+                                            showProjectSuggestions &&
+                                            filteredProjects.length > 0
+                                        ) {
+                                            if (e.key === 'ArrowDown') {
+                                                e.preventDefault();
+                                                setSelectedSuggestionIndex(
+                                                    (prev) =>
+                                                        prev <
+                                                        filteredProjects.length -
+                                                            1
+                                                            ? prev + 1
+                                                            : 0
+                                                );
+                                                return;
+                                            } else if (e.key === 'ArrowUp') {
+                                                e.preventDefault();
+                                                setSelectedSuggestionIndex(
+                                                    (prev) =>
+                                                        prev > 0
+                                                            ? prev - 1
+                                                            : filteredProjects.length -
+                                                              1
+                                                );
+                                                return;
+                                            } else if (e.key === 'Tab') {
+                                                e.preventDefault();
+                                                const selectedProject =
+                                                    selectedSuggestionIndex >= 0
+                                                        ? filteredProjects[
+                                                              selectedSuggestionIndex
+                                                          ]
+                                                        : filteredProjects[0];
+                                                handleProjectSelect(
+                                                    selectedProject.name
+                                                );
+                                                return;
+                                            } else if (
+                                                e.key === 'Enter' &&
+                                                selectedSuggestionIndex >= 0
+                                            ) {
+                                                e.preventDefault();
+                                                handleProjectSelect(
+                                                    filteredProjects[
+                                                        selectedSuggestionIndex
+                                                    ].name
+                                                );
+                                                return;
+                                            } else if (e.key === 'Escape') {
+                                                e.preventDefault();
+                                                setShowProjectSuggestions(
+                                                    false
+                                                );
+                                                setFilteredProjects([]);
+                                                setSelectedSuggestionIndex(-1);
+                                                return;
+                                            }
+                                        }
+
+                                        // Handle form submission
                                         if (
                                             e.key === 'Enter' &&
                                             !e.shiftKey &&
                                             !isSaving
                                         ) {
-                                            // If suggestions are showing and there are filtered options, let the user navigate
+                                            // If suggestions are showing and there are filtered options, don't submit
                                             if (
                                                 (showTagSuggestions &&
                                                     filteredTags.length > 0) ||
@@ -1372,7 +1502,6 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                 // Don't submit, let the user select from suggestions
                                                 return;
                                             }
-
                                             // Otherwise, submit the form
                                             e.preventDefault();
                                             handleSubmit();
@@ -1549,7 +1678,12 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                             tag.name
                                                         )
                                                     }
-                                                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md"
+                                                    className={`w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md ${
+                                                        selectedSuggestionIndex ===
+                                                        index
+                                                            ? 'bg-blue-100 dark:bg-blue-800'
+                                                            : 'hover:bg-gray-100 dark:hover:bg-gray-600'
+                                                    }`}
                                                 >
                                                     #{tag.name}
                                                 </button>
@@ -1580,7 +1714,12 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                                                 project.name
                                                             )
                                                         }
-                                                        className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md"
+                                                        className={`w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-gray-100 first:rounded-t-md last:rounded-b-md ${
+                                                            selectedSuggestionIndex ===
+                                                            index
+                                                                ? 'bg-blue-100 dark:bg-blue-800'
+                                                                : 'hover:bg-gray-100 dark:hover:bg-gray-600'
+                                                        }`}
                                                     >
                                                         +{project.name}
                                                     </button>

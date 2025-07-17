@@ -22,18 +22,22 @@ const TaskList: React.FC<TaskListProps> = ({
     onToggleToday,
 }) => {
     return (
-        <div>
+        <div className="task-list-container">
             {tasks.length > 0 ? (
                 tasks.map((task) => (
-                    <TaskItem
+                    <div
                         key={task.id}
-                        task={task}
-                        onTaskUpdate={onTaskUpdate}
-                        onTaskDelete={onTaskDelete}
-                        projects={projects}
-                        hideProjectName={hideProjectName}
-                        onToggleToday={onToggleToday}
-                    />
+                        className="task-item-wrapper transition-all duration-200 ease-in-out"
+                    >
+                        <TaskItem
+                            task={task}
+                            onTaskUpdate={onTaskUpdate}
+                            onTaskDelete={onTaskDelete}
+                            projects={projects}
+                            hideProjectName={hideProjectName}
+                            onToggleToday={onToggleToday}
+                        />
+                    </div>
                 ))
             ) : (
                 <p className="text-gray-500 dark:text-gray-400 text-center mt-4">

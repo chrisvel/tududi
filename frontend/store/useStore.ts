@@ -178,7 +178,7 @@ export const useStore = create<StoreState>((set) => ({
             set((state) => ({
                 inboxStore: {
                     ...state.inboxStore,
-                    inboxItems: [...state.inboxStore.inboxItems, inboxItem],
+                    inboxItems: [inboxItem, ...state.inboxStore.inboxItems],
                 },
             })),
         updateInboxItem: (inboxItem) =>
