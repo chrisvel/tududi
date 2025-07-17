@@ -445,11 +445,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                     <TagIcon className="h-3 w-3 mr-1" />
                                     <span>
                                         {hashtags.map((hashtag, index) => {
-                                            // Find matching tag
-                                            const matchingTag = tags.find(
-                                                (tag) => tag.name.toLowerCase() === hashtag.toLowerCase()
-                                            );
-                                            
                                             return (
                                                 <React.Fragment key={hashtag}>
                                                     <Link
