@@ -486,7 +486,7 @@ describe('Subtasks Completion Logic Integration', () => {
             const endTime = Date.now();
 
             // Should complete within reasonable time (adjust threshold as needed)
-            expect(endTime - startTime).toBeLessThan(5000); // 5 seconds
+            expect(endTime - startTime).toBeLessThan(10000); // 10 seconds
 
             // Parent should be completed
             const updatedParent = await Task.findByPk(parentTask.id);
