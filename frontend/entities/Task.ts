@@ -26,6 +26,7 @@ export interface Task {
     recurring_parent_id?: number;
     completed_at?: string;
     parent_task_id?: number;
+    subtasks?: Task[];
 }
 
 export type StatusType = 'not_started' | 'in_progress' | 'done' | 'archived';

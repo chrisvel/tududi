@@ -164,27 +164,27 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     const completionPercentage = calculateCompletionPercentage();
 
-    // Helper function to check if task has subtasks
-    const checkSubtasks = async () => {
-        if (!task.id) return;
-
-        try {
-            const subtasksData = await fetchSubtasks(task.id);
-            setHasSubtasks(subtasksData.length > 0);
-        } catch (error) {
-            console.error('Error fetching subtasks:', error);
-            setHasSubtasks(false);
-        }
-    };
-
-    // Check if task has subtasks on mount and when task updates
+    // Check if task has subtasks using the included subtasks data
     useEffect(() => {
-        checkSubtasks();
-    }, [task.id, task.updated_at]);
+        const hasSubtasksFromData = task.subtasks && task.subtasks.length > 0;
+        setHasSubtasks(hasSubtasksFromData);
+        
+        // Set initial subtasks state if they are already loaded
+        if (hasSubtasksFromData) {
+            setSubtasks(task.subtasks);
+        }
+    }, [task.id, task.updated_at, task.subtasks]);
 
     const loadSubtasks = async () => {
         if (!task.id) return;
 
+        // If subtasks are already included in the task data, use them
+        if (task.subtasks && task.subtasks.length > 0) {
+            setSubtasks(task.subtasks);
+            return;
+        }
+
+        // Only fetch if not already included (fallback for older API responses)
         setLoadingSubtasks(true);
         try {
             const subtasksData = await fetchSubtasks(task.id);
@@ -242,8 +242,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
         await onTaskUpdate(updatedSubtask);
         setSubtaskModalOpen(false);
         setSelectedSubtask(null);
-        // Refresh subtasks check after saving
-        await checkSubtasks();
     };
 
     const handleSubtaskDelete = async () => {
@@ -251,8 +249,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
             await onTaskDelete(selectedSubtask.id);
             setSubtaskModalOpen(false);
             setSelectedSubtask(null);
-            // Refresh subtasks check after deleting
-            await checkSubtasks();
         }
     };
 
@@ -260,8 +256,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
         await onTaskUpdate(updatedParentTask);
         setParentTaskModalOpen(false);
         setParentTask(null);
-        // Refresh subtasks check after saving
-        await checkSubtasks();
     };
 
     const handleParentTaskDelete = async () => {
@@ -269,16 +263,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
             await onTaskDelete(parentTask.id);
             setParentTaskModalOpen(false);
             setParentTask(null);
-            // Refresh subtasks check after deleting
-            await checkSubtasks();
         }
     };
 
     const handleSave = async (updatedTask: Task) => {
         await onTaskUpdate(updatedTask);
         setIsModalOpen(false);
-        // Refresh subtasks check after saving
-        await checkSubtasks();
     };
 
     const handleDelete = async () => {

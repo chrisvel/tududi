@@ -13,12 +13,19 @@ async function serializeTask(task) {
         task.id
     );
 
-    // Remove subtasks from the serialized task
+    // Include subtasks if they exist
     const { Subtasks, ...taskWithoutSubtasks } = taskJson;
 
     return {
         ...taskWithoutSubtasks,
         tags: taskJson.Tags || [],
+        subtasks: Subtasks ? Subtasks.map(subtask => ({
+            ...subtask,
+            tags: subtask.Tags || [],
+            due_date: subtask.due_date
+                ? subtask.due_date.toISOString().split('T')[0]
+                : null,
+        })) : [],
         due_date: task.due_date
             ? task.due_date.toISOString().split('T')[0]
             : null,
@@ -184,6 +191,19 @@ async function filterTasksByParams(params, userId) {
     let includeClause = [
         { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
         { model: Project, attributes: ['name'], required: false },
+        {
+            model: Task,
+            as: 'Subtasks',
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] },
+                    required: false,
+                },
+            ],
+            required: false,
+        },
     ];
 
     // Filter by type
@@ -316,6 +336,19 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 attributes: ['id', 'name', 'active'],
                 required: false,
             },
+            {
+                model: Task,
+                as: 'Subtasks',
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name'],
+                        through: { attributes: [] },
+                        required: false,
+                    },
+                ],
+                required: false,
+            },
         ],
         order: [['priority', 'DESC']],
     });
@@ -344,6 +377,19 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             {
                 model: Project,
                 attributes: ['id', 'name', 'active'],
+                required: false,
+            },
+            {
+                model: Task,
+                as: 'Subtasks',
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name'],
+                        through: { attributes: [] },
+                        required: false,
+                    },
+                ],
                 required: false,
             },
         ],
@@ -386,6 +432,19 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             {
                 model: Project,
                 attributes: ['id', 'name', 'active'],
+                required: false,
+            },
+            {
+                model: Task,
+                as: 'Subtasks',
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name'],
+                        through: { attributes: [] },
+                        required: false,
+                    },
+                ],
                 required: false,
             },
         ],
@@ -442,6 +501,19 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                     attributes: ['id', 'name', 'active'],
                     required: false,
                 },
+                {
+                    model: Task,
+                    as: 'Subtasks',
+                    include: [
+                        {
+                            model: Tag,
+                            attributes: ['id', 'name'],
+                            through: { attributes: [] },
+                            required: false,
+                        },
+                    ],
+                    required: false,
+                },
             ],
             order: [
                 ['priority', 'DESC'],
@@ -470,6 +542,19 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 {
                     model: Project,
                     attributes: ['id', 'name', 'active'],
+                    required: false,
+                },
+                {
+                    model: Task,
+                    as: 'Subtasks',
+                    include: [
+                        {
+                            model: Tag,
+                            attributes: ['id', 'name'],
+                            through: { attributes: [] },
+                            required: false,
+                        },
+                    ],
                     required: false,
                 },
             ],
@@ -513,6 +598,19 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                         attributes: ['id', 'name', 'active'],
                         required: false,
                     },
+                    {
+                        model: Task,
+                        as: 'Subtasks',
+                        include: [
+                            {
+                                model: Tag,
+                                attributes: ['id', 'name'],
+                                through: { attributes: [] },
+                                required: false,
+                            },
+                        ],
+                        required: false,
+                    },
                 ],
                 order: [
                     ['priority', 'DESC'],
@@ -551,6 +649,19 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             {
                 model: Project,
                 attributes: ['id', 'name', 'active'],
+                required: false,
+            },
+            {
+                model: Task,
+                as: 'Subtasks',
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name'],
+                        through: { attributes: [] },
+                        required: false,
+                    },
+                ],
                 required: false,
             },
         ],
