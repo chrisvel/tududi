@@ -6,7 +6,7 @@ import {
     PlayIcon,
     ArrowPathIcon,
     ArrowRightIcon,
-    Squares2X2Icon,
+    ListBulletIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
@@ -319,7 +319,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                           )
                                 }
                             >
-                                <Squares2X2Icon className="h-3 w-3" />
+                                <ListBulletIcon className="h-3 w-3" />
                             </button>
                         )}
                 </div>
@@ -501,7 +501,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                               )
                                     }
                                 >
-                                    <Squares2X2Icon className="h-3 w-3" />
+                                    <ListBulletIcon className="h-3 w-3" />
                                 </button>
                             )}
                     </div>
