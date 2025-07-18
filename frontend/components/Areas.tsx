@@ -47,8 +47,8 @@ const Areas: React.FC = () => {
     const handleSaveArea = async (areaData: Partial<Area>) => {
         setLoading(true);
         try {
-            if (areaData.id) {
-                await updateArea(areaData.id, {
+            if (areaData.uid) {
+                await updateArea(areaData.uid, {
                     name: areaData.name,
                     description: areaData.description,
                 });
@@ -85,7 +85,7 @@ const Areas: React.FC = () => {
 
         setLoading(true);
         try {
-            await deleteArea(areaToDelete.id!);
+            await deleteArea(areaToDelete.uid!);
             const updatedAreas = await fetchAreas();
             setAreas(updatedAreas);
             setIsConfirmDialogOpen(false);
@@ -121,7 +121,7 @@ const Areas: React.FC = () => {
                     <ul className="space-y-2">
                         {areas.map((area) => (
                             <li
-                                key={area.id}
+                                key={area.uid || area.id}
                                 className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center"
                                 onMouseEnter={() =>
                                     setHoveredAreaId(area.id || null)
@@ -191,9 +191,9 @@ const Areas: React.FC = () => {
                         isOpen={isAreaModalOpen}
                         onClose={() => setIsAreaModalOpen(false)}
                         onSave={handleSaveArea}
-                        onDelete={async (areaId) => {
+                        onDelete={async (areaUid) => {
                             try {
-                                await deleteArea(areaId);
+                                await deleteArea(areaUid);
                                 const updatedAreas = await fetchAreas();
                                 setAreas(updatedAreas);
                                 setIsAreaModalOpen(false);

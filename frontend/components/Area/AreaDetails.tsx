@@ -1,26 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useStore } from '../../store/useStore';
+import { fetchAreaByUid } from '../../utils/areasService';
 import { Area } from '../../entities/Area';
 import { useTranslation } from 'react-i18next';
 
 const AreaDetails: React.FC = () => {
     const { t } = useTranslation();
-    const { id } = useParams<{ id: string }>();
-    const { areas } = useStore((state) => state.areasStore);
+    const { uid } = useParams<{ uid: string }>();
     const [area, setArea] = useState<Area | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
 
     useEffect(() => {
-        if (!areas.length) setIsLoading(true);
-        const foundArea = areas.find((a: Area) => a.id === Number(id));
-        setArea(foundArea || null);
-        if (!foundArea) {
-            setIsError(true);
-        }
-        setIsLoading(false);
-    }, [id, areas]);
+        const fetchArea = async () => {
+            if (!uid) {
+                setIsError(true);
+                setIsLoading(false);
+                return;
+            }
+            try {
+                setIsLoading(true);
+                const foundArea = await fetchAreaByUid(uid);
+                setArea(foundArea || null);
+                if (!foundArea) {
+                    setIsError(true);
+                }
+            } catch (err) {
+                console.error('Error fetching area:', err);
+                setIsError(true);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchArea();
+    }, [uid]);
 
     if (isLoading) {
         return (

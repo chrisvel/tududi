@@ -9,10 +9,10 @@ import { isTaskOverdue } from '../../utils/dateUtils';
 interface TaskItemProps {
     task: Task;
     onTaskUpdate: (task: Task) => Promise<void>;
-    onTaskDelete: (taskId: number) => void;
+    onTaskDelete: (taskUid: string) => Promise<void>;
     projects: Project[];
     hideProjectName?: boolean;
-    onToggleToday?: (taskId: number) => Promise<void>;
+    onToggleToday?: (taskUid: string) => Promise<void>;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -38,15 +38,15 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     const handleDelete = async () => {
-        if (task.id) {
-            await onTaskDelete(task.id);
+        if (task.uid) {
+            await onTaskDelete(task.uid);
         }
     };
 
     const handleToggleCompletion = async () => {
-        if (task.id) {
+        if (task.uid) {
             try {
-                const updatedTask = await toggleTaskCompletion(task.id);
+                const updatedTask = await toggleTaskCompletion(task.uid);
                 await onTaskUpdate(updatedTask);
             } catch (error) {
                 console.error('Error toggling task completion:', error);

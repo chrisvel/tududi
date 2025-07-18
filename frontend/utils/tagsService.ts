@@ -19,6 +19,17 @@ export const fetchTags = async (): Promise<Tag[]> => {
     }
 };
 
+export const fetchTagByUid = async (tagUid: string): Promise<Tag> => {
+    const response = await fetch(`/api/tag/uid/${tagUid}`, {
+        credentials: 'include',
+        headers: {
+            Accept: 'application/json',
+        },
+    });
+    await handleAuthResponse(response, 'Failed to fetch tag.');
+    return await response.json();
+};
+
 export const createTag = async (tagData: Tag): Promise<Tag> => {
     const response = await fetch('/api/tag', {
         method: 'POST',
@@ -34,8 +45,8 @@ export const createTag = async (tagData: Tag): Promise<Tag> => {
     return await response.json();
 };
 
-export const updateTag = async (tagId: number, tagData: Tag): Promise<Tag> => {
-    const response = await fetch(`/api/tag/${tagId}`, {
+export const updateTag = async (tagUid: string, tagData: Tag): Promise<Tag> => {
+    const response = await fetch(`/api/tag/uid/${tagUid}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -49,8 +60,8 @@ export const updateTag = async (tagId: number, tagData: Tag): Promise<Tag> => {
     return await response.json();
 };
 
-export const deleteTag = async (tagId: number): Promise<void> => {
-    const response = await fetch(`/api/tag/${tagId}`, {
+export const deleteTag = async (tagUid: string): Promise<void> => {
+    const response = await fetch(`/api/tag/uid/${tagUid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {

@@ -7,10 +7,10 @@ interface TaskListProps {
     tasks: Task[];
     onTaskUpdate: (task: Task) => Promise<void>;
     onTaskCreate?: (task: Task) => void;
-    onTaskDelete: (taskId: number) => void;
+    onTaskDelete: (taskUid: string) => Promise<void>;
     projects: Project[];
     hideProjectName?: boolean;
-    onToggleToday?: (taskId: number) => Promise<void>;
+    onToggleToday?: (taskUid: string) => Promise<void>;
 }
 
 const TaskList: React.FC<TaskListProps> = ({
@@ -26,7 +26,7 @@ const TaskList: React.FC<TaskListProps> = ({
             {tasks.length > 0 ? (
                 tasks.map((task) => (
                     <div
-                        key={task.id}
+                        key={task.uid || task.id}
                         className="task-item-wrapper transition-all duration-200 ease-in-out"
                     >
                         <TaskItem

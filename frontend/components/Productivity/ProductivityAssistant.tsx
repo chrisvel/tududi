@@ -13,7 +13,7 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskModal from '../Task/TaskModal';
 import {
-    fetchTaskById,
+    fetchTaskByUid,
     updateTask,
     deleteTask,
 } from '../../utils/tasksService';
@@ -287,7 +287,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
             // Handle task click - open task modal
             try {
                 setLoading(true);
-                const fullTask = await fetchTaskById(item.id!);
+                const fullTask = await fetchTaskByUid(item.uid!);
                 setSelectedTask(fullTask);
                 setIsTaskModalOpen(true);
             } catch (error) {
@@ -300,14 +300,14 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
             }
         } else {
             // Handle project click - navigate to project page
-            navigate(`/project/${item.id}`);
+            navigate(`/project/${item.uid}`);
         }
     };
 
     const handleTaskSave = async (updatedTask: Task) => {
         try {
-            if (updatedTask.id) {
-                await updateTask(updatedTask.id, updatedTask);
+            if (updatedTask.uid) {
+                await updateTask(updatedTask.uid, updatedTask);
                 setIsTaskModalOpen(false);
                 setSelectedTask(null);
                 showSuccessToast(
@@ -323,8 +323,8 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
 
     const handleTaskDelete = async () => {
         try {
-            if (selectedTask?.id) {
-                await deleteTask(selectedTask.id);
+            if (selectedTask?.uid) {
+                await deleteTask(selectedTask.uid);
                 setIsTaskModalOpen(false);
                 setSelectedTask(null);
                 showSuccessToast(

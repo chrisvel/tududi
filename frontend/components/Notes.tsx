@@ -73,9 +73,9 @@ const Notes: React.FC = () => {
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
         try {
-            await apiDeleteNote(noteToDelete.id!);
+            await apiDeleteNote(noteToDelete.uid!);
             setNotes((prev) =>
-                prev.filter((note) => note.id !== noteToDelete.id)
+                prev.filter((note) => note.uid !== noteToDelete.uid)
             );
             setIsConfirmDialogOpen(false);
             setNoteToDelete(null);
@@ -92,8 +92,8 @@ const Notes: React.FC = () => {
     const handleSaveNote = async (noteData: Note) => {
         try {
             let updatedNotes;
-            if (noteData.id) {
-                const savedNote = await updateNote(noteData.id, noteData);
+            if (noteData.uid) {
+                const savedNote = await updateNote(noteData.uid, noteData);
                 updatedNotes = notes.map((note) =>
                     note.id === noteData.id ? savedNote : note
                 );
@@ -178,7 +178,7 @@ const Notes: React.FC = () => {
                     <ul className="space-y-1">
                         {filteredNotes.map((note) => (
                             <li
-                                key={note.id}
+                                key={note.uid || note.id}
                                 className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 flex justify-between items-center"
                                 onMouseEnter={() =>
                                     setHoveredNoteId(note.id || null)
@@ -188,7 +188,7 @@ const Notes: React.FC = () => {
                                 <div className="flex-grow overflow-hidden pr-4">
                                     <div className="flex flex-col">
                                         <Link
-                                            to={`/note/${note.id}`}
+                                            to={`/note/${note.uid}`}
                                             className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline mb-1"
                                         >
                                             {note.title}
@@ -295,11 +295,11 @@ const Notes: React.FC = () => {
                             setIsNoteModalOpen(false);
                         }}
                         onSave={handleSaveNote}
-                        onDelete={async (noteId) => {
+                        onDelete={async (noteUid: string) => {
                             try {
-                                await apiDeleteNote(noteId);
+                                await apiDeleteNote(noteUid);
                                 setNotes((prev) =>
-                                    prev.filter((note) => note.id !== noteId)
+                                    prev.filter((note) => note.uid !== noteUid)
                                 );
                                 setIsNoteModalOpen(false);
                                 setSelectedNote(null);

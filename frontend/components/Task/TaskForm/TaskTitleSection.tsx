@@ -9,7 +9,7 @@ interface TaskAnalysis {
 }
 
 interface TaskTitleSectionProps {
-    taskId: number | undefined;
+    taskId: string | undefined;
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     taskAnalysis: TaskAnalysis | null;

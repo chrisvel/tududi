@@ -213,8 +213,8 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveNote = async (noteData: Note) => {
         try {
-            if (noteData.id) {
-                await updateNote(noteData.id, noteData);
+            if (noteData.uid) {
+                await updateNote(noteData.uid, noteData);
             } else {
                 await createNote(noteData);
             }
@@ -232,8 +232,8 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveTask = async (taskData: Task) => {
         try {
-            if (taskData.id) {
-                await updateTask(taskData.id, taskData);
+            if (taskData.uid) {
+                await updateTask(taskData.uid, taskData);
                 const taskLink = (
                     <span>
                         {t('task.updated', 'Task')}{' '}
@@ -293,8 +293,8 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveProject = async (projectData: Project) => {
         try {
-            if (projectData.id) {
-                await updateProject(projectData.id, projectData);
+            if (projectData.uid) {
+                await updateProject(projectData.uid, projectData);
             } else {
                 await createProject(projectData);
             }
@@ -313,8 +313,8 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveArea = async (areaData: Partial<Area>) => {
         try {
-            if (areaData.id) {
-                await updateArea(areaData.id, areaData);
+            if (areaData.uid) {
+                await updateArea(areaData.uid, areaData);
             } else {
                 await createArea(areaData);
             }
@@ -332,8 +332,8 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveTag = async (tagData: Tag) => {
         try {
-            if (tagData.id) {
-                await updateTag(tagData.id, tagData);
+            if (tagData.uid) {
+                await updateTag(tagData.uid, tagData);
             } else {
                 await createTag(tagData);
             }

@@ -27,7 +27,7 @@ interface NoteModalProps {
     onClose: () => void;
     note?: Note | null;
     onSave: (noteData: Note) => Promise<void>;
-    onDelete?: (noteId: number) => Promise<void>;
+    onDelete?: (noteUid: string) => Promise<void>;
     projects?: Project[];
     onCreateProject?: (name: string) => Promise<Project>;
 }
@@ -323,9 +323,9 @@ const NoteModal: React.FC<NoteModalProps> = ({
     };
 
     const handleDeleteNote = async () => {
-        if (formData.id && formData.id !== 0 && onDelete) {
+        if (formData.uid && onDelete) {
             try {
-                await onDelete(formData.id);
+                await onDelete(formData.uid);
                 showSuccessToast(t('success.noteDeleted'));
                 handleClose();
             } catch (err) {
@@ -605,7 +605,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                 <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
                                     {/* Left side: Delete and Cancel */}
                                     <div className="flex items-center space-x-3">
-                                        {note && note.id && onDelete && (
+                                        {note && note.uid && onDelete && (
                                             <button
                                                 type="button"
                                                 onClick={handleDeleteNote}

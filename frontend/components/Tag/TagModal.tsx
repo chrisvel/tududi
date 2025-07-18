@@ -8,7 +8,7 @@ interface TagModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (tag: Tag) => void;
-    onDelete?: (tagId: number) => void;
+    onDelete?: (tagUid: string) => void;
     tag?: Tag | null;
 }
 
@@ -119,9 +119,9 @@ const TagModal: React.FC<TagModalProps> = ({
     };
 
     const handleDeleteTag = async () => {
-        if (formData.id && onDelete) {
+        if (formData.uid && onDelete) {
             try {
-                await onDelete(formData.id);
+                await onDelete(formData.uid);
                 showSuccessToast(
                     t('success.tagDeleted', 'Tag deleted successfully!')
                 );
@@ -178,7 +178,7 @@ const TagModal: React.FC<TagModalProps> = ({
                         <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
                             {/* Left side: Delete and Cancel */}
                             <div className="flex items-center space-x-3">
-                                {tag && tag.id && onDelete && (
+                                {tag && tag.uid && onDelete && (
                                     <button
                                         type="button"
                                         onClick={handleDeleteTag}

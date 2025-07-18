@@ -17,7 +17,7 @@ const TaskTags: React.FC<TaskTagsProps> = ({
     const navigate = useNavigate();
 
     const handleTagClick = (tag: Tag) => {
-        navigate(`/tag/${encodeURIComponent(tag.name)}`);
+        navigate(`/tag/${tag.uid}`);
     };
 
     // Don't render anything if there are no tags

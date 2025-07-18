@@ -20,7 +20,7 @@ import { Project } from '../../entities/Project';
 import { PriorityType, Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
 import {
-    fetchProjectById,
+    fetchProjectByUid,
     updateProject,
     deleteProject,
 } from '../../utils/projectsService';
@@ -48,7 +48,7 @@ const priorityStyles: PriorityStyles = {
 };
 
 const ProjectDetails: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const { uid } = useParams<{ uid: string }>();
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
     const { showSuccessToast } = useToast();
@@ -69,15 +69,15 @@ const ProjectDetails: React.FC = () => {
 
     useEffect(() => {
         const loadProjectData = async () => {
-            if (!id) {
-                console.error('Project ID is missing.');
+            if (!uid) {
+                console.error('Project UID is missing.');
                 return;
             }
 
             setLoading(true);
             try {
                 fetchAreas();
-                const projectData = await fetchProjectById(id);
+                const projectData = await fetchProjectByUid(uid);
                 setProject(projectData);
                 // Handle both 'tasks' and 'Tasks' property names
                 const projectTasks =
@@ -95,7 +95,7 @@ const ProjectDetails: React.FC = () => {
         };
 
         loadProjectData();
-    }, [id, fetchAreas]);
+    }, [uid, fetchAreas]);
 
     // Check if we should show auto-suggest form for projects with no tasks
     useEffect(() => {
@@ -131,7 +131,7 @@ const ProjectDetails: React.FC = () => {
                 <span>
                     {t('task.created', 'Task')}{' '}
                     <a
-                        href={`/task/${newTask.uuid}`}
+                        href={`/task/${newTask.uid}`}
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {newTask.name}
@@ -151,13 +151,13 @@ const ProjectDetails: React.FC = () => {
     };
 
     const handleTaskUpdate = async (updatedTask: Task) => {
-        if (!updatedTask.id) {
-            console.error('Cannot update task: Task ID is missing');
+        if (!updatedTask.uid) {
+            console.error('Cannot update task: Task UID is missing');
             return;
         }
         try {
             // Use direct fetch call like Tasks.tsx to ensure proper tag saving
-            const response = await fetch(`/api/task/${updatedTask.id}`, {
+            const response = await fetch(`/api/task/uid/${updatedTask.uid}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -173,7 +173,7 @@ const ProjectDetails: React.FC = () => {
             const savedTask = await response.json();
             setTasks((prevTasks) =>
                 prevTasks.map((task) =>
-                    task.id === updatedTask.id ? savedTask : task
+                    task.uid === updatedTask.uid ? savedTask : task
                 )
             );
         } catch (err) {
@@ -181,28 +181,28 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
-    const handleTaskDelete = async (taskId: number | undefined) => {
-        if (!taskId) {
-            console.error('Cannot delete task: Task ID is missing');
+    const handleTaskDelete = async (taskUid: string) => {
+        if (!taskUid) {
+            console.error('Cannot delete task: Task UID is missing');
             return;
         }
         try {
-            await deleteTask(taskId);
+            await deleteTask(taskUid);
             setTasks((prevTasks) =>
-                prevTasks.filter((task) => task.id !== taskId)
+                prevTasks.filter((task) => task.uid !== taskUid)
             );
         } catch (err) {
             console.error('Error deleting task:', err);
         }
     };
 
-    const handleToggleToday = async (taskId: number): Promise<void> => {
+    const handleToggleToday = async (taskUid: string): Promise<void> => {
         try {
-            const updatedTask = await toggleTaskToday(taskId);
+            const updatedTask = await toggleTaskToday(taskUid);
             // Update the task in the local state immediately to avoid UI flashing
             setTasks((prevTasks) =>
                 prevTasks.map((task) =>
-                    task.id === taskId
+                    task.uid === taskUid
                         ? {
                               ...task,
                               today: updatedTask.today,
@@ -214,9 +214,9 @@ const ProjectDetails: React.FC = () => {
         } catch (error) {
             console.error('Error toggling task today status:', error);
             // Optionally refetch data on error to ensure consistency
-            if (id) {
+            if (uid) {
                 try {
-                    const updatedProject = await fetchProjectById(id);
+                    const updatedProject = await fetchProjectByUid(uid);
                     setProject(updatedProject);
                     setTasks(updatedProject.tasks || []);
                 } catch (refetchError) {
@@ -241,7 +241,7 @@ const ProjectDetails: React.FC = () => {
 
         try {
             const savedProject = await updateProject(
-                updatedProject.id,
+                updatedProject.uid!,
                 updatedProject
             );
             setProject(savedProject);
@@ -272,7 +272,7 @@ const ProjectDetails: React.FC = () => {
                 <span>
                     {t('task.created', 'Task')}{' '}
                     <a
-                        href={`/task/${newTask.uuid}`}
+                        href={`/task/${newTask.uid}`}
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {newTask.name}
@@ -297,7 +297,7 @@ const ProjectDetails: React.FC = () => {
         }
 
         try {
-            await deleteProject(project.id);
+            await deleteProject(project.uid!);
             navigate('/projects');
         } catch (err) {
             console.error('Error deleting project:', err);
@@ -623,13 +623,13 @@ const ProjectDetails: React.FC = () => {
                         <div className="space-y-3">
                             {notes.map((note) => (
                                 <div
-                                    key={note.id}
+                                    key={note.uid || note.id}
                                     className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 border-l-4 border-blue-500"
                                 >
                                     <div className="flex justify-between items-start">
                                         <div className="flex-grow">
                                             <Link
-                                                to={`/note/${note.id}`}
+                                                to={`/note/${note.uid}`}
                                                 className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
                                             >
                                                 {note.title ||

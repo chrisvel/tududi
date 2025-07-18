@@ -125,8 +125,8 @@ const Tags: React.FC = () => {
     const handleDeleteTag = async () => {
         if (!tagToDelete) return;
         try {
-            await apiDeleteTag(tagToDelete.id!);
-            setTags(tags.filter((tag) => tag.id !== tagToDelete.id));
+            await apiDeleteTag(tagToDelete.uid!);
+            setTags(tags.filter((tag) => tag.uid !== tagToDelete.uid));
             // Remove the deleted tag from metrics as well
             setTagMetrics((prev) => {
                 const newMetrics = { ...prev };
@@ -147,10 +147,10 @@ const Tags: React.FC = () => {
 
     const handleSaveTag = async (tagData: Tag) => {
         try {
-            if (tagData.id) {
-                await updateTag(tagData.id, tagData);
+            if (tagData.uid) {
+                await updateTag(tagData.uid, tagData);
                 setTags(
-                    tags.map((tag) => (tag.id === tagData.id ? tagData : tag))
+                    tags.map((tag) => (tag.uid === tagData.uid ? tagData : tag))
                 );
             } else {
                 const newTag = await createTag(tagData);
@@ -269,7 +269,7 @@ const Tags: React.FC = () => {
 
                                         return (
                                             <li
-                                                key={tag.id}
+                                                key={tag.uid || tag.id}
                                                 className="bg-white dark:bg-gray-900 shadow rounded-lg p-4"
                                                 onMouseEnter={() =>
                                                     setHoveredTagId(
@@ -382,14 +382,16 @@ const Tags: React.FC = () => {
                             setSelectedTag(null);
                         }}
                         onSave={handleSaveTag}
-                        onDelete={async (tagId) => {
+                        onDelete={async (tagUid) => {
                             try {
-                                await apiDeleteTag(tagId);
-                                setTags(tags.filter((tag) => tag.id !== tagId));
+                                await apiDeleteTag(tagUid);
+                                setTags(
+                                    tags.filter((tag) => tag.uid !== tagUid)
+                                );
                                 setTagMetrics((prev) => {
                                     const newMetrics = { ...prev };
                                     const deletedTag = tags.find(
-                                        (t) => t.id === tagId
+                                        (t) => t.uid === tagUid
                                     );
                                     if (deletedTag) {
                                         delete newMetrics[deletedTag.name];

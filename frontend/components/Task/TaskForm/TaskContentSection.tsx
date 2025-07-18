@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface TaskContentSectionProps {
-    taskId: number | undefined;
+    taskId: string | undefined;
     value: string;
     onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }

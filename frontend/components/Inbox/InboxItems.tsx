@@ -45,11 +45,11 @@ const InboxItems: React.FC = () => {
 
     // Track the current inbox item ID being converted (for task/project/note conversion)
     const [currentConversionItemId, setCurrentConversionItemId] = useState<
-        number | null
+        string | null
     >(null);
 
     // Track the current inbox item being edited
-    const [itemToEdit, setItemToEdit] = useState<number | null>(null);
+    const [itemToEdit, setItemToEdit] = useState<string | null>(null);
 
     // Fetch projects for modals
     const [projects, setProjects] = useState<Project[]>([]);
@@ -134,9 +134,12 @@ const InboxItems: React.FC = () => {
         };
     }, [t, showSuccessToast]); // Include dependencies that are actually used
 
-    const handleProcessItem = async (id: number, showToast: boolean = true) => {
+    const handleProcessItem = async (
+        uid: string,
+        showToast: boolean = true
+    ) => {
         try {
-            await processInboxItemWithStore(id);
+            await processInboxItemWithStore(uid);
             if (showToast) {
                 showSuccessToast(t('inbox.itemProcessed'));
             }
@@ -146,9 +149,9 @@ const InboxItems: React.FC = () => {
         }
     };
 
-    const handleUpdateItem = async (id: number): Promise<void> => {
+    const handleUpdateItem = async (uid: string): Promise<void> => {
         // When edit button is clicked, we open the InboxModal instead of doing inline editing
-        setItemToEdit(id);
+        setItemToEdit(uid);
         setIsEditModalOpen(true);
     };
 
@@ -166,9 +169,9 @@ const InboxItems: React.FC = () => {
         }
     };
 
-    const handleDeleteItem = async (id: number) => {
+    const handleDeleteItem = async (uid: string) => {
         try {
-            await deleteInboxItemWithStore(id);
+            await deleteInboxItemWithStore(uid);
             showSuccessToast(t('inbox.itemDeleted'));
         } catch (error) {
             console.error('Failed to delete inbox item:', error);
@@ -177,7 +180,7 @@ const InboxItems: React.FC = () => {
     };
 
     // Modal handlers
-    const handleOpenTaskModal = async (task: Task, inboxItemId?: number) => {
+    const handleOpenTaskModal = async (task: Task, inboxItemId?: string) => {
         // Load projects first before opening the modal
         try {
             const projectData = await fetchProjects();
@@ -200,7 +203,7 @@ const InboxItems: React.FC = () => {
 
     const handleOpenProjectModal = (
         project: Project | null,
-        inboxItemId?: number
+        inboxItemId?: string
     ) => {
         setProjectToEdit(project);
 
@@ -213,7 +216,7 @@ const InboxItems: React.FC = () => {
 
     const handleOpenNoteModal = async (
         note: Note | null,
-        inboxItemId?: number
+        inboxItemId?: string
     ) => {
         // Set up the note data first
         if (note && note.content && isUrl(note.content.trim())) {
@@ -255,7 +258,7 @@ const InboxItems: React.FC = () => {
                 <span>
                     {t('task.created', 'Task')}{' '}
                     <a
-                        href={`/task/${createdTask.uuid}`}
+                        href={`/task/${createdTask.uid}`}
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {createdTask.name}
@@ -444,7 +447,7 @@ const InboxItems: React.FC = () => {
                     <div className="space-y-2">
                         {inboxItems.map((item) => (
                             <InboxItemDetail
-                                key={item.id}
+                                key={item.uid || item.id}
                                 item={item}
                                 onProcess={handleProcessItem}
                                 onDelete={handleDeleteItem}
@@ -550,7 +553,7 @@ const InboxItems: React.FC = () => {
                         onSave={handleSaveTask}
                         onSaveNote={handleSaveNote}
                         initialText={
-                            inboxItems.find((item) => item.id === itemToEdit)
+                            inboxItems.find((item) => item.uid === itemToEdit)
                                 ?.content || ''
                         }
                         editMode={true}

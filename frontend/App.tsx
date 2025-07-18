@@ -176,7 +176,7 @@ const App: React.FC = () => {
                                 element={<Navigate to="/today" replace />}
                             />
                             <Route path="/today" element={<TasksToday />} />
-                            <Route path="/task/:uuid" element={<TaskView />} />
+                            <Route path="/task/:uid" element={<TaskView />} />
                             <Route
                                 path="/tasks"
                                 element={
@@ -197,18 +197,21 @@ const App: React.FC = () => {
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/projects" element={<Projects />} />
                             <Route
-                                path="/project/:id"
+                                path="/project/:uid"
                                 element={<ProjectDetails />}
                             />
                             <Route path="/areas" element={<Areas />} />
-                            <Route path="/area/:id" element={<AreaDetails />} />
-                            <Route path="/tags" element={<Tags />} />
                             <Route
-                                path="/tag/:identifier"
-                                element={<TagDetails />}
+                                path="/area/:uid"
+                                element={<AreaDetails />}
                             />
+                            <Route path="/tags" element={<Tags />} />
+                            <Route path="/tag/:uid" element={<TagDetails />} />
                             <Route path="/notes" element={<Notes />} />
-                            <Route path="/note/:id" element={<NoteDetails />} />
+                            <Route
+                                path="/note/:uid"
+                                element={<NoteDetails />}
+                            />
                             <Route path="/calendar" element={<Calendar />} />
                             <Route
                                 path="/profile"

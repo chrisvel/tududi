@@ -9,7 +9,7 @@ import DatePicker from '../../Shared/DatePicker';
 interface TaskMetadataSectionProps {
     priority: PriorityType;
     dueDate: string;
-    taskId?: number;
+    taskId?: string;
     onStatusChange: (value: StatusType) => void;
     onPriorityChange: (value: PriorityType) => void;
     onDueDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

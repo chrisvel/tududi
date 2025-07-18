@@ -153,7 +153,7 @@ const Tasks: React.FC = () => {
                 <span>
                     {t('task.created', 'Task')}{' '}
                     <a
-                        href={`/task/${newTask.uuid}`}
+                        href={`/task/${newTask.uid}`}
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {newTask.name}
@@ -171,7 +171,7 @@ const Tasks: React.FC = () => {
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            const response = await fetch(`/api/task/${updatedTask.id}`, {
+            const response = await fetch(`/api/task/uid/${updatedTask.uid}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedTask),
@@ -180,7 +180,7 @@ const Tasks: React.FC = () => {
             if (response.ok) {
                 setTasks((prevTasks) =>
                     prevTasks.map((task) =>
-                        task.id === updatedTask.id ? updatedTask : task
+                        task.uid === updatedTask.uid ? updatedTask : task
                     )
                 );
             } else {
@@ -194,15 +194,15 @@ const Tasks: React.FC = () => {
         }
     };
 
-    const handleTaskDelete = async (taskId: number) => {
+    const handleTaskDelete = async (taskUid: string): Promise<void> => {
         try {
-            const response = await fetch(`/api/task/${taskId}`, {
+            const response = await fetch(`/api/task/uid/${taskUid}`, {
                 method: 'DELETE',
             });
 
             if (response.ok) {
                 setTasks((prevTasks) =>
-                    prevTasks.filter((task) => task.id !== taskId)
+                    prevTasks.filter((task) => task.uid !== taskUid)
                 );
             } else {
                 const errorData = await response.json();
@@ -215,9 +215,9 @@ const Tasks: React.FC = () => {
         }
     };
 
-    const handleToggleToday = async (taskId: number): Promise<void> => {
+    const handleToggleToday = async (taskUid: string): Promise<void> => {
         try {
-            await toggleTaskToday(taskId);
+            await toggleTaskToday(taskUid);
             // Refetch data to ensure consistency with all task relationships
             const params = new URLSearchParams(location.search);
             const type = params.get('type') || 'all';

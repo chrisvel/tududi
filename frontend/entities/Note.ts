@@ -2,6 +2,7 @@ import { Tag } from './Tag';
 
 export interface Note {
     id?: number;
+    uid?: string;
     title: string;
     content: string;
     created_at?: string;

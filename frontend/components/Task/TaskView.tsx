@@ -4,7 +4,7 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskModal from './TaskModal';
 import {
-    fetchTaskByUuid,
+    fetchTaskByUid,
     updateTask,
     deleteTask,
 } from '../../utils/tasksService';
@@ -12,7 +12,7 @@ import { createProject } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
 
 const TaskView: React.FC = () => {
-    const { uuid } = useParams<{ uuid: string }>();
+    const { uid } = useParams<{ uid: string }>();
     const navigate = useNavigate();
     const store = useStore();
     const [task, setTask] = useState<Task | null>(null);
@@ -21,14 +21,14 @@ const TaskView: React.FC = () => {
 
     useEffect(() => {
         const fetchTask = async () => {
-            if (!uuid) {
-                setError('No task UUID provided');
+            if (!uid) {
+                setError('No task UID provided');
                 setLoading(false);
                 return;
             }
 
             try {
-                const taskData = await fetchTaskByUuid(uuid);
+                const taskData = await fetchTaskByUid(uid);
                 setTask(taskData);
             } catch {
                 setError('An error occurred while fetching the task');
@@ -38,7 +38,7 @@ const TaskView: React.FC = () => {
         };
 
         fetchTask();
-    }, [uuid]);
+    }, [uid]);
 
     const handleClose = () => {
         navigate(-1); // Go back to previous page
@@ -46,8 +46,8 @@ const TaskView: React.FC = () => {
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            if (task?.id) {
-                const updated = await updateTask(task.id, updatedTask);
+            if (task?.uid) {
+                const updated = await updateTask(task.uid, updatedTask);
                 setTask(updated);
             }
         } catch (error) {
@@ -55,9 +55,9 @@ const TaskView: React.FC = () => {
         }
     };
 
-    const handleTaskDelete = async (taskId: number) => {
+    const handleTaskDelete = async (taskUid: string) => {
         try {
-            await deleteTask(taskId);
+            await deleteTask(taskUid);
             navigate('/today'); // Navigate back to today view after deletion
         } catch (error) {
             console.error('Error deleting task:', error);

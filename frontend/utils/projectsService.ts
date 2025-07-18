@@ -46,8 +46,20 @@ export const fetchGroupedProjects = async (
     return data;
 };
 
-export const fetchProjectById = async (projectId: string): Promise<Project> => {
+export const fetchProjectById = async (projectId: number): Promise<Project> => {
     const response = await fetch(`/api/project/${projectId}`, {
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    });
+
+    await handleAuthResponse(response, 'Failed to fetch project details.');
+    return await response.json();
+};
+
+export const fetchProjectByUid = async (
+    projectUid: string
+): Promise<Project> => {
+    const response = await fetch(`/api/project/uid/${projectUid}`, {
         credentials: 'include',
         headers: { Accept: 'application/json' },
     });
@@ -74,10 +86,10 @@ export const createProject = async (
 };
 
 export const updateProject = async (
-    projectId: number,
+    projectUid: string,
     projectData: Partial<Project>
 ): Promise<Project> => {
-    const response = await fetch(`/api/project/${projectId}`, {
+    const response = await fetch(`/api/project/uid/${projectUid}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -91,8 +103,8 @@ export const updateProject = async (
     return await response.json();
 };
 
-export const deleteProject = async (projectId: number): Promise<void> => {
-    const response = await fetch(`/api/project/${projectId}`, {
+export const deleteProject = async (projectUid: string): Promise<void> => {
+    const response = await fetch(`/api/project/uid/${projectUid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {

@@ -18,12 +18,12 @@ import { useStore } from '../../store/useStore';
 
 interface InboxItemDetailProps {
     item: InboxItem;
-    onProcess: (id: number) => void;
-    onDelete: (id: number) => void;
-    onUpdate?: (id: number, content: string) => Promise<void>;
-    openTaskModal: (task: Task, inboxItemId?: number) => void;
-    openProjectModal: (project: Project | null, inboxItemId?: number) => void;
-    openNoteModal: (note: Note | null, inboxItemId?: number) => void;
+    onProcess: (uid: string) => void;
+    onDelete: (uid: string) => void;
+    onUpdate?: (uid: string, content: string) => Promise<void>;
+    openTaskModal: (task: Task, inboxItemId?: string) => void;
+    openProjectModal: (project: Project | null, inboxItemId?: string) => void;
+    openNoteModal: (note: Note | null, inboxItemId?: string) => void;
     projects: Project[];
 }
 
@@ -248,7 +248,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         };
 
         if (item.id !== undefined) {
-            openTaskModal(newTask, item.id);
+            openTaskModal(newTask, item.uid!);
         } else {
             openTaskModal(newTask);
         }
@@ -272,7 +272,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         };
 
         if (item.id !== undefined) {
-            openProjectModal(newProject, item.id);
+            openProjectModal(newProject, item.uid!);
         } else {
             openProjectModal(newProject);
         }
@@ -365,7 +365,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         };
 
         if (item.id !== undefined) {
-            openNoteModal(newNote, item.id);
+            openNoteModal(newNote, item.uid!);
         } else {
             openNoteModal(newNote);
         }
@@ -377,7 +377,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
     const confirmDelete = () => {
         if (item.id !== undefined) {
-            onDelete(item.id);
+            onDelete(item.uid!);
         }
         setShowConfirmDialog(false);
     };
@@ -418,7 +418,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                                             key={projectRef}
                                                         >
                                                             <Link
-                                                                to={`/project/${matchingProject.id}`}
+                                                                to={`/project/${matchingProject.uid}`}
                                                                 className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
                                                             >
                                                                 {projectRef}
@@ -487,7 +487,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     <button
                         onClick={() => {
                             if (onUpdate && item.id !== undefined) {
-                                onUpdate(item.id, item.content);
+                                onUpdate(item.uid!, item.content);
                             }
                         }}
                         className={`p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}

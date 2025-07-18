@@ -41,10 +41,10 @@ export const createTask = async (taskData: Task): Promise<Task> => {
 };
 
 export const updateTask = async (
-    taskId: number,
+    taskUid: string,
     taskData: Task
 ): Promise<Task> => {
-    const response = await fetch(`/api/task/${taskId}`, {
+    const response = await fetch(`/api/task/uid/${taskUid}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: getPostHeaders(),
@@ -55,8 +55,8 @@ export const updateTask = async (
     return await response.json();
 };
 
-export const toggleTaskCompletion = async (taskId: number): Promise<Task> => {
-    const response = await fetch(`/api/task/${taskId}/toggle_completion`, {
+export const toggleTaskCompletion = async (taskUid: string): Promise<Task> => {
+    const response = await fetch(`/api/task/uid/${taskUid}/toggle_completion`, {
         method: 'PATCH',
         credentials: 'include',
         headers: getPostHeaders(),
@@ -67,8 +67,8 @@ export const toggleTaskCompletion = async (taskId: number): Promise<Task> => {
     return result;
 };
 
-export const deleteTask = async (taskId: number): Promise<void> => {
-    const response = await fetch(`/api/task/${taskId}`, {
+export const deleteTask = async (taskUid: string): Promise<void> => {
+    const response = await fetch(`/api/task/uid/${taskUid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: getDefaultHeaders(),
@@ -87,8 +87,8 @@ export const fetchTaskById = async (taskId: number): Promise<Task> => {
     return await response.json();
 };
 
-export const fetchTaskByUuid = async (uuid: string): Promise<Task> => {
-    const response = await fetch(`/api/task/uuid/${uuid}`, {
+export const fetchTaskByUid = async (uid: string): Promise<Task> => {
+    const response = await fetch(`/api/task/uid/${uid}`, {
         credentials: 'include',
         headers: getDefaultHeaders(),
     });
@@ -97,8 +97,8 @@ export const fetchTaskByUuid = async (uuid: string): Promise<Task> => {
     return await response.json();
 };
 
-export const toggleTaskToday = async (taskId: number): Promise<Task> => {
-    const response = await fetch(`/api/task/${taskId}/toggle-today`, {
+export const toggleTaskToday = async (taskUid: string): Promise<Task> => {
+    const response = await fetch(`/api/task/uid/${taskUid}/toggle-today`, {
         method: 'PATCH',
         credentials: 'include',
         headers: getPostHeaders(),

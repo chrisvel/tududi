@@ -98,7 +98,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                         ></div>
                     )}
                     <Link
-                        to={`/project/${project.id}`}
+                        to={`/project/${project.uid}`}
                         className={`${
                             viewMode === 'cards'
                                 ? 'text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline line-clamp-2'

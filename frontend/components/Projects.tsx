@@ -184,8 +184,8 @@ const Projects: React.FC = () => {
     const handleSaveProject = async (project: Project) => {
         setProjectsLoading(true);
         try {
-            if (project.id) {
-                await updateProject(project.id, project);
+            if (project.uid) {
+                await updateProject(project.uid, project);
             } else {
                 await createProject(project);
             }
@@ -212,9 +212,9 @@ const Projects: React.FC = () => {
         if (!projectToDelete) return;
 
         try {
-            if (projectToDelete.id !== undefined) {
+            if (projectToDelete.uid !== undefined) {
                 setProjectsLoading(true);
-                await deleteProject(projectToDelete.id);
+                await deleteProject(projectToDelete.uid);
                 const groupedProjectsData = await fetchGroupedProjects(
                     activeFilter,
                     areaFilter
@@ -466,7 +466,7 @@ const Projects: React.FC = () => {
                                         );
                                         return (
                                             <ProjectItem
-                                                key={project.id}
+                                                key={project.uid || project.id}
                                                 project={project}
                                                 viewMode={viewMode}
                                                 color={color}
@@ -506,12 +506,12 @@ const Projects: React.FC = () => {
                         setProjectToEdit(null);
                     }}
                     onSave={handleSaveProject}
-                    onDelete={async (projectId) => {
+                    onDelete={async (projectUid) => {
                         try {
-                            await deleteProject(projectId);
+                            await deleteProject(projectUid);
                             setProjects(
                                 projects.filter(
-                                    (p: Project) => p.id !== projectId
+                                    (p: Project) => p.uid !== projectUid
                                 )
                             );
                             setIsProjectModalOpen(false);

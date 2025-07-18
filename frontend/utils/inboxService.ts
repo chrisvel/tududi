@@ -41,10 +41,10 @@ export const createInboxItem = async (
 };
 
 export const updateInboxItem = async (
-    itemId: number,
+    itemUid: string,
     content: string
 ): Promise<InboxItem> => {
-    const response = await fetch(`/api/inbox/${itemId}`, {
+    const response = await fetch(`/api/inbox/uid/${itemUid}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -58,8 +58,8 @@ export const updateInboxItem = async (
     return await response.json();
 };
 
-export const processInboxItem = async (itemId: number): Promise<InboxItem> => {
-    const response = await fetch(`/api/inbox/${itemId}/process`, {
+export const processInboxItem = async (itemUid: string): Promise<InboxItem> => {
+    const response = await fetch(`/api/inbox/uid/${itemUid}/process`, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -71,8 +71,8 @@ export const processInboxItem = async (itemId: number): Promise<InboxItem> => {
     return await response.json();
 };
 
-export const deleteInboxItem = async (itemId: number): Promise<void> => {
-    const response = await fetch(`/api/inbox/${itemId}`, {
+export const deleteInboxItem = async (itemUid: string): Promise<void> => {
+    const response = await fetch(`/api/inbox/uid/${itemUid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -167,13 +167,13 @@ export const createInboxItemWithStore = async (
 };
 
 export const updateInboxItemWithStore = async (
-    itemId: number,
+    itemUid: string,
     content: string
 ): Promise<InboxItem> => {
     const inboxStore = useStore.getState().inboxStore;
 
     try {
-        const updatedItem = await updateInboxItem(itemId, content);
+        const updatedItem = await updateInboxItem(itemUid, content);
         inboxStore.updateInboxItem(updatedItem);
         return updatedItem;
     } catch (error) {
@@ -183,13 +183,17 @@ export const updateInboxItemWithStore = async (
 };
 
 export const processInboxItemWithStore = async (
-    itemId: number
+    itemUid: string
 ): Promise<InboxItem> => {
     const inboxStore = useStore.getState().inboxStore;
 
     try {
-        const processedItem = await processInboxItem(itemId);
-        inboxStore.removeInboxItem(itemId);
+        const processedItem = await processInboxItem(itemUid);
+        // Note: removeInboxItem still needs to work with the ID for now
+        const item = inboxStore.inboxItems.find((i) => i.uid === itemUid);
+        if (item?.id) {
+            inboxStore.removeInboxItem(item.id);
+        }
         return processedItem;
     } catch (error) {
         console.error('Failed to process inbox item:', error);
@@ -198,13 +202,17 @@ export const processInboxItemWithStore = async (
 };
 
 export const deleteInboxItemWithStore = async (
-    itemId: number
+    itemUid: string
 ): Promise<void> => {
     const inboxStore = useStore.getState().inboxStore;
 
     try {
-        await deleteInboxItem(itemId);
-        inboxStore.removeInboxItem(itemId);
+        await deleteInboxItem(itemUid);
+        // Note: removeInboxItem still needs to work with the ID for now
+        const item = inboxStore.inboxItems.find((i) => i.uid === itemUid);
+        if (item?.id) {
+            inboxStore.removeInboxItem(item.id);
+        }
     } catch (error) {
         console.error('Failed to delete inbox item:', error);
         throw error;

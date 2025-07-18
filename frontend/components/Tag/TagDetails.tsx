@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { fetchTagByUid } from '../../utils/tagsService';
 import {
     TagIcon,
     CheckIcon,
@@ -12,18 +13,13 @@ import {
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
 import { Project } from '../../entities/Project';
+import { Tag } from '../../entities/Tag';
 import TaskList from '../Task/TaskList';
 import ProjectItem from '../Project/ProjectItem';
 
-interface Tag {
-    id: number;
-    name: string;
-    active: boolean;
-}
-
 const TagDetails: React.FC = () => {
     const { t } = useTranslation();
-    const { identifier } = useParams<{ identifier: string }>();
+    const { uid } = useParams<{ uid: string }>();
     const [tag, setTag] = useState<Tag | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
@@ -42,52 +38,44 @@ const TagDetails: React.FC = () => {
         const fetchTagData = async () => {
             try {
                 // First fetch tag details
-                const tagResponse = await fetch(
-                    `/api/tag/${encodeURIComponent(identifier!)}`
-                );
-                if (tagResponse.ok) {
-                    const tagData = await tagResponse.json();
-                    setTag(tagData);
+                const tagData = await fetchTagByUid(uid!);
+                setTag(tagData);
 
-                    // Now fetch entities that have this tag using the tag name
-                    const [tasksResponse, notesResponse, projectsResponse] =
-                        await Promise.all([
-                            fetch(
-                                `/api/tasks?tag=${encodeURIComponent(tagData.name)}`
-                            ),
-                            fetch(
-                                `/api/notes?tag=${encodeURIComponent(tagData.name)}`
-                            ),
-                            fetch(`/api/projects`), // Projects API doesn't support tag filtering yet
-                        ]);
+                // Now fetch entities that have this tag using the tag name
+                const [tasksResponse, notesResponse, projectsResponse] =
+                    await Promise.all([
+                        fetch(
+                            `/api/tasks?tag=${encodeURIComponent(tagData.name)}`
+                        ),
+                        fetch(
+                            `/api/notes?tag=${encodeURIComponent(tagData.name)}`
+                        ),
+                        fetch(`/api/projects`), // Projects API doesn't support tag filtering yet
+                    ]);
 
-                    if (tasksResponse.ok) {
-                        const tasksData = await tasksResponse.json();
-                        setTasks(tasksData.tasks || []);
-                    }
+                if (tasksResponse.ok) {
+                    const tasksData = await tasksResponse.json();
+                    setTasks(tasksData.tasks || []);
+                }
 
-                    if (notesResponse.ok) {
-                        const notesData = await notesResponse.json();
-                        setNotes(notesData || []);
-                    }
+                if (notesResponse.ok) {
+                    const notesData = await notesResponse.json();
+                    setNotes(notesData || []);
+                }
 
-                    if (projectsResponse.ok) {
-                        const projectsData = await projectsResponse.json();
-                        // Filter projects client-side since API doesn't support tag filtering
-                        const allProjects =
-                            projectsData.projects || projectsData || [];
-                        const filteredProjects = allProjects.filter(
-                            (project: any) =>
-                                project.tags &&
-                                project.tags.some(
-                                    (tag: any) => tag.name === tagData.name
-                                )
-                        );
-                        setProjects(filteredProjects);
-                    }
-                } else {
-                    const tagError = await tagResponse.json();
-                    setError(tagError.error || 'Failed to fetch tag.');
+                if (projectsResponse.ok) {
+                    const projectsData = await projectsResponse.json();
+                    // Filter projects client-side since API doesn't support tag filtering
+                    const allProjects =
+                        projectsData.projects || projectsData || [];
+                    const filteredProjects = allProjects.filter(
+                        (project: any) =>
+                            project.tags &&
+                            project.tags.some(
+                                (tag: any) => tag.name === tagData.name
+                            )
+                    );
+                    setProjects(filteredProjects);
                 }
             } catch {
                 setError(t('tags.error'));
@@ -96,12 +84,12 @@ const TagDetails: React.FC = () => {
             }
         };
         fetchTagData();
-    }, [identifier, t]);
+    }, [uid, t]);
 
     // Task handlers
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            const response = await fetch(`/api/task/${updatedTask.id}`, {
+            const response = await fetch(`/api/task/uid/${updatedTask.uid}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedTask),
@@ -110,7 +98,7 @@ const TagDetails: React.FC = () => {
             if (response.ok) {
                 setTasks((prevTasks) =>
                     prevTasks.map((task) =>
-                        task.id === updatedTask.id ? updatedTask : task
+                        task.uid === updatedTask.uid ? updatedTask : task
                     )
                 );
             }
@@ -119,15 +107,15 @@ const TagDetails: React.FC = () => {
         }
     };
 
-    const handleTaskDelete = async (taskId: number) => {
+    const handleTaskDelete = async (taskUid: string) => {
         try {
-            const response = await fetch(`/api/task/${taskId}`, {
+            const response = await fetch(`/api/task/uid/${taskUid}`, {
                 method: 'DELETE',
             });
 
             if (response.ok) {
                 setTasks((prevTasks) =>
-                    prevTasks.filter((task) => task.id !== taskId)
+                    prevTasks.filter((task) => task.uid !== taskUid)
                 );
             }
         } catch (error) {
@@ -135,17 +123,17 @@ const TagDetails: React.FC = () => {
         }
     };
 
-    const handleToggleToday = async (taskId: number) => {
+    const handleToggleToday = async (taskUid: string) => {
         try {
             // Use the proper service function that includes auth
             const { toggleTaskToday } = await import(
                 '../../utils/tasksService'
             );
-            const updatedTask = await toggleTaskToday(taskId);
+            const updatedTask = await toggleTaskToday(taskUid);
 
             setTasks((prevTasks) =>
                 prevTasks.map((task) =>
-                    task.id === taskId
+                    task.uid === taskUid
                         ? {
                               ...task,
                               today: updatedTask.today,
@@ -286,7 +274,7 @@ const TagDetails: React.FC = () => {
                         <ul className="space-y-1">
                             {notes.map((note) => (
                                 <li
-                                    key={note.id}
+                                    key={note.uid || note.id}
                                     className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 flex justify-between items-center"
                                     onMouseEnter={() =>
                                         setHoveredNoteId(note.id || null)
@@ -296,7 +284,7 @@ const TagDetails: React.FC = () => {
                                     <div className="flex-grow overflow-hidden pr-4">
                                         <div className="flex items-center flex-wrap gap-2">
                                             <Link
-                                                to={`/note/${note.id}`}
+                                                to={`/note/${note.uid}`}
                                                 className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
                                             >
                                                 {note.title}
@@ -377,7 +365,7 @@ const TagDetails: React.FC = () => {
                                 );
                                 return (
                                     <ProjectItem
-                                        key={project.id}
+                                        key={project.uid || project.id}
                                         project={project}
                                         viewMode="list"
                                         color={color}

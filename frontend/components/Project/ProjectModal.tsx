@@ -23,7 +23,7 @@ interface ProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (project: Project) => void;
-    onDelete?: (projectId: number) => void;
+    onDelete?: (projectUid: string) => void;
     project?: Project;
     areas: Area[];
 }
@@ -292,8 +292,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     };
 
     const handleDeleteConfirm = () => {
-        if (project && project.id && onDelete) {
-            onDelete(project.id);
+        if (project && project.uid && onDelete) {
+            onDelete(project.uid);
             showSuccessToast(t('success.projectDeleted'));
             setShowConfirmDialog(false);
             handleClose();
@@ -764,7 +764,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                             <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
                                 {/* Left side: Delete and Cancel */}
                                 <div className="flex items-center space-x-3">
-                                    {project && project.id && onDelete && (
+                                    {project && project.uid && onDelete && (
                                         <button
                                             type="button"
                                             onClick={handleDeleteClick}

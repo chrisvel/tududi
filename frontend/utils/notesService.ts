@@ -15,6 +15,15 @@ export const fetchNotes = async (): Promise<Note[]> => {
     return await response.json();
 };
 
+export const fetchNoteByUid = async (noteUid: string): Promise<Note> => {
+    const response = await fetch(`/api/note/uid/${noteUid}`, {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+    });
+    await handleAuthResponse(response, 'Failed to fetch note.');
+    return await response.json();
+};
+
 export const createNote = async (noteData: Note): Promise<Note> => {
     const response = await fetch('/api/note', {
         method: 'POST',
@@ -28,10 +37,10 @@ export const createNote = async (noteData: Note): Promise<Note> => {
 };
 
 export const updateNote = async (
-    noteId: number,
+    noteUid: string,
     noteData: Note
 ): Promise<Note> => {
-    const response = await fetch(`/api/note/${noteId}`, {
+    const response = await fetch(`/api/note/uid/${noteUid}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: getPostHeaders(),
@@ -42,8 +51,8 @@ export const updateNote = async (
     return await response.json();
 };
 
-export const deleteNote = async (noteId: number): Promise<void> => {
-    const response = await fetch(`/api/note/${noteId}`, {
+export const deleteNote = async (noteUid: string): Promise<void> => {
+    const response = await fetch(`/api/note/uid/${noteUid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: getDefaultHeaders(),

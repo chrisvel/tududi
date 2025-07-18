@@ -19,7 +19,7 @@ interface TaskHeaderProps {
     onTaskClick: (e: React.MouseEvent) => void;
     onToggleCompletion?: () => void;
     hideProjectName?: boolean;
-    onToggleToday?: (taskId: number) => Promise<void>;
+    onToggleToday?: (taskUid: string) => Promise<void>;
     onTaskUpdate?: (task: Task) => Promise<void>;
     isOverdue?: boolean;
 }
@@ -77,9 +77,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
     const handleTodayToggle = async (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent opening task modal
-        if (onToggleToday && task.id) {
+        if (onToggleToday && task.uid) {
             try {
-                await onToggleToday(task.id);
+                await onToggleToday(task.uid);
             } catch (error) {
                 console.error('Failed to toggle today status:', error);
             }
@@ -89,7 +89,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     const handlePlayToggle = async (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent opening task modal
         if (
-            task.id &&
+            task.uid &&
             (task.status === 'not_started' ||
                 task.status === 'in_progress' ||
                 task.status === 0 ||
@@ -142,7 +142,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 <div className="flex items-center">
                                     <FolderIcon className="h-3 w-3 mr-1" />
                                     <Link
-                                        to={`/project/${project.id}`}
+                                        to={`/project/${project.uid}`}
                                         className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
                                     >
                                         {project.name}
@@ -306,7 +306,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 <div className="flex items-center">
                                     <FolderIcon className="h-3 w-3 mr-1" />
                                     <Link
-                                        to={`/project/${project.id}`}
+                                        to={`/project/${project.uid}`}
                                         className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
                                     >
                                         {project.name}

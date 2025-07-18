@@ -8,7 +8,7 @@ interface AreaModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (areaData: Partial<Area>) => Promise<void>;
-    onDelete?: (areaId: number) => Promise<void>;
+    onDelete?: (areaUid: string) => Promise<void>;
     area?: Area | null;
 }
 
@@ -121,9 +121,9 @@ const AreaModal: React.FC<AreaModalProps> = ({
     };
 
     const handleDeleteArea = async () => {
-        if (formData.id && formData.id !== 0 && onDelete) {
+        if (formData.uid && onDelete) {
             try {
-                await onDelete(formData.id);
+                await onDelete(formData.uid);
                 showSuccessToast(
                     t('success.areaDeleted', 'Area deleted successfully!')
                 );

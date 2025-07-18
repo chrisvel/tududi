@@ -34,7 +34,7 @@ interface TaskModalProps {
     onClose: () => void;
     task: Task;
     onSave: (task: Task) => void;
-    onDelete: (taskId: number) => Promise<void>;
+    onDelete: (taskUid: string) => Promise<void>;
     projects: Project[];
     onCreateProject: (name: string) => Promise<Project>;
     onEditParentTask?: (parentTask: Task) => void;
@@ -306,7 +306,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             <span>
                 {t('task.updated', 'Task')}{' '}
                 <a
-                    href={`/task/${formData.uuid}`}
+                    href={`/task/${formData.uid}`}
                     className="text-green-200 underline hover:text-green-100"
                 >
                     {formData.name}
@@ -323,14 +323,14 @@ const TaskModal: React.FC<TaskModalProps> = ({
     };
 
     const handleDeleteConfirm = async () => {
-        if (formData.id) {
+        if (formData.uid) {
             try {
-                await onDelete(formData.id);
+                await onDelete(formData.uid);
                 const taskLink = (
                     <span>
                         {t('task.deleted', 'Task')}{' '}
                         <a
-                            href={`/task/${formData.uuid}`}
+                            href={`/task/${formData.uid}`}
                             className="text-green-200 underline hover:text-green-100"
                         >
                             {formData.name}
@@ -447,7 +447,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                             <fieldset className="h-full flex flex-col">
                                                 {/* Task Title Section - Always Visible */}
                                                 <TaskTitleSection
-                                                    taskId={task.id}
+                                                    taskId={task.uid}
                                                     value={formData.name}
                                                     onChange={handleChange}
                                                     taskAnalysis={taskAnalysis}
@@ -458,7 +458,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
                                                 {/* Content Section - Always Visible */}
                                                 <TaskContentSection
-                                                    taskId={task.id}
+                                                    taskId={task.uid}
                                                     value={formData.note || ''}
                                                     onChange={handleChange}
                                                 />
@@ -545,7 +545,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                                 formData.due_date ||
                                                                 ''
                                                             }
-                                                            taskId={task.id}
+                                                            taskId={task.uid}
                                                             onStatusChange={(
                                                                 value: StatusType
                                                             ) => {
@@ -762,7 +762,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                 <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
                                     {/* Left side: Delete and Cancel */}
                                     <div className="flex items-center space-x-3">
-                                        {task.id && (
+                                        {task.uid && (
                                             <button
                                                 type="button"
                                                 onClick={handleDeleteClick}

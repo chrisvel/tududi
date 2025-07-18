@@ -12,7 +12,7 @@ import NoteModal from './NoteModal';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import { Note } from '../../entities/Note';
 import {
-    fetchNotes,
+    fetchNoteByUid,
     deleteNote as apiDeleteNote,
     updateNote as apiUpdateNote,
 } from '../../utils/notesService';
@@ -20,7 +20,7 @@ import { createProject, fetchProjects } from '../../utils/projectsService';
 import { Project } from '../../entities/Project';
 
 const NoteDetails: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const { uid } = useParams<{ uid: string }>();
     const [note, setNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
@@ -37,8 +37,11 @@ const NoteDetails: React.FC = () => {
         const fetchNote = async () => {
             try {
                 setIsLoading(true);
-                const notes = await fetchNotes();
-                const foundNote = notes.find((n: Note) => n.id === Number(id));
+                if (!uid) {
+                    setIsError(true);
+                    return;
+                }
+                const foundNote = await fetchNoteByUid(uid);
                 setNote(foundNote || null);
                 if (!foundNote) {
                     setIsError(true);
@@ -51,7 +54,7 @@ const NoteDetails: React.FC = () => {
             }
         };
         fetchNote();
-    }, [id]);
+    }, [uid]);
 
     // Load projects for the modal
     useEffect(() => {
@@ -69,7 +72,7 @@ const NoteDetails: React.FC = () => {
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
         try {
-            await apiDeleteNote(noteToDelete.id!);
+            await apiDeleteNote(noteToDelete.uid!);
             navigate('/notes');
         } catch (err) {
             console.error('Error deleting note:', err);
@@ -78,14 +81,14 @@ const NoteDetails: React.FC = () => {
 
     const handleSaveNote = async (updatedNote: Note) => {
         try {
-            if (updatedNote.id !== undefined) {
+            if (updatedNote.uid !== undefined) {
                 const savedNote = await apiUpdateNote(
-                    updatedNote.id,
+                    updatedNote.uid,
                     updatedNote
                 );
                 setNote(savedNote);
             } else {
-                console.error('Error: Note ID is undefined.');
+                console.error('Error: Note UID is undefined.');
             }
         } catch (err) {
             console.error('Error saving note:', err);
@@ -223,9 +226,9 @@ const NoteDetails: React.FC = () => {
                         isOpen={isNoteModalOpen}
                         onClose={() => setIsNoteModalOpen(false)}
                         onSave={handleSaveNote}
-                        onDelete={async (noteId) => {
+                        onDelete={async (noteUid) => {
                             try {
-                                await apiDeleteNote(noteId);
+                                await apiDeleteNote(noteUid);
                                 navigate('/notes');
                             } catch (err) {
                                 console.error('Error deleting note:', err);

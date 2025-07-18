@@ -12,6 +12,17 @@ export const fetchAreas = async (): Promise<Area[]> => {
     return await response.json();
 };
 
+export const fetchAreaByUid = async (areaUid: string): Promise<Area> => {
+    const response = await fetch(`/api/areas/uid/${areaUid}`, {
+        credentials: 'include',
+        headers: {
+            Accept: 'application/json',
+        },
+    });
+    await handleAuthResponse(response, 'Failed to fetch area.');
+    return await response.json();
+};
+
 export const createArea = async (areaData: Partial<Area>): Promise<Area> => {
     const response = await fetch('/api/areas', {
         method: 'POST',
@@ -28,10 +39,10 @@ export const createArea = async (areaData: Partial<Area>): Promise<Area> => {
 };
 
 export const updateArea = async (
-    areaId: number,
+    areaUid: string,
     areaData: Partial<Area>
 ): Promise<Area> => {
-    const response = await fetch(`/api/areas/${areaId}`, {
+    const response = await fetch(`/api/areas/uid/${areaUid}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -45,8 +56,8 @@ export const updateArea = async (
     return await response.json();
 };
 
-export const deleteArea = async (areaId: number): Promise<void> => {
-    const response = await fetch(`/api/areas/${areaId}`, {
+export const deleteArea = async (areaUid: string): Promise<void> => {
+    const response = await fetch(`/api/areas/uid/${areaUid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {

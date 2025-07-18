@@ -9,8 +9,8 @@ interface TodayPlanProps {
     todayPlanTasks: Task[] | undefined;
     projects: Project[];
     onTaskUpdate: (task: Task) => Promise<void>;
-    onTaskDelete: (taskId: number) => Promise<void>;
-    onToggleToday?: (taskId: number) => Promise<void>;
+    onTaskDelete: (taskUid: string) => Promise<void>;
+    onToggleToday?: (taskUid: string) => Promise<void>;
 }
 
 const TodayPlan: React.FC<TodayPlanProps> = ({

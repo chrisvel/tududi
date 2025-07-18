@@ -401,11 +401,11 @@ const TasksToday: React.FC = () => {
     // Memoize task handlers to prevent recreating functions on each render
     const handleTaskUpdate = useCallback(
         async (updatedTask: Task): Promise<void> => {
-            if (!updatedTask.id || !isMounted.current) return;
+            if (!updatedTask.uid || !isMounted.current) return;
 
             setIsLoading(true);
             try {
-                await updateTask(updatedTask.id, updatedTask);
+                await updateTask(updatedTask.uid!, updatedTask);
                 // Refetch data to ensure consistency
                 const { tasks: updatedTasks, metrics } =
                     await fetchTasks('?type=today');
@@ -431,12 +431,12 @@ const TasksToday: React.FC = () => {
     );
 
     const handleTaskDelete = useCallback(
-        async (taskId: number): Promise<void> => {
+        async (taskUid: string): Promise<void> => {
             if (!isMounted.current) return;
 
             setIsLoading(true);
             try {
-                await deleteTask(taskId);
+                await deleteTask(taskUid);
                 // Refetch data to ensure consistency
                 const { tasks: updatedTasks, metrics } =
                     await fetchTasks('?type=today');
@@ -462,11 +462,11 @@ const TasksToday: React.FC = () => {
     );
 
     const handleToggleToday = useCallback(
-        async (taskId: number): Promise<void> => {
+        async (taskUid: string): Promise<void> => {
             if (!isMounted.current) return;
 
             try {
-                await toggleTaskToday(taskId);
+                await toggleTaskToday(taskUid);
                 // Refetch data to ensure consistency
                 const { tasks: updatedTasks, metrics } =
                     await fetchTasks('?type=today');
