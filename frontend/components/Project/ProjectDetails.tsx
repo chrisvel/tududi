@@ -461,7 +461,7 @@ const ProjectDetails: React.FC = () => {
     };
 
     const tasksToDisplay = showCompleted
-        ? [...activeTasks, ...completedTasks]
+        ? completedTasks
         : activeTasks;
 
     const displayTasks = sortTasks(tasksToDisplay, orderBy);
@@ -681,17 +681,17 @@ const ProjectDetails: React.FC = () => {
                                             className="sr-only"
                                         />
                                         <div
-                                            className={`w-10 h-5 rounded-full transition-colors ${
+                                            className={`w-10 h-5 rounded-full transition-all duration-300 ease-in-out ${
                                                 showCompleted
-                                                    ? 'bg-blue-500'
+                                                    ? 'bg-blue-500 shadow-lg'
                                                     : 'bg-gray-300 dark:bg-gray-600'
                                             }`}
                                         >
                                             <div
-                                                className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                                                className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-all duration-300 ease-in-out ${
                                                     showCompleted
-                                                        ? 'translate-x-5'
-                                                        : 'translate-x-0.5'
+                                                        ? 'translate-x-5 scale-110'
+                                                        : 'translate-x-0.5 scale-100'
                                                 } translate-y-0.5`}
                                             ></div>
                                         </div>
@@ -773,38 +773,48 @@ const ProjectDetails: React.FC = () => {
                     </div>
                 )}
 
-                {!showAutoSuggestForm && (
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    !showAutoSuggestForm && !showCompleted
+                        ? 'opacity-100 max-h-96 transform translate-y-0'
+                        : 'opacity-0 max-h-0 transform -translate-y-2'
+                }`}>
                     <NewTask onTaskCreate={handleTaskCreate} />
-                )}
+                </div>
 
-                <div className="mt-2">
-                    {displayTasks.length > 0 ? (
-                        <TaskList
-                            tasks={displayTasks}
-                            onTaskUpdate={handleTaskUpdate}
-                            onTaskDelete={handleTaskDelete}
-                            projects={project ? [project] : []}
-                            hideProjectName={true}
-                            onToggleToday={handleToggleToday}
-                        />
-                    ) : showAutoSuggestForm ? (
-                        <AutoSuggestNextActionBox
-                            onAddAction={(actionDescription) => {
-                                if (project?.id) {
-                                    handleCreateNextAction(
-                                        project.id,
-                                        actionDescription
-                                    );
-                                }
-                            }}
-                            onDismiss={handleSkipNextAction}
-                            projectName={project?.name || ''}
-                        />
-                    ) : (
-                        <p className="text-gray-500 dark:text-gray-400">
-                            No tasks.
-                        </p>
-                    )}
+                <div className="transition-all duration-300 ease-in-out">
+                    <div className={`transition-all duration-300 ease-in-out ${
+                        displayTasks.length > 0
+                            ? 'opacity-100 transform translate-y-0'
+                            : 'opacity-0 transform translate-y-2'
+                    }`}>
+                        {displayTasks.length > 0 ? (
+                            <TaskList
+                                tasks={displayTasks}
+                                onTaskUpdate={handleTaskUpdate}
+                                onTaskDelete={handleTaskDelete}
+                                projects={project ? [project] : []}
+                                hideProjectName={true}
+                                onToggleToday={handleToggleToday}
+                            />
+                        ) : showAutoSuggestForm ? (
+                            <AutoSuggestNextActionBox
+                                onAddAction={(actionDescription) => {
+                                    if (project?.id) {
+                                        handleCreateNextAction(
+                                            project.id,
+                                            actionDescription
+                                        );
+                                    }
+                                }}
+                                onDismiss={handleSkipNextAction}
+                                projectName={project?.name || ''}
+                            />
+                        ) : (
+                            <p className="text-gray-500 dark:text-gray-400">
+                                No tasks.
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 {/* Notes Section */}
