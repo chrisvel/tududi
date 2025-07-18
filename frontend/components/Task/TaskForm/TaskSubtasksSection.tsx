@@ -14,6 +14,7 @@ interface TaskSubtasksSectionProps {
 }
 
 const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
+    parentTaskId,
     subtasks,
     onSubtasksChange,
     onSectionMount,
@@ -53,8 +54,10 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
             status: 'not_started',
             priority: 'medium',
             today: false,
-            parent_task_id: undefined, // Will be set when saved
-            // Mark as new for UI purposes
+            parent_task_id: parentTaskId, // Set the parent task ID immediately
+            // Mark as new for backend processing
+            isNew: true,
+            // Also keep for UI purposes  
             _isNew: true,
         } as Task;
 
@@ -88,12 +91,17 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         const updatedSubtasks = subtasks.map((subtask, index) => {
             if (index === editingIndex) {
                 const isNameChanged = subtask.name !== editingName.trim();
-                const isNew = (subtask as any)._isNew || false;
+                const isNew = (subtask as any)._isNew || (subtask as any).isNew || false;
+                const isEdited = !isNew && isNameChanged;
                 return {
                     ...subtask,
                     name: editingName.trim(),
+                    // Backend flags
+                    isNew: isNew,
+                    isEdited: isEdited,
+                    // UI flags
                     _isNew: isNew,
-                    _isEdited: !isNew && isNameChanged, // Mark as edited if it's existing and name changed
+                    _isEdited: isEdited,
                 };
             }
             return subtask;

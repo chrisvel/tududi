@@ -224,11 +224,25 @@ router.get('/project/:id', async (req, res) => {
                 {
                     model: Task,
                     required: false,
+                    where: { parent_task_id: null }, // Exclude subtasks from main task list
                     include: [
                         {
                             model: Tag,
                             attributes: ['id', 'name'],
                             through: { attributes: [] },
+                            required: false,
+                        },
+                        {
+                            model: Task,
+                            as: 'Subtasks',
+                            include: [
+                                {
+                                    model: Tag,
+                                    attributes: ['id', 'name'],
+                                    through: { attributes: [] },
+                                    required: false,
+                                },
+                            ],
                             required: false,
                         },
                     ],
@@ -272,14 +286,16 @@ router.get('/project/:id', async (req, res) => {
                   const normalizedTask = {
                       ...task,
                       tags: task.Tags || [], // Normalize Tags to tags for each task
+                      subtasks: task.Subtasks || [], // Normalize Subtasks to subtasks for each task
                       due_date: task.due_date
                           ? typeof task.due_date === 'string'
                               ? task.due_date.split('T')[0]
                               : task.due_date.toISOString().split('T')[0]
                           : null,
                   };
-                  // Remove the original Tags property to avoid confusion
+                  // Remove the original Tags and Subtasks properties to avoid confusion
                   delete normalizedTask.Tags;
+                  delete normalizedTask.Subtasks;
                   return normalizedTask;
               })
             : [];
