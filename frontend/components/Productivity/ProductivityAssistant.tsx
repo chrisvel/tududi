@@ -17,7 +17,7 @@ import {
     updateTask,
     deleteTask,
 } from '../../utils/tasksService';
-import { fetchProjects, createProject } from '../../utils/projectsService';
+import { createProject } from '../../utils/projectsService';
 import { useToast } from '../Shared/ToastContext';
 import { getVagueTasks } from '../../utils/taskIntelligenceService';
 
@@ -349,22 +349,9 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
         }
     };
 
-    // Load projects when component mounts
+    // Use projects passed as props instead of making additional API calls
     useEffect(() => {
-        const loadProjects = async () => {
-            try {
-                const projectsData = await fetchProjects();
-                setAllProjects(Array.isArray(projectsData) ? projectsData : []);
-            } catch (error) {
-                console.error('Failed to load projects:', error);
-            }
-        };
-
-        if (projects.length === 0) {
-            loadProjects();
-        } else {
-            setAllProjects(projects);
-        }
+        setAllProjects(projects);
     }, [projects]);
 
     if (totalIssues === 0) {

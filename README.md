@@ -18,6 +18,7 @@ For the thinking behind tududi, read [Designing a Life Management System That Do
 ## ✨ Features
 
 - **Task Management**: Create, update, and delete tasks. Mark tasks as completed and view them by different filters (Today, Upcoming, Someday). Order them by Name, Due Date, Date Created, or Priority.
+- **Subtasks**: Break down complex tasks into smaller, manageable subtasks with progress tracking and seamless navigation.
 - **Recurring Tasks**: Comprehensive recurring task system with intelligent parent-child relationships:
   - **Multiple Recurrence Patterns**: Daily, weekly, monthly, monthly on specific weekdays, and monthly last day
   - **Completion-Based Recurrence**: Option to repeat based on completion date rather than due date
@@ -73,6 +74,33 @@ This is particularly useful for tasks like "Weekly grocery shopping" where you w
 - **Monthly Bills**: "Pay rent" (1st of every month)
 - **Quarterly Reviews**: "Team performance review" (1st Monday of every 3 months)
 - **Maintenance Tasks**: "Change air filter" (every 3 months, completion-based)
+
+## 📋 Subtasks
+
+tududi provides comprehensive subtask management to help you break down complex tasks into manageable steps.
+
+### Key Features
+
+- **Hierarchical Task Structure**: Break down large tasks into smaller, actionable subtasks
+- **Visual Progress Tracking**: See completion progress with visual indicators on parent tasks
+- **Seamless Navigation**: Click on subtasks to navigate directly to the parent task with subtasks focused
+- **Independent Task Management**: Each subtask can have its own priority, status, tags, and due date
+- **Unified Interface**: Subtasks appear consistently across all views (Today, Tasks, Projects)
+
+### How It Works
+
+1. **Create Subtasks**: Add subtasks to any task through the task modal's subtasks section
+2. **Visual Indicators**: Tasks with subtasks show a list icon (•••) in the task card
+3. **Expand/Collapse**: Click the subtask toggle button to show/hide subtasks inline
+4. **Progress Tracking**: Parent tasks display a progress bar showing subtask completion percentage
+5. **Direct Navigation**: Click on any subtask to open the parent task with subtasks section focused
+
+### Example Use Cases
+
+- **Project Planning**: "Launch website" → "Design mockups", "Write content", "Set up hosting"
+- **Event Organization**: "Birthday party" → "Send invitations", "Order cake", "Decorate venue"
+- **Learning Goals**: "Learn Spanish" → "Complete Lesson 1", "Practice vocabulary", "Watch Spanish movie"
+- **Home Maintenance**: "Kitchen renovation" → "Choose cabinets", "Hire contractor", "Order appliances"
 
 ## 🗺️ Roadmap
 

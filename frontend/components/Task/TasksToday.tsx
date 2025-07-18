@@ -15,7 +15,12 @@ import {
     ChevronRightIcon,
     Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
-import { fetchTasks, updateTask, deleteTask } from '../../utils/tasksService';
+import {
+    fetchTasks,
+    updateTask,
+    deleteTask,
+    toggleTaskToday,
+} from '../../utils/tasksService';
 import { fetchProjects } from '../../utils/projectsService';
 import { Task } from '../../entities/Task';
 import { useStore } from '../../store/useStore';
@@ -26,11 +31,6 @@ import ProductivityAssistant from '../Productivity/ProductivityAssistant';
 import NextTaskSuggestion from './NextTaskSuggestion';
 import WeeklyCompletionChart from './WeeklyCompletionChart';
 import TodaySettingsDropdown from './TodaySettingsDropdown';
-import {
-    getProductivityAssistantEnabled,
-    getNextTaskSuggestionEnabled,
-} from '../../utils/profileService';
-import { toggleTaskToday } from '../../utils/tasksService';
 
 const getLocale = (language: string) => {
     switch (language) {
@@ -51,15 +51,15 @@ const getLocale = (language: string) => {
 const TasksToday: React.FC = () => {
     const { t } = useTranslation();
 
-    // Don't use multiple separate useStore calls - combine them into one
-    const store = useStore();
-
-    // Use local state for data instead of directly using store state
-    // This prevents unnecessary re-renders from store updates
-    const [localTasks, setLocalTasks] = useState<Task[]>([]);
-    const [localProjects, setLocalProjects] = useState<any[]>([]);
+    // Temporarily use local state to debug infinite loop
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
+    const [hasInitialized, setHasInitialized] = useState(false);
+
+    // Keep local state for UI-specific data
+    const [localProjects, setLocalProjects] = useState<any[]>([]);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [dailyQuote, setDailyQuote] = useState<string>('');
     const [productivityAssistantEnabled, setProductivityAssistantEnabled] =
         useState(true);
@@ -193,35 +193,123 @@ const TasksToday: React.FC = () => {
 
         // Only fetch data once on mount
         const loadData = async () => {
-            if (!isMounted.current) return;
-
-            setIsLoading(true);
-            setIsError(false);
-
-            try {
-                // Load productivity assistant setting
-                const isEnabled = await getProductivityAssistantEnabled();
-                if (isMounted.current) {
-                    setProductivityAssistantEnabled(isEnabled);
-                }
-            } catch (error) {
-                console.error(
-                    'Failed to load productivity assistant setting:',
-                    error
-                );
+            if (!isMounted.current || hasInitialized || isLoading) {
+                return;
             }
 
+            setIsLoading(true);
             try {
-                // Load next task suggestion setting
-                const isNextTaskEnabled = await getNextTaskSuggestionEnabled();
+                const { tasks: fetchedTasks, metrics: fetchedMetrics } =
+                    await fetchTasks('?type=today');
                 if (isMounted.current) {
-                    setNextTaskSuggestionEnabled(isNextTaskEnabled);
+                    setTasks(fetchedTasks);
+                    setMetrics(fetchedMetrics);
+                    setIsError(false);
                 }
             } catch (error) {
-                console.error(
-                    'Failed to load next task suggestion setting:',
-                    error
-                );
+                console.error('Failed to fetch tasks:', error);
+                if (isMounted.current) {
+                    setIsError(true);
+                }
+            }
+
+            // Load all profile settings in a single API call instead of multiple calls
+            try {
+                const response = await fetch('/api/profile', {
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    const userData = await response.json();
+                    if (isMounted.current) {
+                        // Set productivity assistant setting
+                        setProductivityAssistantEnabled(
+                            userData.productivity_assistant_enabled !==
+                                undefined
+                                ? userData.productivity_assistant_enabled
+                                : true
+                        );
+
+                        // Set next task suggestion setting
+                        setNextTaskSuggestionEnabled(
+                            userData.next_task_suggestion_enabled !== undefined
+                                ? userData.next_task_suggestion_enabled
+                                : true
+                        );
+
+                        // Parse today_settings if it's a string, or use the object directly
+                        let settings;
+                        if (userData.today_settings) {
+                            if (typeof userData.today_settings === 'string') {
+                                try {
+                                    settings = JSON.parse(
+                                        userData.today_settings
+                                    );
+                                } catch (error) {
+                                    console.error(
+                                        'Error parsing today_settings:',
+                                        error
+                                    );
+                                    settings = null;
+                                }
+                            } else {
+                                settings = userData.today_settings;
+                            }
+                        }
+
+                        // Use parsed settings or fall back to defaults
+                        settings = settings || {
+                            showMetrics: false,
+                            showProductivity: false,
+                            showNextTaskSuggestion: false,
+                            showSuggestions: false,
+                            showDueToday: true,
+                            showCompleted: true,
+                            showProgressBar: true, // Always enabled
+                            showDailyQuote: true,
+                        };
+
+                        // Store profile settings
+                        const currentProfileSettings = {
+                            productivity_assistant_enabled:
+                                userData.productivity_assistant_enabled ===
+                                true,
+                            next_task_suggestion_enabled:
+                                userData.next_task_suggestion_enabled === true,
+                        };
+                        setProfileSettings(currentProfileSettings);
+
+                        // Sync with profile AI & productivity features
+                        if (
+                            userData.productivity_assistant_enabled !==
+                            undefined
+                        ) {
+                            settings.showProductivity =
+                                userData.productivity_assistant_enabled;
+                        }
+                        if (
+                            userData.next_task_suggestion_enabled !== undefined
+                        ) {
+                            settings.showNextTaskSuggestion =
+                                userData.next_task_suggestion_enabled;
+                        }
+
+                        // Ensure progress bar is always enabled
+                        settings.showProgressBar = true;
+
+                        setTodaySettings(settings);
+                        setIsSettingsLoaded(true);
+                    }
+                } else {
+                    setIsSettingsLoaded(true);
+                }
+            } catch (error) {
+                console.error('Failed to load profile settings:', error);
+                // Set defaults on error
+                if (isMounted.current) {
+                    setProductivityAssistantEnabled(true);
+                    setNextTaskSuggestionEnabled(true);
+                    setIsSettingsLoaded(true);
+                }
             }
 
             try {
@@ -232,36 +320,19 @@ const TasksToday: React.FC = () => {
                         ? projectsData
                         : [];
                     setLocalProjects(safeProjectsData);
-                    store.projectsStore.setProjects(safeProjectsData);
+                    useStore
+                        .getState()
+                        .projectsStore.setProjects(safeProjectsData);
                 }
             } catch (error) {
                 console.error('Projects loading error:', error);
                 if (isMounted.current) {
                     setLocalProjects([]);
-                    setIsError(true);
+                    // Error handling is now managed by the store
                 }
             }
 
-            try {
-                // Load tasks with metrics
-                const { tasks: fetchedTasks, metrics: fetchedMetrics } =
-                    await fetchTasks('?type=today');
-                if (isMounted.current) {
-                    setLocalTasks(fetchedTasks);
-                    setMetrics(fetchedMetrics);
-                    // Also update the store
-                    store.tasksStore.setTasks(fetchedTasks);
-                }
-            } catch (error) {
-                console.error('Failed to fetch tasks:', error);
-                if (isMounted.current) {
-                    setIsError(true);
-                }
-            } finally {
-                if (isMounted.current) {
-                    setIsLoading(false);
-                }
-            }
+            // Tasks will be loaded via the store's loadTasks method called earlier
 
             // Load daily quote from translations
             try {
@@ -308,85 +379,11 @@ const TasksToday: React.FC = () => {
                 }
             }
 
-            // Load user settings
-            try {
-                const response = await fetch('/api/profile', {
-                    credentials: 'include',
-                });
-                if (response.ok) {
-                    const userData = await response.json();
-                    if (isMounted.current) {
-                        // Parse today_settings if it's a string, or use the object directly
-                        let settings;
-                        if (userData.today_settings) {
-                            if (typeof userData.today_settings === 'string') {
-                                try {
-                                    settings = JSON.parse(
-                                        userData.today_settings
-                                    );
-                                } catch (error) {
-                                    console.error(
-                                        'Error parsing today_settings:',
-                                        error
-                                    );
-                                    settings = null;
-                                }
-                            } else {
-                                settings = userData.today_settings;
-                            }
-                        }
-
-                        // Use parsed settings or fall back to defaults
-                        settings = settings || {
-                            showMetrics: false,
-                            showProductivity: false,
-                            showNextTaskSuggestion: false,
-                            showSuggestions: false,
-                            showDueToday: true,
-                            showCompleted: true,
-                            showProgressBar: true, // Always enabled
-                            showDailyQuote: true,
-                        };
-
-                        // Store profile settings
-                        const currentProfileSettings = {
-                            productivity_assistant_enabled:
-                                userData.productivity_assistant_enabled ===
-                                true,
-                            next_task_suggestion_enabled:
-                                userData.next_task_suggestion_enabled === true,
-                        };
-                        setProfileSettings(currentProfileSettings);
-
-                        // Sync with profile AI & productivity features
-                        // If profile has productivity assistant enabled, sync the setting
-                        if (
-                            userData.productivity_assistant_enabled !==
-                            undefined
-                        ) {
-                            settings.showProductivity =
-                                userData.productivity_assistant_enabled;
-                        }
-                        // If profile has next task suggestion enabled, sync the setting
-                        if (
-                            userData.next_task_suggestion_enabled !== undefined
-                        ) {
-                            settings.showNextTaskSuggestion =
-                                userData.next_task_suggestion_enabled;
-                        }
-
-                        // Ensure progress bar is always enabled
-                        settings.showProgressBar = true;
-
-                        setTodaySettings(settings);
-                        setIsSettingsLoaded(true);
-                    }
-                } else {
-                    setIsSettingsLoaded(true);
-                }
-            } catch (error) {
-                console.error('Failed to load user settings:', error);
-                setIsSettingsLoaded(true);
+            // Set loading to false and mark as initialized
+            if (isMounted.current) {
+                setIsInitialLoading(false);
+                setIsLoading(false);
+                setHasInitialized(true);
             }
         };
 
@@ -403,62 +400,99 @@ const TasksToday: React.FC = () => {
         async (updatedTask: Task): Promise<void> => {
             if (!updatedTask.id || !isMounted.current) return;
 
-            setIsLoading(true);
-            try {
-                await updateTask(updatedTask.id, updatedTask);
-                // Refetch data to ensure consistency
-                const { tasks: updatedTasks, metrics } =
-                    await fetchTasks('?type=today');
+            // Helper function to update a task in an array
+            const updateTaskInArray = (tasks: Task[]) =>
+                tasks.map((task) =>
+                    task.id === updatedTask.id
+                        ? {
+                              ...task,
+                              ...updatedTask,
+                              updated_at: new Date().toISOString(),
+                          }
+                        : task
+                );
 
-                if (isMounted.current) {
-                    setLocalTasks(updatedTasks);
-                    setMetrics(metrics);
-                    // Update store
-                    store.tasksStore.setTasks(updatedTasks);
+            // Check if this task exists in any of our task lists
+            const taskExistsInLocal = tasks.some(
+                (task) => task.id === updatedTask.id
+            );
+            const taskExistsInMetrics =
+                metrics.today_plan_tasks?.some(
+                    (task) => task.id === updatedTask.id
+                ) ||
+                metrics.suggested_tasks.some(
+                    (task) => task.id === updatedTask.id
+                ) ||
+                metrics.tasks_due_today.some(
+                    (task) => task.id === updatedTask.id
+                ) ||
+                metrics.tasks_in_progress.some(
+                    (task) => task.id === updatedTask.id
+                ) ||
+                metrics.tasks_completed_today.some(
+                    (task) => task.id === updatedTask.id
+                );
+
+            // Update local task state
+            if (taskExistsInLocal) {
+                setTasks((prevTasks) => updateTaskInArray(prevTasks));
+            }
+
+            if (taskExistsInMetrics) {
+                setMetrics((prevMetrics) => ({
+                    ...prevMetrics,
+                    today_plan_tasks: updateTaskInArray(
+                        prevMetrics.today_plan_tasks || []
+                    ),
+                    suggested_tasks: updateTaskInArray(
+                        prevMetrics.suggested_tasks || []
+                    ),
+                    tasks_due_today: updateTaskInArray(
+                        prevMetrics.tasks_due_today || []
+                    ),
+                    tasks_in_progress: updateTaskInArray(
+                        prevMetrics.tasks_in_progress || []
+                    ),
+                    tasks_completed_today: updateTaskInArray(
+                        prevMetrics.tasks_completed_today || []
+                    ),
+                }));
+            }
+
+            try {
+                // Make API call if the task exists anywhere
+                if (taskExistsInLocal || taskExistsInMetrics) {
+                    await updateTask(updatedTask.id, updatedTask);
                 }
             } catch (error) {
                 console.error('Error updating task:', error);
                 if (isMounted.current) {
-                    setIsError(true);
-                }
-            } finally {
-                if (isMounted.current) {
-                    setIsLoading(false);
+                    // Error handling is now managed by the store
                 }
             }
         },
-        [store.tasksStore]
+        [tasks, metrics]
     );
 
     const handleTaskDelete = useCallback(
         async (taskId: number): Promise<void> => {
             if (!isMounted.current) return;
 
-            setIsLoading(true);
             try {
                 await deleteTask(taskId);
-                // Refetch data to ensure consistency
-                const { tasks: updatedTasks, metrics } =
-                    await fetchTasks('?type=today');
 
+                // Reload tasks to reflect the change
+                const { tasks: updatedTasks, metrics: updatedMetrics } =
+                    await fetchTasks('?type=today');
                 if (isMounted.current) {
-                    setLocalTasks(updatedTasks);
-                    setMetrics(metrics);
-                    // Update store
-                    store.tasksStore.setTasks(updatedTasks);
+                    setTasks(updatedTasks);
+                    setMetrics(updatedMetrics);
                 }
             } catch (error) {
                 console.error('Error deleting task:', error);
-                if (isMounted.current) {
-                    setIsError(true);
-                }
-            } finally {
-                if (isMounted.current) {
-                    setIsLoading(false);
-                }
             }
         },
-        [store.tasksStore]
+        []
     );
 
     const handleToggleToday = useCallback(
@@ -467,24 +501,19 @@ const TasksToday: React.FC = () => {
 
             try {
                 await toggleTaskToday(taskId);
-                // Refetch data to ensure consistency
-                const { tasks: updatedTasks, metrics } =
-                    await fetchTasks('?type=today');
 
+                // Reload tasks to reflect the change
+                const { tasks: updatedTasks, metrics: updatedMetrics } =
+                    await fetchTasks('?type=today');
                 if (isMounted.current) {
-                    setLocalTasks(updatedTasks);
-                    setMetrics(metrics);
-                    // Update store
-                    store.tasksStore.setTasks(updatedTasks);
+                    setTasks(updatedTasks);
+                    setMetrics(updatedMetrics);
                 }
             } catch (error) {
                 console.error('Error toggling task today status:', error);
-                if (isMounted.current) {
-                    setIsError(true);
-                }
             }
         },
-        [store.tasksStore]
+        []
     );
 
     // Calculate today's progress for the progress bar
@@ -510,8 +539,8 @@ const TasksToday: React.FC = () => {
         setTodaySettings(newSettings);
     };
 
-    // Show loading state until both data and settings are loaded
-    if ((isLoading && localTasks.length === 0) || !isSettingsLoaded) {
+    // Show loading state until both data and settings are loaded (only for initial load)
+    if (isInitialLoading || !isSettingsLoaded) {
         return (
             <div className="flex justify-center items-center h-64">
                 <p className="text-gray-500 dark:text-gray-400">
@@ -522,7 +551,7 @@ const TasksToday: React.FC = () => {
     }
 
     // Show error state
-    if (isError && localTasks.length === 0) {
+    if (isError && tasks.length === 0) {
         return (
             <div className="flex justify-center items-center h-64">
                 <p className="text-red-500">
@@ -786,7 +815,7 @@ const TasksToday: React.FC = () => {
                   productivityAssistantEnabled &&
                   profileSettings.productivity_assistant_enabled === true ? (
                     <ProductivityAssistant
-                        tasks={localTasks}
+                        tasks={tasks}
                         projects={localProjects}
                     />
                 ) : null}

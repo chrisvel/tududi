@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     CalendarDaysIcon,
@@ -6,12 +6,14 @@ import {
     PlayIcon,
     ArrowPathIcon,
     ArrowRightIcon,
+    ListBulletIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import TaskPriorityIcon from './TaskPriorityIcon';
 import { Project } from '../../entities/Project';
 import { Task, StatusType } from '../../entities/Task';
+import { fetchSubtasks } from '../../utils/tasksService';
 
 interface TaskHeaderProps {
     task: Task;
@@ -22,6 +24,10 @@ interface TaskHeaderProps {
     onToggleToday?: (taskId: number) => Promise<void>;
     onTaskUpdate?: (task: Task) => Promise<void>;
     isOverdue?: boolean;
+    // Props for subtasks functionality
+    showSubtasks?: boolean;
+    hasSubtasks?: boolean;
+    onSubtasksToggle?: (e: React.MouseEvent) => void;
 }
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
@@ -33,6 +39,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     onToggleToday,
     onTaskUpdate,
     isOverdue = false,
+    // Props for subtasks functionality
+    showSubtasks,
+    hasSubtasks,
+    onSubtasksToggle,
 }) => {
     const { t } = useTranslation();
 
@@ -114,11 +124,21 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         }
     };
 
+    // Check if task has metadata (project, tags, due_date, recurrence_type)
+    const hasMetadata =
+        (project && !hideProjectName) ||
+        (task.tags && task.tags.length > 0) ||
+        task.due_date ||
+        (task.recurrence_type && task.recurrence_type !== 'none');
+
     return (
-        <div className="py-2 px-4 cursor-pointer group" onClick={onTaskClick}>
+        <div
+            className={`${hasMetadata ? 'py-2' : 'py-3'} px-4 cursor-pointer group`}
+            onClick={onTaskClick}
+        >
             {/* Full view (md and larger) */}
             <div className="hidden md:flex flex-col md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center space-x-4 mb-2 md:mb-0">
+                <div className="flex items-center space-x-3 mb-2 md:mb-0">
                     <TaskPriorityIcon
                         priority={task.priority}
                         status={task.status}
@@ -272,6 +292,36 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             <PlayIcon className="h-3 w-3" />
                         </button>
                     )}
+
+                    {/* Show Subtasks Controls */}
+                    {hasSubtasks &&
+                        !(task.status === 'archived' || task.status === 3) && (
+                            <button
+                                onClick={(e) => {
+                                    if (onSubtasksToggle) {
+                                        onSubtasksToggle(e);
+                                    }
+                                }}
+                                className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                                    showSubtasks
+                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
+                                }`}
+                                title={
+                                    showSubtasks
+                                        ? t(
+                                              'tasks.hideSubtasks',
+                                              'Hide subtasks'
+                                          )
+                                        : t(
+                                              'tasks.showSubtasks',
+                                              'Show subtasks'
+                                          )
+                                }
+                            >
+                                <ListBulletIcon className="h-3 w-3" />
+                            </button>
+                        )}
                 </div>
             </div>
 
@@ -418,6 +468,42 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 <PlayIcon className="h-3 w-3" />
                             </button>
                         )}
+
+                        {/* Show Subtasks Controls - Mobile */}
+                        {hasSubtasks &&
+                            !(
+                                task.status === 'archived' || task.status === 3
+                            ) && (
+                                <button
+                                    onClick={(e) => {
+                                        console.log(
+                                            'Subtasks button clicked (mobile)',
+                                            e
+                                        );
+                                        if (onSubtasksToggle) {
+                                            onSubtasksToggle(e);
+                                        }
+                                    }}
+                                    className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                                        showSubtasks
+                                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800'
+                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
+                                    }`}
+                                    title={
+                                        showSubtasks
+                                            ? t(
+                                                  'tasks.hideSubtasks',
+                                                  'Hide subtasks'
+                                              )
+                                            : t(
+                                                  'tasks.showSubtasks',
+                                                  'Show subtasks'
+                                              )
+                                    }
+                                >
+                                    <ListBulletIcon className="h-3 w-3" />
+                                </button>
+                            )}
                     </div>
                 </div>
             </div>
@@ -425,4 +511,169 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     );
 };
 
+// Subtasks Display Component
+interface SubtasksDisplayProps {
+    showSubtasks: boolean;
+    loadingSubtasks: boolean;
+    subtasks: Task[];
+    onTaskClick: (e: React.MouseEvent, task: Task) => void;
+}
+
+const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
+    showSubtasks,
+    loadingSubtasks,
+    subtasks,
+    onTaskClick,
+}) => {
+    const { t } = useTranslation();
+
+    if (!showSubtasks) return null;
+
+    return (
+        <div className="mt-1 space-y-1">
+            {loadingSubtasks ? (
+                <div className="ml-[10%] text-sm text-gray-500 dark:text-gray-400">
+                    {t('loading.subtasks', 'Loading subtasks...')}
+                </div>
+            ) : subtasks.length > 0 ? (
+                subtasks.map((subtask) => (
+                    <div key={subtask.id} className="ml-[10%] group">
+                        <div
+                            className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 cursor-pointer transition-all duration-200 ${
+                                subtask.status === 'in_progress' ||
+                                subtask.status === 1
+                                    ? 'border-green-400/60 dark:border-green-500/60'
+                                    : 'border-gray-50 dark:border-gray-800'
+                            }`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onTaskClick(e, subtask);
+                            }}
+                        >
+                            <div className="px-3 py-2.5 flex items-center justify-between">
+                                {/* Left side - Task info */}
+                                <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                    <TaskPriorityIcon
+                                        priority={subtask.priority}
+                                        status={subtask.status}
+                                    />
+                                    <span
+                                        className={`text-sm flex-1 truncate ${
+                                            subtask.status === 'done' ||
+                                            subtask.status === 2 ||
+                                            subtask.status === 'archived' ||
+                                            subtask.status === 3
+                                                ? 'text-gray-500 dark:text-gray-400 line-through'
+                                                : 'text-gray-900 dark:text-gray-100'
+                                        }`}
+                                    >
+                                        {subtask.name}
+                                    </span>
+                                </div>
+
+                                {/* Right side - Status indicator */}
+                                <div className="flex items-center space-x-1">
+                                    {subtask.status === 'done' ||
+                                    subtask.status === 2 ||
+                                    subtask.status === 'archived' ||
+                                    subtask.status === 3 ? (
+                                        <span className="text-xs text-green-600 dark:text-green-400">
+                                            ✓
+                                        </span>
+                                    ) : null}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <div className="ml-[10%] text-sm text-gray-500 dark:text-gray-400">
+                    {t('subtasks.noSubtasks', 'No subtasks found')}
+                </div>
+            )}
+        </div>
+    );
+};
+
+// TaskWithSubtasks Component that combines both
+interface TaskWithSubtasksProps extends TaskHeaderProps {
+    onSubtaskClick?: (subtask: Task) => void;
+}
+
+const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
+    const [showSubtasks, setShowSubtasks] = useState(false);
+    const [subtasks, setSubtasks] = useState<Task[]>([]);
+    const [loadingSubtasks, setLoadingSubtasks] = useState(false);
+    const [hasSubtasks, setHasSubtasks] = useState(false);
+
+    // Check if task has subtasks using included data
+    useEffect(() => {
+        const hasSubtasksFromData =
+            props.task.subtasks && props.task.subtasks.length > 0;
+        setHasSubtasks(!!hasSubtasksFromData);
+
+        // Set initial subtasks state if they are already loaded
+        if (hasSubtasksFromData && props.task.subtasks) {
+            setSubtasks(props.task.subtasks);
+        }
+    }, [props.task.id, props.task.subtasks]);
+
+    const loadSubtasks = async () => {
+        if (!props.task.id) return;
+
+        // If subtasks are already included in the task data, use them
+        if (props.task.subtasks && props.task.subtasks.length > 0) {
+            setSubtasks(props.task.subtasks);
+            return;
+        }
+
+        // Only fetch if not already included (fallback for older API responses)
+        setLoadingSubtasks(true);
+        try {
+            const subtasksData = await fetchSubtasks(props.task.id);
+            setSubtasks(subtasksData);
+        } catch (error) {
+            console.error('Failed to load subtasks:', error);
+            setSubtasks([]);
+        } finally {
+            setLoadingSubtasks(false);
+        }
+    };
+
+    const handleSubtasksToggle = async (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent opening task modal
+
+        if (!showSubtasks && subtasks.length === 0) {
+            await loadSubtasks();
+        }
+
+        setShowSubtasks(!showSubtasks);
+    };
+
+    return (
+        <>
+            <TaskHeader
+                {...props}
+                // Pass the subtasks state to the header
+                showSubtasks={showSubtasks}
+                hasSubtasks={hasSubtasks}
+                onSubtasksToggle={handleSubtasksToggle}
+            />
+            <SubtasksDisplay
+                showSubtasks={showSubtasks}
+                loadingSubtasks={loadingSubtasks}
+                subtasks={subtasks}
+                onTaskClick={(e, task) => {
+                    e.stopPropagation();
+                    // Call the parent's onSubtaskClick handler if provided
+                    if (props.onSubtaskClick) {
+                        props.onSubtaskClick(task);
+                    }
+                }}
+            />
+        </>
+    );
+};
+
+export { TaskWithSubtasks };
 export default TaskHeader;

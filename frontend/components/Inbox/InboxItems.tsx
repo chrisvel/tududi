@@ -17,7 +17,6 @@ import TaskModal from '../Task/TaskModal';
 import ProjectModal from '../Project/ProjectModal';
 import NoteModal from '../Note/NoteModal';
 import InboxModal from './InboxModal';
-import { fetchProjects } from '../../utils/projectsService';
 import { createTask } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { createNote } from '../../utils/notesService';
@@ -51,24 +50,13 @@ const InboxItems: React.FC = () => {
     // Track the current inbox item being edited
     const [itemToEdit, setItemToEdit] = useState<number | null>(null);
 
-    // Fetch projects for modals
-    const [projects, setProjects] = useState<Project[]>([]);
+    // Access projects from store instead of making separate API calls
+    const { projectsStore } = useStore();
+    const projects = projectsStore.projects;
 
     useEffect(() => {
         // Initial data loading
         loadInboxItemsToStore(true);
-
-        // Load projects initially
-        const loadInitialProjects = async () => {
-            try {
-                const projectData = await fetchProjects();
-                setProjects(Array.isArray(projectData) ? projectData : []);
-            } catch (error) {
-                console.error('Failed to load initial projects:', error);
-                setProjects([]);
-            }
-        };
-        loadInitialProjects();
 
         // Set up an event listener for force reload
         const handleForceReload = () => {
@@ -178,17 +166,6 @@ const InboxItems: React.FC = () => {
 
     // Modal handlers
     const handleOpenTaskModal = async (task: Task, inboxItemId?: number) => {
-        // Load projects first before opening the modal
-        try {
-            const projectData = await fetchProjects();
-            // Make sure we always set an array
-            setProjects(Array.isArray(projectData) ? projectData : []);
-        } catch (error) {
-            console.error('Failed to load projects:', error);
-            showErrorToast(t('project.loadError', 'Failed to load projects'));
-            setProjects([]); // Ensure we have an empty array even on error
-        }
-
         setTaskToEdit(task);
 
         if (inboxItemId) {
@@ -230,20 +207,7 @@ const InboxItems: React.FC = () => {
             setCurrentConversionItemId(inboxItemId);
         }
 
-        // Projects should already be loaded from initial useEffect,
-        // but refresh them if they're empty as a fallback
-        if (projects.length === 0) {
-            try {
-                const projectData = await fetchProjects();
-                setProjects(Array.isArray(projectData) ? projectData : []);
-            } catch (error) {
-                console.error('Failed to load projects:', error);
-                showErrorToast(
-                    t('project.loadError', 'Failed to load projects')
-                );
-                setProjects([]);
-            }
-        }
+        // Projects are already available from the store
 
         setIsNoteModalOpen(true);
     };
@@ -565,6 +529,7 @@ const InboxItems: React.FC = () => {
                                 await handleProcessItem(itemToEdit);
                             }
                         }}
+                        projects={projects}
                     />
                 )}
             </div>

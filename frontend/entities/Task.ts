@@ -25,6 +25,9 @@ export interface Task {
     completion_based?: boolean;
     recurring_parent_id?: number;
     completed_at?: string;
+    parent_task_id?: number;
+    subtasks?: Task[];
+    Subtasks?: Task[]; // Handle API response case sensitivity (temporary)
 }
 
 export type StatusType = 'not_started' | 'in_progress' | 'done' | 'archived';

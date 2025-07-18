@@ -5,7 +5,7 @@ import { useToast } from '../Shared/ToastContext';
 import TimelinePanel from './TimelinePanel';
 import { Project } from '../../entities/Project';
 import { fetchTags } from '../../utils/tagsService';
-import { fetchTaskById } from '../../utils/tasksService';
+import { fetchTaskById, fetchSubtasks } from '../../utils/tasksService';
 import { getTaskIntelligenceEnabled } from '../../utils/profileService';
 import {
     analyzeTaskName,
@@ -19,6 +19,7 @@ import {
     Cog6ToothIcon,
     ArrowPathIcon,
     TrashIcon,
+    ListBulletIcon,
 } from '@heroicons/react/24/outline';
 
 // Import form sections
@@ -28,6 +29,7 @@ import TaskTagsSection from './TaskForm/TaskTagsSection';
 import TaskProjectSection from './TaskForm/TaskProjectSection';
 import TaskMetadataSection from './TaskForm/TaskMetadataSection';
 import TaskRecurrenceSection from './TaskForm/TaskRecurrenceSection';
+import TaskSubtasksSection from './TaskForm/TaskSubtasksSection';
 
 interface TaskModalProps {
     isOpen: boolean;
@@ -38,6 +40,7 @@ interface TaskModalProps {
     projects: Project[];
     onCreateProject: (name: string) => Promise<Project>;
     onEditParentTask?: (parentTask: Task) => void;
+    autoFocusSubtasks?: boolean;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -49,6 +52,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     projects,
     onCreateProject,
     onEditParentTask,
+    autoFocusSubtasks,
 }) => {
     const [formData, setFormData] = useState<Task>(task);
     const [tags, setTags] = useState<string[]>(
@@ -73,6 +77,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] =
         useState(true);
     const [isTimelineExpanded, setIsTimelineExpanded] = useState(false);
+    const [subtasks, setSubtasks] = useState<Task[]>([]);
+    const [subtasksLoaded, setSubtasksLoaded] = useState(false);
 
     // Collapsible section states
     const [expandedSections, setExpandedSections] = useState({
@@ -80,10 +86,25 @@ const TaskModal: React.FC<TaskModalProps> = ({
         project: false,
         metadata: false,
         recurrence: false,
+        subtasks: false,
     });
 
     const { showSuccessToast, showErrorToast } = useToast();
     const { t } = useTranslation();
+
+    const scrollToSubtasksSection = () => {
+        setTimeout(() => {
+            const subtasksSection = document.querySelector(
+                '[data-section="subtasks"]'
+            );
+            if (subtasksSection) {
+                subtasksSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'end',
+                });
+            }
+        }, 300); // Give time for section to expand
+    };
 
     const toggleSection = useCallback(
         (section: keyof typeof expandedSections) => {
@@ -95,17 +116,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
                 // Auto-scroll to show the expanded section
                 if (newExpanded[section]) {
-                    setTimeout(() => {
-                        const scrollContainer = document.querySelector(
-                            '.absolute.inset-0.overflow-y-auto'
-                        );
-                        if (scrollContainer) {
-                            scrollContainer.scrollTo({
-                                top: scrollContainer.scrollHeight,
-                                behavior: 'smooth',
-                            });
-                        }
-                    }, 100); // Small delay to ensure DOM is updated
+                    // Special handling for subtasks section
+                    if (section === 'subtasks') {
+                        scrollToSubtasksSection();
+                    } else {
+                        setTimeout(() => {
+                            const scrollContainer = document.querySelector(
+                                '.absolute.inset-0.overflow-y-auto'
+                            );
+                            if (scrollContainer) {
+                                scrollContainer.scrollTo({
+                                    top: scrollContainer.scrollHeight,
+                                    behavior: 'smooth',
+                                });
+                            }
+                        }, 100); // Small delay to ensure DOM is updated
+                    }
                 }
 
                 return newExpanded;
@@ -174,6 +200,20 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
         fetchTaskIntelligenceSetting();
     }, [isOpen]);
+
+    // Auto-focus on subtasks section when modal opens
+    useEffect(() => {
+        if (isOpen && autoFocusSubtasks) {
+            // Small delay to ensure modal is fully rendered
+            setTimeout(() => {
+                setExpandedSections((prev) => ({
+                    ...prev,
+                    subtasks: true,
+                }));
+                scrollToSubtasksSection();
+            }, 100);
+        }
+    }, [isOpen, autoFocusSubtasks]);
 
     const handleEditParent = () => {
         if (parentTask && onEditParentTask) {
@@ -301,7 +341,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
     };
 
     const handleSubmit = () => {
-        onSave({ ...formData, tags: tags.map((tag) => ({ name: tag })) });
+        onSave({
+            ...formData,
+            tags: tags.map((tag) => ({ name: tag })),
+            subtasks: subtasks,
+        } as any);
         const taskLink = (
             <span>
                 {t('task.updated', 'Task')}{' '}
@@ -412,6 +456,29 @@ const TaskModal: React.FC<TaskModalProps> = ({
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [isOpen]);
+
+    // Load existing subtasks when modal opens (only if not already loaded)
+    useEffect(() => {
+        if (isOpen && task.id && !subtasksLoaded) {
+            const loadExistingSubtasks = async () => {
+                try {
+                    const existingSubtasks = await fetchSubtasks(task.id!);
+                    setSubtasks(existingSubtasks);
+                    setSubtasksLoaded(true);
+                } catch {
+                    // Handle silently - don't show error for this
+                    setSubtasks([]);
+                    setSubtasksLoaded(true);
+                }
+            };
+
+            loadExistingSubtasks();
+        } else if (!isOpen) {
+            // Reset subtasks when modal closes
+            setSubtasks([]);
+            setSubtasksLoaded(false);
+        }
+    }, [isOpen, task.id, subtasksLoaded]);
 
     if (!isOpen) return null;
 
@@ -613,6 +680,49 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                         />
                                                     </div>
                                                 )}
+
+                                                {expandedSections.subtasks && (
+                                                    <div
+                                                        className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4"
+                                                        data-section="subtasks"
+                                                    >
+                                                        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                                            {t(
+                                                                'forms.task.subtasks',
+                                                                'Subtasks'
+                                                            )}
+                                                        </h3>
+                                                        <TaskSubtasksSection
+                                                            parentTaskId={
+                                                                task.id!
+                                                            }
+                                                            subtasks={subtasks}
+                                                            onSubtasksChange={
+                                                                setSubtasks
+                                                            }
+                                                            onSectionMount={
+                                                                scrollToSubtasksSection
+                                                            }
+                                                            onSubtaskUpdate={async (
+                                                                updatedSubtask
+                                                            ) => {
+                                                                // Update the subtask in the local state
+                                                                setSubtasks(
+                                                                    (prev) =>
+                                                                        prev.map(
+                                                                            (
+                                                                                st
+                                                                            ) =>
+                                                                                st.id ===
+                                                                                updatedSubtask.id
+                                                                                    ? updatedSubtask
+                                                                                    : st
+                                                                        )
+                                                                );
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
                                             </fieldset>
                                         </form>
                                     </div>
@@ -726,6 +836,27 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 <ArrowPathIcon className="h-5 w-5" />
                                                 {(formData.recurrence_type ||
                                                     formData.recurring_parent_id) && (
+                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                                                )}
+                                            </button>
+
+                                            {/* Subtasks Toggle */}
+                                            <button
+                                                onClick={() =>
+                                                    toggleSection('subtasks')
+                                                }
+                                                className={`relative p-2 rounded-full transition-colors ${
+                                                    expandedSections.subtasks
+                                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                }`}
+                                                title={t(
+                                                    'forms.task.subtasks',
+                                                    'Subtasks'
+                                                )}
+                                            >
+                                                <ListBulletIcon className="h-5 w-5" />
+                                                {subtasks.length > 0 && (
                                                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                 )}
                                             </button>
