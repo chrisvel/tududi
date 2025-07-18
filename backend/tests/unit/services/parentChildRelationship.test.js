@@ -360,9 +360,8 @@ describe('Parent-Child Relationship Functionality', () => {
             expect(existingChild).not.toBeNull();
         });
 
-        it('should allow deleting parent when child tasks exist (FK constraints disabled in tests)', async () => {
-            // In test environment, FK constraints are disabled to allow flexible testing
-            // This test verifies the actual behavior, not the ideal FK constraint behavior
+        it('should allow deleting parent and set child recurring_parent_id to null (FK SET NULL)', async () => {
+            // With FK constraint SET NULL, deleting parent should nullify recurring_parent_id in children
 
             const result = await parentTask.destroy();
             expect(result).toBeTruthy();
@@ -375,9 +374,9 @@ describe('Parent-Child Relationship Functionality', () => {
             expect(existingChild1).not.toBeNull();
             expect(existingChild2).not.toBeNull();
 
-            // Children should have parent_task_id pointing to deleted parent
-            expect(existingChild1.recurring_parent_id).toBe(parentTask.id);
-            expect(existingChild2.recurring_parent_id).toBe(parentTask.id);
+            // Children should have recurring_parent_id set to null due to FK SET NULL constraint
+            expect(existingChild1.recurring_parent_id).toBe(null);
+            expect(existingChild2.recurring_parent_id).toBe(null);
         });
 
         it('should allow deleting parent after deleting all child tasks', async () => {
