@@ -11,7 +11,7 @@ import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
 import {
     TagIcon,
-    FolderIcon,
+    Squares2X2Icon,
     TrashIcon,
     CameraIcon,
     CalendarIcon,
@@ -685,7 +685,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             }`}
                                             title={t('common.area', 'Area')}
                                         >
-                                            <FolderIcon className="h-5 w-5" />
+                                            <Squares2X2Icon className="h-5 w-5" />
                                             {formData.area_id && (
                                                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                             )}

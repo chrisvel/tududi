@@ -63,7 +63,6 @@ export const fetchProjectById = async (
         url.searchParams.set('completed', options.completed.toString());
     }
 
-    console.log('fetchProjectById: Making API call to:', url.toString());
     const response = await fetch(url.toString(), {
         credentials: 'include',
         headers: { Accept: 'application/json' },

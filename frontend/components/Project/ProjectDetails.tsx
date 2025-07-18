@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 import {
@@ -7,7 +7,6 @@ import {
     TrashIcon,
     FolderIcon,
     BookOpenIcon,
-    TagIcon,
     ListBulletIcon,
     ChevronDownIcon,
     BarsArrowUpIcon,
@@ -15,9 +14,11 @@ import {
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import NoteModal from '../Note/NoteModal';
 import { useStore } from '../../store/useStore';
 import NewTask from '../Task/NewTask';
 import { Project } from '../../entities/Project';
+import NoteCard from '../Shared/NoteCard';
 import { PriorityType, Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
 import {
@@ -30,6 +31,10 @@ import {
     deleteTask,
     toggleTaskToday,
 } from '../../utils/tasksService';
+import {
+    updateNote,
+    deleteNote as apiDeleteNote,
+} from '../../utils/notesService';
 import { isAuthError } from '../../utils/authUtils';
 // import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
@@ -64,6 +69,11 @@ const ProjectDetails: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
     const dropdownRef = useRef<HTMLDivElement>(null);
+    
+    // Note modal state
+    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+    const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
     // Dispatch global modal events
 
@@ -117,23 +127,18 @@ const ProjectDetails: React.FC = () => {
                 
                 const urlParams = new URLSearchParams(location.search);
                 const sortParam = urlParams.get('sort') || localStorage.getItem('project_order_by') || 'created_at:desc';
-                const showCompletedParam = urlParams.get('completed') === 'true';
-                
-                // console.log('Fetching project data for id:', id, 'with params:', { sort: sortParam, completed: showCompletedParam });
-                
+                                
                 const projectData = await fetchProjectById(id, {
                     sort: sortParam
                     // Remove completed parameter since backend filtering isn't working
                 });
                 
-                // console.log('Received project data with', (projectData.tasks || projectData.Tasks || []).length, 'tasks');
                 
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
                 setNotes(projectData.notes || projectData.Notes || []);
                 setLoading(false);
             } catch (error) {
-                console.error('Error loading project data:', error);
                 setError(true);
                 setLoading(false);
             }
@@ -162,7 +167,6 @@ const ProjectDetails: React.FC = () => {
 
     const handleTaskCreate = async (taskName: string) => {
         if (!project) {
-            console.error('Cannot create task: Project is missing');
             throw new Error('Cannot create task: Project is missing');
         }
 
@@ -189,7 +193,6 @@ const ProjectDetails: React.FC = () => {
             );
             showSuccessToast(taskLink);
         } catch (err: any) {
-            console.error('Error creating task:', err);
             // Check if it's an authentication error
             if (isAuthError(err)) {
                 return;
@@ -200,7 +203,6 @@ const ProjectDetails: React.FC = () => {
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         if (!updatedTask.id) {
-            console.error('Cannot update task: Task ID is missing');
             return;
         }
         try {
@@ -214,7 +216,6 @@ const ProjectDetails: React.FC = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('Failed to update task:', errorData.error);
                 throw new Error('Failed to update task');
             }
 
@@ -225,20 +226,19 @@ const ProjectDetails: React.FC = () => {
                 )
             );
         } catch (err) {
-            console.error('Error updating task:', err);
+            // Error updating task - silently handled
         }
     };
 
     const handleTaskDelete = async (taskId: number | undefined) => {
         if (!taskId) {
-            console.error('Cannot delete task: Task ID is missing');
             return;
         }
         try {
             await deleteTask(taskId);
             setTasks(tasks.filter((task) => task.id !== taskId));
         } catch (err) {
-            console.error('Error deleting task:', err);
+            // Error deleting task - silently handled
         }
     };
 
@@ -258,7 +258,6 @@ const ProjectDetails: React.FC = () => {
                 )
             );
         } catch (error) {
-            console.error('Error toggling task today status:', error);
             // Optionally refetch data on error to ensure consistency
             if (id) {
                 const urlParams = new URLSearchParams(location.search);
@@ -274,7 +273,7 @@ const ProjectDetails: React.FC = () => {
                     setTasks(projectData.tasks || projectData.Tasks || []);
                     setNotes(projectData.notes || projectData.Notes || []);
                 } catch (fetchError) {
-                    console.error('Error refetching project data:', fetchError);
+                    // Error refetching project data - silently handled
                 }
             }
         }
@@ -286,7 +285,6 @@ const ProjectDetails: React.FC = () => {
 
     const handleSaveProject = async (updatedProject: Project) => {
         if (!updatedProject.id) {
-            console.error('Cannot save project: Project ID is missing');
             return;
         }
 
@@ -298,7 +296,7 @@ const ProjectDetails: React.FC = () => {
             setProject(savedProject);
             setIsModalOpen(false);
         } catch (err) {
-            console.error('Error saving project:', err);
+            // Error saving project - silently handled
         }
     };
 
@@ -333,7 +331,7 @@ const ProjectDetails: React.FC = () => {
             );
             showSuccessToast(taskLink);
         } catch (error) {
-            console.error('Error creating next action:', error);
+            // Error creating next action - silently handled
         }
     };
 
@@ -370,7 +368,6 @@ const ProjectDetails: React.FC = () => {
 
     const handleDeleteProject = async () => {
         if (!project?.id) {
-            console.error('Cannot delete project: Project ID is missing');
             return;
         }
 
@@ -378,13 +375,42 @@ const ProjectDetails: React.FC = () => {
             await deleteProject(project.id);
             navigate('/projects');
         } catch (err) {
-            console.error('Error deleting project:', err);
+            // Error deleting project - silently handled
+        }
+    };
+
+    // Note handlers
+    const handleEditNote = (note: Note) => {
+        setSelectedNote(note);
+        setIsNoteModalOpen(true);
+    };
+
+    const handleDeleteNote = async (noteId: number) => {
+        try {
+            await apiDeleteNote(noteId);
+            setNotes(notes.filter(n => n.id !== noteId));
+            setNoteToDelete(null);
+            setIsConfirmDialogOpen(false);
+        } catch (err) {
+            // Error deleting note - silently handled
+        }
+    };
+
+    const handleUpdateNote = async (noteData: Partial<Note>) => {
+        try {
+            if (selectedNote?.id) {
+                const updatedNote = await updateNote(selectedNote.id, noteData);
+                setNotes(notes.map(n => n.id === selectedNote.id ? updatedNote : n));
+                setIsNoteModalOpen(false);
+                setSelectedNote(null);
+            }
+        } catch (err) {
+            // Error updating note - silently handled
         }
     };
 
     // Filter and sort tasks (backend filtering/sorting not working reliably)
     const displayTasks = useMemo(() => {
-        // console.log('Filtering/sorting tasks. showCompleted:', showCompleted, 'orderBy:', orderBy);
         
         // First, filter tasks based on completed state
         let filteredTasks;
@@ -441,7 +467,6 @@ const ProjectDetails: React.FC = () => {
             return 0;
         });
         
-        // console.log(`Filtered ${filteredTasks.length} tasks, sorted by ${orderBy}`);
         
         return sortedTasks;
     }, [tasks, showCompleted, orderBy]);
@@ -557,20 +582,21 @@ const ProjectDetails: React.FC = () => {
                     <div className="mb-4">
                         {/* Mobile Layout */}
                         <div className="sm:hidden">
-                            <div className="flex items-center mb-3">
-                                <ListBulletIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-                                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                    {t('sidebar.tasks', 'Tasks')}
-                                </h3>
-                            </div>
-                            <div className="flex items-center justify-between space-x-3">
-                                <label className="flex items-center space-x-2 cursor-pointer">
-                                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                                        {t(
-                                            'project.showCompleted',
-                                            'Show completed'
-                                        )}
-                                    </span>
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center space-x-2">
+                                    <ListBulletIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                        {t('sidebar.tasks', 'Tasks')}
+                                    </h3>
+                                </div>
+                                <div className="flex flex-col items-end space-y-2">
+                                    <label className="flex items-center space-x-2 cursor-pointer">
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            {t(
+                                                'project.showCompleted',
+                                                'Show completed'
+                                            )}
+                                        </span>
                                         <div className="relative flex items-center">
                                             <input
                                                 type="checkbox"
@@ -598,69 +624,69 @@ const ProjectDetails: React.FC = () => {
                                                 ></div>
                                             </div>
                                         </div>
-                                </label>
-
-                                {/* Sort Dropdown */}
-                                <div
-                                    className="relative inline-block text-left"
-                                    ref={dropdownRef}
-                                >
-                                    <button
-                                        type="button"
-                                        className="inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-3 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
-                                        id="menu-button"
-                                        aria-expanded={dropdownOpen}
-                                        aria-haspopup="true"
-                                        onClick={() =>
-                                            setDropdownOpen(!dropdownOpen)
-                                        }
+                                    </label>
+                                    {/* Sort Dropdown */}
+                                    <div
+                                        className="relative inline-block text-left"
+                                        ref={dropdownRef}
                                     >
-                                        <BarsArrowUpIcon className="h-5 w-5 text-gray-500" />
-                                        <ChevronDownIcon className="h-4 w-4 ml-1 text-gray-500 dark:text-gray-300" />
-                                    </button>
-
-                                    {dropdownOpen && (
-                                        <div
-                                            className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
-                                            role="menu"
-                                            aria-orientation="vertical"
-                                            aria-labelledby="menu-button"
+                                        <button
+                                            type="button"
+                                            className="inline-flex justify-center w-40 rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-2 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
+                                            id="menu-button"
+                                            aria-expanded={dropdownOpen}
+                                            aria-haspopup="true"
+                                            onClick={() =>
+                                                setDropdownOpen(!dropdownOpen)
+                                            }
                                         >
+                                            <BarsArrowUpIcon className="h-5 w-5 text-gray-500" />
+                                            <ChevronDownIcon className="h-4 w-4 ml-1 text-gray-500 dark:text-gray-300" />
+                                        </button>
+
+                                        {dropdownOpen && (
                                             <div
-                                                className="py-1 max-h-60 overflow-y-auto"
-                                                role="none"
+                                                className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
+                                                role="menu"
+                                                aria-orientation="vertical"
+                                                aria-labelledby="menu-button"
                                             >
-                                                {[
-                                                    'due_date:asc',
-                                                    'name:asc',
-                                                    'priority:desc',
-                                                    'status:desc',
-                                                    'created_at:desc',
-                                                ].map((order) => (
-                                                    <button
-                                                        key={order}
-                                                        onClick={() =>
-                                                            handleSortChange(order)
-                                                        }
-                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left transition-colors"
-                                                        role="menuitem"
-                                                    >
-                                                        {t(
-                                                            `sort.${order.split(':')[0]}`,
-                                                            capitalize(
-                                                                order
-                                                                    .split(':')[0]
-                                                                    .replace(
-                                                                        '_',
-                                                                        ' '
-                                                                    )
-                                                            )
-                                                        )}
-                                                    </button>
-                                                ))}
+                                                <div
+                                                    className="py-1 max-h-60 overflow-y-auto"
+                                                    role="none"
+                                                >
+                                                    {[
+                                                        'due_date:asc',
+                                                        'name:asc',
+                                                        'priority:desc',
+                                                        'status:desc',
+                                                        'created_at:desc',
+                                                    ].map((order) => (
+                                                        <button
+                                                            key={order}
+                                                            onClick={() =>
+                                                                handleSortChange(order)
+                                                            }
+                                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left transition-colors"
+                                                            role="menuitem"
+                                                        >
+                                                            {t(
+                                                                `sort.${order.split(':')[0]}`,
+                                                                capitalize(
+                                                                    order
+                                                                        .split(':')[0]
+                                                                        .replace(
+                                                                            '_',
+                                                                            ' '
+                                                                        )
+                                                                )
+                                                            )}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -717,7 +743,7 @@ const ProjectDetails: React.FC = () => {
                                 >
                                     <button
                                         type="button"
-                                        className="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
+                                        className="inline-flex justify-center w-40 rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-2 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
                                         id="menu-button-desktop"
                                         aria-expanded={dropdownOpen}
                                         aria-haspopup="true"
@@ -739,7 +765,7 @@ const ProjectDetails: React.FC = () => {
 
                                     {dropdownOpen && (
                                         <div
-                                            className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
+                                            className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
                                             role="menu"
                                             aria-orientation="vertical"
                                             aria-labelledby="menu-button-desktop"
@@ -838,51 +864,19 @@ const ProjectDetails: React.FC = () => {
                     </h3>
 
                     {notes.length > 0 ? (
-                        <div className="space-y-3">
+                        <div className="space-y-1">
                             {notes.map((note) => (
-                                <div
+                                <NoteCard
                                     key={note.id}
-                                    className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 border-l-4 border-blue-500"
-                                >
-                                    <div className="flex justify-between items-start">
-                                        <div className="flex-grow">
-                                            <Link
-                                                to={`/note/${note.id}`}
-                                                className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
-                                            >
-                                                {note.title ||
-                                                    t(
-                                                        'notes.untitled',
-                                                        'Untitled Note'
-                                                    )}
-                                            </Link>
-                                            {note.content && (
-                                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                                                    {note.content.length > 150
-                                                        ? note.content.substring(
-                                                              0,
-                                                              150
-                                                          ) + '...'
-                                                        : note.content}
-                                                </p>
-                                            )}
-                                            {note.tags &&
-                                                note.tags.length > 0 && (
-                                                    <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                                        <TagIcon className="h-3 w-3 mr-1" />
-                                                        <span>
-                                                            {note.tags
-                                                                .map(
-                                                                    (tag) =>
-                                                                        tag.name
-                                                                )
-                                                                .join(', ')}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                        </div>
-                                    </div>
-                                </div>
+                                    note={note}
+                                    onEdit={handleEditNote}
+                                    onDelete={(note) => {
+                                        setNoteToDelete(note);
+                                        setIsConfirmDialogOpen(true);
+                                    }}
+                                    showActions={true}
+                                    showProject={false}
+                                />
                             ))}
                         </div>
                     ) : (
@@ -900,7 +894,32 @@ const ProjectDetails: React.FC = () => {
                     areas={areas}
                 />
 
-                {isConfirmDialogOpen && (
+                {/* NoteModal */}
+                {isNoteModalOpen && (
+                    <NoteModal
+                        isOpen={isNoteModalOpen}
+                        onClose={() => {
+                            setIsNoteModalOpen(false);
+                            setSelectedNote(null);
+                        }}
+                        onSave={handleUpdateNote}
+                        note={selectedNote}
+                        projects={[]}
+                    />
+                )}
+
+                {isConfirmDialogOpen && noteToDelete && (
+                    <ConfirmDialog
+                        title="Delete Note"
+                        message={`Are you sure you want to delete the note "${noteToDelete.title}"?`}
+                        onConfirm={() => handleDeleteNote(noteToDelete.id!)}
+                        onCancel={() => {
+                            setIsConfirmDialogOpen(false);
+                            setNoteToDelete(null);
+                        }}
+                    />
+                )}
+                {isConfirmDialogOpen && !noteToDelete && (
                     <ConfirmDialog
                         title="Delete Project"
                         message={`Are you sure you want to delete the project "${project.name}"?`}

@@ -144,6 +144,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <Link
                                         to={`/project/${project.id}`}
                                         className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                        onClick={(e) => e.stopPropagation()}
                                     >
                                         {project.name}
                                     </Link>
@@ -308,6 +309,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <Link
                                         to={`/project/${project.id}`}
                                         className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                        onClick={(e) => e.stopPropagation()}
                                     >
                                         {project.name}
                                     </Link>

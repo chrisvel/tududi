@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     BookOpenIcon,
     PencilSquareIcon,
     TrashIcon,
     MagnifyingGlassIcon,
-    TagIcon,
-    FolderIcon,
 } from '@heroicons/react/24/solid';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
+import NoteCard from './Shared/NoteCard';
 import { Note } from '../entities/Note';
 import {
     fetchNotes,
@@ -36,7 +34,6 @@ const Notes: React.FC = () => {
     const { setProjects } = useStore((state) => state.projectsStore);
 
     const [isError, setIsError] = useState(false);
-    const [hoveredNoteId, setHoveredNoteId] = useState<number | null>(null);
 
     useEffect(() => {
         const loadNotes = async () => {
@@ -177,111 +174,17 @@ const Notes: React.FC = () => {
                 ) : (
                     <ul className="space-y-1">
                         {filteredNotes.map((note) => (
-                            <li
-                                key={note.id}
-                                className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 flex justify-between items-center"
-                                onMouseEnter={() =>
-                                    setHoveredNoteId(note.id || null)
-                                }
-                                onMouseLeave={() => setHoveredNoteId(null)}
-                            >
-                                <div className="flex-grow overflow-hidden pr-4">
-                                    <div className="flex flex-col">
-                                        <Link
-                                            to={`/note/${note.id}`}
-                                            className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline mb-1"
-                                        >
-                                            {note.title}
-                                        </Link>
-                                        {/* Project and Tags */}
-                                        {(note.project ||
-                                            note.Project ||
-                                            (note.tags &&
-                                                note.tags.length > 0) ||
-                                            (note.Tags &&
-                                                note.Tags.length > 0)) && (
-                                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                                                {(note.project ||
-                                                    note.Project) && (
-                                                    <div className="flex items-center">
-                                                        <FolderIcon className="h-3 w-3 mr-1" />
-                                                        <span>
-                                                            {
-                                                                (
-                                                                    note.project ||
-                                                                    note.Project
-                                                                )?.name
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {(note.project ||
-                                                    note.Project) &&
-                                                    ((note.tags &&
-                                                        note.tags.length > 0) ||
-                                                        (note.Tags &&
-                                                            note.Tags.length >
-                                                                0)) && (
-                                                        <span className="mx-2">
-                                                            •
-                                                        </span>
-                                                    )}
-                                                {((note.tags &&
-                                                    note.tags.length > 0) ||
-                                                    (note.Tags &&
-                                                        note.Tags.length >
-                                                            0)) && (
-                                                    <div className="flex items-center">
-                                                        <TagIcon className="h-3 w-3 mr-1" />
-                                                        <span>
-                                                            {(
-                                                                note.tags ||
-                                                                note.Tags ||
-                                                                []
-                                                            )
-                                                                .map(
-                                                                    (tag) =>
-                                                                        tag.name
-                                                                )
-                                                                .join(', ')}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="flex space-x-2">
-                                    <button
-                                        onClick={() => handleEditNote(note)}
-                                        className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
-                                        aria-label={t(
-                                            'notes.editNoteAriaLabel',
-                                            { noteTitle: note.title }
-                                        )}
-                                        title={t('notes.editNoteTitle', {
-                                            noteTitle: note.title,
-                                        })}
-                                    >
-                                        <PencilSquareIcon className="h-5 w-5" />
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setNoteToDelete(note);
-                                            setIsConfirmDialogOpen(true);
-                                        }}
-                                        className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
-                                        aria-label={t(
-                                            'notes.deleteNoteAriaLabel',
-                                            { noteTitle: note.title }
-                                        )}
-                                        title={t('notes.deleteNoteTitle', {
-                                            noteTitle: note.title,
-                                        })}
-                                    >
-                                        <TrashIcon className="h-5 w-5" />
-                                    </button>
-                                </div>
+                            <li key={note.id}>
+                                <NoteCard
+                                    note={note}
+                                    onEdit={handleEditNote}
+                                    onDelete={(note) => {
+                                        setNoteToDelete(note);
+                                        setIsConfirmDialogOpen(true);
+                                    }}
+                                    showActions={true}
+                                    showProject={true}
+                                />
                             </li>
                         ))}
                     </ul>

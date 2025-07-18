@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
@@ -27,16 +27,11 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
             }
 
             try {
-                console.log('NewTask: Fetching task intelligence setting (this triggers /api/profile)');
                 const enabled = await getTaskIntelligenceEnabled();
                 setTaskIntelligenceEnabled(enabled);
                 // Cache the value for future use
                 localStorage.setItem('taskIntelligenceEnabled', JSON.stringify(enabled));
-            } catch (error) {
-                console.error(
-                    'Error fetching task intelligence setting:',
-                    error
-                );
+            } catch {
                 setTaskIntelligenceEnabled(true); // Default to enabled
                 localStorage.setItem('taskIntelligenceEnabled', JSON.stringify(true));
             }
@@ -69,8 +64,7 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
             try {
                 await onTaskCreate(taskText);
                 // Success toast is now handled by the parent component
-            } catch (error) {
-                console.error('Error creating task:', error);
+            } catch {
                 setTaskName(taskText);
                 showErrorToast(
                     t('errors.taskCreate', 'Failed to create task.')
