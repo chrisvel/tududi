@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const bcrypt = require('bcrypt');
+const { uid } = require('../utils/nanoid');
 
 module.exports = (sequelize) => {
     const User = sequelize.define(
@@ -9,6 +10,12 @@ module.exports = (sequelize) => {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true,
+            },
+            uid: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+                defaultValue: uid,
             },
             name: {
                 type: DataTypes.STRING,
