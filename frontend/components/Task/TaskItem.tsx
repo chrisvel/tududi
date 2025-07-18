@@ -34,8 +34,8 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                     {t('loading.subtasks', 'Loading subtasks...')}
                 </div>
             ) : subtasks.length > 0 ? (
-                subtasks.map((subtask) => (
-                    <div key={subtask.id} className="ml-12 group">
+                subtasks.map((subtask, index) => (
+                    <div key={subtask.id || `subtask-${index}`} className="ml-12 group">
                         <div
                             className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 cursor-pointer transition-all duration-200 ${
                                 subtask.status === 'in_progress' ||
@@ -166,21 +166,24 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     // Check if task has subtasks using the included subtasks data
     useEffect(() => {
-        const hasSubtasksFromData = task.subtasks && task.subtasks.length > 0;
+        // Handle both 'subtasks' and 'Subtasks' property names (case sensitivity)
+        const subtasksData = task.subtasks || task.Subtasks || [];
+        const hasSubtasksFromData = subtasksData.length > 0;
         setHasSubtasks(!!hasSubtasksFromData);
 
         // Set initial subtasks state if they are already loaded
-        if (hasSubtasksFromData && task.subtasks) {
-            setSubtasks(task.subtasks);
+        if (hasSubtasksFromData) {
+            setSubtasks(subtasksData);
         }
-    }, [task.id, task.updated_at, task.subtasks]);
+    }, [task.id, task.updated_at, task.subtasks, task.Subtasks]);
 
     const loadSubtasks = async () => {
         if (!task.id) return;
 
-        // If subtasks are already included in the task data, use them
-        if (task.subtasks && task.subtasks.length > 0) {
-            setSubtasks(task.subtasks);
+        // If subtasks are already included in the task data, use them (handle case sensitivity)
+        const subtasksData = task.subtasks || task.Subtasks || [];
+        if (subtasksData.length > 0) {
+            setSubtasks(subtasksData);
             return;
         }
 
