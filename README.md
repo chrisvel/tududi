@@ -20,7 +20,14 @@ For the thinking behind tududi, read:
 ## ✨ Features
 
 - **Task Management**: Create, update, and delete tasks. Mark tasks as completed and view them by different filters (Today, Upcoming, Someday). Order them by Name, Due Date, Date Created, or Priority.
-- **Recurring Tasks**: tududi features a sophisticated recurring task system designed to handle complex scheduling needs while maintaining an intuitive user experience
+- **Subtasks**: Break down complex tasks into smaller, manageable subtasks with progress tracking and seamless navigation.
+- **Recurring Tasks**: Comprehensive recurring task system with intelligent parent-child relationships:
+  - **Multiple Recurrence Patterns**: Daily, weekly, monthly, monthly on specific weekdays, and monthly last day
+  - **Completion-Based Recurrence**: Option to repeat based on completion date rather than due date
+  - **Smart Parent-Child Linking**: Generated task instances maintain connection to their original recurring pattern
+  - **Direct Parent Editing**: Edit recurrence settings directly from any generated task instance
+  - **Flexible Scheduling**: Set custom intervals (every 2 weeks, every 3 months, etc.)
+  - **End Date Control**: Optional end dates for recurring series
 - **Quick Notes**: Create, update, delete, or assign text notes to projects.
 - **Tags**: Create tags for tasks and notes to enhance organization.
 - **Project Tracking**: Organize tasks into projects. Each project can contain multiple tasks and/or multiple notes.
@@ -32,6 +39,33 @@ For the thinking behind tududi, read:
   - Create tasks directly through Telegram messages
   - Receive daily digests of your tasks
   - Quick capture of ideas and todos on the go
+
+## 📋 Subtasks
+
+tududi provides comprehensive subtask management to help you break down complex tasks into manageable steps.
+
+### Key Features
+
+- **Hierarchical Task Structure**: Break down large tasks into smaller, actionable subtasks
+- **Visual Progress Tracking**: See completion progress with visual indicators on parent tasks
+- **Seamless Navigation**: Click on subtasks to navigate directly to the parent task with subtasks focused
+- **Independent Task Management**: Each subtask can have its own priority, status, tags, and due date
+- **Unified Interface**: Subtasks appear consistently across all views (Today, Tasks, Projects)
+
+### How It Works
+
+1. **Create Subtasks**: Add subtasks to any task through the task modal's subtasks section
+2. **Visual Indicators**: Tasks with subtasks show a list icon (•••) in the task card
+3. **Expand/Collapse**: Click the subtask toggle button to show/hide subtasks inline
+4. **Progress Tracking**: Parent tasks display a progress bar showing subtask completion percentage
+5. **Direct Navigation**: Click on any subtask to open the parent task with subtasks section focused
+
+### Example Use Cases
+
+- **Project Planning**: "Launch website" → "Design mockups", "Write content", "Set up hosting"
+- **Event Organization**: "Birthday party" → "Send invitations", "Order cake", "Decorate venue"
+- **Learning Goals**: "Learn Spanish" → "Complete Lesson 1", "Practice vocabulary", "Watch Spanish movie"
+- **Home Maintenance**: "Kitchen renovation" → "Choose cabinets", "Hire contractor", "Order appliances"
 
 ## 🗺️ Roadmap
 

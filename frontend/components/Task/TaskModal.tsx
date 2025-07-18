@@ -20,7 +20,7 @@ import {
     Cog6ToothIcon,
     ArrowPathIcon,
     TrashIcon,
-    Squares2X2Icon,
+    ListBulletIcon,
 } from '@heroicons/react/24/outline';
 
 // Import form sections
@@ -831,7 +831,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                     'Subtasks'
                                                 )}
                                             >
-                                                <Squares2X2Icon className="h-5 w-5" />
+                                                <ListBulletIcon className="h-5 w-5" />
                                                 {subtasks.length > 0 && (
                                                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                 )}
