@@ -31,16 +31,21 @@ const TaskView: React.FC = () => {
 
             try {
                 const taskData = await fetchTaskByUuid(uuid);
-                
+
                 // Check if this is a subtask and redirect to parent if so
                 if (taskData.parent_task_id) {
                     setIsSubtaskRedirect(true);
                     try {
-                        const parentTask = await fetchTaskById(taskData.parent_task_id);
+                        const parentTask = await fetchTaskById(
+                            taskData.parent_task_id
+                        );
                         setTask(parentTask);
                     } catch (parentError) {
                         // If parent task fetch fails, fall back to showing the subtask
-                        console.error('Error fetching parent task:', parentError);
+                        console.error(
+                            'Error fetching parent task:',
+                            parentError
+                        );
                         setTask(taskData);
                         setIsSubtaskRedirect(false);
                     }

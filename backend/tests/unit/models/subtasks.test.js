@@ -4,41 +4,32 @@ const { createTestUser } = require('../../helpers/testUtils');
 describe('Task Model - Subtasks', () => {
     let testUser;
 
-    beforeAll(async () => {
-        testUser = await createTestUser();
-    });
-
     beforeEach(async () => {
+        // Clean up tasks first
         await Task.destroy({ where: {}, truncate: true });
+        // Create test user for each test since setup.js deletes all users
+        testUser = await createTestUser();
     });
 
     describe('Subtask Creation', () => {
         it('should create a task with subtasks', async () => {
-            try {
-                const parentTask = await Task.create({
-                    name: 'Parent Task',
-                    user_id: testUser.id,
-                    status: Task.STATUS.NOT_STARTED,
-                    priority: Task.PRIORITY.MEDIUM,
-                });
+            const parentTask = await Task.create({
+                name: 'Parent Task',
+                user_id: testUser.id,
+                status: Task.STATUS.NOT_STARTED,
+                priority: Task.PRIORITY.MEDIUM,
+            });
 
-                const subtask = await Task.create({
-                    name: 'Subtask 1',
-                    user_id: testUser.id,
-                    parent_task_id: parentTask.id,
-                    status: Task.STATUS.NOT_STARTED,
-                    priority: Task.PRIORITY.MEDIUM,
-                });
+            const subtask = await Task.create({
+                name: 'Subtask 1',
+                user_id: testUser.id,
+                parent_task_id: parentTask.id,
+                status: Task.STATUS.NOT_STARTED,
+                priority: Task.PRIORITY.MEDIUM,
+            });
 
-                expect(subtask.parent_task_id).toBe(parentTask.id);
-                expect(subtask.name).toBe('Subtask 1');
-            } catch (error) {
-                console.error('Detailed error:', error);
-                console.error('Error name:', error.name);
-                console.error('Error message:', error.message);
-                console.error('SQL:', error.sql);
-                throw error;
-            }
+            expect(subtask.parent_task_id).toBe(parentTask.id);
+            expect(subtask.name).toBe('Subtask 1');
         });
 
         it('should allow multiple subtasks for a parent task', async () => {
@@ -144,18 +135,16 @@ describe('Task Model - Subtasks', () => {
 
     describe('Subtask Validation', () => {
         it('should validate parent_task_id references existing task', async () => {
-            // Note: This test is skipped because foreign key constraints are disabled in test environment
-            // In production, this would throw a foreign key constraint error
-            const invalidSubtask = await Task.create({
-                name: 'Invalid Subtask',
-                user_id: testUser.id,
-                parent_task_id: 999999, // Non-existent task ID
-                status: Task.STATUS.NOT_STARTED,
-                priority: Task.PRIORITY.MEDIUM,
-            });
-
-            // In test environment without FK constraints, this will succeed
-            expect(invalidSubtask.parent_task_id).toBe(999999);
+            // Foreign key constraints are enabled in test environment, so this should throw an error
+            await expect(
+                Task.create({
+                    name: 'Invalid Subtask',
+                    user_id: testUser.id,
+                    parent_task_id: 999999, // Non-existent task ID
+                    status: Task.STATUS.NOT_STARTED,
+                    priority: Task.PRIORITY.MEDIUM,
+                })
+            ).rejects.toThrow();
         });
 
         it('should not allow subtask to reference itself as parent', async () => {
