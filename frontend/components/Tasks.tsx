@@ -64,7 +64,8 @@ const Tasks: React.FC = () => {
     const status = query.get('status');
 
     useEffect(() => {
-        const savedOrderBy = localStorage.getItem('order_by') || 'created_at:desc';
+        const savedOrderBy =
+            localStorage.getItem('order_by') || 'created_at:desc';
         setOrderBy(savedOrderBy);
 
         const params = new URLSearchParams(location.search);

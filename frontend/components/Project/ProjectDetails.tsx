@@ -120,7 +120,8 @@ const ProjectDetails: React.FC = () => {
 
     // Load saved sort order from localStorage
     useEffect(() => {
-        const savedOrderBy = localStorage.getItem('project_order_by') || 'created_at:desc';
+        const savedOrderBy =
+            localStorage.getItem('project_order_by') || 'created_at:desc';
         setOrderBy(savedOrderBy);
     }, []);
 
@@ -326,7 +327,8 @@ const ProjectDetails: React.FC = () => {
         setDropdownOpen(false);
     };
 
-    const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+    const capitalize = (str: string) =>
+        str.charAt(0).toUpperCase() + str.slice(1);
 
     const handleDeleteProject = async () => {
         if (!project?.id) {
@@ -384,62 +386,84 @@ const ProjectDetails: React.FC = () => {
         const [field, direction] = orderBy.split(':');
         const sortedTasks = [...tasks].sort((a, b) => {
             let aValue: any, bValue: any;
-            
+
             switch (field) {
                 case 'due_date':
-                    aValue = a.due_date ? new Date(a.due_date).getTime() : Infinity;
-                    bValue = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+                    aValue = a.due_date
+                        ? new Date(a.due_date).getTime()
+                        : Infinity;
+                    bValue = b.due_date
+                        ? new Date(b.due_date).getTime()
+                        : Infinity;
                     break;
                 case 'name':
                     aValue = a.name.toLowerCase();
                     bValue = b.name.toLowerCase();
                     break;
                 case 'priority': {
-                    const getPriorityValue = (priority: string | number | undefined) => {
+                    const getPriorityValue = (
+                        priority: string | number | undefined
+                    ) => {
                         if (typeof priority === 'number') {
                             return priority; // 0=low, 1=medium, 2=high
                         }
                         const priorityOrder = { low: 0, medium: 1, high: 2 };
-                        return priorityOrder[priority as keyof typeof priorityOrder] || 0;
+                        return (
+                            priorityOrder[
+                                priority as keyof typeof priorityOrder
+                            ] || 0
+                        );
                     };
                     aValue = getPriorityValue(a.priority);
                     bValue = getPriorityValue(b.priority);
                     break;
                 }
                 case 'status': {
-                    const getStatusValue = (status: string | number | undefined) => {
+                    const getStatusValue = (
+                        status: string | number | undefined
+                    ) => {
                         if (typeof status === 'number') {
                             return status; // 0=not_started, 1=in_progress, 2=done
                         }
-                        const statusOrder = { not_started: 0, in_progress: 1, done: 2 };
-                        return statusOrder[status as keyof typeof statusOrder] || 0;
+                        const statusOrder = {
+                            not_started: 0,
+                            in_progress: 1,
+                            done: 2,
+                        };
+                        return (
+                            statusOrder[status as keyof typeof statusOrder] || 0
+                        );
                     };
                     aValue = getStatusValue(a.status);
                     bValue = getStatusValue(b.status);
                     break;
                 }
                 case 'created_at':
-                    aValue = a.created_at ? new Date(a.created_at).getTime() : 0;
-                    bValue = b.created_at ? new Date(b.created_at).getTime() : 0;
+                    aValue = a.created_at
+                        ? new Date(a.created_at).getTime()
+                        : 0;
+                    bValue = b.created_at
+                        ? new Date(b.created_at).getTime()
+                        : 0;
                     break;
                 default:
                     return 0;
             }
-            
+
             if (direction === 'asc') {
                 return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
             } else {
                 return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
             }
         });
-        
+
         return sortedTasks;
     };
 
     const tasksToDisplay = showCompleted
         ? [...activeTasks, ...completedTasks]
         : activeTasks;
-    
+
     const displayTasks = sortTasks(tasksToDisplay, orderBy);
 
     const formatProjectDueDate = (dateString: string) => {
@@ -650,7 +674,9 @@ const ProjectDetails: React.FC = () => {
                                             type="checkbox"
                                             checked={showCompleted}
                                             onChange={(e) =>
-                                                setShowCompleted(e.target.checked)
+                                                setShowCompleted(
+                                                    e.target.checked
+                                                )
                                             }
                                             className="sr-only"
                                         />
@@ -672,7 +698,7 @@ const ProjectDetails: React.FC = () => {
                                     </div>
                                 </label>
                             )}
-                            
+
                             {/* Sort Dropdown */}
                             <div
                                 className="relative inline-block text-left"
@@ -684,13 +710,17 @@ const ProjectDetails: React.FC = () => {
                                     id="menu-button"
                                     aria-expanded={dropdownOpen}
                                     aria-haspopup="true"
-                                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                                    onClick={() =>
+                                        setDropdownOpen(!dropdownOpen)
+                                    }
                                 >
                                     <BarsArrowUpIcon className="h-5 w-5 text-gray-500 mr-2" />
                                     {t(
                                         `sort.${orderBy.split(':')[0]}`,
                                         capitalize(
-                                            orderBy.split(':')[0].replace('_', ' ')
+                                            orderBy
+                                                .split(':')[0]
+                                                .replace('_', ' ')
                                         )
                                     )}
                                     <ChevronDownIcon className="h-5 w-5 ml-2 text-gray-500 dark:text-gray-300" />
@@ -727,7 +757,10 @@ const ProjectDetails: React.FC = () => {
                                                         capitalize(
                                                             order
                                                                 .split(':')[0]
-                                                                .replace('_', ' ')
+                                                                .replace(
+                                                                    '_',
+                                                                    ' '
+                                                                )
                                                         )
                                                     )}
                                                 </button>
