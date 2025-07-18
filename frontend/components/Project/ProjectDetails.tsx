@@ -11,7 +11,6 @@ import {
     TagIcon,
     ListBulletIcon,
     ChevronDownIcon,
-    ChevronDoubleDownIcon,
     BarsArrowUpIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
@@ -388,14 +387,14 @@ const ProjectDetails: React.FC = () => {
             
             switch (field) {
                 case 'due_date':
-                    aValue = a.due_date_at ? new Date(a.due_date_at).getTime() : Infinity;
-                    bValue = b.due_date_at ? new Date(b.due_date_at).getTime() : Infinity;
+                    aValue = a.due_date ? new Date(a.due_date).getTime() : Infinity;
+                    bValue = b.due_date ? new Date(b.due_date).getTime() : Infinity;
                     break;
                 case 'name':
                     aValue = a.name.toLowerCase();
                     bValue = b.name.toLowerCase();
                     break;
-                case 'priority':
+                case 'priority': {
                     const getPriorityValue = (priority: string | number | undefined) => {
                         if (typeof priority === 'number') {
                             return priority; // 0=low, 1=medium, 2=high
@@ -406,7 +405,8 @@ const ProjectDetails: React.FC = () => {
                     aValue = getPriorityValue(a.priority);
                     bValue = getPriorityValue(b.priority);
                     break;
-                case 'status':
+                }
+                case 'status': {
                     const getStatusValue = (status: string | number | undefined) => {
                         if (typeof status === 'number') {
                             return status; // 0=not_started, 1=in_progress, 2=done
@@ -417,6 +417,7 @@ const ProjectDetails: React.FC = () => {
                     aValue = getStatusValue(a.status);
                     bValue = getStatusValue(b.status);
                     break;
+                }
                 case 'created_at':
                     aValue = a.created_at ? new Date(a.created_at).getTime() : 0;
                     bValue = b.created_at ? new Date(b.created_at).getTime() : 0;
