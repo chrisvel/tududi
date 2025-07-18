@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '../../components/Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
@@ -16,18 +16,29 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
     const { showErrorToast } = useToast();
     const { t } = useTranslation();
 
-    // Fetch task intelligence setting when component mounts
+    // Fetch task intelligence setting when component mounts (with caching)
     useEffect(() => {
         const fetchTaskIntelligenceSetting = async () => {
+            // Check if we have a cached value
+            const cachedValue = localStorage.getItem('taskIntelligenceEnabled');
+            if (cachedValue !== null) {
+                setTaskIntelligenceEnabled(JSON.parse(cachedValue));
+                return;
+            }
+
             try {
+                console.log('NewTask: Fetching task intelligence setting (this triggers /api/profile)');
                 const enabled = await getTaskIntelligenceEnabled();
                 setTaskIntelligenceEnabled(enabled);
+                // Cache the value for future use
+                localStorage.setItem('taskIntelligenceEnabled', JSON.stringify(enabled));
             } catch (error) {
                 console.error(
                     'Error fetching task intelligence setting:',
                     error
                 );
                 setTaskIntelligenceEnabled(true); // Default to enabled
+                localStorage.setItem('taskIntelligenceEnabled', JSON.stringify(true));
             }
         };
 

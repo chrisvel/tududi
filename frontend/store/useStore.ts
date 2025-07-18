@@ -26,9 +26,11 @@ interface AreasStore {
 
 interface ProjectsStore {
     projects: Project[];
+    currentProject: Project | null;
     isLoading: boolean;
     isError: boolean;
     setProjects: (projects: Project[]) => void;
+    setCurrentProject: (project: Project | null) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
 }
@@ -102,11 +104,16 @@ export const useStore = create<StoreState>((set) => ({
     },
     projectsStore: {
         projects: [],
+        currentProject: null,
         isLoading: false,
         isError: false,
         setProjects: (projects) =>
             set((state) => ({
                 projectsStore: { ...state.projectsStore, projects },
+            })),
+        setCurrentProject: (currentProject) =>
+            set((state) => ({
+                projectsStore: { ...state.projectsStore, currentProject },
             })),
         setLoading: (isLoading) =>
             set((state) => ({

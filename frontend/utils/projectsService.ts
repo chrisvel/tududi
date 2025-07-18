@@ -46,8 +46,25 @@ export const fetchGroupedProjects = async (
     return data;
 };
 
-export const fetchProjectById = async (projectId: string): Promise<Project> => {
-    const response = await fetch(`/api/project/${projectId}`, {
+export const fetchProjectById = async (
+    projectId: string,
+    options?: {
+        sort?: string;
+        completed?: boolean;
+    }
+): Promise<Project> => {
+    const url = new URL(`/api/project/${projectId}`, window.location.origin);
+    
+    if (options?.sort) {
+        url.searchParams.set('sort', options.sort);
+    }
+    
+    if (options?.completed !== undefined) {
+        url.searchParams.set('completed', options.completed.toString());
+    }
+
+    console.log('fetchProjectById: Making API call to:', url.toString());
+    const response = await fetch(url.toString(), {
         credentials: 'include',
         headers: { Accept: 'application/json' },
     });

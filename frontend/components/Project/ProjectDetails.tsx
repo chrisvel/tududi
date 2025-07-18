@@ -1,12 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 import {
     PencilSquareIcon,
     TrashIcon,
     FolderIcon,
-    Squares2X2Icon,
     BookOpenIcon,
     TagIcon,
     ListBulletIcon,
@@ -31,13 +30,8 @@ import {
     deleteTask,
     toggleTaskToday,
 } from '../../utils/tasksService';
-import { fetchAreas } from '../../utils/areasService';
 import { isAuthError } from '../../utils/authUtils';
-import {
-    CalendarDaysIcon,
-    InformationCircleIcon,
-} from '@heroicons/react/24/solid';
-import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
+// import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
 
 type PriorityStyles = Record<PriorityType, string> & { default: string };
@@ -52,78 +46,101 @@ const priorityStyles: PriorityStyles = {
 const ProjectDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
+    const location = useLocation();
+    const { t } = useTranslation();
     const { showSuccessToast } = useToast();
 
+    // Using local state to avoid infinite loops
     const areas = useStore((state) => state.areasStore.areas);
-
-    const [project, setProject] = useState<Project | undefined>(undefined);
+    const [project, setProject] = useState<Project | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [showCompleted, setShowCompleted] = useState(false);
     const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
-
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Dispatch global modal events
 
-    useEffect(() => {
-        const loadProjectData = async () => {
-            if (!id) {
-                console.error('Project ID is missing.');
-                return;
-            }
 
-            setLoading(true);
-            try {
-                fetchAreas();
-                const projectData = await fetchProjectById(id);
-                setProject(projectData);
-                // Handle both 'tasks' and 'Tasks' property names
-                const projectTasks =
-                    projectData.tasks || projectData.Tasks || [];
-                setTasks(projectTasks);
-                // Handle project notes
-                const projectNotes =
-                    projectData.notes || projectData.Notes || [];
-                setNotes(projectNotes);
-            } catch (error) {
-                console.error('Error fetching project data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadProjectData();
-    }, [id, fetchAreas]);
+    // Temporarily disable auto-suggest to isolate profile request issue
+    // TODO: Re-enable after fixing profile request issue
+    // useEffect(() => {
+    //     const fetchAutoSuggestSetting = async () => {
+    //         if (!hasCheckedAutoSuggest.current) {
+    //             hasCheckedAutoSuggest.current = true;
+    //             const enabled = await getAutoSuggestNextActionsEnabled();
+    //             setAutoSuggestEnabled(enabled);
+    //         }
+    //     };
+        
+    //     fetchAutoSuggestSetting();
+    // }, []);
 
     // Check if we should show auto-suggest form for projects with no tasks
     useEffect(() => {
-        const checkAutoSuggest = async () => {
-            if (project && tasks.length === 0 && !loading) {
-                const autoSuggestEnabled =
-                    await getAutoSuggestNextActionsEnabled();
-                if (autoSuggestEnabled) {
-                    setShowAutoSuggestForm(true);
+        // Temporarily disable auto-suggest functionality
+        setShowAutoSuggestForm(false);
+        // if (project && tasks.length === 0 && !loading && !showCompleted && autoSuggestEnabled) {
+        //     setShowAutoSuggestForm(true);
+        // } else {
+        //     setShowAutoSuggestForm(false);
+        // }
+    }, [project, tasks.length, loading, showCompleted]);
+
+    // Load sort order and show completed from URL parameters
+    useEffect(() => {
+        const urlParams = new URLSearchParams(location.search);
+        const sortParam = urlParams.get('sort') || localStorage.getItem('project_order_by') || 'created_at:desc';
+        const showCompletedParam = urlParams.get('completed') === 'true';
+        
+        setOrderBy(sortParam);
+        setShowCompleted(showCompletedParam);
+    }, [location.search]);
+
+    // Fetch project data when id or URL parameters change
+    useEffect(() => {
+        if (!id) return;
+        
+        const loadProjectData = async () => {
+            try {
+                // Only show loading if we don't have any project data yet
+                if (!project) {
+                    setLoading(true);
                 }
+                setError(false);
+                
+                const urlParams = new URLSearchParams(location.search);
+                const sortParam = urlParams.get('sort') || localStorage.getItem('project_order_by') || 'created_at:desc';
+                const showCompletedParam = urlParams.get('completed') === 'true';
+                
+                // console.log('Fetching project data for id:', id, 'with params:', { sort: sortParam, completed: showCompletedParam });
+                
+                const projectData = await fetchProjectById(id, {
+                    sort: sortParam
+                    // Remove completed parameter since backend filtering isn't working
+                });
+                
+                // console.log('Received project data with', (projectData.tasks || projectData.Tasks || []).length, 'tasks');
+                
+                setProject(projectData);
+                setTasks(projectData.tasks || projectData.Tasks || []);
+                setNotes(projectData.notes || projectData.Notes || []);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error loading project data:', error);
+                setError(true);
+                setLoading(false);
             }
         };
-
-        checkAutoSuggest();
-    }, [project, tasks, loading]);
-
-    // Load saved sort order from localStorage
-    useEffect(() => {
-        const savedOrderBy =
-            localStorage.getItem('project_order_by') || 'created_at:desc';
-        setOrderBy(savedOrderBy);
-    }, []);
+        
+        loadProjectData();
+    }, [id, location.search]);
 
     // Handle click outside dropdown
     useEffect(() => {
@@ -155,7 +172,7 @@ const ProjectDetails: React.FC = () => {
                 status: 'not_started',
                 project_id: project.id,
             });
-            setTasks((prevTasks) => [...prevTasks, newTask]);
+            setTasks([...tasks, newTask]);
 
             // Show success toast with task link
             const taskLink = (
@@ -202,8 +219,8 @@ const ProjectDetails: React.FC = () => {
             }
 
             const savedTask = await response.json();
-            setTasks((prevTasks) =>
-                prevTasks.map((task) =>
+            setTasks(
+                tasks.map((task) =>
                     task.id === updatedTask.id ? savedTask : task
                 )
             );
@@ -219,9 +236,7 @@ const ProjectDetails: React.FC = () => {
         }
         try {
             await deleteTask(taskId);
-            setTasks((prevTasks) =>
-                prevTasks.filter((task) => task.id !== taskId)
-            );
+            setTasks(tasks.filter((task) => task.id !== taskId));
         } catch (err) {
             console.error('Error deleting task:', err);
         }
@@ -231,8 +246,8 @@ const ProjectDetails: React.FC = () => {
         try {
             const updatedTask = await toggleTaskToday(taskId);
             // Update the task in the local state immediately to avoid UI flashing
-            setTasks((prevTasks) =>
-                prevTasks.map((task) =>
+            setTasks(
+                tasks.map((task) =>
                     task.id === taskId
                         ? {
                               ...task,
@@ -246,15 +261,20 @@ const ProjectDetails: React.FC = () => {
             console.error('Error toggling task today status:', error);
             // Optionally refetch data on error to ensure consistency
             if (id) {
+                const urlParams = new URLSearchParams(location.search);
+                const sortParam = urlParams.get('sort') || 'created_at:desc';
+                
+                // Refetch project data on error to ensure consistency
                 try {
-                    const updatedProject = await fetchProjectById(id);
-                    setProject(updatedProject);
-                    setTasks(updatedProject.tasks || []);
-                } catch (refetchError) {
-                    console.error(
-                        'Error refetching project data:',
-                        refetchError
-                    );
+                    const projectData = await fetchProjectById(id, {
+                        sort: sortParam
+                        // Remove completed parameter since backend filtering isn't working
+                    });
+                    setProject(projectData);
+                    setTasks(projectData.tasks || projectData.Tasks || []);
+                    setNotes(projectData.notes || projectData.Notes || []);
+                } catch (fetchError) {
+                    console.error('Error refetching project data:', fetchError);
                 }
             }
         }
@@ -295,7 +315,7 @@ const ProjectDetails: React.FC = () => {
             });
 
             // Update the tasks list to include the new task
-            setTasks((prevTasks) => [...prevTasks, newTask]);
+            setTasks([...tasks, newTask]);
             setShowAutoSuggestForm(false);
 
             // Show success toast with task link
@@ -325,6 +345,24 @@ const ProjectDetails: React.FC = () => {
         setOrderBy(order);
         localStorage.setItem('project_order_by', order);
         setDropdownOpen(false);
+        
+        // Update URL parameters
+        const urlParams = new URLSearchParams(location.search);
+        urlParams.set('sort', order);
+        navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
+    };
+
+    const handleShowCompletedChange = (checked: boolean) => {
+        setShowCompleted(checked);
+        
+        // Update URL parameters
+        const urlParams = new URLSearchParams(location.search);
+        if (checked) {
+            urlParams.set('completed', 'true');
+        } else {
+            urlParams.delete('completed');
+        }
+        navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
     };
 
     const capitalize = (str: string) =>
@@ -344,6 +382,70 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
+    // Filter and sort tasks (backend filtering/sorting not working reliably)
+    const displayTasks = useMemo(() => {
+        // console.log('Filtering/sorting tasks. showCompleted:', showCompleted, 'orderBy:', orderBy);
+        
+        // First, filter tasks based on completed state
+        let filteredTasks;
+        if (showCompleted) {
+            // Show only completed tasks (done=2 or archived=3)
+            filteredTasks = tasks.filter(task => 
+                task.status === 'done' || task.status === 'archived' || 
+                task.status === 2 || task.status === 3
+            );
+        } else {
+            // Show only non-completed tasks (not_started=0, in_progress=1)
+            filteredTasks = tasks.filter(task => 
+                task.status === 'not_started' || task.status === 'in_progress' ||
+                task.status === 0 || task.status === 1
+            );
+        }
+        
+        // Then, sort the filtered tasks
+        const sortedTasks = [...filteredTasks].sort((a, b) => {
+            const [field, direction] = orderBy.split(':');
+            const isAsc = direction === 'asc';
+            
+            let valueA, valueB;
+            
+            switch (field) {
+                case 'name':
+                    valueA = a.name?.toLowerCase() || '';
+                    valueB = b.name?.toLowerCase() || '';
+                    break;
+                case 'due_date':
+                    valueA = a.due_date ? new Date(a.due_date).getTime() : 0;
+                    valueB = b.due_date ? new Date(b.due_date).getTime() : 0;
+                    break;
+                case 'priority': {
+                    // Convert priority to numeric for sorting (high=2, medium=1, low=0)
+                    const priorityMap = { 'high': 2, 'medium': 1, 'low': 0 };
+                    valueA = typeof a.priority === 'string' ? priorityMap[a.priority] || 0 : (a.priority || 0);
+                    valueB = typeof b.priority === 'string' ? priorityMap[b.priority] || 0 : (b.priority || 0);
+                    break;
+                }
+                case 'status':
+                    valueA = typeof a.status === 'string' ? a.status : a.status || 0;
+                    valueB = typeof b.status === 'string' ? b.status : b.status || 0;
+                    break;
+                case 'created_at':
+                default:
+                    valueA = a.created_at ? new Date(a.created_at).getTime() : 0;
+                    valueB = b.created_at ? new Date(b.created_at).getTime() : 0;
+                    break;
+            }
+            
+            if (valueA < valueB) return isAsc ? -1 : 1;
+            if (valueA > valueB) return isAsc ? 1 : -1;
+            return 0;
+        });
+        
+        // console.log(`Filtered ${filteredTasks.length} tasks, sorted by ${orderBy}`);
+        
+        return sortedTasks;
+    }, [tasks, showCompleted, orderBy]);
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
@@ -357,7 +459,7 @@ const ProjectDetails: React.FC = () => {
     if (error) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-                <div className="text-red-500 text-lg">{error}</div>
+                <div className="text-red-500 text-lg">Failed to load project details.</div>
             </div>
         );
     }
@@ -370,157 +472,42 @@ const ProjectDetails: React.FC = () => {
         );
     }
 
-    const activeTasks =
-        tasks?.filter((task) => {
-            return typeof task.status === 'number'
-                ? task.status !== 2
-                : task.status !== 'done';
-        }) || []; //TODO: Also add archived
-    const completedTasks = tasks?.filter((task) => {
-        return typeof task.status === 'number'
-            ? task.status === 2
-            : task.status === 'done';
-    });
-
-    const sortTasks = (tasks: Task[], orderBy: string) => {
-        const [field, direction] = orderBy.split(':');
-        const sortedTasks = [...tasks].sort((a, b) => {
-            let aValue: any, bValue: any;
-
-            switch (field) {
-                case 'due_date':
-                    aValue = a.due_date
-                        ? new Date(a.due_date).getTime()
-                        : Infinity;
-                    bValue = b.due_date
-                        ? new Date(b.due_date).getTime()
-                        : Infinity;
-                    break;
-                case 'name':
-                    aValue = a.name.toLowerCase();
-                    bValue = b.name.toLowerCase();
-                    break;
-                case 'priority': {
-                    const getPriorityValue = (
-                        priority: string | number | undefined
-                    ) => {
-                        if (typeof priority === 'number') {
-                            return priority; // 0=low, 1=medium, 2=high
-                        }
-                        const priorityOrder = { low: 0, medium: 1, high: 2 };
-                        return (
-                            priorityOrder[
-                                priority as keyof typeof priorityOrder
-                            ] || 0
-                        );
-                    };
-                    aValue = getPriorityValue(a.priority);
-                    bValue = getPriorityValue(b.priority);
-                    break;
-                }
-                case 'status': {
-                    const getStatusValue = (
-                        status: string | number | undefined
-                    ) => {
-                        if (typeof status === 'number') {
-                            return status; // 0=not_started, 1=in_progress, 2=done
-                        }
-                        const statusOrder = {
-                            not_started: 0,
-                            in_progress: 1,
-                            done: 2,
-                        };
-                        return (
-                            statusOrder[status as keyof typeof statusOrder] || 0
-                        );
-                    };
-                    aValue = getStatusValue(a.status);
-                    bValue = getStatusValue(b.status);
-                    break;
-                }
-                case 'created_at':
-                    aValue = a.created_at
-                        ? new Date(a.created_at).getTime()
-                        : 0;
-                    bValue = b.created_at
-                        ? new Date(b.created_at).getTime()
-                        : 0;
-                    break;
-                default:
-                    return 0;
-            }
-
-            if (direction === 'asc') {
-                return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-            } else {
-                return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-            }
-        });
-
-        return sortedTasks;
-    };
-
-    const tasksToDisplay = showCompleted
-        ? completedTasks
-        : activeTasks;
-
-    const displayTasks = sortTasks(tasksToDisplay, orderBy);
-
-    const formatProjectDueDate = (dateString: string) => {
-        const date = new Date(dateString);
-        const currentLang = i18n.language;
-
-        // Format based on language
-        const formatOptions: Intl.DateTimeFormatOptions = {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        };
-
-        return date.toLocaleDateString(currentLang, formatOptions);
-    };
 
     return (
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
                 {/* Project Banner Image */}
                 {project.image_url && (
-                    <div className="mb-6 rounded-lg overflow-hidden relative">
+                    <div className="mb-6 rounded-lg overflow-hidden relative group">
                         <img
                             src={project.image_url}
                             alt={project.name}
-                            className="w-full h-48 object-cover"
+                            className="w-full h-64 object-cover"
                         />
                         {/* Title Overlay */}
                         <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                            <h1 className="text-4xl md:text-5xl font-bold text-white text-center px-4 drop-shadow-lg">
-                                {project.name}
-                            </h1>
+                            <div className="text-center px-4">
+                                <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
+                                    {project.name}
+                                </h1>
+                                {project.description && (
+                                    <p className="text-lg md:text-xl text-white/90 mt-2 font-light drop-shadow-md max-w-2xl mx-auto">
+                                        {project.description}
+                                    </p>
+                                )}
+                            </div>
                         </div>
-                        {/* Priority Indicator on Image */}
-                        {project.priority !== undefined &&
-                            project.priority !== null && (
-                                <div className="absolute top-3 left-3">
-                                    <div
-                                        className={`w-4 h-4 rounded-full border-2 border-white shadow-lg ${getPriorityStyle(
-                                            project.priority
-                                        )}`}
-                                        title={`Priority: ${priorityLabel(project.priority)}`}
-                                        aria-label={`Priority: ${priorityLabel(project.priority)}`}
-                                    ></div>
-                                </div>
-                            )}
-                        {/* Edit/Delete Buttons on Image */}
-                        <div className="absolute bottom-4 right-4 flex space-x-2">
+                        {/* Edit/Delete Buttons on Image - Show only on hover */}
+                        <div className="absolute bottom-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <button
                                 onClick={handleEditProject}
-                                className="p-2 bg-black bg-opacity-50 text-white hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                                className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
                             >
                                 <PencilSquareIcon className="h-5 w-5" />
                             </button>
                             <button
                                 onClick={() => setIsConfirmDialogOpen(true)}
-                                className="p-2 bg-black bg-opacity-50 text-white hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                                className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
                             >
                                 <TrashIcon className="h-5 w-5" />
                             </button>
@@ -528,92 +515,6 @@ const ProjectDetails: React.FC = () => {
                     </div>
                 )}
 
-                {/* Project Metadata Box */}
-                {(project.description ||
-                    project.area ||
-                    project.due_date_at ||
-                    (project.tags && project.tags.length > 0)) && (
-                    <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg">
-                        <div className="grid gap-3">
-                            {project.description && (
-                                <div className="flex items-start">
-                                    <InformationCircleIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
-                                    <div className="flex-1">
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">
-                                            Description:
-                                        </span>
-                                        <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed mt-1">
-                                            {project.description}
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {project.area && (
-                                <div className="flex items-center">
-                                    <Squares2X2Icon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3" />
-                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">
-                                        Area:
-                                    </span>
-                                    <span className="text-sm text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                                        {project.area.name}
-                                    </span>
-                                </div>
-                            )}
-
-                            {project.due_date_at && (
-                                <div className="flex items-center">
-                                    <CalendarDaysIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3" />
-                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">
-                                        Due Date:
-                                    </span>
-                                    <span className="text-sm text-gray-900 dark:text-gray-100">
-                                        {formatProjectDueDate(
-                                            project.due_date_at
-                                        )}
-                                    </span>
-                                </div>
-                            )}
-
-                            {project.tags && project.tags.length > 0 && (
-                                <div className="flex items-start">
-                                    <div className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3 mt-0.5">
-                                        <svg
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <div className="flex-1">
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">
-                                            Tags:
-                                        </span>
-                                        <div className="flex flex-wrap gap-1 mt-1">
-                                            {project.tags.map((tag, index) => (
-                                                <button
-                                                    key={index}
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/tag/${encodeURIComponent(tag.name)}`
-                                                        )
-                                                    }
-                                                    className="inline-block px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
-                                                >
-                                                    {tag.name}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
 
                 {/* Project Header - Only show when no image */}
                 {!project.image_url && (
@@ -653,15 +554,16 @@ const ProjectDetails: React.FC = () => {
                 )}
 
                 {!showAutoSuggestForm && (
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center">
-                            <ListBulletIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                {t('sidebar.tasks', 'Tasks')}
-                            </h3>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            {completedTasks.length > 0 && (
+                    <div className="mb-4">
+                        {/* Mobile Layout */}
+                        <div className="sm:hidden">
+                            <div className="flex items-center mb-3">
+                                <ListBulletIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                    {t('sidebar.tasks', 'Tasks')}
+                                </h3>
+                            </div>
+                            <div className="flex items-center justify-between space-x-3">
                                 <label className="flex items-center space-x-2 cursor-pointer">
                                     <span className="text-sm text-gray-600 dark:text-gray-400">
                                         {t(
@@ -669,105 +571,215 @@ const ProjectDetails: React.FC = () => {
                                             'Show completed'
                                         )}
                                     </span>
-                                    <div className="relative flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            checked={showCompleted}
-                                            onChange={(e) =>
-                                                setShowCompleted(
-                                                    e.target.checked
-                                                )
-                                            }
-                                            className="sr-only"
-                                        />
+                                        <div className="relative flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={showCompleted}
+                                                onChange={(e) =>
+                                                    handleShowCompletedChange(
+                                                        e.target.checked
+                                                    )
+                                                }
+                                                className="sr-only"
+                                            />
+                                            <div
+                                                className={`w-10 h-5 rounded-full transition-all duration-300 ease-in-out ${
+                                                    showCompleted
+                                                        ? 'bg-blue-500 shadow-lg'
+                                                        : 'bg-gray-300 dark:bg-gray-600'
+                                                }`}
+                                            >
+                                                <div
+                                                    className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-all duration-300 ease-in-out ${
+                                                        showCompleted
+                                                            ? 'translate-x-5 scale-110'
+                                                            : 'translate-x-0.5 scale-100'
+                                                    } translate-y-0.5`}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                </label>
+
+                                {/* Sort Dropdown */}
+                                <div
+                                    className="relative inline-block text-left"
+                                    ref={dropdownRef}
+                                >
+                                    <button
+                                        type="button"
+                                        className="inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-3 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
+                                        id="menu-button"
+                                        aria-expanded={dropdownOpen}
+                                        aria-haspopup="true"
+                                        onClick={() =>
+                                            setDropdownOpen(!dropdownOpen)
+                                        }
+                                    >
+                                        <BarsArrowUpIcon className="h-5 w-5 text-gray-500" />
+                                        <ChevronDownIcon className="h-4 w-4 ml-1 text-gray-500 dark:text-gray-300" />
+                                    </button>
+
+                                    {dropdownOpen && (
                                         <div
-                                            className={`w-10 h-5 rounded-full transition-all duration-300 ease-in-out ${
-                                                showCompleted
-                                                    ? 'bg-blue-500 shadow-lg'
-                                                    : 'bg-gray-300 dark:bg-gray-600'
-                                            }`}
+                                            className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
+                                            role="menu"
+                                            aria-orientation="vertical"
+                                            aria-labelledby="menu-button"
                                         >
                                             <div
-                                                className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-all duration-300 ease-in-out ${
-                                                    showCompleted
-                                                        ? 'translate-x-5 scale-110'
-                                                        : 'translate-x-0.5 scale-100'
-                                                } translate-y-0.5`}
-                                            ></div>
+                                                className="py-1 max-h-60 overflow-y-auto"
+                                                role="none"
+                                            >
+                                                {[
+                                                    'due_date:asc',
+                                                    'name:asc',
+                                                    'priority:desc',
+                                                    'status:desc',
+                                                    'created_at:desc',
+                                                ].map((order) => (
+                                                    <button
+                                                        key={order}
+                                                        onClick={() =>
+                                                            handleSortChange(order)
+                                                        }
+                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left transition-colors"
+                                                        role="menuitem"
+                                                    >
+                                                        {t(
+                                                            `sort.${order.split(':')[0]}`,
+                                                            capitalize(
+                                                                order
+                                                                    .split(':')[0]
+                                                                    .replace(
+                                                                        '_',
+                                                                        ' '
+                                                                    )
+                                                            )
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                </label>
-                            )}
-
-                            {/* Sort Dropdown */}
-                            <div
-                                className="relative inline-block text-left"
-                                ref={dropdownRef}
-                            >
-                                <button
-                                    type="button"
-                                    className="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
-                                    id="menu-button"
-                                    aria-expanded={dropdownOpen}
-                                    aria-haspopup="true"
-                                    onClick={() =>
-                                        setDropdownOpen(!dropdownOpen)
-                                    }
-                                >
-                                    <BarsArrowUpIcon className="h-5 w-5 text-gray-500 mr-2" />
-                                    {t(
-                                        `sort.${orderBy.split(':')[0]}`,
-                                        capitalize(
-                                            orderBy
-                                                .split(':')[0]
-                                                .replace('_', ' ')
-                                        )
                                     )}
-                                    <ChevronDownIcon className="h-5 w-5 ml-2 text-gray-500 dark:text-gray-300" />
-                                </button>
-
-                                {dropdownOpen && (
-                                    <div
-                                        className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
-                                        role="menu"
-                                        aria-orientation="vertical"
-                                        aria-labelledby="menu-button"
-                                    >
-                                        <div
-                                            className="py-1 max-h-60 overflow-y-auto"
-                                            role="none"
-                                        >
-                                            {[
-                                                'due_date:asc',
-                                                'name:asc',
-                                                'priority:desc',
-                                                'status:desc',
-                                                'created_at:desc',
-                                            ].map((order) => (
-                                                <button
-                                                    key={order}
-                                                    onClick={() =>
-                                                        handleSortChange(order)
-                                                    }
-                                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                                    role="menuitem"
-                                                >
-                                                    {t(
-                                                        `sort.${order.split(':')[0]}`,
-                                                        capitalize(
-                                                            order
-                                                                .split(':')[0]
-                                                                .replace(
-                                                                    '_',
-                                                                    ' '
-                                                                )
-                                                        )
-                                                    )}
-                                                </button>
-                                            ))}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Desktop Layout */}
+                        <div className="hidden sm:flex items-center justify-between">
+                            <div className="flex items-center">
+                                <ListBulletIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                    {t('sidebar.tasks', 'Tasks')}
+                                </h3>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                                <label className="flex items-center space-x-2 cursor-pointer">
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            {t(
+                                                'project.showCompleted',
+                                                'Show completed'
+                                            )}
+                                        </span>
+                                        <div className="relative flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={showCompleted}
+                                                onChange={(e) =>
+                                                    handleShowCompletedChange(
+                                                        e.target.checked
+                                                    )
+                                                }
+                                                className="sr-only"
+                                            />
+                                            <div
+                                                className={`w-10 h-5 rounded-full transition-all duration-300 ease-in-out ${
+                                                    showCompleted
+                                                        ? 'bg-blue-500 shadow-lg'
+                                                        : 'bg-gray-300 dark:bg-gray-600'
+                                                }`}
+                                            >
+                                                <div
+                                                    className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-all duration-300 ease-in-out ${
+                                                        showCompleted
+                                                            ? 'translate-x-5 scale-110'
+                                                            : 'translate-x-0.5 scale-100'
+                                                    } translate-y-0.5`}
+                                                ></div>
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                </label>
+
+                                {/* Sort Dropdown */}
+                                <div
+                                    className="relative inline-block text-left"
+                                    ref={dropdownRef}
+                                >
+                                    <button
+                                        type="button"
+                                        className="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
+                                        id="menu-button-desktop"
+                                        aria-expanded={dropdownOpen}
+                                        aria-haspopup="true"
+                                        onClick={() =>
+                                            setDropdownOpen(!dropdownOpen)
+                                        }
+                                    >
+                                        <BarsArrowUpIcon className="h-5 w-5 text-gray-500 mr-2" />
+                                        {t(
+                                            `sort.${orderBy.split(':')[0]}`,
+                                            capitalize(
+                                                orderBy
+                                                    .split(':')[0]
+                                                    .replace('_', ' ')
+                                            )
+                                        )}
+                                        <ChevronDownIcon className="h-5 w-5 ml-2 text-gray-500 dark:text-gray-300" />
+                                    </button>
+
+                                    {dropdownOpen && (
+                                        <div
+                                            className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
+                                            role="menu"
+                                            aria-orientation="vertical"
+                                            aria-labelledby="menu-button-desktop"
+                                        >
+                                            <div
+                                                className="py-1 max-h-60 overflow-y-auto"
+                                                role="none"
+                                            >
+                                                {[
+                                                    'due_date:asc',
+                                                    'name:asc',
+                                                    'priority:desc',
+                                                    'status:desc',
+                                                    'created_at:desc',
+                                                ].map((order) => (
+                                                    <button
+                                                        key={order}
+                                                        onClick={() =>
+                                                            handleSortChange(order)
+                                                        }
+                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left transition-colors"
+                                                        role="menuitem"
+                                                    >
+                                                        {t(
+                                                            `sort.${order.split(':')[0]}`,
+                                                            capitalize(
+                                                                order
+                                                                    .split(':')[0]
+                                                                    .replace(
+                                                                        '_',
+                                                                        ' '
+                                                                    )
+                                                            )
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -789,6 +801,7 @@ const ProjectDetails: React.FC = () => {
                     }`}>
                         {displayTasks.length > 0 ? (
                             <TaskList
+                                key={`${showCompleted}-${displayTasks.length}`}
                                 tasks={displayTasks}
                                 onTaskUpdate={handleTaskUpdate}
                                 onTaskDelete={handleTaskDelete}

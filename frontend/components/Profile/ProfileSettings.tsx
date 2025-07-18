@@ -316,7 +316,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 setIsPolling(data.status?.running || false);
 
                 // Auto-start polling if user has a bot token but polling is not running
-                if (profile?.telegram_bot_token && !data.status?.running) {
+                if (data.telegram_bot_token && !data.status?.running) {
                     handleStartPolling();
                 }
             } catch {
