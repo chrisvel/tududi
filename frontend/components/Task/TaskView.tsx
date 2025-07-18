@@ -5,6 +5,7 @@ import { Project } from '../../entities/Project';
 import TaskModal from './TaskModal';
 import {
     fetchTaskByUuid,
+    fetchTaskById,
     updateTask,
     deleteTask,
 } from '../../utils/tasksService';
@@ -18,6 +19,7 @@ const TaskView: React.FC = () => {
     const [task, setTask] = useState<Task | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isSubtaskRedirect, setIsSubtaskRedirect] = useState(false);
 
     useEffect(() => {
         const fetchTask = async () => {
@@ -29,7 +31,22 @@ const TaskView: React.FC = () => {
 
             try {
                 const taskData = await fetchTaskByUuid(uuid);
-                setTask(taskData);
+                
+                // Check if this is a subtask and redirect to parent if so
+                if (taskData.parent_task_id) {
+                    setIsSubtaskRedirect(true);
+                    try {
+                        const parentTask = await fetchTaskById(taskData.parent_task_id);
+                        setTask(parentTask);
+                    } catch (parentError) {
+                        // If parent task fetch fails, fall back to showing the subtask
+                        console.error('Error fetching parent task:', parentError);
+                        setTask(taskData);
+                        setIsSubtaskRedirect(false);
+                    }
+                } else {
+                    setTask(taskData);
+                }
             } catch {
                 setError('An error occurred while fetching the task');
             } finally {
@@ -111,6 +128,7 @@ const TaskView: React.FC = () => {
             onDelete={handleTaskDelete}
             projects={store.projectsStore.projects}
             onCreateProject={handleCreateProject}
+            autoFocusSubtasks={isSubtaskRedirect}
         />
     );
 };

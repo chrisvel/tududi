@@ -667,8 +667,10 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
                 subtasks={subtasks}
                 onTaskClick={(e, task) => {
                     e.stopPropagation();
-                    // Handle subtask click - could be extended with custom logic
-                    console.log('Subtask clicked:', task);
+                    // Call the parent's onSubtaskClick handler if provided
+                    if (props.onSubtaskClick) {
+                        props.onSubtaskClick(task);
+                    }
                 }}
             />
         </>

@@ -27,6 +27,7 @@ export interface Task {
     completed_at?: string;
     parent_task_id?: number;
     subtasks?: Task[];
+    Subtasks?: Task[]; // Handle API response case sensitivity (temporary)
 }
 
 export type StatusType = 'not_started' | 'in_progress' | 'done' | 'archived';
