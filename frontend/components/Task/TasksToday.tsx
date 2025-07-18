@@ -338,27 +338,50 @@ const TasksToday: React.FC = () => {
             if (isMounted.current) {
                 try {
                     // Check if quotes namespace is loaded
-                    console.log('Quotes namespace loaded:', i18n.hasResourceBundle(i18n.language, 'quotes'));
-                    console.log('Available namespaces:', Object.keys(i18n.getResourceBundle(i18n.language) || {}));
-                    
-                    const quotes = i18n.t('quotes', { returnObjects: true, ns: 'quotes' });
+                    console.log(
+                        'Quotes namespace loaded:',
+                        i18n.hasResourceBundle(i18n.language, 'quotes')
+                    );
+                    console.log(
+                        'Available namespaces:',
+                        Object.keys(i18n.getResourceBundle(i18n.language) || {})
+                    );
+
+                    const quotes = i18n.t('quotes', {
+                        returnObjects: true,
+                        ns: 'quotes',
+                    });
                     console.log('Quotes from i18n:', quotes);
-                    
+
                     if (Array.isArray(quotes) && quotes.length > 0) {
-                        const randomIndex = Math.floor(Math.random() * quotes.length);
+                        const randomIndex = Math.floor(
+                            Math.random() * quotes.length
+                        );
                         setDailyQuote(quotes[randomIndex]);
                     } else {
                         // Try loading quotes manually if not available
-                        const response = await fetch(`/locales/${i18n.language}/quotes.json`);
+                        const response = await fetch(
+                            `/locales/${i18n.language}/quotes.json`
+                        );
                         if (response.ok) {
                             const data = await response.json();
                             if (data.quotes && data.quotes.length > 0) {
-                                const randomIndex = Math.floor(Math.random() * data.quotes.length);
+                                const randomIndex = Math.floor(
+                                    Math.random() * data.quotes.length
+                                );
                                 setDailyQuote(data.quotes[randomIndex]);
                                 // Add to i18n for future use
-                                i18n.addResourceBundle(i18n.language, 'quotes', data, true, true);
+                                i18n.addResourceBundle(
+                                    i18n.language,
+                                    'quotes',
+                                    data,
+                                    true,
+                                    true
+                                );
                             } else {
-                                setDailyQuote('Focus on progress, not perfection.');
+                                setDailyQuote(
+                                    'Focus on progress, not perfection.'
+                                );
                             }
                         } else {
                             setDailyQuote('Focus on progress, not perfection.');
