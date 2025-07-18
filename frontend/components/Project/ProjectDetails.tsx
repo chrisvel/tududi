@@ -6,8 +6,6 @@ import {
     PencilSquareIcon,
     TrashIcon,
     FolderIcon,
-    BookOpenIcon,
-    ListBulletIcon,
     ChevronDownIcon,
     BarsArrowUpIcon,
 } from '@heroicons/react/24/outline';
@@ -128,15 +126,27 @@ const ProjectDetails: React.FC = () => {
                 const urlParams = new URLSearchParams(location.search);
                 const sortParam = urlParams.get('sort') || localStorage.getItem('project_order_by') || 'created_at:desc';
                                 
+                console.log(`Fetching ONLY project ${id} with fetchProjectById`);
                 const projectData = await fetchProjectById(id, {
                     sort: sortParam
                     // Remove completed parameter since backend filtering isn't working
                 });
+                console.log('ProjectDetails received project data:', projectData);
                 
                 
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
-                setNotes(projectData.notes || projectData.Notes || []);
+                const fetchedNotes = projectData.notes || projectData.Notes || [];
+                
+                // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
+                const normalizedNotes = fetchedNotes.map(note => {
+                    if (note.Tags && !note.tags) {
+                        note.tags = note.Tags;
+                    }
+                    return note;
+                });
+                
+                setNotes(normalizedNotes);
                 setLoading(false);
             } catch (error) {
                 setError(true);
@@ -271,7 +281,17 @@ const ProjectDetails: React.FC = () => {
                     });
                     setProject(projectData);
                     setTasks(projectData.tasks || projectData.Tasks || []);
-                    setNotes(projectData.notes || projectData.Notes || []);
+                    const fetchedNotes = projectData.notes || projectData.Notes || [];
+                    
+                    // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
+                    const normalizedNotes = fetchedNotes.map(note => {
+                        if (note.Tags && !note.tags) {
+                            note.tags = note.Tags;
+                        }
+                        return note;
+                    });
+                    
+                    setNotes(normalizedNotes);
                 } catch (fetchError) {
                     // Error refetching project data - silently handled
                 }
@@ -399,7 +419,13 @@ const ProjectDetails: React.FC = () => {
     const handleUpdateNote = async (noteData: Partial<Note>) => {
         try {
             if (selectedNote?.id) {
-                const updatedNote = await updateNote(selectedNote.id, noteData);
+                const updatedNote = await updateNote(selectedNote.id, noteData as Note);
+                
+                // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
+                if (updatedNote.Tags && !updatedNote.tags) {
+                    updatedNote.tags = updatedNote.Tags;
+                }
+                
                 setNotes(notes.map(n => n.id === selectedNote.id ? updatedNote : n));
                 setIsNoteModalOpen(false);
                 setSelectedNote(null);
@@ -584,7 +610,6 @@ const ProjectDetails: React.FC = () => {
                         <div className="sm:hidden">
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center space-x-2">
-                                    <ListBulletIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                                     <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                                         {t('sidebar.tasks', 'Tasks')}
                                     </h3>
@@ -694,7 +719,6 @@ const ProjectDetails: React.FC = () => {
                         {/* Desktop Layout */}
                         <div className="hidden sm:flex items-center justify-between">
                             <div className="flex items-center">
-                                <ListBulletIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
                                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                                     {t('sidebar.tasks', 'Tasks')}
                                 </h3>
@@ -820,12 +844,8 @@ const ProjectDetails: React.FC = () => {
                 </div>
 
                 <div className="transition-all duration-300 ease-in-out">
-                    <div className={`transition-all duration-300 ease-in-out ${
-                        displayTasks.length > 0
-                            ? 'opacity-100 transform translate-y-0'
-                            : 'opacity-0 transform translate-y-2'
-                    }`}>
-                        {displayTasks.length > 0 ? (
+                    {displayTasks.length > 0 ? (
+                        <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
                             <TaskList
                                 key={`${showCompleted}-${displayTasks.length}`}
                                 tasks={displayTasks}
@@ -835,7 +855,9 @@ const ProjectDetails: React.FC = () => {
                                 hideProjectName={true}
                                 onToggleToday={handleToggleToday}
                             />
-                        ) : showAutoSuggestForm ? (
+                        </div>
+                    ) : showAutoSuggestForm ? (
+                        <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
                             <AutoSuggestNextActionBox
                                 onAddAction={(actionDescription) => {
                                     if (project?.id) {
@@ -848,18 +870,22 @@ const ProjectDetails: React.FC = () => {
                                 onDismiss={handleSkipNextAction}
                                 projectName={project?.name || ''}
                             />
-                        ) : (
+                        </div>
+                    ) : (
+                        <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
                             <p className="text-gray-500 dark:text-gray-400">
-                                No tasks.
+                                {showCompleted
+                                    ? t('project.noCompletedTasks', 'No completed tasks.')
+                                    : t('project.noTasks', 'No tasks.')
+                                }
                             </p>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Notes Section */}
                 <div className="mt-8">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-                        <BookOpenIcon className="h-5 w-5 mr-2" />
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                         {t('sidebar.notes', 'Notes')}
                     </h3>
 

@@ -110,63 +110,9 @@ const Layout: React.FC<LayoutProps> = ({
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const loadNotes = async () => {
-        setNotesLoading(true);
-        try {
-            const notesData = await fetchNotes();
-            setNotes(notesData);
-        } catch (error) {
-            console.error('Error fetching notes:', error);
-            setNotesError(true);
-        } finally {
-            setNotesLoading(false);
-        }
-    };
-
-    const loadAreas = async () => {
-        setAreasLoading(true);
-        try {
-            const areasData = await fetchAreas();
-            setAreas(areasData);
-        } catch (error) {
-            console.error('Error fetching areas:', error);
-            setAreasError(true);
-        } finally {
-            setAreasLoading(false);
-        }
-    };
-
-    const loadTags = async () => {
-        setTagsLoading(true);
-        try {
-            const tagsData = await fetchTags();
-            setTags(tagsData);
-        } catch (error) {
-            console.error('Error fetching tags:', error);
-            setTagsError(true);
-        } finally {
-            setTagsLoading(false);
-        }
-    };
-
-    const loadProjects = async () => {
-        setProjectsLoading(true);
-        try {
-            const projectsData = await fetchProjects();
-            setProjects(projectsData);
-        } catch (error) {
-            console.error('Error fetching projects:', error);
-            setProjectsError(true);
-        } finally {
-            setProjectsLoading(false);
-        }
-    };
 
     useEffect(() => {
-        loadNotes();
-        loadAreas();
-        loadTags();
-        loadProjects();
+        // Layout no longer loads global data
     }, []);
 
     const openNoteModal = (note: Note | null = null) => {
@@ -218,7 +164,6 @@ const Layout: React.FC<LayoutProps> = ({
             } else {
                 await createNote(noteData);
             }
-            loadNotes();
             closeNoteModal();
         } catch (error: any) {
             console.error('Error saving note:', error);
@@ -318,7 +263,6 @@ const Layout: React.FC<LayoutProps> = ({
             } else {
                 await createArea(areaData);
             }
-            loadAreas();
             closeAreaModal();
         } catch (error: any) {
             console.error('Error saving area:', error);
@@ -337,8 +281,6 @@ const Layout: React.FC<LayoutProps> = ({
             } else {
                 await createTag(tagData);
             }
-            const tagsData = await fetchTags();
-            setTags(tagsData);
             closeTagModal();
         } catch (error: any) {
             console.error('Error saving tag:', error);
@@ -513,7 +455,6 @@ const Layout: React.FC<LayoutProps> = ({
                                 './utils/projectsService'
                             );
                             await deleteProject(projectId);
-                            loadProjects();
                             closeProjectModal();
                         } catch (error) {
                             console.error('Error deleting project:', error);
@@ -534,8 +475,7 @@ const Layout: React.FC<LayoutProps> = ({
                                 './utils/notesService'
                             );
                             await deleteNote(noteId);
-                            loadNotes();
-                            closeNoteModal();
+                                            closeNoteModal();
                         } catch (error) {
                             console.error('Error deleting note:', error);
                         }
