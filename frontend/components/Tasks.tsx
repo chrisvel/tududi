@@ -41,7 +41,7 @@ const Tasks: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-    const [orderBy, setOrderBy] = useState<string>('due_date:asc');
+    const [orderBy, setOrderBy] = useState<string>('created_at:desc');
     const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
     const [isInfoExpanded, setIsInfoExpanded] = useState(false); // Collapsed by default
     const [isSearchExpanded, setIsSearchExpanded] = useState(false); // Collapsed by default
@@ -64,7 +64,7 @@ const Tasks: React.FC = () => {
     const status = query.get('status');
 
     useEffect(() => {
-        const savedOrderBy = localStorage.getItem('order_by') || 'due_date:asc';
+        const savedOrderBy = localStorage.getItem('order_by') || 'created_at:desc';
         setOrderBy(savedOrderBy);
 
         const params = new URLSearchParams(location.search);

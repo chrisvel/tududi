@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
@@ -10,6 +10,9 @@ import {
     BookOpenIcon,
     TagIcon,
     ListBulletIcon,
+    ChevronDownIcon,
+    ChevronDoubleDownIcon,
+    BarsArrowUpIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
@@ -64,6 +67,10 @@ const ProjectDetails: React.FC = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [showCompleted, setShowCompleted] = useState(false);
     const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+    const [orderBy, setOrderBy] = useState<string>('created_at:desc');
+
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Dispatch global modal events
 
@@ -111,6 +118,30 @@ const ProjectDetails: React.FC = () => {
 
         checkAutoSuggest();
     }, [project, tasks, loading]);
+
+    // Load saved sort order from localStorage
+    useEffect(() => {
+        const savedOrderBy = localStorage.getItem('project_order_by') || 'created_at:desc';
+        setOrderBy(savedOrderBy);
+    }, []);
+
+    // Handle click outside dropdown
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
+                setDropdownOpen(false);
+            }
+        };
+        if (dropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [dropdownOpen]);
 
     const handleTaskCreate = async (taskName: string) => {
         if (!project) {
@@ -290,6 +321,14 @@ const ProjectDetails: React.FC = () => {
         setShowAutoSuggestForm(false);
     };
 
+    const handleSortChange = (order: string) => {
+        setOrderBy(order);
+        localStorage.setItem('project_order_by', order);
+        setDropdownOpen(false);
+    };
+
+    const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
     const handleDeleteProject = async () => {
         if (!project?.id) {
             console.error('Cannot delete project: Project ID is missing');
@@ -342,9 +381,65 @@ const ProjectDetails: React.FC = () => {
             : task.status === 'done';
     });
 
-    const displayTasks = showCompleted
+    const sortTasks = (tasks: Task[], orderBy: string) => {
+        const [field, direction] = orderBy.split(':');
+        const sortedTasks = [...tasks].sort((a, b) => {
+            let aValue: any, bValue: any;
+            
+            switch (field) {
+                case 'due_date':
+                    aValue = a.due_date_at ? new Date(a.due_date_at).getTime() : Infinity;
+                    bValue = b.due_date_at ? new Date(b.due_date_at).getTime() : Infinity;
+                    break;
+                case 'name':
+                    aValue = a.name.toLowerCase();
+                    bValue = b.name.toLowerCase();
+                    break;
+                case 'priority':
+                    const getPriorityValue = (priority: string | number | undefined) => {
+                        if (typeof priority === 'number') {
+                            return priority; // 0=low, 1=medium, 2=high
+                        }
+                        const priorityOrder = { low: 0, medium: 1, high: 2 };
+                        return priorityOrder[priority as keyof typeof priorityOrder] || 0;
+                    };
+                    aValue = getPriorityValue(a.priority);
+                    bValue = getPriorityValue(b.priority);
+                    break;
+                case 'status':
+                    const getStatusValue = (status: string | number | undefined) => {
+                        if (typeof status === 'number') {
+                            return status; // 0=not_started, 1=in_progress, 2=done
+                        }
+                        const statusOrder = { not_started: 0, in_progress: 1, done: 2 };
+                        return statusOrder[status as keyof typeof statusOrder] || 0;
+                    };
+                    aValue = getStatusValue(a.status);
+                    bValue = getStatusValue(b.status);
+                    break;
+                case 'created_at':
+                    aValue = a.created_at ? new Date(a.created_at).getTime() : 0;
+                    bValue = b.created_at ? new Date(b.created_at).getTime() : 0;
+                    break;
+                default:
+                    return 0;
+            }
+            
+            if (direction === 'asc') {
+                return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+            } else {
+                return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+            }
+        });
+        
+        return sortedTasks;
+    };
+
+    const tasksToDisplay = showCompleted
         ? [...activeTasks, ...completedTasks]
         : activeTasks;
+    
+    const displayTasks = sortTasks(tasksToDisplay, orderBy);
 
     const formatProjectDueDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -540,41 +635,107 @@ const ProjectDetails: React.FC = () => {
                                 {t('sidebar.tasks', 'Tasks')}
                             </h3>
                         </div>
-                        {completedTasks.length > 0 && (
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                        <div className="flex items-center space-x-3">
+                            {completedTasks.length > 0 && (
+                                <label className="flex items-center space-x-2 cursor-pointer">
+                                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                                        {t(
+                                            'project.showCompleted',
+                                            'Show completed'
+                                        )}
+                                    </span>
+                                    <div className="relative flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={showCompleted}
+                                            onChange={(e) =>
+                                                setShowCompleted(e.target.checked)
+                                            }
+                                            className="sr-only"
+                                        />
+                                        <div
+                                            className={`w-10 h-5 rounded-full transition-colors ${
+                                                showCompleted
+                                                    ? 'bg-blue-500'
+                                                    : 'bg-gray-300 dark:bg-gray-600'
+                                            }`}
+                                        >
+                                            <div
+                                                className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                                                    showCompleted
+                                                        ? 'translate-x-5'
+                                                        : 'translate-x-0.5'
+                                                } translate-y-0.5`}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </label>
+                            )}
+                            
+                            {/* Sort Dropdown */}
+                            <div
+                                className="relative inline-block text-left"
+                                ref={dropdownRef}
+                            >
+                                <button
+                                    type="button"
+                                    className="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
+                                    id="menu-button"
+                                    aria-expanded={dropdownOpen}
+                                    aria-haspopup="true"
+                                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                                >
+                                    <BarsArrowUpIcon className="h-5 w-5 text-gray-500 mr-2" />
                                     {t(
-                                        'project.showCompleted',
-                                        'Show completed'
+                                        `sort.${orderBy.split(':')[0]}`,
+                                        capitalize(
+                                            orderBy.split(':')[0].replace('_', ' ')
+                                        )
                                     )}
-                                </span>
-                                <div className="relative flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={showCompleted}
-                                        onChange={(e) =>
-                                            setShowCompleted(e.target.checked)
-                                        }
-                                        className="sr-only"
-                                    />
+                                    <ChevronDownIcon className="h-5 w-5 ml-2 text-gray-500 dark:text-gray-300" />
+                                </button>
+
+                                {dropdownOpen && (
                                     <div
-                                        className={`w-10 h-5 rounded-full transition-colors ${
-                                            showCompleted
-                                                ? 'bg-blue-500'
-                                                : 'bg-gray-300 dark:bg-gray-600'
-                                        }`}
+                                        className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                                        role="menu"
+                                        aria-orientation="vertical"
+                                        aria-labelledby="menu-button"
                                     >
                                         <div
-                                            className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
-                                                showCompleted
-                                                    ? 'translate-x-5'
-                                                    : 'translate-x-0.5'
-                                            } translate-y-0.5`}
-                                        ></div>
+                                            className="py-1 max-h-60 overflow-y-auto"
+                                            role="none"
+                                        >
+                                            {[
+                                                'due_date:asc',
+                                                'name:asc',
+                                                'priority:desc',
+                                                'status:desc',
+                                                'created_at:desc',
+                                            ].map((order) => (
+                                                <button
+                                                    key={order}
+                                                    onClick={() =>
+                                                        handleSortChange(order)
+                                                    }
+                                                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                                    role="menuitem"
+                                                >
+                                                    {t(
+                                                        `sort.${order.split(':')[0]}`,
+                                                        capitalize(
+                                                            order
+                                                                .split(':')[0]
+                                                                .replace('_', ' ')
+                                                        )
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            </label>
-                        )}
+                                )}
+                            </div>
+                        </div>
                     </div>
                 )}
 
