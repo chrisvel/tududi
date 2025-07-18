@@ -35,7 +35,10 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                 </div>
             ) : subtasks.length > 0 ? (
                 subtasks.map((subtask, index) => (
-                    <div key={subtask.id || `subtask-${index}`} className="ml-12 group">
+                    <div
+                        key={subtask.id || `subtask-${index}`}
+                        className="ml-12 group"
+                    >
                         <div
                             className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 cursor-pointer transition-all duration-200 ${
                                 subtask.status === 'in_progress' ||

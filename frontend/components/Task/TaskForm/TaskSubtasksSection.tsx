@@ -57,7 +57,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
             parent_task_id: parentTaskId, // Set the parent task ID immediately
             // Mark as new for backend processing
             isNew: true,
-            // Also keep for UI purposes  
+            // Also keep for UI purposes
             _isNew: true,
         } as Task;
 
@@ -91,7 +91,8 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         const updatedSubtasks = subtasks.map((subtask, index) => {
             if (index === editingIndex) {
                 const isNameChanged = subtask.name !== editingName.trim();
-                const isNew = (subtask as any)._isNew || (subtask as any).isNew || false;
+                const isNew =
+                    (subtask as any)._isNew || (subtask as any).isNew || false;
                 const isEdited = !isNew && isNameChanged;
                 return {
                     ...subtask,
