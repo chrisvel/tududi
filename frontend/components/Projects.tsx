@@ -461,15 +461,11 @@ const Projects: React.FC = () => {
                                     {searchFilteredGroupedProjects[
                                         areaName
                                     ].map((project) => {
-                                        const { color } = getPriorityStyles(
-                                            project.priority || 'low'
-                                        );
                                         return (
                                             <ProjectItem
                                                 key={project.id}
                                                 project={project}
                                                 viewMode={viewMode}
-                                                color={color}
                                                 getCompletionPercentage={() =>
                                                     getCompletionPercentage(
                                                         project

@@ -17,7 +17,7 @@ import { useStore } from '../../store/useStore';
 import NewTask from '../Task/NewTask';
 import { Project } from '../../entities/Project';
 import NoteCard from '../Shared/NoteCard';
-import { PriorityType, Task } from '../../entities/Task';
+import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
 import {
     fetchProjectById,
@@ -34,17 +34,9 @@ import {
     deleteNote as apiDeleteNote,
 } from '../../utils/notesService';
 import { isAuthError } from '../../utils/authUtils';
-// import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
+import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
 
-type PriorityStyles = Record<PriorityType, string> & { default: string };
-
-const priorityStyles: PriorityStyles = {
-    high: 'bg-red-500',
-    medium: 'bg-yellow-500',
-    low: 'bg-green-500',
-    default: 'bg-gray-400',
-};
 
 const ProjectDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -64,6 +56,8 @@ const ProjectDetails: React.FC = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [showCompleted, setShowCompleted] = useState(false);
     const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
+    const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(false);
+    const hasCheckedAutoSuggest = useRef(false);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -76,30 +70,26 @@ const ProjectDetails: React.FC = () => {
     // Dispatch global modal events
 
 
-    // Temporarily disable auto-suggest to isolate profile request issue
-    // TODO: Re-enable after fixing profile request issue
-    // useEffect(() => {
-    //     const fetchAutoSuggestSetting = async () => {
-    //         if (!hasCheckedAutoSuggest.current) {
-    //             hasCheckedAutoSuggest.current = true;
-    //             const enabled = await getAutoSuggestNextActionsEnabled();
-    //             setAutoSuggestEnabled(enabled);
-    //         }
-    //     };
+    useEffect(() => {
+        const fetchAutoSuggestSetting = async () => {
+            if (!hasCheckedAutoSuggest.current) {
+                hasCheckedAutoSuggest.current = true;
+                const enabled = await getAutoSuggestNextActionsEnabled();
+                setAutoSuggestEnabled(enabled);
+            }
+        };
         
-    //     fetchAutoSuggestSetting();
-    // }, []);
+        fetchAutoSuggestSetting();
+    }, []);
 
     // Check if we should show auto-suggest form for projects with no tasks
     useEffect(() => {
-        // Temporarily disable auto-suggest functionality
-        setShowAutoSuggestForm(false);
-        // if (project && tasks.length === 0 && !loading && !showCompleted && autoSuggestEnabled) {
-        //     setShowAutoSuggestForm(true);
-        // } else {
-        //     setShowAutoSuggestForm(false);
-        // }
-    }, [project, tasks.length, loading, showCompleted]);
+        if (project && tasks.length === 0 && !loading && !showCompleted && autoSuggestEnabled) {
+            setShowAutoSuggestForm(true);
+        } else {
+            setShowAutoSuggestForm(false);
+        }
+    }, [project, tasks.length, loading, showCompleted, autoSuggestEnabled]);
 
     // Load sort order and show completed from URL parameters
     useEffect(() => {
@@ -131,24 +121,52 @@ const ProjectDetails: React.FC = () => {
                     sort: sortParam
                     // Remove completed parameter since backend filtering isn't working
                 });
-                console.log('ProjectDetails received project data:', projectData);
-                
-                
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
                 const fetchedNotes = projectData.notes || projectData.Notes || [];
                 
-                // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
-                const normalizedNotes = fetchedNotes.map(note => {
-                    if (note.Tags && !note.tags) {
-                        note.tags = note.Tags;
+                // Fetch complete note data including tags for each note
+                if (fetchedNotes.length > 0) {
+                    try {
+                        const notesWithTags = await Promise.all(
+                            fetchedNotes.map(async (note) => {
+                                try {
+                                    const response = await fetch(`/api/note/${note.id}`, {
+                                        credentials: 'include',
+                                        headers: { Accept: 'application/json' },
+                                    });
+                                    
+                                    if (response.ok) {
+                                        const fullNote = await response.json();
+                                        return fullNote;
+                                    }
+                                } catch (error) {
+                                    console.error(`Error fetching note ${note.id}:`, error);
+                                }
+                                // Fallback to original note if fetch fails
+                                return note;
+                            })
+                        );
+                        
+                        // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
+                        const normalizedNotes = notesWithTags.map(note => {
+                            if (note.Tags && !note.tags) {
+                                note.tags = note.Tags;
+                            }
+                            return note;
+                        });
+                        
+                        setNotes(normalizedNotes);
+                    } catch (error) {
+                        console.error('Error fetching notes with tags:', error);
+                        // Fallback to original notes without tags
+                        setNotes(fetchedNotes);
                     }
-                    return note;
-                });
-                
-                setNotes(normalizedNotes);
+                } else {
+                    setNotes([]);
+                }
                 setLoading(false);
-            } catch (error) {
+            } catch {
                 setError(true);
                 setLoading(false);
             }
@@ -225,7 +243,7 @@ const ProjectDetails: React.FC = () => {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
+                await response.json();
                 throw new Error('Failed to update task');
             }
 
@@ -235,7 +253,7 @@ const ProjectDetails: React.FC = () => {
                     task.id === updatedTask.id ? savedTask : task
                 )
             );
-        } catch (err) {
+        } catch {
             // Error updating task - silently handled
         }
     };
@@ -247,7 +265,7 @@ const ProjectDetails: React.FC = () => {
         try {
             await deleteTask(taskId);
             setTasks(tasks.filter((task) => task.id !== taskId));
-        } catch (err) {
+        } catch {
             // Error deleting task - silently handled
         }
     };
@@ -267,7 +285,7 @@ const ProjectDetails: React.FC = () => {
                         : task
                 )
             );
-        } catch (error) {
+        } catch {
             // Optionally refetch data on error to ensure consistency
             if (id) {
                 const urlParams = new URLSearchParams(location.search);
@@ -283,16 +301,47 @@ const ProjectDetails: React.FC = () => {
                     setTasks(projectData.tasks || projectData.Tasks || []);
                     const fetchedNotes = projectData.notes || projectData.Notes || [];
                     
-                    // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
-                    const normalizedNotes = fetchedNotes.map(note => {
-                        if (note.Tags && !note.tags) {
-                            note.tags = note.Tags;
+                    // Fetch complete note data including tags for each note
+                    if (fetchedNotes.length > 0) {
+                        try {
+                            const notesWithTags = await Promise.all(
+                                fetchedNotes.map(async (note) => {
+                                    try {
+                                        const response = await fetch(`/api/note/${note.id}`, {
+                                            credentials: 'include',
+                                            headers: { Accept: 'application/json' },
+                                        });
+                                        
+                                        if (response.ok) {
+                                            const fullNote = await response.json();
+                                            return fullNote;
+                                        }
+                                    } catch (error) {
+                                        console.error(`Error fetching note ${note.id}:`, error);
+                                    }
+                                    // Fallback to original note if fetch fails
+                                    return note;
+                                })
+                            );
+                            
+                            // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
+                            const normalizedNotes = notesWithTags.map(note => {
+                                if (note.Tags && !note.tags) {
+                                    note.tags = note.Tags;
+                                }
+                                return note;
+                            });
+                            
+                            setNotes(normalizedNotes);
+                        } catch (error) {
+                            console.error('Error fetching notes with tags:', error);
+                            // Fallback to original notes without tags
+                            setNotes(fetchedNotes);
                         }
-                        return note;
-                    });
-                    
-                    setNotes(normalizedNotes);
-                } catch (fetchError) {
+                    } else {
+                        setNotes([]);
+                    }
+                } catch {
                     // Error refetching project data - silently handled
                 }
             }
@@ -315,7 +364,7 @@ const ProjectDetails: React.FC = () => {
             );
             setProject(savedProject);
             setIsModalOpen(false);
-        } catch (err) {
+        } catch {
             // Error saving project - silently handled
         }
     };
@@ -350,7 +399,7 @@ const ProjectDetails: React.FC = () => {
                 </span>
             );
             showSuccessToast(taskLink);
-        } catch (error) {
+        } catch {
             // Error creating next action - silently handled
         }
     };
@@ -394,14 +443,32 @@ const ProjectDetails: React.FC = () => {
         try {
             await deleteProject(project.id);
             navigate('/projects');
-        } catch (err) {
+        } catch {
             // Error deleting project - silently handled
         }
     };
 
     // Note handlers
-    const handleEditNote = (note: Note) => {
-        setSelectedNote(note);
+    const handleEditNote = async (note: Note) => {
+        try {
+            // Fetch the complete note data including tags
+            const response = await fetch(`/api/note/${note.id}`, {
+                credentials: 'include',
+                headers: { Accept: 'application/json' },
+            });
+            
+            if (response.ok) {
+                const fullNote = await response.json();
+                setSelectedNote(fullNote);
+            } else {
+                // Fallback to the original note if fetch fails
+                setSelectedNote(note);
+            }
+        } catch (error) {
+            // Fallback to the original note if fetch fails
+            console.error('Error fetching note details:', error);
+            setSelectedNote(note);
+        }
         setIsNoteModalOpen(true);
     };
 
@@ -411,7 +478,7 @@ const ProjectDetails: React.FC = () => {
             setNotes(notes.filter(n => n.id !== noteId));
             setNoteToDelete(null);
             setIsConfirmDialogOpen(false);
-        } catch (err) {
+        } catch {
             // Error deleting note - silently handled
         }
     };
@@ -430,7 +497,7 @@ const ProjectDetails: React.FC = () => {
                 setIsNoteModalOpen(false);
                 setSelectedNote(null);
             }
-        } catch (err) {
+        } catch {
             // Error updating note - silently handled
         }
     };
@@ -575,17 +642,6 @@ const ProjectDetails: React.FC = () => {
                             <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100 mr-2">
                                 {project.name}
                             </h2>
-                            {/* Show priority indicator only when no image */}
-                            {project.priority !== undefined &&
-                                project.priority !== null && (
-                                    <div
-                                        className={`w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${getPriorityStyle(
-                                            project.priority
-                                        )}`}
-                                        title={`Priority: ${priorityLabel(project.priority)}`}
-                                        aria-label={`Priority: ${priorityLabel(project.priority)}`}
-                                    ></div>
-                                )}
                         </div>
                         <div className="flex space-x-2">
                             <button
@@ -930,7 +986,7 @@ const ProjectDetails: React.FC = () => {
                         }}
                         onSave={handleUpdateNote}
                         note={selectedNote}
-                        projects={[]}
+                        projects={project ? [project] : []}
                     />
                 )}
 
@@ -958,33 +1014,5 @@ const ProjectDetails: React.FC = () => {
     );
 };
 
-const priorityLabel = (priority: PriorityType | number) => {
-    // Handle both string and numeric priorities
-    const normalizedPriority =
-        typeof priority === 'number'
-            ? (['low', 'medium', 'high'][priority] as PriorityType)
-            : priority;
-
-    switch (normalizedPriority) {
-        case 'high':
-            return 'High';
-        case 'medium':
-            return 'Medium';
-        case 'low':
-            return 'Low';
-        default:
-            return '';
-    }
-};
-
-const getPriorityStyle = (priority: PriorityType | number) => {
-    // Handle both string and numeric priorities
-    const normalizedPriority =
-        typeof priority === 'number'
-            ? (['low', 'medium', 'high'][priority] as PriorityType)
-            : priority;
-
-    return priorityStyles[normalizedPriority] || priorityStyles.default;
-};
 
 export default ProjectDetails;

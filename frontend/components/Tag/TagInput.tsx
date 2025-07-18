@@ -25,11 +25,8 @@ const TagInput: React.FC<TagInputProps> = ({
 
     // Update internal tags state when initialTags prop changes
     useEffect(() => {
-        // Set the tags state with the initial tags
-        if (initialTags && initialTags.length > 0) {
-            // Simply set our internal state to match the initialTags
-            setTags(initialTags);
-        }
+        // Always set tags to match initialTags, even if empty
+        setTags(initialTags || []);
     }, [initialTags]);
 
     // Remove this effect to prevent infinite loops

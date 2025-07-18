@@ -241,6 +241,13 @@ router.get('/project/:id', async (req, res) => {
                         'created_at',
                         'updated_at',
                     ],
+                    include: [
+                        {
+                            model: Tag,
+                            attributes: ['id', 'name'],
+                            through: { attributes: [] },
+                        },
+                    ],
                 },
                 { model: Area, required: false, attributes: ['id', 'name'] },
                 {
@@ -275,11 +282,24 @@ router.get('/project/:id', async (req, res) => {
               })
             : [];
 
+        // Normalize note data to match frontend expectations
+        const normalizedNotes = projectJson.Notes
+            ? projectJson.Notes.map((note) => {
+                  const normalizedNote = {
+                      ...note,
+                      tags: note.Tags || [], // Normalize Tags to tags for each note
+                  };
+                  // Remove the original Tags property to avoid confusion
+                  delete normalizedNote.Tags;
+                  return normalizedNote;
+              })
+            : [];
+
         const result = {
             ...projectJson,
             tags: projectJson.Tags || [], // Normalize Tags to tags
             Tasks: normalizedTasks, // Keep as Tasks (capital T) to match expected structure
-            Notes: projectJson.Notes || [], // Include notes
+            Notes: normalizedNotes, // Include normalized notes with tags
             due_date_at: formatDate(project.due_date_at),
         };
 

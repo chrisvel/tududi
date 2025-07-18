@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 interface ProjectItemProps {
     project: Project;
     viewMode: 'cards' | 'list';
-    color: string;
     getCompletionPercentage: () => number;
     activeDropdown: number | null;
     setActiveDropdown: React.Dispatch<React.SetStateAction<number | null>>;
@@ -30,7 +29,6 @@ const getProjectInitials = (name: string) => {
 const ProjectItem: React.FC<ProjectItemProps> = ({
     project,
     viewMode,
-    color,
     getCompletionPercentage,
     activeDropdown,
     setActiveDropdown,
@@ -70,9 +68,6 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             {getProjectInitials(project.name)}
                         </span>
                     )}
-                    <div
-                        className={`absolute top-2 left-2 w-3 h-3 rounded-full ${color}`}
-                    ></div>
                 </div>
             )}
 
@@ -92,11 +87,6 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 }`}
             >
                 <div className="flex items-center">
-                    {viewMode === 'list' && !project.image_url && (
-                        <div
-                            className={`w-3 h-3 rounded-full ${color} mr-3 flex-shrink-0`}
-                        ></div>
-                    )}
                     <Link
                         to={`/project/${project.id}`}
                         className={`${
