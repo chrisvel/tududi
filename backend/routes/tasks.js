@@ -287,7 +287,7 @@ async function filterTasksByParams(params, userId) {
             orderClause = [
                 [
                     sequelize.literal(
-                        'CASE WHEN due_date IS NULL THEN 1 ELSE 0 END'
+                        'CASE WHEN Task.due_date IS NULL THEN 1 ELSE 0 END'
                     ),
                     'ASC',
                 ],
