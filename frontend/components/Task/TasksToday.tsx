@@ -334,47 +334,38 @@ const TasksToday: React.FC = () => {
 
             // Tasks will be loaded via the store's loadTasks method called earlier
 
-            // Load daily quote from translations
-            try {
-                const response = await fetch(
-                    `/locales/${i18n.language}/quotes.json`
-                );
-                if (response.ok) {
-                    const data = await response.json();
-                    if (
-                        isMounted.current &&
-                        data.quotes &&
-                        data.quotes.length > 0
-                    ) {
-                        // Get a random quote from the translated quotes
-                        const randomIndex = Math.floor(
-                            Math.random() * data.quotes.length
-                        );
-                        setDailyQuote(data.quotes[randomIndex]);
-                    }
-                } else {
-                    // Fallback to English if language file doesn't exist
-                    const fallbackResponse = await fetch(
-                        '/locales/en/quotes.json'
-                    );
-                    if (fallbackResponse.ok) {
-                        const fallbackData = await fallbackResponse.json();
-                        if (
-                            isMounted.current &&
-                            fallbackData.quotes &&
-                            fallbackData.quotes.length > 0
-                        ) {
-                            const randomIndex = Math.floor(
-                                Math.random() * fallbackData.quotes.length
-                            );
-                            setDailyQuote(fallbackData.quotes[randomIndex]);
+            // Get daily quote from i18n
+            if (isMounted.current) {
+                try {
+                    // Check if quotes namespace is loaded
+                    console.log('Quotes namespace loaded:', i18n.hasResourceBundle(i18n.language, 'quotes'));
+                    console.log('Available namespaces:', Object.keys(i18n.getResourceBundle(i18n.language) || {}));
+                    
+                    const quotes = i18n.t('quotes', { returnObjects: true, ns: 'quotes' });
+                    console.log('Quotes from i18n:', quotes);
+                    
+                    if (Array.isArray(quotes) && quotes.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * quotes.length);
+                        setDailyQuote(quotes[randomIndex]);
+                    } else {
+                        // Try loading quotes manually if not available
+                        const response = await fetch(`/locales/${i18n.language}/quotes.json`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.quotes && data.quotes.length > 0) {
+                                const randomIndex = Math.floor(Math.random() * data.quotes.length);
+                                setDailyQuote(data.quotes[randomIndex]);
+                                // Add to i18n for future use
+                                i18n.addResourceBundle(i18n.language, 'quotes', data, true, true);
+                            } else {
+                                setDailyQuote('Focus on progress, not perfection.');
+                            }
+                        } else {
+                            setDailyQuote('Focus on progress, not perfection.');
                         }
                     }
-                }
-            } catch (error) {
-                console.error('Failed to load daily quote:', error);
-                // Ultimate fallback
-                if (isMounted.current) {
+                } catch (error) {
+                    console.error('Failed to get daily quote:', error);
                     setDailyQuote('Focus on progress, not perfection.');
                 }
             }

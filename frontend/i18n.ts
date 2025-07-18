@@ -82,7 +82,7 @@ i18nInstance
             escapeValue: false,
         },
         defaultNS: 'translation',
-        ns: ['translation'],
+        ns: ['translation', 'quotes'],
         backend: {
             loadPath: '/locales/{{lng}}/{{ns}}.json',
             queryStringParams: { v: '1' },
@@ -94,66 +94,8 @@ i18nInstance
         },
     })
     .then(() => {
-        const loadPath = isDevelopment
-            ? `./locales/${i18n.language}/translation.json`
-            : `/locales/${i18n.language}/translation.json`;
-
-        fetch(loadPath)
-            .then((response) => {
-                if (!response.ok) {
-                    if (isDevelopment) {
-                        return fetch(
-                            `/locales/${i18n.language}/translation.json`
-                        );
-                    }
-                    throw new Error(
-                        `Failed to fetch translation: ${response.status}`
-                    );
-                }
-                return response.json();
-            })
-            .then((data) => {
-                i18n.addResourceBundle(
-                    i18n.language,
-                    'translation',
-                    data,
-                    true,
-                    true
-                );
-            })
-            .catch(() => {
-                if (isDevelopment) {
-                    try {
-                        setTimeout(() => {
-                            fetch(
-                                `/locales/${i18n.language}/translation.json`,
-                                {
-                                    headers: { Accept: 'application/json' },
-                                    mode: 'cors',
-                                }
-                            )
-                                .then((res) => res.json())
-                                .then((data) => {
-                                    i18n.addResourceBundle(
-                                        i18n.language,
-                                        'translation',
-                                        data,
-                                        true,
-                                        true
-                                    );
-                                })
-                                .catch((error) => {
-                                    console.error(
-                                        'Error loading translation:',
-                                        error
-                                    );
-                                });
-                        }, 1000);
-                    } catch (e) {
-                        console.error('Error in retry mechanism:', e);
-                    }
-                }
-            });
+        // Explicitly load the quotes namespace
+        return i18n.loadNamespaces('quotes');
     });
 
 i18n.on('initialized', () => {});
