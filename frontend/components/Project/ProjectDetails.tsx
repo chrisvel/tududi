@@ -6,8 +6,8 @@ import {
     PencilSquareIcon,
     TrashIcon,
     FolderIcon,
-    ChevronDownIcon,
-    BarsArrowUpIcon,
+    Cog6ToothIcon,
+    CheckIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
@@ -59,8 +59,12 @@ const ProjectDetails: React.FC = () => {
     const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(false);
     const hasCheckedAutoSuggest = useRef(false);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+    const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
+    const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const mobileSettingsRef = useRef<HTMLDivElement>(null);
+    const desktopSettingsRef = useRef<HTMLDivElement>(null);
     
     // Note modal state
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -123,48 +127,25 @@ const ProjectDetails: React.FC = () => {
                 });
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
+                
+                // Load saved preferences from project data
+                if (projectData.task_show_completed !== undefined) {
+                    setShowCompleted(projectData.task_show_completed);
+                }
+                if (projectData.task_sort_order) {
+                    setOrderBy(projectData.task_sort_order);
+                }
                 const fetchedNotes = projectData.notes || projectData.Notes || [];
                 
-                // Fetch complete note data including tags for each note
-                if (fetchedNotes.length > 0) {
-                    try {
-                        const notesWithTags = await Promise.all(
-                            fetchedNotes.map(async (note) => {
-                                try {
-                                    const response = await fetch(`/api/note/${note.id}`, {
-                                        credentials: 'include',
-                                        headers: { Accept: 'application/json' },
-                                    });
-                                    
-                                    if (response.ok) {
-                                        const fullNote = await response.json();
-                                        return fullNote;
-                                    }
-                                } catch (error) {
-                                    console.error(`Error fetching note ${note.id}:`, error);
-                                }
-                                // Fallback to original note if fetch fails
-                                return note;
-                            })
-                        );
-                        
-                        // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
-                        const normalizedNotes = notesWithTags.map(note => {
-                            if (note.Tags && !note.tags) {
-                                note.tags = note.Tags;
-                            }
-                            return note;
-                        });
-                        
-                        setNotes(normalizedNotes);
-                    } catch (error) {
-                        console.error('Error fetching notes with tags:', error);
-                        // Fallback to original notes without tags
-                        setNotes(fetchedNotes);
+                // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
+                const normalizedNotes = fetchedNotes.map(note => {
+                    if (note.Tags && !note.tags) {
+                        note.tags = note.Tags;
                     }
-                } else {
-                    setNotes([]);
-                }
+                    return note;
+                });
+                
+                setNotes(normalizedNotes);
                 setLoading(false);
             } catch {
                 setError(true);
@@ -175,7 +156,7 @@ const ProjectDetails: React.FC = () => {
         loadProjectData();
     }, [id, location.search]);
 
-    // Handle click outside dropdown
+    // Handle click outside dropdowns
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -184,14 +165,22 @@ const ProjectDetails: React.FC = () => {
             ) {
                 setDropdownOpen(false);
             }
+            
+            // Check if click is outside both mobile and desktop settings dropdowns
+            const isOutsideMobile = mobileSettingsRef.current && !mobileSettingsRef.current.contains(event.target as Node);
+            const isOutsideDesktop = desktopSettingsRef.current && !desktopSettingsRef.current.contains(event.target as Node);
+            
+            if (isOutsideMobile && isOutsideDesktop) {
+                setSettingsOpen(false);
+            }
         };
-        if (dropdownOpen) {
+        if (dropdownOpen || settingsOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         }
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [dropdownOpen]);
+    }, [dropdownOpen, settingsOpen]);
 
     const handleTaskCreate = async (taskName: string) => {
         if (!project) {
@@ -301,46 +290,15 @@ const ProjectDetails: React.FC = () => {
                     setTasks(projectData.tasks || projectData.Tasks || []);
                     const fetchedNotes = projectData.notes || projectData.Notes || [];
                     
-                    // Fetch complete note data including tags for each note
-                    if (fetchedNotes.length > 0) {
-                        try {
-                            const notesWithTags = await Promise.all(
-                                fetchedNotes.map(async (note) => {
-                                    try {
-                                        const response = await fetch(`/api/note/${note.id}`, {
-                                            credentials: 'include',
-                                            headers: { Accept: 'application/json' },
-                                        });
-                                        
-                                        if (response.ok) {
-                                            const fullNote = await response.json();
-                                            return fullNote;
-                                        }
-                                    } catch (error) {
-                                        console.error(`Error fetching note ${note.id}:`, error);
-                                    }
-                                    // Fallback to original note if fetch fails
-                                    return note;
-                                })
-                            );
-                            
-                            // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
-                            const normalizedNotes = notesWithTags.map(note => {
-                                if (note.Tags && !note.tags) {
-                                    note.tags = note.Tags;
-                                }
-                                return note;
-                            });
-                            
-                            setNotes(normalizedNotes);
-                        } catch (error) {
-                            console.error('Error fetching notes with tags:', error);
-                            // Fallback to original notes without tags
-                            setNotes(fetchedNotes);
+                    // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
+                    const normalizedNotes = fetchedNotes.map(note => {
+                        if (note.Tags && !note.tags) {
+                            note.tags = note.Tags;
                         }
-                    } else {
-                        setNotes([]);
-                    }
+                        return note;
+                    });
+                    
+                    setNotes(normalizedNotes);
                 } catch {
                     // Error refetching project data - silently handled
                 }
@@ -408,19 +366,46 @@ const ProjectDetails: React.FC = () => {
         setShowAutoSuggestForm(false);
     };
 
+    const saveProjectPreferences = async (showCompleted: boolean, orderBy: string) => {
+        if (!project?.id) return;
+
+        try {
+            // Save preferences directly via API call
+            const response = await fetch(`/api/project/${project.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    task_show_completed: showCompleted,
+                    task_sort_order: orderBy,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save project preferences');
+            }
+        } catch (error) {
+            console.error('Error saving project preferences:', error);
+        }
+    };
+
     const handleSortChange = (order: string) => {
         setOrderBy(order);
         localStorage.setItem('project_order_by', order);
-        setDropdownOpen(false);
+        setSettingsOpen(false);
         
         // Update URL parameters
         const urlParams = new URLSearchParams(location.search);
         urlParams.set('sort', order);
         navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
+
+        // Save to project
+        saveProjectPreferences(showCompleted, order);
     };
 
     const handleShowCompletedChange = (checked: boolean) => {
         setShowCompleted(checked);
+        setSettingsOpen(false);
         
         // Update URL parameters
         const urlParams = new URLSearchParams(location.search);
@@ -430,10 +415,11 @@ const ProjectDetails: React.FC = () => {
             urlParams.delete('completed');
         }
         navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
+
+        // Save to project
+        saveProjectPreferences(checked, orderBy);
     };
 
-    const capitalize = (str: string) =>
-        str.charAt(0).toUpperCase() + str.slice(1);
 
     const handleDeleteProject = async () => {
         if (!project?.id) {
@@ -660,313 +646,301 @@ const ProjectDetails: React.FC = () => {
                     </div>
                 )}
 
-                {!showAutoSuggestForm && (
-                    <div className="mb-4">
-                        {/* Mobile Layout */}
-                        <div className="sm:hidden">
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center space-x-2">
-                                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                        {t('sidebar.tasks', 'Tasks')}
-                                    </h3>
-                                </div>
-                                <div className="flex flex-col items-end space-y-2">
-                                    <label className="flex items-center space-x-2 cursor-pointer">
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                                            {t(
-                                                'project.showCompleted',
-                                                'Show completed'
-                                            )}
+                {/* Header with Tab Links and Controls */}
+                <div className="mb-4">
+                    {/* Mobile Layout */}
+                    <div className="sm:hidden">
+                        <div className="flex items-center justify-between mb-3">
+                            {/* Tab Navigation Links */}
+                            <div className="flex items-center space-x-6">
+                                <button
+                                    onClick={() => setActiveTab('tasks')}
+                                    className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                                        activeTab === 'tasks'
+                                            ? 'text-gray-900 dark:text-gray-100'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                    }`}
+                                >
+                                    <span>{t('sidebar.tasks', 'Tasks')}</span>
+                                    {displayTasks.length > 0 && (
+                                        <span className="ml-1 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                            {displayTasks.length}
                                         </span>
-                                        <div className="relative flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={showCompleted}
-                                                onChange={(e) =>
-                                                    handleShowCompletedChange(
-                                                        e.target.checked
-                                                    )
-                                                }
-                                                className="sr-only"
-                                            />
-                                            <div
-                                                className={`w-10 h-5 rounded-full transition-all duration-300 ease-in-out ${
-                                                    showCompleted
-                                                        ? 'bg-blue-500 shadow-lg'
-                                                        : 'bg-gray-300 dark:bg-gray-600'
-                                                }`}
-                                            >
-                                                <div
-                                                    className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-all duration-300 ease-in-out ${
-                                                        showCompleted
-                                                            ? 'translate-x-5 scale-110'
-                                                            : 'translate-x-0.5 scale-100'
-                                                    } translate-y-0.5`}
-                                                ></div>
-                                            </div>
-                                        </div>
-                                    </label>
-                                    {/* Sort Dropdown */}
-                                    <div
-                                        className="relative inline-block text-left"
-                                        ref={dropdownRef}
-                                    >
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('notes')}
+                                    className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                                        activeTab === 'notes'
+                                            ? 'text-gray-900 dark:text-gray-100'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                    }`}
+                                >
+                                    <span>{t('sidebar.notes', 'Notes')}</span>
+                                    {notes.length > 0 && (
+                                        <span className="ml-1 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                            {notes.length}
+                                        </span>
+                                    )}
+                                </button>
+                            </div>
+                            
+                            {/* Settings Cog Button - Always visible for tasks tab */}
+                            <div className="flex items-center">
+                                {activeTab === 'tasks' && (
+                                    <div className="relative" ref={mobileSettingsRef}>
                                         <button
                                             type="button"
-                                            className="inline-flex justify-center w-40 rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-2 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
-                                            id="menu-button"
-                                            aria-expanded={dropdownOpen}
-                                            aria-haspopup="true"
-                                            onClick={() =>
-                                                setDropdownOpen(!dropdownOpen)
-                                            }
+                                            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                                            onClick={() => setSettingsOpen(!settingsOpen)}
                                         >
-                                            <BarsArrowUpIcon className="h-5 w-5 text-gray-500" />
-                                            <ChevronDownIcon className="h-4 w-4 ml-1 text-gray-500 dark:text-gray-300" />
+                                            <Cog6ToothIcon className="h-5 w-5" />
                                         </button>
-
-                                        {dropdownOpen && (
-                                            <div
-                                                className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
-                                                role="menu"
-                                                aria-orientation="vertical"
-                                                aria-labelledby="menu-button"
+                                        {settingsOpen && (
+                                            <div 
+                                                className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
                                             >
-                                                <div
-                                                    className="py-1 max-h-60 overflow-y-auto"
-                                                    role="none"
-                                                >
-                                                    {[
-                                                        'due_date:asc',
-                                                        'name:asc',
-                                                        'priority:desc',
-                                                        'status:desc',
-                                                        'created_at:desc',
-                                                    ].map((order) => (
-                                                        <button
-                                                            key={order}
-                                                            onClick={() =>
-                                                                handleSortChange(order)
-                                                            }
-                                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left transition-colors"
-                                                            role="menuitem"
-                                                        >
-                                                            {t(
-                                                                `sort.${order.split(':')[0]}`,
-                                                                capitalize(
-                                                                    order
-                                                                        .split(':')[0]
-                                                                        .replace(
-                                                                            '_',
-                                                                            ' '
-                                                                        )
-                                                                )
-                                                            )}
-                                                        </button>
-                                                    ))}
+                                                <div className="p-3 space-y-3">
+                                                    {/* Sort Options */}
+                                                    <div className="space-y-1">
+                                                        <div className="px-1 text-xs text-gray-700 dark:text-gray-300 font-medium">
+                                                            Sort by
+                                                        </div>
+                                                        {[
+                                                            { value: 'due_date:asc', label: 'Due date' },
+                                                            { value: 'name:asc', label: 'Name' },
+                                                            { value: 'priority:desc', label: 'Priority' },
+                                                            { value: 'status:desc', label: 'Status' },
+                                                            { value: 'created_at:desc', label: 'Created at' },
+                                                        ].map((option) => (
+                                                            <button
+                                                                key={option.value}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleSortChange(option.value);
+                                                                }}
+                                                                className="w-full text-left px-3 py-1.5 rounded-md text-xs transition-colors flex items-center justify-between text-gray-700 dark:text-gray-300"
+                                                            >
+                                                                <span>{option.label}</span>
+                                                                {orderBy === option.value && (
+                                                                    <CheckIcon className="h-3 w-3" />
+                                                                )}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                    
+                                                    {/* Divider */}
+                                                    <div className="border-t border-gray-200 dark:border-gray-600"></div>
+                                                    
+                                                    {/* Show Completed Toggle */}
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleShowCompletedChange(!showCompleted);
+                                                        }}
+                                                        className="w-full text-left px-3 py-1.5 rounded-md text-xs transition-colors flex items-center justify-between text-gray-700 dark:text-gray-300"
+                                                    >
+                                                        <span>{t('project.showCompleted', 'Show completed')}</span>
+                                                        {showCompleted && (
+                                                            <CheckIcon className="h-3 w-3" />
+                                                        )}
+                                                    </button>
                                                 </div>
                                             </div>
                                         )}
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </div>
+                    </div>
+                    
+                    {/* Desktop Layout */}
+                    <div className="hidden sm:flex items-center justify-between min-h-[2.5rem]">
+                        {/* Tab Navigation Links */}
+                        <div className="flex items-center space-x-6">
+                            <button
+                                onClick={() => setActiveTab('tasks')}
+                                className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                                    activeTab === 'tasks'
+                                        ? 'text-gray-900 dark:text-gray-100'
+                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                }`}
+                            >
+                                <span>{t('sidebar.tasks', 'Tasks')}</span>
+                                {displayTasks.length > 0 && (
+                                    <span className="ml-2 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                        {displayTasks.length}
+                                    </span>
+                                )}
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('notes')}
+                                className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                                    activeTab === 'notes'
+                                        ? 'text-gray-900 dark:text-gray-100'
+                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                }`}
+                            >
+                                <span>{t('sidebar.notes', 'Notes')}</span>
+                                {notes.length > 0 && (
+                                    <span className="ml-2 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                        {notes.length}
+                                    </span>
+                                )}
+                            </button>
+                        </div>
                         
-                        {/* Desktop Layout */}
-                        <div className="hidden sm:flex items-center justify-between">
-                            <div className="flex items-center">
-                                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                    {t('sidebar.tasks', 'Tasks')}
-                                </h3>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <label className="flex items-center space-x-2 cursor-pointer">
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                                            {t(
-                                                'project.showCompleted',
-                                                'Show completed'
-                                            )}
-                                        </span>
-                                        <div className="relative flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={showCompleted}
-                                                onChange={(e) =>
-                                                    handleShowCompletedChange(
-                                                        e.target.checked
-                                                    )
-                                                }
-                                                className="sr-only"
-                                            />
-                                            <div
-                                                className={`w-10 h-5 rounded-full transition-all duration-300 ease-in-out ${
-                                                    showCompleted
-                                                        ? 'bg-blue-500 shadow-lg'
-                                                        : 'bg-gray-300 dark:bg-gray-600'
-                                                }`}
-                                            >
-                                                <div
-                                                    className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-all duration-300 ease-in-out ${
-                                                        showCompleted
-                                                            ? 'translate-x-5 scale-110'
-                                                            : 'translate-x-0.5 scale-100'
-                                                    } translate-y-0.5`}
-                                                ></div>
-                                            </div>
-                                        </div>
-                                </label>
-
-                                {/* Sort Dropdown */}
-                                <div
-                                    className="relative inline-block text-left"
-                                    ref={dropdownRef}
-                                >
+                        {/* Settings Cog Button - Always visible for tasks tab */}
+                        <div className="flex items-center">
+                            {activeTab === 'tasks' && (
+                                <div className="relative" ref={desktopSettingsRef}>
                                     <button
                                         type="button"
-                                        className="inline-flex justify-center w-40 rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-2 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
-                                        id="menu-button-desktop"
-                                        aria-expanded={dropdownOpen}
-                                        aria-haspopup="true"
-                                        onClick={() =>
-                                            setDropdownOpen(!dropdownOpen)
-                                        }
+                                        className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                                        onClick={() => setSettingsOpen(!settingsOpen)}
                                     >
-                                        <BarsArrowUpIcon className="h-5 w-5 text-gray-500 mr-2" />
-                                        {t(
-                                            `sort.${orderBy.split(':')[0]}`,
-                                            capitalize(
-                                                orderBy
-                                                    .split(':')[0]
-                                                    .replace('_', ' ')
-                                            )
-                                        )}
-                                        <ChevronDownIcon className="h-5 w-5 ml-2 text-gray-500 dark:text-gray-300" />
+                                        <Cog6ToothIcon className="h-5 w-5" />
                                     </button>
-
-                                    {dropdownOpen && (
-                                        <div
-                                            className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
-                                            role="menu"
-                                            aria-orientation="vertical"
-                                            aria-labelledby="menu-button-desktop"
+                                    {settingsOpen && (
+                                        <div 
+                                            className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
                                         >
-                                            <div
-                                                className="py-1 max-h-60 overflow-y-auto"
-                                                role="none"
-                                            >
-                                                {[
-                                                    'due_date:asc',
-                                                    'name:asc',
-                                                    'priority:desc',
-                                                    'status:desc',
-                                                    'created_at:desc',
-                                                ].map((order) => (
-                                                    <button
-                                                        key={order}
-                                                        onClick={() =>
-                                                            handleSortChange(order)
-                                                        }
-                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left transition-colors"
-                                                        role="menuitem"
-                                                    >
-                                                        {t(
-                                                            `sort.${order.split(':')[0]}`,
-                                                            capitalize(
-                                                                order
-                                                                    .split(':')[0]
-                                                                    .replace(
-                                                                        '_',
-                                                                        ' '
-                                                                    )
-                                                            )
-                                                        )}
-                                                    </button>
-                                                ))}
+                                            <div className="p-3 space-y-3">
+                                                {/* Sort Options */}
+                                                <div className="space-y-1">
+                                                    <div className="px-1 text-xs text-gray-700 dark:text-gray-300 font-medium">
+                                                        Sort by
+                                                    </div>
+                                                    {[
+                                                        { value: 'due_date:asc', label: 'Due date' },
+                                                        { value: 'name:asc', label: 'Name' },
+                                                        { value: 'priority:desc', label: 'Priority' },
+                                                        { value: 'status:desc', label: 'Status' },
+                                                        { value: 'created_at:desc', label: 'Created at' },
+                                                    ].map((option) => (
+                                                        <button
+                                                            key={option.value}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleSortChange(option.value);
+                                                            }}
+                                                            className="w-full text-left px-3 py-1.5 rounded-md text-xs transition-colors flex items-center justify-between text-gray-700 dark:text-gray-300"
+                                                        >
+                                                            <span>{option.label}</span>
+                                                            {orderBy === option.value && (
+                                                                <CheckIcon className="h-3 w-3" />
+                                                            )}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                
+                                                {/* Divider */}
+                                                <div className="border-t border-gray-200 dark:border-gray-600"></div>
+                                                
+                                                {/* Show Completed Toggle */}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleShowCompletedChange(!showCompleted);
+                                                    }}
+                                                    className="w-full text-left px-3 py-1.5 rounded-md text-xs transition-colors flex items-center justify-between text-gray-700 dark:text-gray-300"
+                                                >
+                                                    <span>{t('project.showCompleted', 'Show completed')}</span>
+                                                    {showCompleted && (
+                                                        <CheckIcon className="h-3 w-3" />
+                                                    )}
+                                                </button>
                                             </div>
                                         </div>
                                     )}
                                 </div>
-                            </div>
+                            )}
                         </div>
+                    </div>
+                </div>
+
+                {/* Auto-suggest form for tasks with no items */}
+                {activeTab === 'tasks' && showAutoSuggestForm && (
+                    <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 mb-6">
+                        <AutoSuggestNextActionBox
+                            onAddAction={(actionDescription) => {
+                                if (project?.id) {
+                                    handleCreateNextAction(
+                                        project.id,
+                                        actionDescription
+                                    );
+                                }
+                            }}
+                            onDismiss={handleSkipNextAction}
+                            projectName={project?.name || ''}
+                        />
                     </div>
                 )}
 
-                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                    !showAutoSuggestForm && !showCompleted
-                        ? 'opacity-100 max-h-96 transform translate-y-0'
-                        : 'opacity-0 max-h-0 transform -translate-y-2'
-                }`}>
-                    <NewTask onTaskCreate={handleTaskCreate} />
-                </div>
+                {/* Tasks Tab Content */}
+                {activeTab === 'tasks' && (
+                    <>
+                        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                            !showAutoSuggestForm && !showCompleted
+                                ? 'opacity-100 max-h-96 transform translate-y-0'
+                                : 'opacity-0 max-h-0 transform -translate-y-2'
+                        }`}>
+                            <NewTask onTaskCreate={handleTaskCreate} />
+                        </div>
 
-                <div className="transition-all duration-300 ease-in-out">
-                    {displayTasks.length > 0 ? (
-                        <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
-                            <TaskList
-                                key={`${showCompleted}-${displayTasks.length}`}
-                                tasks={displayTasks}
-                                onTaskUpdate={handleTaskUpdate}
-                                onTaskDelete={handleTaskDelete}
-                                projects={project ? [project] : []}
-                                hideProjectName={true}
-                                onToggleToday={handleToggleToday}
-                            />
+                        <div className="transition-all duration-300 ease-in-out">
+                            {displayTasks.length > 0 ? (
+                                <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
+                                    <TaskList
+                                        key={`${showCompleted}-${displayTasks.length}`}
+                                        tasks={displayTasks}
+                                        onTaskUpdate={handleTaskUpdate}
+                                        onTaskDelete={handleTaskDelete}
+                                        projects={project ? [project] : []}
+                                        hideProjectName={true}
+                                        onToggleToday={handleToggleToday}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
+                                    <p className="text-gray-500 dark:text-gray-400">
+                                        {showCompleted
+                                            ? t('project.noCompletedTasks', 'No completed tasks.')
+                                            : t('project.noTasks', 'No tasks.')
+                                        }
+                                    </p>
+                                </div>
+                            )}
                         </div>
-                    ) : showAutoSuggestForm ? (
-                        <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
-                            <AutoSuggestNextActionBox
-                                onAddAction={(actionDescription) => {
-                                    if (project?.id) {
-                                        handleCreateNextAction(
-                                            project.id,
-                                            actionDescription
-                                        );
-                                    }
-                                }}
-                                onDismiss={handleSkipNextAction}
-                                projectName={project?.name || ''}
-                            />
-                        </div>
-                    ) : (
-                        <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
+                    </>
+                )}
+
+                {/* Notes Content */}
+                {activeTab === 'notes' && (
+                    <div className="transition-all duration-300 ease-in-out">
+                        {notes.length > 0 ? (
+                            <div className="space-y-1">
+                                {notes.map((note) => (
+                                    <NoteCard
+                                        key={note.id}
+                                        note={note}
+                                        onEdit={handleEditNote}
+                                        onDelete={(note) => {
+                                            setNoteToDelete(note);
+                                            setIsConfirmDialogOpen(true);
+                                        }}
+                                        showActions={true}
+                                        showProject={false}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
                             <p className="text-gray-500 dark:text-gray-400">
-                                {showCompleted
-                                    ? t('project.noCompletedTasks', 'No completed tasks.')
-                                    : t('project.noTasks', 'No tasks.')
-                                }
+                                {t('project.noNotes', 'No notes for this project.')}
                             </p>
-                        </div>
-                    )}
-                </div>
-
-                {/* Notes Section */}
-                <div className="mt-8">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                        {t('sidebar.notes', 'Notes')}
-                    </h3>
-
-                    {notes.length > 0 ? (
-                        <div className="space-y-1">
-                            {notes.map((note) => (
-                                <NoteCard
-                                    key={note.id}
-                                    note={note}
-                                    onEdit={handleEditNote}
-                                    onDelete={(note) => {
-                                        setNoteToDelete(note);
-                                        setIsConfirmDialogOpen(true);
-                                    }}
-                                    showActions={true}
-                                    showProject={false}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-gray-500 dark:text-gray-400">
-                            {t('project.noNotes', 'No notes for this project.')}
-                        </p>
-                    )}
-                </div>
+                        )}
+                    </div>
+                )}
 
                 <ProjectModal
                     isOpen={isModalOpen}
