@@ -8,6 +8,7 @@ import {
     FolderIcon,
     Cog6ToothIcon,
     CheckIcon,
+    FunnelIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
@@ -669,72 +670,80 @@ const ProjectDetails: React.FC = () => {
                                 </button>
                             </div>
                             
-                            {/* Settings Cog Button - Always visible for tasks tab */}
-                            <div className="flex items-center">
-                                {activeTab === 'tasks' && (
+                            {/* Inline Controls - Always visible for tasks tab */}
+                            {activeTab === 'tasks' && (
+                                <div className="flex items-center gap-2 flex-wrap justify-end">
+                                    {/* Show Completed Toggle */}
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Show completed</span>
+                                        <button
+                                            onClick={() => handleShowCompletedChange(!showCompleted)}
+                                            className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${
+                                                showCompleted 
+                                                    ? 'bg-blue-600' 
+                                                    : 'bg-gray-200 dark:bg-gray-600'
+                                            }`}
+                                        >
+                                            <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                                                showCompleted ? 'translate-x-3.5' : 'translate-x-0.5'
+                                            }`} />
+                                        </button>
+                                    </div>
+
+                                    {/* Sort Filter */}
                                     <div className="relative" ref={mobileSettingsRef}>
                                         <button
                                             type="button"
-                                            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                                            className="inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-3 py-1.5 bg-white dark:bg-gray-700 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors w-32"
                                             onClick={() => setSettingsOpen(!settingsOpen)}
                                         >
-                                            <Cog6ToothIcon className="h-5 w-5" />
+                                            <div className="flex items-center">
+                                                <FunnelIcon className="h-3 w-3 mr-1" />
+                                                <span className="whitespace-nowrap">{[
+                                                    { value: 'created_at:desc', label: 'Created at' },
+                                                    { value: 'due_date:asc', label: 'Due date' },
+                                                    { value: 'name:asc', label: 'Name' },
+                                                    { value: 'priority:desc', label: 'Priority' },
+                                                    { value: 'status:desc', label: 'Status' },
+                                                ].find(option => option.value === orderBy)?.label || 'Created at'}</span>
+                                            </div>
+                                            <span className="text-xs ml-1">
+                                                {orderBy?.includes(':desc') ? '↓' : '↑'}
+                                            </span>
                                         </button>
                                         {settingsOpen && (
-                                            <div 
-                                                className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
-                                            >
-                                                <div className="p-3 space-y-3">
-                                                    {/* Sort Options */}
-                                                    <div className="space-y-1">
-                                                        <div className="px-1 text-xs text-gray-700 dark:text-gray-300 font-medium">
-                                                            Sort by
-                                                        </div>
-                                                        {[
-                                                            { value: 'due_date:asc', label: 'Due date' },
-                                                            { value: 'name:asc', label: 'Name' },
-                                                            { value: 'priority:desc', label: 'Priority' },
-                                                            { value: 'status:desc', label: 'Status' },
-                                                            { value: 'created_at:desc', label: 'Created at' },
-                                                        ].map((option) => (
-                                                            <button
-                                                                key={option.value}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    handleSortChange(option.value);
-                                                                }}
-                                                                className="w-full text-left px-3 py-1.5 rounded-md text-xs transition-colors flex items-center justify-between text-gray-700 dark:text-gray-300"
-                                                            >
+                                            <div className="origin-top-right absolute -right-8 mt-1 w-36 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50">
+                                                <div className="p-1">
+                                                    {[
+                                                        { value: 'created_at:desc', label: 'Created at' },
+                                                        { value: 'due_date:asc', label: 'Due date' },
+                                                        { value: 'name:asc', label: 'Name' },
+                                                        { value: 'priority:desc', label: 'Priority' },
+                                                        { value: 'status:desc', label: 'Status' },
+                                                    ].map((option) => (
+                                                        <button
+                                                            key={option.value}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleSortChange(option.value);
+                                                                setSettingsOpen(false);
+                                                            }}
+                                                            className="block px-4 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                                        >
+                                                            <span className="flex items-center justify-between">
                                                                 <span>{option.label}</span>
                                                                 {orderBy === option.value && (
                                                                     <CheckIcon className="h-3 w-3" />
                                                                 )}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                    
-                                                    {/* Divider */}
-                                                    <div className="border-t border-gray-200 dark:border-gray-600"></div>
-                                                    
-                                                    {/* Show Completed Toggle */}
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleShowCompletedChange(!showCompleted);
-                                                        }}
-                                                        className="w-full text-left px-3 py-1.5 rounded-md text-xs transition-colors flex items-center justify-between text-gray-700 dark:text-gray-300"
-                                                    >
-                                                        <span>{t('project.showCompleted', 'Show completed')}</span>
-                                                        {showCompleted && (
-                                                            <CheckIcon className="h-3 w-3" />
-                                                        )}
-                                                    </button>
+                                                            </span>
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             </div>
                                         )}
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                     
@@ -774,72 +783,80 @@ const ProjectDetails: React.FC = () => {
                             </button>
                         </div>
                         
-                        {/* Settings Cog Button - Always visible for tasks tab */}
-                        <div className="flex items-center">
-                            {activeTab === 'tasks' && (
+                        {/* Inline Controls - Always visible for tasks tab */}
+                        {activeTab === 'tasks' && (
+                            <div className="flex items-center gap-4">
+                                {/* Show Completed Toggle */}
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-600 dark:text-gray-400">Show completed</span>
+                                    <button
+                                        onClick={() => handleShowCompletedChange(!showCompleted)}
+                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                                            showCompleted 
+                                                ? 'bg-blue-600' 
+                                                : 'bg-gray-200 dark:bg-gray-600'
+                                        }`}
+                                    >
+                                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                            showCompleted ? 'translate-x-4' : 'translate-x-0.5'
+                                        }`} />
+                                    </button>
+                                </div>
+
+                                {/* Sort Filter */}
                                 <div className="relative" ref={desktopSettingsRef}>
                                     <button
                                         type="button"
-                                        className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors"
+                                        className="inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors w-40"
                                         onClick={() => setSettingsOpen(!settingsOpen)}
                                     >
-                                        <Cog6ToothIcon className="h-5 w-5" />
+                                        <div className="flex items-center">
+                                            <FunnelIcon className="h-4 w-4 mr-2" />
+                                            <span>{[
+                                                { value: 'created_at:desc', label: 'Created at' },
+                                                { value: 'due_date:asc', label: 'Due date' },
+                                                { value: 'name:asc', label: 'Name' },
+                                                { value: 'priority:desc', label: 'Priority' },
+                                                { value: 'status:desc', label: 'Status' },
+                                            ].find(option => option.value === orderBy)?.label || 'Created at'}</span>
+                                        </div>
+                                        <span className="text-sm ml-2">
+                                            {orderBy?.includes(':desc') ? '↓' : '↑'}
+                                        </span>
                                     </button>
                                     {settingsOpen && (
-                                        <div 
-                                            className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50"
-                                        >
-                                            <div className="p-3 space-y-3">
-                                                {/* Sort Options */}
-                                                <div className="space-y-1">
-                                                    <div className="px-1 text-xs text-gray-700 dark:text-gray-300 font-medium">
-                                                        Sort by
-                                                    </div>
-                                                    {[
-                                                        { value: 'due_date:asc', label: 'Due date' },
-                                                        { value: 'name:asc', label: 'Name' },
-                                                        { value: 'priority:desc', label: 'Priority' },
-                                                        { value: 'status:desc', label: 'Status' },
-                                                        { value: 'created_at:desc', label: 'Created at' },
-                                                    ].map((option) => (
-                                                        <button
-                                                            key={option.value}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleSortChange(option.value);
-                                                            }}
-                                                            className="w-full text-left px-3 py-1.5 rounded-md text-xs transition-colors flex items-center justify-between text-gray-700 dark:text-gray-300"
-                                                        >
+                                        <div className="origin-top-right absolute right-0 mt-1 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50">
+                                            <div className="p-1">
+                                                {[
+                                                    { value: 'created_at:desc', label: 'Created at' },
+                                                    { value: 'due_date:asc', label: 'Due date' },
+                                                    { value: 'name:asc', label: 'Name' },
+                                                    { value: 'priority:desc', label: 'Priority' },
+                                                    { value: 'status:desc', label: 'Status' },
+                                                ].map((option) => (
+                                                    <button
+                                                        key={option.value}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleSortChange(option.value);
+                                                            setSettingsOpen(false);
+                                                        }}
+                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                                    >
+                                                        <span className="flex items-center justify-between">
                                                             <span>{option.label}</span>
                                                             {orderBy === option.value && (
-                                                                <CheckIcon className="h-3 w-3" />
+                                                                <CheckIcon className="h-4 w-4" />
                                                             )}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                                
-                                                {/* Divider */}
-                                                <div className="border-t border-gray-200 dark:border-gray-600"></div>
-                                                
-                                                {/* Show Completed Toggle */}
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleShowCompletedChange(!showCompleted);
-                                                    }}
-                                                    className="w-full text-left px-3 py-1.5 rounded-md text-xs transition-colors flex items-center justify-between text-gray-700 dark:text-gray-300"
-                                                >
-                                                    <span>{t('project.showCompleted', 'Show completed')}</span>
-                                                    {showCompleted && (
-                                                        <CheckIcon className="h-3 w-3" />
-                                                    )}
-                                                </button>
+                                                        </span>
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
                                     )}
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
