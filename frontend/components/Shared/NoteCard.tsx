@@ -39,7 +39,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
 
     return (
         <div
-            className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 flex justify-between items-center"
+            className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-2 flex justify-between items-center"
             onMouseEnter={() => setHoveredNoteId(note.id?.toString() || null)}
             onMouseLeave={() => setHoveredNoteId(null)}
         >

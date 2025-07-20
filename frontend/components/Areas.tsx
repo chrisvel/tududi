@@ -107,46 +107,50 @@ const Areas: React.FC = () => {
                     <h2 className="text-2xl font-light">{t('areas.title')}</h2>
                 </div>
 
-                {/* Areas List */}
+                {/* Areas Grid */}
                 {areas.length === 0 ? (
                     <p className="text-gray-700 dark:text-gray-300">
                         {t('areas.noAreasFound')}
                     </p>
                 ) : (
-                    <ul className="space-y-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {areas.map((area) => (
-                            <li
+                            <Link
                                 key={area.id}
-                                className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center"
+                                to={`/projects?area_id=${area.id}`}
+                                className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:ring-2 hover:ring-blue-200 dark:hover:ring-blue-700 hover:ring-opacity-50 transition-all duration-300 ease-in-out cursor-pointer"
+                                style={{
+                                    minHeight: '200px',
+                                    maxHeight: '200px',
+                                }}
                                 onMouseEnter={() =>
                                     setHoveredAreaId(area.id || null)
                                 }
                                 onMouseLeave={() => setHoveredAreaId(null)}
                             >
-                                {/* Area Content */}
-                                <div className="flex-grow overflow-hidden pr-4">
-                                    <Link
-                                        to={`/projects?area_id=${area.id}`}
-                                        className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline block"
-                                    >
-                                        {area.name}
-                                    </Link>
-                                    {area.description && (
-                                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate">
-                                            {area.description}
-                                        </p>
-                                    )}
+                                {/* Area Content - Centered */}
+                                <div className="p-4 flex-1 flex items-center justify-center">
+                                    <div className="text-center">
+                                        <h3 className="text-xl font-light text-gray-900 dark:text-gray-100 line-clamp-2 uppercase">
+                                            {area.name}
+                                        </h3>
+                                        {area.description && (
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-3">
+                                                {area.description}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
 
-                                {/* Action Buttons */}
-                                <div className="flex space-x-2">
+                                {/* Action Buttons - Bottom Right */}
+                                <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <button
-                                        onClick={() => handleEditArea(area)}
-                                        className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${
-                                            hoveredAreaId === area.id
-                                                ? 'opacity-100'
-                                                : 'opacity-0'
-                                        }`}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleEditArea(area);
+                                        }}
+                                        className="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                                         aria-label={t(
                                             'areas.editAreaAriaLabel',
                                             { name: area.name }
@@ -158,12 +162,12 @@ const Areas: React.FC = () => {
                                         <PencilSquareIcon className="h-5 w-5" />
                                     </button>
                                     <button
-                                        onClick={() => openConfirmDialog(area)}
-                                        className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${
-                                            hoveredAreaId === area.id
-                                                ? 'opacity-100'
-                                                : 'opacity-0'
-                                        }`}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            openConfirmDialog(area);
+                                        }}
+                                        className="text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
                                         aria-label={t(
                                             'areas.deleteAreaAriaLabel',
                                             { name: area.name }
@@ -175,9 +179,9 @@ const Areas: React.FC = () => {
                                         <TrashIcon className="h-5 w-5" />
                                     </button>
                                 </div>
-                            </li>
+                            </Link>
                         ))}
-                    </ul>
+                    </div>
                 )}
 
                 {/* AreaModal */}
