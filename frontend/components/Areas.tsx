@@ -24,7 +24,6 @@ const Areas: React.FC = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
         useState<boolean>(false);
     const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
-    const [hoveredAreaId, setHoveredAreaId] = useState<number | null>(null);
 
     useEffect(() => {
         const loadAreas = async () => {

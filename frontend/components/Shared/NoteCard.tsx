@@ -2,11 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-    PencilSquareIcon,
-    TrashIcon,
     TagIcon,
     FolderIcon,
-    DocumentTextIcon,
     EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
 import MarkdownRenderer from './MarkdownRenderer';
