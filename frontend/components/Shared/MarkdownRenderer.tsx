@@ -56,41 +56,77 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                 ]}
                 components={{
                     // Customize heading styles - in summary mode, convert headers to emphasized text
-                    h1: ({ ...props }) => 
+                    h1: ({ ...props }) =>
                         summaryMode ? (
-                            <strong className="font-semibold text-gray-900 dark:text-gray-100" {...props} />
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ) : (
-                            <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100" {...props} />
+                            <h1
+                                className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ),
                     h2: ({ ...props }) =>
                         summaryMode ? (
-                            <strong className="font-semibold text-gray-900 dark:text-gray-100" {...props} />
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ) : (
-                            <h2 className="text-2xl font-semibold mb-3 text-gray-900 dark:text-gray-100" {...props} />
+                            <h2
+                                className="text-2xl font-semibold mb-3 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ),
                     h3: ({ ...props }) =>
                         summaryMode ? (
-                            <strong className="font-semibold text-gray-900 dark:text-gray-100" {...props} />
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ) : (
-                            <h3 className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100" {...props} />
+                            <h3
+                                className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ),
                     h4: ({ ...props }) =>
                         summaryMode ? (
-                            <strong className="font-semibold text-gray-900 dark:text-gray-100" {...props} />
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ) : (
-                            <h4 className="text-lg font-medium mb-2 text-gray-900 dark:text-gray-100" {...props} />
+                            <h4
+                                className="text-lg font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ),
                     h5: ({ ...props }) =>
                         summaryMode ? (
-                            <strong className="font-semibold text-gray-900 dark:text-gray-100" {...props} />
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ) : (
-                            <h5 className="text-base font-medium mb-2 text-gray-900 dark:text-gray-100" {...props} />
+                            <h5
+                                className="text-base font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ),
                     h6: ({ ...props }) =>
                         summaryMode ? (
-                            <strong className="font-semibold text-gray-900 dark:text-gray-100" {...props} />
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ) : (
-                            <h6 className="text-sm font-medium mb-2 text-gray-900 dark:text-gray-100" {...props} />
+                            <h6
+                                className="text-sm font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
                         ),
 
                     // Customize paragraph styles
@@ -182,7 +218,9 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     // Customize table styles - hide tables in summary mode
                     table: ({ ...props }) =>
                         summaryMode ? (
-                            <span className="text-gray-500 italic">[Table content hidden in preview]</span>
+                            <span className="text-gray-500 italic">
+                                [Table content hidden in preview]
+                            </span>
                         ) : (
                             <table
                                 className="mb-4 w-full border-collapse border border-gray-300 dark:border-gray-600"

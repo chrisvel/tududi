@@ -39,7 +39,10 @@ const NoteCard: React.FC<NoteCardProps> = ({
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
                 setDropdownOpen(false);
             }
         };
@@ -70,16 +73,19 @@ const NoteCard: React.FC<NoteCardProps> = ({
                         {note.title || t('notes.untitled', 'Untitled Note')}
                     </h3>
                 </div>
-                
+
                 {/* Separator under title */}
                 <hr className="border-gray-200 dark:border-gray-700 mb-3" />
-                
+
                 {/* Content Summary - Main Area */}
-                <div className="flex-1 mb-3">
+                <div className="flex-1 mb-3 min-h-[120px]">
                     <div className="text-sm text-gray-400 dark:text-gray-600 line-clamp-5 leading-relaxed prose prose-sm max-w-none prose-gray dark:prose-invert opacity-60">
                         {note.content ? (
-                            <MarkdownRenderer 
-                                content={note.content.substring(0, 200) + (note.content.length > 200 ? '...' : '')}
+                            <MarkdownRenderer
+                                content={
+                                    note.content.substring(0, 200) +
+                                    (note.content.length > 200 ? '...' : '')
+                                }
                                 summaryMode={true}
                             />
                         ) : (
@@ -87,12 +93,12 @@ const NoteCard: React.FC<NoteCardProps> = ({
                         )}
                     </div>
                 </div>
-                
+
                 {/* Separator */}
                 <hr className="border-gray-200 dark:border-gray-700 mb-3" />
-                
+
                 {/* Footer - Project and Tags - Fixed Height */}
-                <div className="h-12 flex items-end">
+                <div className="h-8 flex items-end">
                     <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1 w-full">
                         {showProject && project && (
                             <div className="flex items-center">
