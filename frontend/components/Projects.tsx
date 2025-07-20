@@ -22,7 +22,6 @@ import { Project } from '../entities/Project';
 import { useSearchParams } from 'react-router-dom';
 import ProjectItem from './Project/ProjectItem';
 
-
 const Projects: React.FC = () => {
     const { t } = useTranslation();
     const {
@@ -217,20 +216,30 @@ const Projects: React.FC = () => {
         // Apply active filter
         if (activeFilter !== 'all') {
             const isActive = activeFilter === 'true';
-            filteredProjects = filteredProjects.filter(project => project.active === isActive);
+            filteredProjects = filteredProjects.filter(
+                (project) => project.active === isActive
+            );
         }
 
         // Apply area filter
         if (areaFilter) {
             const areaId = parseInt(areaFilter);
-            filteredProjects = filteredProjects.filter(project => project.area_id === areaId);
+            filteredProjects = filteredProjects.filter(
+                (project) => project.area_id === areaId
+            );
         }
 
         // Apply search filter
         if (searchQuery.trim()) {
-            filteredProjects = filteredProjects.filter(project =>
-                project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                (project.description && project.description.toLowerCase().includes(searchQuery.toLowerCase()))
+            filteredProjects = filteredProjects.filter(
+                (project) =>
+                    project.name
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase()) ||
+                    (project.description &&
+                        project.description
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase()))
             );
         }
 
@@ -247,17 +256,29 @@ const Projects: React.FC = () => {
                     valueB = b.name?.toLowerCase() || '';
                     break;
                 case 'due_date_at':
-                    valueA = a.due_date_at ? new Date(a.due_date_at).getTime() : 0;
-                    valueB = b.due_date_at ? new Date(b.due_date_at).getTime() : 0;
+                    valueA = a.due_date_at
+                        ? new Date(a.due_date_at).getTime()
+                        : 0;
+                    valueB = b.due_date_at
+                        ? new Date(b.due_date_at).getTime()
+                        : 0;
                     break;
                 case 'updated_at':
-                    valueA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
-                    valueB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+                    valueA = a.updated_at
+                        ? new Date(a.updated_at).getTime()
+                        : 0;
+                    valueB = b.updated_at
+                        ? new Date(b.updated_at).getTime()
+                        : 0;
                     break;
                 case 'created_at':
                 default:
-                    valueA = a.created_at ? new Date(a.created_at).getTime() : 0;
-                    valueB = b.created_at ? new Date(b.created_at).getTime() : 0;
+                    valueA = a.created_at
+                        ? new Date(a.created_at).getTime()
+                        : 0;
+                    valueB = b.created_at
+                        ? new Date(b.created_at).getTime()
+                        : 0;
                     break;
             }
 

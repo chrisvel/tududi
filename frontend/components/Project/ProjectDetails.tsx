@@ -161,7 +161,6 @@ const ProjectDetails: React.FC = () => {
         loadProjectData();
     }, [id]);
 
-
     const handleTaskCreate = async (taskName: string) => {
         if (!project) {
             throw new Error('Cannot create task: Project is missing');
@@ -582,7 +581,7 @@ const ProjectDetails: React.FC = () => {
                     ) : (
                         <div className="w-full h-64 bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
                     )}
-                    
+
                     {/* Title Overlay */}
                     <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                         <div className="text-center px-4">
@@ -596,7 +595,7 @@ const ProjectDetails: React.FC = () => {
                             )}
                         </div>
                     </div>
-                    
+
                     {/* Tags Display - Bottom Left */}
                     {project.tags && project.tags.length > 0 && (
                         <div className="absolute bottom-2 left-2 flex items-center space-x-1">
@@ -616,7 +615,8 @@ const ProjectDetails: React.FC = () => {
                                             >
                                                 {tag.name}
                                             </button>
-                                            {index < project.tags.length - 1 && (
+                                            {index <
+                                                project.tags.length - 1 && (
                                                 <span className="text-white/60 text-xs">
                                                     ,{' '}
                                                 </span>

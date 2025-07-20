@@ -75,7 +75,10 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             )}
 
             {viewMode === 'list' && (
-                <Link to={`/project/${project.id}`} className="w-10 h-10 mr-3 flex-shrink-0">
+                <Link
+                    to={`/project/${project.id}`}
+                    className="w-10 h-10 mr-3 flex-shrink-0"
+                >
                     {project.image_url ? (
                         <img
                             src={project.image_url}
@@ -94,7 +97,9 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
 
             <div
                 className={`flex justify-between ${
-                    viewMode === 'cards' ? 'items-start p-4 flex-1' : 'items-center flex-1'
+                    viewMode === 'cards'
+                        ? 'items-start p-4 flex-1'
+                        : 'items-center flex-1'
                 }`}
             >
                 <div className="flex items-center">
@@ -129,7 +134,9 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             {activeDropdown === project.id && (
                                 <div className="absolute right-0 mt-2 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
                                     <button
-                                        onClick={() => handleEditProject(project)}
+                                        onClick={() =>
+                                            handleEditProject(project)
+                                        }
                                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
                                     >
                                         {t('projectItem.edit')}

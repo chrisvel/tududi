@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-    PencilSquareIcon,
-    TrashIcon,
-} from '@heroicons/react/24/solid';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import AreaModal from './Area/AreaModal';
 import { useStore } from '../store/useStore';

@@ -54,7 +54,6 @@ const Tasks: React.FC = () => {
 
     const title = stateTitle || getTitleAndIcon(query, projects, t).title;
 
-
     const tag = query.get('tag');
     const status = query.get('status');
 

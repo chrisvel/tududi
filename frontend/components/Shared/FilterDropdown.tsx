@@ -47,35 +47,38 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
         };
     }, [isOpen]);
 
-    const selectedOption = options.find(option => option.value === value);
+    const selectedOption = options.find((option) => option.value === value);
     const isMobile = size === 'mobile';
 
     // Calculate width based on longest option if autoWidth is enabled
     const getMinWidth = () => {
         if (!autoWidth) return {};
-        
-        const longestLabel = options.reduce((longest, option) => 
-            option.label.length > longest.length ? option.label : longest
-        , '');
-        
+
+        const longestLabel = options.reduce(
+            (longest, option) =>
+                option.label.length > longest.length ? option.label : longest,
+            ''
+        );
+
         // More accurate width calculation:
-        // - Character width: ~6px for text-xs, ~7px for text-sm  
+        // - Character width: ~6px for text-xs, ~7px for text-sm
         // - Padding: 12px left + 16px right (px-3 = 12px, px-4 = 16px)
         // - Icon space: ~20px for chevron icon
         const charWidth = isMobile ? 6 : 7;
         const padding = isMobile ? 24 : 32; // px-3 py-1.5 vs px-4 py-2
         const iconSpace = 20;
-        const estimatedWidth = longestLabel.length * charWidth + padding + iconSpace;
-        
+        const estimatedWidth =
+            longestLabel.length * charWidth + padding + iconSpace;
+
         return { minWidth: `${estimatedWidth}px` };
     };
 
     const dynamicStyles = getMinWidth();
-    const widthClass = autoWidth ? "" : (isMobile ? "w-32" : "w-40");
+    const widthClass = autoWidth ? '' : isMobile ? 'w-32' : 'w-40';
 
     const buttonClasses = `inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm ${isMobile ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'} bg-white dark:bg-gray-700 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors ${widthClass}`;
 
-    const iconSize = isMobile ? "h-3 w-3" : "h-4 w-4";
+    const iconSize = isMobile ? 'h-3 w-3' : 'h-4 w-4';
 
     return (
         <div className={`relative ${className}`} ref={dropdownRef}>
@@ -95,7 +98,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
                 />
             </button>
             {isOpen && (
-                <div 
+                <div
                     className={`origin-top-right absolute right-0 mt-1 ${!autoWidth ? (isMobile ? 'w-36' : 'w-40') : ''} rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50`}
                     style={autoWidth ? dynamicStyles : {}}
                 >
@@ -113,7 +116,9 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
                                 <span className="flex items-center justify-between">
                                     <span>{option.label}</span>
                                     {value === option.value && (
-                                        <CheckIcon className={`${iconSize} ml-2`} />
+                                        <CheckIcon
+                                            className={`${iconSize} ml-2`}
+                                        />
                                     )}
                                 </span>
                             </button>
