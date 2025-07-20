@@ -19,22 +19,9 @@ import { fetchAreas } from '../utils/areasService';
 import { useTranslation } from 'react-i18next';
 
 import { Project } from '../entities/Project';
-import { PriorityType } from '../entities/Task';
 import { useSearchParams } from 'react-router-dom';
 import ProjectItem from './Project/ProjectItem';
 
-const getPriorityStyles = (priority: PriorityType) => {
-    switch (priority) {
-        case 'low':
-            return { color: 'bg-green-500' };
-        case 'medium':
-            return { color: 'bg-yellow-500' };
-        case 'high':
-            return { color: 'bg-red-500' };
-        default:
-            return { color: 'bg-gray-500' };
-    }
-};
 
 // Reusable dropdown component
 interface DropdownOption {

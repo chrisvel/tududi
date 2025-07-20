@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     BookOpenIcon,
-    PencilSquareIcon,
-    TrashIcon,
     MagnifyingGlassIcon,
 } from '@heroicons/react/24/solid';
 import NoteModal from './Note/NoteModal';

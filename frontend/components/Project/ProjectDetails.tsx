@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 import {
     PencilSquareIcon,
     TrashIcon,
     FolderIcon,
-    Cog6ToothIcon,
     CheckIcon,
     FunnelIcon,
 } from '@heroicons/react/24/outline';
@@ -42,7 +41,6 @@ import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
 const ProjectDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const location = useLocation();
     const { t } = useTranslation();
     const { showSuccessToast } = useToast();
 

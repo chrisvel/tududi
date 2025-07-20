@@ -11,6 +11,7 @@ import { PriorityType } from '../../entities/Task';
 import Switch from '../Shared/Switch';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
+import { fetchTags } from '../../utils/tagsService';
 import {
     TagIcon,
     Squares2X2Icon,
@@ -62,6 +63,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     const { tagsStore } = useStore();
     const { tags: availableTags } = tagsStore;
+    
+    const [localAvailableTags, setLocalAvailableTags] = useState<
+        Array<{ name: string }>
+    >([]);
+    const [tagsLoaded, setTagsLoaded] = useState(false);
 
     const modalRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,6 +87,28 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     const { showSuccessToast } = useToast();
     const { t } = useTranslation();
+
+    // Load tags when modal opens
+    useEffect(() => {
+        const loadTags = async () => {
+            if (isOpen && !tagsLoaded) {
+                try {
+                    const fetchedTags = await fetchTags();
+                    // Ensure fetchedTags is always an array
+                    const safeTagsArray = Array.isArray(fetchedTags)
+                        ? fetchedTags
+                        : [];
+                    setLocalAvailableTags(safeTagsArray);
+                    setTagsLoaded(true);
+                } catch (error) {
+                    console.error('Error loading tags:', error);
+                    setLocalAvailableTags([]);
+                }
+            }
+        };
+
+        loadTags();
+    }, [isOpen, tagsLoaded]);
 
     useEffect(() => {
         if (project) {
@@ -347,16 +375,20 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 // Auto-scroll to show the expanded section
                 if (newExpanded[section]) {
                     setTimeout(() => {
-                        const scrollContainer = document.querySelector(
-                            '.absolute.inset-0.overflow-y-auto'
-                        );
+                        // Try multiple selectors to find the scroll container
+                        const scrollContainer = 
+                            modalRef.current?.querySelector('.absolute.inset-0.overflow-y-auto') ||
+                            modalRef.current?.querySelector('[style*="overflow-y"]') ||
+                            modalRef.current?.querySelector('.overflow-y-auto') ||
+                            document.querySelector('.absolute.inset-0.overflow-y-auto');
+                        
                         if (scrollContainer) {
                             scrollContainer.scrollTo({
                                 top: scrollContainer.scrollHeight,
                                 behavior: 'smooth',
                             });
                         }
-                    }, 100); // Small delay to ensure DOM is updated
+                    }, 250); // Increased delay to ensure DOM is updated
                 }
 
                 return newExpanded;
@@ -480,7 +512,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         }
                                                         initialTags={tags}
                                                         availableTags={
-                                                            availableTags
+                                                            localAvailableTags.length > 0 
+                                                                ? localAvailableTags 
+                                                                : availableTags
                                                         }
                                                     />
                                                 </div>

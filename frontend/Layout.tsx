@@ -17,9 +17,9 @@ import { Project } from './entities/Project';
 import { Task } from './entities/Task';
 import { User } from './entities/User';
 import { useStore } from './store/useStore';
-import { fetchNotes, createNote, updateNote } from './utils/notesService';
-import { fetchAreas, createArea, updateArea } from './utils/areasService';
-import { fetchTags, createTag, updateTag } from './utils/tagsService';
+import { createNote, updateNote } from './utils/notesService';
+import { createArea, updateArea } from './utils/areasService';
+import { createTag, updateTag } from './utils/tagsService';
 import {
     fetchProjects,
     createProject,
@@ -64,17 +64,11 @@ const Layout: React.FC<LayoutProps> = ({
     const {
         notesStore: {
             notes,
-            setNotes,
-            setLoading: setNotesLoading,
-            setError: setNotesError,
             isLoading: isNotesLoading,
             isError: isNotesError,
         },
         areasStore: {
             areas,
-            setAreas,
-            setLoading: setAreasLoading,
-            setError: setAreasError,
             isLoading: isAreasLoading,
             isError: isAreasError,
         },
@@ -82,16 +76,11 @@ const Layout: React.FC<LayoutProps> = ({
         projectsStore: {
             projects,
             setProjects,
-            setLoading: setProjectsLoading,
-            setError: setProjectsError,
             isLoading: isProjectsLoading,
             isError: isProjectsError,
         },
         tagsStore: {
             tags,
-            setTags,
-            setLoading: setTagsLoading,
-            setError: setTagsError,
             isLoading: isTagsLoading,
             isError: isTagsError,
         },
