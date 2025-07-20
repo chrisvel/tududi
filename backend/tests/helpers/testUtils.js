@@ -4,7 +4,7 @@ const { User } = require('../../models');
 const createTestUser = async (userData = {}) => {
     const defaultUser = {
         email: 'test@example.com',
-        password: 'password123', // Use password field to trigger model hook
+        password_digest: '$2b$10$DPcA0XSvK9FT04mLyKGza.uHb8d.bESwP.XdQfQ47.sKVT4fYzbP.', // Pre-computed hash for 'password123'
         ...userData,
     };
 

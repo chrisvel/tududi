@@ -14,15 +14,17 @@ beforeAll(async () => {
 beforeEach(async () => {
     // Clean all tables except Sessions to avoid conflicts
     try {
-        const models = Object.values(sequelize.models);
-        const nonSessionModels = models.filter(
-            (model) => model.name !== 'Session'
-        );
-        await Promise.all(
-            nonSessionModels.map((model) =>
-                model.destroy({ truncate: true, cascade: true })
-            )
-        );
+        // Use raw SQL for faster cleanup
+        const tableNames = [
+            'users', 'areas', 'projects', 'tasks', 'tags', 'notes', 
+            'inbox_items', 'task_events', 'tasks_tags', 'notes_tags', 'projects_tags'
+        ];
+        
+        await sequelize.query('PRAGMA foreign_keys = OFF');
+        for (const tableName of tableNames) {
+            await sequelize.query(`DELETE FROM ${tableName}`);
+        }
+        await sequelize.query('PRAGMA foreign_keys = ON');
     } catch (error) {
         // Ignore errors during cleanup
     }
