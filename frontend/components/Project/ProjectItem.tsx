@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Project } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
 
@@ -41,8 +42,8 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         <div
             className={`${
                 viewMode === 'cards'
-                    ? 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col'
-                    : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4'
+                    ? 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group'
+                    : 'bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-row items-center p-4 group'
             }`}
             style={{
                 minHeight: viewMode === 'cards' ? '250px' : 'auto',
@@ -50,40 +51,50 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             }}
         >
             {viewMode === 'cards' && (
-                <div
-                    className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg relative"
-                    style={{ height: '140px' }}
-                >
+                <Link to={`/project/${project.id}`}>
+                    <div
+                        className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg relative cursor-pointer hover:opacity-90 transition-opacity"
+                        style={{ height: '140px' }}
+                    >
+                        {project.image_url ? (
+                            <img
+                                src={project.image_url}
+                                alt={project.name}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <span
+                                className="text-2xl font-extrabold text-gray-500 dark:text-gray-400 opacity-20"
+                                aria-label={t('projectItem.projectInitials')}
+                            >
+                                {getProjectInitials(project.name)}
+                            </span>
+                        )}
+                    </div>
+                </Link>
+            )}
+
+            {viewMode === 'list' && (
+                <Link to={`/project/${project.id}`} className="w-10 h-10 mr-3 flex-shrink-0">
                     {project.image_url ? (
                         <img
                             src={project.image_url}
                             alt={project.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity"
                         />
                     ) : (
-                        <span
-                            className="text-2xl font-extrabold text-gray-500 dark:text-gray-400 opacity-20"
-                            aria-label={t('projectItem.projectInitials')}
-                        >
-                            {getProjectInitials(project.name)}
-                        </span>
+                        <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
+                            <span className="text-xs font-extrabold text-gray-500 dark:text-gray-400 opacity-20">
+                                {getProjectInitials(project.name)}
+                            </span>
+                        </div>
                     )}
-                </div>
-            )}
-
-            {viewMode === 'list' && project.image_url && (
-                <div className="w-16 h-16 mr-4 flex-shrink-0">
-                    <img
-                        src={project.image_url}
-                        alt={project.name}
-                        className="w-full h-full object-cover rounded-md"
-                    />
-                </div>
+                </Link>
             )}
 
             <div
-                className={`flex justify-between items-start ${
-                    viewMode === 'cards' ? 'p-4 flex-1' : 'flex-1'
+                className={`flex justify-between ${
+                    viewMode === 'cards' ? 'items-start p-4 flex-1' : 'items-center flex-1'
                 }`}
             >
                 <div className="flex items-center">
@@ -92,44 +103,66 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                         className={`${
                             viewMode === 'cards'
                                 ? 'text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline line-clamp-2'
-                                : 'text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline'
+                                : 'text-md font-semibold text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-200 transition-colors'
                         }`}
                     >
                         {project.name}
                     </Link>
                 </div>
                 <div className="relative">
-                    <button
-                        className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none"
-                        onClick={() =>
-                            setActiveDropdown(
-                                activeDropdown === project.id
-                                    ? null
-                                    : (project.id ?? null)
-                            )
-                        }
-                        aria-label={t('projectItem.toggleDropdownMenu')}
-                    >
-                        <EllipsisVerticalIcon className="h-5 w-5" />
-                    </button>
-
-                    {activeDropdown === project.id && (
-                        <div className="absolute right-0 mt-2 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
+                    {viewMode === 'cards' ? (
+                        <>
                             <button
-                                onClick={() => handleEditProject(project)}
-                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none"
+                                onClick={() =>
+                                    setActiveDropdown(
+                                        activeDropdown === project.id
+                                            ? null
+                                            : (project.id ?? null)
+                                    )
+                                }
+                                aria-label={t('projectItem.toggleDropdownMenu')}
                             >
-                                {t('projectItem.edit')}
+                                <EllipsisVerticalIcon className="h-5 w-5" />
+                            </button>
+
+                            {activeDropdown === project.id && (
+                                <div className="absolute right-0 mt-2 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
+                                    <button
+                                        onClick={() => handleEditProject(project)}
+                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                    >
+                                        {t('projectItem.edit')}
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setProjectToDelete(project);
+                                            setIsConfirmDialogOpen(true);
+                                            setActiveDropdown(null);
+                                        }}
+                                        className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                    >
+                                        {t('projectItem.delete')}
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <button
+                                onClick={handleEditProject}
+                                className="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                            >
+                                <PencilSquareIcon className="h-5 w-5" />
                             </button>
                             <button
                                 onClick={() => {
                                     setProjectToDelete(project);
                                     setIsConfirmDialogOpen(true);
-                                    setActiveDropdown(null);
                                 }}
-                                className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                className="text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
                             >
-                                {t('projectItem.delete')}
+                                <TrashIcon className="h-5 w-5" />
                             </button>
                         </div>
                     )}

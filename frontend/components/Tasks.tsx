@@ -276,9 +276,6 @@ const Tasks: React.FC = () => {
                 {/* Title row with info button and filters dropdown on the right */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
                     <div className="flex items-center mb-2 sm:mb-0">
-                        {IconComponent && (
-                            <IconComponent className="h-6 w-6 mr-2" />
-                        )}
                         <h2 className="text-2xl font-light">{title}</h2>
                         {tag && (
                             <div className="ml-4 flex items-center space-x-2">

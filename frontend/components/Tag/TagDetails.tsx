@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-    TagIcon,
     CheckIcon,
     BookOpenIcon,
     FolderIcon,
@@ -209,9 +208,8 @@ const TagDetails: React.FC = () => {
             <div className="w-full max-w-5xl">
                 {/* Tag Header */}
                 <div className="flex items-center mb-8">
-                    <TagIcon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
                     <h2 className="text-2xl font-light text-gray-900 dark:text-white">
-                        {tag.name}
+                        Tag: {tag.name}
                     </h2>
                 </div>
 

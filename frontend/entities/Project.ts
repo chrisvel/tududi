@@ -21,4 +21,6 @@ export interface Project {
     image_url?: string;
     task_show_completed?: boolean;
     task_sort_order?: string;
+    created_at?: string;
+    updated_at?: string;
 }

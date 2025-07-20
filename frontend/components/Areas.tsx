@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import {
     PencilSquareIcon,
     TrashIcon,
-    Squares2X2Icon,
 } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import AreaModal from './Area/AreaModal';
@@ -108,7 +107,6 @@ const Areas: React.FC = () => {
             <div className="w-full max-w-5xl">
                 {/* Areas Header */}
                 <div className="flex items-center mb-8">
-                    <Squares2X2Icon className="h-6 w-6 mr-2" />
                     <h2 className="text-2xl font-light">{t('areas.title')}</h2>
                 </div>
 

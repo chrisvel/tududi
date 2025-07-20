@@ -6,8 +6,6 @@ import {
     PencilSquareIcon,
     TrashIcon,
     FolderIcon,
-    CheckIcon,
-    FunnelIcon,
     TagIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
@@ -37,6 +35,7 @@ import {
 import { isAuthError } from '../../utils/authUtils';
 import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
+import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
 
 const ProjectDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -57,13 +56,15 @@ const ProjectDetails: React.FC = () => {
     const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
     const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(false);
     const hasCheckedAutoSuggest = useRef(false);
-    const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-    const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
     const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const mobileSettingsRef = useRef<HTMLDivElement>(null);
-    const desktopSettingsRef = useRef<HTMLDivElement>(null);
+
+    // Sort options for tasks
+    const sortOptions: SortOption[] = [
+        { value: 'created_at:desc', label: 'Created at' },
+        { value: 'due_date:asc', label: 'Due date' },
+        { value: 'priority:desc', label: 'Priority' },
+    ];
 
     // Note modal state
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -161,35 +162,6 @@ const ProjectDetails: React.FC = () => {
         loadProjectData();
     }, [id]);
 
-    // Handle click outside dropdowns
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
-                setDropdownOpen(false);
-            }
-
-            // Check if click is outside both mobile and desktop settings dropdowns
-            const isOutsideMobile =
-                mobileSettingsRef.current &&
-                !mobileSettingsRef.current.contains(event.target as Node);
-            const isOutsideDesktop =
-                desktopSettingsRef.current &&
-                !desktopSettingsRef.current.contains(event.target as Node);
-
-            if (isOutsideMobile && isOutsideDesktop) {
-                setSettingsOpen(false);
-            }
-        };
-        if (dropdownOpen || settingsOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [dropdownOpen, settingsOpen]);
 
     const handleTaskCreate = async (taskName: string) => {
         if (!project) {
@@ -403,21 +375,17 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
-    const handleSortChange = (order: string) => {
-        setOrderBy(order);
-        localStorage.setItem('project_order_by', order);
-        setSettingsOpen(false);
-
-        // Save to project (remove navigation to prevent re-render)
-        saveProjectPreferences(showCompleted, order);
-    };
-
     const handleShowCompletedChange = (checked: boolean) => {
         setShowCompleted(checked);
-        setSettingsOpen(false);
 
         // Save to project (remove navigation to prevent re-render)
         saveProjectPreferences(checked, orderBy);
+    };
+
+    const handleSortChange = (newOrderBy: string) => {
+        setOrderBy(newOrderBy);
+        // Save to project
+        saveProjectPreferences(showCompleted, newOrderBy);
     };
 
     const handleDeleteProject = async () => {
@@ -603,97 +571,80 @@ const ProjectDetails: React.FC = () => {
     return (
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
-                {/* Project Banner Image */}
-                {project.image_url && (
-                    <div className="mb-6 rounded-lg overflow-hidden relative group">
+                {/* Project Banner - Unified for both with and without images */}
+                <div className="mb-6 rounded-lg overflow-hidden relative group">
+                    {/* Background - Image or Gradient */}
+                    {project.image_url ? (
                         <img
                             src={project.image_url}
                             alt={project.name}
                             className="w-full h-64 object-cover"
                         />
-                        {/* Title Overlay */}
-                        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                            <div className="text-center px-4">
-                                <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
-                                    {project.name}
-                                </h1>
-                                {project.description && (
-                                    <p className="text-lg md:text-xl text-white/90 mt-2 font-light drop-shadow-md max-w-2xl mx-auto">
-                                        {project.description}
-                                    </p>
-                                )}
-                            </div>
+                    ) : (
+                        <div className="w-full h-64 bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
+                    )}
+                    
+                    {/* Title Overlay */}
+                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                        <div className="text-center px-4">
+                            <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
+                                {project.name}
+                            </h1>
+                            {project.description && (
+                                <p className="text-lg md:text-xl text-white/90 mt-2 font-light drop-shadow-md max-w-2xl mx-auto">
+                                    {project.description}
+                                </p>
+                            )}
                         </div>
-                        {/* Tags Display - Bottom Left */}
-                        {project.tags && project.tags.length > 0 && (
-                            <div className="absolute bottom-2 left-2 flex items-center space-x-1">
-                                <div className="flex items-center space-x-1 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
-                                    <TagIcon className="h-3 w-3 text-white/70" />
-                                    <div className="flex items-center space-x-1">
-                                        {project.tags.map((tag, index) => (
-                                            <span key={tag.id || index}>
-                                                <button
-                                                    onClick={() => {
-                                                        // Navigate to tag details page
-                                                        navigate(`/tag/${encodeURIComponent(tag.name)}`);
-                                                    }}
-                                                    className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
-                                                >
-                                                    {tag.name}
-                                                </button>
-                                                {index < project.tags.length - 1 && (
-                                                    <span className="text-white/60 text-xs">, </span>
-                                                )}
-                                            </span>
-                                        ))}
-                                    </div>
+                    </div>
+                    
+                    {/* Tags Display - Bottom Left */}
+                    {project.tags && project.tags.length > 0 && (
+                        <div className="absolute bottom-2 left-2 flex items-center space-x-1">
+                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
+                                <TagIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
+                                <div className="flex items-center space-x-1">
+                                    {project.tags.map((tag, index) => (
+                                        <span key={tag.id || index}>
+                                            <button
+                                                onClick={() => {
+                                                    // Navigate to tag details page
+                                                    navigate(
+                                                        `/tag/${encodeURIComponent(tag.name)}`
+                                                    );
+                                                }}
+                                                className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
+                                            >
+                                                {tag.name}
+                                            </button>
+                                            {index < project.tags.length - 1 && (
+                                                <span className="text-white/60 text-xs">
+                                                    ,{' '}
+                                                </span>
+                                            )}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
-                        )}
+                        </div>
+                    )}
 
-                        {/* Edit/Delete Buttons on Image - Show only on hover */}
-                        <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <button
-                                onClick={handleEditProject}
-                                className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                            >
-                                <PencilSquareIcon className="h-5 w-5" />
-                            </button>
-                            <button
-                                onClick={() => setIsConfirmDialogOpen(true)}
-                                className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                            >
-                                <TrashIcon className="h-5 w-5" />
-                            </button>
-                        </div>
+                    {/* Edit/Delete Buttons - Bottom Right */}
+                    <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button
+                            onClick={handleEditProject}
+                            className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                        >
+                            <PencilSquareIcon className="h-5 w-5" />
+                        </button>
+                        <button
+                            onClick={() => setIsConfirmDialogOpen(true)}
+                            className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                        >
+                            <TrashIcon className="h-5 w-5" />
+                        </button>
                     </div>
-                )}
-
-                {/* Project Header - Only show when no image */}
-                {!project.image_url && (
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center">
-                            <FolderIcon className="h-6 w-6 text-gray-500 mr-3" />
-                            <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100 mr-2">
-                                {project.name}
-                            </h2>
-                        </div>
-                        <div className="flex space-x-2">
-                            <button
-                                onClick={handleEditProject}
-                                className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
-                            >
-                                <PencilSquareIcon className="h-5 w-5" />
-                            </button>
-                            <button
-                                onClick={() => setIsConfirmDialogOpen(true)}
-                                className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
-                            >
-                                <TrashIcon className="h-5 w-5" />
-                            </button>
-                        </div>
-                    </div>
-                )}
+                </div>
 
                 {/* Header with Tab Links and Controls */}
                 <div className="mb-4">
@@ -789,109 +740,12 @@ const ProjectDetails: React.FC = () => {
                                     </div>
 
                                     {/* Sort Filter */}
-                                    <div
-                                        className="relative"
-                                        ref={mobileSettingsRef}
-                                    >
-                                        <button
-                                            type="button"
-                                            className="inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-3 py-1.5 bg-white dark:bg-gray-700 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors w-32"
-                                            onClick={() =>
-                                                setSettingsOpen(!settingsOpen)
-                                            }
-                                        >
-                                            <div className="flex items-center">
-                                                <FunnelIcon className="h-3 w-3 mr-1" />
-                                                <span className="whitespace-nowrap">
-                                                    {[
-                                                        {
-                                                            value: 'created_at:desc',
-                                                            label: 'Created at',
-                                                        },
-                                                        {
-                                                            value: 'due_date:asc',
-                                                            label: 'Due date',
-                                                        },
-                                                        {
-                                                            value: 'name:asc',
-                                                            label: 'Name',
-                                                        },
-                                                        {
-                                                            value: 'priority:desc',
-                                                            label: 'Priority',
-                                                        },
-                                                        {
-                                                            value: 'status:desc',
-                                                            label: 'Status',
-                                                        },
-                                                    ].find(
-                                                        (option) =>
-                                                            option.value ===
-                                                            orderBy
-                                                    )?.label || 'Created at'}
-                                                </span>
-                                            </div>
-                                            <span className="text-xs ml-1">
-                                                {orderBy?.includes(':desc')
-                                                    ? '↓'
-                                                    : '↑'}
-                                            </span>
-                                        </button>
-                                        {settingsOpen && (
-                                            <div className="origin-top-right absolute -right-8 mt-1 w-36 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50">
-                                                <div className="p-1">
-                                                    {[
-                                                        {
-                                                            value: 'created_at:desc',
-                                                            label: 'Created at',
-                                                        },
-                                                        {
-                                                            value: 'due_date:asc',
-                                                            label: 'Due date',
-                                                        },
-                                                        {
-                                                            value: 'name:asc',
-                                                            label: 'Name',
-                                                        },
-                                                        {
-                                                            value: 'priority:desc',
-                                                            label: 'Priority',
-                                                        },
-                                                        {
-                                                            value: 'status:desc',
-                                                            label: 'Status',
-                                                        },
-                                                    ].map((option) => (
-                                                        <button
-                                                            key={option.value}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleSortChange(
-                                                                    option.value
-                                                                );
-                                                                setSettingsOpen(
-                                                                    false
-                                                                );
-                                                            }}
-                                                            className="block px-4 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                                        >
-                                                            <span className="flex items-center justify-between">
-                                                                <span>
-                                                                    {
-                                                                        option.label
-                                                                    }
-                                                                </span>
-                                                                {orderBy ===
-                                                                    option.value && (
-                                                                    <CheckIcon className="h-3 w-3" />
-                                                                )}
-                                                            </span>
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
+                                    <SortFilterButton
+                                        options={sortOptions}
+                                        value={orderBy}
+                                        onChange={handleSortChange}
+                                        size="mobile"
+                                    />
                                 </div>
                             )}
                         </div>
@@ -964,106 +818,12 @@ const ProjectDetails: React.FC = () => {
                                 </div>
 
                                 {/* Sort Filter */}
-                                <div
-                                    className="relative"
-                                    ref={desktopSettingsRef}
-                                >
-                                    <button
-                                        type="button"
-                                        className="inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors w-40"
-                                        onClick={() =>
-                                            setSettingsOpen(!settingsOpen)
-                                        }
-                                    >
-                                        <div className="flex items-center">
-                                            <FunnelIcon className="h-4 w-4 mr-2" />
-                                            <span>
-                                                {[
-                                                    {
-                                                        value: 'created_at:desc',
-                                                        label: 'Created at',
-                                                    },
-                                                    {
-                                                        value: 'due_date:asc',
-                                                        label: 'Due date',
-                                                    },
-                                                    {
-                                                        value: 'name:asc',
-                                                        label: 'Name',
-                                                    },
-                                                    {
-                                                        value: 'priority:desc',
-                                                        label: 'Priority',
-                                                    },
-                                                    {
-                                                        value: 'status:desc',
-                                                        label: 'Status',
-                                                    },
-                                                ].find(
-                                                    (option) =>
-                                                        option.value === orderBy
-                                                )?.label || 'Created at'}
-                                            </span>
-                                        </div>
-                                        <span className="text-sm ml-2">
-                                            {orderBy?.includes(':desc')
-                                                ? '↓'
-                                                : '↑'}
-                                        </span>
-                                    </button>
-                                    {settingsOpen && (
-                                        <div className="origin-top-right absolute right-0 mt-1 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50">
-                                            <div className="p-1">
-                                                {[
-                                                    {
-                                                        value: 'created_at:desc',
-                                                        label: 'Created at',
-                                                    },
-                                                    {
-                                                        value: 'due_date:asc',
-                                                        label: 'Due date',
-                                                    },
-                                                    {
-                                                        value: 'name:asc',
-                                                        label: 'Name',
-                                                    },
-                                                    {
-                                                        value: 'priority:desc',
-                                                        label: 'Priority',
-                                                    },
-                                                    {
-                                                        value: 'status:desc',
-                                                        label: 'Status',
-                                                    },
-                                                ].map((option) => (
-                                                    <button
-                                                        key={option.value}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleSortChange(
-                                                                option.value
-                                                            );
-                                                            setSettingsOpen(
-                                                                false
-                                                            );
-                                                        }}
-                                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                                    >
-                                                        <span className="flex items-center justify-between">
-                                                            <span>
-                                                                {option.label}
-                                                            </span>
-                                                            {orderBy ===
-                                                                option.value && (
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            )}
-                                                        </span>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
+                                <SortFilterButton
+                                    options={sortOptions}
+                                    value={orderBy}
+                                    onChange={handleSortChange}
+                                    size="desktop"
+                                />
                             </div>
                         )}
                     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BookOpenIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import SortFilterButton, { SortOption } from './Shared/SortFilterButton';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import NoteCard from './Shared/NoteCard';
@@ -23,6 +24,8 @@ const Notes: React.FC = () => {
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [isSearchExpanded, setIsSearchExpanded] = useState<boolean>(false);
+    const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
     // Get projects from store
     const projects = useStore((state) => state.projectsStore.projects);
@@ -61,6 +64,18 @@ const Notes: React.FC = () => {
 
         loadProjectsIfNeeded();
     }, []); // Remove dependencies to force it to run once
+
+    // Sort options for notes
+    const sortOptions: SortOption[] = [
+        { value: 'created_at:desc', label: 'Created at' },
+        { value: 'title:asc', label: 'Title' },
+        { value: 'updated_at:desc', label: 'Updated at' },
+    ];
+
+    // Handle sort change
+    const handleSortChange = (newOrderBy: string) => {
+        setOrderBy(newOrderBy);
+    };
 
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
@@ -120,6 +135,34 @@ const Notes: React.FC = () => {
             note.content.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Sort the filtered notes
+    const sortedNotes = [...filteredNotes].sort((a, b) => {
+        const [field, direction] = orderBy.split(':');
+        const isAsc = direction === 'asc';
+
+        let valueA, valueB;
+
+        switch (field) {
+            case 'title':
+                valueA = a.title?.toLowerCase() || '';
+                valueB = b.title?.toLowerCase() || '';
+                break;
+            case 'updated_at':
+                valueA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+                valueB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+                break;
+            case 'created_at':
+            default:
+                valueA = a.created_at ? new Date(a.created_at).getTime() : 0;
+                valueB = b.created_at ? new Date(b.created_at).getTime() : 0;
+                break;
+        }
+
+        if (valueA < valueB) return isAsc ? -1 : 1;
+        if (valueA > valueB) return isAsc ? 1 : -1;
+        return 0;
+    });
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
@@ -143,12 +186,49 @@ const Notes: React.FC = () => {
             <div className="w-full max-w-5xl">
                 {/* Notes Header */}
                 <div className="flex items-center mb-8">
-                    <BookOpenIcon className="h-6 w-6 mr-2" />
                     <h2 className="text-2xl font-light">{t('notes.title')}</h2>
                 </div>
 
-                {/* Search Bar with Icon */}
-                <div className="mb-4">
+                {/* Header with Search and Sort Controls */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 space-y-4 md:space-y-0">
+                    <div className="flex items-center space-x-2">
+                        {/* Search Toggle Button */}
+                        <button
+                            onClick={() =>
+                                setIsSearchExpanded(!isSearchExpanded)
+                            }
+                            className={`p-2 rounded-md focus:outline-none transition-colors ${
+                                isSearchExpanded
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                            }`}
+                            aria-label={t('common.search', 'Search')}
+                        >
+                            <MagnifyingGlassIcon className="h-5 w-5" />
+                        </button>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
+                        {/* Sort Filter Button */}
+                        <div className="w-full md:w-auto">
+                            <SortFilterButton
+                                options={sortOptions}
+                                value={orderBy}
+                                onChange={handleSortChange}
+                                size="desktop"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Collapsible Search Bar */}
+                <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                        isSearchExpanded
+                            ? 'max-h-20 opacity-100 mb-4'
+                            : 'max-h-0 opacity-0 mb-0'
+                    }`}
+                >
                     <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm p-2">
                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
                         <input
@@ -162,13 +242,13 @@ const Notes: React.FC = () => {
                 </div>
 
                 {/* Notes List */}
-                {filteredNotes.length === 0 ? (
+                {sortedNotes.length === 0 ? (
                     <p className="text-gray-700 dark:text-gray-300">
                         {t('notes.noNotesFound')}
                     </p>
                 ) : (
                     <ul className="space-y-1">
-                        {filteredNotes.map((note) => (
+                        {sortedNotes.map((note) => (
                             <li key={note.id}>
                                 <NoteCard
                                     note={note}
