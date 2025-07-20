@@ -13,7 +13,7 @@ This app allows users to manage their tasks, projects, areas, notes, and tags in
 
 ## 🧠 Philosophy
 
-For the thinking behind tududi, read [Designing a Life Management System That Doesn't Fight Back](https://example.com/designing-a-life-management-system-that-doesnt-fight-back)
+For the thinking behind tududi, read [Designing a Life Management System That Doesn't Fight Back]([https://example.com/designing-a-life-management-system-that-doesnt-fight-back](https://medium.com/@chrisveleris/designing-a-life-management-system-that-doesnt-fight-back-2fd58773e857))
 
 ## ✨ Features
 
