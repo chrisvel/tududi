@@ -16,10 +16,19 @@ beforeEach(async () => {
     try {
         // Use raw SQL for faster cleanup
         const tableNames = [
-            'users', 'areas', 'projects', 'tasks', 'tags', 'notes', 
-            'inbox_items', 'task_events', 'tasks_tags', 'notes_tags', 'projects_tags'
+            'users',
+            'areas',
+            'projects',
+            'tasks',
+            'tags',
+            'notes',
+            'inbox_items',
+            'task_events',
+            'tasks_tags',
+            'notes_tags',
+            'projects_tags',
         ];
-        
+
         await sequelize.query('PRAGMA foreign_keys = OFF');
         for (const tableName of tableNames) {
             await sequelize.query(`DELETE FROM ${tableName}`);
