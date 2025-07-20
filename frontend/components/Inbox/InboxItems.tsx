@@ -11,6 +11,7 @@ import {
 import InboxItemDetail from './InboxItemDetail';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
+import { InboxIcon } from '@heroicons/react/24/outline';
 import LoadingScreen from '../Shared/LoadingScreen';
 import TaskModal from '../Task/TaskModal';
 import ProjectModal from '../Project/ProjectModal';

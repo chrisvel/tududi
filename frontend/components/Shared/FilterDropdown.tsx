@@ -76,7 +76,6 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
     const buttonClasses = `inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm ${isMobile ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm'} bg-white dark:bg-gray-700 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors ${widthClass}`;
 
     const iconSize = isMobile ? "h-3 w-3" : "h-4 w-4";
-    const textSize = isMobile ? "text-xs" : "text-sm";
 
     return (
         <div className={`relative ${className}`} ref={dropdownRef}>

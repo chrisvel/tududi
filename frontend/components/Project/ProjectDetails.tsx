@@ -5,7 +5,6 @@ import { useToast } from '../Shared/ToastContext';
 import {
     PencilSquareIcon,
     TrashIcon,
-    FolderIcon,
     TagIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';

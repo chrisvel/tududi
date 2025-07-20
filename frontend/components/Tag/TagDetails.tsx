@@ -7,6 +7,7 @@ import {
     FolderIcon,
     PencilSquareIcon,
     TrashIcon,
+    TagIcon,
 } from '@heroicons/react/24/solid';
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';

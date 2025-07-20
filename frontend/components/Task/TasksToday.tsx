@@ -13,6 +13,7 @@ import {
     ChevronDownIcon,
     ChevronRightIcon,
     Cog6ToothIcon,
+    CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 import { fetchTasks, updateTask, deleteTask } from '../../utils/tasksService';
 import { fetchProjects } from '../../utils/projectsService';
