@@ -50,12 +50,9 @@ const Tasks: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const query = new URLSearchParams(location.search);
-    const { title: stateTitle, icon: stateIcon } = location.state || {};
+    const { title: stateTitle } = location.state || {};
 
-    const { title, icon } =
-        stateTitle && stateIcon
-            ? { title: stateTitle, icon: stateIcon }
-            : getTitleAndIcon(query, projects, t);
+    const title = stateTitle || getTitleAndIcon(query, projects, t).title;
 
 
     const tag = query.get('tag');
