@@ -17,6 +17,8 @@ export interface Project {
     Tasks?: Task[]; // Sequelize association naming (capitalized)
     notes?: Note[];
     Notes?: Note[]; // Sequelize association naming (capitalized)
-    due_date_at?: string;
+    due_date_at?: string | null;
     image_url?: string;
+    task_show_completed?: boolean;
+    task_sort_order?: string;
 }

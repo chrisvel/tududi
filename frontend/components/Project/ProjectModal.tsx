@@ -5,6 +5,8 @@ import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
 import PriorityDropdown from '../Shared/PriorityDropdown';
+import AreaDropdown from '../Shared/AreaDropdown';
+import DatePicker from '../Shared/DatePicker';
 import { PriorityType } from '../../entities/Task';
 import Switch from '../Shared/Switch';
 import { useStore } from '../../store/useStore';
@@ -44,7 +46,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             active: true,
             tags: [],
             priority: 'low',
-            due_date_at: '',
+            due_date_at: null,
             image_url: '',
         }
     );
@@ -82,10 +84,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     useEffect(() => {
         if (project) {
+            // Convert ISO date to YYYY-MM-DD format if needed
+            let dueDateValue = project.due_date_at;
+            if (dueDateValue && dueDateValue.includes('T')) {
+                dueDateValue = dueDateValue.split('T')[0];
+            }
+            
             setFormData({
                 ...project,
                 tags: project.tags || [],
-                due_date_at: project.due_date_at || '',
+                due_date_at: dueDateValue || null,
                 image_url: project.image_url || '',
             });
             setTags(project.tags?.map((tag) => tag.name) || []);
@@ -98,7 +106,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 active: true,
                 tags: [],
                 priority: 'low',
-                due_date_at: '',
+                due_date_at: null,
                 image_url: '',
             });
             setTags([]);
@@ -176,9 +184,15 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 }));
             }
         } else {
+            // Handle empty date values by converting to null
+            let processedValue: any = value;
+            if (name === 'due_date_at' && value === '') {
+                processedValue = null;
+            }
+            
             setFormData((prev) => ({
                 ...prev,
-                [name]: value,
+                [name]: processedValue,
             }));
         }
     };
@@ -190,6 +204,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             tags: newTags.map((name) => ({ name })),
         }));
     }, []);
+
+    const handleDueDateChange = (value: string) => {
+        setFormData((prev) => ({
+            ...prev,
+            due_date_at: value || null,
+        }));
+    };
 
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -348,6 +369,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     return (
         <>
+            
             <div
                 className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
                     isClosing ? 'opacity-0' : 'opacity-100'
@@ -472,31 +494,18 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                             'Area'
                                                         )}
                                                     </h3>
-                                                    <select
-                                                        id="projectArea"
-                                                        name="area_id"
-                                                        value={
-                                                            formData.area_id ||
-                                                            ''
-                                                        }
-                                                        onChange={handleChange}
-                                                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-                                                    >
-                                                        <option value="">
-                                                            {t(
-                                                                'common.none',
-                                                                'No Area'
-                                                            )}
-                                                        </option>
-                                                        {areas.map((area) => (
-                                                            <option
-                                                                key={area.id}
-                                                                value={area.id}
-                                                            >
-                                                                {area.name}
-                                                            </option>
-                                                        ))}
-                                                    </select>
+                                                    <div className="overflow-visible">
+                                                        <AreaDropdown
+                                                            value={formData.area_id}
+                                                            onChange={(value) =>
+                                                                setFormData((prev) => ({
+                                                                    ...prev,
+                                                                    area_id: value,
+                                                                }))
+                                                            }
+                                                            areas={areas}
+                                                        />
+                                                    </div>
                                                 </div>
                                             )}
 
@@ -601,23 +610,20 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             )}
 
                                             {expandedSections.dueDate && (
-                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
+                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 overflow-visible">
                                                     <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                                         {t(
                                                             'forms.dueDate',
                                                             'Due Date'
                                                         )}
                                                     </h3>
-                                                    <input
-                                                        type="date"
-                                                        name="due_date_at"
-                                                        value={
-                                                            formData.due_date_at ||
-                                                            ''
-                                                        }
-                                                        onChange={handleChange}
-                                                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-                                                    />
+                                                    <div className="overflow-visible">
+                                                        <DatePicker
+                                                            value={formData.due_date_at || ''}
+                                                            onChange={handleDueDateChange}
+                                                            placeholder="Select due date"
+                                                        />
+                                                    </div>
                                                 </div>
                                             )}
                                         </fieldset>

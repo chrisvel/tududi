@@ -95,17 +95,13 @@ const ProjectDetails: React.FC = () => {
         }
     }, [project, tasks.length, loading, showCompleted, autoSuggestEnabled]);
 
-    // Load sort order and show completed from URL parameters
+    // Load initial sort order from localStorage (URL params removed to prevent conflicts)
     useEffect(() => {
-        const urlParams = new URLSearchParams(location.search);
-        const sortParam = urlParams.get('sort') || localStorage.getItem('project_order_by') || 'created_at:desc';
-        const showCompletedParam = urlParams.get('completed') === 'true';
-        
+        const sortParam = localStorage.getItem('project_order_by') || 'created_at:desc';
         setOrderBy(sortParam);
-        setShowCompleted(showCompletedParam);
-    }, [location.search]);
+    }, []);
 
-    // Fetch project data when id or URL parameters change
+    // Fetch project data when id changes
     useEffect(() => {
         if (!id) return;
         
@@ -117,8 +113,7 @@ const ProjectDetails: React.FC = () => {
                 }
                 setError(false);
                 
-                const urlParams = new URLSearchParams(location.search);
-                const sortParam = urlParams.get('sort') || localStorage.getItem('project_order_by') || 'created_at:desc';
+                const sortParam = localStorage.getItem('project_order_by') || 'created_at:desc';
                                 
                 console.log(`Fetching ONLY project ${id} with fetchProjectById`);
                 const projectData = await fetchProjectById(id, {
@@ -154,7 +149,7 @@ const ProjectDetails: React.FC = () => {
         };
         
         loadProjectData();
-    }, [id, location.search]);
+    }, [id]);
 
     // Handle click outside dropdowns
     useEffect(() => {
@@ -277,8 +272,7 @@ const ProjectDetails: React.FC = () => {
         } catch {
             // Optionally refetch data on error to ensure consistency
             if (id) {
-                const urlParams = new URLSearchParams(location.search);
-                const sortParam = urlParams.get('sort') || 'created_at:desc';
+                const sortParam = localStorage.getItem('project_order_by') || 'created_at:desc';
                 
                 // Refetch project data on error to ensure consistency
                 try {
@@ -393,30 +387,16 @@ const ProjectDetails: React.FC = () => {
         setOrderBy(order);
         localStorage.setItem('project_order_by', order);
         setSettingsOpen(false);
-        
-        // Update URL parameters
-        const urlParams = new URLSearchParams(location.search);
-        urlParams.set('sort', order);
-        navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
 
-        // Save to project
+        // Save to project (remove navigation to prevent re-render)
         saveProjectPreferences(showCompleted, order);
     };
 
     const handleShowCompletedChange = (checked: boolean) => {
         setShowCompleted(checked);
         setSettingsOpen(false);
-        
-        // Update URL parameters
-        const urlParams = new URLSearchParams(location.search);
-        if (checked) {
-            urlParams.set('completed', 'true');
-        } else {
-            urlParams.delete('completed');
-        }
-        navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
 
-        // Save to project
+        // Save to project (remove navigation to prevent re-render)
         saveProjectPreferences(checked, orderBy);
     };
 
@@ -655,33 +635,37 @@ const ProjectDetails: React.FC = () => {
                             <div className="flex items-center space-x-6">
                                 <button
                                     onClick={() => setActiveTab('tasks')}
-                                    className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                                    className={`flex items-center py-2 text-sm font-medium transition-colors ${
                                         activeTab === 'tasks'
                                             ? 'text-gray-900 dark:text-gray-100'
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                     }`}
                                 >
                                     <span>{t('sidebar.tasks', 'Tasks')}</span>
-                                    {displayTasks.length > 0 && (
-                                        <span className="ml-1 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
-                                            {displayTasks.length}
-                                        </span>
-                                    )}
+                                    <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                                        displayTasks.length > 0 
+                                            ? 'bg-gray-200 dark:bg-gray-600' 
+                                            : 'bg-transparent'
+                                    }`} style={{ minWidth: '20px', visibility: displayTasks.length > 0 ? 'visible' : 'hidden' }}>
+                                        {displayTasks.length > 0 ? displayTasks.length : '0'}
+                                    </span>
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('notes')}
-                                    className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                                    className={`flex items-center py-2 text-sm font-medium transition-colors ${
                                         activeTab === 'notes'
                                             ? 'text-gray-900 dark:text-gray-100'
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                     }`}
                                 >
                                     <span>{t('sidebar.notes', 'Notes')}</span>
-                                    {notes.length > 0 && (
-                                        <span className="ml-1 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
-                                            {notes.length}
-                                        </span>
-                                    )}
+                                    <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                                        notes.length > 0 
+                                            ? 'bg-gray-200 dark:bg-gray-600' 
+                                            : 'bg-transparent'
+                                    }`} style={{ minWidth: '20px', visibility: notes.length > 0 ? 'visible' : 'hidden' }}>
+                                        {notes.length > 0 ? notes.length : '0'}
+                                    </span>
                                 </button>
                             </div>
                             
@@ -892,7 +876,6 @@ const ProjectDetails: React.FC = () => {
                             {displayTasks.length > 0 ? (
                                 <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
                                     <TaskList
-                                        key={`${showCompleted}-${displayTasks.length}`}
                                         tasks={displayTasks}
                                         onTaskUpdate={handleTaskUpdate}
                                         onTaskDelete={handleTaskDelete}
