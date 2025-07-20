@@ -103,7 +103,8 @@ const NoteModal: React.FC<NoteModalProps> = ({
             if (note) {
                 // Initialize form data directly from note (like TaskModal)
                 setFormData(note);
-                const tagNames = (note?.tags || note?.Tags)?.map((tag) => tag.name) || [];
+                const tagNames =
+                    (note?.tags || note?.Tags)?.map((tag) => tag.name) || [];
                 setTags(tagNames);
                 setError(null);
 

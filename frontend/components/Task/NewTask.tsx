@@ -30,10 +30,16 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
                 const enabled = await getTaskIntelligenceEnabled();
                 setTaskIntelligenceEnabled(enabled);
                 // Cache the value for future use
-                localStorage.setItem('taskIntelligenceEnabled', JSON.stringify(enabled));
+                localStorage.setItem(
+                    'taskIntelligenceEnabled',
+                    JSON.stringify(enabled)
+                );
             } catch {
                 setTaskIntelligenceEnabled(true); // Default to enabled
-                localStorage.setItem('taskIntelligenceEnabled', JSON.stringify(true));
+                localStorage.setItem(
+                    'taskIntelligenceEnabled',
+                    JSON.stringify(true)
+                );
             }
         };
 

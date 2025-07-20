@@ -22,7 +22,6 @@ import { Project } from '../entities/Project';
 import { useSearchParams } from 'react-router-dom';
 import ProjectItem from './Project/ProjectItem';
 
-
 // Reusable dropdown component
 interface DropdownOption {
     value: string;

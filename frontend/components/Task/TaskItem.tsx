@@ -78,8 +78,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     // Use the project from the task's included data if available, otherwise find from projectList
-    let project = task.Project || projectList.find((p) => p.id === task.project_id);
-    
+    let project =
+        task.Project || projectList.find((p) => p.id === task.project_id);
+
     // If project exists but doesn't have an ID, add the ID from task.project_id
     if (project && !project.id && task.project_id) {
         project = { ...project, id: task.project_id };

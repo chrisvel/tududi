@@ -62,16 +62,8 @@ const Layout: React.FC<LayoutProps> = ({
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
 
     const {
-        notesStore: {
-            notes,
-            isLoading: isNotesLoading,
-            isError: isNotesError,
-        },
-        areasStore: {
-            areas,
-            isLoading: isAreasLoading,
-            isError: isAreasError,
-        },
+        notesStore: { notes, isLoading: isNotesLoading, isError: isNotesError },
+        areasStore: { areas, isLoading: isAreasLoading, isError: isAreasError },
         tasksStore: { isLoading: isTasksLoading, isError: isTasksError },
         projectsStore: {
             projects,
@@ -79,11 +71,7 @@ const Layout: React.FC<LayoutProps> = ({
             isLoading: isProjectsLoading,
             isError: isProjectsError,
         },
-        tagsStore: {
-            tags,
-            isLoading: isTagsLoading,
-            isError: isTagsError,
-        },
+        tagsStore: { tags, isLoading: isTagsLoading, isError: isTagsError },
     } = useStore();
 
     const openTaskModal = (type: 'simplified' | 'full' = 'simplified') => {
@@ -98,7 +86,6 @@ const Layout: React.FC<LayoutProps> = ({
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-
 
     useEffect(() => {
         // Layout no longer loads global data
@@ -464,7 +451,7 @@ const Layout: React.FC<LayoutProps> = ({
                                 './utils/notesService'
                             );
                             await deleteNote(noteId);
-                                            closeNoteModal();
+                            closeNoteModal();
                         } catch (error) {
                             console.error('Error deleting note:', error);
                         }

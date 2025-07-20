@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PencilSquareIcon, TrashIcon, TagIcon, FolderIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import {
+    PencilSquareIcon,
+    TrashIcon,
+    TagIcon,
+    FolderIcon,
+    DocumentTextIcon,
+} from '@heroicons/react/24/outline';
 
 interface NoteCardProps {
     note: {
@@ -49,7 +55,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                         </Link>
                     </div>
                     {/* Project and Tags */}
-                    {(showProject && project || tags.length > 0) && (
+                    {((showProject && project) || tags.length > 0) && (
                         <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                             {showProject && project && (
                                 <div className="flex items-center">
@@ -78,10 +84,16 @@ const NoteCard: React.FC<NoteCardProps> = ({
                         <button
                             onClick={() => onEdit(note)}
                             className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${
-                                hoveredNoteId === note.id?.toString() ? 'opacity-100' : 'opacity-0'
+                                hoveredNoteId === note.id?.toString()
+                                    ? 'opacity-100'
+                                    : 'opacity-0'
                             }`}
-                            aria-label={t('notes.editNoteAriaLabel', { noteTitle: note.title })}
-                            title={t('notes.editNoteTitle', { noteTitle: note.title })}
+                            aria-label={t('notes.editNoteAriaLabel', {
+                                noteTitle: note.title,
+                            })}
+                            title={t('notes.editNoteTitle', {
+                                noteTitle: note.title,
+                            })}
                         >
                             <PencilSquareIcon className="h-5 w-5" />
                         </button>
@@ -90,10 +102,16 @@ const NoteCard: React.FC<NoteCardProps> = ({
                         <button
                             onClick={() => onDelete(note)}
                             className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${
-                                hoveredNoteId === note.id?.toString() ? 'opacity-100' : 'opacity-0'
+                                hoveredNoteId === note.id?.toString()
+                                    ? 'opacity-100'
+                                    : 'opacity-0'
                             }`}
-                            aria-label={t('notes.deleteNoteAriaLabel', { noteTitle: note.title })}
-                            title={t('notes.deleteNoteTitle', { noteTitle: note.title })}
+                            aria-label={t('notes.deleteNoteAriaLabel', {
+                                noteTitle: note.title,
+                            })}
+                            title={t('notes.deleteNoteTitle', {
+                                noteTitle: note.title,
+                            })}
                         >
                             <TrashIcon className="h-5 w-5" />
                         </button>

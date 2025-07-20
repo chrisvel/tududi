@@ -55,26 +55,36 @@ const TagInput: React.FC<TagInputProps> = ({
                 setTimeout(() => {
                     if (containerRef.current) {
                         // Find the modal's scroll container
-                        const modalScrollContainer = 
-                            containerRef.current.closest('.absolute.inset-0.overflow-y-auto') ||
-                            containerRef.current.closest('[style*="overflow-y"]') ||
+                        const modalScrollContainer =
+                            containerRef.current.closest(
+                                '.absolute.inset-0.overflow-y-auto'
+                            ) ||
+                            containerRef.current.closest(
+                                '[style*="overflow-y"]'
+                            ) ||
                             containerRef.current.closest('.overflow-y-auto');
-                        
+
                         if (modalScrollContainer) {
                             // Get the position of the TagInput container relative to the scroll container
-                            const containerRect = containerRef.current.getBoundingClientRect();
-                            const scrollRect = modalScrollContainer.getBoundingClientRect();
-                            
+                            const containerRect =
+                                containerRef.current.getBoundingClientRect();
+                            const scrollRect =
+                                modalScrollContainer.getBoundingClientRect();
+
                             // Calculate how much to scroll to show the dropdown
                             const dropdownHeight = 240; // max-h-60 = 240px
-                            const neededSpace = containerRect.bottom - scrollRect.top + dropdownHeight;
+                            const neededSpace =
+                                containerRect.bottom -
+                                scrollRect.top +
+                                dropdownHeight;
                             const availableSpace = scrollRect.height;
-                            
+
                             if (neededSpace > availableSpace) {
-                                const scrollAmount = neededSpace - availableSpace + 20; // 20px padding
+                                const scrollAmount =
+                                    neededSpace - availableSpace + 20; // 20px padding
                                 modalScrollContainer.scrollBy({
                                     top: scrollAmount,
-                                    behavior: 'smooth'
+                                    behavior: 'smooth',
                                 });
                             }
                         } else {
@@ -82,7 +92,7 @@ const TagInput: React.FC<TagInputProps> = ({
                             containerRef.current.scrollIntoView({
                                 behavior: 'smooth',
                                 block: 'nearest',
-                                inline: 'nearest'
+                                inline: 'nearest',
                             });
                         }
                     }

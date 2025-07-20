@@ -63,7 +63,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     const { tagsStore } = useStore();
     const { tags: availableTags } = tagsStore;
-    
+
     const [localAvailableTags, setLocalAvailableTags] = useState<
         Array<{ name: string }>
     >([]);
@@ -117,7 +117,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             if (dueDateValue && dueDateValue.includes('T')) {
                 dueDateValue = dueDateValue.split('T')[0];
             }
-            
+
             setFormData({
                 ...project,
                 tags: project.tags || [],
@@ -217,7 +217,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             if (name === 'due_date_at' && value === '') {
                 processedValue = null;
             }
-            
+
             setFormData((prev) => ({
                 ...prev,
                 [name]: processedValue,
@@ -376,12 +376,20 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 if (newExpanded[section]) {
                     setTimeout(() => {
                         // Try multiple selectors to find the scroll container
-                        const scrollContainer = 
-                            modalRef.current?.querySelector('.absolute.inset-0.overflow-y-auto') ||
-                            modalRef.current?.querySelector('[style*="overflow-y"]') ||
-                            modalRef.current?.querySelector('.overflow-y-auto') ||
-                            document.querySelector('.absolute.inset-0.overflow-y-auto');
-                        
+                        const scrollContainer =
+                            modalRef.current?.querySelector(
+                                '.absolute.inset-0.overflow-y-auto'
+                            ) ||
+                            modalRef.current?.querySelector(
+                                '[style*="overflow-y"]'
+                            ) ||
+                            modalRef.current?.querySelector(
+                                '.overflow-y-auto'
+                            ) ||
+                            document.querySelector(
+                                '.absolute.inset-0.overflow-y-auto'
+                            );
+
                         if (scrollContainer) {
                             scrollContainer.scrollTo({
                                 top: scrollContainer.scrollHeight,
@@ -401,7 +409,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     return (
         <>
-            
             <div
                 className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
                     isClosing ? 'opacity-0' : 'opacity-100'
@@ -512,8 +519,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         }
                                                         initialTags={tags}
                                                         availableTags={
-                                                            localAvailableTags.length > 0 
-                                                                ? localAvailableTags 
+                                                            localAvailableTags.length >
+                                                            0
+                                                                ? localAvailableTags
                                                                 : availableTags
                                                         }
                                                     />
@@ -530,12 +538,17 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     </h3>
                                                     <div className="overflow-visible">
                                                         <AreaDropdown
-                                                            value={formData.area_id}
+                                                            value={
+                                                                formData.area_id
+                                                            }
                                                             onChange={(value) =>
-                                                                setFormData((prev) => ({
-                                                                    ...prev,
-                                                                    area_id: value,
-                                                                }))
+                                                                setFormData(
+                                                                    (prev) => ({
+                                                                        ...prev,
+                                                                        area_id:
+                                                                            value,
+                                                                    })
+                                                                )
                                                             }
                                                             areas={areas}
                                                         />
@@ -653,8 +666,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     </h3>
                                                     <div className="overflow-visible">
                                                         <DatePicker
-                                                            value={formData.due_date_at || ''}
-                                                            onChange={handleDueDateChange}
+                                                            value={
+                                                                formData.due_date_at ||
+                                                                ''
+                                                            }
+                                                            onChange={
+                                                                handleDueDateChange
+                                                            }
                                                             placeholder="Select due date"
                                                         />
                                                     </div>

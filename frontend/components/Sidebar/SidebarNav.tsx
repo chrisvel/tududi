@@ -94,7 +94,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                                 <span className="ml-2">{link.title}</span>
                             </div>
                             {link.path === '/inbox' && inboxItemsCount > 0 && (
-                                <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-blue-500 rounded-full">
+                                <span className="text-sm font-bold text-blue-500 dark:text-blue-400">
                                     {inboxItemsCount > 99
                                         ? '99+'
                                         : inboxItemsCount}

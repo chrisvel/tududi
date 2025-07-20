@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import {
-    ChevronDownIcon,
-    Squares2X2Icon,
-} from '@heroicons/react/24/outline';
+import { ChevronDownIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 import { Area } from '../../entities/Area';
 import { useTranslation } from 'react-i18next';
 
@@ -122,7 +119,7 @@ const AreaDropdown: React.FC<AreaDropdownProps> = ({
                                 <span>{t('common.none', 'No Area')}</span>
                             </span>
                         </button>
-                        
+
                         {/* Area options */}
                         {areas.map((area) => (
                             <button

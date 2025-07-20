@@ -54,11 +54,11 @@ export const fetchProjectById = async (
     }
 ): Promise<Project> => {
     const url = new URL(`/api/project/${projectId}`, window.location.origin);
-    
+
     if (options?.sort) {
         url.searchParams.set('sort', options.sort);
     }
-    
+
     if (options?.completed !== undefined) {
         url.searchParams.set('completed', options.completed.toString());
     }

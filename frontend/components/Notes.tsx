@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    BookOpenIcon,
-    MagnifyingGlassIcon,
-} from '@heroicons/react/24/solid';
+import { BookOpenIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import NoteCard from './Shared/NoteCard';

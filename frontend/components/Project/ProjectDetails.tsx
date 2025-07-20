@@ -37,7 +37,6 @@ import { isAuthError } from '../../utils/authUtils';
 import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
 
-
 const ProjectDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -64,14 +63,13 @@ const ProjectDetails: React.FC = () => {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const mobileSettingsRef = useRef<HTMLDivElement>(null);
     const desktopSettingsRef = useRef<HTMLDivElement>(null);
-    
+
     // Note modal state
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
     // Dispatch global modal events
-
 
     useEffect(() => {
         const fetchAutoSuggestSetting = async () => {
@@ -81,13 +79,19 @@ const ProjectDetails: React.FC = () => {
                 setAutoSuggestEnabled(enabled);
             }
         };
-        
+
         fetchAutoSuggestSetting();
     }, []);
 
     // Check if we should show auto-suggest form for projects with no tasks
     useEffect(() => {
-        if (project && tasks.length === 0 && !loading && !showCompleted && autoSuggestEnabled) {
+        if (
+            project &&
+            tasks.length === 0 &&
+            !loading &&
+            !showCompleted &&
+            autoSuggestEnabled
+        ) {
             setShowAutoSuggestForm(true);
         } else {
             setShowAutoSuggestForm(false);
@@ -96,14 +100,15 @@ const ProjectDetails: React.FC = () => {
 
     // Load initial sort order from localStorage (URL params removed to prevent conflicts)
     useEffect(() => {
-        const sortParam = localStorage.getItem('project_order_by') || 'created_at:desc';
+        const sortParam =
+            localStorage.getItem('project_order_by') || 'created_at:desc';
         setOrderBy(sortParam);
     }, []);
 
     // Fetch project data when id changes
     useEffect(() => {
         if (!id) return;
-        
+
         const loadProjectData = async () => {
             try {
                 // Only show loading if we don't have any project data yet
@@ -111,17 +116,21 @@ const ProjectDetails: React.FC = () => {
                     setLoading(true);
                 }
                 setError(false);
-                
-                const sortParam = localStorage.getItem('project_order_by') || 'created_at:desc';
-                                
-                console.log(`Fetching ONLY project ${id} with fetchProjectById`);
+
+                const sortParam =
+                    localStorage.getItem('project_order_by') ||
+                    'created_at:desc';
+
+                console.log(
+                    `Fetching ONLY project ${id} with fetchProjectById`
+                );
                 const projectData = await fetchProjectById(id, {
-                    sort: sortParam
+                    sort: sortParam,
                     // Remove completed parameter since backend filtering isn't working
                 });
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
-                
+
                 // Load saved preferences from project data
                 if (projectData.task_show_completed !== undefined) {
                     setShowCompleted(projectData.task_show_completed);
@@ -129,16 +138,17 @@ const ProjectDetails: React.FC = () => {
                 if (projectData.task_sort_order) {
                     setOrderBy(projectData.task_sort_order);
                 }
-                const fetchedNotes = projectData.notes || projectData.Notes || [];
-                
+                const fetchedNotes =
+                    projectData.notes || projectData.Notes || [];
+
                 // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
-                const normalizedNotes = fetchedNotes.map(note => {
+                const normalizedNotes = fetchedNotes.map((note) => {
                     if (note.Tags && !note.tags) {
                         note.tags = note.Tags;
                     }
                     return note;
                 });
-                
+
                 setNotes(normalizedNotes);
                 setLoading(false);
             } catch {
@@ -146,7 +156,7 @@ const ProjectDetails: React.FC = () => {
                 setLoading(false);
             }
         };
-        
+
         loadProjectData();
     }, [id]);
 
@@ -159,11 +169,15 @@ const ProjectDetails: React.FC = () => {
             ) {
                 setDropdownOpen(false);
             }
-            
+
             // Check if click is outside both mobile and desktop settings dropdowns
-            const isOutsideMobile = mobileSettingsRef.current && !mobileSettingsRef.current.contains(event.target as Node);
-            const isOutsideDesktop = desktopSettingsRef.current && !desktopSettingsRef.current.contains(event.target as Node);
-            
+            const isOutsideMobile =
+                mobileSettingsRef.current &&
+                !mobileSettingsRef.current.contains(event.target as Node);
+            const isOutsideDesktop =
+                desktopSettingsRef.current &&
+                !desktopSettingsRef.current.contains(event.target as Node);
+
             if (isOutsideMobile && isOutsideDesktop) {
                 setSettingsOpen(false);
             }
@@ -271,26 +285,29 @@ const ProjectDetails: React.FC = () => {
         } catch {
             // Optionally refetch data on error to ensure consistency
             if (id) {
-                const sortParam = localStorage.getItem('project_order_by') || 'created_at:desc';
-                
+                const sortParam =
+                    localStorage.getItem('project_order_by') ||
+                    'created_at:desc';
+
                 // Refetch project data on error to ensure consistency
                 try {
                     const projectData = await fetchProjectById(id, {
-                        sort: sortParam
+                        sort: sortParam,
                         // Remove completed parameter since backend filtering isn't working
                     });
                     setProject(projectData);
                     setTasks(projectData.tasks || projectData.Tasks || []);
-                    const fetchedNotes = projectData.notes || projectData.Notes || [];
-                    
+                    const fetchedNotes =
+                        projectData.notes || projectData.Notes || [];
+
                     // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
-                    const normalizedNotes = fetchedNotes.map(note => {
+                    const normalizedNotes = fetchedNotes.map((note) => {
                         if (note.Tags && !note.tags) {
                             note.tags = note.Tags;
                         }
                         return note;
                     });
-                    
+
                     setNotes(normalizedNotes);
                 } catch {
                     // Error refetching project data - silently handled
@@ -359,7 +376,10 @@ const ProjectDetails: React.FC = () => {
         setShowAutoSuggestForm(false);
     };
 
-    const saveProjectPreferences = async (showCompleted: boolean, orderBy: string) => {
+    const saveProjectPreferences = async (
+        showCompleted: boolean,
+        orderBy: string
+    ) => {
         if (!project?.id) return;
 
         try {
@@ -399,7 +419,6 @@ const ProjectDetails: React.FC = () => {
         saveProjectPreferences(checked, orderBy);
     };
 
-
     const handleDeleteProject = async () => {
         if (!project?.id) {
             return;
@@ -421,7 +440,7 @@ const ProjectDetails: React.FC = () => {
                 credentials: 'include',
                 headers: { Accept: 'application/json' },
             });
-            
+
             if (response.ok) {
                 const fullNote = await response.json();
                 setSelectedNote(fullNote);
@@ -440,7 +459,7 @@ const ProjectDetails: React.FC = () => {
     const handleDeleteNote = async (noteId: number) => {
         try {
             await apiDeleteNote(noteId);
-            setNotes(notes.filter(n => n.id !== noteId));
+            setNotes(notes.filter((n) => n.id !== noteId));
             setNoteToDelete(null);
             setIsConfirmDialogOpen(false);
         } catch {
@@ -451,14 +470,21 @@ const ProjectDetails: React.FC = () => {
     const handleUpdateNote = async (noteData: Partial<Note>) => {
         try {
             if (selectedNote?.id) {
-                const updatedNote = await updateNote(selectedNote.id, noteData as Note);
-                
+                const updatedNote = await updateNote(
+                    selectedNote.id,
+                    noteData as Note
+                );
+
                 // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
                 if (updatedNote.Tags && !updatedNote.tags) {
                     updatedNote.tags = updatedNote.Tags;
                 }
-                
-                setNotes(notes.map(n => n.id === selectedNote.id ? updatedNote : n));
+
+                setNotes(
+                    notes.map((n) =>
+                        n.id === selectedNote.id ? updatedNote : n
+                    )
+                );
                 setIsNoteModalOpen(false);
                 setSelectedNote(null);
             }
@@ -469,30 +495,35 @@ const ProjectDetails: React.FC = () => {
 
     // Filter and sort tasks (backend filtering/sorting not working reliably)
     const displayTasks = useMemo(() => {
-        
         // First, filter tasks based on completed state
         let filteredTasks;
         if (showCompleted) {
             // Show only completed tasks (done=2 or archived=3)
-            filteredTasks = tasks.filter(task => 
-                task.status === 'done' || task.status === 'archived' || 
-                task.status === 2 || task.status === 3
+            filteredTasks = tasks.filter(
+                (task) =>
+                    task.status === 'done' ||
+                    task.status === 'archived' ||
+                    task.status === 2 ||
+                    task.status === 3
             );
         } else {
             // Show only non-completed tasks (not_started=0, in_progress=1)
-            filteredTasks = tasks.filter(task => 
-                task.status === 'not_started' || task.status === 'in_progress' ||
-                task.status === 0 || task.status === 1
+            filteredTasks = tasks.filter(
+                (task) =>
+                    task.status === 'not_started' ||
+                    task.status === 'in_progress' ||
+                    task.status === 0 ||
+                    task.status === 1
             );
         }
-        
+
         // Then, sort the filtered tasks
         const sortedTasks = [...filteredTasks].sort((a, b) => {
             const [field, direction] = orderBy.split(':');
             const isAsc = direction === 'asc';
-            
+
             let valueA, valueB;
-            
+
             switch (field) {
                 case 'name':
                     valueA = a.name?.toLowerCase() || '';
@@ -504,28 +535,39 @@ const ProjectDetails: React.FC = () => {
                     break;
                 case 'priority': {
                     // Convert priority to numeric for sorting (high=2, medium=1, low=0)
-                    const priorityMap = { 'high': 2, 'medium': 1, 'low': 0 };
-                    valueA = typeof a.priority === 'string' ? priorityMap[a.priority] || 0 : (a.priority || 0);
-                    valueB = typeof b.priority === 'string' ? priorityMap[b.priority] || 0 : (b.priority || 0);
+                    const priorityMap = { high: 2, medium: 1, low: 0 };
+                    valueA =
+                        typeof a.priority === 'string'
+                            ? priorityMap[a.priority] || 0
+                            : a.priority || 0;
+                    valueB =
+                        typeof b.priority === 'string'
+                            ? priorityMap[b.priority] || 0
+                            : b.priority || 0;
                     break;
                 }
                 case 'status':
-                    valueA = typeof a.status === 'string' ? a.status : a.status || 0;
-                    valueB = typeof b.status === 'string' ? b.status : b.status || 0;
+                    valueA =
+                        typeof a.status === 'string' ? a.status : a.status || 0;
+                    valueB =
+                        typeof b.status === 'string' ? b.status : b.status || 0;
                     break;
                 case 'created_at':
                 default:
-                    valueA = a.created_at ? new Date(a.created_at).getTime() : 0;
-                    valueB = b.created_at ? new Date(b.created_at).getTime() : 0;
+                    valueA = a.created_at
+                        ? new Date(a.created_at).getTime()
+                        : 0;
+                    valueB = b.created_at
+                        ? new Date(b.created_at).getTime()
+                        : 0;
                     break;
             }
-            
+
             if (valueA < valueB) return isAsc ? -1 : 1;
             if (valueA > valueB) return isAsc ? 1 : -1;
             return 0;
         });
-        
-        
+
         return sortedTasks;
     }, [tasks, showCompleted, orderBy]);
 
@@ -542,7 +584,9 @@ const ProjectDetails: React.FC = () => {
     if (error) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-                <div className="text-red-500 text-lg">Failed to load project details.</div>
+                <div className="text-red-500 text-lg">
+                    Failed to load project details.
+                </div>
             </div>
         );
     }
@@ -554,7 +598,6 @@ const ProjectDetails: React.FC = () => {
             </div>
         );
     }
-
 
     return (
         <div className="flex justify-center px-4 lg:px-2">
@@ -598,7 +641,6 @@ const ProjectDetails: React.FC = () => {
                     </div>
                 )}
 
-
                 {/* Project Header - Only show when no image */}
                 {!project.image_url && (
                     <div className="flex items-center justify-between mb-8">
@@ -641,12 +683,23 @@ const ProjectDetails: React.FC = () => {
                                     }`}
                                 >
                                     <span>{t('sidebar.tasks', 'Tasks')}</span>
-                                    <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
-                                        displayTasks.length > 0 
-                                            ? 'bg-gray-200 dark:bg-gray-600' 
-                                            : 'bg-transparent'
-                                    }`} style={{ minWidth: '20px', visibility: displayTasks.length > 0 ? 'visible' : 'hidden' }}>
-                                        {displayTasks.length > 0 ? displayTasks.length : '0'}
+                                    <span
+                                        className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                                            displayTasks.length > 0
+                                                ? 'bg-gray-200 dark:bg-gray-600'
+                                                : 'bg-transparent'
+                                        }`}
+                                        style={{
+                                            minWidth: '20px',
+                                            visibility:
+                                                displayTasks.length > 0
+                                                    ? 'visible'
+                                                    : 'hidden',
+                                        }}
+                                    >
+                                        {displayTasks.length > 0
+                                            ? displayTasks.length
+                                            : '0'}
                                     </span>
                                 </button>
                                 <button
@@ -658,79 +711,150 @@ const ProjectDetails: React.FC = () => {
                                     }`}
                                 >
                                     <span>{t('sidebar.notes', 'Notes')}</span>
-                                    <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
-                                        notes.length > 0 
-                                            ? 'bg-gray-200 dark:bg-gray-600' 
-                                            : 'bg-transparent'
-                                    }`} style={{ minWidth: '20px', visibility: notes.length > 0 ? 'visible' : 'hidden' }}>
+                                    <span
+                                        className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                                            notes.length > 0
+                                                ? 'bg-gray-200 dark:bg-gray-600'
+                                                : 'bg-transparent'
+                                        }`}
+                                        style={{
+                                            minWidth: '20px',
+                                            visibility:
+                                                notes.length > 0
+                                                    ? 'visible'
+                                                    : 'hidden',
+                                        }}
+                                    >
                                         {notes.length > 0 ? notes.length : '0'}
                                     </span>
                                 </button>
                             </div>
-                            
+
                             {/* Inline Controls - Always visible for tasks tab */}
                             {activeTab === 'tasks' && (
                                 <div className="flex items-center gap-2 flex-wrap justify-end">
                                     {/* Show Completed Toggle */}
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Show completed</span>
+                                        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                                            Show completed
+                                        </span>
                                         <button
-                                            onClick={() => handleShowCompletedChange(!showCompleted)}
+                                            onClick={() =>
+                                                handleShowCompletedChange(
+                                                    !showCompleted
+                                                )
+                                            }
                                             className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${
-                                                showCompleted 
-                                                    ? 'bg-blue-600' 
+                                                showCompleted
+                                                    ? 'bg-blue-600'
                                                     : 'bg-gray-200 dark:bg-gray-600'
                                             }`}
                                         >
-                                            <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
-                                                showCompleted ? 'translate-x-3.5' : 'translate-x-0.5'
-                                            }`} />
+                                            <span
+                                                className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                                                    showCompleted
+                                                        ? 'translate-x-3.5'
+                                                        : 'translate-x-0.5'
+                                                }`}
+                                            />
                                         </button>
                                     </div>
 
                                     {/* Sort Filter */}
-                                    <div className="relative" ref={mobileSettingsRef}>
+                                    <div
+                                        className="relative"
+                                        ref={mobileSettingsRef}
+                                    >
                                         <button
                                             type="button"
                                             className="inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-3 py-1.5 bg-white dark:bg-gray-700 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors w-32"
-                                            onClick={() => setSettingsOpen(!settingsOpen)}
+                                            onClick={() =>
+                                                setSettingsOpen(!settingsOpen)
+                                            }
                                         >
                                             <div className="flex items-center">
                                                 <FunnelIcon className="h-3 w-3 mr-1" />
-                                                <span className="whitespace-nowrap">{[
-                                                    { value: 'created_at:desc', label: 'Created at' },
-                                                    { value: 'due_date:asc', label: 'Due date' },
-                                                    { value: 'name:asc', label: 'Name' },
-                                                    { value: 'priority:desc', label: 'Priority' },
-                                                    { value: 'status:desc', label: 'Status' },
-                                                ].find(option => option.value === orderBy)?.label || 'Created at'}</span>
+                                                <span className="whitespace-nowrap">
+                                                    {[
+                                                        {
+                                                            value: 'created_at:desc',
+                                                            label: 'Created at',
+                                                        },
+                                                        {
+                                                            value: 'due_date:asc',
+                                                            label: 'Due date',
+                                                        },
+                                                        {
+                                                            value: 'name:asc',
+                                                            label: 'Name',
+                                                        },
+                                                        {
+                                                            value: 'priority:desc',
+                                                            label: 'Priority',
+                                                        },
+                                                        {
+                                                            value: 'status:desc',
+                                                            label: 'Status',
+                                                        },
+                                                    ].find(
+                                                        (option) =>
+                                                            option.value ===
+                                                            orderBy
+                                                    )?.label || 'Created at'}
+                                                </span>
                                             </div>
                                             <span className="text-xs ml-1">
-                                                {orderBy?.includes(':desc') ? '↓' : '↑'}
+                                                {orderBy?.includes(':desc')
+                                                    ? '↓'
+                                                    : '↑'}
                                             </span>
                                         </button>
                                         {settingsOpen && (
                                             <div className="origin-top-right absolute -right-8 mt-1 w-36 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50">
                                                 <div className="p-1">
                                                     {[
-                                                        { value: 'created_at:desc', label: 'Created at' },
-                                                        { value: 'due_date:asc', label: 'Due date' },
-                                                        { value: 'name:asc', label: 'Name' },
-                                                        { value: 'priority:desc', label: 'Priority' },
-                                                        { value: 'status:desc', label: 'Status' },
+                                                        {
+                                                            value: 'created_at:desc',
+                                                            label: 'Created at',
+                                                        },
+                                                        {
+                                                            value: 'due_date:asc',
+                                                            label: 'Due date',
+                                                        },
+                                                        {
+                                                            value: 'name:asc',
+                                                            label: 'Name',
+                                                        },
+                                                        {
+                                                            value: 'priority:desc',
+                                                            label: 'Priority',
+                                                        },
+                                                        {
+                                                            value: 'status:desc',
+                                                            label: 'Status',
+                                                        },
                                                     ].map((option) => (
                                                         <button
                                                             key={option.value}
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                handleSortChange(option.value);
-                                                                setSettingsOpen(false);
+                                                                handleSortChange(
+                                                                    option.value
+                                                                );
+                                                                setSettingsOpen(
+                                                                    false
+                                                                );
                                                             }}
                                                             className="block px-4 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
                                                         >
                                                             <span className="flex items-center justify-between">
-                                                                <span>{option.label}</span>
-                                                                {orderBy === option.value && (
+                                                                <span>
+                                                                    {
+                                                                        option.label
+                                                                    }
+                                                                </span>
+                                                                {orderBy ===
+                                                                    option.value && (
                                                                     <CheckIcon className="h-3 w-3" />
                                                                 )}
                                                             </span>
@@ -744,7 +868,7 @@ const ProjectDetails: React.FC = () => {
                             )}
                         </div>
                     </div>
-                    
+
                     {/* Desktop Layout */}
                     <div className="hidden sm:flex items-center justify-between min-h-[2.5rem]">
                         {/* Tab Navigation Links */}
@@ -780,70 +904,129 @@ const ProjectDetails: React.FC = () => {
                                 )}
                             </button>
                         </div>
-                        
+
                         {/* Inline Controls - Always visible for tasks tab */}
                         {activeTab === 'tasks' && (
                             <div className="flex items-center gap-4">
                                 {/* Show Completed Toggle */}
                                 <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-600 dark:text-gray-400">Show completed</span>
+                                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                                        Show completed
+                                    </span>
                                     <button
-                                        onClick={() => handleShowCompletedChange(!showCompleted)}
+                                        onClick={() =>
+                                            handleShowCompletedChange(
+                                                !showCompleted
+                                            )
+                                        }
                                         className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                                            showCompleted 
-                                                ? 'bg-blue-600' 
+                                            showCompleted
+                                                ? 'bg-blue-600'
                                                 : 'bg-gray-200 dark:bg-gray-600'
                                         }`}
                                     >
-                                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                            showCompleted ? 'translate-x-4' : 'translate-x-0.5'
-                                        }`} />
+                                        <span
+                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                showCompleted
+                                                    ? 'translate-x-4'
+                                                    : 'translate-x-0.5'
+                                            }`}
+                                        />
                                     </button>
                                 </div>
 
                                 {/* Sort Filter */}
-                                <div className="relative" ref={desktopSettingsRef}>
+                                <div
+                                    className="relative"
+                                    ref={desktopSettingsRef}
+                                >
                                     <button
                                         type="button"
                                         className="inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors w-40"
-                                        onClick={() => setSettingsOpen(!settingsOpen)}
+                                        onClick={() =>
+                                            setSettingsOpen(!settingsOpen)
+                                        }
                                     >
                                         <div className="flex items-center">
                                             <FunnelIcon className="h-4 w-4 mr-2" />
-                                            <span>{[
-                                                { value: 'created_at:desc', label: 'Created at' },
-                                                { value: 'due_date:asc', label: 'Due date' },
-                                                { value: 'name:asc', label: 'Name' },
-                                                { value: 'priority:desc', label: 'Priority' },
-                                                { value: 'status:desc', label: 'Status' },
-                                            ].find(option => option.value === orderBy)?.label || 'Created at'}</span>
+                                            <span>
+                                                {[
+                                                    {
+                                                        value: 'created_at:desc',
+                                                        label: 'Created at',
+                                                    },
+                                                    {
+                                                        value: 'due_date:asc',
+                                                        label: 'Due date',
+                                                    },
+                                                    {
+                                                        value: 'name:asc',
+                                                        label: 'Name',
+                                                    },
+                                                    {
+                                                        value: 'priority:desc',
+                                                        label: 'Priority',
+                                                    },
+                                                    {
+                                                        value: 'status:desc',
+                                                        label: 'Status',
+                                                    },
+                                                ].find(
+                                                    (option) =>
+                                                        option.value === orderBy
+                                                )?.label || 'Created at'}
+                                            </span>
                                         </div>
                                         <span className="text-sm ml-2">
-                                            {orderBy?.includes(':desc') ? '↓' : '↑'}
+                                            {orderBy?.includes(':desc')
+                                                ? '↓'
+                                                : '↑'}
                                         </span>
                                     </button>
                                     {settingsOpen && (
                                         <div className="origin-top-right absolute right-0 mt-1 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none z-50">
                                             <div className="p-1">
                                                 {[
-                                                    { value: 'created_at:desc', label: 'Created at' },
-                                                    { value: 'due_date:asc', label: 'Due date' },
-                                                    { value: 'name:asc', label: 'Name' },
-                                                    { value: 'priority:desc', label: 'Priority' },
-                                                    { value: 'status:desc', label: 'Status' },
+                                                    {
+                                                        value: 'created_at:desc',
+                                                        label: 'Created at',
+                                                    },
+                                                    {
+                                                        value: 'due_date:asc',
+                                                        label: 'Due date',
+                                                    },
+                                                    {
+                                                        value: 'name:asc',
+                                                        label: 'Name',
+                                                    },
+                                                    {
+                                                        value: 'priority:desc',
+                                                        label: 'Priority',
+                                                    },
+                                                    {
+                                                        value: 'status:desc',
+                                                        label: 'Status',
+                                                    },
                                                 ].map((option) => (
                                                     <button
                                                         key={option.value}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            handleSortChange(option.value);
-                                                            setSettingsOpen(false);
+                                                            handleSortChange(
+                                                                option.value
+                                                            );
+                                                            setSettingsOpen(
+                                                                false
+                                                            );
                                                         }}
                                                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
                                                     >
                                                         <span className="flex items-center justify-between">
-                                                            <span>{option.label}</span>
-                                                            {orderBy === option.value && (
+                                                            <span>
+                                                                {option.label}
+                                                            </span>
+                                                            {orderBy ===
+                                                                option.value && (
                                                                 <CheckIcon className="h-4 w-4" />
                                                             )}
                                                         </span>
@@ -879,11 +1062,13 @@ const ProjectDetails: React.FC = () => {
                 {/* Tasks Tab Content */}
                 {activeTab === 'tasks' && (
                     <>
-                        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                            !showAutoSuggestForm && !showCompleted
-                                ? 'opacity-100 max-h-96 transform translate-y-0'
-                                : 'opacity-0 max-h-0 transform -translate-y-2'
-                        }`}>
+                        <div
+                            className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                                !showAutoSuggestForm && !showCompleted
+                                    ? 'opacity-100 max-h-96 transform translate-y-0'
+                                    : 'opacity-0 max-h-0 transform -translate-y-2'
+                            }`}
+                        >
                             <NewTask onTaskCreate={handleTaskCreate} />
                         </div>
 
@@ -903,9 +1088,11 @@ const ProjectDetails: React.FC = () => {
                                 <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
                                     <p className="text-gray-500 dark:text-gray-400">
                                         {showCompleted
-                                            ? t('project.noCompletedTasks', 'No completed tasks.')
-                                            : t('project.noTasks', 'No tasks.')
-                                        }
+                                            ? t(
+                                                  'project.noCompletedTasks',
+                                                  'No completed tasks.'
+                                              )
+                                            : t('project.noTasks', 'No tasks.')}
                                     </p>
                                 </div>
                             )}
@@ -934,7 +1121,10 @@ const ProjectDetails: React.FC = () => {
                             </div>
                         ) : (
                             <p className="text-gray-500 dark:text-gray-400">
-                                {t('project.noNotes', 'No notes for this project.')}
+                                {t(
+                                    'project.noNotes',
+                                    'No notes for this project.'
+                                )}
                             </p>
                         )}
                     </div>
@@ -985,6 +1175,5 @@ const ProjectDetails: React.FC = () => {
         </div>
     );
 };
-
 
 export default ProjectDetails;
