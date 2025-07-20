@@ -241,28 +241,27 @@ const Notes: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Notes List */}
+                {/* Notes Grid */}
                 {sortedNotes.length === 0 ? (
                     <p className="text-gray-700 dark:text-gray-300">
                         {t('notes.noNotesFound')}
                     </p>
                 ) : (
-                    <ul className="space-y-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {sortedNotes.map((note) => (
-                            <li key={note.id}>
-                                <NoteCard
-                                    note={note}
-                                    onEdit={handleEditNote}
-                                    onDelete={(note) => {
-                                        setNoteToDelete(note);
-                                        setIsConfirmDialogOpen(true);
-                                    }}
-                                    showActions={true}
-                                    showProject={true}
-                                />
-                            </li>
+                            <NoteCard
+                                key={note.id}
+                                note={note}
+                                onEdit={handleEditNote}
+                                onDelete={(note) => {
+                                    setNoteToDelete(note);
+                                    setIsConfirmDialogOpen(true);
+                                }}
+                                showActions={true}
+                                showProject={true}
+                            />
                         ))}
-                    </ul>
+                    </div>
                 )}
 
                 {/* NoteModal */}
