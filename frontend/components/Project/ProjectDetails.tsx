@@ -8,6 +8,7 @@ import {
     FolderIcon,
     CheckIcon,
     FunnelIcon,
+    TagIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
@@ -623,8 +624,35 @@ const ProjectDetails: React.FC = () => {
                                 )}
                             </div>
                         </div>
+                        {/* Tags Display - Bottom Left */}
+                        {project.tags && project.tags.length > 0 && (
+                            <div className="absolute bottom-2 left-2 flex items-center space-x-1">
+                                <div className="flex items-center space-x-1 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
+                                    <TagIcon className="h-3 w-3 text-white/70" />
+                                    <div className="flex items-center space-x-1">
+                                        {project.tags.map((tag, index) => (
+                                            <span key={tag.id || index}>
+                                                <button
+                                                    onClick={() => {
+                                                        // Navigate to tag details page
+                                                        navigate(`/tag/${encodeURIComponent(tag.name)}`);
+                                                    }}
+                                                    className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
+                                                >
+                                                    {tag.name}
+                                                </button>
+                                                {index < project.tags.length - 1 && (
+                                                    <span className="text-white/60 text-xs">, </span>
+                                                )}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Edit/Delete Buttons on Image - Show only on hover */}
-                        <div className="absolute bottom-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <button
                                 onClick={handleEditProject}
                                 className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"

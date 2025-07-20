@@ -21,7 +21,7 @@ import { useStore } from '../store/useStore';
 
 const Tags: React.FC = () => {
     const {
-        tagsStore: { tags, setTags, isLoading, isError },
+        tagsStore: { tags, setTags, isLoading, isError, loadTags },
     } = useStore();
 
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
@@ -37,10 +37,17 @@ const Tags: React.FC = () => {
     const [metricsLoaded, setMetricsLoaded] = useState<boolean>(false);
     const [, setCachedProjects] = useState<any[]>([]);
 
+    // Load tags when component mounts
+    useEffect(() => {
+        if (tags.length === 0 && !isLoading && !isError) {
+            loadTags();
+        }
+    }, [tags.length, isLoading, isError, loadTags]);
+
     useEffect(() => {
         const loadMetrics = async () => {
             if (tags.length === 0) {
-                // Tags not loaded yet, wait for Layout to load them
+                // Tags not loaded yet, wait for them to be loaded
                 return;
             }
 
