@@ -1,13 +1,38 @@
 #!/bin/sh
 set -eu
 
+backup_db() {
+  db_dir=$(dirname "$DB_FILE")
+    backup_count=$(find "$db_dir" -maxdepth 1 -name "db-backup-*.sqlite3" -type f | wc -l)
+
+  if [ "$backup_count" -ge 4 ]; then
+    # Delete the oldest backup file in the DB directory
+    oldest_backup=$(ls -t "$db_dir"/db-backup-*.sqlite3 2>/dev/null | tail -n 1)
+    if [ -n "$oldest_backup" ]; then
+      rm "$oldest_backup"
+      echo "Deleted oldest backup: $oldest_backup"
+    fi
+  fi
+
+  timestamp=$(date +"%Y%m%d%H%M%S")
+  backup_file="$db_dir/db-backup-${timestamp}.sqlite3"
+
+  if [ -f "$DB_FILE" ]; then
+    cp "$DB_FILE" "$backup_file"
+    echo "Database backed up to $backup_file"
+  else
+    echo "Database file $DB_FILE not found, skipping backup"
+  fi
+}
+
 # Check if database exists and create/authenticate
 if [ ! -f "$DB_FILE" ]; then
   echo "Creating new database..."
-  node -e "require(\"./models\").sequelize.sync({force:true}).then(()=>{console.log(\"✅ DB ready\");process.exit(0)}).catch(e=>{console.error(\"❌\",e.message);process.exit(1)})"
+  node -e "require(\"./models\").sequelize.sync({force:true}).then(()=>{console.log(\"DB ready\");process.exit(0)}).catch(e=>{console.error(\"❌\",e.message);process.exit(1)})"
 else
+  backup_db
   echo "Checking database connection..."
-  node -e "require(\"./models\").sequelize.authenticate().then(()=>{console.log(\"✅ DB OK\");process.exit(0)}).catch(e=>{console.error(\"❌\",e.message);process.exit(1)})"
+  node -e "require(\"./models\").sequelize.authenticate().then(()=>{console.log(\"DB OK\");process.exit(0)}).catch(e=>{console.error(\"❌\",e.message);process.exit(1)})"
 fi
 
 # Run database migrations automatically
