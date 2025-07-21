@@ -17,7 +17,7 @@ const Areas: React.FC = () => {
     const { t } = useTranslation();
 
     // Use global store for consistency
-    const { areas, isLoading: loading } = useStore((state) => state.areasStore);
+    const { areas, isLoading: loading, hasLoaded, loadAreas } = useStore((state) => state.areasStore);
 
     const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
@@ -25,41 +25,43 @@ const Areas: React.FC = () => {
         useState<boolean>(false);
     const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
+    const justOpenedRef = useRef<boolean>(false);
+    
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const loadAreas = async () => {
-            useStore.getState().areasStore.setLoading(true);
-            try {
-                const areasData = await fetchAreas();
-                useStore.getState().areasStore.setAreas(areasData);
-                useStore.getState().areasStore.setError(false);
-            } catch (error) {
-                console.error('Error loading areas:', error);
-                useStore.getState().areasStore.setError(true);
-            } finally {
-                useStore.getState().areasStore.setLoading(false);
-            }
-        };
-
-        // Only load if areas is empty to prevent infinite loop
-        if (areas.length === 0 && !loading) {
+        if (!hasLoaded && !loading) {
             loadAreas();
         }
-    }, [areas.length, loading]);
+    }, [hasLoaded, loading, loadAreas]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
+            // Skip if dropdown was just opened
+            if (justOpenedRef.current) {
+                justOpenedRef.current = false;
+                return;
+            }
+            
+            const clickedElement = event.target as Node;
             if (
                 dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
+                !dropdownRef.current.contains(clickedElement)
             ) {
                 setDropdownOpen(null);
             }
         };
 
         if (dropdownOpen !== null) {
-            document.addEventListener('mousedown', handleClickOutside);
+            // Add a small delay to prevent immediate closing
+            const timeoutId = setTimeout(() => {
+                document.addEventListener('mousedown', handleClickOutside);
+            }, 100);
+            
+            return () => {
+                clearTimeout(timeoutId);
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
         }
 
         return () => {
@@ -202,11 +204,12 @@ const Areas: React.FC = () => {
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
-                                            setDropdownOpen(
-                                                dropdownOpen === area.id
-                                                    ? null
-                                                    : area.id!
-                                            );
+                                            const newDropdownState = dropdownOpen === area.id ? null : area.id!;
+                                            
+                                            if (newDropdownState !== null) {
+                                                justOpenedRef.current = true;
+                                            }
+                                            setDropdownOpen(newDropdownState);
                                         }}
                                         className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                                         aria-label={t(

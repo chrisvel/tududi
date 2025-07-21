@@ -13,18 +13,14 @@ This app allows users to manage their tasks, projects, areas, notes, and tags in
 
 ## 🧠 Philosophy
 
-For the thinking behind tududi, read [Designing a Life Management System That Doesn't Fight Back]([https://example.com/designing-a-life-management-system-that-doesnt-fight-back](https://medium.com/@chrisveleris/designing-a-life-management-system-that-doesnt-fight-back-2fd58773e857))
+For the thinking behind tududi, read:
+- [Designing a Life Management System That Doesn't Fight Back](https://medium.com/@chrisveleris/designing-a-life-management-system-that-doesnt-fight-back-2fd58773e857)
+- [From Task to Table: How I Finally Got to the Korean Burger](https://medium.com/@chrisveleris/from-task-to-table-how-i-finally-got-to-the-korean-burger-01245a14d491)
 
 ## ✨ Features
 
 - **Task Management**: Create, update, and delete tasks. Mark tasks as completed and view them by different filters (Today, Upcoming, Someday). Order them by Name, Due Date, Date Created, or Priority.
-- **Recurring Tasks**: Comprehensive recurring task system with intelligent parent-child relationships:
-  - **Multiple Recurrence Patterns**: Daily, weekly, monthly, monthly on specific weekdays, and monthly last day
-  - **Completion-Based Recurrence**: Option to repeat based on completion date rather than due date
-  - **Smart Parent-Child Linking**: Generated task instances maintain connection to their original recurring pattern
-  - **Direct Parent Editing**: Edit recurrence settings directly from any generated task instance
-  - **Flexible Scheduling**: Set custom intervals (every 2 weeks, every 3 months, etc.)
-  - **End Date Control**: Optional end dates for recurring series
+- **Recurring Tasks**: tududi features a sophisticated recurring task system designed to handle complex scheduling needs while maintaining an intuitive user experience
 - **Quick Notes**: Create, update, delete, or assign text notes to projects.
 - **Tags**: Create tags for tasks and notes to enhance organization.
 - **Project Tracking**: Organize tasks into projects. Each project can contain multiple tasks and/or multiple notes.
@@ -36,43 +32,6 @@ For the thinking behind tududi, read [Designing a Life Management System That Do
   - Create tasks directly through Telegram messages
   - Receive daily digests of your tasks
   - Quick capture of ideas and todos on the go
-  - Secure bot token management with polling controls
-
-## 🔄 Recurring Tasks
-
-tududi features a sophisticated recurring task system designed to handle complex scheduling needs while maintaining an intuitive user experience.
-
-### Recurrence Patterns
-
-- **Daily**: Repeat every N days
-- **Weekly**: Repeat every N weeks, optionally on specific weekdays
-- **Monthly**: Repeat every N months on a specific date
-- **Monthly Weekday**: Repeat on the Nth occurrence of a weekday (e.g., "2nd Tuesday of every month")
-- **Monthly Last Day**: Repeat on the last day of every month
-
-### Smart Parent-Child Relationships
-
-When a recurring task generates new instances:
-- Each generated task maintains a link to its parent recurring task
-- Generated tasks display as "Recurring Task Instance" with inherited settings
-- Users can edit the parent's recurrence pattern directly from any child task
-- Changes to parent settings affect all future instances in the series
-
-### Completion-Based Recurrence
-
-Choose between two recurrence behaviors:
-- **Due Date Based** (default): Next task scheduled based on original due date
-- **Completion Based**: Next task scheduled based on when the task is actually completed
-
-This is particularly useful for tasks like "Weekly grocery shopping" where you want the next instance to appear a week after you complete it, regardless of when it was originally due.
-
-### Example Use Cases
-
-- **Daily Habits**: "Take vitamins" (daily)
-- **Weekly Routines**: "Grocery shopping" (every Sunday, completion-based)
-- **Monthly Bills**: "Pay rent" (1st of every month)
-- **Quarterly Reviews**: "Team performance review" (1st Monday of every 3 months)
-- **Maintenance Tasks**: "Change air filter" (every 3 months, completion-based)
 
 ## 🗺️ Roadmap
 

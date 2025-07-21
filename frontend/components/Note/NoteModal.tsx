@@ -11,7 +11,7 @@ import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import { Tag } from '../../entities/Tag';
-import { fetchTags } from '../../utils/tagsService';
+import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
 import ProjectDropdown from '../Shared/ProjectDropdown';
 import {
@@ -42,6 +42,9 @@ const NoteModal: React.FC<NoteModalProps> = ({
     onCreateProject,
 }) => {
     const { t } = useTranslation();
+    const {
+        tagsStore: { tags: availableTagsStore, loadTags, isLoading: tagsLoading, hasLoaded: tagsHasLoaded },
+    } = useStore();
     const [formData, setFormData] = useState<Note>(
         note || {
             title: '',
@@ -52,7 +55,6 @@ const NoteModal: React.FC<NoteModalProps> = ({
     const [tags, setTags] = useState<string[]>(
         (note?.tags || note?.Tags)?.map((tag) => tag.name) || []
     );
-    const [availableTags, setAvailableTags] = useState<Tag[]>([]);
     const [error, setError] = useState<string | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
@@ -80,17 +82,9 @@ const NoteModal: React.FC<NoteModalProps> = ({
     useEffect(() => {
         if (!isOpen) return;
 
-        const loadTags = async () => {
-            try {
-                const data = await fetchTags();
-                setAvailableTags(data);
-            } catch (error) {
-                console.error('Failed to fetch tags', error);
-                showErrorToast('Failed to load tags');
-            }
-        };
-
-        loadTags();
+        if (!tagsHasLoaded && !tagsLoading) {
+            loadTags();
+        }
 
         // Auto-focus on the title input when modal opens
         if (isOpen) {
@@ -98,7 +92,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                 titleInputRef.current?.focus();
             }, 100);
         }
-    }, [isOpen]);
+    }, [isOpen, tagsHasLoaded, tagsLoading]);
 
     // Initialize filtered projects from props - like TaskModal
     useEffect(() => {
@@ -399,7 +393,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                 </div>
 
                                                 {/* Content Section - Always Visible */}
-                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
+                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 px-4 flex-1 flex flex-col">
                                                     <div className="flex items-center justify-between mb-2">
                                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                             {t(
@@ -463,21 +457,12 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             onChange={
                                                                 handleChange
                                                             }
-                                                            rows={15}
-                                                            className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
+                                                            className="block w-full h-full min-h-0 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
                                                             placeholder="Write your content using Markdown formatting...&#10;&#10;Examples:&#10;# Heading&#10;**Bold text**&#10;*Italic text*&#10;- List item&#10;```code```"
                                                             autoComplete="off"
                                                         />
                                                     ) : (
-                                                        <div
-                                                            className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-gray-50 dark:bg-gray-800 overflow-y-auto"
-                                                            style={{
-                                                                minHeight:
-                                                                    '300px',
-                                                                maxHeight:
-                                                                    '400px',
-                                                            }}
-                                                        >
+                                                        <div className="block w-full h-full min-h-0 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-gray-50 dark:bg-gray-800 overflow-y-auto">
                                                             {formData.content ? (
                                                                 <MarkdownRenderer
                                                                     content={
@@ -509,7 +494,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             }
                                                             initialTags={tags}
                                                             availableTags={
-                                                                availableTags
+                                                                availableTagsStore
                                                             }
                                                         />
                                                     </div>

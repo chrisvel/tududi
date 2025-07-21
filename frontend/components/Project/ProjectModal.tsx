@@ -11,7 +11,6 @@ import { PriorityType } from '../../entities/Task';
 import Switch from '../Shared/Switch';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
-import { fetchTags } from '../../utils/tagsService';
 import {
     TagIcon,
     Squares2X2Icon,
@@ -62,12 +61,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const [isUploading, setIsUploading] = useState(false);
 
     const { tagsStore } = useStore();
-    const { tags: availableTags } = tagsStore;
+    const { tags: availableTags, loadTags, isLoading: tagsLoading, hasLoaded: tagsHasLoaded } = tagsStore;
 
-    const [localAvailableTags, setLocalAvailableTags] = useState<
-        Array<{ name: string }>
-    >([]);
-    const [tagsLoaded, setTagsLoaded] = useState(false);
 
     const modalRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -91,24 +86,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     // Load tags when modal opens
     useEffect(() => {
-        const loadTags = async () => {
-            if (isOpen && !tagsLoaded) {
-                try {
-                    const fetchedTags = await fetchTags();
-                    // Ensure fetchedTags is always an array
-                    const safeTagsArray = Array.isArray(fetchedTags)
-                        ? fetchedTags
-                        : [];
-                    setLocalAvailableTags(safeTagsArray);
-                    setTagsLoaded(true);
-                } catch (error) {
-                    console.error('Error loading tags:', error);
-                    setLocalAvailableTags([]);
-                }
-            }
-        };
-
-        loadTags();
+        if (isOpen && !tagsHasLoaded && !tagsLoading) {
+            loadTags();
+        }
 
         // Auto-focus on the name input when modal opens
         if (isOpen) {
@@ -116,7 +96,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 nameInputRef.current?.focus();
             }, 100);
         }
-    }, [isOpen, tagsLoaded]);
+    }, [isOpen, tagsHasLoaded, tagsLoading]);
 
     useEffect(() => {
         if (project) {
@@ -473,7 +453,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             </div>
 
                                             {/* Description Section - Always Visible */}
-                                            <div className="flex-1 border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
+                                            <div className="flex-1 border-b border-gray-200 dark:border-gray-700 pb-4 px-4 flex flex-col">
                                                 <textarea
                                                     id="projectDescription"
                                                     name="description"
@@ -482,14 +462,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         ''
                                                     }
                                                     onChange={handleChange}
-                                                    className="block w-full h-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
+                                                    className="block w-full h-full min-h-0 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
                                                     placeholder={t(
                                                         'forms.projectDescriptionPlaceholder',
                                                         'Enter project description (optional)'
                                                     )}
-                                                    style={{
-                                                        minHeight: '200px',
-                                                    }}
                                                 />
                                             </div>
 
@@ -539,10 +516,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         }
                                                         initialTags={tags}
                                                         availableTags={
-                                                            localAvailableTags.length >
-                                                            0
-                                                                ? localAvailableTags
-                                                                : availableTags
+                                                            availableTags
                                                         }
                                                     />
                                                 </div>

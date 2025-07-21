@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HeartIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
+import { HeartIcon } from '@heroicons/react/24/outline';
 
 const About: React.FC = () => {
     const { t } = useTranslation();
@@ -25,7 +25,6 @@ const About: React.FC = () => {
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
                 <div className="flex items-center mb-4">
-                    <InformationCircleIcon className="h-6 w-6 mr-2" />
                     <h2 className="text-2xl font-light">
                         {t('about.title', 'About')}
                     </h2>

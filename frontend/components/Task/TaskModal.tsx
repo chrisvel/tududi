@@ -5,7 +5,7 @@ import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useToast } from '../Shared/ToastContext';
 import TimelinePanel from './TimelinePanel';
 import { Project } from '../../entities/Project';
-import { fetchTags } from '../../utils/tagsService';
+import { useStore } from '../../store/useStore';
 import { fetchTaskById } from '../../utils/tasksService';
 import { getTaskIntelligenceEnabled } from '../../utils/profileService';
 import {
@@ -51,6 +51,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
     onCreateProject,
     onEditParentTask,
 }) => {
+    const {
+        tagsStore: { tags: availableTags, loadTags, isLoading: tagsLoading, hasLoaded: tagsHasLoaded },
+    } = useStore();
     const [formData, setFormData] = useState<Task>(task);
     const [tags, setTags] = useState<string[]>(
         task.tags?.map((tag) => tag.name) || []
@@ -64,10 +67,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const modalRef = useRef<HTMLDivElement>(null);
     const [isClosing, setIsClosing] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-    const [localAvailableTags, setLocalAvailableTags] = useState<
-        Array<{ name: string }>
-    >([]);
-    const [tagsLoaded, setTagsLoaded] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [parentTaskLoading, setParentTaskLoading] = useState(false);
     const [taskAnalysis, setTaskAnalysis] = useState<TaskAnalysis | null>(null);
@@ -197,30 +196,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
     };
 
     useEffect(() => {
-        const loadTags = async () => {
-            if (isOpen && !tagsLoaded) {
-                try {
-                    const fetchedTags = await fetchTags();
-                    // Ensure fetchedTags is always an array
-                    const safeTagsArray = Array.isArray(fetchedTags)
-                        ? fetchedTags
-                        : [];
-                    setLocalAvailableTags(safeTagsArray);
-                    setTagsLoaded(true);
-                } catch (error: any) {
-                    console.error('Error fetching tags:', error);
-                    // Set empty array as fallback
-                    setLocalAvailableTags([]);
-                    setTagsLoaded(true); // Mark as loaded even on error to prevent retry loop
-                }
-            }
-        };
-
-        // Only load tags if modal is open
-        if (isOpen) {
+        // Load tags when modal opens if they're not already loaded
+        if (isOpen && !tagsHasLoaded && !tagsLoading) {
             loadTags();
         }
-    }, [isOpen, tagsLoaded]);
+    }, [isOpen, tagsHasLoaded, tagsLoading]);
 
     const getPriorityString = (
         priority: PriorityType | number | undefined
@@ -354,7 +334,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
         setTimeout(() => {
             onClose();
             setIsClosing(false);
-            setTagsLoaded(false); // Reset tags loaded state for next modal open
         }, 300);
     };
 
@@ -484,7 +463,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                                 handleTagsChange
                                                             }
                                                             availableTags={
-                                                                localAvailableTags
+                                                                availableTags
                                                             }
                                                         />
                                                     </div>

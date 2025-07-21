@@ -73,8 +73,8 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
     // Handle keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            // Check for Ctrl key combinations only (not Cmd/Meta key)
-            if (event.ctrlKey && !event.metaKey) {
+            // Check for Ctrl + Shift key combinations only (not Cmd/Meta key)
+            if (event.ctrlKey && event.shiftKey && !event.metaKey) {
                 switch (event.key.toLowerCase()) {
                     case 'i':
                         event.preventDefault();
@@ -144,37 +144,37 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
             label: 'Inbox',
             translationKey: 'dropdown.inbox',
             icon: <InboxIcon className="h-5 w-5 mr-2" />,
-            shortcut: '⌃I',
+            shortcut: 'Ctrl+Shift+I',
         },
         {
             label: 'Task',
             translationKey: 'dropdown.task',
             icon: <CheckIcon className="h-5 w-5 mr-2" />,
-            shortcut: '⌃T',
+            shortcut: 'Ctrl+Shift+T',
         },
         {
             label: 'Project',
             translationKey: 'dropdown.project',
             icon: <FolderIcon className="h-5 w-5 mr-2" />,
-            shortcut: '⌃P',
+            shortcut: 'Ctrl+Shift+P',
         },
         {
             label: 'Note',
             translationKey: 'dropdown.note',
             icon: <BookOpenIcon className="h-5 w-5 mr-2" />,
-            shortcut: '⌃N',
+            shortcut: 'Ctrl+Shift+N',
         },
         {
             label: 'Area',
             translationKey: 'dropdown.area',
             icon: <Squares2X2Icon className="h-5 w-5 mr-2" />,
-            shortcut: '⌃A',
+            shortcut: 'Ctrl+Shift+A',
         },
         {
             label: 'Tag',
             translationKey: 'dropdown.tag',
             icon: <TagIcon className="h-5 w-5 mr-2" />,
-            shortcut: '⌃G',
+            shortcut: 'Ctrl+Shift+G',
         },
     ];
     return (
@@ -225,8 +225,8 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                                                             label
                                                         )}
                                                     </div>
-                                                    <span className="text-xs text-gray-500 dark:text-gray-400 font-mono bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded opacity-60">
-                                                        {shortcut}
+                                                    <span className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400 opacity-60" style={{fontSize: '10px'}}>
+                                                        ^ + Shift + {shortcut.split('+').pop()}
                                                     </span>
                                                 </button>
                                             )

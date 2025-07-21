@@ -163,19 +163,6 @@ const TagDetails: React.FC = () => {
         return (project as any).completion_percentage || 0;
     };
 
-    const getPriorityStyles = (priority: string) => {
-        switch (priority) {
-            case 'low':
-                return { color: 'bg-green-500' };
-            case 'medium':
-                return { color: 'bg-yellow-500' };
-            case 'high':
-                return { color: 'bg-red-500' };
-            default:
-                return { color: 'bg-gray-500' };
-        }
-    };
-    
     const handleEditProject = (project: Project) => {
         navigate(`/project/${project.id}/edit`);
     };
@@ -366,9 +353,6 @@ const TagDetails: React.FC = () => {
                         </h3>
                         <div className="flex flex-col space-y-1">
                             {projects.map((project) => {
-                                const { color } = getPriorityStyles(
-                                    project.priority || 'low'
-                                );
                                 return (
                                     <ProjectItem
                                         key={project.id}

@@ -10,18 +10,22 @@ interface NotesStore {
     notes: Note[];
     isLoading: boolean;
     isError: boolean;
+    hasLoaded: boolean;
     setNotes: (notes: Note[]) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
+    loadNotes: () => Promise<void>;
 }
 
 interface AreasStore {
     areas: Area[];
     isLoading: boolean;
     isError: boolean;
+    hasLoaded: boolean;
     setAreas: (areas: Area[]) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
+    loadAreas: () => Promise<void>;
 }
 
 interface ProjectsStore {
@@ -39,6 +43,7 @@ interface TagsStore {
     tags: Tag[];
     isLoading: boolean;
     isError: boolean;
+    hasLoaded: boolean;
     setTags: (tags: Tag[]) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
@@ -80,6 +85,7 @@ export const useStore = create<StoreState>((set) => ({
         notes: [],
         isLoading: false,
         isError: false,
+        hasLoaded: false,
         setNotes: (notes) =>
             set((state) => ({ notesStore: { ...state.notesStore, notes } })),
         setLoading: (isLoading) =>
@@ -88,11 +94,48 @@ export const useStore = create<StoreState>((set) => ({
             })),
         setError: (isError) =>
             set((state) => ({ notesStore: { ...state.notesStore, isError } })),
+        loadNotes: async () => {
+            const state = useStore.getState();
+            if (state.notesStore.isLoading) return;
+            
+            const { fetchNotes } = await import('../utils/notesService');
+            
+            set((state) => ({
+                notesStore: {
+                    ...state.notesStore,
+                    isLoading: true,
+                    isError: false,
+                },
+            }));
+            
+            try {
+                const notes = await fetchNotes();
+                set((state) => ({
+                    notesStore: { 
+                        ...state.notesStore, 
+                        notes, 
+                        isLoading: false, 
+                        hasLoaded: true 
+                    },
+                }));
+            } catch (error) {
+                console.error('loadNotes: Failed to load notes:', error);
+                set((state) => ({
+                    notesStore: {
+                        ...state.notesStore,
+                        isError: true,
+                        isLoading: false,
+                        hasLoaded: true,
+                    },
+                }));
+            }
+        },
     },
     areasStore: {
         areas: [],
         isLoading: false,
         isError: false,
+        hasLoaded: false,
         setAreas: (areas) =>
             set((state) => ({ areasStore: { ...state.areasStore, areas } })),
         setLoading: (isLoading) =>
@@ -101,6 +144,42 @@ export const useStore = create<StoreState>((set) => ({
             })),
         setError: (isError) =>
             set((state) => ({ areasStore: { ...state.areasStore, isError } })),
+        loadAreas: async () => {
+            const state = useStore.getState();
+            if (state.areasStore.isLoading) return;
+            
+            const { fetchAreas } = await import('../utils/areasService');
+            
+            set((state) => ({
+                areasStore: {
+                    ...state.areasStore,
+                    isLoading: true,
+                    isError: false,
+                },
+            }));
+            
+            try {
+                const areas = await fetchAreas();
+                set((state) => ({
+                    areasStore: { 
+                        ...state.areasStore, 
+                        areas, 
+                        isLoading: false, 
+                        hasLoaded: true 
+                    },
+                }));
+            } catch (error) {
+                console.error('loadAreas: Failed to load areas:', error);
+                set((state) => ({
+                    areasStore: {
+                        ...state.areasStore,
+                        isError: true,
+                        isLoading: false,
+                        hasLoaded: true,
+                    },
+                }));
+            }
+        },
     },
     projectsStore: {
         projects: [],
@@ -128,6 +207,7 @@ export const useStore = create<StoreState>((set) => ({
         tags: [],
         isLoading: false,
         isError: false,
+        hasLoaded: false,
         setTags: (tags) =>
             set((state) => ({ tagsStore: { ...state.tagsStore, tags } })),
         setLoading: (isLoading) =>
@@ -135,7 +215,11 @@ export const useStore = create<StoreState>((set) => ({
         setError: (isError) =>
             set((state) => ({ tagsStore: { ...state.tagsStore, isError } })),
         loadTags: async () => {
+            const state = useStore.getState();
+            if (state.tagsStore.isLoading) return;
+            
             const { fetchTags } = await import('../utils/tagsService');
+            
             set((state) => ({
                 tagsStore: {
                     ...state.tagsStore,
@@ -143,10 +227,16 @@ export const useStore = create<StoreState>((set) => ({
                     isError: false,
                 },
             }));
+            
             try {
                 const tags = await fetchTags();
                 set((state) => ({
-                    tagsStore: { ...state.tagsStore, tags, isLoading: false },
+                    tagsStore: { 
+                        ...state.tagsStore, 
+                        tags, 
+                        isLoading: false, 
+                        hasLoaded: true 
+                    },
                 }));
             } catch (error) {
                 console.error('loadTags: Failed to load tags:', error);
@@ -155,6 +245,7 @@ export const useStore = create<StoreState>((set) => ({
                         ...state.tagsStore,
                         isError: true,
                         isLoading: false,
+                        hasLoaded: true,
                     },
                 }));
             }

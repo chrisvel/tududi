@@ -7,7 +7,6 @@ import ConfirmDialog from './Shared/ConfirmDialog';
 import NoteCard from './Shared/NoteCard';
 import { Note } from '../entities/Note';
 import {
-    fetchNotes,
     createNote,
     updateNote,
     deleteNote as apiDeleteNote,
@@ -26,30 +25,16 @@ const Notes: React.FC = () => {
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
     // Get notes and projects from global store
-    const { notes, isLoading, isError, setNotes, setLoading, setError } =
+    const { notes, isLoading, isError, hasLoaded, loadNotes, setNotes } =
         useStore((state) => state.notesStore);
     const projects = useStore((state) => state.projectsStore.projects);
     const { setProjects } = useStore((state) => state.projectsStore);
 
     useEffect(() => {
-        const loadNotes = async () => {
-            if (notes.length === 0 && !isLoading) {
-                setLoading(true);
-                try {
-                    const fetchedNotes = await fetchNotes();
-                    setNotes(fetchedNotes);
-                    setError(false);
-                } catch (error) {
-                    console.error('Error loading notes:', error);
-                    setError(true);
-                } finally {
-                    setLoading(false);
-                }
-            }
-        };
-
-        loadNotes();
-    }, [notes.length, isLoading, setNotes, setLoading, setError]);
+        if (!hasLoaded && !isLoading && !isError) {
+            loadNotes();
+        }
+    }, [hasLoaded, isLoading, isError, loadNotes]);
 
     // Load projects if not available - force load every time for debugging
     useEffect(() => {

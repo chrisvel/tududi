@@ -20,7 +20,7 @@ import { useStore } from '../store/useStore';
 
 const Tags: React.FC = () => {
     const {
-        tagsStore: { tags, setTags, isLoading, isError, loadTags },
+        tagsStore: { tags, setTags, isLoading, isError, hasLoaded, loadTags },
     } = useStore();
 
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
@@ -38,10 +38,10 @@ const Tags: React.FC = () => {
 
     // Load tags when component mounts
     useEffect(() => {
-        if (tags.length === 0 && !isLoading && !isError) {
+        if (!hasLoaded && !isLoading && !isError) {
             loadTags();
         }
-    }, [tags.length, isLoading, isError, loadTags]);
+    }, [hasLoaded, isLoading, isError, loadTags]);
 
     useEffect(() => {
         const loadMetrics = async () => {
@@ -147,6 +147,7 @@ const Tags: React.FC = () => {
     };
 
     const handleEditTag = (tag: Tag) => {
+        console.log('🏷️ handleEditTag called:', tag);
         setSelectedTag(tag);
         setIsTagModalOpen(true);
     };

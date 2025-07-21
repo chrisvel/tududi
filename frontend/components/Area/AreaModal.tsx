@@ -193,7 +193,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
                                             </div>
 
                                             {/* Description Section - Always Visible */}
-                                            <div className="flex-1 pb-4 mb-4 px-4">
+                                            <div className="flex-1 pb-4 px-4">
                                                 <textarea
                                                     id="areaDescription"
                                                     name="description"
