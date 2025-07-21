@@ -47,11 +47,13 @@ const SortFilterButton: React.FC<SortFilterButtonProps> = ({
     const isMobile = size === 'mobile';
 
     // Calculate optimal width based on the longest option text
-    const longestOptionLength = Math.max(...options.map(option => option.label.length));
-    const optimalWidth = isMobile 
+    const longestOptionLength = Math.max(
+        ...options.map((option) => option.label.length)
+    );
+    const optimalWidth = isMobile
         ? Math.max(longestOptionLength * 0.45 + 2.5, 6.5) // min 6.5rem for mobile
         : Math.max(longestOptionLength * 0.55 + 3.5, 8.5); // min 8.5rem for desktop
-    
+
     const buttonClasses = isMobile
         ? `inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-3 py-1.5 bg-white dark:bg-gray-700 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors`
         : `inline-flex justify-between items-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none transition-colors`;

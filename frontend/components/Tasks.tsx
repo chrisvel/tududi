@@ -137,9 +137,15 @@ const Tasks: React.FC = () => {
             }
         };
 
-        window.addEventListener('taskCreated', handleTaskCreated as EventListener);
+        window.addEventListener(
+            'taskCreated',
+            handleTaskCreated as EventListener
+        );
         return () => {
-            window.removeEventListener('taskCreated', handleTaskCreated as EventListener);
+            window.removeEventListener(
+                'taskCreated',
+                handleTaskCreated as EventListener
+            );
         };
     }, []);
 
