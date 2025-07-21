@@ -17,38 +17,38 @@ import { createProject, fetchProjects } from '../utils/projectsService';
 
 const Notes: React.FC = () => {
     const { t } = useTranslation();
-    const [notes, setNotes] = useState<Note[]>([]);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
     const [isSearchExpanded, setIsSearchExpanded] = useState<boolean>(false);
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
-    // Get projects from store
+    // Get notes and projects from global store
+    const { notes, isLoading, isError, setNotes, setLoading, setError } = useStore((state) => state.notesStore);
     const projects = useStore((state) => state.projectsStore.projects);
     const { setProjects } = useStore((state) => state.projectsStore);
 
-    const [isError, setIsError] = useState(false);
-
     useEffect(() => {
         const loadNotes = async () => {
-            setIsLoading(true);
-            try {
-                const fetchedNotes = await fetchNotes();
-                setNotes(fetchedNotes);
-            } catch (error) {
-                console.error('Error loading notes:', error);
-                setIsError(true);
-            } finally {
-                setIsLoading(false);
+            if (notes.length === 0 && !isLoading) {
+                setLoading(true);
+                try {
+                    const fetchedNotes = await fetchNotes();
+                    setNotes(fetchedNotes);
+                    setError(false);
+                } catch (error) {
+                    console.error('Error loading notes:', error);
+                    setError(true);
+                } finally {
+                    setLoading(false);
+                }
             }
         };
 
         loadNotes();
-    }, []);
+    }, [notes.length, isLoading, setNotes, setLoading, setError]);
 
     // Load projects if not available - force load every time for debugging
     useEffect(() => {
@@ -81,9 +81,8 @@ const Notes: React.FC = () => {
         if (!noteToDelete) return;
         try {
             await apiDeleteNote(noteToDelete.id!);
-            setNotes((prev) =>
-                prev.filter((note) => note.id !== noteToDelete.id)
-            );
+            const updatedNotes = notes.filter((note) => note.id !== noteToDelete.id);
+            setNotes(updatedNotes);
             setIsConfirmDialogOpen(false);
             setNoteToDelete(null);
         } catch (err) {
@@ -98,17 +97,16 @@ const Notes: React.FC = () => {
 
     const handleSaveNote = async (noteData: Note) => {
         try {
-            let updatedNotes;
             if (noteData.id) {
                 const savedNote = await updateNote(noteData.id, noteData);
-                updatedNotes = notes.map((note) =>
+                const updatedNotes = notes.map((note) =>
                     note.id === noteData.id ? savedNote : note
                 );
+                setNotes(updatedNotes);
             } else {
                 const newNote = await createNote(noteData);
-                updatedNotes = [...notes, newNote];
+                setNotes([newNote, ...notes]);
             }
-            setNotes(updatedNotes);
             setIsNoteModalOpen(false);
             setSelectedNote(null);
         } catch (err) {
@@ -275,9 +273,8 @@ const Notes: React.FC = () => {
                         onDelete={async (noteId) => {
                             try {
                                 await apiDeleteNote(noteId);
-                                setNotes((prev) =>
-                                    prev.filter((note) => note.id !== noteId)
-                                );
+                                const updatedNotes = notes.filter((note) => note.id !== noteId);
+                                setNotes(updatedNotes);
                                 setIsNoteModalOpen(false);
                                 setSelectedNote(null);
                             } catch (err) {

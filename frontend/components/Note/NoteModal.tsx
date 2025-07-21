@@ -55,6 +55,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
     const [availableTags, setAvailableTags] = useState<Tag[]>([]);
     const [error, setError] = useState<string | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
+    const titleInputRef = useRef<HTMLInputElement>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [isClosing, setIsClosing] = useState(false);
     const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
@@ -90,6 +91,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
         };
 
         loadTags();
+        
+        // Auto-focus on the title input when modal opens
+        if (isOpen) {
+            setTimeout(() => {
+                titleInputRef.current?.focus();
+            }, 100);
+        }
     }, [isOpen]);
 
     // Initialize filtered projects from props - like TaskModal
@@ -362,11 +370,18 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                             WebkitOverflowScrolling: 'touch',
                                         }}
                                     >
-                                        <form className="h-full">
+                                        <form 
+                                            className="h-full"
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                handleSubmit();
+                                            }}
+                                        >
                                             <fieldset className="h-full flex flex-col">
                                                 {/* Note Title Section - Always Visible */}
                                                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 pt-4">
                                                     <input
+                                                        ref={titleInputRef}
                                                         type="text"
                                                         id="noteTitle"
                                                         name="title"

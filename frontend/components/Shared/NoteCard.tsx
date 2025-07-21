@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     TagIcon,
@@ -31,6 +31,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
     showProject = true,
 }) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -115,16 +116,19 @@ const NoteCard: React.FC<NoteCardProps> = ({
                     <div className="h-10 flex items-center justify-between overflow-hidden flex-shrink-0">
                         <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2 min-w-0 flex-1">
                             {showProject && project && (
-                                <Link
-                                    to={`/project/${project.id}`}
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="flex items-center min-w-0 hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors"
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        navigate(`/project/${project.id}`);
+                                    }}
+                                    className="flex items-center min-w-0 hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors bg-transparent border-none p-0 cursor-pointer"
                                 >
                                     <FolderIcon className="h-3 w-3 mr-1 flex-shrink-0" />
                                     <span className="truncate">
                                         {project.name}
                                     </span>
-                                </Link>
+                                </button>
                             )}
                             {tags.length > 0 && (
                                 <div className="flex items-center min-w-0 flex-1 overflow-hidden">
@@ -135,15 +139,16 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                                 key={index}
                                                 className="inline"
                                             >
-                                                <Link
-                                                    to={`/tag/${tag.id}`}
-                                                    onClick={(e) =>
-                                                        e.stopPropagation()
-                                                    }
-                                                    className="hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors"
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        navigate(`/tag/${encodeURIComponent(tag.name)}`);
+                                                    }}
+                                                    className="hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors bg-transparent border-none p-0 cursor-pointer"
                                                 >
                                                     {tag.name}
-                                                </Link>
+                                                </button>
                                                 {index < tags.length - 1 && (
                                                     <span className="text-gray-400">
                                                         ,{' '}
