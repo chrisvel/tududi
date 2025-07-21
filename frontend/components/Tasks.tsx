@@ -128,6 +128,21 @@ const Tasks: React.FC = () => {
         fetchData();
     }, [location]);
 
+    // Listen for task creation from other components (e.g., Layout modal)
+    useEffect(() => {
+        const handleTaskCreated = (event: CustomEvent) => {
+            const newTask = event.detail;
+            if (newTask) {
+                setTasks((prevTasks) => [newTask, ...prevTasks]);
+            }
+        };
+
+        window.addEventListener('taskCreated', handleTaskCreated as EventListener);
+        return () => {
+            window.removeEventListener('taskCreated', handleTaskCreated as EventListener);
+        };
+    }, []);
+
     const handleRemoveTag = () => {
         const params = new URLSearchParams(location.search);
         params.delete('tag');
@@ -256,11 +271,11 @@ const Tasks: React.FC = () => {
 
     // Sort options for tasks
     const sortOptions: SortOption[] = [
-        { value: 'due_date:asc', label: 'Due date' },
-        { value: 'name:asc', label: 'Name' },
-        { value: 'priority:desc', label: 'Priority' },
-        { value: 'status:desc', label: 'Status' },
-        { value: 'created_at:desc', label: 'Created at' },
+        { value: 'due_date:asc', label: t('sort.due_date', 'Due Date') },
+        { value: 'name:asc', label: t('sort.name', 'Name') },
+        { value: 'priority:desc', label: t('sort.priority', 'Priority') },
+        { value: 'status:desc', label: t('sort.status', 'Status') },
+        { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
     ];
 
     const description = getDescription(query, projects, t);

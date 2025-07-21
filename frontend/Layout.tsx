@@ -198,6 +198,9 @@ const Layout: React.FC<LayoutProps> = ({
                     </span>
                 );
                 showSuccessToast(taskLink);
+                
+                // Notify Tasks component that a task was created
+                window.dispatchEvent(new CustomEvent('taskCreated', { detail: createdTask }));
             }
             // Don't refetch all tasks here - let individual components handle their own state
             // This prevents unnecessary re-renders and race conditions

@@ -58,10 +58,10 @@ const Projects: React.FC = () => {
 
     // Sort options for the filter button
     const sortOptions: SortOption[] = [
-        { value: 'created_at:desc', label: 'Created at' },
-        { value: 'name:asc', label: 'Name' },
-        { value: 'due_date_at:asc', label: 'Due date' },
-        { value: 'updated_at:desc', label: 'Updated at' },
+        { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
+        { value: 'name:asc', label: t('sort.name', 'Name') },
+        { value: 'due_date_at:asc', label: t('sort.due_date', 'Due Date') },
+        { value: 'updated_at:desc', label: t('common.updated', 'Updated') },
     ];
 
     // Filter options for dropdowns

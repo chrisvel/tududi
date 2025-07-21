@@ -68,9 +68,9 @@ const Notes: React.FC = () => {
 
     // Sort options for notes
     const sortOptions: SortOption[] = [
-        { value: 'created_at:desc', label: 'Created at' },
-        { value: 'title:asc', label: 'Title' },
-        { value: 'updated_at:desc', label: 'Updated at' },
+        { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
+        { value: 'title:asc', label: t('sort.name', 'Title') },
+        { value: 'updated_at:desc', label: t('common.updated', 'Updated') },
     ];
 
     // Handle sort change
