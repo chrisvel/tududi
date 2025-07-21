@@ -26,6 +26,7 @@ const TagModal: React.FC<TagModalProps> = ({
     );
 
     const modalRef = useRef<HTMLDivElement>(null);
+    const nameInputRef = useRef<HTMLInputElement>(null);
     const [isClosing, setIsClosing] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { showSuccessToast, showErrorToast } = useToast();
@@ -39,7 +40,14 @@ const TagModal: React.FC<TagModalProps> = ({
                 name: '',
             });
         }
-    }, [tag]);
+        
+        // Auto-focus on the name input when modal opens
+        if (isOpen) {
+            setTimeout(() => {
+                nameInputRef.current?.focus();
+            }, 100);
+        }
+    }, [tag, isOpen]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -152,11 +160,17 @@ const TagModal: React.FC<TagModalProps> = ({
                     <div className="flex flex-col h-auto">
                         {/* Main Form Section */}
                         <div className="bg-white dark:bg-gray-800">
-                            <form>
+                            <form 
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleSubmit();
+                                }}
+                            >
                                 <fieldset>
                                     {/* Tag Title Section - Always Visible */}
                                     <div className="px-4 pt-4 pb-4">
                                         <input
+                                            ref={nameInputRef}
                                             type="text"
                                             id="tagName"
                                             name="name"

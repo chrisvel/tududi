@@ -270,10 +270,19 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveTag = async (tagData: Tag) => {
         try {
+            let result: Tag;
             if (tagData.id) {
-                await updateTag(tagData.id, tagData);
+                result = await updateTag(tagData.id, tagData);
+                // Update existing tag in global store
+                const currentTags = useStore.getState().tagsStore.tags;
+                useStore.getState().tagsStore.setTags(
+                    currentTags.map(tag => tag.id === result.id ? result : tag)
+                );
             } else {
-                await createTag(tagData);
+                result = await createTag(tagData);
+                // Add new tag to global store
+                const currentTags = useStore.getState().tagsStore.tags;
+                useStore.getState().tagsStore.setTags([...currentTags, result]);
             }
             closeTagModal();
         } catch (error: any) {
