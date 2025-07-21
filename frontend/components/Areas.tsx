@@ -37,6 +37,7 @@ const Areas: React.FC = () => {
                 useStore.getState().areasStore.setAreas(areasData);
                 useStore.getState().areasStore.setError(false);
             } catch (error) {
+                console.error('Error loading areas:', error);
                 useStore.getState().areasStore.setError(true);
             } finally {
                 useStore.getState().areasStore.setLoading(false);
@@ -105,6 +106,7 @@ const Areas: React.FC = () => {
             setSelectedArea(null);
             useStore.getState().areasStore.setError(false);
         } catch (error) {
+            console.error('Error saving area:', error);
             useStore.getState().areasStore.setError(true);
         } finally {
             useStore.getState().areasStore.setLoading(false);
@@ -134,6 +136,7 @@ const Areas: React.FC = () => {
             setAreaToDelete(null);
             useStore.getState().areasStore.setError(false);
         } catch (error) {
+            console.error('Error deleting area:', error);
             useStore.getState().areasStore.setError(true);
         } finally {
             useStore.getState().areasStore.setLoading(false);
@@ -254,6 +257,7 @@ const Areas: React.FC = () => {
                                 setIsAreaModalOpen(false);
                                 setSelectedArea(null);
                             } catch (error) {
+                                console.error('Error deleting area from modal:', error);
                                 useStore.getState().areasStore.setError(true);
                             }
                         }}
