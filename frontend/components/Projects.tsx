@@ -37,7 +37,6 @@ const Projects: React.FC = () => {
     } = useStore((state) => state.projectsStore);
     const { isLoading, isError } = useStore((state) => state.projectsStore);
 
-    const [allProjects, setAllProjects] = useState<Project[]>([]);
     const [isProjectModalOpen, setIsProjectModalOpen] =
         useState<boolean>(false);
     const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
@@ -97,7 +96,7 @@ const Projects: React.FC = () => {
         const loadProjects = async () => {
             try {
                 const projectsData = await fetchProjects();
-                setAllProjects(projectsData);
+                setProjects(projectsData);
             } catch (error) {
                 console.error('Failed to fetch projects:', error);
                 setProjectsError(true);
@@ -144,7 +143,7 @@ const Projects: React.FC = () => {
                 await createProject(project);
             }
             const projectsData = await fetchProjects();
-            setAllProjects(projectsData);
+            setProjects(projectsData);
         } catch (error) {
             console.error('Error saving project:', error);
             setProjectsError(true);
@@ -166,8 +165,10 @@ const Projects: React.FC = () => {
             if (projectToDelete.id !== undefined) {
                 setProjectsLoading(true);
                 await deleteProject(projectToDelete.id);
+                
+                // Update global state
                 const projectsData = await fetchProjects();
-                setAllProjects(projectsData);
+                setProjects(projectsData);
             } else {
                 console.error('Cannot delete project: ID is undefined.');
             }
@@ -217,7 +218,7 @@ const Projects: React.FC = () => {
 
     // Filter, sort and search projects
     const displayProjects = useMemo(() => {
-        let filteredProjects = [...allProjects];
+        let filteredProjects = [...projects];
 
         // Apply active filter
         if (activeFilter !== 'all') {
@@ -294,7 +295,7 @@ const Projects: React.FC = () => {
         });
 
         return filteredProjects;
-    }, [allProjects, activeFilter, areaFilter, searchQuery, orderBy]);
+    }, [projects, activeFilter, areaFilter, searchQuery, orderBy]);
 
     if (isLoading) {
         return (
@@ -474,11 +475,13 @@ const Projects: React.FC = () => {
                     onDelete={async (projectId) => {
                         try {
                             await deleteProject(projectId);
-                            setProjects(
-                                projects.filter(
-                                    (p: Project) => p.id !== projectId
-                                )
+                            
+                            // Update both local and global state
+                            const updatedProjects = projects.filter(
+                                (p: Project) => p.id !== projectId
                             );
+                            setProjects(updatedProjects);
+                            
                             setIsProjectModalOpen(false);
                             setProjectToEdit(null);
                         } catch (error) {

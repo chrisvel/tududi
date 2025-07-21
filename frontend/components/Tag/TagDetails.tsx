@@ -162,7 +162,7 @@ const TagDetails: React.FC = () => {
     // Project handlers
     const handleEditProject = (project: Project) => {
         // For now, just log - could add modal later
-        console.log('Edit project:', project);
+        // Edit functionality not implemented yet
     };
 
     const getCompletionPercentage = (project: Project) => {
@@ -334,7 +334,7 @@ const TagDetails: React.FC = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             onClick={() =>
-                                                console.log('Edit note:', note)
+                                                {} // Edit functionality not implemented yet
                                             }
                                             className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
                                             aria-label={`Edit ${note.title}`}
@@ -344,10 +344,7 @@ const TagDetails: React.FC = () => {
                                         </button>
                                         <button
                                             onClick={() =>
-                                                console.log(
-                                                    'Delete note:',
-                                                    note
-                                                )
+                                                {} // Delete functionality not implemented yet
                                             }
                                             className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
                                             aria-label={`Delete ${note.title}`}

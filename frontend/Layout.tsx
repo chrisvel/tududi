@@ -440,6 +440,13 @@ const Layout: React.FC<LayoutProps> = ({
                                 './utils/projectsService'
                             );
                             await deleteProject(projectId);
+                            
+                            // Update global projects store
+                            const currentProjects = useStore.getState().projectsStore.projects;
+                            useStore.getState().projectsStore.setProjects(
+                                currentProjects.filter(p => p.id !== projectId)
+                            );
+                            
                             closeProjectModal();
                         } catch (error) {
                             console.error('Error deleting project:', error);

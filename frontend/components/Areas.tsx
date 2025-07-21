@@ -17,10 +17,8 @@ const Areas: React.FC = () => {
     const { t } = useTranslation();
     
     // Use global store for consistency  
-    const { areas, isLoading: loading, isError: error } = useStore((state) => state.areasStore);
+    const { areas, isLoading: loading } = useStore((state) => state.areasStore);
     
-    
-
     const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =

@@ -26,7 +26,7 @@ interface ProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (project: Project) => void;
-    onDelete?: (projectId: number) => void;
+    onDelete?: (projectId: number) => Promise<void>;
     project?: Project;
     areas: Area[];
 }
@@ -71,6 +71,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     const modalRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const nameInputRef = useRef<HTMLInputElement>(null);
     const [isClosing, setIsClosing] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -108,6 +109,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         };
 
         loadTags();
+        
+        // Auto-focus on the name input when modal opens
+        if (isOpen) {
+            setTimeout(() => {
+                nameInputRef.current?.focus();
+            }, 100);
+        }
     }, [isOpen, tagsLoaded]);
 
     useEffect(() => {
@@ -340,12 +348,17 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         setShowConfirmDialog(true);
     };
 
-    const handleDeleteConfirm = () => {
+    const handleDeleteConfirm = async () => {
         if (project && project.id && onDelete) {
-            onDelete(project.id);
-            showSuccessToast(t('success.projectDeleted'));
-            setShowConfirmDialog(false);
-            handleClose();
+            try {
+                await onDelete(project.id);
+                showSuccessToast(t('success.projectDeleted'));
+                setShowConfirmDialog(false);
+                handleClose();
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                showErrorToast(t('errors.failedToDeleteProject'));
+            }
         }
     };
 
@@ -428,11 +441,18 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                     className="absolute inset-0 overflow-y-auto overflow-x-hidden"
                                     style={{ WebkitOverflowScrolling: 'touch' }}
                                 >
-                                    <form className="h-full">
+                                    <form 
+                                        className="h-full"
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            handleSubmit();
+                                        }}
+                                    >
                                         <fieldset className="h-full flex flex-col">
                                             {/* Project Title Section - Always Visible */}
                                             <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 pt-4">
                                                 <input
+                                                    ref={nameInputRef}
                                                     type="text"
                                                     id="projectName"
                                                     name="name"
