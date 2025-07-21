@@ -159,12 +159,6 @@ const TagDetails: React.FC = () => {
         }
     };
 
-    // Project handlers
-    const handleEditProject = (project: Project) => {
-        // For now, just log - could add modal later
-        // Edit functionality not implemented yet
-    };
-
     const getCompletionPercentage = (project: Project) => {
         return (project as any).completion_percentage || 0;
     };
