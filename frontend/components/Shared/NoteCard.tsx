@@ -74,23 +74,24 @@ const NoteCard: React.FC<NoteCardProps> = ({
                             {note.title || t('notes.untitled', 'Untitled Note')}
                         </h3>
                     </div>
-
                 </div>
-                
+
                 {/* Separator under title */}
                 <hr className="border-gray-200 dark:border-gray-700" />
-                
-                <div className="px-4 flex flex-col flex-1">
 
+                <div className="px-4 flex flex-col flex-1">
                     {/* Content Summary - Main Area */}
                     <div className="h-40 overflow-hidden flex py-3">
-                        <div className="text-sm text-gray-400 dark:text-gray-600 leading-relaxed w-full opacity-50" style={{
-                            display: '-webkit-box',
-                            WebkitLineClamp: 6,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                        }}>
+                        <div
+                            className="text-sm text-gray-400 dark:text-gray-600 leading-relaxed w-full opacity-50"
+                            style={{
+                                display: '-webkit-box',
+                                WebkitLineClamp: 6,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            }}
+                        >
                             {note.content ? (
                                 <MarkdownRenderer
                                     content={
@@ -104,14 +105,12 @@ const NoteCard: React.FC<NoteCardProps> = ({
                             )}
                         </div>
                     </div>
-
                 </div>
-                
+
                 {/* Separator */}
                 <hr className="border-gray-200 dark:border-gray-700" />
-                
-                <div className="px-4">
 
+                <div className="px-4">
                     {/* Footer - Project and Tags - Fixed Height */}
                     <div className="h-10 flex items-center justify-between overflow-hidden flex-shrink-0">
                         <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2 min-w-0 flex-1">
@@ -122,7 +121,9 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                     className="flex items-center min-w-0 hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors"
                                 >
                                     <FolderIcon className="h-3 w-3 mr-1 flex-shrink-0" />
-                                    <span className="truncate">{project.name}</span>
+                                    <span className="truncate">
+                                        {project.name}
+                                    </span>
                                 </Link>
                             )}
                             {tags.length > 0 && (
@@ -130,26 +131,34 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                     <TagIcon className="h-3 w-3 mr-1 flex-shrink-0" />
                                     <div className="truncate">
                                         {tags.map((tag, index) => (
-                                            <span key={index} className="inline">
+                                            <span
+                                                key={index}
+                                                className="inline"
+                                            >
                                                 <Link
                                                     to={`/tag/${tag.id}`}
-                                                    onClick={(e) => e.stopPropagation()}
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
                                                     className="hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors"
                                                 >
                                                     {tag.name}
                                                 </Link>
-                                                {index < tags.length - 1 && <span className="text-gray-400">, </span>}
+                                                {index < tags.length - 1 && (
+                                                    <span className="text-gray-400">
+                                                        ,{' '}
+                                                    </span>
+                                                )}
                                             </span>
                                         ))}
                                     </div>
                                 </div>
                             )}
                         </div>
-                        
                     </div>
                 </div>
             </Link>
-            
+
             {/* Three Dots Dropdown - Outside Link */}
             {showActions && (onEdit || onDelete) && (
                 <div className="absolute bottom-2 right-2" ref={dropdownRef}>
@@ -198,7 +207,6 @@ const NoteCard: React.FC<NoteCardProps> = ({
                     )}
                 </div>
             )}
-            
         </div>
     );
 };

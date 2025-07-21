@@ -43,7 +43,10 @@ const Areas: React.FC = () => {
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
                 setDropdownOpen(null);
             }
         };
@@ -156,15 +159,24 @@ const Areas: React.FC = () => {
                                 </div>
 
                                 {/* Three Dots Dropdown - Bottom Right */}
-                                <div className="absolute bottom-2 right-2" ref={dropdownRef}>
+                                <div
+                                    className="absolute bottom-2 right-2"
+                                    ref={dropdownRef}
+                                >
                                     <button
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
-                                            setDropdownOpen(dropdownOpen === area.id ? null : area.id!);
+                                            setDropdownOpen(
+                                                dropdownOpen === area.id
+                                                    ? null
+                                                    : area.id!
+                                            );
                                         }}
                                         className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                        aria-label={t('areas.toggleDropdownMenu')}
+                                        aria-label={t(
+                                            'areas.toggleDropdownMenu'
+                                        )}
                                     >
                                         <EllipsisVerticalIcon className="h-5 w-5" />
                                     </button>
