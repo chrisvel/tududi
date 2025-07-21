@@ -955,19 +955,13 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
     const handleSubmit = useCallback(
         async (forceInbox = false) => {
-            console.log('HandleSubmit called with forceInbox:', forceInbox);
             if (!inputText.trim() || isSaving) return;
 
             setIsSaving(true);
 
             try {
                 // Check if suggestions are present first, even in edit mode (unless forced to inbox mode)
-                console.log('Checking task suggestion:', {
-                    suggestedType: analysisResult?.suggested_type,
-                    forceInbox,
-                });
                 if (analysisResult?.suggested_type === 'task' && !forceInbox) {
-                    console.log('Taking task creation path');
                     // Auto-convert to task using the same logic as convert to task action
                     await createMissingTags(inputText.trim());
                     await createMissingProjects(inputText.trim());
@@ -1031,12 +1025,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                 }
 
                 // Check if it's a note suggestion (bookmark + project) (unless forced to inbox mode)
-                console.log('Checking note suggestion:', {
-                    suggestedType: analysisResult?.suggested_type,
-                    forceInbox,
-                });
                 if (analysisResult?.suggested_type === 'note' && !forceInbox) {
-                    console.log('Taking note creation path');
                     // Auto-convert to note using similar logic
                     await createMissingTags(inputText.trim());
                     await createMissingProjects(inputText.trim());

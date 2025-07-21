@@ -1,119 +1,27 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     MagnifyingGlassIcon,
-    FolderIcon,
     Squares2X2Icon,
     Bars3Icon,
-    ChevronDownIcon,
 } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import ProjectModal from './Project/ProjectModal';
+import SortFilter from './Shared/SortFilter';
+import FilterDropdown, { FilterOption } from './Shared/FilterDropdown';
 import { useStore } from '../store/useStore';
 import {
-    fetchGroupedProjects,
+    fetchProjects,
     createProject,
     updateProject,
     deleteProject,
 } from '../utils/projectsService';
 import { fetchAreas } from '../utils/areasService';
 import { useTranslation } from 'react-i18next';
+import { SortOption } from './Shared/SortFilterButton';
 
 import { Project } from '../entities/Project';
-import { PriorityType } from '../entities/Task';
 import { useSearchParams } from 'react-router-dom';
 import ProjectItem from './Project/ProjectItem';
-
-const getPriorityStyles = (priority: PriorityType) => {
-    switch (priority) {
-        case 'low':
-            return { color: 'bg-green-500' };
-        case 'medium':
-            return { color: 'bg-yellow-500' };
-        case 'high':
-            return { color: 'bg-red-500' };
-        default:
-            return { color: 'bg-gray-500' };
-    }
-};
-
-// Reusable dropdown component
-interface DropdownOption {
-    value: string;
-    label: string;
-}
-
-interface DropdownProps {
-    label: string;
-    value: string;
-    options: DropdownOption[];
-    onChange: (value: string) => void;
-    placeholder?: string;
-}
-
-const Dropdown: React.FC<DropdownProps> = ({
-    label,
-    value,
-    options,
-    onChange,
-    placeholder,
-}) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
-                setIsOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () =>
-            document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const selectedOption = options.find((option) => option.value === value);
-
-    return (
-        <div className="w-full md:w-auto relative" ref={dropdownRef}>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {label}
-            </label>
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex justify-between w-full px-3 py-2 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-                <span>{selectedOption?.label || placeholder}</span>
-                <ChevronDownIcon
-                    className={`w-5 h-5 text-gray-500 dark:text-gray-300 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                />
-            </button>
-            {isOpen && (
-                <div className="absolute z-10 mt-2 w-full bg-white dark:bg-gray-700 shadow-lg rounded-md border border-gray-200 dark:border-gray-600 max-h-60 overflow-y-auto">
-                    {options.map((option) => (
-                        <button
-                            key={option.value}
-                            onClick={() => {
-                                onChange(option.value);
-                                setIsOpen(false);
-                            }}
-                            className={`flex items-center justify-between w-full px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors ${
-                                option.value === value
-                                    ? 'bg-blue-50 dark:bg-blue-900/20'
-                                    : ''
-                            }`}
-                        >
-                            {option.label}
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
 
 const Projects: React.FC = () => {
     const { t } = useTranslation();
@@ -130,9 +38,6 @@ const Projects: React.FC = () => {
     } = useStore((state) => state.projectsStore);
     const { isLoading, isError } = useStore((state) => state.projectsStore);
 
-    const [groupedProjects, setGroupedProjects] = useState<
-        Record<string, Project[]>
-    >({});
     const [isProjectModalOpen, setIsProjectModalOpen] =
         useState<boolean>(false);
     const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
@@ -145,10 +50,34 @@ const Projects: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
     const [isSearchExpanded, setIsSearchExpanded] = useState<boolean>(false);
+    const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
     const [searchParams, setSearchParams] = useSearchParams();
     const activeFilter = searchParams.get('active') || 'all';
     const areaFilter = searchParams.get('area_id') || '';
+
+    // Sort options for the filter button
+    const sortOptions: SortOption[] = [
+        { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
+        { value: 'name:asc', label: t('sort.name', 'Name') },
+        { value: 'due_date_at:asc', label: t('sort.due_date', 'Due Date') },
+        { value: 'updated_at:desc', label: t('common.updated', 'Updated') },
+    ];
+
+    // Filter options for dropdowns
+    const statusOptions: FilterOption[] = [
+        { value: 'all', label: t('projects.filters.all') },
+        { value: 'true', label: t('projects.filters.active') },
+        { value: 'false', label: t('projects.filters.inactive') },
+    ];
+
+    const areaOptions: FilterOption[] = [
+        { value: '', label: t('projects.filters.allAreas') },
+        ...areas.map((area) => ({
+            value: area.id?.toString() || '',
+            label: area.name,
+        })),
+    ];
 
     useEffect(() => {
         const loadAreas = async () => {
@@ -167,11 +96,8 @@ const Projects: React.FC = () => {
     useEffect(() => {
         const loadProjects = async () => {
             try {
-                const groupedProjectsData = await fetchGroupedProjects(
-                    activeFilter,
-                    areaFilter
-                );
-                setGroupedProjects(groupedProjectsData);
+                const projectsData = await fetchProjects();
+                setProjects(projectsData);
             } catch (error) {
                 console.error('Failed to fetch projects:', error);
                 setProjectsError(true);
@@ -179,7 +105,35 @@ const Projects: React.FC = () => {
         };
 
         loadProjects();
-    }, [activeFilter, areaFilter]);
+    }, []);
+
+    // Handle click outside to close dropdown
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Element;
+            // Check if the click is on a dropdown or its children
+            const dropdownElement = target.closest('.dropdown-container');
+            if (!dropdownElement && activeDropdown !== null) {
+                setActiveDropdown(null);
+            }
+        };
+
+        if (activeDropdown !== null) {
+            // Use setTimeout to avoid immediate triggering
+            setTimeout(() => {
+                document.addEventListener('mousedown', handleClickOutside);
+            }, 100);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [activeDropdown]);
+
+    // Handle sort change
+    const handleSortChange = (newOrderBy: string) => {
+        setOrderBy(newOrderBy);
+    };
 
     const handleSaveProject = async (project: Project) => {
         setProjectsLoading(true);
@@ -189,11 +143,8 @@ const Projects: React.FC = () => {
             } else {
                 await createProject(project);
             }
-            const groupedProjectsData = await fetchGroupedProjects(
-                activeFilter,
-                areaFilter
-            );
-            setGroupedProjects(groupedProjectsData);
+            const projectsData = await fetchProjects();
+            setProjects(projectsData);
         } catch (error) {
             console.error('Error saving project:', error);
             setProjectsError(true);
@@ -215,11 +166,10 @@ const Projects: React.FC = () => {
             if (projectToDelete.id !== undefined) {
                 setProjectsLoading(true);
                 await deleteProject(projectToDelete.id);
-                const groupedProjectsData = await fetchGroupedProjects(
-                    activeFilter,
-                    areaFilter
-                );
-                setGroupedProjects(groupedProjectsData);
+
+                // Update global state
+                const projectsData = await fetchProjects();
+                setProjects(projectsData);
             } else {
                 console.error('Cannot delete project: ID is undefined.');
             }
@@ -238,58 +188,109 @@ const Projects: React.FC = () => {
         return (project as any).completion_percentage || 0;
     };
 
-    const handleActiveFilterChange = (
-        e: React.ChangeEvent<HTMLSelectElement>
-    ) => {
-        const newActiveFilter = e.target.value;
+    const handleActiveFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
-        if (newActiveFilter === 'all') {
+        if (value === 'all') {
             params.delete('active');
         } else {
-            params.set('active', newActiveFilter);
+            params.set('active', value);
         }
         setSearchParams(params);
     };
 
-    const handleAreaFilterChange = (
-        e: React.ChangeEvent<HTMLSelectElement>
-    ) => {
-        const newAreaFilter = e.target.value;
+    const handleAreaFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
-        if (newAreaFilter === '') {
+        if (value === '') {
             params.delete('area_id');
         } else {
-            params.set('area_id', newAreaFilter);
+            params.set('area_id', value);
         }
 
         setSearchParams(params);
     };
 
-    // Apply search filter to the grouped projects from backend
-    const searchFilteredGroupedProjects = Object.keys(groupedProjects).reduce<
-        Record<string, Project[]>
-    >((acc, areaName) => {
-        const projectsInArea = groupedProjects[areaName];
+    // Filter, sort and search projects
+    const displayProjects = useMemo(() => {
+        let filteredProjects = [...projects];
 
-        // Defensive check: ensure projectsInArea is an array
-        if (!Array.isArray(projectsInArea)) {
-            console.warn(
-                `Projects for area "${areaName}" is not an array:`,
-                projectsInArea
+        // Apply active filter
+        if (activeFilter !== 'all') {
+            const isActive = activeFilter === 'true';
+            filteredProjects = filteredProjects.filter(
+                (project) => project.active === isActive
             );
-            return acc;
         }
 
-        const filteredProjects = projectsInArea.filter((project) =>
-            project.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        if (filteredProjects.length > 0) {
-            acc[areaName] = filteredProjects;
+        // Apply area filter
+        if (areaFilter) {
+            const areaId = parseInt(areaFilter);
+            filteredProjects = filteredProjects.filter(
+                (project) => project.area_id === areaId
+            );
         }
-        return acc;
-    }, {});
+
+        // Apply search filter
+        if (searchQuery.trim()) {
+            filteredProjects = filteredProjects.filter(
+                (project) =>
+                    project.name
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase()) ||
+                    (project.description &&
+                        project.description
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase()))
+            );
+        }
+
+        // Apply sorting
+        filteredProjects.sort((a, b) => {
+            const [field, direction] = orderBy.split(':');
+            const isAsc = direction === 'asc';
+
+            let valueA, valueB;
+
+            switch (field) {
+                case 'name':
+                    valueA = a.name?.toLowerCase() || '';
+                    valueB = b.name?.toLowerCase() || '';
+                    break;
+                case 'due_date_at':
+                    valueA = a.due_date_at
+                        ? new Date(a.due_date_at).getTime()
+                        : 0;
+                    valueB = b.due_date_at
+                        ? new Date(b.due_date_at).getTime()
+                        : 0;
+                    break;
+                case 'updated_at':
+                    valueA = a.updated_at
+                        ? new Date(a.updated_at).getTime()
+                        : 0;
+                    valueB = b.updated_at
+                        ? new Date(b.updated_at).getTime()
+                        : 0;
+                    break;
+                case 'created_at':
+                default:
+                    valueA = a.created_at
+                        ? new Date(a.created_at).getTime()
+                        : 0;
+                    valueB = b.created_at
+                        ? new Date(b.created_at).getTime()
+                        : 0;
+                    break;
+            }
+
+            if (valueA < valueB) return isAsc ? -1 : 1;
+            if (valueA > valueB) return isAsc ? 1 : -1;
+            return 0;
+        });
+
+        return filteredProjects;
+    }, [projects, activeFilter, areaFilter, searchQuery, orderBy]);
 
     if (isLoading) {
         return (
@@ -315,7 +316,6 @@ const Projects: React.FC = () => {
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
                 <div className="flex items-center mb-8">
-                    <FolderIcon className="h-6 w-6 mr-2" />
                     <h2 className="text-2xl font-light">
                         {t('projects.title')}
                     </h2>
@@ -365,50 +365,33 @@ const Projects: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                        {/* Status Dropdown */}
-                        <Dropdown
-                            label={t('common.status')}
-                            value={activeFilter}
-                            options={[
-                                {
-                                    value: 'true',
-                                    label: t('projects.filters.active'),
-                                },
-                                {
-                                    value: 'false',
-                                    label: t('projects.filters.inactive'),
-                                },
-                                {
-                                    value: 'all',
-                                    label: t('projects.filters.all'),
-                                },
-                            ]}
-                            onChange={(value) =>
-                                handleActiveFilterChange({
-                                    target: { value },
-                                } as any)
-                            }
-                        />
+                        {/* Status Filter */}
+                        <div className="w-full md:w-auto mb-4 md:mb-0">
+                            <FilterDropdown
+                                options={statusOptions}
+                                value={activeFilter}
+                                onChange={handleActiveFilterChange}
+                                size="desktop"
+                                autoWidth={true}
+                            />
+                        </div>
 
-                        {/* Area Dropdown */}
-                        <Dropdown
-                            label={t('common.area')}
-                            value={areaFilter}
-                            options={[
-                                {
-                                    value: '',
-                                    label: t('projects.filters.allAreas'),
-                                },
-                                ...areas.map((area) => ({
-                                    value: area.id?.toString() || '',
-                                    label: area.name,
-                                })),
-                            ]}
-                            onChange={(value) =>
-                                handleAreaFilterChange({
-                                    target: { value },
-                                } as any)
-                            }
+                        {/* Area Filter */}
+                        <div className="w-full md:w-auto mb-4 md:mb-0">
+                            <FilterDropdown
+                                options={areaOptions}
+                                value={areaFilter}
+                                onChange={handleAreaFilterChange}
+                                size="desktop"
+                                autoWidth={true}
+                            />
+                        </div>
+
+                        {/* Sort Filter Button */}
+                        <SortFilter
+                            sortOptions={sortOptions}
+                            sortValue={orderBy}
+                            onSortChange={handleSortChange}
                         />
                     </div>
                 </div>
@@ -441,59 +424,26 @@ const Projects: React.FC = () => {
                             : 'flex flex-col space-y-1'
                     }`}
                 >
-                    {Object.keys(searchFilteredGroupedProjects).length === 0 ? (
+                    {displayProjects.length === 0 ? (
                         <div className="text-gray-700 dark:text-gray-300">
                             {t('projects.noProjectsFound')}
                         </div>
                     ) : (
-                        Object.keys(searchFilteredGroupedProjects).map(
-                            (areaName) => (
-                                <React.Fragment key={areaName}>
-                                    <h3
-                                        className={`${
-                                            viewMode === 'cards'
-                                                ? 'col-span-full text-md uppercase font-light text-gray-800 dark:text-gray-200 mb-2 mt-6'
-                                                : 'text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3 mt-6 border-b border-gray-300 dark:border-gray-600 pb-2'
-                                        }`}
-                                    >
-                                        {areaName}
-                                    </h3>
-                                    {searchFilteredGroupedProjects[
-                                        areaName
-                                    ].map((project) => {
-                                        const { color } = getPriorityStyles(
-                                            project.priority || 'low'
-                                        );
-                                        return (
-                                            <ProjectItem
-                                                key={project.id}
-                                                project={project}
-                                                viewMode={viewMode}
-                                                color={color}
-                                                getCompletionPercentage={() =>
-                                                    getCompletionPercentage(
-                                                        project
-                                                    )
-                                                }
-                                                activeDropdown={activeDropdown}
-                                                setActiveDropdown={
-                                                    setActiveDropdown
-                                                }
-                                                handleEditProject={
-                                                    handleEditProject
-                                                }
-                                                setProjectToDelete={
-                                                    setProjectToDelete
-                                                }
-                                                setIsConfirmDialogOpen={
-                                                    setIsConfirmDialogOpen
-                                                }
-                                            />
-                                        );
-                                    })}
-                                </React.Fragment>
-                            )
-                        )
+                        displayProjects.map((project) => (
+                            <ProjectItem
+                                key={project.id}
+                                project={project}
+                                viewMode={viewMode}
+                                getCompletionPercentage={() =>
+                                    getCompletionPercentage(project)
+                                }
+                                activeDropdown={activeDropdown}
+                                setActiveDropdown={setActiveDropdown}
+                                handleEditProject={handleEditProject}
+                                setProjectToDelete={setProjectToDelete}
+                                setIsConfirmDialogOpen={setIsConfirmDialogOpen}
+                            />
+                        ))
                     )}
                 </div>
             </div>
@@ -509,11 +459,13 @@ const Projects: React.FC = () => {
                     onDelete={async (projectId) => {
                         try {
                             await deleteProject(projectId);
-                            setProjects(
-                                projects.filter(
-                                    (p: Project) => p.id !== projectId
-                                )
+
+                            // Update both local and global state
+                            const updatedProjects = projects.filter(
+                                (p: Project) => p.id !== projectId
                             );
+                            setProjects(updatedProjects);
+
                             setIsProjectModalOpen(false);
                             setProjectToEdit(null);
                         } catch (error) {

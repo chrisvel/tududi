@@ -6,7 +6,6 @@ import i18n from 'i18next';
 import {
     ClipboardDocumentListIcon,
     ArrowPathIcon,
-    CalendarDaysIcon,
     FolderIcon,
     CheckCircleIcon,
     ArrowUpIcon,
@@ -14,6 +13,7 @@ import {
     ChevronDownIcon,
     ChevronRightIcon,
     Cog6ToothIcon,
+    CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 import { fetchTasks, updateTask, deleteTask } from '../../utils/tasksService';
 import { fetchProjects } from '../../utils/projectsService';
@@ -540,7 +540,6 @@ const TasksToday: React.FC = () => {
                     <div className="mb-4">
                         <div className="flex items-end justify-between mb-4">
                             <div className="flex items-end">
-                                <CalendarDaysIcon className="h-6 w-6 mr-2 mb-1" />
                                 <h2 className="text-2xl font-light mr-2">
                                     {t('tasks.today')},
                                 </h2>

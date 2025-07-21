@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-    BookOpenIcon,
-    PencilSquareIcon,
-    TrashIcon,
-    MagnifyingGlassIcon,
-    TagIcon,
-    FolderIcon,
-} from '@heroicons/react/24/solid';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import SortFilterButton, { SortOption } from './Shared/SortFilterButton';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
+import NoteCard from './Shared/NoteCard';
 import { Note } from '../entities/Note';
 import {
     fetchNotes,
@@ -23,37 +17,39 @@ import { createProject, fetchProjects } from '../utils/projectsService';
 
 const Notes: React.FC = () => {
     const { t } = useTranslation();
-    const [notes, setNotes] = useState<Note[]>([]);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
+    const [isSearchExpanded, setIsSearchExpanded] = useState<boolean>(false);
+    const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
-    // Get projects from store
+    // Get notes and projects from global store
+    const { notes, isLoading, isError, setNotes, setLoading, setError } =
+        useStore((state) => state.notesStore);
     const projects = useStore((state) => state.projectsStore.projects);
     const { setProjects } = useStore((state) => state.projectsStore);
 
-    const [isError, setIsError] = useState(false);
-    const [hoveredNoteId, setHoveredNoteId] = useState<number | null>(null);
-
     useEffect(() => {
         const loadNotes = async () => {
-            setIsLoading(true);
-            try {
-                const fetchedNotes = await fetchNotes();
-                setNotes(fetchedNotes);
-            } catch (error) {
-                console.error('Error loading notes:', error);
-                setIsError(true);
-            } finally {
-                setIsLoading(false);
+            if (notes.length === 0 && !isLoading) {
+                setLoading(true);
+                try {
+                    const fetchedNotes = await fetchNotes();
+                    setNotes(fetchedNotes);
+                    setError(false);
+                } catch (error) {
+                    console.error('Error loading notes:', error);
+                    setError(true);
+                } finally {
+                    setLoading(false);
+                }
             }
         };
 
         loadNotes();
-    }, []);
+    }, [notes.length, isLoading, setNotes, setLoading, setError]);
 
     // Load projects if not available - force load every time for debugging
     useEffect(() => {
@@ -70,13 +66,26 @@ const Notes: React.FC = () => {
         loadProjectsIfNeeded();
     }, []); // Remove dependencies to force it to run once
 
+    // Sort options for notes
+    const sortOptions: SortOption[] = [
+        { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
+        { value: 'title:asc', label: t('sort.name', 'Title') },
+        { value: 'updated_at:desc', label: t('common.updated', 'Updated') },
+    ];
+
+    // Handle sort change
+    const handleSortChange = (newOrderBy: string) => {
+        setOrderBy(newOrderBy);
+    };
+
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
         try {
             await apiDeleteNote(noteToDelete.id!);
-            setNotes((prev) =>
-                prev.filter((note) => note.id !== noteToDelete.id)
+            const updatedNotes = notes.filter(
+                (note) => note.id !== noteToDelete.id
             );
+            setNotes(updatedNotes);
             setIsConfirmDialogOpen(false);
             setNoteToDelete(null);
         } catch (err) {
@@ -91,17 +100,16 @@ const Notes: React.FC = () => {
 
     const handleSaveNote = async (noteData: Note) => {
         try {
-            let updatedNotes;
             if (noteData.id) {
                 const savedNote = await updateNote(noteData.id, noteData);
-                updatedNotes = notes.map((note) =>
+                const updatedNotes = notes.map((note) =>
                     note.id === noteData.id ? savedNote : note
                 );
+                setNotes(updatedNotes);
             } else {
                 const newNote = await createNote(noteData);
-                updatedNotes = [...notes, newNote];
+                setNotes([newNote, ...notes]);
             }
-            setNotes(updatedNotes);
             setIsNoteModalOpen(false);
             setSelectedNote(null);
         } catch (err) {
@@ -128,6 +136,34 @@ const Notes: React.FC = () => {
             note.content.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Sort the filtered notes
+    const sortedNotes = [...filteredNotes].sort((a, b) => {
+        const [field, direction] = orderBy.split(':');
+        const isAsc = direction === 'asc';
+
+        let valueA, valueB;
+
+        switch (field) {
+            case 'title':
+                valueA = a.title?.toLowerCase() || '';
+                valueB = b.title?.toLowerCase() || '';
+                break;
+            case 'updated_at':
+                valueA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+                valueB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+                break;
+            case 'created_at':
+            default:
+                valueA = a.created_at ? new Date(a.created_at).getTime() : 0;
+                valueB = b.created_at ? new Date(b.created_at).getTime() : 0;
+                break;
+        }
+
+        if (valueA < valueB) return isAsc ? -1 : 1;
+        if (valueA > valueB) return isAsc ? 1 : -1;
+        return 0;
+    });
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
@@ -151,12 +187,49 @@ const Notes: React.FC = () => {
             <div className="w-full max-w-5xl">
                 {/* Notes Header */}
                 <div className="flex items-center mb-8">
-                    <BookOpenIcon className="h-6 w-6 mr-2" />
                     <h2 className="text-2xl font-light">{t('notes.title')}</h2>
                 </div>
 
-                {/* Search Bar with Icon */}
-                <div className="mb-4">
+                {/* Header with Search and Sort Controls */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 space-y-4 md:space-y-0">
+                    <div className="flex items-center space-x-2">
+                        {/* Search Toggle Button */}
+                        <button
+                            onClick={() =>
+                                setIsSearchExpanded(!isSearchExpanded)
+                            }
+                            className={`p-2 rounded-md focus:outline-none transition-colors ${
+                                isSearchExpanded
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                            }`}
+                            aria-label={t('common.search', 'Search')}
+                        >
+                            <MagnifyingGlassIcon className="h-5 w-5" />
+                        </button>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
+                        {/* Sort Filter Button */}
+                        <div className="w-full md:w-auto">
+                            <SortFilterButton
+                                options={sortOptions}
+                                value={orderBy}
+                                onChange={handleSortChange}
+                                size="desktop"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Collapsible Search Bar */}
+                <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                        isSearchExpanded
+                            ? 'max-h-20 opacity-100 mb-4'
+                            : 'max-h-0 opacity-0 mb-0'
+                    }`}
+                >
                     <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm p-2">
                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
                         <input
@@ -169,122 +242,27 @@ const Notes: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Notes List */}
-                {filteredNotes.length === 0 ? (
+                {/* Notes Grid */}
+                {sortedNotes.length === 0 ? (
                     <p className="text-gray-700 dark:text-gray-300">
                         {t('notes.noNotesFound')}
                     </p>
                 ) : (
-                    <ul className="space-y-1">
-                        {filteredNotes.map((note) => (
-                            <li
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {sortedNotes.map((note) => (
+                            <NoteCard
                                 key={note.id}
-                                className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 flex justify-between items-center"
-                                onMouseEnter={() =>
-                                    setHoveredNoteId(note.id || null)
-                                }
-                                onMouseLeave={() => setHoveredNoteId(null)}
-                            >
-                                <div className="flex-grow overflow-hidden pr-4">
-                                    <div className="flex flex-col">
-                                        <Link
-                                            to={`/note/${note.id}`}
-                                            className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline mb-1"
-                                        >
-                                            {note.title}
-                                        </Link>
-                                        {/* Project and Tags */}
-                                        {(note.project ||
-                                            note.Project ||
-                                            (note.tags &&
-                                                note.tags.length > 0) ||
-                                            (note.Tags &&
-                                                note.Tags.length > 0)) && (
-                                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                                                {(note.project ||
-                                                    note.Project) && (
-                                                    <div className="flex items-center">
-                                                        <FolderIcon className="h-3 w-3 mr-1" />
-                                                        <span>
-                                                            {
-                                                                (
-                                                                    note.project ||
-                                                                    note.Project
-                                                                )?.name
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {(note.project ||
-                                                    note.Project) &&
-                                                    ((note.tags &&
-                                                        note.tags.length > 0) ||
-                                                        (note.Tags &&
-                                                            note.Tags.length >
-                                                                0)) && (
-                                                        <span className="mx-2">
-                                                            •
-                                                        </span>
-                                                    )}
-                                                {((note.tags &&
-                                                    note.tags.length > 0) ||
-                                                    (note.Tags &&
-                                                        note.Tags.length >
-                                                            0)) && (
-                                                    <div className="flex items-center">
-                                                        <TagIcon className="h-3 w-3 mr-1" />
-                                                        <span>
-                                                            {(
-                                                                note.tags ||
-                                                                note.Tags ||
-                                                                []
-                                                            )
-                                                                .map(
-                                                                    (tag) =>
-                                                                        tag.name
-                                                                )
-                                                                .join(', ')}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="flex space-x-2">
-                                    <button
-                                        onClick={() => handleEditNote(note)}
-                                        className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
-                                        aria-label={t(
-                                            'notes.editNoteAriaLabel',
-                                            { noteTitle: note.title }
-                                        )}
-                                        title={t('notes.editNoteTitle', {
-                                            noteTitle: note.title,
-                                        })}
-                                    >
-                                        <PencilSquareIcon className="h-5 w-5" />
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setNoteToDelete(note);
-                                            setIsConfirmDialogOpen(true);
-                                        }}
-                                        className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
-                                        aria-label={t(
-                                            'notes.deleteNoteAriaLabel',
-                                            { noteTitle: note.title }
-                                        )}
-                                        title={t('notes.deleteNoteTitle', {
-                                            noteTitle: note.title,
-                                        })}
-                                    >
-                                        <TrashIcon className="h-5 w-5" />
-                                    </button>
-                                </div>
-                            </li>
+                                note={note}
+                                onEdit={handleEditNote}
+                                onDelete={(note) => {
+                                    setNoteToDelete(note);
+                                    setIsConfirmDialogOpen(true);
+                                }}
+                                showActions={true}
+                                showProject={true}
+                            />
                         ))}
-                    </ul>
+                    </div>
                 )}
 
                 {/* NoteModal */}
@@ -298,9 +276,10 @@ const Notes: React.FC = () => {
                         onDelete={async (noteId) => {
                             try {
                                 await apiDeleteNote(noteId);
-                                setNotes((prev) =>
-                                    prev.filter((note) => note.id !== noteId)
+                                const updatedNotes = notes.filter(
+                                    (note) => note.id !== noteId
                                 );
+                                setNotes(updatedNotes);
                                 setIsNoteModalOpen(false);
                                 setSelectedNote(null);
                             } catch (err) {

@@ -25,11 +25,8 @@ const TagInput: React.FC<TagInputProps> = ({
 
     // Update internal tags state when initialTags prop changes
     useEffect(() => {
-        // Set the tags state with the initial tags
-        if (initialTags && initialTags.length > 0) {
-            // Simply set our internal state to match the initialTags
-            setTags(initialTags);
-        }
+        // Always set tags to match initialTags, even if empty
+        setTags(initialTags || []);
     }, [initialTags]);
 
     // Remove this effect to prevent infinite loops
@@ -49,8 +46,58 @@ const TagInput: React.FC<TagInputProps> = ({
                     !tags.includes(tag.name)
             );
             setFilteredTags(filtered);
-            setIsDropdownOpen(filtered.length > 0);
+            const shouldOpen = filtered.length > 0;
+            setIsDropdownOpen(shouldOpen);
             setHighlightedIndex(-1);
+
+            // Auto-scroll to show dropdown when it opens
+            if (shouldOpen) {
+                setTimeout(() => {
+                    if (containerRef.current) {
+                        // Find the modal's scroll container
+                        const modalScrollContainer =
+                            containerRef.current.closest(
+                                '.absolute.inset-0.overflow-y-auto'
+                            ) ||
+                            containerRef.current.closest(
+                                '[style*="overflow-y"]'
+                            ) ||
+                            containerRef.current.closest('.overflow-y-auto');
+
+                        if (modalScrollContainer) {
+                            // Get the position of the TagInput container relative to the scroll container
+                            const containerRect =
+                                containerRef.current.getBoundingClientRect();
+                            const scrollRect =
+                                modalScrollContainer.getBoundingClientRect();
+
+                            // Calculate how much to scroll to show the dropdown
+                            const dropdownHeight = 240; // max-h-60 = 240px
+                            const neededSpace =
+                                containerRect.bottom -
+                                scrollRect.top +
+                                dropdownHeight;
+                            const availableSpace = scrollRect.height;
+
+                            if (neededSpace > availableSpace) {
+                                const scrollAmount =
+                                    neededSpace - availableSpace + 20; // 20px padding
+                                modalScrollContainer.scrollBy({
+                                    top: scrollAmount,
+                                    behavior: 'smooth',
+                                });
+                            }
+                        } else {
+                            // Fallback to scrollIntoView if modal container not found
+                            containerRef.current.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'nearest',
+                                inline: 'nearest',
+                            });
+                        }
+                    }
+                }, 150);
+            }
         }, 300);
 
         return () => {
@@ -186,9 +233,10 @@ const TagInput: React.FC<TagInputProps> = ({
             {isDropdownOpen && (
                 <div
                     ref={dropdownRef}
-                    className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
+                    className="absolute z-[60] mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
                     role="listbox"
                     id="tag-suggestions"
+                    style={{ position: 'absolute', top: '100%' }}
                 >
                     {filteredTags.map((tag, index) => (
                         <button

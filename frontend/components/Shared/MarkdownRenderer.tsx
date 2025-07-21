@@ -7,11 +7,13 @@ import hljs from 'highlight.js';
 interface MarkdownRendererProps {
     content: string;
     className?: string;
+    summaryMode?: boolean;
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     content,
     className = '',
+    summaryMode = false,
 }) => {
     useEffect(() => {
         // Configure highlight.js
@@ -53,43 +55,79 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     [rehypeHighlight, { detect: true, ignoreMissing: true }],
                 ]}
                 components={{
-                    // Customize heading styles
-                    h1: ({ ...props }) => (
-                        <h1
-                            className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100"
-                            {...props}
-                        />
-                    ),
-                    h2: ({ ...props }) => (
-                        <h2
-                            className="text-2xl font-semibold mb-3 text-gray-900 dark:text-gray-100"
-                            {...props}
-                        />
-                    ),
-                    h3: ({ ...props }) => (
-                        <h3
-                            className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100"
-                            {...props}
-                        />
-                    ),
-                    h4: ({ ...props }) => (
-                        <h4
-                            className="text-lg font-medium mb-2 text-gray-900 dark:text-gray-100"
-                            {...props}
-                        />
-                    ),
-                    h5: ({ ...props }) => (
-                        <h5
-                            className="text-base font-medium mb-2 text-gray-900 dark:text-gray-100"
-                            {...props}
-                        />
-                    ),
-                    h6: ({ ...props }) => (
-                        <h6
-                            className="text-sm font-medium mb-2 text-gray-900 dark:text-gray-100"
-                            {...props}
-                        />
-                    ),
+                    // Customize heading styles - in summary mode, convert headers to emphasized text
+                    h1: ({ ...props }) =>
+                        summaryMode ? (
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ) : (
+                            <h1
+                                className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ),
+                    h2: ({ ...props }) =>
+                        summaryMode ? (
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ) : (
+                            <h2
+                                className="text-2xl font-semibold mb-3 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ),
+                    h3: ({ ...props }) =>
+                        summaryMode ? (
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ) : (
+                            <h3
+                                className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ),
+                    h4: ({ ...props }) =>
+                        summaryMode ? (
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ) : (
+                            <h4
+                                className="text-lg font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ),
+                    h5: ({ ...props }) =>
+                        summaryMode ? (
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ) : (
+                            <h5
+                                className="text-base font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ),
+                    h6: ({ ...props }) =>
+                        summaryMode ? (
+                            <strong
+                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ) : (
+                            <h6
+                                className="text-sm font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ),
 
                     // Customize paragraph styles
                     p: ({ ...props }) => (
@@ -177,31 +215,39 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                         />
                     ),
 
-                    // Customize table styles
-                    table: ({ ...props }) => (
-                        <table
-                            className="mb-4 w-full border-collapse border border-gray-300 dark:border-gray-600"
-                            {...props}
-                        />
-                    ),
-                    thead: ({ ...props }) => (
-                        <thead
-                            className="bg-gray-100 dark:bg-gray-800"
-                            {...props}
-                        />
-                    ),
-                    th: ({ ...props }) => (
-                        <th
-                            className="border border-gray-300 dark:border-gray-600 px-3 py-2 text-left font-semibold text-gray-900 dark:text-gray-100"
-                            {...props}
-                        />
-                    ),
-                    td: ({ ...props }) => (
-                        <td
-                            className="border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-700 dark:text-gray-300"
-                            {...props}
-                        />
-                    ),
+                    // Customize table styles - hide tables in summary mode
+                    table: ({ ...props }) =>
+                        summaryMode ? (
+                            <span className="text-gray-500 italic">
+                                [Table content hidden in preview]
+                            </span>
+                        ) : (
+                            <table
+                                className="mb-4 w-full border-collapse border border-gray-300 dark:border-gray-600"
+                                {...props}
+                            />
+                        ),
+                    thead: ({ ...props }) =>
+                        summaryMode ? null : (
+                            <thead
+                                className="bg-gray-100 dark:bg-gray-800"
+                                {...props}
+                            />
+                        ),
+                    th: ({ ...props }) =>
+                        summaryMode ? null : (
+                            <th
+                                className="border border-gray-300 dark:border-gray-600 px-3 py-2 text-left font-semibold text-gray-900 dark:text-gray-100"
+                                {...props}
+                            />
+                        ),
+                    td: ({ ...props }) =>
+                        summaryMode ? null : (
+                            <td
+                                className="border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-700 dark:text-gray-300"
+                                {...props}
+                            />
+                        ),
 
                     // Customize horizontal rule
                     hr: ({ ...props }) => (

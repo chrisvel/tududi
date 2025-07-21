@@ -16,18 +16,30 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
     const { showErrorToast } = useToast();
     const { t } = useTranslation();
 
-    // Fetch task intelligence setting when component mounts
+    // Fetch task intelligence setting when component mounts (with caching)
     useEffect(() => {
         const fetchTaskIntelligenceSetting = async () => {
+            // Check if we have a cached value
+            const cachedValue = localStorage.getItem('taskIntelligenceEnabled');
+            if (cachedValue !== null) {
+                setTaskIntelligenceEnabled(JSON.parse(cachedValue));
+                return;
+            }
+
             try {
                 const enabled = await getTaskIntelligenceEnabled();
                 setTaskIntelligenceEnabled(enabled);
-            } catch (error) {
-                console.error(
-                    'Error fetching task intelligence setting:',
-                    error
+                // Cache the value for future use
+                localStorage.setItem(
+                    'taskIntelligenceEnabled',
+                    JSON.stringify(enabled)
                 );
+            } catch {
                 setTaskIntelligenceEnabled(true); // Default to enabled
+                localStorage.setItem(
+                    'taskIntelligenceEnabled',
+                    JSON.stringify(true)
+                );
             }
         };
 
@@ -58,8 +70,7 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
             try {
                 await onTaskCreate(taskText);
                 // Success toast is now handled by the parent component
-            } catch (error) {
-                console.error('Error creating task:', error);
+            } catch {
                 setTaskName(taskText);
                 showErrorToast(
                     t('errors.taskCreate', 'Failed to create task.')
@@ -69,7 +80,7 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
     };
 
     return (
-        <div className="mb-2">
+        <div>
             <div className="flex items-center justify-between py-3 px-4 border-b border-gray-200 dark:border-gray-800 rounded-lg shadow-sm bg-white dark:bg-gray-900">
                 <span className="text-xl text-gray-500 dark:text-gray-400 mr-4">
                     <PlusCircleIcon className="h-6 w-6" />

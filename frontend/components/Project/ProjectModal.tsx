@@ -5,13 +5,16 @@ import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
 import PriorityDropdown from '../Shared/PriorityDropdown';
+import AreaDropdown from '../Shared/AreaDropdown';
+import DatePicker from '../Shared/DatePicker';
 import { PriorityType } from '../../entities/Task';
 import Switch from '../Shared/Switch';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
+import { fetchTags } from '../../utils/tagsService';
 import {
     TagIcon,
-    FolderIcon,
+    Squares2X2Icon,
     TrashIcon,
     CameraIcon,
     CalendarIcon,
@@ -23,7 +26,7 @@ interface ProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (project: Project) => void;
-    onDelete?: (projectId: number) => void;
+    onDelete?: (projectId: number) => Promise<void>;
     project?: Project;
     areas: Area[];
 }
@@ -44,7 +47,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             active: true,
             tags: [],
             priority: 'low',
-            due_date_at: '',
+            due_date_at: null,
             image_url: '',
         }
     );
@@ -61,8 +64,14 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const { tagsStore } = useStore();
     const { tags: availableTags } = tagsStore;
 
+    const [localAvailableTags, setLocalAvailableTags] = useState<
+        Array<{ name: string }>
+    >([]);
+    const [tagsLoaded, setTagsLoaded] = useState(false);
+
     const modalRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const nameInputRef = useRef<HTMLInputElement>(null);
     const [isClosing, setIsClosing] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -80,12 +89,47 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const { showSuccessToast } = useToast();
     const { t } = useTranslation();
 
+    // Load tags when modal opens
+    useEffect(() => {
+        const loadTags = async () => {
+            if (isOpen && !tagsLoaded) {
+                try {
+                    const fetchedTags = await fetchTags();
+                    // Ensure fetchedTags is always an array
+                    const safeTagsArray = Array.isArray(fetchedTags)
+                        ? fetchedTags
+                        : [];
+                    setLocalAvailableTags(safeTagsArray);
+                    setTagsLoaded(true);
+                } catch (error) {
+                    console.error('Error loading tags:', error);
+                    setLocalAvailableTags([]);
+                }
+            }
+        };
+
+        loadTags();
+
+        // Auto-focus on the name input when modal opens
+        if (isOpen) {
+            setTimeout(() => {
+                nameInputRef.current?.focus();
+            }, 100);
+        }
+    }, [isOpen, tagsLoaded]);
+
     useEffect(() => {
         if (project) {
+            // Convert ISO date to YYYY-MM-DD format if needed
+            let dueDateValue = project.due_date_at;
+            if (dueDateValue && dueDateValue.includes('T')) {
+                dueDateValue = dueDateValue.split('T')[0];
+            }
+
             setFormData({
                 ...project,
                 tags: project.tags || [],
-                due_date_at: project.due_date_at || '',
+                due_date_at: dueDateValue || null,
                 image_url: project.image_url || '',
             });
             setTags(project.tags?.map((tag) => tag.name) || []);
@@ -98,7 +142,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 active: true,
                 tags: [],
                 priority: 'low',
-                due_date_at: '',
+                due_date_at: null,
                 image_url: '',
             });
             setTags([]);
@@ -176,9 +220,15 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 }));
             }
         } else {
+            // Handle empty date values by converting to null
+            let processedValue: any = value;
+            if (name === 'due_date_at' && value === '') {
+                processedValue = null;
+            }
+
             setFormData((prev) => ({
                 ...prev,
-                [name]: value,
+                [name]: processedValue,
             }));
         }
     };
@@ -190,6 +240,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             tags: newTags.map((name) => ({ name })),
         }));
     }, []);
+
+    const handleDueDateChange = (value: string) => {
+        setFormData((prev) => ({
+            ...prev,
+            due_date_at: value || null,
+        }));
+    };
 
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -291,12 +348,17 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         setShowConfirmDialog(true);
     };
 
-    const handleDeleteConfirm = () => {
+    const handleDeleteConfirm = async () => {
         if (project && project.id && onDelete) {
-            onDelete(project.id);
-            showSuccessToast(t('success.projectDeleted'));
-            setShowConfirmDialog(false);
-            handleClose();
+            try {
+                await onDelete(project.id);
+                showSuccessToast(t('success.projectDeleted'));
+                setShowConfirmDialog(false);
+                handleClose();
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                showErrorToast(t('errors.failedToDeleteProject'));
+            }
         }
     };
 
@@ -326,16 +388,28 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 // Auto-scroll to show the expanded section
                 if (newExpanded[section]) {
                     setTimeout(() => {
-                        const scrollContainer = document.querySelector(
-                            '.absolute.inset-0.overflow-y-auto'
-                        );
+                        // Try multiple selectors to find the scroll container
+                        const scrollContainer =
+                            modalRef.current?.querySelector(
+                                '.absolute.inset-0.overflow-y-auto'
+                            ) ||
+                            modalRef.current?.querySelector(
+                                '[style*="overflow-y"]'
+                            ) ||
+                            modalRef.current?.querySelector(
+                                '.overflow-y-auto'
+                            ) ||
+                            document.querySelector(
+                                '.absolute.inset-0.overflow-y-auto'
+                            );
+
                         if (scrollContainer) {
                             scrollContainer.scrollTo({
                                 top: scrollContainer.scrollHeight,
                                 behavior: 'smooth',
                             });
                         }
-                    }, 100); // Small delay to ensure DOM is updated
+                    }, 250); // Increased delay to ensure DOM is updated
                 }
 
                 return newExpanded;
@@ -367,11 +441,18 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                     className="absolute inset-0 overflow-y-auto overflow-x-hidden"
                                     style={{ WebkitOverflowScrolling: 'touch' }}
                                 >
-                                    <form className="h-full">
+                                    <form
+                                        className="h-full"
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            handleSubmit();
+                                        }}
+                                    >
                                         <fieldset className="h-full flex flex-col">
                                             {/* Project Title Section - Always Visible */}
                                             <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 pt-4">
                                                 <input
+                                                    ref={nameInputRef}
                                                     type="text"
                                                     id="projectName"
                                                     name="name"
@@ -458,7 +539,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         }
                                                         initialTags={tags}
                                                         availableTags={
-                                                            availableTags
+                                                            localAvailableTags.length >
+                                                            0
+                                                                ? localAvailableTags
+                                                                : availableTags
                                                         }
                                                     />
                                                 </div>
@@ -472,31 +556,23 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                             'Area'
                                                         )}
                                                     </h3>
-                                                    <select
-                                                        id="projectArea"
-                                                        name="area_id"
-                                                        value={
-                                                            formData.area_id ||
-                                                            ''
-                                                        }
-                                                        onChange={handleChange}
-                                                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-                                                    >
-                                                        <option value="">
-                                                            {t(
-                                                                'common.none',
-                                                                'No Area'
-                                                            )}
-                                                        </option>
-                                                        {areas.map((area) => (
-                                                            <option
-                                                                key={area.id}
-                                                                value={area.id}
-                                                            >
-                                                                {area.name}
-                                                            </option>
-                                                        ))}
-                                                    </select>
+                                                    <div className="overflow-visible">
+                                                        <AreaDropdown
+                                                            value={
+                                                                formData.area_id
+                                                            }
+                                                            onChange={(value) =>
+                                                                setFormData(
+                                                                    (prev) => ({
+                                                                        ...prev,
+                                                                        area_id:
+                                                                            value,
+                                                                    })
+                                                                )
+                                                            }
+                                                            areas={areas}
+                                                        />
+                                                    </div>
                                                 </div>
                                             )}
 
@@ -601,23 +677,25 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             )}
 
                                             {expandedSections.dueDate && (
-                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
+                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 overflow-visible">
                                                     <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                                         {t(
                                                             'forms.dueDate',
                                                             'Due Date'
                                                         )}
                                                     </h3>
-                                                    <input
-                                                        type="date"
-                                                        name="due_date_at"
-                                                        value={
-                                                            formData.due_date_at ||
-                                                            ''
-                                                        }
-                                                        onChange={handleChange}
-                                                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
-                                                    />
+                                                    <div className="overflow-visible">
+                                                        <DatePicker
+                                                            value={
+                                                                formData.due_date_at ||
+                                                                ''
+                                                            }
+                                                            onChange={
+                                                                handleDueDateChange
+                                                            }
+                                                            placeholder="Select due date"
+                                                        />
+                                                    </div>
                                                 </div>
                                             )}
                                         </fieldset>
@@ -685,7 +763,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             }`}
                                             title={t('common.area', 'Area')}
                                         >
-                                            <FolderIcon className="h-5 w-5" />
+                                            <Squares2X2Icon className="h-5 w-5" />
                                             {formData.area_id && (
                                                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                             )}

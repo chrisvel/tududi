@@ -106,15 +106,16 @@ const DatePicker: React.FC<DatePickerProps> = ({
             }
 
             // Ensure left position doesn't go off screen
+            const calendarWidth = Math.min(Math.max(rect.width, 280), 320); // Min 280px, max 320px
             const left = Math.min(
                 Math.max(padding, rect.left),
-                window.innerWidth - Math.max(rect.width, 280) - padding
+                window.innerWidth - calendarWidth - padding
             );
 
             setPosition({
                 top,
                 left,
-                width: Math.max(rect.width, 280), // Minimum width for calendar
+                width: calendarWidth,
                 openUpward,
             });
 

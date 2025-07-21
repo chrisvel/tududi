@@ -59,6 +59,16 @@ module.exports = (sequelize) => {
                 type: DataTypes.TEXT,
                 allowNull: true,
             },
+            task_show_completed: {
+                type: DataTypes.BOOLEAN,
+                allowNull: true,
+                defaultValue: false,
+            },
+            task_sort_order: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: 'created_at:desc',
+            },
         },
         {
             tableName: 'projects',

@@ -357,7 +357,6 @@ const InboxItems: React.FC = () => {
                 {/* Title row with info button on the right */}
                 <div className="flex items-center mb-8 justify-between">
                     <div className="flex items-center">
-                        <InboxIcon className="h-6 w-6 mr-2" />
                         <h1 className="text-2xl font-light">
                             {t('inbox.title')}
                         </h1>

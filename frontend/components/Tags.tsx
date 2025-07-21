@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     TrashIcon,
-    TagIcon,
     MagnifyingGlassIcon,
     CheckIcon,
     BookOpenIcon,
@@ -21,7 +20,7 @@ import { useStore } from '../store/useStore';
 
 const Tags: React.FC = () => {
     const {
-        tagsStore: { tags, setTags, isLoading, isError },
+        tagsStore: { tags, setTags, isLoading, isError, loadTags },
     } = useStore();
 
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
@@ -37,10 +36,17 @@ const Tags: React.FC = () => {
     const [metricsLoaded, setMetricsLoaded] = useState<boolean>(false);
     const [, setCachedProjects] = useState<any[]>([]);
 
+    // Load tags when component mounts
+    useEffect(() => {
+        if (tags.length === 0 && !isLoading && !isError) {
+            loadTags();
+        }
+    }, [tags.length, isLoading, isError, loadTags]);
+
     useEffect(() => {
         const loadMetrics = async () => {
             if (tags.length === 0) {
-                // Tags not loaded yet, wait for Layout to load them
+                // Tags not loaded yet, wait for them to be loaded
                 return;
             }
 
@@ -217,7 +223,6 @@ const Tags: React.FC = () => {
             <div className="w-full max-w-5xl">
                 {/* Tags Header */}
                 <div className="flex items-center mb-8">
-                    <TagIcon className="h-6 w-6 mr-2" />
                     <h2 className="text-2xl font-light">Tags</h2>
                 </div>
 

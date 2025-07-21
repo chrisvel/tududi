@@ -50,11 +50,12 @@ const NoteModal: React.FC<NoteModalProps> = ({
         }
     );
     const [tags, setTags] = useState<string[]>(
-        note?.tags?.map((tag) => tag.name) || []
+        (note?.tags || note?.Tags)?.map((tag) => tag.name) || []
     );
     const [availableTags, setAvailableTags] = useState<Tag[]>([]);
     const [error, setError] = useState<string | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
+    const titleInputRef = useRef<HTMLInputElement>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [isClosing, setIsClosing] = useState(false);
     const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
@@ -90,6 +91,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
         };
 
         loadTags();
+
+        // Auto-focus on the title input when modal opens
+        if (isOpen) {
+            setTimeout(() => {
+                titleInputRef.current?.focus();
+            }, 100);
+        }
     }, [isOpen]);
 
     // Initialize filtered projects from props - like TaskModal
@@ -103,7 +111,8 @@ const NoteModal: React.FC<NoteModalProps> = ({
             if (note) {
                 // Initialize form data directly from note (like TaskModal)
                 setFormData(note);
-                const tagNames = note?.tags?.map((tag) => tag.name) || [];
+                const tagNames =
+                    (note?.tags || note?.Tags)?.map((tag) => tag.name) || [];
                 setTags(tagNames);
                 setError(null);
 
@@ -351,7 +360,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                             isClosing ? 'scale-95' : 'scale-100'
                         } h-full sm:h-auto sm:my-4`}
                     >
-                        <div className="flex flex-col h-full sm:min-h-[600px] sm:max-h-[90vh]">
+                        <div className="flex flex-col h-full sm:min-h-[800px] sm:max-h-[90vh]">
                             {/* Main Form Section */}
                             <div className="flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800">
                                 <div className="flex-1 relative">
@@ -361,11 +370,18 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                             WebkitOverflowScrolling: 'touch',
                                         }}
                                     >
-                                        <form className="h-full">
+                                        <form
+                                            className="h-full"
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                handleSubmit();
+                                            }}
+                                        >
                                             <fieldset className="h-full flex flex-col">
                                                 {/* Note Title Section - Always Visible */}
                                                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 pt-4">
                                                     <input
+                                                        ref={titleInputRef}
                                                         type="text"
                                                         id="noteTitle"
                                                         name="title"

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-    TagIcon,
     CheckIcon,
     BookOpenIcon,
     FolderIcon,
     PencilSquareIcon,
     TrashIcon,
+    TagIcon,
 } from '@heroicons/react/24/solid';
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
@@ -159,12 +159,6 @@ const TagDetails: React.FC = () => {
         }
     };
 
-    // Project handlers
-    const handleEditProject = (project: Project) => {
-        // For now, just log - could add modal later
-        console.log('Edit project:', project);
-    };
-
     const getCompletionPercentage = (project: Project) => {
         return (project as any).completion_percentage || 0;
     };
@@ -209,9 +203,8 @@ const TagDetails: React.FC = () => {
             <div className="w-full max-w-5xl">
                 {/* Tag Header */}
                 <div className="flex items-center mb-8">
-                    <TagIcon className="h-6 w-6 mr-2 text-gray-900 dark:text-white" />
                     <h2 className="text-2xl font-light text-gray-900 dark:text-white">
-                        {tag.name}
+                        Tag: {tag.name}
                     </h2>
                 </div>
 
@@ -334,8 +327,8 @@ const TagDetails: React.FC = () => {
                                     </div>
                                     <div className="flex space-x-2">
                                         <button
-                                            onClick={() =>
-                                                console.log('Edit note:', note)
+                                            onClick={
+                                                () => {} // Edit functionality not implemented yet
                                             }
                                             className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
                                             aria-label={`Edit ${note.title}`}
@@ -344,11 +337,8 @@ const TagDetails: React.FC = () => {
                                             <PencilSquareIcon className="h-5 w-5" />
                                         </button>
                                         <button
-                                            onClick={() =>
-                                                console.log(
-                                                    'Delete note:',
-                                                    note
-                                                )
+                                            onClick={
+                                                () => {} // Delete functionality not implemented yet
                                             }
                                             className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
                                             aria-label={`Delete ${note.title}`}

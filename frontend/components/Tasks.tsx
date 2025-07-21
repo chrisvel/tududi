@@ -3,17 +3,17 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import TaskList from './Task/TaskList';
 import NewTask from './Task/NewTask';
+import SortFilter from './Shared/SortFilter';
 import { Task } from '../entities/Task';
 import { Project } from '../entities/Project';
 import { getTitleAndIcon } from './Task/getTitleAndIcon';
 import { getDescription } from './Task/getDescription';
 import { createTask, toggleTaskToday } from '../utils/tasksService';
 import { useToast } from './Shared/ToastContext';
+import { SortOption } from './Shared/SortFilterButton';
 import {
     TagIcon,
     XMarkIcon,
-    ChevronDownIcon,
-    ChevronDoubleDownIcon,
     MagnifyingGlassIcon,
 } from '@heroicons/react/24/solid';
 
@@ -41,7 +41,7 @@ const Tasks: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-    const [orderBy, setOrderBy] = useState<string>('due_date:asc');
+    const [orderBy, setOrderBy] = useState<string>('created_at:desc');
     const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
     const [isInfoExpanded, setIsInfoExpanded] = useState(false); // Collapsed by default
     const [isSearchExpanded, setIsSearchExpanded] = useState(false); // Collapsed by default
@@ -50,21 +50,16 @@ const Tasks: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const query = new URLSearchParams(location.search);
-    const { title: stateTitle, icon: stateIcon } = location.state || {};
+    const { title: stateTitle } = location.state || {};
 
-    const { title, icon } =
-        stateTitle && stateIcon
-            ? { title: stateTitle, icon: stateIcon }
-            : getTitleAndIcon(query, projects, t);
-
-    const IconComponent =
-        typeof icon === 'string' ? React.createElement(icon) : icon;
+    const title = stateTitle || getTitleAndIcon(query, projects, t).title;
 
     const tag = query.get('tag');
     const status = query.get('status');
 
     useEffect(() => {
-        const savedOrderBy = localStorage.getItem('order_by') || 'due_date:asc';
+        const savedOrderBy =
+            localStorage.getItem('order_by') || 'created_at:desc';
         setOrderBy(savedOrderBy);
 
         const params = new URLSearchParams(location.search);
@@ -132,6 +127,27 @@ const Tasks: React.FC = () => {
 
         fetchData();
     }, [location]);
+
+    // Listen for task creation from other components (e.g., Layout modal)
+    useEffect(() => {
+        const handleTaskCreated = (event: CustomEvent) => {
+            const newTask = event.detail;
+            if (newTask) {
+                setTasks((prevTasks) => [newTask, ...prevTasks]);
+            }
+        };
+
+        window.addEventListener(
+            'taskCreated',
+            handleTaskCreated as EventListener
+        );
+        return () => {
+            window.removeEventListener(
+                'taskCreated',
+                handleTaskCreated as EventListener
+            );
+        };
+    }, []);
 
     const handleRemoveTag = () => {
         const params = new URLSearchParams(location.search);
@@ -259,6 +275,15 @@ const Tasks: React.FC = () => {
         setDropdownOpen(false);
     };
 
+    // Sort options for tasks
+    const sortOptions: SortOption[] = [
+        { value: 'due_date:asc', label: t('sort.due_date', 'Due Date') },
+        { value: 'name:asc', label: t('sort.name', 'Name') },
+        { value: 'priority:desc', label: t('sort.priority', 'Priority') },
+        { value: 'status:desc', label: t('sort.status', 'Status') },
+        { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
+    ];
+
     const description = getDescription(query, projects, t);
 
     const isNewTaskAllowed = () => {
@@ -275,9 +300,6 @@ const Tasks: React.FC = () => {
                 {/* Title row with info button and filters dropdown on the right */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
                     <div className="flex items-center mb-2 sm:mb-0">
-                        {IconComponent && (
-                            <IconComponent className="h-6 w-6 mr-2" />
-                        )}
                         <h2 className="text-2xl font-light">{title}</h2>
                         {tag && (
                             <div className="ml-4 flex items-center space-x-2">
@@ -294,7 +316,7 @@ const Tasks: React.FC = () => {
                             </div>
                         )}
                     </div>
-                    {/* Info expand/collapse button, search button, and filters dropdown */}
+                    {/* Info expand/collapse button, search button, and sort dropdown */}
                     <div className="flex items-center gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0">
                         <button
                             onClick={() => setIsInfoExpanded((v) => !v)}
@@ -350,68 +372,11 @@ const Tasks: React.FC = () => {
                                     : 'Search Tasks'}
                             </span>
                         </button>
-                        <div
-                            className="relative inline-block text-left"
-                            ref={dropdownRef}
-                        >
-                            <button
-                                type="button"
-                                className="inline-flex justify-center w-full rounded-md border border-gray-300 dark:border-gray-700 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none"
-                                id="menu-button"
-                                aria-expanded={dropdownOpen}
-                                aria-haspopup="true"
-                                onClick={() => setDropdownOpen(!dropdownOpen)}
-                            >
-                                <ChevronDoubleDownIcon className="h-5 w-5 text-gray-500 mr-2" />{' '}
-                                {t(
-                                    `sort.${orderBy.split(':')[0]}`,
-                                    capitalize(
-                                        orderBy.split(':')[0].replace('_', ' ')
-                                    )
-                                )}
-                                <ChevronDownIcon className="h-5 w-5 ml-2 text-gray-500 dark:text-gray-300" />
-                            </button>
-
-                            {dropdownOpen && (
-                                <div
-                                    className="origin-top-right absolute left-0 sm:right-0 sm:left-auto mt-2 w-full sm:w-56 max-w-full rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
-                                    role="menu"
-                                    aria-orientation="vertical"
-                                    aria-labelledby="menu-button"
-                                >
-                                    <div
-                                        className="py-1 max-h-60 overflow-y-auto"
-                                        role="none"
-                                    >
-                                        {[
-                                            'due_date:asc',
-                                            'name:asc',
-                                            'priority:desc',
-                                            'status:desc',
-                                            'created_at:desc',
-                                        ].map((order) => (
-                                            <button
-                                                key={order}
-                                                onClick={() =>
-                                                    handleSortChange(order)
-                                                }
-                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                                role="menuitem"
-                                            >
-                                                {t(
-                                                    `sort.${order.split(':')[0]}`,
-                                                    capitalize(
-                                                        order
-                                                            .split(':')[0]
-                                                            .replace('_', ' ')
-                                                    )
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                        <SortFilter
+                            sortOptions={sortOptions}
+                            sortValue={orderBy}
+                            onSortChange={handleSortChange}
+                        />
                     </div>
                 </div>
 

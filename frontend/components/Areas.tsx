@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-    PencilSquareIcon,
-    TrashIcon,
-    Squares2X2Icon,
-} from '@heroicons/react/24/solid';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import AreaModal from './Area/AreaModal';
 import { useStore } from '../store/useStore';
@@ -19,54 +15,103 @@ import { Area } from '../entities/Area';
 
 const Areas: React.FC = () => {
     const { t } = useTranslation();
-    const { areas, setAreas, setLoading, setError } = useStore(
-        (state) => state.areasStore
-    );
+
+    // Use global store for consistency
+    const { areas, isLoading: loading } = useStore((state) => state.areasStore);
 
     const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
         useState<boolean>(false);
     const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
-    const [hoveredAreaId, setHoveredAreaId] = useState<number | null>(null);
+    const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const loadAreas = async () => {
+            useStore.getState().areasStore.setLoading(true);
             try {
                 const areasData = await fetchAreas();
-                setAreas(areasData);
+                useStore.getState().areasStore.setAreas(areasData);
+                useStore.getState().areasStore.setError(false);
             } catch (error) {
-                console.error('Error fetching areas:', error);
-                setError(true);
+                console.error('Error loading areas:', error);
+                useStore.getState().areasStore.setError(true);
+            } finally {
+                useStore.getState().areasStore.setLoading(false);
             }
         };
 
-        loadAreas();
-    }, []);
+        // Only load if areas is empty to prevent infinite loop
+        if (areas.length === 0 && !loading) {
+            loadAreas();
+        }
+    }, [areas.length, loading]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
+                setDropdownOpen(null);
+            }
+        };
+
+        if (dropdownOpen !== null) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [dropdownOpen]);
 
     const handleSaveArea = async (areaData: Partial<Area>) => {
-        setLoading(true);
         try {
-            if (areaData.id) {
-                await updateArea(areaData.id, {
+            useStore.getState().areasStore.setLoading(true);
+            let result: Area;
+            if (areaData.id && areaData.id !== 0) {
+                result = await updateArea(areaData.id, {
                     name: areaData.name,
                     description: areaData.description,
                 });
+                // Update the existing area in the list
+                const currentAreas = useStore.getState().areasStore.areas;
+                useStore
+                    .getState()
+                    .areasStore.setAreas(
+                        currentAreas.map((area) =>
+                            area.id === result.id ? result : area
+                        )
+                    );
             } else {
-                await createArea({
+                result = await createArea({
                     name: areaData.name,
                     description: areaData.description,
                 });
+
+                // Add the new area immediately to global state
+                const currentAreas = useStore.getState().areasStore.areas;
+                const newAreas = [...currentAreas, result];
+                useStore.getState().areasStore.setAreas(newAreas);
+
+                // Force a re-fetch to ensure consistency
+                setTimeout(async () => {
+                    const freshAreas = await fetchAreas();
+                    useStore.getState().areasStore.setAreas(freshAreas);
+                }, 100);
             }
-            const updatedAreas = await fetchAreas();
-            setAreas(updatedAreas);
-        } catch (error) {
-            console.error('Error saving area:', error);
-            setError(true);
-        } finally {
-            setLoading(false);
+
+            // Close modal only on success
             setIsAreaModalOpen(false);
             setSelectedArea(null);
+            useStore.getState().areasStore.setError(false);
+        } catch (error) {
+            console.error('Error saving area:', error);
+            useStore.getState().areasStore.setError(true);
+        } finally {
+            useStore.getState().areasStore.setLoading(false);
         }
     };
 
@@ -83,18 +128,24 @@ const Areas: React.FC = () => {
     const handleDeleteArea = async () => {
         if (!areaToDelete) return;
 
-        setLoading(true);
+        useStore.getState().areasStore.setLoading(true);
         try {
             await deleteArea(areaToDelete.id!);
-            const updatedAreas = await fetchAreas();
-            setAreas(updatedAreas);
+            // Remove the area from global state immediately
+            const currentAreas = useStore.getState().areasStore.areas;
+            useStore
+                .getState()
+                .areasStore.setAreas(
+                    currentAreas.filter((area) => area.id !== areaToDelete.id)
+                );
             setIsConfirmDialogOpen(false);
             setAreaToDelete(null);
+            useStore.getState().areasStore.setError(false);
         } catch (error) {
             console.error('Error deleting area:', error);
-            setError(true);
+            useStore.getState().areasStore.setError(true);
         } finally {
-            setLoading(false);
+            useStore.getState().areasStore.setLoading(false);
         }
     };
 
@@ -108,81 +159,93 @@ const Areas: React.FC = () => {
             <div className="w-full max-w-5xl">
                 {/* Areas Header */}
                 <div className="flex items-center mb-8">
-                    <Squares2X2Icon className="h-6 w-6 mr-2" />
                     <h2 className="text-2xl font-light">{t('areas.title')}</h2>
                 </div>
 
-                {/* Areas List */}
+                {/* Areas Grid */}
                 {areas.length === 0 ? (
                     <p className="text-gray-700 dark:text-gray-300">
                         {t('areas.noAreasFound')}
                     </p>
                 ) : (
-                    <ul className="space-y-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {areas.map((area) => (
-                            <li
+                            <Link
                                 key={area.id}
-                                className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 flex justify-between items-center"
-                                onMouseEnter={() =>
-                                    setHoveredAreaId(area.id || null)
-                                }
-                                onMouseLeave={() => setHoveredAreaId(null)}
+                                to={`/projects?area_id=${area.id}`}
+                                className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer"
+                                style={{
+                                    minHeight: '120px',
+                                    maxHeight: '120px',
+                                }}
                             >
-                                {/* Area Content */}
-                                <div className="flex-grow overflow-hidden pr-4">
-                                    <Link
-                                        to={`/projects?area_id=${area.id}`}
-                                        className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline block"
-                                    >
-                                        {area.name}
-                                    </Link>
-                                    {area.description && (
-                                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 truncate">
-                                            {area.description}
-                                        </p>
-                                    )}
+                                {/* Area Content - Centered */}
+                                <div className="p-4 flex-1 flex items-center justify-center">
+                                    <div className="text-center">
+                                        <h3 className="text-lg font-light text-gray-900 dark:text-gray-100 line-clamp-2 uppercase">
+                                            {area.name}
+                                        </h3>
+                                        {area.description && (
+                                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 line-clamp-3">
+                                                {area.description}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
 
-                                {/* Action Buttons */}
-                                <div className="flex space-x-2">
+                                {/* Three Dots Dropdown - Bottom Right */}
+                                <div
+                                    className="absolute bottom-2 right-2"
+                                    ref={dropdownRef}
+                                >
                                     <button
-                                        onClick={() => handleEditArea(area)}
-                                        className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${
-                                            hoveredAreaId === area.id
-                                                ? 'opacity-100'
-                                                : 'opacity-0'
-                                        }`}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setDropdownOpen(
+                                                dropdownOpen === area.id
+                                                    ? null
+                                                    : area.id!
+                                            );
+                                        }}
+                                        className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                                         aria-label={t(
-                                            'areas.editAreaAriaLabel',
-                                            { name: area.name }
+                                            'areas.toggleDropdownMenu'
                                         )}
-                                        title={t('areas.editAreaTitle', {
-                                            name: area.name,
-                                        })}
                                     >
-                                        <PencilSquareIcon className="h-5 w-5" />
+                                        <EllipsisVerticalIcon className="h-5 w-5" />
                                     </button>
-                                    <button
-                                        onClick={() => openConfirmDialog(area)}
-                                        className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${
-                                            hoveredAreaId === area.id
-                                                ? 'opacity-100'
-                                                : 'opacity-0'
-                                        }`}
-                                        aria-label={t(
-                                            'areas.deleteAreaAriaLabel',
-                                            { name: area.name }
-                                        )}
-                                        title={t('areas.deleteAreaTitle', {
-                                            name: area.name,
-                                        })}
-                                    >
-                                        <TrashIcon className="h-5 w-5" />
-                                    </button>
+
+                                    {dropdownOpen === area.id && (
+                                        <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-50">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    handleEditArea(area);
+                                                    setDropdownOpen(null);
+                                                }}
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                            >
+                                                {t('areas.edit', 'Edit')}
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    openConfirmDialog(area);
+                                                    setDropdownOpen(null);
+                                                }}
+                                                className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                            >
+                                                {t('areas.delete', 'Delete')}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
-                            </li>
+                            </Link>
                         ))}
-                    </ul>
+                    </div>
                 )}
 
                 {/* AreaModal */}
@@ -195,12 +258,17 @@ const Areas: React.FC = () => {
                             try {
                                 await deleteArea(areaId);
                                 const updatedAreas = await fetchAreas();
-                                setAreas(updatedAreas);
+                                useStore
+                                    .getState()
+                                    .areasStore.setAreas(updatedAreas);
                                 setIsAreaModalOpen(false);
                                 setSelectedArea(null);
                             } catch (error) {
-                                console.error('Error deleting area:', error);
-                                setError(true);
+                                console.error(
+                                    'Error deleting area from modal:',
+                                    error
+                                );
+                                useStore.getState().areasStore.setError(true);
                             }
                         }}
                         area={selectedArea}
@@ -210,10 +278,8 @@ const Areas: React.FC = () => {
                 {/* ConfirmDialog */}
                 {isConfirmDialogOpen && areaToDelete && (
                     <ConfirmDialog
-                        title={t('modals.deleteArea.title')}
-                        message={t('modals.deleteArea.message', {
-                            name: areaToDelete.name,
-                        })}
+                        title="Delete Area"
+                        message={`Are you sure you want to delete the area "${areaToDelete.name}"?`}
                         onConfirm={handleDeleteArea}
                         onCancel={closeConfirmDialog}
                     />

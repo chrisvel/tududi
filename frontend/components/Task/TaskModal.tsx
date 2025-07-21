@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { PriorityType, StatusType, Task } from '../../entities/Task';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useToast } from '../Shared/ToastContext';
@@ -415,7 +416,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <>
             <div
                 className={`fixed top-16 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 overflow-hidden sm:overflow-y-auto ${
@@ -818,7 +819,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     onCancel={() => setShowConfirmDialog(false)}
                 />
             )}
-        </>
+        </>,
+        document.body
     );
 };
 

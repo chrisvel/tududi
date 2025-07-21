@@ -4,7 +4,6 @@ import {
     PencilSquareIcon,
     TrashIcon,
     TagIcon,
-    DocumentTextIcon,
     FolderIcon,
 } from '@heroicons/react/24/solid';
 import ConfirmDialog from '../Shared/ConfirmDialog';
@@ -144,7 +143,6 @@ const NoteDetails: React.FC = () => {
                 {/* Header Section with Title and Action Buttons */}
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
-                        <DocumentTextIcon className="h-6 w-6 text-xl mr-2" />
                         <div className="flex flex-col">
                             <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
                                 {note.title}

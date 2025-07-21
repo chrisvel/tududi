@@ -17,9 +17,9 @@ import { Project } from './entities/Project';
 import { Task } from './entities/Task';
 import { User } from './entities/User';
 import { useStore } from './store/useStore';
-import { fetchNotes, createNote, updateNote } from './utils/notesService';
-import { fetchAreas, createArea, updateArea } from './utils/areasService';
-import { fetchTags, createTag, updateTag } from './utils/tagsService';
+import { createNote, updateNote } from './utils/notesService';
+import { createArea, updateArea } from './utils/areasService';
+import { createTag, updateTag } from './utils/tagsService';
 import {
     fetchProjects,
     createProject,
@@ -62,39 +62,16 @@ const Layout: React.FC<LayoutProps> = ({
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
 
     const {
-        notesStore: {
-            notes,
-            setNotes,
-            setLoading: setNotesLoading,
-            setError: setNotesError,
-            isLoading: isNotesLoading,
-            isError: isNotesError,
-        },
-        areasStore: {
-            areas,
-            setAreas,
-            setLoading: setAreasLoading,
-            setError: setAreasError,
-            isLoading: isAreasLoading,
-            isError: isAreasError,
-        },
+        notesStore: { notes, isLoading: isNotesLoading, isError: isNotesError },
+        areasStore: { areas, isLoading: isAreasLoading, isError: isAreasError },
         tasksStore: { isLoading: isTasksLoading, isError: isTasksError },
         projectsStore: {
             projects,
             setProjects,
-            setLoading: setProjectsLoading,
-            setError: setProjectsError,
             isLoading: isProjectsLoading,
             isError: isProjectsError,
         },
-        tagsStore: {
-            tags,
-            setTags,
-            setLoading: setTagsLoading,
-            setError: setTagsError,
-            isLoading: isTagsLoading,
-            isError: isTagsError,
-        },
+        tagsStore: { tags, isLoading: isTagsLoading, isError: isTagsError },
     } = useStore();
 
     const openTaskModal = (type: 'simplified' | 'full' = 'simplified') => {
@@ -110,63 +87,8 @@ const Layout: React.FC<LayoutProps> = ({
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const loadNotes = async () => {
-        setNotesLoading(true);
-        try {
-            const notesData = await fetchNotes();
-            setNotes(notesData);
-        } catch (error) {
-            console.error('Error fetching notes:', error);
-            setNotesError(true);
-        } finally {
-            setNotesLoading(false);
-        }
-    };
-
-    const loadAreas = async () => {
-        setAreasLoading(true);
-        try {
-            const areasData = await fetchAreas();
-            setAreas(areasData);
-        } catch (error) {
-            console.error('Error fetching areas:', error);
-            setAreasError(true);
-        } finally {
-            setAreasLoading(false);
-        }
-    };
-
-    const loadTags = async () => {
-        setTagsLoading(true);
-        try {
-            const tagsData = await fetchTags();
-            setTags(tagsData);
-        } catch (error) {
-            console.error('Error fetching tags:', error);
-            setTagsError(true);
-        } finally {
-            setTagsLoading(false);
-        }
-    };
-
-    const loadProjects = async () => {
-        setProjectsLoading(true);
-        try {
-            const projectsData = await fetchProjects();
-            setProjects(projectsData);
-        } catch (error) {
-            console.error('Error fetching projects:', error);
-            setProjectsError(true);
-        } finally {
-            setProjectsLoading(false);
-        }
-    };
-
     useEffect(() => {
-        loadNotes();
-        loadAreas();
-        loadTags();
-        loadProjects();
+        // Layout no longer loads global data
     }, []);
 
     const openNoteModal = (note: Note | null = null) => {
@@ -213,12 +135,26 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveNote = async (noteData: Note) => {
         try {
+            let result: Note;
             if (noteData.id) {
-                await updateNote(noteData.id, noteData);
+                result = await updateNote(noteData.id, noteData);
+                // Update existing note in global store
+                const currentNotes = useStore.getState().notesStore.notes;
+                useStore
+                    .getState()
+                    .notesStore.setNotes(
+                        currentNotes.map((note) =>
+                            note.id === result.id ? result : note
+                        )
+                    );
             } else {
-                await createNote(noteData);
+                result = await createNote(noteData);
+                // Add new note to global store
+                const currentNotes = useStore.getState().notesStore.notes;
+                useStore
+                    .getState()
+                    .notesStore.setNotes([result, ...currentNotes]);
             }
-            loadNotes();
             closeNoteModal();
         } catch (error: any) {
             console.error('Error saving note:', error);
@@ -262,6 +198,11 @@ const Layout: React.FC<LayoutProps> = ({
                     </span>
                 );
                 showSuccessToast(taskLink);
+
+                // Notify Tasks component that a task was created
+                window.dispatchEvent(
+                    new CustomEvent('taskCreated', { detail: createdTask })
+                );
             }
             // Don't refetch all tasks here - let individual components handle their own state
             // This prevents unnecessary re-renders and race conditions
@@ -313,12 +254,26 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveArea = async (areaData: Partial<Area>) => {
         try {
+            let result: Area;
             if (areaData.id) {
-                await updateArea(areaData.id, areaData);
+                result = await updateArea(areaData.id, areaData);
+                // Update existing area in global store
+                const currentAreas = useStore.getState().areasStore.areas;
+                useStore
+                    .getState()
+                    .areasStore.setAreas(
+                        currentAreas.map((area) =>
+                            area.id === result.id ? result : area
+                        )
+                    );
             } else {
-                await createArea(areaData);
+                result = await createArea(areaData);
+                // Add new area to global store
+                const currentAreas = useStore.getState().areasStore.areas;
+                useStore
+                    .getState()
+                    .areasStore.setAreas([...currentAreas, result]);
             }
-            loadAreas();
             closeAreaModal();
         } catch (error: any) {
             console.error('Error saving area:', error);
@@ -332,13 +287,24 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveTag = async (tagData: Tag) => {
         try {
+            let result: Tag;
             if (tagData.id) {
-                await updateTag(tagData.id, tagData);
+                result = await updateTag(tagData.id, tagData);
+                // Update existing tag in global store
+                const currentTags = useStore.getState().tagsStore.tags;
+                useStore
+                    .getState()
+                    .tagsStore.setTags(
+                        currentTags.map((tag) =>
+                            tag.id === result.id ? result : tag
+                        )
+                    );
             } else {
-                await createTag(tagData);
+                result = await createTag(tagData);
+                // Add new tag to global store
+                const currentTags = useStore.getState().tagsStore.tags;
+                useStore.getState().tagsStore.setTags([...currentTags, result]);
             }
-            const tagsData = await fetchTags();
-            setTags(tagsData);
             closeTagModal();
         } catch (error: any) {
             console.error('Error saving tag:', error);
@@ -513,7 +479,18 @@ const Layout: React.FC<LayoutProps> = ({
                                 './utils/projectsService'
                             );
                             await deleteProject(projectId);
-                            loadProjects();
+
+                            // Update global projects store
+                            const currentProjects =
+                                useStore.getState().projectsStore.projects;
+                            useStore
+                                .getState()
+                                .projectsStore.setProjects(
+                                    currentProjects.filter(
+                                        (p) => p.id !== projectId
+                                    )
+                                );
+
                             closeProjectModal();
                         } catch (error) {
                             console.error('Error deleting project:', error);
@@ -534,7 +511,6 @@ const Layout: React.FC<LayoutProps> = ({
                                 './utils/notesService'
                             );
                             await deleteNote(noteId);
-                            loadNotes();
                             closeNoteModal();
                         } catch (error) {
                             console.error('Error deleting note:', error);

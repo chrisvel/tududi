@@ -1,23 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 import {
     PencilSquareIcon,
     TrashIcon,
-    FolderIcon,
-    Squares2X2Icon,
-    BookOpenIcon,
     TagIcon,
-    ListBulletIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import NoteModal from '../Note/NoteModal';
 import { useStore } from '../../store/useStore';
 import NewTask from '../Task/NewTask';
 import { Project } from '../../entities/Project';
-import { PriorityType, Task } from '../../entities/Task';
+import NoteCard from '../Shared/NoteCard';
+import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
 import {
     fetchProjectById,
@@ -29,92 +27,142 @@ import {
     deleteTask,
     toggleTaskToday,
 } from '../../utils/tasksService';
-import { fetchAreas } from '../../utils/areasService';
-import { isAuthError } from '../../utils/authUtils';
 import {
-    CalendarDaysIcon,
-    InformationCircleIcon,
-} from '@heroicons/react/24/solid';
+    updateNote,
+    deleteNote as apiDeleteNote,
+} from '../../utils/notesService';
+import { isAuthError } from '../../utils/authUtils';
 import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
-
-type PriorityStyles = Record<PriorityType, string> & { default: string };
-
-const priorityStyles: PriorityStyles = {
-    high: 'bg-red-500',
-    medium: 'bg-yellow-500',
-    low: 'bg-green-500',
-    default: 'bg-gray-400',
-};
+import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
 
 const ProjectDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const { showSuccessToast } = useToast();
 
+    // Using local state to avoid infinite loops
     const areas = useStore((state) => state.areasStore.areas);
-
-    const [project, setProject] = useState<Project | undefined>(undefined);
+    const [project, setProject] = useState<Project | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [showCompleted, setShowCompleted] = useState(false);
     const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
+    const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(false);
+    const hasCheckedAutoSuggest = useRef(false);
+    const [orderBy, setOrderBy] = useState<string>('created_at:desc');
+    const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
+
+    // Sort options for tasks
+    const sortOptions: SortOption[] = [
+        { value: 'created_at:desc', label: 'Created at' },
+        { value: 'due_date:asc', label: 'Due date' },
+        { value: 'priority:desc', label: 'Priority' },
+    ];
+
+    // Note modal state
+    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+    const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
     // Dispatch global modal events
 
     useEffect(() => {
-        const loadProjectData = async () => {
-            if (!id) {
-                console.error('Project ID is missing.');
-                return;
+        const fetchAutoSuggestSetting = async () => {
+            if (!hasCheckedAutoSuggest.current) {
+                hasCheckedAutoSuggest.current = true;
+                const enabled = await getAutoSuggestNextActionsEnabled();
+                setAutoSuggestEnabled(enabled);
             }
+        };
 
-            setLoading(true);
+        fetchAutoSuggestSetting();
+    }, []);
+
+    // Check if we should show auto-suggest form for projects with no tasks
+    useEffect(() => {
+        if (
+            project &&
+            tasks.length === 0 &&
+            !loading &&
+            !showCompleted &&
+            autoSuggestEnabled
+        ) {
+            setShowAutoSuggestForm(true);
+        } else {
+            setShowAutoSuggestForm(false);
+        }
+    }, [project, tasks.length, loading, showCompleted, autoSuggestEnabled]);
+
+    // Load initial sort order from localStorage (URL params removed to prevent conflicts)
+    useEffect(() => {
+        const sortParam =
+            localStorage.getItem('project_order_by') || 'created_at:desc';
+        setOrderBy(sortParam);
+    }, []);
+
+    // Fetch project data when id changes
+    useEffect(() => {
+        if (!id) return;
+
+        const loadProjectData = async () => {
             try {
-                fetchAreas();
-                const projectData = await fetchProjectById(id);
+                // Only show loading if we don't have any project data yet
+                if (!project) {
+                    setLoading(true);
+                }
+                setError(false);
+
+                const sortParam =
+                    localStorage.getItem('project_order_by') ||
+                    'created_at:desc';
+
+                console.log(
+                    `Fetching ONLY project ${id} with fetchProjectById`
+                );
+                const projectData = await fetchProjectById(id, {
+                    sort: sortParam,
+                    // Remove completed parameter since backend filtering isn't working
+                });
                 setProject(projectData);
-                // Handle both 'tasks' and 'Tasks' property names
-                const projectTasks =
-                    projectData.tasks || projectData.Tasks || [];
-                setTasks(projectTasks);
-                // Handle project notes
-                const projectNotes =
+                setTasks(projectData.tasks || projectData.Tasks || []);
+
+                // Load saved preferences from project data
+                if (projectData.task_show_completed !== undefined) {
+                    setShowCompleted(projectData.task_show_completed);
+                }
+                if (projectData.task_sort_order) {
+                    setOrderBy(projectData.task_sort_order);
+                }
+                const fetchedNotes =
                     projectData.notes || projectData.Notes || [];
-                setNotes(projectNotes);
-            } catch (error) {
-                console.error('Error fetching project data:', error);
-            } finally {
+
+                // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
+                const normalizedNotes = fetchedNotes.map((note) => {
+                    if (note.Tags && !note.tags) {
+                        note.tags = note.Tags;
+                    }
+                    return note;
+                });
+
+                setNotes(normalizedNotes);
+                setLoading(false);
+            } catch {
+                setError(true);
                 setLoading(false);
             }
         };
 
         loadProjectData();
-    }, [id, fetchAreas]);
-
-    // Check if we should show auto-suggest form for projects with no tasks
-    useEffect(() => {
-        const checkAutoSuggest = async () => {
-            if (project && tasks.length === 0 && !loading) {
-                const autoSuggestEnabled =
-                    await getAutoSuggestNextActionsEnabled();
-                if (autoSuggestEnabled) {
-                    setShowAutoSuggestForm(true);
-                }
-            }
-        };
-
-        checkAutoSuggest();
-    }, [project, tasks, loading]);
+    }, [id]);
 
     const handleTaskCreate = async (taskName: string) => {
         if (!project) {
-            console.error('Cannot create task: Project is missing');
             throw new Error('Cannot create task: Project is missing');
         }
 
@@ -124,7 +172,7 @@ const ProjectDetails: React.FC = () => {
                 status: 'not_started',
                 project_id: project.id,
             });
-            setTasks((prevTasks) => [...prevTasks, newTask]);
+            setTasks([...tasks, newTask]);
 
             // Show success toast with task link
             const taskLink = (
@@ -141,7 +189,6 @@ const ProjectDetails: React.FC = () => {
             );
             showSuccessToast(taskLink);
         } catch (err: any) {
-            console.error('Error creating task:', err);
             // Check if it's an authentication error
             if (isAuthError(err)) {
                 return;
@@ -152,7 +199,6 @@ const ProjectDetails: React.FC = () => {
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         if (!updatedTask.id) {
-            console.error('Cannot update task: Task ID is missing');
             return;
         }
         try {
@@ -165,34 +211,30 @@ const ProjectDetails: React.FC = () => {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Failed to update task:', errorData.error);
+                await response.json();
                 throw new Error('Failed to update task');
             }
 
             const savedTask = await response.json();
-            setTasks((prevTasks) =>
-                prevTasks.map((task) =>
+            setTasks(
+                tasks.map((task) =>
                     task.id === updatedTask.id ? savedTask : task
                 )
             );
-        } catch (err) {
-            console.error('Error updating task:', err);
+        } catch {
+            // Error updating task - silently handled
         }
     };
 
     const handleTaskDelete = async (taskId: number | undefined) => {
         if (!taskId) {
-            console.error('Cannot delete task: Task ID is missing');
             return;
         }
         try {
             await deleteTask(taskId);
-            setTasks((prevTasks) =>
-                prevTasks.filter((task) => task.id !== taskId)
-            );
-        } catch (err) {
-            console.error('Error deleting task:', err);
+            setTasks(tasks.filter((task) => task.id !== taskId));
+        } catch {
+            // Error deleting task - silently handled
         }
     };
 
@@ -200,8 +242,8 @@ const ProjectDetails: React.FC = () => {
         try {
             const updatedTask = await toggleTaskToday(taskId);
             // Update the task in the local state immediately to avoid UI flashing
-            setTasks((prevTasks) =>
-                prevTasks.map((task) =>
+            setTasks(
+                tasks.map((task) =>
                     task.id === taskId
                         ? {
                               ...task,
@@ -211,19 +253,35 @@ const ProjectDetails: React.FC = () => {
                         : task
                 )
             );
-        } catch (error) {
-            console.error('Error toggling task today status:', error);
+        } catch {
             // Optionally refetch data on error to ensure consistency
             if (id) {
+                const sortParam =
+                    localStorage.getItem('project_order_by') ||
+                    'created_at:desc';
+
+                // Refetch project data on error to ensure consistency
                 try {
-                    const updatedProject = await fetchProjectById(id);
-                    setProject(updatedProject);
-                    setTasks(updatedProject.tasks || []);
-                } catch (refetchError) {
-                    console.error(
-                        'Error refetching project data:',
-                        refetchError
-                    );
+                    const projectData = await fetchProjectById(id, {
+                        sort: sortParam,
+                        // Remove completed parameter since backend filtering isn't working
+                    });
+                    setProject(projectData);
+                    setTasks(projectData.tasks || projectData.Tasks || []);
+                    const fetchedNotes =
+                        projectData.notes || projectData.Notes || [];
+
+                    // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
+                    const normalizedNotes = fetchedNotes.map((note) => {
+                        if (note.Tags && !note.tags) {
+                            note.tags = note.Tags;
+                        }
+                        return note;
+                    });
+
+                    setNotes(normalizedNotes);
+                } catch {
+                    // Error refetching project data - silently handled
                 }
             }
         }
@@ -235,7 +293,6 @@ const ProjectDetails: React.FC = () => {
 
     const handleSaveProject = async (updatedProject: Project) => {
         if (!updatedProject.id) {
-            console.error('Cannot save project: Project ID is missing');
             return;
         }
 
@@ -246,8 +303,8 @@ const ProjectDetails: React.FC = () => {
             );
             setProject(savedProject);
             setIsModalOpen(false);
-        } catch (err) {
-            console.error('Error saving project:', err);
+        } catch {
+            // Error saving project - silently handled
         }
     };
 
@@ -264,7 +321,7 @@ const ProjectDetails: React.FC = () => {
             });
 
             // Update the tasks list to include the new task
-            setTasks((prevTasks) => [...prevTasks, newTask]);
+            setTasks([...tasks, newTask]);
             setShowAutoSuggestForm(false);
 
             // Show success toast with task link
@@ -281,8 +338,8 @@ const ProjectDetails: React.FC = () => {
                 </span>
             );
             showSuccessToast(taskLink);
-        } catch (error) {
-            console.error('Error creating next action:', error);
+        } catch {
+            // Error creating next action - silently handled
         }
     };
 
@@ -290,19 +347,196 @@ const ProjectDetails: React.FC = () => {
         setShowAutoSuggestForm(false);
     };
 
+    const saveProjectPreferences = async (
+        showCompleted: boolean,
+        orderBy: string
+    ) => {
+        if (!project?.id) return;
+
+        try {
+            // Save preferences directly via API call
+            const response = await fetch(`/api/project/${project.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    task_show_completed: showCompleted,
+                    task_sort_order: orderBy,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save project preferences');
+            }
+        } catch (error) {
+            console.error('Error saving project preferences:', error);
+        }
+    };
+
+    const handleShowCompletedChange = (checked: boolean) => {
+        setShowCompleted(checked);
+
+        // Save to project (remove navigation to prevent re-render)
+        saveProjectPreferences(checked, orderBy);
+    };
+
+    const handleSortChange = (newOrderBy: string) => {
+        setOrderBy(newOrderBy);
+        // Save to project
+        saveProjectPreferences(showCompleted, newOrderBy);
+    };
+
     const handleDeleteProject = async () => {
         if (!project?.id) {
-            console.error('Cannot delete project: Project ID is missing');
             return;
         }
 
         try {
             await deleteProject(project.id);
             navigate('/projects');
-        } catch (err) {
-            console.error('Error deleting project:', err);
+        } catch {
+            // Error deleting project - silently handled
         }
     };
+
+    // Note handlers
+    const handleEditNote = async (note: Note) => {
+        try {
+            // Fetch the complete note data including tags
+            const response = await fetch(`/api/note/${note.id}`, {
+                credentials: 'include',
+                headers: { Accept: 'application/json' },
+            });
+
+            if (response.ok) {
+                const fullNote = await response.json();
+                setSelectedNote(fullNote);
+            } else {
+                // Fallback to the original note if fetch fails
+                setSelectedNote(note);
+            }
+        } catch (error) {
+            // Fallback to the original note if fetch fails
+            console.error('Error fetching note details:', error);
+            setSelectedNote(note);
+        }
+        setIsNoteModalOpen(true);
+    };
+
+    const handleDeleteNote = async (noteId: number) => {
+        try {
+            await apiDeleteNote(noteId);
+            setNotes(notes.filter((n) => n.id !== noteId));
+            setNoteToDelete(null);
+            setIsConfirmDialogOpen(false);
+        } catch {
+            // Error deleting note - silently handled
+        }
+    };
+
+    const handleUpdateNote = async (noteData: Partial<Note>) => {
+        try {
+            if (selectedNote?.id) {
+                const updatedNote = await updateNote(
+                    selectedNote.id,
+                    noteData as Note
+                );
+
+                // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
+                if (updatedNote.Tags && !updatedNote.tags) {
+                    updatedNote.tags = updatedNote.Tags;
+                }
+
+                setNotes(
+                    notes.map((n) =>
+                        n.id === selectedNote.id ? updatedNote : n
+                    )
+                );
+                setIsNoteModalOpen(false);
+                setSelectedNote(null);
+            }
+        } catch {
+            // Error updating note - silently handled
+        }
+    };
+
+    // Filter and sort tasks (backend filtering/sorting not working reliably)
+    const displayTasks = useMemo(() => {
+        // First, filter tasks based on completed state
+        let filteredTasks;
+        if (showCompleted) {
+            // Show only completed tasks (done=2 or archived=3)
+            filteredTasks = tasks.filter(
+                (task) =>
+                    task.status === 'done' ||
+                    task.status === 'archived' ||
+                    task.status === 2 ||
+                    task.status === 3
+            );
+        } else {
+            // Show only non-completed tasks (not_started=0, in_progress=1)
+            filteredTasks = tasks.filter(
+                (task) =>
+                    task.status === 'not_started' ||
+                    task.status === 'in_progress' ||
+                    task.status === 0 ||
+                    task.status === 1
+            );
+        }
+
+        // Then, sort the filtered tasks
+        const sortedTasks = [...filteredTasks].sort((a, b) => {
+            const [field, direction] = orderBy.split(':');
+            const isAsc = direction === 'asc';
+
+            let valueA, valueB;
+
+            switch (field) {
+                case 'name':
+                    valueA = a.name?.toLowerCase() || '';
+                    valueB = b.name?.toLowerCase() || '';
+                    break;
+                case 'due_date':
+                    valueA = a.due_date ? new Date(a.due_date).getTime() : 0;
+                    valueB = b.due_date ? new Date(b.due_date).getTime() : 0;
+                    break;
+                case 'priority': {
+                    // Convert priority to numeric for sorting (high=2, medium=1, low=0)
+                    const priorityMap = { high: 2, medium: 1, low: 0 };
+                    valueA =
+                        typeof a.priority === 'string'
+                            ? priorityMap[a.priority] || 0
+                            : a.priority || 0;
+                    valueB =
+                        typeof b.priority === 'string'
+                            ? priorityMap[b.priority] || 0
+                            : b.priority || 0;
+                    break;
+                }
+                case 'status':
+                    valueA =
+                        typeof a.status === 'string' ? a.status : a.status || 0;
+                    valueB =
+                        typeof b.status === 'string' ? b.status : b.status || 0;
+                    break;
+                case 'created_at':
+                default:
+                    valueA = a.created_at
+                        ? new Date(a.created_at).getTime()
+                        : 0;
+                    valueB = b.created_at
+                        ? new Date(b.created_at).getTime()
+                        : 0;
+                    break;
+            }
+
+            if (valueA < valueB) return isAsc ? -1 : 1;
+            if (valueA > valueB) return isAsc ? 1 : -1;
+            return 0;
+        });
+
+        return sortedTasks;
+    }, [tasks, showCompleted, orderBy]);
 
     if (loading) {
         return (
@@ -317,7 +551,9 @@ const ProjectDetails: React.FC = () => {
     if (error) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-                <div className="text-red-500 text-lg">{error}</div>
+                <div className="text-red-500 text-lg">
+                    Failed to load project details.
+                </div>
             </div>
         );
     }
@@ -330,269 +566,272 @@ const ProjectDetails: React.FC = () => {
         );
     }
 
-    const activeTasks =
-        tasks?.filter((task) => {
-            return typeof task.status === 'number'
-                ? task.status !== 2
-                : task.status !== 'done';
-        }) || []; //TODO: Also add archived
-    const completedTasks = tasks?.filter((task) => {
-        return typeof task.status === 'number'
-            ? task.status === 2
-            : task.status === 'done';
-    });
-
-    const displayTasks = showCompleted
-        ? [...activeTasks, ...completedTasks]
-        : activeTasks;
-
-    const formatProjectDueDate = (dateString: string) => {
-        const date = new Date(dateString);
-        const currentLang = i18n.language;
-
-        // Format based on language
-        const formatOptions: Intl.DateTimeFormatOptions = {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        };
-
-        return date.toLocaleDateString(currentLang, formatOptions);
-    };
-
     return (
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
-                {/* Project Banner Image */}
-                {project.image_url && (
-                    <div className="mb-6 rounded-lg overflow-hidden relative">
+                {/* Project Banner - Unified for both with and without images */}
+                <div className="mb-6 rounded-lg overflow-hidden relative group">
+                    {/* Background - Image or Gradient */}
+                    {project.image_url ? (
                         <img
                             src={project.image_url}
                             alt={project.name}
-                            className="w-full h-48 object-cover"
+                            className="w-full h-64 object-cover"
                         />
-                        {/* Title Overlay */}
-                        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                            <h1 className="text-4xl md:text-5xl font-bold text-white text-center px-4 drop-shadow-lg">
+                    ) : (
+                        <div className="w-full h-64 bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
+                    )}
+
+                    {/* Title Overlay */}
+                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                        <div className="text-center px-4">
+                            <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
                                 {project.name}
                             </h1>
-                        </div>
-                        {/* Priority Indicator on Image */}
-                        {project.priority !== undefined &&
-                            project.priority !== null && (
-                                <div className="absolute top-3 left-3">
-                                    <div
-                                        className={`w-4 h-4 rounded-full border-2 border-white shadow-lg ${getPriorityStyle(
-                                            project.priority
-                                        )}`}
-                                        title={`Priority: ${priorityLabel(project.priority)}`}
-                                        aria-label={`Priority: ${priorityLabel(project.priority)}`}
-                                    ></div>
-                                </div>
-                            )}
-                        {/* Edit/Delete Buttons on Image */}
-                        <div className="absolute bottom-4 right-4 flex space-x-2">
-                            <button
-                                onClick={handleEditProject}
-                                className="p-2 bg-black bg-opacity-50 text-white hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                            >
-                                <PencilSquareIcon className="h-5 w-5" />
-                            </button>
-                            <button
-                                onClick={() => setIsConfirmDialogOpen(true)}
-                                className="p-2 bg-black bg-opacity-50 text-white hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                            >
-                                <TrashIcon className="h-5 w-5" />
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* Project Metadata Box */}
-                {(project.description ||
-                    project.area ||
-                    project.due_date_at ||
-                    (project.tags && project.tags.length > 0)) && (
-                    <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg">
-                        <div className="grid gap-3">
                             {project.description && (
-                                <div className="flex items-start">
-                                    <InformationCircleIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
-                                    <div className="flex-1">
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">
-                                            Description:
+                                <p className="text-lg md:text-xl text-white/90 mt-2 font-light drop-shadow-md max-w-2xl mx-auto">
+                                    {project.description}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Tags Display - Bottom Left */}
+                    {project.tags && project.tags.length > 0 && (
+                        <div className="absolute bottom-2 left-2 flex items-center space-x-1">
+                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
+                                <TagIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
+                                <div className="flex items-center space-x-1">
+                                    {project.tags.map((tag, index) => (
+                                        <span key={tag.id || index}>
+                                            <button
+                                                onClick={() => {
+                                                    // Navigate to tag details page
+                                                    navigate(
+                                                        `/tag/${encodeURIComponent(tag.name)}`
+                                                    );
+                                                }}
+                                                className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
+                                            >
+                                                {tag.name}
+                                            </button>
+                                            {index <
+                                                (project.tags?.length || 0) -
+                                                    1 && (
+                                                <span className="text-white/60 text-xs">
+                                                    ,{' '}
+                                                </span>
+                                            )}
                                         </span>
-                                        <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed mt-1">
-                                            {project.description}
-                                        </p>
-                                    </div>
+                                    ))}
                                 </div>
-                            )}
+                            </div>
+                        </div>
+                    )}
 
-                            {project.area && (
-                                <div className="flex items-center">
-                                    <Squares2X2Icon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3" />
-                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">
-                                        Area:
-                                    </span>
-                                    <span className="text-sm text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                                        {project.area.name}
-                                    </span>
-                                </div>
-                            )}
+                    {/* Edit/Delete Buttons - Bottom Right */}
+                    <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button
+                            onClick={handleEditProject}
+                            className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                        >
+                            <PencilSquareIcon className="h-5 w-5" />
+                        </button>
+                        <button
+                            onClick={() => setIsConfirmDialogOpen(true)}
+                            className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                        >
+                            <TrashIcon className="h-5 w-5" />
+                        </button>
+                    </div>
+                </div>
 
-                            {project.due_date_at && (
-                                <div className="flex items-center">
-                                    <CalendarDaysIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3" />
-                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">
-                                        Due Date:
+                {/* Header with Tab Links and Controls */}
+                <div className="mb-4">
+                    {/* Mobile Layout */}
+                    <div className="sm:hidden">
+                        <div className="flex items-center justify-between mb-3">
+                            {/* Tab Navigation Links */}
+                            <div className="flex items-center space-x-6">
+                                <button
+                                    onClick={() => setActiveTab('tasks')}
+                                    className={`flex items-center py-2 text-sm font-medium transition-colors ${
+                                        activeTab === 'tasks'
+                                            ? 'text-gray-900 dark:text-gray-100'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                    }`}
+                                >
+                                    <span>{t('sidebar.tasks', 'Tasks')}</span>
+                                    <span
+                                        className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                                            displayTasks.length > 0
+                                                ? 'bg-gray-200 dark:bg-gray-600'
+                                                : 'bg-transparent'
+                                        }`}
+                                        style={{
+                                            minWidth: '20px',
+                                            visibility:
+                                                displayTasks.length > 0
+                                                    ? 'visible'
+                                                    : 'hidden',
+                                        }}
+                                    >
+                                        {displayTasks.length > 0
+                                            ? displayTasks.length
+                                            : '0'}
                                     </span>
-                                    <span className="text-sm text-gray-900 dark:text-gray-100">
-                                        {formatProjectDueDate(
-                                            project.due_date_at
-                                        )}
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('notes')}
+                                    className={`flex items-center py-2 text-sm font-medium transition-colors ${
+                                        activeTab === 'notes'
+                                            ? 'text-gray-900 dark:text-gray-100'
+                                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                    }`}
+                                >
+                                    <span>{t('sidebar.notes', 'Notes')}</span>
+                                    <span
+                                        className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                                            notes.length > 0
+                                                ? 'bg-gray-200 dark:bg-gray-600'
+                                                : 'bg-transparent'
+                                        }`}
+                                        style={{
+                                            minWidth: '20px',
+                                            visibility:
+                                                notes.length > 0
+                                                    ? 'visible'
+                                                    : 'hidden',
+                                        }}
+                                    >
+                                        {notes.length > 0 ? notes.length : '0'}
                                     </span>
-                                </div>
-                            )}
+                                </button>
+                            </div>
 
-                            {project.tags && project.tags.length > 0 && (
-                                <div className="flex items-start">
-                                    <div className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-3 mt-0.5">
-                                        <svg
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
+                            {/* Inline Controls - Always visible for tasks tab */}
+                            {activeTab === 'tasks' && (
+                                <div className="flex items-center gap-2 flex-wrap justify-end">
+                                    {/* Show Completed Toggle */}
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                                            Show completed
+                                        </span>
+                                        <button
+                                            onClick={() =>
+                                                handleShowCompletedChange(
+                                                    !showCompleted
+                                                )
+                                            }
+                                            className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${
+                                                showCompleted
+                                                    ? 'bg-blue-600'
+                                                    : 'bg-gray-200 dark:bg-gray-600'
+                                            }`}
                                         >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z"
-                                                clipRule="evenodd"
+                                            <span
+                                                className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                                                    showCompleted
+                                                        ? 'translate-x-3.5'
+                                                        : 'translate-x-0.5'
+                                                }`}
                                             />
-                                        </svg>
+                                        </button>
                                     </div>
-                                    <div className="flex-1">
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400 mr-2">
-                                            Tags:
-                                        </span>
-                                        <div className="flex flex-wrap gap-1 mt-1">
-                                            {project.tags.map((tag, index) => (
-                                                <button
-                                                    key={index}
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/tag/${encodeURIComponent(tag.name)}`
-                                                        )
-                                                    }
-                                                    className="inline-block px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
-                                                >
-                                                    {tag.name}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
+
+                                    {/* Sort Filter */}
+                                    <SortFilterButton
+                                        options={sortOptions}
+                                        value={orderBy}
+                                        onChange={handleSortChange}
+                                        size="mobile"
+                                    />
                                 </div>
                             )}
                         </div>
                     </div>
-                )}
 
-                {/* Project Header - Only show when no image */}
-                {!project.image_url && (
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center">
-                            <FolderIcon className="h-6 w-6 text-gray-500 mr-3" />
-                            <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100 mr-2">
-                                {project.name}
-                            </h2>
-                            {/* Show priority indicator only when no image */}
-                            {project.priority !== undefined &&
-                                project.priority !== null && (
-                                    <div
-                                        className={`w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${getPriorityStyle(
-                                            project.priority
-                                        )}`}
-                                        title={`Priority: ${priorityLabel(project.priority)}`}
-                                        aria-label={`Priority: ${priorityLabel(project.priority)}`}
-                                    ></div>
+                    {/* Desktop Layout */}
+                    <div className="hidden sm:flex items-center justify-between min-h-[2.5rem]">
+                        {/* Tab Navigation Links */}
+                        <div className="flex items-center space-x-6">
+                            <button
+                                onClick={() => setActiveTab('tasks')}
+                                className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                                    activeTab === 'tasks'
+                                        ? 'text-gray-900 dark:text-gray-100'
+                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                }`}
+                            >
+                                <span>{t('sidebar.tasks', 'Tasks')}</span>
+                                {displayTasks.length > 0 && (
+                                    <span className="ml-2 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                        {displayTasks.length}
+                                    </span>
                                 )}
-                        </div>
-                        <div className="flex space-x-2">
-                            <button
-                                onClick={handleEditProject}
-                                className="text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
-                            >
-                                <PencilSquareIcon className="h-5 w-5" />
                             </button>
                             <button
-                                onClick={() => setIsConfirmDialogOpen(true)}
-                                className="text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none"
+                                onClick={() => setActiveTab('notes')}
+                                className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                                    activeTab === 'notes'
+                                        ? 'text-gray-900 dark:text-gray-100'
+                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                }`}
                             >
-                                <TrashIcon className="h-5 w-5" />
+                                <span>{t('sidebar.notes', 'Notes')}</span>
+                                {notes.length > 0 && (
+                                    <span className="ml-2 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                        {notes.length}
+                                    </span>
+                                )}
                             </button>
                         </div>
-                    </div>
-                )}
 
-                {!showAutoSuggestForm && (
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center">
-                            <ListBulletIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                {t('sidebar.tasks', 'Tasks')}
-                            </h3>
-                        </div>
-                        {completedTasks.length > 0 && (
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
-                                    {t(
-                                        'project.showCompleted',
-                                        'Show completed'
-                                    )}
-                                </span>
-                                <div className="relative flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={showCompleted}
-                                        onChange={(e) =>
-                                            setShowCompleted(e.target.checked)
+                        {/* Inline Controls - Always visible for tasks tab */}
+                        {activeTab === 'tasks' && (
+                            <div className="flex items-center gap-4">
+                                {/* Show Completed Toggle */}
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                                        Show completed
+                                    </span>
+                                    <button
+                                        onClick={() =>
+                                            handleShowCompletedChange(
+                                                !showCompleted
+                                            )
                                         }
-                                        className="sr-only"
-                                    />
-                                    <div
-                                        className={`w-10 h-5 rounded-full transition-colors ${
+                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                                             showCompleted
-                                                ? 'bg-blue-500'
-                                                : 'bg-gray-300 dark:bg-gray-600'
+                                                ? 'bg-blue-600'
+                                                : 'bg-gray-200 dark:bg-gray-600'
                                         }`}
                                     >
-                                        <div
-                                            className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                                        <span
+                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                                                 showCompleted
-                                                    ? 'translate-x-5'
+                                                    ? 'translate-x-4'
                                                     : 'translate-x-0.5'
-                                            } translate-y-0.5`}
-                                        ></div>
-                                    </div>
+                                            }`}
+                                        />
+                                    </button>
                                 </div>
-                            </label>
+
+                                {/* Sort Filter */}
+                                <SortFilterButton
+                                    options={sortOptions}
+                                    value={orderBy}
+                                    onChange={handleSortChange}
+                                    size="desktop"
+                                />
+                            </div>
                         )}
                     </div>
-                )}
+                </div>
 
-                {!showAutoSuggestForm && (
-                    <NewTask onTaskCreate={handleTaskCreate} />
-                )}
-
-                <div className="mt-2">
-                    {displayTasks.length > 0 ? (
-                        <TaskList
-                            tasks={displayTasks}
-                            onTaskUpdate={handleTaskUpdate}
-                            onTaskDelete={handleTaskDelete}
-                            projects={project ? [project] : []}
-                            hideProjectName={true}
-                            onToggleToday={handleToggleToday}
-                        />
-                    ) : showAutoSuggestForm ? (
+                {/* Auto-suggest form for tasks with no items */}
+                {activeTab === 'tasks' && showAutoSuggestForm && (
+                    <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 mb-6">
                         <AutoSuggestNextActionBox
                             onAddAction={(actionDescription) => {
                                 if (project?.id) {
@@ -605,74 +844,79 @@ const ProjectDetails: React.FC = () => {
                             onDismiss={handleSkipNextAction}
                             projectName={project?.name || ''}
                         />
-                    ) : (
-                        <p className="text-gray-500 dark:text-gray-400">
-                            No tasks.
-                        </p>
-                    )}
-                </div>
+                    </div>
+                )}
 
-                {/* Notes Section */}
-                <div className="mt-8">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-                        <BookOpenIcon className="h-5 w-5 mr-2" />
-                        {t('sidebar.notes', 'Notes')}
-                    </h3>
-
-                    {notes.length > 0 ? (
-                        <div className="space-y-3">
-                            {notes.map((note) => (
-                                <div
-                                    key={note.id}
-                                    className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 border-l-4 border-blue-500"
-                                >
-                                    <div className="flex justify-between items-start">
-                                        <div className="flex-grow">
-                                            <Link
-                                                to={`/note/${note.id}`}
-                                                className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
-                                            >
-                                                {note.title ||
-                                                    t(
-                                                        'notes.untitled',
-                                                        'Untitled Note'
-                                                    )}
-                                            </Link>
-                                            {note.content && (
-                                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                                                    {note.content.length > 150
-                                                        ? note.content.substring(
-                                                              0,
-                                                              150
-                                                          ) + '...'
-                                                        : note.content}
-                                                </p>
-                                            )}
-                                            {note.tags &&
-                                                note.tags.length > 0 && (
-                                                    <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                                        <TagIcon className="h-3 w-3 mr-1" />
-                                                        <span>
-                                                            {note.tags
-                                                                .map(
-                                                                    (tag) =>
-                                                                        tag.name
-                                                                )
-                                                                .join(', ')}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                {/* Tasks Tab Content */}
+                {activeTab === 'tasks' && (
+                    <>
+                        <div
+                            className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                                !showAutoSuggestForm && !showCompleted
+                                    ? 'opacity-100 max-h-96 transform translate-y-0'
+                                    : 'opacity-0 max-h-0 transform -translate-y-2'
+                            }`}
+                        >
+                            <NewTask onTaskCreate={handleTaskCreate} />
                         </div>
-                    ) : (
-                        <p className="text-gray-500 dark:text-gray-400">
-                            {t('project.noNotes', 'No notes for this project.')}
-                        </p>
-                    )}
-                </div>
+
+                        <div className="transition-all duration-300 ease-in-out">
+                            {displayTasks.length > 0 ? (
+                                <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
+                                    <TaskList
+                                        tasks={displayTasks}
+                                        onTaskUpdate={handleTaskUpdate}
+                                        onTaskDelete={handleTaskDelete}
+                                        projects={project ? [project] : []}
+                                        hideProjectName={true}
+                                        onToggleToday={handleToggleToday}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
+                                    <p className="text-gray-500 dark:text-gray-400">
+                                        {showCompleted
+                                            ? t(
+                                                  'project.noCompletedTasks',
+                                                  'No completed tasks.'
+                                              )
+                                            : t('project.noTasks', 'No tasks.')}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </>
+                )}
+
+                {/* Notes Content */}
+                {activeTab === 'notes' && (
+                    <div className="transition-all duration-300 ease-in-out">
+                        {notes.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {notes.map((note) => (
+                                    <NoteCard
+                                        key={note.id}
+                                        note={note}
+                                        onEdit={handleEditNote}
+                                        onDelete={(note) => {
+                                            setNoteToDelete(note);
+                                            setIsConfirmDialogOpen(true);
+                                        }}
+                                        showActions={true}
+                                        showProject={false}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500 dark:text-gray-400">
+                                {t(
+                                    'project.noNotes',
+                                    'No notes for this project.'
+                                )}
+                            </p>
+                        )}
+                    </div>
+                )}
 
                 <ProjectModal
                     isOpen={isModalOpen}
@@ -682,7 +926,32 @@ const ProjectDetails: React.FC = () => {
                     areas={areas}
                 />
 
-                {isConfirmDialogOpen && (
+                {/* NoteModal */}
+                {isNoteModalOpen && (
+                    <NoteModal
+                        isOpen={isNoteModalOpen}
+                        onClose={() => {
+                            setIsNoteModalOpen(false);
+                            setSelectedNote(null);
+                        }}
+                        onSave={handleUpdateNote}
+                        note={selectedNote}
+                        projects={project ? [project] : []}
+                    />
+                )}
+
+                {isConfirmDialogOpen && noteToDelete && (
+                    <ConfirmDialog
+                        title="Delete Note"
+                        message={`Are you sure you want to delete the note "${noteToDelete.title}"?`}
+                        onConfirm={() => handleDeleteNote(noteToDelete.id!)}
+                        onCancel={() => {
+                            setIsConfirmDialogOpen(false);
+                            setNoteToDelete(null);
+                        }}
+                    />
+                )}
+                {isConfirmDialogOpen && !noteToDelete && (
                     <ConfirmDialog
                         title="Delete Project"
                         message={`Are you sure you want to delete the project "${project.name}"?`}
@@ -693,35 +962,6 @@ const ProjectDetails: React.FC = () => {
             </div>
         </div>
     );
-};
-
-const priorityLabel = (priority: PriorityType | number) => {
-    // Handle both string and numeric priorities
-    const normalizedPriority =
-        typeof priority === 'number'
-            ? (['low', 'medium', 'high'][priority] as PriorityType)
-            : priority;
-
-    switch (normalizedPriority) {
-        case 'high':
-            return 'High';
-        case 'medium':
-            return 'Medium';
-        case 'low':
-            return 'Low';
-        default:
-            return '';
-    }
-};
-
-const getPriorityStyle = (priority: PriorityType | number) => {
-    // Handle both string and numeric priorities
-    const normalizedPriority =
-        typeof priority === 'number'
-            ? (['low', 'medium', 'high'][priority] as PriorityType)
-            : priority;
-
-    return priorityStyles[normalizedPriority] || priorityStyles.default;
 };
 
 export default ProjectDetails;
