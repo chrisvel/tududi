@@ -26,7 +26,8 @@ const Notes: React.FC = () => {
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
     // Get notes and projects from global store
-    const { notes, isLoading, isError, setNotes, setLoading, setError } = useStore((state) => state.notesStore);
+    const { notes, isLoading, isError, setNotes, setLoading, setError } =
+        useStore((state) => state.notesStore);
     const projects = useStore((state) => state.projectsStore.projects);
     const { setProjects } = useStore((state) => state.projectsStore);
 
@@ -81,7 +82,9 @@ const Notes: React.FC = () => {
         if (!noteToDelete) return;
         try {
             await apiDeleteNote(noteToDelete.id!);
-            const updatedNotes = notes.filter((note) => note.id !== noteToDelete.id);
+            const updatedNotes = notes.filter(
+                (note) => note.id !== noteToDelete.id
+            );
             setNotes(updatedNotes);
             setIsConfirmDialogOpen(false);
             setNoteToDelete(null);
@@ -273,7 +276,9 @@ const Notes: React.FC = () => {
                         onDelete={async (noteId) => {
                             try {
                                 await apiDeleteNote(noteId);
-                                const updatedNotes = notes.filter((note) => note.id !== noteId);
+                                const updatedNotes = notes.filter(
+                                    (note) => note.id !== noteId
+                                );
                                 setNotes(updatedNotes);
                                 setIsNoteModalOpen(false);
                                 setSelectedNote(null);

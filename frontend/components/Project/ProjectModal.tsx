@@ -109,7 +109,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         };
 
         loadTags();
-        
+
         // Auto-focus on the name input when modal opens
         if (isOpen) {
             setTimeout(() => {
@@ -441,7 +441,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                     className="absolute inset-0 overflow-y-auto overflow-x-hidden"
                                     style={{ WebkitOverflowScrolling: 'touch' }}
                                 >
-                                    <form 
+                                    <form
                                         className="h-full"
                                         onSubmit={(e) => {
                                             e.preventDefault();

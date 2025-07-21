@@ -140,14 +140,20 @@ const Layout: React.FC<LayoutProps> = ({
                 result = await updateNote(noteData.id, noteData);
                 // Update existing note in global store
                 const currentNotes = useStore.getState().notesStore.notes;
-                useStore.getState().notesStore.setNotes(
-                    currentNotes.map(note => note.id === result.id ? result : note)
-                );
+                useStore
+                    .getState()
+                    .notesStore.setNotes(
+                        currentNotes.map((note) =>
+                            note.id === result.id ? result : note
+                        )
+                    );
             } else {
                 result = await createNote(noteData);
                 // Add new note to global store
                 const currentNotes = useStore.getState().notesStore.notes;
-                useStore.getState().notesStore.setNotes([result, ...currentNotes]);
+                useStore
+                    .getState()
+                    .notesStore.setNotes([result, ...currentNotes]);
             }
             closeNoteModal();
         } catch (error: any) {
@@ -248,14 +254,20 @@ const Layout: React.FC<LayoutProps> = ({
                 result = await updateArea(areaData.id, areaData);
                 // Update existing area in global store
                 const currentAreas = useStore.getState().areasStore.areas;
-                useStore.getState().areasStore.setAreas(
-                    currentAreas.map(area => area.id === result.id ? result : area)
-                );
+                useStore
+                    .getState()
+                    .areasStore.setAreas(
+                        currentAreas.map((area) =>
+                            area.id === result.id ? result : area
+                        )
+                    );
             } else {
                 result = await createArea(areaData);
                 // Add new area to global store
                 const currentAreas = useStore.getState().areasStore.areas;
-                useStore.getState().areasStore.setAreas([...currentAreas, result]);
+                useStore
+                    .getState()
+                    .areasStore.setAreas([...currentAreas, result]);
             }
             closeAreaModal();
         } catch (error: any) {
@@ -275,9 +287,13 @@ const Layout: React.FC<LayoutProps> = ({
                 result = await updateTag(tagData.id, tagData);
                 // Update existing tag in global store
                 const currentTags = useStore.getState().tagsStore.tags;
-                useStore.getState().tagsStore.setTags(
-                    currentTags.map(tag => tag.id === result.id ? result : tag)
-                );
+                useStore
+                    .getState()
+                    .tagsStore.setTags(
+                        currentTags.map((tag) =>
+                            tag.id === result.id ? result : tag
+                        )
+                    );
             } else {
                 result = await createTag(tagData);
                 // Add new tag to global store
@@ -458,13 +474,18 @@ const Layout: React.FC<LayoutProps> = ({
                                 './utils/projectsService'
                             );
                             await deleteProject(projectId);
-                            
+
                             // Update global projects store
-                            const currentProjects = useStore.getState().projectsStore.projects;
-                            useStore.getState().projectsStore.setProjects(
-                                currentProjects.filter(p => p.id !== projectId)
-                            );
-                            
+                            const currentProjects =
+                                useStore.getState().projectsStore.projects;
+                            useStore
+                                .getState()
+                                .projectsStore.setProjects(
+                                    currentProjects.filter(
+                                        (p) => p.id !== projectId
+                                    )
+                                );
+
                             closeProjectModal();
                         } catch (error) {
                             console.error('Error deleting project:', error);

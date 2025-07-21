@@ -165,7 +165,7 @@ const Projects: React.FC = () => {
             if (projectToDelete.id !== undefined) {
                 setProjectsLoading(true);
                 await deleteProject(projectToDelete.id);
-                
+
                 // Update global state
                 const projectsData = await fetchProjects();
                 setProjects(projectsData);
@@ -475,13 +475,13 @@ const Projects: React.FC = () => {
                     onDelete={async (projectId) => {
                         try {
                             await deleteProject(projectId);
-                            
+
                             // Update both local and global state
                             const updatedProjects = projects.filter(
                                 (p: Project) => p.id !== projectId
                             );
                             setProjects(updatedProjects);
-                            
+
                             setIsProjectModalOpen(false);
                             setProjectToEdit(null);
                         } catch (error) {

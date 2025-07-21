@@ -143,7 +143,9 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
-                                                        navigate(`/tag/${encodeURIComponent(tag.name)}`);
+                                                        navigate(
+                                                            `/tag/${encodeURIComponent(tag.name)}`
+                                                        );
                                                     }}
                                                     className="hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors bg-transparent border-none p-0 cursor-pointer"
                                                 >

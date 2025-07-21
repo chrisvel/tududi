@@ -42,7 +42,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
                 description: area?.description || '',
             });
             setError(null);
-            
+
             // Auto-focus on the name input when modal opens
             setTimeout(() => {
                 nameInputRef.current?.focus();
@@ -97,7 +97,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
         if (e) {
             e.preventDefault();
         }
-        
+
         if (!formData.name.trim()) {
             setError(t('errors.areaNameRequired'));
             return;
@@ -170,7 +170,10 @@ const AreaModal: React.FC<AreaModalProps> = ({
                                     className="absolute inset-0 overflow-y-auto overflow-x-hidden"
                                     style={{ WebkitOverflowScrolling: 'touch' }}
                                 >
-                                    <form className="h-full" onSubmit={handleSubmit}>
+                                    <form
+                                        className="h-full"
+                                        onSubmit={handleSubmit}
+                                    >
                                         <fieldset className="h-full flex flex-col">
                                             {/* Area Title Section - Always Visible */}
                                             <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 pt-4">

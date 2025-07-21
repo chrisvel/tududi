@@ -91,7 +91,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
         };
 
         loadTags();
-        
+
         // Auto-focus on the title input when modal opens
         if (isOpen) {
             setTimeout(() => {
@@ -370,7 +370,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                             WebkitOverflowScrolling: 'touch',
                                         }}
                                     >
-                                        <form 
+                                        <form
                                             className="h-full"
                                             onSubmit={(e) => {
                                                 e.preventDefault();

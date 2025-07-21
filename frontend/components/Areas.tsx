@@ -15,10 +15,10 @@ import { Area } from '../entities/Area';
 
 const Areas: React.FC = () => {
     const { t } = useTranslation();
-    
-    // Use global store for consistency  
+
+    // Use global store for consistency
     const { areas, isLoading: loading } = useStore((state) => state.areasStore);
-    
+
     const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
@@ -78,27 +78,31 @@ const Areas: React.FC = () => {
                 });
                 // Update the existing area in the list
                 const currentAreas = useStore.getState().areasStore.areas;
-                useStore.getState().areasStore.setAreas(currentAreas.map(area => 
-                    area.id === result.id ? result : area
-                ));
+                useStore
+                    .getState()
+                    .areasStore.setAreas(
+                        currentAreas.map((area) =>
+                            area.id === result.id ? result : area
+                        )
+                    );
             } else {
                 result = await createArea({
                     name: areaData.name,
                     description: areaData.description,
                 });
-                
+
                 // Add the new area immediately to global state
                 const currentAreas = useStore.getState().areasStore.areas;
                 const newAreas = [...currentAreas, result];
                 useStore.getState().areasStore.setAreas(newAreas);
-                
+
                 // Force a re-fetch to ensure consistency
                 setTimeout(async () => {
                     const freshAreas = await fetchAreas();
                     useStore.getState().areasStore.setAreas(freshAreas);
                 }, 100);
             }
-            
+
             // Close modal only on success
             setIsAreaModalOpen(false);
             setSelectedArea(null);
@@ -129,7 +133,11 @@ const Areas: React.FC = () => {
             await deleteArea(areaToDelete.id!);
             // Remove the area from global state immediately
             const currentAreas = useStore.getState().areasStore.areas;
-            useStore.getState().areasStore.setAreas(currentAreas.filter(area => area.id !== areaToDelete.id));
+            useStore
+                .getState()
+                .areasStore.setAreas(
+                    currentAreas.filter((area) => area.id !== areaToDelete.id)
+                );
             setIsConfirmDialogOpen(false);
             setAreaToDelete(null);
             useStore.getState().areasStore.setError(false);
@@ -145,7 +153,6 @@ const Areas: React.FC = () => {
         setIsConfirmDialogOpen(false);
         setAreaToDelete(null);
     };
-
 
     return (
         <div className="flex justify-center px-4 lg:px-2">
@@ -251,11 +258,16 @@ const Areas: React.FC = () => {
                             try {
                                 await deleteArea(areaId);
                                 const updatedAreas = await fetchAreas();
-                                useStore.getState().areasStore.setAreas(updatedAreas);
+                                useStore
+                                    .getState()
+                                    .areasStore.setAreas(updatedAreas);
                                 setIsAreaModalOpen(false);
                                 setSelectedArea(null);
                             } catch (error) {
-                                console.error('Error deleting area from modal:', error);
+                                console.error(
+                                    'Error deleting area from modal:',
+                                    error
+                                );
                                 useStore.getState().areasStore.setError(true);
                             }
                         }}

@@ -40,7 +40,7 @@ const TagModal: React.FC<TagModalProps> = ({
                 name: '',
             });
         }
-        
+
         // Auto-focus on the name input when modal opens
         if (isOpen) {
             setTimeout(() => {
@@ -160,7 +160,7 @@ const TagModal: React.FC<TagModalProps> = ({
                     <div className="flex flex-col h-auto">
                         {/* Main Form Section */}
                         <div className="bg-white dark:bg-gray-800">
-                            <form 
+                            <form
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     handleSubmit();
