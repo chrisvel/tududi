@@ -43,7 +43,12 @@ const NoteModal: React.FC<NoteModalProps> = ({
 }) => {
     const { t } = useTranslation();
     const {
-        tagsStore: { tags: availableTagsStore, loadTags, isLoading: tagsLoading, hasLoaded: tagsHasLoaded },
+        tagsStore: {
+            tags: availableTagsStore,
+            loadTags,
+            isLoading: tagsLoading,
+            hasLoaded: tagsHasLoaded,
+        },
     } = useStore();
     const [formData, setFormData] = useState<Note>(
         note || {

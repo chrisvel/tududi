@@ -97,9 +97,9 @@ export const useStore = create<StoreState>((set) => ({
         loadNotes: async () => {
             const state = useStore.getState();
             if (state.notesStore.isLoading) return;
-            
+
             const { fetchNotes } = await import('../utils/notesService');
-            
+
             set((state) => ({
                 notesStore: {
                     ...state.notesStore,
@@ -107,15 +107,15 @@ export const useStore = create<StoreState>((set) => ({
                     isError: false,
                 },
             }));
-            
+
             try {
                 const notes = await fetchNotes();
                 set((state) => ({
-                    notesStore: { 
-                        ...state.notesStore, 
-                        notes, 
-                        isLoading: false, 
-                        hasLoaded: true 
+                    notesStore: {
+                        ...state.notesStore,
+                        notes,
+                        isLoading: false,
+                        hasLoaded: true,
                     },
                 }));
             } catch (error) {
@@ -147,9 +147,9 @@ export const useStore = create<StoreState>((set) => ({
         loadAreas: async () => {
             const state = useStore.getState();
             if (state.areasStore.isLoading) return;
-            
+
             const { fetchAreas } = await import('../utils/areasService');
-            
+
             set((state) => ({
                 areasStore: {
                     ...state.areasStore,
@@ -157,15 +157,15 @@ export const useStore = create<StoreState>((set) => ({
                     isError: false,
                 },
             }));
-            
+
             try {
                 const areas = await fetchAreas();
                 set((state) => ({
-                    areasStore: { 
-                        ...state.areasStore, 
-                        areas, 
-                        isLoading: false, 
-                        hasLoaded: true 
+                    areasStore: {
+                        ...state.areasStore,
+                        areas,
+                        isLoading: false,
+                        hasLoaded: true,
                     },
                 }));
             } catch (error) {
@@ -217,9 +217,9 @@ export const useStore = create<StoreState>((set) => ({
         loadTags: async () => {
             const state = useStore.getState();
             if (state.tagsStore.isLoading) return;
-            
+
             const { fetchTags } = await import('../utils/tagsService');
-            
+
             set((state) => ({
                 tagsStore: {
                     ...state.tagsStore,
@@ -227,15 +227,15 @@ export const useStore = create<StoreState>((set) => ({
                     isError: false,
                 },
             }));
-            
+
             try {
                 const tags = await fetchTags();
                 set((state) => ({
-                    tagsStore: { 
-                        ...state.tagsStore, 
-                        tags, 
-                        isLoading: false, 
-                        hasLoaded: true 
+                    tagsStore: {
+                        ...state.tagsStore,
+                        tags,
+                        isLoading: false,
+                        hasLoaded: true,
                     },
                 }));
             } catch (error) {

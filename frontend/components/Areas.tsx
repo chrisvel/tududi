@@ -17,7 +17,12 @@ const Areas: React.FC = () => {
     const { t } = useTranslation();
 
     // Use global store for consistency
-    const { areas, isLoading: loading, hasLoaded, loadAreas } = useStore((state) => state.areasStore);
+    const {
+        areas,
+        isLoading: loading,
+        hasLoaded,
+        loadAreas,
+    } = useStore((state) => state.areasStore);
 
     const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
@@ -26,7 +31,7 @@ const Areas: React.FC = () => {
     const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
     const justOpenedRef = useRef<boolean>(false);
-    
+
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -42,7 +47,7 @@ const Areas: React.FC = () => {
                 justOpenedRef.current = false;
                 return;
             }
-            
+
             const clickedElement = event.target as Node;
             if (
                 dropdownRef.current &&
@@ -57,7 +62,7 @@ const Areas: React.FC = () => {
             const timeoutId = setTimeout(() => {
                 document.addEventListener('mousedown', handleClickOutside);
             }, 100);
-            
+
             return () => {
                 clearTimeout(timeoutId);
                 document.removeEventListener('mousedown', handleClickOutside);
@@ -204,8 +209,11 @@ const Areas: React.FC = () => {
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
-                                            const newDropdownState = dropdownOpen === area.id ? null : area.id!;
-                                            
+                                            const newDropdownState =
+                                                dropdownOpen === area.id
+                                                    ? null
+                                                    : area.id!;
+
                                             if (newDropdownState !== null) {
                                                 justOpenedRef.current = true;
                                             }

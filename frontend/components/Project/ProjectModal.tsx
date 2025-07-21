@@ -61,8 +61,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const [isUploading, setIsUploading] = useState(false);
 
     const { tagsStore } = useStore();
-    const { tags: availableTags, loadTags, isLoading: tagsLoading, hasLoaded: tagsHasLoaded } = tagsStore;
-
+    const {
+        tags: availableTags,
+        loadTags,
+        isLoading: tagsLoading,
+        hasLoaded: tagsHasLoaded,
+    } = tagsStore;
 
     const modalRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -533,7 +537,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     <div className="overflow-visible">
                                                         <AreaDropdown
                                                             value={
-                                                                formData.area_id || null
+                                                                formData.area_id ||
+                                                                null
                                                             }
                                                             onChange={(value) =>
                                                                 setFormData(

@@ -52,7 +52,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
     onEditParentTask,
 }) => {
     const {
-        tagsStore: { tags: availableTags, loadTags, isLoading: tagsLoading, hasLoaded: tagsHasLoaded },
+        tagsStore: {
+            tags: availableTags,
+            loadTags,
+            isLoading: tagsLoading,
+            hasLoaded: tagsHasLoaded,
+        },
     } = useStore();
     const [formData, setFormData] = useState<Task>(task);
     const [tags, setTags] = useState<string[]>(

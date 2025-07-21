@@ -225,8 +225,16 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                                                             label
                                                         )}
                                                     </div>
-                                                    <span className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400 opacity-60" style={{fontSize: '10px'}}>
-                                                        ^ + Shift + {shortcut.split('+').pop()}
+                                                    <span
+                                                        className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs font-mono text-gray-500 dark:text-gray-400 opacity-60"
+                                                        style={{
+                                                            fontSize: '10px',
+                                                        }}
+                                                    >
+                                                        ^ + Shift +{' '}
+                                                        {shortcut
+                                                            .split('+')
+                                                            .pop()}
                                                     </span>
                                                 </button>
                                             )
