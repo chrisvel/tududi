@@ -28,6 +28,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
 
     const [error, setError] = useState<string | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
+    const nameInputRef = useRef<HTMLInputElement>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [isClosing, setIsClosing] = useState(false);
 
@@ -41,6 +42,11 @@ const AreaModal: React.FC<AreaModalProps> = ({
                 description: area?.description || '',
             });
             setError(null);
+            
+            // Auto-focus on the name input when modal opens
+            setTimeout(() => {
+                nameInputRef.current?.focus();
+            }, 100);
         }
     }, [isOpen, area]);
 
@@ -87,7 +93,11 @@ const AreaModal: React.FC<AreaModalProps> = ({
         }));
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e?: React.FormEvent) => {
+        if (e) {
+            e.preventDefault();
+        }
+        
         if (!formData.name.trim()) {
             setError(t('errors.areaNameRequired'));
             return;
@@ -160,11 +170,12 @@ const AreaModal: React.FC<AreaModalProps> = ({
                                     className="absolute inset-0 overflow-y-auto overflow-x-hidden"
                                     style={{ WebkitOverflowScrolling: 'touch' }}
                                 >
-                                    <form className="h-full">
+                                    <form className="h-full" onSubmit={handleSubmit}>
                                         <fieldset className="h-full flex flex-col">
                                             {/* Area Title Section - Always Visible */}
                                             <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 pt-4">
                                                 <input
+                                                    ref={nameInputRef}
                                                     type="text"
                                                     id="areaName"
                                                     name="name"
@@ -238,7 +249,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
                                 {/* Right side: Save */}
                                 <button
                                     type="button"
-                                    onClick={handleSubmit}
+                                    onClick={() => handleSubmit()}
                                     disabled={isSubmitting}
                                     className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm ${
                                         isSubmitting

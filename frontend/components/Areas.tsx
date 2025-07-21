@@ -15,9 +15,11 @@ import { Area } from '../entities/Area';
 
 const Areas: React.FC = () => {
     const { t } = useTranslation();
-    const { areas, setAreas, setLoading, setError } = useStore(
-        (state) => state.areasStore
-    );
+    
+    // Use global store for consistency  
+    const { areas, isLoading: loading, isError: error } = useStore((state) => state.areasStore);
+    
+    
 
     const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
@@ -29,17 +31,23 @@ const Areas: React.FC = () => {
 
     useEffect(() => {
         const loadAreas = async () => {
+            useStore.getState().areasStore.setLoading(true);
             try {
                 const areasData = await fetchAreas();
-                setAreas(areasData);
+                useStore.getState().areasStore.setAreas(areasData);
+                useStore.getState().areasStore.setError(false);
             } catch (error) {
-                console.error('Error fetching areas:', error);
-                setError(true);
+                useStore.getState().areasStore.setError(true);
+            } finally {
+                useStore.getState().areasStore.setLoading(false);
             }
         };
 
-        loadAreas();
-    }, []);
+        // Only load if areas is empty to prevent infinite loop
+        if (areas.length === 0 && !loading) {
+            loadAreas();
+        }
+    }, [areas.length, loading]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -61,28 +69,45 @@ const Areas: React.FC = () => {
     }, [dropdownOpen]);
 
     const handleSaveArea = async (areaData: Partial<Area>) => {
-        setLoading(true);
         try {
-            if (areaData.id) {
-                await updateArea(areaData.id, {
+            useStore.getState().areasStore.setLoading(true);
+            let result: Area;
+            if (areaData.id && areaData.id !== 0) {
+                result = await updateArea(areaData.id, {
                     name: areaData.name,
                     description: areaData.description,
                 });
+                // Update the existing area in the list
+                const currentAreas = useStore.getState().areasStore.areas;
+                useStore.getState().areasStore.setAreas(currentAreas.map(area => 
+                    area.id === result.id ? result : area
+                ));
             } else {
-                await createArea({
+                result = await createArea({
                     name: areaData.name,
                     description: areaData.description,
                 });
+                
+                // Add the new area immediately to global state
+                const currentAreas = useStore.getState().areasStore.areas;
+                const newAreas = [...currentAreas, result];
+                useStore.getState().areasStore.setAreas(newAreas);
+                
+                // Force a re-fetch to ensure consistency
+                setTimeout(async () => {
+                    const freshAreas = await fetchAreas();
+                    useStore.getState().areasStore.setAreas(freshAreas);
+                }, 100);
             }
-            const updatedAreas = await fetchAreas();
-            setAreas(updatedAreas);
-        } catch (error) {
-            console.error('Error saving area:', error);
-            setError(true);
-        } finally {
-            setLoading(false);
+            
+            // Close modal only on success
             setIsAreaModalOpen(false);
             setSelectedArea(null);
+            useStore.getState().areasStore.setError(false);
+        } catch (error) {
+            useStore.getState().areasStore.setError(true);
+        } finally {
+            useStore.getState().areasStore.setLoading(false);
         }
     };
 
@@ -99,18 +124,19 @@ const Areas: React.FC = () => {
     const handleDeleteArea = async () => {
         if (!areaToDelete) return;
 
-        setLoading(true);
+        useStore.getState().areasStore.setLoading(true);
         try {
             await deleteArea(areaToDelete.id!);
-            const updatedAreas = await fetchAreas();
-            setAreas(updatedAreas);
+            // Remove the area from global state immediately
+            const currentAreas = useStore.getState().areasStore.areas;
+            useStore.getState().areasStore.setAreas(currentAreas.filter(area => area.id !== areaToDelete.id));
             setIsConfirmDialogOpen(false);
             setAreaToDelete(null);
+            useStore.getState().areasStore.setError(false);
         } catch (error) {
-            console.error('Error deleting area:', error);
-            setError(true);
+            useStore.getState().areasStore.setError(true);
         } finally {
-            setLoading(false);
+            useStore.getState().areasStore.setLoading(false);
         }
     };
 
@@ -118,6 +144,7 @@ const Areas: React.FC = () => {
         setIsConfirmDialogOpen(false);
         setAreaToDelete(null);
     };
+
 
     return (
         <div className="flex justify-center px-4 lg:px-2">
@@ -138,7 +165,7 @@ const Areas: React.FC = () => {
                             <Link
                                 key={area.id}
                                 to={`/projects?area_id=${area.id}`}
-                                className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:ring-2 hover:ring-blue-200 dark:hover:ring-blue-700 hover:ring-opacity-50 transition-all duration-300 ease-in-out cursor-pointer"
+                                className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer"
                                 style={{
                                     minHeight: '120px',
                                     maxHeight: '120px',
@@ -223,12 +250,11 @@ const Areas: React.FC = () => {
                             try {
                                 await deleteArea(areaId);
                                 const updatedAreas = await fetchAreas();
-                                setAreas(updatedAreas);
+                                useStore.getState().areasStore.setAreas(updatedAreas);
                                 setIsAreaModalOpen(false);
                                 setSelectedArea(null);
                             } catch (error) {
-                                console.error('Error deleting area:', error);
-                                setError(true);
+                                useStore.getState().areasStore.setError(true);
                             }
                         }}
                         area={selectedArea}
@@ -238,10 +264,8 @@ const Areas: React.FC = () => {
                 {/* ConfirmDialog */}
                 {isConfirmDialogOpen && areaToDelete && (
                     <ConfirmDialog
-                        title={t('modals.deleteArea.title')}
-                        message={t('modals.deleteArea.message', {
-                            name: areaToDelete.name,
-                        })}
+                        title="Delete Area"
+                        message={`Are you sure you want to delete the area "${areaToDelete.name}"?`}
                         onConfirm={handleDeleteArea}
                         onCancel={closeConfirmDialog}
                     />

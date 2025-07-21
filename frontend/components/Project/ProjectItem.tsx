@@ -38,6 +38,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     setIsConfirmDialogOpen,
 }) => {
     const { t } = useTranslation();
+    // console.log('ProjectItem rendered for:', project.name, 'viewMode:', viewMode, 'handlers:', !!handleEditProject, !!setProjectToDelete);
     return (
         <div
             className={`${
@@ -114,18 +115,19 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                         {project.name}
                     </Link>
                 </div>
-                <div className="relative">
+                <div className="relative dropdown-container">
                     {viewMode === 'cards' ? (
                         <>
                             <button
                                 className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none"
-                                onClick={() =>
+                                onClick={(e) => {
+                                    e.stopPropagation();
                                     setActiveDropdown(
                                         activeDropdown === project.id
                                             ? null
                                             : (project.id ?? null)
-                                    )
-                                }
+                                    );
+                                }}
                                 aria-label={t('projectItem.toggleDropdownMenu')}
                             >
                                 <EllipsisVerticalIcon className="h-5 w-5" />
@@ -134,9 +136,10 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             {activeDropdown === project.id && (
                                 <div className="absolute right-0 mt-2 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
                                     <button
-                                        onClick={() =>
-                                            handleEditProject(project)
-                                        }
+                                        onClick={() => {
+                                            handleEditProject(project);
+                                            setActiveDropdown(null);
+                                        }}
                                         className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
                                     >
                                         {t('projectItem.edit')}
@@ -157,7 +160,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                     ) : (
                         <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <button
-                                onClick={handleEditProject}
+                                onClick={() => handleEditProject(project)}
                                 className="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                             >
                                 <PencilSquareIcon className="h-5 w-5" />

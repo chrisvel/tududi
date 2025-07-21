@@ -234,10 +234,19 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveArea = async (areaData: Partial<Area>) => {
         try {
+            let result: Area;
             if (areaData.id) {
-                await updateArea(areaData.id, areaData);
+                result = await updateArea(areaData.id, areaData);
+                // Update existing area in global store
+                const currentAreas = useStore.getState().areasStore.areas;
+                useStore.getState().areasStore.setAreas(
+                    currentAreas.map(area => area.id === result.id ? result : area)
+                );
             } else {
-                await createArea(areaData);
+                result = await createArea(areaData);
+                // Add new area to global store
+                const currentAreas = useStore.getState().areasStore.areas;
+                useStore.getState().areasStore.setAreas([...currentAreas, result]);
             }
             closeAreaModal();
         } catch (error: any) {

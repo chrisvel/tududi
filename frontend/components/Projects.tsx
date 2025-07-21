@@ -109,14 +109,20 @@ const Projects: React.FC = () => {
 
     // Handle click outside to close dropdown
     useEffect(() => {
-        const handleClickOutside = () => {
-            if (activeDropdown !== null) {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Element;
+            // Check if the click is on a dropdown or its children
+            const dropdownElement = target.closest('.dropdown-container');
+            if (!dropdownElement && activeDropdown !== null) {
                 setActiveDropdown(null);
             }
         };
 
         if (activeDropdown !== null) {
-            document.addEventListener('mousedown', handleClickOutside);
+            // Use setTimeout to avoid immediate triggering
+            setTimeout(() => {
+                document.addEventListener('mousedown', handleClickOutside);
+            }, 100);
         }
 
         return () => {

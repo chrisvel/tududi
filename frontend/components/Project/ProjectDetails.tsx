@@ -616,7 +616,7 @@ const ProjectDetails: React.FC = () => {
                                                 {tag.name}
                                             </button>
                                             {index <
-                                                project.tags.length - 1 && (
+                                                (project.tags?.length || 0) - 1 && (
                                                 <span className="text-white/60 text-xs">
                                                     ,{' '}
                                                 </span>
