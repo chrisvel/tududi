@@ -175,6 +175,10 @@ const TagDetails: React.FC = () => {
                 return { color: 'bg-gray-500' };
         }
     };
+    
+    const handleEditProject = (project: Project) => {
+        navigate(`/project/${project.id}/edit`);
+    };
 
     if (loading) {
         return (
@@ -370,7 +374,6 @@ const TagDetails: React.FC = () => {
                                         key={project.id}
                                         project={project}
                                         viewMode="list"
-                                        color={color}
                                         getCompletionPercentage={() =>
                                             getCompletionPercentage(project)
                                         }

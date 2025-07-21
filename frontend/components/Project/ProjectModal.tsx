@@ -86,7 +86,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         active: false,
     });
 
-    const { showSuccessToast } = useToast();
+    const { showSuccessToast, showErrorToast } = useToast();
     const { t } = useTranslation();
 
     // Load tags when modal opens
@@ -559,7 +559,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     <div className="overflow-visible">
                                                         <AreaDropdown
                                                             value={
-                                                                formData.area_id
+                                                                formData.area_id || null
                                                             }
                                                             onChange={(value) =>
                                                                 setFormData(

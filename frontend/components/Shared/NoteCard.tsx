@@ -12,10 +12,11 @@ interface NoteCardProps {
     note: {
         id?: string | number;
         title: string;
+        content?: string;
         tags?: { name: string }[];
         Tags?: { name: string }[];
-        project?: { name: string };
-        Project?: { name: string };
+        project?: { name: string; id?: number };
+        Project?: { name: string; id?: number };
     };
     onEdit?: (note: any) => void;
     onDelete?: (note: any) => void;
