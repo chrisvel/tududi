@@ -6,6 +6,8 @@ import {
 } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import ProjectModal from './Project/ProjectModal';
+import SortFilter from './Shared/SortFilter';
+import FilterDropdown, { FilterOption } from './Shared/FilterDropdown';
 import { useStore } from '../store/useStore';
 import {
     fetchProjects,
@@ -15,8 +17,7 @@ import {
 } from '../utils/projectsService';
 import { fetchAreas } from '../utils/areasService';
 import { useTranslation } from 'react-i18next';
-import SortFilterButton, { SortOption } from './Shared/SortFilterButton';
-import FilterDropdown, { FilterOption } from './Shared/FilterDropdown';
+import { SortOption } from './Shared/SortFilterButton';
 
 import { Project } from '../entities/Project';
 import { useSearchParams } from 'react-router-dom';
@@ -187,30 +188,24 @@ const Projects: React.FC = () => {
         return (project as any).completion_percentage || 0;
     };
 
-    const handleActiveFilterChange = (
-        e: React.ChangeEvent<HTMLSelectElement>
-    ) => {
-        const newActiveFilter = e.target.value;
+    const handleActiveFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
-        if (newActiveFilter === 'all') {
+        if (value === 'all') {
             params.delete('active');
         } else {
-            params.set('active', newActiveFilter);
+            params.set('active', value);
         }
         setSearchParams(params);
     };
 
-    const handleAreaFilterChange = (
-        e: React.ChangeEvent<HTMLSelectElement>
-    ) => {
-        const newAreaFilter = e.target.value;
+    const handleAreaFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
-        if (newAreaFilter === '') {
+        if (value === '') {
             params.delete('area_id');
         } else {
-            params.set('area_id', newAreaFilter);
+            params.set('area_id', value);
         }
 
         setSearchParams(params);
@@ -375,11 +370,7 @@ const Projects: React.FC = () => {
                             <FilterDropdown
                                 options={statusOptions}
                                 value={activeFilter}
-                                onChange={(value) =>
-                                    handleActiveFilterChange({
-                                        target: { value },
-                                    } as any)
-                                }
+                                onChange={handleActiveFilterChange}
                                 size="desktop"
                                 autoWidth={true}
                             />
@@ -390,25 +381,18 @@ const Projects: React.FC = () => {
                             <FilterDropdown
                                 options={areaOptions}
                                 value={areaFilter}
-                                onChange={(value) =>
-                                    handleAreaFilterChange({
-                                        target: { value },
-                                    } as any)
-                                }
+                                onChange={handleAreaFilterChange}
                                 size="desktop"
                                 autoWidth={true}
                             />
                         </div>
 
                         {/* Sort Filter Button */}
-                        <div className="w-full md:w-auto">
-                            <SortFilterButton
-                                options={sortOptions}
-                                value={orderBy}
-                                onChange={handleSortChange}
-                                size="desktop"
-                            />
-                        </div>
+                        <SortFilter
+                            sortOptions={sortOptions}
+                            sortValue={orderBy}
+                            onSortChange={handleSortChange}
+                        />
                     </div>
                 </div>
 
