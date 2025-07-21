@@ -114,7 +114,6 @@ app.use('/api', requireAuth, require('./routes/url'));
 app.use('/api', requireAuth, require('./routes/telegram'));
 app.use('/api', requireAuth, require('./routes/quotes'));
 app.use('/api', requireAuth, require('./routes/task-events'));
-app.use('/api/calendar', require('./routes/calendar'));
 
 // SPA fallback
 app.get('*', (req, res) => {
