@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import SortFilterButton, { SortOption } from './SortFilterButton';
 
 export interface SortFilterProps {
