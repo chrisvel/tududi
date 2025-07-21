@@ -3,13 +3,14 @@ set -eu
 
 # Runtime UID/GID Configuration
 # This script allows setting the user ID and group ID at runtime using PUID and PGID environment variables
-# This solves the issue where hardcoded UID/GID (1001:1001) conflicts with host system users
 
 # Get runtime UID/GID from environment variables, fallback to build-time defaults
 PUID=${PUID:-${APP_UID:-1001}}
 PGID=${PGID:-${APP_GID:-1001}}
 
-# Get current app user/group info
+# Get current app user/group info.
+# Assuming the current user/group is app:app
+# as created in our Dockerfile.
 CURRENT_UID=$(id -u app)
 CURRENT_GID=$(id -g app)
 
@@ -27,7 +28,7 @@ set_db_file_permissions() {
     fi
 }
 
-# Only modify user/group if different from current
+# Only modify user/group if different from current user's
 if [ "$CURRENT_UID" != "$PUID" ] || [ "$CURRENT_GID" != "$PGID" ]; then
     echo "Configuring user permissions..."
 
@@ -36,38 +37,36 @@ if [ "$CURRENT_UID" != "$PUID" ] || [ "$CURRENT_GID" != "$PGID" ]; then
 
     if getent group "$PGID" >/dev/null 2>&1; then
         TARGET_GROUP=$(getent group "$PGID" | cut -d: -f1)
-        echo "Using existing group: $TARGET_GROUP ($PGID)"
+        echo "Using existing group '$TARGET_GROUP' with GUID $PGID"
     else
+        # Create group "app" with our target group id
         addgroup -g "$PGID" -S app
         TARGET_GROUP="app"
-        echo "Created app group with GID: $PGID"
+        echo "Created 'app' group with GID: $PGID"
     fi
 
-    if getent passwd "$PUID" >/dev/null 2>&1; then
-        echo "Using existing user with UID $PUID"
+    TARGET_USER=$(getent passwd "$PUID" | cut -d: -f1)
+    if [ -n "$TARGET_USER" ]; then
+        echo "Using existing user '$TARGET_USER' with UID $PUID"
     else
+        # Create user "app" with our target user id
         adduser -S app -u "$PUID" -G "$TARGET_GROUP"
-        echo "Created user with UID: $PUID, GID: $PGID"
+        echo "Created 'app' user with UID: $PUID"
+        TARGET_USER=app
     fi
-
-    echo "Fixing ownership of application directories..."
-    chown -R app:$TARGET_GROUP /app
-    mkdir -p /app/backend/db /app/backend/certs
-    chown -R app:$TARGET_GROUP /app/backend/db /app/backend/certs
-    chmod 770 /app/backend/db /app/backend/certs
-    set_db_file_permissions
 
     echo "User configuration completed"
 else
-    echo "No user configuration needed"
-    echo "Fixing ownership of application directories..."
-    chown -R "${PUID}:${PGID}" /app/backend
-    mkdir -p /app/backend/db /app/backend/certs
-    chown -R "${PUID}:${PGID}" /app/backend/db /app/backend/certs
-    chmod 770 /app/backend/db /app/backend/certs
-    set_db_file_permissions
+    TARGET_USER=$(getent passwd "$PUID" | cut -d: -f1)
+    TARGET_GROUP=$(getent group "$PGID" | cut -d: -f1)
 fi
 
+echo "Setting ownership of application directories to $TARGET_USER:$TARGET_GROUP"
+mkdir -p /app/backend/db /app/backend/certs
+chown -R "$TARGET_USER":"$TARGET_GROUP" /app/backend /app/scripts
+chmod 770 /app/backend/db /app/backend/certs
+set_db_file_permissions
+
 # Drop privileges and execute the original start script
-echo "🚀 Starting application as user $(id -u app):$(id -g app)"
-exec su-exec app dumb-init -- /app/backend/cmd/start.sh
+echo "Starting application as user $TARGET_USER"
+exec su-exec "$TARGET_USER" dumb-init -- /app/backend/cmd/start.sh
