@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import AreaModal from './Area/AreaModal';
 import { useStore } from '../store/useStore';
@@ -24,6 +24,8 @@ const Areas: React.FC = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
         useState<boolean>(false);
     const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
+    const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const loadAreas = async () => {
@@ -38,6 +40,22 @@ const Areas: React.FC = () => {
 
         loadAreas();
     }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setDropdownOpen(null);
+            }
+        };
+
+        if (dropdownOpen !== null) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [dropdownOpen]);
 
     const handleSaveArea = async (areaData: Partial<Area>) => {
         setLoading(true);
@@ -119,64 +137,64 @@ const Areas: React.FC = () => {
                                 to={`/projects?area_id=${area.id}`}
                                 className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:ring-2 hover:ring-blue-200 dark:hover:ring-blue-700 hover:ring-opacity-50 transition-all duration-300 ease-in-out cursor-pointer"
                                 style={{
-                                    minHeight: '200px',
-                                    maxHeight: '200px',
+                                    minHeight: '120px',
+                                    maxHeight: '120px',
                                 }}
-                                onMouseEnter={() =>
-                                    setHoveredAreaId(area.id || null)
-                                }
-                                onMouseLeave={() => setHoveredAreaId(null)}
                             >
                                 {/* Area Content - Centered */}
                                 <div className="p-4 flex-1 flex items-center justify-center">
                                     <div className="text-center">
-                                        <h3 className="text-xl font-light text-gray-900 dark:text-gray-100 line-clamp-2 uppercase">
+                                        <h3 className="text-lg font-light text-gray-900 dark:text-gray-100 line-clamp-2 uppercase">
                                             {area.name}
                                         </h3>
                                         {area.description && (
-                                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-3">
+                                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 line-clamp-3">
                                                 {area.description}
                                             </p>
                                         )}
                                     </div>
                                 </div>
 
-                                {/* Action Buttons - Bottom Right */}
-                                <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                {/* Three Dots Dropdown - Bottom Right */}
+                                <div className="absolute bottom-2 right-2" ref={dropdownRef}>
                                     <button
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
-                                            handleEditArea(area);
+                                            setDropdownOpen(dropdownOpen === area.id ? null : area.id!);
                                         }}
-                                        className="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-                                        aria-label={t(
-                                            'areas.editAreaAriaLabel',
-                                            { name: area.name }
-                                        )}
-                                        title={t('areas.editAreaTitle', {
-                                            name: area.name,
-                                        })}
+                                        className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                        aria-label={t('areas.toggleDropdownMenu')}
                                     >
-                                        <PencilSquareIcon className="h-5 w-5" />
+                                        <EllipsisVerticalIcon className="h-5 w-5" />
                                     </button>
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            openConfirmDialog(area);
-                                        }}
-                                        className="text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
-                                        aria-label={t(
-                                            'areas.deleteAreaAriaLabel',
-                                            { name: area.name }
-                                        )}
-                                        title={t('areas.deleteAreaTitle', {
-                                            name: area.name,
-                                        })}
-                                    >
-                                        <TrashIcon className="h-5 w-5" />
-                                    </button>
+
+                                    {dropdownOpen === area.id && (
+                                        <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-50">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    handleEditArea(area);
+                                                    setDropdownOpen(null);
+                                                }}
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                            >
+                                                {t('areas.edit', 'Edit')}
+                                            </button>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    openConfirmDialog(area);
+                                                    setDropdownOpen(null);
+                                                }}
+                                                className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                            >
+                                                {t('areas.delete', 'Delete')}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </Link>
                         ))}

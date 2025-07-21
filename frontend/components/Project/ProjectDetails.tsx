@@ -891,7 +891,7 @@ const ProjectDetails: React.FC = () => {
                 {activeTab === 'notes' && (
                     <div className="transition-all duration-300 ease-in-out">
                         {notes.length > 0 ? (
-                            <div className="space-y-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {notes.map((note) => (
                                     <NoteCard
                                         key={note.id}
