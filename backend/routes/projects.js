@@ -23,7 +23,7 @@ const formatDate = (date) => {
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadDir = path.join(config.uploadLocation, '/projects');
+        const uploadDir = path.join(config.uploadPath, 'projects');
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }

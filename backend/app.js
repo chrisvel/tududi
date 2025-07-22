@@ -86,7 +86,7 @@ if (config.production) {
 }
 
 // Serve uploaded files
-app.use('/api/uploads', express.static(config.uploadLocation));
+app.use('/api/uploads', express.static(config.uploadPath));
 
 // Authentication middleware
 const { requireAuth } = require('./middleware/auth');
