@@ -23,9 +23,9 @@ const sessionStore = new SequelizeStore({
 // Middlewares
 app.use(
     helmet({
-        hsts: config.sslEnabled, // Only enable HSTS when SSL is enabled
-        forceHTTPS: config.sslEnabled, // Only force HTTPS when SSL is enabled
-        contentSecurityPolicy: false, // Disable CSP for now to avoid conflicts
+        hsts: false,
+        forceHTTPS: false,
+        contentSecurityPolicy: false,
     })
 );
 app.use(compression());
@@ -61,9 +61,9 @@ app.use(
         saveUninitialized: false,
         cookie: {
             httpOnly: true,
-            secure: config.sslEnabled,
+            secure: false,
             maxAge: 2592000000, // 30 days
-            sameSite: config.sslEnabled ? 'none' : 'lax',
+            sameSite: 'lax',
         },
     })
 );
