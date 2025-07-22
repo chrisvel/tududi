@@ -51,8 +51,11 @@ const getLocale = (language: string) => {
 const TasksToday: React.FC = () => {
     const { t } = useTranslation();
 
+    // Get tasks from store at the top level to avoid conditional hook usage
+    const storeTasks = useStore((state) => state.tasksStore.tasks);
+
     // Temporarily use local state to debug infinite loop
-    const [tasks, setTasks] = useState<Task[]>([]);
+
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
     const [hasInitialized, setHasInitialized] = useState(false);
@@ -202,9 +205,13 @@ const TasksToday: React.FC = () => {
                 const { tasks: fetchedTasks, metrics: fetchedMetrics } =
                     await fetchTasks('?type=today');
                 if (isMounted.current) {
-                    setTasks(fetchedTasks);
-                    setMetrics(fetchedMetrics);
-                    setIsError(false);
+                    // setTasks(fetchedTasks); // Removed local state
+                    if (isMounted.current) {
+                        // setTasks(fetchedTasks); // Removed local state
+                        setMetrics(fetchedMetrics);
+                        useStore.getState().tasksStore.setTasks(fetchedTasks);
+                        setIsError(false);
+                    }
                 }
             } catch (error) {
                 console.error('Failed to fetch tasks:', error);
@@ -400,78 +407,171 @@ const TasksToday: React.FC = () => {
         async (updatedTask: Task): Promise<void> => {
             if (!updatedTask.id || !isMounted.current) return;
 
-            // Helper function to update a task in an array
-            const updateTaskInArray = (tasks: Task[]) =>
-                tasks.map((task) =>
-                    task.id === updatedTask.id
-                        ? {
-                              ...task,
-                              ...updatedTask,
-                              updated_at: new Date().toISOString(),
-                          }
-                        : task
+            // Optimistically update UI
+            setMetrics((prevMetrics) => {
+                const newMetrics = { ...prevMetrics };
+
+                // Helper to remove task from a list
+                const removeTask = (list: Task[]) =>
+                    list.filter((task) => task.id !== updatedTask.id);
+
+                // Helper to add or update task in a list
+                const updateOrAddTask = (list: Task[], taskToProcess: Task) => {
+                    const existingIndex = list.findIndex(
+                        (task) => task.id === taskToProcess.id
+                    );
+                    if (existingIndex > -1) {
+                        // Task exists, update it by creating a new object and a new array
+                        // Preserve subtasks data to prevent loss
+                        return list.map((task, index) =>
+                            index === existingIndex
+                                ? {
+                                      ...task,
+                                      ...taskToProcess,
+                                      // Explicitly preserve subtasks data
+                                      subtasks:
+                                          taskToProcess.subtasks ||
+                                          taskToProcess.Subtasks ||
+                                          task.subtasks ||
+                                          task.Subtasks ||
+                                          [],
+                                      Subtasks:
+                                          taskToProcess.subtasks ||
+                                          taskToProcess.Subtasks ||
+                                          task.subtasks ||
+                                          task.Subtasks ||
+                                          [],
+                                  }
+                                : task
+                        );
+                    } else {
+                        // Task does not exist, add it by creating a new array
+                        return [...list, taskToProcess];
+                    }
+                };
+
+                // Remove task from all potential "active" lists first
+                newMetrics.today_plan_tasks = removeTask(
+                    newMetrics.today_plan_tasks || []
                 );
-
-            // Check if this task exists in any of our task lists
-            const taskExistsInLocal = tasks.some(
-                (task) => task.id === updatedTask.id
-            );
-            const taskExistsInMetrics =
-                metrics.today_plan_tasks?.some(
-                    (task) => task.id === updatedTask.id
-                ) ||
-                metrics.suggested_tasks.some(
-                    (task) => task.id === updatedTask.id
-                ) ||
-                metrics.tasks_due_today.some(
-                    (task) => task.id === updatedTask.id
-                ) ||
-                metrics.tasks_in_progress.some(
-                    (task) => task.id === updatedTask.id
-                ) ||
-                metrics.tasks_completed_today.some(
-                    (task) => task.id === updatedTask.id
+                newMetrics.suggested_tasks = removeTask(
+                    newMetrics.suggested_tasks || []
                 );
+                newMetrics.tasks_due_today = removeTask(
+                    newMetrics.tasks_due_today || []
+                );
+                newMetrics.tasks_in_progress = removeTask(
+                    newMetrics.tasks_in_progress || []
+                );
+                newMetrics.tasks_completed_today = removeTask(
+                    newMetrics.tasks_completed_today || []
+                ); // Always remove from completed first
 
-            // Update local task state
-            if (taskExistsInLocal) {
-                setTasks((prevTasks) => updateTaskInArray(prevTasks));
-            }
+                // Now, add the task to the appropriate list(s) based on its new status
+                if (updatedTask.status === 'done' || updatedTask.status === 2) {
+                    // If completed, add to tasks_completed_today if it was completed today
+                    if (updatedTask.completed_at) {
+                        const completedDate = new Date(
+                            updatedTask.completed_at
+                        );
+                        const today = new Date();
+                        if (
+                            format(completedDate, 'yyyy-MM-dd') ===
+                            format(today, 'yyyy-MM-dd')
+                        ) {
+                            newMetrics.tasks_completed_today = updateOrAddTask(
+                                newMetrics.tasks_completed_today,
+                                updatedTask
+                            );
+                        }
+                    }
+                } else {
+                    // If not completed, add to relevant active lists
+                    if (
+                        updatedTask.today &&
+                        updatedTask.status !== 'archived'
+                    ) {
+                        newMetrics.today_plan_tasks = updateOrAddTask(
+                            newMetrics.today_plan_tasks,
+                            updatedTask
+                        );
+                    }
+                    if (updatedTask.status === 'in_progress') {
+                        newMetrics.tasks_in_progress = updateOrAddTask(
+                            newMetrics.tasks_in_progress,
+                            updatedTask
+                        );
+                    }
+                    // Check if due today (and not already in today_plan_tasks or in_progress)
+                    const isDueToday =
+                        updatedTask.due_date &&
+                        format(new Date(updatedTask.due_date), 'yyyy-MM-dd') ===
+                            format(new Date(), 'yyyy-MM-dd');
+                    if (
+                        isDueToday &&
+                        updatedTask.status !== 'archived' &&
+                        !newMetrics.today_plan_tasks.some(
+                            (t) => t.id === updatedTask.id
+                        ) &&
+                        !newMetrics.tasks_in_progress.some(
+                            (t) => t.id === updatedTask.id
+                        )
+                    ) {
+                        newMetrics.tasks_due_today = updateOrAddTask(
+                            newMetrics.tasks_due_today,
+                            updatedTask
+                        );
+                    }
+                    // Check for suggested tasks (and not already in other active lists)
+                    const isSuggested =
+                        !updatedTask.today &&
+                        !updatedTask.project_id &&
+                        !updatedTask.due_date;
+                    if (
+                        isSuggested &&
+                        updatedTask.status !== 'archived' &&
+                        updatedTask.status !== 'done' &&
+                        updatedTask.status !== 2 &&
+                        !newMetrics.today_plan_tasks.some(
+                            (t) => t.id === updatedTask.id
+                        ) &&
+                        !newMetrics.tasks_due_today.some(
+                            (t) => t.id === updatedTask.id
+                        ) &&
+                        !newMetrics.tasks_in_progress.some(
+                            (t) => t.id === updatedTask.id
+                        )
+                    ) {
+                        newMetrics.suggested_tasks = updateOrAddTask(
+                            newMetrics.suggested_tasks,
+                            updatedTask
+                        );
+                    }
+                }
 
-            if (taskExistsInMetrics) {
-                setMetrics((prevMetrics) => ({
-                    ...prevMetrics,
-                    today_plan_tasks: updateTaskInArray(
-                        prevMetrics.today_plan_tasks || []
-                    ),
-                    suggested_tasks: updateTaskInArray(
-                        prevMetrics.suggested_tasks || []
-                    ),
-                    tasks_due_today: updateTaskInArray(
-                        prevMetrics.tasks_due_today || []
-                    ),
-                    tasks_in_progress: updateTaskInArray(
-                        prevMetrics.tasks_in_progress || []
-                    ),
-                    tasks_completed_today: updateTaskInArray(
-                        prevMetrics.tasks_completed_today || []
-                    ),
-                }));
-            }
+                // Recalculate total_open_tasks based on the updated active lists
+                newMetrics.total_open_tasks =
+                    newMetrics.today_plan_tasks.length +
+                    newMetrics.suggested_tasks.length +
+                    newMetrics.tasks_due_today.length +
+                    newMetrics.tasks_in_progress.length;
+
+                return newMetrics;
+            });
+
+            // Update the store with the updated task
+            useStore.getState().tasksStore.updateTaskInStore(updatedTask);
 
             try {
-                // Make API call if the task exists anywhere
-                if (taskExistsInLocal || taskExistsInMetrics) {
-                    await updateTask(updatedTask.id, updatedTask);
-                }
+                // Make API call to persist the change
+                await updateTask(updatedTask.id, updatedTask);
             } catch (error) {
                 console.error('Error updating task:', error);
-                if (isMounted.current) {
-                    // Error handling is now managed by the store
-                }
+                // Revert UI on error if necessary, or re-fetch to sync
+                // For now, just log the error
             }
         },
-        [tasks, metrics]
+        [] // Dependencies are now handled by direct state manipulation
     );
 
     const handleTaskDelete = useCallback(
@@ -485,7 +585,7 @@ const TasksToday: React.FC = () => {
                 const { tasks: updatedTasks, metrics: updatedMetrics } =
                     await fetchTasks('?type=today');
                 if (isMounted.current) {
-                    setTasks(updatedTasks);
+                    useStore.getState().tasksStore.setTasks(updatedTasks);
                     setMetrics(updatedMetrics);
                 }
             } catch (error) {
@@ -506,7 +606,7 @@ const TasksToday: React.FC = () => {
                 const { tasks: updatedTasks, metrics: updatedMetrics } =
                     await fetchTasks('?type=today');
                 if (isMounted.current) {
-                    setTasks(updatedTasks);
+                    useStore.getState().tasksStore.setTasks(updatedTasks);
                     setMetrics(updatedMetrics);
                 }
             } catch (error) {
@@ -514,6 +614,21 @@ const TasksToday: React.FC = () => {
             }
         },
         []
+    );
+
+    const handleTaskCompletionToggle = useCallback(
+        async (updatedTask: Task): Promise<void> => {
+            if (!isMounted.current) return;
+
+            try {
+                // The updatedTask is already the result of the API call from TaskItem
+                // Use the centralized task update handler to update UI optimistically
+                await handleTaskUpdate(updatedTask);
+            } catch (error) {
+                console.error('Error toggling task completion:', error);
+            }
+        },
+        [handleTaskUpdate]
     );
 
     // Calculate today's progress for the progress bar
@@ -551,7 +666,7 @@ const TasksToday: React.FC = () => {
     }
 
     // Show error state
-    if (isError && tasks.length === 0) {
+    if (isError && storeTasks.length === 0) {
         return (
             <div className="flex justify-center items-center h-64">
                 <p className="text-red-500">
@@ -814,7 +929,7 @@ const TasksToday: React.FC = () => {
                   productivityAssistantEnabled &&
                   profileSettings.productivity_assistant_enabled === true ? (
                     <ProductivityAssistant
-                        tasks={tasks}
+                        tasks={storeTasks}
                         projects={localProjects}
                     />
                 ) : null}
@@ -854,6 +969,7 @@ const TasksToday: React.FC = () => {
                     onTaskUpdate={handleTaskUpdate}
                     onTaskDelete={handleTaskDelete}
                     onToggleToday={handleToggleToday}
+                    onTaskCompletionToggle={handleTaskCompletionToggle}
                 />
 
                 {/* Suggested Tasks - Separate setting */}
@@ -890,6 +1006,9 @@ const TasksToday: React.FC = () => {
                             <TaskList
                                 tasks={metrics.suggested_tasks}
                                 onTaskUpdate={handleTaskUpdate}
+                                onTaskCompletionToggle={
+                                    handleTaskCompletionToggle
+                                }
                                 onTaskDelete={handleTaskDelete}
                                 projects={localProjects}
                                 onToggleToday={handleToggleToday}
@@ -912,6 +1031,9 @@ const TasksToday: React.FC = () => {
                                 onTaskDelete={handleTaskDelete}
                                 projects={localProjects}
                                 onToggleToday={handleToggleToday}
+                                onTaskCompletionToggle={
+                                    handleTaskCompletionToggle
+                                }
                             />
                         </div>
                     )}
@@ -919,37 +1041,49 @@ const TasksToday: React.FC = () => {
                 {/* Completed Tasks - Conditionally Rendered */}
                 {isSettingsLoaded &&
                     todaySettings.showCompleted &&
-                    metrics.tasks_completed_today.length > 0 && (
-                        <div className="mb-6">
-                            <div
-                                className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
-                                onClick={toggleCompletedCollapsed}
-                            >
-                                <h3 className="text-xl font-medium">
-                                    {t('tasks.completedToday')}
-                                </h3>
-                                <div className="flex items-center">
-                                    <span className="text-sm text-gray-500 mr-2">
-                                        {metrics.tasks_completed_today.length}
-                                    </span>
-                                    {isCompletedCollapsed ? (
-                                        <ChevronRightIcon className="h-5 w-5 text-gray-500" />
-                                    ) : (
-                                        <ChevronDownIcon className="h-5 w-5 text-gray-500" />
-                                    )}
+                    (() => {
+                        const completedToday = metrics.tasks_completed_today; // Use the already filtered list from backend
+                        return (
+                            <div className="mb-6">
+                                <div
+                                    className="flex items-center justify-between cursor-pointer mt-6 mb-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+                                    onClick={toggleCompletedCollapsed}
+                                >
+                                    <h3 className="text-xl font-medium">
+                                        {t('tasks.completedToday')}
+                                    </h3>
+                                    <div className="flex items-center">
+                                        <span className="text-sm text-gray-500 mr-2">
+                                            {completedToday.length}
+                                        </span>
+                                        {isCompletedCollapsed ? (
+                                            <ChevronRightIcon className="h-5 w-5 text-gray-500" />
+                                        ) : (
+                                            <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                                        )}
+                                    </div>
                                 </div>
+                                {!isCompletedCollapsed &&
+                                    (completedToday.length > 0 ? (
+                                        <TaskList
+                                            tasks={completedToday}
+                                            onTaskUpdate={handleTaskUpdate}
+                                            onTaskDelete={handleTaskDelete}
+                                            projects={localProjects}
+                                            onToggleToday={handleToggleToday}
+                                            showCompletedTasks={true}
+                                        />
+                                    ) : (
+                                        <p className="text-gray-500 dark:text-gray-400 text-center mt-4">
+                                            {t(
+                                                'tasks.noCompletedTasksToday',
+                                                'No completed tasks today.'
+                                            )}
+                                        </p>
+                                    ))}
                             </div>
-                            {!isCompletedCollapsed && (
-                                <TaskList
-                                    tasks={metrics.tasks_completed_today}
-                                    onTaskUpdate={handleTaskUpdate}
-                                    onTaskDelete={handleTaskDelete}
-                                    projects={localProjects}
-                                    onToggleToday={handleToggleToday}
-                                />
-                            )}
-                        </div>
-                    )}
+                        );
+                    })()}
 
                 {metrics.tasks_due_today.length === 0 &&
                     metrics.tasks_in_progress.length === 0 &&

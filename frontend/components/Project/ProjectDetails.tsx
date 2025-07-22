@@ -122,9 +122,6 @@ const ProjectDetails: React.FC = () => {
                     localStorage.getItem('project_order_by') ||
                     'created_at:desc';
 
-                console.log(
-                    `Fetching ONLY project ${id} with fetchProjectById`
-                );
                 const projectData = await fetchProjectById(id, {
                     sort: sortParam,
                     // Remove completed parameter since backend filtering isn't working
@@ -171,6 +168,7 @@ const ProjectDetails: React.FC = () => {
                 name: taskName,
                 status: 'not_started',
                 project_id: project.id,
+                completed_at: null,
             });
             setTasks([...tasks, newTask]);
 
@@ -318,6 +316,7 @@ const ProjectDetails: React.FC = () => {
                 status: 'not_started',
                 project_id: projectId,
                 priority: 'medium',
+                completed_at: null,
             });
 
             // Update the tasks list to include the new task

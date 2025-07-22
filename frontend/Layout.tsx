@@ -461,6 +461,7 @@ const Layout: React.FC<LayoutProps> = ({
                         task={{
                             name: '',
                             status: 'not_started',
+                            completed_at: null,
                         }}
                         onSave={handleSaveTask}
                         onDelete={async () => {}}

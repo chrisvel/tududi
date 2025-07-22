@@ -24,13 +24,18 @@ export interface Task {
     recurrence_week_of_month?: number;
     completion_based?: boolean;
     recurring_parent_id?: number;
-    completed_at?: string;
+    completed_at: string | null;
     parent_task_id?: number;
     subtasks?: Task[];
     Subtasks?: Task[]; // Handle API response case sensitivity (temporary)
 }
 
-export type StatusType = 'not_started' | 'in_progress' | 'done' | 'archived';
+export type StatusType =
+    | 'not_started'
+    | 'in_progress'
+    | 'done'
+    | 'archived'
+    | 'waiting';
 export type PriorityType = 'low' | 'medium' | 'high';
 export type RecurrenceType =
     | 'none'

@@ -26,10 +26,16 @@ async function serializeTask(task) {
                   due_date: subtask.due_date
                       ? subtask.due_date.toISOString().split('T')[0]
                       : null,
+                  completed_at: subtask.completed_at
+                      ? subtask.completed_at.toISOString()
+                      : null,
               }))
             : [],
         due_date: task.due_date
             ? task.due_date.toISOString().split('T')[0]
+            : null,
+        completed_at: task.completed_at
+            ? task.completed_at.toISOString()
             : null,
         today_move_count: todayMoveCount,
     };
@@ -90,22 +96,39 @@ async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
             );
 
         if (allSubtasksDone) {
-            // Update parent task to done
-            await Task.update(
-                {
-                    status: Task.STATUS.DONE,
-                    completed_at: new Date(),
+            // Check if parent is already done to avoid unnecessary updates
+            const parentTask = await Task.findOne({
+                where: {
+                    id: parentTaskId,
+                    user_id: userId,
                 },
-                {
-                    where: {
-                        id: parentTaskId,
-                        user_id: userId,
+            });
+
+            if (
+                parentTask &&
+                parentTask.status !== Task.STATUS.DONE &&
+                parentTask.status !== 'done'
+            ) {
+                // Update parent task to done
+                await Task.update(
+                    {
+                        status: Task.STATUS.DONE,
+                        completed_at: new Date(),
                     },
-                }
-            );
+                    {
+                        where: {
+                            id: parentTaskId,
+                            user_id: userId,
+                        },
+                    }
+                );
+                return true;
+            }
         }
+        return false;
     } catch (error) {
         console.error('Error checking parent task completion:', error);
+        return false;
     }
 }
 
@@ -138,16 +161,20 @@ async function undoneParentTaskIfNeeded(parentTaskId, userId) {
                     },
                 }
             );
+            return true;
         }
+        return false;
     } catch (error) {
         console.error('Error undoing parent task:', error);
+        return false;
     }
 }
 
 // Helper function to complete all subtasks when parent is done
 async function completeAllSubtasks(parentTaskId, userId) {
     try {
-        await Task.update(
+        // Update all subtasks to be completed - this ensures completed_at is set for all
+        const result = await Task.update(
             {
                 status: Task.STATUS.DONE,
                 completed_at: new Date(),
@@ -159,15 +186,17 @@ async function completeAllSubtasks(parentTaskId, userId) {
                 },
             }
         );
+        return result[0] > 0; // Return true if any subtasks were actually updated
     } catch (error) {
         console.error('Error completing all subtasks:', error);
+        return false;
     }
 }
 
 // Helper function to undone all subtasks when parent is undone
 async function undoneAllSubtasks(parentTaskId, userId) {
     try {
-        await Task.update(
+        const result = await Task.update(
             {
                 status: Task.STATUS.NOT_STARTED,
                 completed_at: null,
@@ -176,11 +205,16 @@ async function undoneAllSubtasks(parentTaskId, userId) {
                 where: {
                     parent_task_id: parentTaskId,
                     user_id: userId,
+                    status: {
+                        [Op.in]: [Task.STATUS.DONE, 'done'],
+                    },
                 },
             }
         );
+        return result[0] > 0; // Return true if any subtasks were actually updated
     } catch (error) {
         console.error('Error undoing all subtasks:', error);
+        return false;
     }
 }
 
@@ -248,9 +282,11 @@ async function filterTasksByParams(params, userId) {
         default:
             if (params.status === 'done') {
                 whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
-            } else {
+            } else if (!params.client_side_filtering) {
+                // Only exclude completed tasks if not doing client-side filtering
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             }
+        // If client_side_filtering is true, don't add any status filter (include all)
     }
 
     // Filter by tag
@@ -827,6 +863,17 @@ router.get('/task/:id', async (req, res) => {
                     through: { attributes: [] },
                 },
                 { model: Project, attributes: ['name'], required: false },
+                {
+                    model: Task,
+                    as: 'Subtasks',
+                    include: [
+                        {
+                            model: Tag,
+                            attributes: ['id', 'name'],
+                            through: { attributes: [] },
+                        },
+                    ],
+                },
             ],
         });
 
@@ -1266,22 +1313,60 @@ router.patch('/task/:id', async (req, res) => {
                 });
             }
 
-            // Update edited subtasks
-            const editedSubtasks = subtasks.filter(
-                (s) => s.isEdited && s.id && s.name && s.name.trim()
+            // Update edited subtasks and status changes
+            const subtasksToUpdate = subtasks.filter(
+                (s) =>
+                    s.id &&
+                    ((s.isEdited && s.name && s.name.trim()) ||
+                        s._statusChanged)
             );
-            if (editedSubtasks.length > 0) {
-                const updatePromises = editedSubtasks.map((subtask) =>
-                    Task.update(
-                        { name: subtask.name.trim() },
-                        {
-                            where: {
-                                id: subtask.id,
-                                user_id: req.currentUser.id,
-                            },
+            if (subtasksToUpdate.length > 0) {
+                const updatePromises = subtasksToUpdate.map((subtask) => {
+                    const updateData = {};
+
+                    if (
+                        subtask.isEdited &&
+                        subtask.name &&
+                        subtask.name.trim()
+                    ) {
+                        updateData.name = subtask.name.trim();
+                    }
+
+                    if (
+                        subtask._statusChanged ||
+                        subtask.status !== undefined
+                    ) {
+                        updateData.status = subtask.status
+                            ? typeof subtask.status === 'string'
+                                ? Task.getStatusValue(subtask.status)
+                                : subtask.status
+                            : Task.STATUS.NOT_STARTED;
+
+                        if (
+                            updateData.status === Task.STATUS.DONE &&
+                            !subtask.completed_at
+                        ) {
+                            updateData.completed_at = new Date();
+                        } else if (updateData.status !== Task.STATUS.DONE) {
+                            updateData.completed_at = null;
                         }
-                    )
-                );
+                    }
+
+                    if (subtask.priority !== undefined) {
+                        updateData.priority = subtask.priority
+                            ? typeof subtask.priority === 'string'
+                                ? Task.getPriorityValue(subtask.priority)
+                                : subtask.priority
+                            : Task.PRIORITY.MEDIUM;
+                    }
+
+                    return Task.update(updateData, {
+                        where: {
+                            id: subtask.id,
+                            user_id: req.currentUser.id,
+                        },
+                    });
+                });
 
                 await Promise.all(updatePromises);
             }
@@ -1296,9 +1381,24 @@ router.patch('/task/:id', async (req, res) => {
                         name: subtask.name.trim(),
                         parent_task_id: task.id,
                         user_id: req.currentUser.id,
-                        priority: Task.PRIORITY.MEDIUM,
-                        status: Task.STATUS.NOT_STARTED,
-                        today: false,
+                        priority: subtask.priority
+                            ? typeof subtask.priority === 'string'
+                                ? Task.getPriorityValue(subtask.priority)
+                                : subtask.priority
+                            : Task.PRIORITY.MEDIUM,
+                        status: subtask.status
+                            ? typeof subtask.status === 'string'
+                                ? Task.getStatusValue(subtask.status)
+                                : subtask.status
+                            : Task.STATUS.NOT_STARTED,
+                        completed_at:
+                            subtask.status === 'done' ||
+                            subtask.status === Task.STATUS.DONE
+                                ? subtask.completed_at
+                                    ? new Date(subtask.completed_at)
+                                    : new Date()
+                                : null,
+                        today: subtask.today || false,
                         recurrence_type: 'none',
                         completion_based: false,
                     })
@@ -1472,15 +1572,10 @@ router.patch('/task/:id', async (req, res) => {
             ],
         });
 
-        const taskJson = taskWithAssociations.toJSON();
+        // Use serializeTask to include subtasks data
+        const serializedTask = await serializeTask(taskWithAssociations);
 
-        res.json({
-            ...taskJson,
-            tags: taskJson.Tags || [], // Normalize Tags to tags
-            due_date: taskWithAssociations.due_date
-                ? taskWithAssociations.due_date.toISOString().split('T')[0]
-                : null,
-        });
+        res.json(serializedTask);
     } catch (error) {
         console.error('Error updating task:', error);
         res.status(400).json({
@@ -1497,11 +1592,33 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
     try {
         const task = await Task.findOne({
             where: { id: req.params.id, user_id: req.currentUser.id },
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name'],
+                    through: { attributes: [] },
+                },
+                { model: Project, attributes: ['name'], required: false },
+                {
+                    model: Task,
+                    as: 'Subtasks',
+                    include: [
+                        {
+                            model: Tag,
+                            attributes: ['id', 'name'],
+                            through: { attributes: [] },
+                        },
+                    ],
+                },
+            ],
         });
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
         }
+
+        // Track if parent-child logic was executed
+        let parentChildLogicExecuted = false;
 
         const newStatus =
             task.status === Task.STATUS.DONE || task.status === 'done'
@@ -1520,29 +1637,63 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
 
         await task.update(updateData);
 
-        // Handle parent-child task completion logic
+        // Check if subtasks exist in database directly to debug association issue
+        const directSubtasksQuery = await Task.findAll({
+            where: {
+                parent_task_id: task.id,
+                user_id: req.currentUser.id,
+            },
+            attributes: ['id', 'name', 'status', 'parent_task_id'],
+        });
+
+        // If direct query finds subtasks but task.Subtasks is empty, there's an association issue
+        if (
+            directSubtasksQuery.length > 0 &&
+            (!task.Subtasks || task.Subtasks.length === 0)
+        ) {
+            task.Subtasks = directSubtasksQuery;
+        }
+
         if (task.parent_task_id) {
-            if (newStatus === Task.STATUS.DONE) {
+            if (newStatus === Task.STATUS.DONE || newStatus === 'done') {
                 // When subtask is done, check if parent should be done
-                await checkAndUpdateParentTaskCompletion(
+                const parentUpdated = await checkAndUpdateParentTaskCompletion(
                     task.parent_task_id,
                     req.currentUser.id
                 );
+                if (parentUpdated) {
+                    parentChildLogicExecuted = true;
+                }
             } else {
                 // When subtask is undone, undone parent if it was done
-                await undoneParentTaskIfNeeded(
+                const parentUpdated = await undoneParentTaskIfNeeded(
                     task.parent_task_id,
                     req.currentUser.id
                 );
+                if (parentUpdated) {
+                    parentChildLogicExecuted = true;
+                }
             }
-        } else {
-            // This is a parent task
+        } else if (task.Subtasks && task.Subtasks.length > 0) {
+            // This is a parent task with subtasks
             if (newStatus === Task.STATUS.DONE) {
                 // When parent is done, complete all subtasks
-                await completeAllSubtasks(task.id, req.currentUser.id);
+                const subtasksUpdated = await completeAllSubtasks(
+                    task.id,
+                    req.currentUser.id
+                );
+                if (subtasksUpdated) {
+                    parentChildLogicExecuted = true;
+                }
             } else {
                 // When parent is undone, undone all subtasks
-                await undoneAllSubtasks(task.id, req.currentUser.id);
+                const subtasksUpdated = await undoneAllSubtasks(
+                    task.id,
+                    req.currentUser.id
+                );
+                if (subtasksUpdated) {
+                    parentChildLogicExecuted = true;
+                }
             }
         }
 
@@ -1552,12 +1703,11 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
             nextTask = await RecurringTaskService.handleTaskCompletion(task);
         }
 
-        const response = {
-            ...task.toJSON(),
-            due_date: task.due_date
-                ? task.due_date.toISOString().split('T')[0]
-                : null,
-        };
+        // Use serializeTask to include subtasks data
+        const response = await serializeTask(task);
+
+        // If parent-child logic was executed, we might need to reload data
+        // For now, let the frontend handle the refresh to avoid complex reloading logic
 
         if (nextTask) {
             response.next_task = {
@@ -1568,9 +1718,17 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
             };
         }
 
+        // Add flag to response to indicate if parent-child logic was executed
+        response.parent_child_logic_executed = parentChildLogicExecuted;
+
         res.json(response);
     } catch (error) {
-        res.status(422).json({ error: 'Unable to update task' });
+        console.error('Error in toggle completion endpoint:', error);
+        console.error('Error stack:', error.stack);
+        res.status(422).json({
+            error: 'Unable to update task',
+            details: error.message,
+        });
     }
 });
 
