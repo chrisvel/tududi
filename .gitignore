@@ -26,6 +26,7 @@ backend/server.log
 # Build output
 dist/
 build/
+backend/dist/
 
 # Webpack output
 public/assets/
