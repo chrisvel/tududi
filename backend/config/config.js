@@ -65,9 +65,6 @@ const config = {
 
     credentials,
 
-    sslEnabled:
-        production && process.env.TUDUDI_INTERNAL_SSL_ENABLED === 'true',
-
     uploadPath:
         process.env.TUDUDI_UPLOAD_PATH || path.join(projectRootPath, 'uploads'),
 };

@@ -60,7 +60,6 @@ The following environment variables are used to configure tududi:
 
 #### Optional Variables:
 - `PUID`, `GUID` - Run with specified user and group ID (instead of defaults 1001/1001)
-- `TUDUDI_INTERNAL_SSL_ENABLED` - Set to 'true' if using HTTPS internally (default: false)
 - `TUDUDI_ALLOWED_ORIGINS` - Controls CORS access for different deployment scenarios:
   - Not set: Only allows localhost origins
   - Specific domains: `https://tududi.com,http://localhost:3002`
@@ -73,7 +72,6 @@ The following environment variables are used to configure tududi:
 export TUDUDI_USER_EMAIL=dev@local.test
 export TUDUDI_USER_PASSWORD=devpassword123
 export TUDUDI_SESSION_SECRET=$(openssl rand -hex 64)
-export TUDUDI_INTERNAL_SSL_ENABLED=false
 # TUDUDI_ALLOWED_ORIGINS not set - defaults to localhost only
 ```
 
@@ -82,7 +80,6 @@ export TUDUDI_INTERNAL_SSL_ENABLED=false
 export TUDUDI_USER_EMAIL=admin@yourdomain.com
 export TUDUDI_USER_PASSWORD=your-secure-password-here
 export TUDUDI_SESSION_SECRET=$(openssl rand -hex 64)
-export TUDUDI_INTERNAL_SSL_ENABLED=true
 export TUDUDI_ALLOWED_ORIGINS=https://tududi.yourdomain.com
 ```
 
@@ -93,7 +90,6 @@ docker run \
   -e TUDUDI_USER_EMAIL=myemail@example.com \
   -e TUDUDI_USER_PASSWORD=mysecurepassword \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
-  -e TUDUDI_INTERNAL_SSL_ENABLED=false \
   -e TUDUDI_ALLOWED_ORIGINS=https://tududi,http://tududi:3002 \
   -e PUID=1001 \
   -e GUID=1001 \
@@ -218,22 +214,6 @@ To install `tududi`, follow these steps:
    ```bash
    # Install all dependencies (frontend and backend)
    npm install
-   ```
-
-### 🔒 SSL Setup (Optional)
-
-For HTTPS support, create SSL certificates:
-
-1. Create and enter the directory:
-   ```bash
-   mkdir backend/certs
-   cd backend/certs
-   ```
-2. Create the key and cert:
-   ```bash
-   openssl genrsa -out server.key 2048
-   openssl req -new -x509 -key server.key -out server.crt -days 365
-   cd ../..
    ```
 
 ### 📂 Database Setup

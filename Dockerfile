@@ -86,7 +86,6 @@ EXPOSE 3002
 ENV NODE_ENV=production \
     DB_FILE="db/production.sqlite3" \
     PORT=3002 \
-    TUDUDI_INTERNAL_SSL_ENABLED=false \
     TUDUDI_ALLOWED_ORIGINS="http://localhost:8080,http://localhost:3002,http://127.0.0.1:8080,http://127.0.0.1:3002" \
     TUDUDI_SESSION_SECRET="" \
     TUDUDI_USER_EMAIL="" \
