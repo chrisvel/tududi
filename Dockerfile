@@ -70,7 +70,7 @@ COPY --from=builder --chown=app:app /app/node_modules ./node_modules
 COPY --from=builder --chown=app:app /app/package.json /app/
 
 # Create necessary directories
-RUN mkdir -p /app/backend/db /app/backend/certs
+RUN mkdir -p /app/backend/db /app/backend/certs /app/backend/uploads
 
 # Cleanup
 RUN apk del --no-cache .runtime-deps sqlite openssl curl && \
@@ -79,6 +79,7 @@ RUN apk del --no-cache .runtime-deps sqlite openssl curl && \
     rm -rf /root/.npm /tmp/* /var/tmp/* /var/cache/apk/*
 
 VOLUME ["/app/backend/db"]
+VOLUME ["/app/backend/uploads"]
 
 EXPOSE 3002
 
@@ -91,7 +92,8 @@ ENV NODE_ENV=production \
     TUDUDI_USER_EMAIL="" \
     TUDUDI_USER_PASSWORD="" \
     DISABLE_TELEGRAM=false \
-    DISABLE_SCHEDULER=false
+    DISABLE_SCHEDULER=false \
+    TUDUDI_UPLOAD_PATH="/app/backend/uploads"
 
 HEALTHCHECK --interval=60s --timeout=3s --start-period=10s --retries=2 \
     CMD curl -sf http://localhost:3002/api/health || exit 1
