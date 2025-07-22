@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { Task } from '../../../entities/Task';
@@ -9,7 +9,6 @@ interface TaskSubtasksSectionProps {
     parentTaskId: number;
     subtasks: Task[];
     onSubtasksChange: (subtasks: Task[]) => void;
-    onSectionMount?: () => void;
     onSubtaskUpdate?: (subtask: Task) => Promise<void>;
 }
 
@@ -17,7 +16,6 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
     parentTaskId,
     subtasks,
     onSubtasksChange,
-    onSectionMount,
     onSubtaskUpdate,
 }) => {
     const [newSubtaskName, setNewSubtaskName] = useState('');
@@ -28,12 +26,6 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
     const subtasksSectionRef = useRef<HTMLDivElement>(null);
     const addInputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        if (onSectionMount) {
-            scrollToBottom();
-            onSectionMount();
-        }
-    }, [onSectionMount]);
 
     const scrollToBottom = () => {
         setTimeout(() => {
@@ -64,7 +56,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         onSubtasksChange([...subtasks, newSubtask]);
         setNewSubtaskName('');
 
-        // Scroll to bottom after adding new subtask
+        // Only scroll when adding new subtask, not when toggling completion
         scrollToBottom();
     };
 
@@ -118,6 +110,21 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         setEditingName('');
     };
 
+    const handleToggleNewSubtaskCompletion = (index: number) => {
+        const updatedSubtasks = subtasks.map((subtask, i) => {
+            if (i === index) {
+                const isDone = subtask.status === 'done' || subtask.status === 2;
+                return {
+                    ...subtask,
+                    status: isDone ? ('not_started' as const) : ('done' as const),
+                    completed_at: isDone ? undefined : new Date().toISOString(),
+                };
+            }
+            return subtask;
+        });
+        onSubtasksChange(updatedSubtasks);
+    };
+
     return (
         <div ref={subtasksSectionRef} className="space-y-3">
             {/* Existing Subtasks */}
@@ -143,10 +150,8 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                 subtask.status || 'not_started'
                                             }
                                             onToggleCompletion={async () => {
-                                                if (
-                                                    subtask.id &&
-                                                    onSubtaskUpdate
-                                                ) {
+                                                if (subtask.id && onSubtaskUpdate) {
+                                                    // Existing subtask - use API
                                                     try {
                                                         const updatedSubtask =
                                                             await toggleTaskCompletion(
@@ -161,6 +166,9 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                             error
                                                         );
                                                     }
+                                                } else {
+                                                    // New subtask - handle locally
+                                                    handleToggleNewSubtaskCompletion(index);
                                                 }
                                             }}
                                         />
@@ -205,10 +213,8 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                     'not_started'
                                                 }
                                                 onToggleCompletion={async () => {
-                                                    if (
-                                                        subtask.id &&
-                                                        onSubtaskUpdate
-                                                    ) {
+                                                    if (subtask.id && onSubtaskUpdate) {
+                                                        // Existing subtask - use API
                                                         try {
                                                             const updatedSubtask =
                                                                 await toggleTaskCompletion(
@@ -223,6 +229,9 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                                                 error
                                                             );
                                                         }
+                                                    } else {
+                                                        // New subtask - handle locally
+                                                        handleToggleNewSubtaskCompletion(index);
                                                     }
                                                 }}
                                             />

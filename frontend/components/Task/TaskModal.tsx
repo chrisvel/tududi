@@ -676,9 +676,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                             onSubtasksChange={
                                                                 setSubtasks
                                                             }
-                                                            onSectionMount={
-                                                                scrollToSubtasksSection
-                                                            }
                                                             onSubtaskUpdate={async (
                                                                 updatedSubtask
                                                             ) => {
