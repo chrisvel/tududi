@@ -989,6 +989,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                         priority: 'medium',
                         tags: taskTags,
                         project_id: projectId,
+                        completed_at: null,
                     };
 
                     try {
@@ -1127,8 +1128,8 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     const newTask: Task = {
                         name: cleanedText,
                         status: 'not_started',
+                        completed_at: null,
                     };
-
                     try {
                         await onSave(newTask);
                         showSuccessToast(t('task.createSuccess'));

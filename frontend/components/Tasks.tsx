@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import TaskList from './Task/TaskList';
@@ -15,6 +15,7 @@ import {
     TagIcon,
     XMarkIcon,
     MagnifyingGlassIcon,
+    CheckCircleIcon,
 } from '@heroicons/react/24/solid';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -45,10 +46,49 @@ const Tasks: React.FC = () => {
     const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
     const [isInfoExpanded, setIsInfoExpanded] = useState(false); // Collapsed by default
     const [isSearchExpanded, setIsSearchExpanded] = useState(false); // Collapsed by default
+    const [showCompleted, setShowCompleted] = useState(false); // Show completed tasks toggle
 
     const dropdownRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
     const navigate = useNavigate();
+
+    // Filter tasks based on completion status and search query
+    const displayTasks = useMemo(() => {
+        let filteredTasks;
+
+        // First filter by completion status
+        if (showCompleted) {
+            // Show only completed tasks (done=2 or archived=3)
+            filteredTasks = tasks.filter(
+                (task) =>
+                    task.status === 'done' ||
+                    task.status === 'archived' ||
+                    task.status === 2 ||
+                    task.status === 3
+            );
+        } else {
+            // Show only non-completed tasks - exclude done(2) and archived(3)
+            filteredTasks = tasks.filter(
+                (task) =>
+                    task.status !== 'done' &&
+                    task.status !== 'archived' &&
+                    task.status !== 2 &&
+                    task.status !== 3
+            );
+        }
+
+        // Then filter by search query if provided
+        if (taskSearchQuery.trim()) {
+            const query = taskSearchQuery.toLowerCase();
+            filteredTasks = filteredTasks.filter(
+                (task) =>
+                    task.name.toLowerCase().includes(query) ||
+                    task.note?.toLowerCase().includes(query)
+            );
+        }
+
+        return filteredTasks;
+    }, [tasks, showCompleted, taskSearchQuery]);
     const query = new URLSearchParams(location.search);
     const { title: stateTitle } = location.state || {};
 
@@ -98,9 +138,15 @@ const Tasks: React.FC = () => {
             setError(null);
             try {
                 const tagId = query.get('tag');
+                // Fetch all tasks (both completed and non-completed) for client-side filtering
+                const allTasksUrl = new URLSearchParams(location.search);
+                // Add special parameter to get ALL tasks (completed and non-completed)
+                allTasksUrl.set('client_side_filtering', 'true');
+                const searchParams = allTasksUrl.toString();
+
                 const [tasksResponse, projectsResponse] = await Promise.all([
                     fetch(
-                        `/api/tasks${location.search}${tagId ? `&tag=${tagId}` : ''}`
+                        `/api/tasks?${searchParams}${tagId ? `&tag=${tagId}` : ''}`
                     ),
                     fetch('/api/projects'),
                 ]);
@@ -196,7 +242,25 @@ const Tasks: React.FC = () => {
             if (response.ok) {
                 setTasks((prevTasks) =>
                     prevTasks.map((task) =>
-                        task.id === updatedTask.id ? updatedTask : task
+                        task.id === updatedTask.id
+                            ? {
+                                  ...task,
+                                  ...updatedTask,
+                                  // Explicitly preserve subtasks data
+                                  subtasks:
+                                      updatedTask.subtasks ||
+                                      updatedTask.Subtasks ||
+                                      task.subtasks ||
+                                      task.Subtasks ||
+                                      [],
+                                  Subtasks:
+                                      updatedTask.subtasks ||
+                                      updatedTask.Subtasks ||
+                                      task.subtasks ||
+                                      task.Subtasks ||
+                                      [],
+                              }
+                            : task
                     )
                 );
             } else {
@@ -208,6 +272,15 @@ const Tasks: React.FC = () => {
             console.error('Error updating task:', error);
             setError('Error updating task.');
         }
+    };
+
+    // Handler specifically for task completion toggles (no API call needed, just state update)
+    const handleTaskCompletionToggle = (updatedTask: Task) => {
+        setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === updatedTask.id ? updatedTask : task
+            )
+        );
     };
 
     const handleTaskDelete = async (taskId: number) => {
@@ -290,10 +363,6 @@ const Tasks: React.FC = () => {
         return status !== 'done';
     };
 
-    const filteredTasks = tasks.filter((task) =>
-        task.name.toLowerCase().includes(taskSearchQuery.toLowerCase())
-    );
-
     return (
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
@@ -316,7 +385,7 @@ const Tasks: React.FC = () => {
                             </div>
                         )}
                     </div>
-                    {/* Info expand/collapse button, search button, and sort dropdown */}
+                    {/* Info expand/collapse button, search button, show completed toggle, and sort dropdown */}
                     <div className="flex items-center gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0">
                         <button
                             onClick={() => setIsInfoExpanded((v) => !v)}
@@ -370,6 +439,32 @@ const Tasks: React.FC = () => {
                                 {isSearchExpanded
                                     ? 'Hide search'
                                     : 'Search Tasks'}
+                            </span>
+                        </button>
+                        <button
+                            onClick={() => setShowCompleted((v) => !v)}
+                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
+                                showCompleted
+                                    ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400'
+                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
+                            }`}
+                            aria-pressed={showCompleted}
+                            aria-label={
+                                showCompleted
+                                    ? 'Hide completed tasks'
+                                    : 'Show completed tasks'
+                            }
+                            title={
+                                showCompleted
+                                    ? 'Hide completed tasks'
+                                    : 'Show completed tasks'
+                            }
+                        >
+                            <CheckCircleIcon className="h-5 w-5" />
+                            <span className="sr-only">
+                                {showCompleted
+                                    ? 'Hide completed tasks'
+                                    : 'Show completed tasks'}
                             </span>
                         </button>
                         <SortFilter
@@ -450,14 +545,18 @@ const Tasks: React.FC = () => {
                             />
                         )}
 
-                        {filteredTasks.length > 0 ? (
+                        {displayTasks.length > 0 ? (
                             <TaskList
-                                tasks={filteredTasks}
+                                tasks={displayTasks}
                                 onTaskCreate={handleTaskCreate}
                                 onTaskUpdate={handleTaskUpdate}
+                                onTaskCompletionToggle={
+                                    handleTaskCompletionToggle
+                                }
                                 onTaskDelete={handleTaskDelete}
                                 projects={projects}
                                 onToggleToday={handleToggleToday}
+                                showCompletedTasks={showCompleted}
                             />
                         ) : (
                             <div className="flex justify-center items-center mt-4">

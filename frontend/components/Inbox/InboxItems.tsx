@@ -514,6 +514,7 @@ const InboxItems: React.FC = () => {
                                         name: '',
                                         status: 'not_started',
                                         priority: 'medium',
+                                        completed_at: null,
                                     }
                                 }
                                 onSave={handleSaveTask}

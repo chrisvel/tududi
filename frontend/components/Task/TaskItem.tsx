@@ -69,6 +69,18 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                                                 subtask.id
                                                             );
 
+                                                        // Check if parent-child logic was executed
+                                                        if (
+                                                            updatedSubtask.parent_child_logic_executed
+                                                        ) {
+                                                            // For subtasks, we need a full page refresh because the parent task
+                                                            // might be displayed in multiple places (task list, today view, etc.)
+                                                            setTimeout(() => {
+                                                                window.location.reload();
+                                                            }, 200);
+                                                            return;
+                                                        }
+
                                                         // Update the subtask in local state immediately
                                                         onSubtaskUpdate(
                                                             updatedSubtask
@@ -125,6 +137,7 @@ import { useTranslation } from 'react-i18next';
 interface TaskItemProps {
     task: Task;
     onTaskUpdate: (task: Task) => Promise<void>;
+    onTaskCompletionToggle?: (task: Task) => void;
     onTaskDelete: (taskId: number) => void;
     projects: Project[];
     hideProjectName?: boolean;
@@ -134,6 +147,7 @@ interface TaskItemProps {
 const TaskItem: React.FC<TaskItemProps> = ({
     task,
     onTaskUpdate,
+    onTaskCompletionToggle,
     onTaskDelete,
     projects,
     hideProjectName = false,
@@ -286,8 +300,39 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const handleToggleCompletion = async () => {
         if (task.id) {
             try {
-                const updatedTask = await toggleTaskCompletion(task.id);
-                await onTaskUpdate(updatedTask);
+                const response = await toggleTaskCompletion(task.id);
+
+                // Handle the updated task
+                if (onTaskCompletionToggle) {
+                    onTaskCompletionToggle(response);
+                } else {
+                    await onTaskUpdate(response);
+                }
+
+                // Only refresh if parent-child logic was executed (affecting other tasks)
+                if (response.parent_child_logic_executed) {
+                    // Instead of refreshing, let's refetch and update the task data
+                    setTimeout(async () => {
+                        try {
+                            // Refetch the current task with updated subtasks
+                            const updatedTaskResponse = await fetch(
+                                `/api/task/${task.id}`
+                            );
+                            if (updatedTaskResponse.ok) {
+                                const updatedTaskData =
+                                    await updatedTaskResponse.json();
+                                await onTaskUpdate(updatedTaskData);
+                            }
+                        } catch (error) {
+                            console.error(
+                                'Error refetching task after parent-child logic:',
+                                error
+                            );
+                            // Fallback to refresh if API call fails
+                            window.location.reload();
+                        }
+                    }, 200);
+                }
             } catch (error) {
                 console.error('Error toggling task completion:', error);
             }

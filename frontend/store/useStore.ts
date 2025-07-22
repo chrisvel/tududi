@@ -509,7 +509,25 @@ export const useStore = create<StoreState>((set) => ({
                 tasksStore: {
                     ...state.tasksStore,
                     tasks: state.tasksStore.tasks.map((task) =>
-                        task.id === updatedTask.id ? updatedTask : task
+                        task.id === updatedTask.id
+                            ? {
+                                  ...task,
+                                  ...updatedTask,
+                                  // Explicitly preserve subtasks data
+                                  subtasks:
+                                      updatedTask.subtasks ||
+                                      updatedTask.Subtasks ||
+                                      task.subtasks ||
+                                      task.Subtasks ||
+                                      [],
+                                  Subtasks:
+                                      updatedTask.subtasks ||
+                                      updatedTask.Subtasks ||
+                                      task.subtasks ||
+                                      task.Subtasks ||
+                                      [],
+                              }
+                            : task
                     ),
                 },
             })),

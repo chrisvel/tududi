@@ -146,7 +146,7 @@ export const isTaskOverdue = (task: {
     created_at?: string;
     today_move_count?: number;
     status: string | number;
-    completed_at?: string;
+    completed_at: string | null;
 }): boolean => {
     // If task is not in today plan, it's not overdue
     if (!task.today) {

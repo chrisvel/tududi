@@ -6,25 +6,41 @@ import { Task } from '../../entities/Task';
 interface TaskListProps {
     tasks: Task[];
     onTaskUpdate: (task: Task) => Promise<void>;
+    onTaskCompletionToggle?: (task: Task) => void;
     onTaskCreate?: (task: Task) => void;
     onTaskDelete: (taskId: number) => void;
     projects: Project[];
     hideProjectName?: boolean;
     onToggleToday?: (taskId: number) => Promise<void>;
+    showCompletedTasks?: boolean; // New prop
 }
 
 const TaskList: React.FC<TaskListProps> = ({
     tasks,
     onTaskUpdate,
+    onTaskCompletionToggle,
     onTaskDelete,
     projects,
     hideProjectName = false,
     onToggleToday,
+    showCompletedTasks = false, // Default to false
 }) => {
+    // Conditionally filter tasks based on showCompletedTasks prop
+    const filteredTasks = showCompletedTasks
+        ? tasks
+        : tasks.filter((task) => {
+              const isCompleted =
+                  task.status === 'done' ||
+                  task.status === 'archived' ||
+                  task.status === 2 ||
+                  task.status === 3;
+              return !isCompleted;
+          });
+
     return (
         <div className="task-list-container">
-            {tasks.length > 0 ? (
-                tasks.map((task) => (
+            {filteredTasks.length > 0 ? (
+                filteredTasks.map((task) => (
                     <div
                         key={task.id}
                         className="task-item-wrapper transition-all duration-200 ease-in-out"
@@ -32,6 +48,7 @@ const TaskList: React.FC<TaskListProps> = ({
                         <TaskItem
                             task={task}
                             onTaskUpdate={onTaskUpdate}
+                            onTaskCompletionToggle={onTaskCompletionToggle}
                             onTaskDelete={onTaskDelete}
                             projects={projects}
                             hideProjectName={hideProjectName}

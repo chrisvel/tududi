@@ -247,6 +247,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 priority: 'medium',
                 tags: taskTags,
                 project_id: projectId,
+                completed_at: null,
             };
 
             if (item.id !== undefined) {
