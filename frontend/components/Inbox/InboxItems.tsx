@@ -22,6 +22,7 @@ import { createTask } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { createNote } from '../../utils/notesService';
 import { isUrl } from '../../utils/urlService';
+import { fetchAreas } from '../../utils/areasService';
 import { useStore } from '../../store/useStore';
 
 const InboxItems: React.FC = () => {
@@ -30,6 +31,16 @@ const InboxItems: React.FC = () => {
 
     // Access store data
     const { inboxItems, isLoading } = useStore((state) => state.inboxStore);
+    const {
+        areas,
+        setAreas,
+        setError: setAreasError,
+    } = useStore((state) => state.areasStore);
+    const {
+        loadTags,
+        hasLoaded: tagsHasLoaded,
+        isLoading: tagsLoading,
+    } = useStore((state) => state.tagsStore);
 
     // Modal states
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -69,6 +80,30 @@ const InboxItems: React.FC = () => {
             }
         };
         loadInitialProjects();
+
+        // Load areas initially
+        const loadInitialAreas = async () => {
+            try {
+                const areasData = await fetchAreas();
+                setAreas(areasData);
+            } catch (error) {
+                console.error('Failed to load initial areas:', error);
+                setAreasError(true);
+            }
+        };
+        loadInitialAreas();
+
+        // Load tags initially
+        const loadInitialTags = async () => {
+            if (!tagsHasLoaded && !tagsLoading) {
+                try {
+                    await loadTags();
+                } catch (error) {
+                    console.error('Failed to load initial tags:', error);
+                }
+            }
+        };
+        loadInitialTags();
 
         // Set up an event listener for force reload
         const handleForceReload = () => {
@@ -178,37 +213,57 @@ const InboxItems: React.FC = () => {
 
     // Modal handlers
     const handleOpenTaskModal = async (task: Task, inboxItemId?: number) => {
-        // Load projects first before opening the modal
         try {
-            const projectData = await fetchProjects();
-            // Make sure we always set an array
-            setProjects(Array.isArray(projectData) ? projectData : []);
+            // Load projects first before opening the modal
+            try {
+                const projectData = await fetchProjects();
+                // Make sure we always set an array
+                setProjects(Array.isArray(projectData) ? projectData : []);
+            } catch (error) {
+                console.error('Failed to load projects:', error);
+                showErrorToast(
+                    t('project.loadError', 'Failed to load projects')
+                );
+                setProjects([]); // Ensure we have an empty array even on error
+            }
+
+            setTaskToEdit(task);
+
+            if (inboxItemId) {
+                setCurrentConversionItemId(inboxItemId);
+            }
+
+            setIsTaskModalOpen(true);
         } catch (error) {
-            console.error('Failed to load projects:', error);
-            showErrorToast(t('project.loadError', 'Failed to load projects'));
-            setProjects([]); // Ensure we have an empty array even on error
+            console.error('Failed to open task modal:', error);
         }
-
-        setTaskToEdit(task);
-
-        if (inboxItemId) {
-            setCurrentConversionItemId(inboxItemId);
-        }
-
-        setIsTaskModalOpen(true);
     };
 
-    const handleOpenProjectModal = (
+    const handleOpenProjectModal = async (
         project: Project | null,
         inboxItemId?: number
     ) => {
-        setProjectToEdit(project);
+        try {
+            // Load areas first before opening the modal (similar to task modal)
+            try {
+                const areasData = await fetchAreas();
+                setAreas(areasData);
+            } catch (error) {
+                console.error('Failed to load areas:', error);
+                showErrorToast(t('area.loadError', 'Failed to load areas'));
+                setAreas([]); // Ensure we have an empty array even on error
+            }
 
-        if (inboxItemId) {
-            setCurrentConversionItemId(inboxItemId);
+            setProjectToEdit(project);
+
+            if (inboxItemId) {
+                setCurrentConversionItemId(inboxItemId);
+            }
+
+            setIsProjectModalOpen(true);
+        } catch (error) {
+            console.error('Failed to open project modal:', error);
         }
-
-        setIsProjectModalOpen(true);
     };
 
     const handleOpenNoteModal = async (
@@ -490,29 +545,35 @@ const InboxItems: React.FC = () => {
                 })()}
 
                 {/* Project Modal - Only render when needed to prevent infinite loops */}
-                {isProjectModalOpen &&
-                    (() => {
-                        try {
-                            return (
-                                <ProjectModal
-                                    isOpen={isProjectModalOpen}
-                                    onClose={() => {
-                                        setIsProjectModalOpen(false);
-                                        setProjectToEdit(null);
-                                    }}
-                                    onSave={handleSaveProject}
-                                    project={projectToEdit || undefined}
-                                    areas={[]}
-                                />
-                            );
-                        } catch (error) {
-                            console.error(
-                                'ProjectModal rendering error:',
-                                error
-                            );
-                            return null;
-                        }
-                    })()}
+                {(() => {
+                    return (
+                        isProjectModalOpen &&
+                        (() => {
+                            try {
+                                return (
+                                    <ProjectModal
+                                        isOpen={isProjectModalOpen}
+                                        onClose={() => {
+                                            setIsProjectModalOpen(false);
+                                            setProjectToEdit(null);
+                                        }}
+                                        onSave={handleSaveProject}
+                                        project={projectToEdit || undefined}
+                                        areas={
+                                            Array.isArray(areas) ? areas : []
+                                        }
+                                    />
+                                );
+                            } catch (error) {
+                                console.error(
+                                    'ProjectModal rendering error:',
+                                    error
+                                );
+                                return null;
+                            }
+                        })()
+                    );
+                })()}
 
                 {/* Note Modal - Always render it but control visibility with isOpen */}
                 {(() => {

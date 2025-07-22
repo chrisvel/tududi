@@ -43,12 +43,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
 }) => {
     const { t } = useTranslation();
     const {
-        tagsStore: {
-            tags: availableTagsStore,
-            loadTags,
-            isLoading: tagsLoading,
-            hasLoaded: tagsHasLoaded,
-        },
+        tagsStore: { tags: availableTagsStore },
     } = useStore();
     const [formData, setFormData] = useState<Note>(
         note || {
@@ -87,17 +82,11 @@ const NoteModal: React.FC<NoteModalProps> = ({
     useEffect(() => {
         if (!isOpen) return;
 
-        if (!tagsHasLoaded && !tagsLoading) {
-            loadTags();
-        }
-
         // Auto-focus on the title input when modal opens
-        if (isOpen) {
-            setTimeout(() => {
-                titleInputRef.current?.focus();
-            }, 100);
-        }
-    }, [isOpen, tagsHasLoaded, tagsLoading]);
+        setTimeout(() => {
+            titleInputRef.current?.focus();
+        }, 100);
+    }, [isOpen]);
 
     // Initialize filtered projects from props - like TaskModal
     useEffect(() => {

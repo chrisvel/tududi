@@ -52,12 +52,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     onEditParentTask,
 }) => {
     const {
-        tagsStore: {
-            tags: availableTags,
-            loadTags,
-            isLoading: tagsLoading,
-            hasLoaded: tagsHasLoaded,
-        },
+        tagsStore: { tags: availableTags },
     } = useStore();
     const [formData, setFormData] = useState<Task>(task);
     const [tags, setTags] = useState<string[]>(
@@ -200,12 +195,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
         }));
     };
 
-    useEffect(() => {
-        // Load tags when modal opens if they're not already loaded
-        if (isOpen && !tagsHasLoaded && !tagsLoading) {
-            loadTags();
-        }
-    }, [isOpen, tagsHasLoaded, tagsLoading]);
+    // Note: Tags loading removed to prevent modal closing issues
+    // Tags will be loaded by other components or on app startup
 
     const getPriorityString = (
         priority: PriorityType | number | undefined

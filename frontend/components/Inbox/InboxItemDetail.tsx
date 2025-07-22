@@ -216,65 +216,75 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const cleanedContent = cleanTextFromTagsAndProjects(item.content);
 
     const handleConvertToTask = () => {
-        // Convert hashtags to Tag objects
-        const taskTags = hashtags.map((hashtagName) => {
-            // Find existing tag or create a placeholder for new tag
-            const existingTag = tags.find(
-                (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
-            );
-            return existingTag || { name: hashtagName };
-        });
+        try {
+            // Convert hashtags to Tag objects
+            const taskTags = hashtags.map((hashtagName) => {
+                // Find existing tag or create a placeholder for new tag
+                const existingTag = tags.find(
+                    (tag) =>
+                        tag.name.toLowerCase() === hashtagName.toLowerCase()
+                );
+                return existingTag || { name: hashtagName };
+            });
 
-        // Find the project to assign (use first project reference if any)
-        let projectId = undefined;
-        if (projectRefs.length > 0) {
-            // Look for an existing project with the first project reference name
-            const projectName = projectRefs[0];
-            const matchingProject = projects.find(
-                (project) =>
-                    project.name.toLowerCase() === projectName.toLowerCase()
-            );
-            if (matchingProject) {
-                projectId = matchingProject.id;
+            // Find the project to assign (use first project reference if any)
+            let projectId = undefined;
+            if (projectRefs.length > 0) {
+                // Look for an existing project with the first project reference name
+                const projectName = projectRefs[0];
+                const matchingProject = projects.find(
+                    (project) =>
+                        project.name.toLowerCase() === projectName.toLowerCase()
+                );
+                if (matchingProject) {
+                    projectId = matchingProject.id;
+                }
             }
-        }
 
-        const newTask: Task = {
-            name: cleanedContent || item.content,
-            status: 'not_started',
-            priority: 'medium',
-            tags: taskTags,
-            project_id: projectId,
-        };
+            const newTask: Task = {
+                name: cleanedContent || item.content,
+                status: 'not_started',
+                priority: 'medium',
+                tags: taskTags,
+                project_id: projectId,
+            };
 
-        if (item.id !== undefined) {
-            openTaskModal(newTask, item.id);
-        } else {
-            openTaskModal(newTask);
+            if (item.id !== undefined) {
+                openTaskModal(newTask, item.id);
+            } else {
+                openTaskModal(newTask);
+            }
+        } catch (error) {
+            console.error('Error converting to task:', error);
         }
     };
 
     const handleConvertToProject = () => {
-        // Convert hashtags to Tag objects (ignore any existing project references)
-        const projectTags = hashtags.map((hashtagName) => {
-            // Find existing tag or create a placeholder for new tag
-            const existingTag = tags.find(
-                (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
-            );
-            return existingTag || { name: hashtagName };
-        });
+        try {
+            // Convert hashtags to Tag objects (ignore any existing project references)
+            const projectTags = hashtags.map((hashtagName) => {
+                // Find existing tag or create a placeholder for new tag
+                const existingTag = tags.find(
+                    (tag) =>
+                        tag.name.toLowerCase() === hashtagName.toLowerCase()
+                );
+                return existingTag || { name: hashtagName };
+            });
 
-        const newProject: Project = {
-            name: cleanedContent || item.content,
-            description: '',
-            active: true,
-            tags: projectTags,
-        };
+            const newProject: Project = {
+                name: cleanedContent || item.content,
+                description: '',
+                active: true,
+                tags: projectTags,
+            };
 
-        if (item.id !== undefined) {
-            openProjectModal(newProject, item.id);
-        } else {
-            openProjectModal(newProject);
+            if (item.id !== undefined) {
+                openProjectModal(newProject, item.id);
+            } else {
+                openProjectModal(newProject);
+            }
+        } catch (error) {
+            console.error('Error converting to project:', error);
         }
     };
 

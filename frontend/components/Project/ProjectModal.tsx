@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Area } from '../../entities/Area';
 import { Project } from '../../entities/Project';
 import ConfirmDialog from '../Shared/ConfirmDialog';
@@ -61,12 +62,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const [isUploading, setIsUploading] = useState(false);
 
     const { tagsStore } = useStore();
-    const {
-        tags: availableTags,
-        loadTags,
-        isLoading: tagsLoading,
-        hasLoaded: tagsHasLoaded,
-    } = tagsStore;
+    const { tags: availableTags } = tagsStore;
 
     const modalRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -88,19 +84,26 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const { showSuccessToast, showErrorToast } = useToast();
     const { t } = useTranslation();
 
-    // Load tags when modal opens
+    // Auto-focus on the name input when modal opens
     useEffect(() => {
-        if (isOpen && !tagsHasLoaded && !tagsLoading) {
-            loadTags();
-        }
-
-        // Auto-focus on the name input when modal opens
         if (isOpen) {
             setTimeout(() => {
                 nameInputRef.current?.focus();
-            }, 100);
+            }, 200);
         }
-    }, [isOpen, tagsHasLoaded, tagsLoading]);
+    }, [isOpen]);
+
+    // Manage body scroll when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
 
     useEffect(() => {
         if (project) {
@@ -404,8 +407,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     if (!isOpen) return null;
 
-    return (
+    // Don't render if areas aren't loaded yet (prevents race condition)
+    if (!areas || !Array.isArray(areas)) return null;
+
+    return createPortal(
         <>
+            ,
             <div
                 className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
                     isClosing ? 'opacity-0' : 'opacity-100'
@@ -868,7 +875,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     </div>
                 </div>
             </div>
-
             {showConfirmDialog && (
                 <ConfirmDialog
                     title="Delete Project"
@@ -877,7 +883,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     onCancel={() => setShowConfirmDialog(false)}
                 />
             )}
-        </>
+        </>,
+        document.body
     );
 };
 
