@@ -87,6 +87,8 @@ describe('Project Model', () => {
 
             expect(project.active).toBe(false);
             expect(project.pin_to_sidebar).toBe(false);
+            expect(project.task_show_completed).toBe(false);
+            expect(project.task_sort_order).toBe('created_at:desc');
         });
     });
 
@@ -105,6 +107,48 @@ describe('Project Model', () => {
             expect(project.priority).toBeNull();
             expect(project.due_date_at).toBeNull();
             expect(project.area_id).toBeNull();
+        });
+    });
+
+    describe('task sorting columns', () => {
+        it('should create project with task_show_completed set to true', async () => {
+            const project = await Project.create({
+                name: 'Test Project',
+                user_id: user.id,
+                task_show_completed: true,
+            });
+
+            expect(project.task_show_completed).toBe(true);
+        });
+
+        it('should create project with custom task_sort_order', async () => {
+            const project = await Project.create({
+                name: 'Test Project',
+                user_id: user.id,
+                task_sort_order: 'priority:asc',
+            });
+
+            expect(project.task_sort_order).toBe('priority:asc');
+        });
+
+        it('should allow task_show_completed to be null', async () => {
+            const project = await Project.create({
+                name: 'Test Project',
+                user_id: user.id,
+                task_show_completed: null,
+            });
+
+            expect(project.task_show_completed).toBeNull();
+        });
+
+        it('should allow task_sort_order to be null', async () => {
+            const project = await Project.create({
+                name: 'Test Project',
+                user_id: user.id,
+                task_sort_order: null,
+            });
+
+            expect(project.task_sort_order).toBeNull();
         });
     });
 
