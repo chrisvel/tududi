@@ -306,7 +306,25 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 if (onTaskCompletionToggle) {
                     onTaskCompletionToggle(response);
                 } else {
-                    await onTaskUpdate(response);
+                    // Merge the response with existing task data to preserve subtasks
+                    const mergedTask = {
+                        ...task,
+                        ...response,
+                        // Explicitly preserve subtasks data from original task
+                        subtasks:
+                            response.subtasks ||
+                            response.Subtasks ||
+                            task.subtasks ||
+                            task.Subtasks ||
+                            [],
+                        Subtasks:
+                            response.subtasks ||
+                            response.Subtasks ||
+                            task.subtasks ||
+                            task.Subtasks ||
+                            [],
+                    };
+                    await onTaskUpdate(mergedTask);
                 }
 
                 // Only refresh if parent-child logic was executed (affecting other tasks)
