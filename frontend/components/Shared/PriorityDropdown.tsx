@@ -102,11 +102,14 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
     }, [isOpen]);
 
     // Convert numeric priority to string if needed
-    const normalizedValue = typeof value === 'number' 
-        ? ['low', 'medium', 'high'][value] || 'medium'
-        : value;
-    
-    const selectedPriority = priorities.find((p) => p.value === normalizedValue);
+    const normalizedValue =
+        typeof value === 'number'
+            ? ['low', 'medium', 'high'][value] || 'medium'
+            : value;
+
+    const selectedPriority = priorities.find(
+        (p) => p.value === normalizedValue
+    );
 
     return (
         <div

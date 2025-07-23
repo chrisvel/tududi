@@ -43,7 +43,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
 }) => {
     const { t } = useTranslation();
     const {
-        tagsStore: { tags: availableTagsStore },
+        tagsStore: {
+            tags: availableTagsStore,
+            hasLoaded: tagsLoaded,
+            isLoading: tagsLoading,
+            isError: tagsError,
+            loadTags,
+        },
     } = useStore();
     const [formData, setFormData] = useState<Note>(
         note || {
@@ -138,6 +144,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
             }
         }
     }, [isOpen, note, memoizedProjects]);
+
+    // Load tags when modal opens if not already loaded
+    useEffect(() => {
+        if (isOpen && !tagsLoaded && !tagsLoading && !tagsError) {
+            loadTags();
+        }
+    }, [isOpen, tagsLoaded, tagsLoading, tagsError, loadTags]);
 
     const handleClose = useCallback(() => {
         setIsClosing(true);
@@ -482,15 +495,26 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                         <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                                             {t('forms.tags')}
                                                         </h3>
-                                                        <TagInput
-                                                            onTagsChange={
-                                                                handleTagsChange
-                                                            }
-                                                            initialTags={tags}
-                                                            availableTags={
-                                                                availableTagsStore
-                                                            }
-                                                        />
+                                                        {tagsLoaded ? (
+                                                            <TagInput
+                                                                onTagsChange={
+                                                                    handleTagsChange
+                                                                }
+                                                                initialTags={
+                                                                    tags
+                                                                }
+                                                                availableTags={
+                                                                    availableTagsStore
+                                                                }
+                                                            />
+                                                        ) : (
+                                                            <div className="text-gray-500 text-sm">
+                                                                {t(
+                                                                    'common.loading',
+                                                                    'Loading...'
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
 
