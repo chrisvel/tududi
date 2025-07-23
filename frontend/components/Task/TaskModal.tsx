@@ -276,12 +276,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }, []);
 
     const handleProjectSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const query = e.target.value.toLowerCase();
+        const query = e.target.value;
         setNewProjectName(query);
         setDropdownOpen(true);
         setFilteredProjects(
             projects.filter((project) =>
-                project.name.toLowerCase().includes(query)
+                project.name.toLowerCase().includes(query.toLowerCase())
             )
         );
     };
@@ -318,11 +318,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
     };
 
     const handleSubmit = () => {
-        onSave({
+        // If project name is empty, clear the project_id
+        const finalFormData = {
             ...formData,
+            project_id: newProjectName.trim() === '' ? null : formData.project_id,
             tags: tags.map((tag) => ({ name: tag })),
             subtasks: subtasks,
-        } as any);
+        };
+        
+        onSave(finalFormData as any);
         const taskLink = (
             <span>
                 {t('task.updated', 'Task')}{' '}
