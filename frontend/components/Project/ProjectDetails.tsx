@@ -21,6 +21,7 @@ import {
     fetchProjectById,
     updateProject,
     deleteProject,
+    fetchProjects,
 } from '../../utils/projectsService';
 import {
     createTask,
@@ -44,6 +45,7 @@ const ProjectDetails: React.FC = () => {
 
     // Using local state to avoid infinite loops
     const areas = useStore((state) => state.areasStore.areas);
+    const { projects: allProjects, setProjects } = useStore((state) => state.projectsStore);
     const [project, setProject] = useState<Project | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
@@ -83,6 +85,21 @@ const ProjectDetails: React.FC = () => {
 
         fetchAutoSuggestSetting();
     }, []);
+
+    // Load projects if not already loaded
+    useEffect(() => {
+        const loadProjectsIfNeeded = async () => {
+            if (allProjects.length === 0) {
+                try {
+                    const projectsData = await fetchProjects();
+                    setProjects(projectsData);
+                } catch (error) {
+                    console.error('Failed to fetch projects:', error);
+                }
+            }
+        };
+        loadProjectsIfNeeded();
+    }, [allProjects.length, setProjects]);
 
     // Check if we should show auto-suggest form for projects with no tasks
     useEffect(() => {
@@ -910,7 +927,7 @@ const ProjectDetails: React.FC = () => {
                                         tasks={displayTasks}
                                         onTaskUpdate={handleTaskUpdate}
                                         onTaskDelete={handleTaskDelete}
-                                        projects={project ? [project] : []}
+                                        projects={allProjects}
                                         hideProjectName={true}
                                         onToggleToday={handleToggleToday}
                                         showCompletedTasks={showCompleted}
@@ -980,7 +997,7 @@ const ProjectDetails: React.FC = () => {
                         }}
                         onSave={handleUpdateNote}
                         note={selectedNote}
-                        projects={project ? [project] : []}
+                        projects={allProjects}
                     />
                 )}
 
