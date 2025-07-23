@@ -21,6 +21,8 @@ import {
     ArrowPathIcon,
     TrashIcon,
     ListBulletIcon,
+    ExclamationTriangleIcon,
+    CalendarIcon,
 } from '@heroicons/react/24/outline';
 
 // Import form sections
@@ -28,9 +30,10 @@ import TaskTitleSection from './TaskForm/TaskTitleSection';
 import TaskContentSection from './TaskForm/TaskContentSection';
 import TaskTagsSection from './TaskForm/TaskTagsSection';
 import TaskProjectSection from './TaskForm/TaskProjectSection';
-import TaskMetadataSection from './TaskForm/TaskMetadataSection';
 import TaskRecurrenceSection from './TaskForm/TaskRecurrenceSection';
 import TaskSubtasksSection from './TaskForm/TaskSubtasksSection';
+import PriorityDropdown from '../Shared/PriorityDropdown';
+import DatePicker from '../Shared/DatePicker';
 
 interface TaskModalProps {
     isOpen: boolean;
@@ -84,7 +87,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [expandedSections, setExpandedSections] = useState({
         tags: false,
         project: false,
-        metadata: false,
+        priority: false,
+        dueDate: false,
         recurrence: false,
         subtasks: false,
     });
@@ -321,11 +325,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
         // If project name is empty, clear the project_id
         const finalFormData = {
             ...formData,
-            project_id: newProjectName.trim() === '' ? null : formData.project_id,
+            project_id:
+                newProjectName.trim() === '' ? null : formData.project_id,
             tags: tags.map((tag) => ({ name: tag })),
             subtasks: subtasks,
         };
-        
+
         onSave(finalFormData as any);
         const taskLink = (
             <span>
@@ -576,55 +581,43 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                     </div>
                                                 )}
 
-                                                {expandedSections.metadata && (
-                                                    <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 overflow-visible">
+                                                {expandedSections.priority && (
+                                                    <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
                                                         <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                                            {t(
-                                                                'forms.task.statusAndOptions',
-                                                                'Status & Options'
-                                                            )}
+                                                            {t('forms.task.labels.priority', 'Priority')}
                                                         </h3>
-                                                        <TaskMetadataSection
-                                                            priority={getPriorityString(
-                                                                formData.priority
-                                                            )}
-                                                            dueDate={
-                                                                formData.due_date ||
-                                                                ''
-                                                            }
-                                                            taskId={task.id}
-                                                            onStatusChange={(
-                                                                value: StatusType
-                                                            ) => {
-                                                                // Universal rule: when setting status to in_progress, also add to today
-                                                                const updatedData =
-                                                                    {
-                                                                        ...formData,
-                                                                        status: value,
-                                                                    };
-                                                                if (
-                                                                    value ===
-                                                                    'in_progress'
-                                                                ) {
-                                                                    updatedData.today = true;
-                                                                }
-                                                                setFormData(
-                                                                    updatedData
-                                                                );
-                                                            }}
-                                                            onPriorityChange={(
-                                                                value: PriorityType
-                                                            ) =>
+                                                        <PriorityDropdown
+                                                            value={getPriorityString(formData.priority)}
+                                                            onChange={(value: PriorityType) =>
                                                                 setFormData({
                                                                     ...formData,
-                                                                    priority:
-                                                                        value,
+                                                                    priority: value,
                                                                 })
                                                             }
-                                                            onDueDateChange={
-                                                                handleChange
-                                                            }
                                                         />
+                                                    </div>
+                                                )}
+
+                                                {expandedSections.dueDate && (
+                                                    <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 overflow-visible">
+                                                        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                                            {t('forms.task.labels.dueDate', 'Due Date')}
+                                                        </h3>
+                                                        <div className="overflow-visible">
+                                                            <DatePicker
+                                                                value={formData.due_date || ''}
+                                                                onChange={(value) => {
+                                                                    const event = {
+                                                                        target: { name: 'due_date', value },
+                                                                    } as React.ChangeEvent<HTMLInputElement>;
+                                                                    handleChange(event);
+                                                                }}
+                                                                placeholder={t(
+                                                                    'forms.task.dueDatePlaceholder',
+                                                                    'Select due date'
+                                                                )}
+                                                            />
+                                                        </div>
                                                     </div>
                                                 )}
 
@@ -769,28 +762,44 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 )}
                                             </button>
 
-                                            {/* Status & Options Toggle */}
+                                            {/* Priority Toggle */}
                                             <button
                                                 onClick={() =>
-                                                    toggleSection('metadata')
+                                                    toggleSection('priority')
                                                 }
                                                 className={`relative p-2 rounded-full transition-colors ${
-                                                    expandedSections.metadata
+                                                    expandedSections.priority
                                                         ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
                                                         : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                                                 }`}
                                                 title={t(
-                                                    'forms.task.statusAndOptions',
-                                                    'Status & Options'
+                                                    'forms.task.labels.priority',
+                                                    'Priority'
                                                 )}
                                             >
-                                                <Cog6ToothIcon className="h-5 w-5" />
-                                                {(formData.due_date ||
-                                                    formData.priority !==
-                                                        'medium' ||
-                                                    (formData.status &&
-                                                        formData.status !==
-                                                            'not_started')) && (
+                                                <ExclamationTriangleIcon className="h-5 w-5" />
+                                                {getPriorityString(formData.priority) !== 'medium' && (
+                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                                                )}
+                                            </button>
+
+                                            {/* Due Date Toggle */}
+                                            <button
+                                                onClick={() =>
+                                                    toggleSection('dueDate')
+                                                }
+                                                className={`relative p-2 rounded-full transition-colors ${
+                                                    expandedSections.dueDate
+                                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                }`}
+                                                title={t(
+                                                    'forms.task.labels.dueDate',
+                                                    'Due Date'
+                                                )}
+                                            >
+                                                <CalendarIcon className="h-5 w-5" />
+                                                {formData.due_date && (
                                                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                 )}
                                             </button>
