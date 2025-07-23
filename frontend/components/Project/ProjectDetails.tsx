@@ -192,6 +192,42 @@ const ProjectDetails: React.FC = () => {
         if (!updatedTask.id) {
             return;
         }
+
+        // If the updatedTask already contains updated data from API (like from toggleTaskCompletion),
+        // and has critical fields like status, we can skip the API call and just update local state
+        const hasUpdatedData =
+            updatedTask.status !== undefined &&
+            (updatedTask.updated_at !== undefined ||
+                updatedTask.parent_child_logic_executed !== undefined);
+
+        if (hasUpdatedData) {
+            // Use the provided data directly, preserving existing subtasks if not included
+            setTasks(
+                tasks.map((task) =>
+                    task.id === updatedTask.id
+                        ? {
+                              ...task,
+                              ...updatedTask,
+                              // Explicitly preserve subtasks data
+                              subtasks:
+                                  updatedTask.subtasks ||
+                                  updatedTask.Subtasks ||
+                                  task.subtasks ||
+                                  task.Subtasks ||
+                                  [],
+                              Subtasks:
+                                  updatedTask.subtasks ||
+                                  updatedTask.Subtasks ||
+                                  task.subtasks ||
+                                  task.Subtasks ||
+                                  [],
+                          }
+                        : task
+                )
+            );
+            return;
+        }
+
         try {
             // Use direct fetch call like Tasks.tsx to ensure proper tag saving
             const response = await fetch(`/api/task/${updatedTask.id}`, {
@@ -209,7 +245,29 @@ const ProjectDetails: React.FC = () => {
             const savedTask = await response.json();
             setTasks(
                 tasks.map((task) =>
-                    task.id === updatedTask.id ? savedTask : task
+                    task.id === updatedTask.id
+                        ? {
+                              ...task,
+                              ...savedTask,
+                              // Explicitly preserve subtasks data
+                              subtasks:
+                                  savedTask.subtasks ||
+                                  savedTask.Subtasks ||
+                                  updatedTask.subtasks ||
+                                  updatedTask.Subtasks ||
+                                  task.subtasks ||
+                                  task.Subtasks ||
+                                  [],
+                              Subtasks:
+                                  savedTask.subtasks ||
+                                  savedTask.Subtasks ||
+                                  updatedTask.subtasks ||
+                                  updatedTask.Subtasks ||
+                                  task.subtasks ||
+                                  task.Subtasks ||
+                                  [],
+                          }
+                        : task
                 )
             );
         } catch {
