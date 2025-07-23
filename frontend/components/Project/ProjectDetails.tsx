@@ -118,14 +118,7 @@ const ProjectDetails: React.FC = () => {
                 }
                 setError(false);
 
-                const sortParam =
-                    localStorage.getItem('project_order_by') ||
-                    'created_at:desc';
-
-                const projectData = await fetchProjectById(id, {
-                    sort: sortParam,
-                    // Remove completed parameter since backend filtering isn't working
-                });
+                const projectData = await fetchProjectById(id);
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
 
@@ -254,16 +247,9 @@ const ProjectDetails: React.FC = () => {
         } catch {
             // Optionally refetch data on error to ensure consistency
             if (id) {
-                const sortParam =
-                    localStorage.getItem('project_order_by') ||
-                    'created_at:desc';
-
                 // Refetch project data on error to ensure consistency
                 try {
-                    const projectData = await fetchProjectById(id, {
-                        sort: sortParam,
-                        // Remove completed parameter since backend filtering isn't working
-                    });
+                    const projectData = await fetchProjectById(id);
                     setProject(projectData);
                     setTasks(projectData.tasks || projectData.Tasks || []);
                     const fetchedNotes =
@@ -869,6 +855,7 @@ const ProjectDetails: React.FC = () => {
                                         projects={project ? [project] : []}
                                         hideProjectName={true}
                                         onToggleToday={handleToggleToday}
+                                        showCompletedTasks={showCompleted}
                                     />
                                 </div>
                             ) : (
