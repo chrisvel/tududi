@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { PriorityType, StatusType, Task } from '../../entities/Task';
+import { PriorityType, Task } from '../../entities/Task';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useToast } from '../Shared/ToastContext';
 import TimelinePanel from './TimelinePanel';
@@ -17,7 +17,6 @@ import {
     ClockIcon,
     TagIcon,
     FolderIcon,
-    Cog6ToothIcon,
     ArrowPathIcon,
     TrashIcon,
     ListBulletIcon,
@@ -59,7 +58,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
     autoFocusSubtasks,
 }) => {
     const {
-        tagsStore: { tags: availableTags },
+        tagsStore: {
+            tags: availableTags,
+            hasLoaded: tagsLoaded,
+            isLoading: tagsLoading,
+            isError: tagsError,
+            loadTags,
+        },
     } = useStore();
     const [formData, setFormData] = useState<Task>(task);
     const [tags, setTags] = useState<string[]>(
@@ -218,6 +223,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
             }, 100);
         }
     }, [isOpen, autoFocusSubtasks]);
+
+    // Load tags when modal opens if not already loaded
+    useEffect(() => {
+        if (isOpen && !tagsLoaded && !tagsLoading && !tagsError) {
+            loadTags();
+        }
+    }, [isOpen, tagsLoaded, tagsLoading, tagsError, loadTags]);
 
     const handleEditParent = () => {
         if (parentTask && onEditParentTask) {
@@ -524,20 +536,24 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                                 'Tags'
                                                             )}
                                                         </h3>
-                                                        <TaskTagsSection
-                                                            tags={
-                                                                formData.tags?.map(
-                                                                    (tag) =>
-                                                                        tag.name
-                                                                ) || []
-                                                            }
-                                                            onTagsChange={
-                                                                handleTagsChange
-                                                            }
-                                                            availableTags={
-                                                                availableTags
-                                                            }
-                                                        />
+                                                        {tagsLoaded ? (
+                                                            <TaskTagsSection
+                                                                tags={tags}
+                                                                onTagsChange={
+                                                                    handleTagsChange
+                                                                }
+                                                                availableTags={
+                                                                    availableTags
+                                                                }
+                                                            />
+                                                        ) : (
+                                                            <div className="text-gray-500 text-sm">
+                                                                {t(
+                                                                    'common.loading',
+                                                                    'Loading...'
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 )}
 
@@ -584,14 +600,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 {expandedSections.priority && (
                                                     <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
                                                         <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                                            {t('forms.task.labels.priority', 'Priority')}
+                                                            {t(
+                                                                'forms.task.labels.priority',
+                                                                'Priority'
+                                                            )}
                                                         </h3>
                                                         <PriorityDropdown
-                                                            value={getPriorityString(formData.priority)}
-                                                            onChange={(value: PriorityType) =>
+                                                            value={getPriorityString(
+                                                                formData.priority
+                                                            )}
+                                                            onChange={(
+                                                                value: PriorityType
+                                                            ) =>
                                                                 setFormData({
                                                                     ...formData,
-                                                                    priority: value,
+                                                                    priority:
+                                                                        value,
                                                                 })
                                                             }
                                                         />
@@ -601,16 +625,30 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 {expandedSections.dueDate && (
                                                     <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 overflow-visible">
                                                         <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                                            {t('forms.task.labels.dueDate', 'Due Date')}
+                                                            {t(
+                                                                'forms.task.labels.dueDate',
+                                                                'Due Date'
+                                                            )}
                                                         </h3>
                                                         <div className="overflow-visible">
                                                             <DatePicker
-                                                                value={formData.due_date || ''}
-                                                                onChange={(value) => {
-                                                                    const event = {
-                                                                        target: { name: 'due_date', value },
-                                                                    } as React.ChangeEvent<HTMLInputElement>;
-                                                                    handleChange(event);
+                                                                value={
+                                                                    formData.due_date ||
+                                                                    ''
+                                                                }
+                                                                onChange={(
+                                                                    value
+                                                                ) => {
+                                                                    const event =
+                                                                        {
+                                                                            target: {
+                                                                                name: 'due_date',
+                                                                                value,
+                                                                            },
+                                                                        } as React.ChangeEvent<HTMLInputElement>;
+                                                                    handleChange(
+                                                                        event
+                                                                    );
                                                                 }}
                                                                 placeholder={t(
                                                                     'forms.task.dueDatePlaceholder',
@@ -778,7 +816,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 )}
                                             >
                                                 <ExclamationTriangleIcon className="h-5 w-5" />
-                                                {getPriorityString(formData.priority) !== 'medium' && (
+                                                {getPriorityString(
+                                                    formData.priority
+                                                ) !== 'medium' && (
                                                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                 )}
                                             </button>
