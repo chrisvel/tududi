@@ -224,7 +224,10 @@ router.get('/project/:id', async (req, res) => {
                 {
                     model: Task,
                     required: false,
-                    where: { parent_task_id: null }, // Exclude subtasks from main task list
+                    where: {
+                        parent_task_id: null,
+                        // Include ALL tasks regardless of status for client-side filtering
+                    },
                     include: [
                         {
                             model: Tag,
