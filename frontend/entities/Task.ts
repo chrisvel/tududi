@@ -28,6 +28,7 @@ export interface Task {
     parent_task_id?: number;
     subtasks?: Task[];
     Subtasks?: Task[]; // Handle API response case sensitivity (temporary)
+    parent_child_logic_executed?: boolean; // Flag indicating if parent-child logic was executed during toggle
 }
 
 export type StatusType =
