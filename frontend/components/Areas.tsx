@@ -180,7 +180,9 @@ const Areas: React.FC = () => {
                             <Link
                                 key={area.id}
                                 to={`/projects?area_id=${area.id}`}
-                                className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer"
+                                className={`bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer ${
+                                    dropdownOpen === area.id ? 'z-50' : ''
+                                }`}
                                 style={{
                                     minHeight: '120px',
                                     maxHeight: '120px',
@@ -228,7 +230,7 @@ const Areas: React.FC = () => {
                                     </button>
 
                                     {dropdownOpen === area.id && (
-                                        <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-50">
+                                        <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60]">
                                             <button
                                                 onClick={(e) => {
                                                     e.preventDefault();

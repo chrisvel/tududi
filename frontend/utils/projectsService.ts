@@ -46,9 +46,7 @@ export const fetchGroupedProjects = async (
     return data;
 };
 
-export const fetchProjectById = async (
-    projectId: string
-): Promise<Project> => {
+export const fetchProjectById = async (projectId: string): Promise<Project> => {
     const response = await fetch(`/api/project/${projectId}`, {
         credentials: 'include',
         headers: { Accept: 'application/json' },

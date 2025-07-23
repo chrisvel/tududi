@@ -527,11 +527,17 @@ const TasksToday: React.FC = () => {
                         !updatedTask.today &&
                         !updatedTask.project_id &&
                         !updatedTask.due_date;
+                    // Check if task is not completed (can be string or number)
+                    const taskStatus = updatedTask.status as string | number;
+                    const isNotCompleted =
+                        taskStatus !== 'archived' &&
+                        taskStatus !== 'done' &&
+                        taskStatus !== 2 &&
+                        taskStatus !== 3;
+
                     if (
                         isSuggested &&
-                        updatedTask.status !== 'archived' &&
-                        updatedTask.status !== 'done' &&
-                        updatedTask.status !== 2 &&
+                        isNotCompleted &&
                         !newMetrics.today_plan_tasks.some(
                             (t) => t.id === updatedTask.id
                         ) &&
