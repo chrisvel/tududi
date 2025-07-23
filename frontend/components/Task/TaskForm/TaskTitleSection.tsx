@@ -26,7 +26,7 @@ const TaskTitleSection: React.FC<TaskTitleSectionProps> = ({
     const { t } = useTranslation();
 
     return (
-        <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-700 sm:rounded-tl-lg">
             <input
                 type="text"
                 id={`task_name_${taskId}`}

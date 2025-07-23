@@ -501,7 +501,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                         <div className="flex flex-col lg:flex-row h-full sm:min-h-[600px] sm:max-h-[90vh]">
                             {/* Main Form Section */}
                             <div
-                                className={`flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 ${
+                                className={`flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 sm:rounded-l-lg ${
                                     isTimelineExpanded ? 'lg:pr-2' : ''
                                 }`}
                             >
@@ -921,7 +921,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                 </div>
 
                                 {/* Action Buttons - Below border with custom layout */}
-                                <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
+                                <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between sm:rounded-bl-lg">
                                     {/* Left side: Delete and Cancel */}
                                     <div className="flex items-center space-x-3">
                                         {task.id && (

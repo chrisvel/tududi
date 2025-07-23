@@ -22,7 +22,7 @@ const TimelinePanel: React.FC<TimelinePanelProps> = ({
                 isExpanded
                     ? 'w-full lg:w-80 opacity-100'
                     : 'w-0 lg:w-12 opacity-0 lg:opacity-100'
-            } border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex flex-col transition-all duration-300 overflow-hidden`}
+            } border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 sm:rounded-r-lg flex flex-col transition-all duration-300 overflow-hidden`}
         >
             {/* Collapsed state - envelope icon */}
             {!isExpanded && (

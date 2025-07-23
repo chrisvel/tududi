@@ -426,7 +426,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 >
                     <div className="flex flex-col h-full sm:min-h-[500px] sm:max-h-[80vh]">
                         {/* Main Form Section */}
-                        <div className="flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800">
+                        <div className="flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 sm:rounded-lg">
                             <div className="flex-1 relative">
                                 <div
                                     className="absolute inset-0 overflow-y-auto overflow-x-hidden"
@@ -441,7 +441,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                     >
                                         <fieldset className="h-full flex flex-col">
                                             {/* Project Title Section - Always Visible */}
-                                            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 pt-4">
+                                            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 pt-4 sm:rounded-t-lg">
                                                 <input
                                                     ref={nameInputRef}
                                                     type="text"
@@ -825,7 +825,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                             </div>
 
                             {/* Action Buttons - Below border with custom layout */}
-                            <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
+                            <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between sm:rounded-b-lg">
                                 {/* Left side: Delete and Cancel */}
                                 <div className="flex items-center space-x-3">
                                     {project && project.id && onDelete && (

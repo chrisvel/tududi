@@ -20,7 +20,7 @@ interface InboxItemDetailProps {
     item: InboxItem;
     onProcess: (id: number) => void;
     onDelete: (id: number) => void;
-    onUpdate?: (id: number, content: string) => Promise<void>;
+    onUpdate?: (id: number) => Promise<void>;
     openTaskModal: (task: Task, inboxItemId?: number) => void;
     openProjectModal: (project: Project | null, inboxItemId?: number) => void;
     openNoteModal: (note: Note | null, inboxItemId?: number) => void;
@@ -401,9 +401,16 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         >
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-2 gap-2">
                 <div className="flex-1">
-                    <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
+                    <button
+                        onClick={() => {
+                            if (onUpdate && item.id !== undefined) {
+                                onUpdate(item.id);
+                            }
+                        }}
+                        className="text-base font-medium text-gray-900 dark:text-gray-300 break-words text-left cursor-pointer w-full"
+                    >
                         {cleanedContent || item.content}
-                    </p>
+                    </button>
 
                     {/* Tags and Projects display - TaskHeader style */}
                     {(hashtags.length > 0 || projectRefs.length > 0) && (
@@ -498,7 +505,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     <button
                         onClick={() => {
                             if (onUpdate && item.id !== undefined) {
-                                onUpdate(item.id, item.content);
+                                onUpdate(item.id);
                             }
                         }}
                         className={`p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
