@@ -523,6 +523,7 @@ const InboxItems: React.FC = () => {
                                     Array.isArray(projects) ? projects : []
                                 }
                                 onCreateProject={handleCreateProject}
+                                showToast={false}
                             />
                         );
                     } catch (error) {
