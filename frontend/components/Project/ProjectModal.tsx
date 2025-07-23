@@ -464,7 +464,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             </div>
 
                                             {/* Description Section - Always Visible */}
-                                            <div className="flex-1 border-b border-gray-200 dark:border-gray-700 pb-4 px-4 flex flex-col">
+                                            <div className="flex-1 border-b border-gray-200 dark:border-gray-700 pb-4 px-4 flex flex-col mb-2">
                                                 <textarea
                                                     id="projectDescription"
                                                     name="description"

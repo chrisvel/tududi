@@ -15,7 +15,7 @@ const TaskContentSection: React.FC<TaskContentSectionProps> = ({
     const { t } = useTranslation();
 
     return (
-        <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-700 flex-1 flex flex-col">
+        <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-700 flex-1 flex flex-col mb-2">
             <textarea
                 id={`task_note_${taskId}`}
                 name="note"

@@ -400,7 +400,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                 </div>
 
                                                 {/* Content Section - Always Visible */}
-                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 px-4 flex-1 flex flex-col">
+                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 px-4 flex-1 flex flex-col mb-2">
                                                     <div className="flex items-center justify-between mb-2">
                                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                             {t(
