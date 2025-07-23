@@ -159,7 +159,7 @@ const TagModal: React.FC<TagModalProps> = ({
                 >
                     <div className="flex flex-col h-auto">
                         {/* Main Form Section */}
-                        <div className="bg-white dark:bg-gray-800">
+                        <div className="bg-white dark:bg-gray-800 sm:rounded-t-lg">
                             <form
                                 onSubmit={(e) => {
                                     e.preventDefault();
@@ -189,7 +189,7 @@ const TagModal: React.FC<TagModalProps> = ({
                         </div>
 
                         {/* Action Buttons - Below border with custom layout */}
-                        <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
+                        <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between sm:rounded-b-lg">
                             {/* Left side: Delete and Cancel */}
                             <div className="flex items-center space-x-3">
                                 {tag && tag.id && onDelete && (
