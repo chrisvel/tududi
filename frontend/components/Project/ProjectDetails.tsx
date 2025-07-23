@@ -210,12 +210,10 @@ const ProjectDetails: React.FC = () => {
             return;
         }
 
-        // If the updatedTask already contains updated data from API (like from toggleTaskCompletion),
-        // and has critical fields like status, we can skip the API call and just update local state
+        // Only skip API call for specific operations that already have fresh data from the server
+        // (like toggleTaskCompletion), not for general modal updates
         const hasUpdatedData =
-            updatedTask.status !== undefined &&
-            (updatedTask.updated_at !== undefined ||
-                updatedTask.parent_child_logic_executed !== undefined);
+            updatedTask.parent_child_logic_executed !== undefined;
 
         if (hasUpdatedData) {
             // Use the provided data directly, preserving existing subtasks if not included
@@ -260,33 +258,40 @@ const ProjectDetails: React.FC = () => {
             }
 
             const savedTask = await response.json();
-            setTasks(
-                tasks.map((task) =>
-                    task.id === updatedTask.id
-                        ? {
-                              ...task,
-                              ...savedTask,
-                              // Explicitly preserve subtasks data
-                              subtasks:
-                                  savedTask.subtasks ||
-                                  savedTask.Subtasks ||
-                                  updatedTask.subtasks ||
-                                  updatedTask.Subtasks ||
-                                  task.subtasks ||
-                                  task.Subtasks ||
-                                  [],
-                              Subtasks:
-                                  savedTask.subtasks ||
-                                  savedTask.Subtasks ||
-                                  updatedTask.subtasks ||
-                                  updatedTask.Subtasks ||
-                                  task.subtasks ||
-                                  task.Subtasks ||
-                                  [],
-                          }
-                        : task
-                )
-            );
+            
+            // If the task's project was changed/cleared and no longer belongs to this project, remove it
+            if (savedTask.project_id !== project?.id) {
+                setTasks(tasks.filter((task) => task.id !== updatedTask.id));
+            } else {
+                // Otherwise, update the task in place
+                setTasks(
+                    tasks.map((task) =>
+                        task.id === updatedTask.id
+                            ? {
+                                  ...task,
+                                  ...savedTask,
+                                  // Explicitly preserve subtasks data
+                                  subtasks:
+                                      savedTask.subtasks ||
+                                      savedTask.Subtasks ||
+                                      updatedTask.subtasks ||
+                                      updatedTask.Subtasks ||
+                                      task.subtasks ||
+                                      task.Subtasks ||
+                                      [],
+                                  Subtasks:
+                                      savedTask.subtasks ||
+                                      savedTask.Subtasks ||
+                                      updatedTask.subtasks ||
+                                      updatedTask.Subtasks ||
+                                      task.subtasks ||
+                                      task.Subtasks ||
+                                      [],
+                              }
+                            : task
+                    )
+                );
+            }
         } catch {
             // Error updating task - silently handled
         }
