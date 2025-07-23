@@ -45,7 +45,9 @@ const ProjectDetails: React.FC = () => {
 
     // Using local state to avoid infinite loops
     const areas = useStore((state) => state.areasStore.areas);
-    const { projects: allProjects, setProjects } = useStore((state) => state.projectsStore);
+    const { projects: allProjects, setProjects } = useStore(
+        (state) => state.projectsStore
+    );
     const [project, setProject] = useState<Project | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
@@ -258,7 +260,7 @@ const ProjectDetails: React.FC = () => {
             }
 
             const savedTask = await response.json();
-            
+
             // If the task's project was changed/cleared and no longer belongs to this project, remove it
             if (savedTask.project_id !== project?.id) {
                 setTasks(tasks.filter((task) => task.id !== updatedTask.id));
