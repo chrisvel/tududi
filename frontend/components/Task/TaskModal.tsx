@@ -44,6 +44,7 @@ interface TaskModalProps {
     onCreateProject: (name: string) => Promise<Project>;
     onEditParentTask?: (parentTask: Task) => void;
     autoFocusSubtasks?: boolean;
+    showToast?: boolean;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -56,6 +57,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     onCreateProject,
     onEditParentTask,
     autoFocusSubtasks,
+    showToast = true,
 }) => {
     const {
         tagsStore: {
@@ -344,19 +346,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
         };
 
         onSave(finalFormData as any);
-        const taskLink = (
-            <span>
-                {t('task.updated', 'Task')}{' '}
-                <a
-                    href={`/task/${formData.uuid}`}
-                    className="text-green-200 underline hover:text-green-100"
-                >
-                    {formData.name}
-                </a>{' '}
-                {t('task.updatedSuccessfully', 'updated successfully!')}
-            </span>
-        );
-        showSuccessToast(taskLink);
+
+        if (showToast) {
+            const taskLink = (
+                <span>
+                    {t('task.updated', 'Task')}{' '}
+                    <a
+                        href={`/task/${formData.uuid}`}
+                        className="text-green-200 underline hover:text-green-100"
+                    >
+                        {formData.name}
+                    </a>{' '}
+                    {t('task.updatedSuccessfully', 'updated successfully!')}
+                </span>
+            );
+            showSuccessToast(taskLink);
+        }
         handleClose();
     };
 
