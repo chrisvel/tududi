@@ -61,8 +61,15 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     );
     const [isUploading, setIsUploading] = useState(false);
 
-    const { tagsStore } = useStore();
-    const { tags: availableTags } = tagsStore;
+    const {
+        tagsStore: {
+            tags: availableTags,
+            hasLoaded: tagsLoaded,
+            isLoading: tagsLoading,
+            isError: tagsError,
+            loadTags,
+        },
+    } = useStore();
 
     const modalRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -92,6 +99,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             }, 200);
         }
     }, [isOpen]);
+
+    // Load tags when modal opens if not already loaded
+    useEffect(() => {
+        if (isOpen && !tagsLoaded && !tagsLoading && !tagsError) {
+            loadTags();
+        }
+    }, [isOpen, tagsLoaded, tagsLoading, tagsError, loadTags]);
 
     // Manage body scroll when modal is open
     useEffect(() => {
@@ -521,15 +535,24 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                             'Tags'
                                                         )}
                                                     </h3>
-                                                    <TagInput
-                                                        onTagsChange={
-                                                            handleTagsChange
-                                                        }
-                                                        initialTags={tags}
-                                                        availableTags={
-                                                            availableTags
-                                                        }
-                                                    />
+                                                    {tagsLoaded ? (
+                                                        <TagInput
+                                                            onTagsChange={
+                                                                handleTagsChange
+                                                            }
+                                                            initialTags={tags}
+                                                            availableTags={
+                                                                availableTags
+                                                            }
+                                                        />
+                                                    ) : (
+                                                        <div className="text-gray-500 text-sm">
+                                                            {t(
+                                                                'common.loading',
+                                                                'Loading...'
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
 
