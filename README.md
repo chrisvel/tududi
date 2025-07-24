@@ -373,9 +373,10 @@ Contributions to `tududi` are welcome. To contribute:
 5. Push to the branch (\`git push origin fexature/AmazingFeature\`).
 6. Open a pull request.
 
+
 ## 📜 License
 
-This project is licensed for free personal use, with consent required for commercial use. Refer to the LICENSE for further details.
+This project is licensed under the [MIT License](LICENSE).
 
 ## 📬 Contact
 
