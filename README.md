@@ -1,8 +1,9 @@
 <div align="center">
-  <img src="screenshots/tududi-logo.png" alt="tududi logo" width="200"/>
+  <img src="screenshots/tududi-logo.png" alt="tududi logo" width="100%"/>
 </div>
 
-# 📝 tududi
+
+# Introduction
 
 `tududi` is the self-hosted task management tool that puts you in control. Organize your life and projects with a clear, hierarchical structure,
 smart recurring tasks, and seamless Telegram integration. Get focused, stay productive, and keep your data private.
