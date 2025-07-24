@@ -15,7 +15,6 @@ import {
     TagIcon,
     XMarkIcon,
     MagnifyingGlassIcon,
-    CheckCircleIcon,
 } from '@heroicons/react/24/solid';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -434,39 +433,45 @@ const Tasks: React.FC = () => {
                                     : 'Search Tasks'
                             }
                         >
-                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-300 dark:text-gray-200" />
+                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
                             <span className="sr-only">
                                 {isSearchExpanded
                                     ? 'Hide search'
                                     : 'Search Tasks'}
                             </span>
                         </button>
-                        <button
-                            onClick={() => setShowCompleted((v) => !v)}
-                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
-                                showCompleted
-                                    ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400'
-                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
-                            }`}
-                            aria-pressed={showCompleted}
-                            aria-label={
-                                showCompleted
-                                    ? 'Hide completed tasks'
-                                    : 'Show completed tasks'
-                            }
-                            title={
-                                showCompleted
-                                    ? 'Hide completed tasks'
-                                    : 'Show completed tasks'
-                            }
-                        >
-                            <CheckCircleIcon className="h-5 w-5" />
-                            <span className="sr-only">
-                                {showCompleted
-                                    ? 'Hide completed tasks'
-                                    : 'Show completed tasks'}
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                Show completed
                             </span>
-                        </button>
+                            <button
+                                onClick={() => setShowCompleted((v) => !v)}
+                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                                    showCompleted
+                                        ? 'bg-blue-600'
+                                        : 'bg-gray-200 dark:bg-gray-600'
+                                }`}
+                                aria-pressed={showCompleted}
+                                aria-label={
+                                    showCompleted
+                                        ? 'Hide completed tasks'
+                                        : 'Show completed tasks'
+                                }
+                                title={
+                                    showCompleted
+                                        ? 'Hide completed tasks'
+                                        : 'Show completed tasks'
+                                }
+                            >
+                                <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                        showCompleted
+                                            ? 'translate-x-4'
+                                            : 'translate-x-0.5'
+                                    }`}
+                                />
+                            </button>
+                        </div>
                         <SortFilter
                             sortOptions={sortOptions}
                             sortValue={orderBy}
@@ -516,7 +521,7 @@ const Tasks: React.FC = () => {
                     } overflow-hidden`}
                 >
                     <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
-                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
                         <input
                             type="text"
                             placeholder={getSearchPlaceholder(i18n.language)}
