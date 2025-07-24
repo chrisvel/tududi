@@ -59,10 +59,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     initialSubtasks = [],
 }) => {
     const {
-        tagsStore: {
-            tags: availableTags,
-            hasLoaded: tagsLoaded,
-        },
+        tagsStore: { tags: availableTags, hasLoaded: tagsLoaded },
     } = useStore();
     const [formData, setFormData] = useState<Task>(task);
     const [tags, setTags] = useState<string[]>(

@@ -127,10 +127,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
     );
 };
 import TaskModal from './TaskModal';
-import {
-    toggleTaskCompletion,
-    fetchSubtasks,
-} from '../../utils/tasksService';
+import { toggleTaskCompletion, fetchSubtasks } from '../../utils/tasksService';
 import { isTaskOverdue } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 
