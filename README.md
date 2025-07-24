@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="screenshots/tududi-logo.png" alt="tududi logo" width="200"/>
+</div>
+
 # 📝 tududi
 
 `tududi` is the self-hosted task management tool that puts you in control. Organize your life and projects with a clear, hierarchical structure,
