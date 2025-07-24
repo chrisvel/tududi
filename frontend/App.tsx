@@ -17,7 +17,7 @@ import About from './components/About';
 import Layout from './Layout';
 import { User } from './entities/User';
 import TasksToday from './components/Task/TasksToday';
-import TaskView from './components/Task/TaskView';
+import TaskDetails from './components/Task/TaskDetails';
 import LoadingScreen from './components/Shared/LoadingScreen';
 import InboxItems from './components/Inbox/InboxItems';
 // Lazy load Tasks component to prevent issues with tags loading
@@ -25,13 +25,12 @@ const Tasks = lazy(() => import('./components/Tasks'));
 
 const App: React.FC = () => {
     const { i18n } = useTranslation();
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
 
     if (!i18n.isInitialized) {
         return <LoadingScreen />;
     }
-
-    const [currentUser, setCurrentUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
 
     const fetchCurrentUser = async () => {
         try {
@@ -176,7 +175,10 @@ const App: React.FC = () => {
                                 element={<Navigate to="/today" replace />}
                             />
                             <Route path="/today" element={<TasksToday />} />
-                            <Route path="/task/:uuid" element={<TaskView />} />
+                            <Route
+                                path="/task/:uuid"
+                                element={<TaskDetails />}
+                            />
                             <Route
                                 path="/tasks"
                                 element={

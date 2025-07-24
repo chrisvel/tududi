@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { EyeIcon, PencilIcon } from '@heroicons/react/24/outline';
+import MarkdownRenderer from '../../Shared/MarkdownRenderer';
 
 interface TaskContentSectionProps {
     taskId: number | undefined;
@@ -13,20 +15,65 @@ const TaskContentSection: React.FC<TaskContentSectionProps> = ({
     onChange,
 }) => {
     const { t } = useTranslation();
+    const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
 
     return (
         <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-700 flex-1 flex flex-col mb-2">
-            <textarea
-                id={`task_note_${taskId}`}
-                name="note"
-                value={value}
-                onChange={onChange}
-                className="block w-full border-0 focus:outline-none focus:ring-0 p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 resize-none flex-1 min-h-0"
-                placeholder={t(
-                    'forms.noteContentPlaceholder',
-                    'Add task description...'
+            {/* Content area with floating buttons */}
+            <div className="relative flex-1 flex flex-col">
+                {/* Floating toggle buttons */}
+                <div className="absolute top-2 right-2 z-10 flex space-x-1">
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('edit')}
+                        className={`p-1.5 rounded-md transition-colors ${
+                            activeTab === 'edit'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                        }`}
+                        title="Edit"
+                    >
+                        <PencilIcon className="h-3 w-3" />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('preview')}
+                        className={`p-1.5 rounded-md transition-colors ${
+                            activeTab === 'preview'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                        }`}
+                        title="Preview"
+                    >
+                        <EyeIcon className="h-3 w-3" />
+                    </button>
+                </div>
+
+                {activeTab === 'edit' ? (
+                    <textarea
+                        id={`task_note_${taskId}`}
+                        name="note"
+                        value={value}
+                        onChange={onChange}
+                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 pr-20 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 resize-none flex-1 min-h-0 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+                        placeholder={t(
+                            'forms.noteContentPlaceholder',
+                            'Add task description using Markdown formatting...\n\nExamples:\n# Heading\n**Bold text**\n*Italic text*\n- List item\n```code```'
+                        )}
+                    />
+                ) : (
+                    <div className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 pr-20 text-sm bg-gray-50 dark:bg-gray-800 flex-1 min-h-0 overflow-y-auto">
+                        {value ? (
+                            <MarkdownRenderer content={value} />
+                        ) : (
+                            <p className="text-gray-500 dark:text-gray-400 italic">
+                                No content to preview. Switch to Edit mode to
+                                add content.
+                            </p>
+                        )}
+                    </div>
                 )}
-            />
+            </div>
         </div>
     );
 };
