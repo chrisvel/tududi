@@ -67,7 +67,8 @@ const TaskContentSection: React.FC<TaskContentSectionProps> = ({
                             <MarkdownRenderer content={value} />
                         ) : (
                             <p className="text-gray-500 dark:text-gray-400 italic">
-                                No content to preview. Switch to Edit mode to add content.
+                                No content to preview. Switch to Edit mode to
+                                add content.
                             </p>
                         )}
                     </div>

@@ -175,7 +175,10 @@ const App: React.FC = () => {
                                 element={<Navigate to="/today" replace />}
                             />
                             <Route path="/today" element={<TasksToday />} />
-                            <Route path="/task/:uuid" element={<TaskDetails />} />
+                            <Route
+                                path="/task/:uuid"
+                                element={<TaskDetails />}
+                            />
                             <Route
                                 path="/tasks"
                                 element={

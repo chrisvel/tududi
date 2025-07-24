@@ -8,7 +8,6 @@ import {
     FolderIcon,
     CalendarIcon,
     ExclamationTriangleIcon,
-    CheckCircleIcon,
     ArrowPathIcon,
     ClockIcon,
 } from '@heroicons/react/24/outline';
@@ -36,9 +35,9 @@ const TaskDetails: React.FC = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
-    
+
     const projects = useStore((state) => state.projectsStore.projects);
-    
+
     // Local state
     const [task, setTask] = useState<Task | null>(null);
     const [subtasks, setSubtasks] = useState<Task[]>([]);
@@ -132,15 +131,18 @@ const TaskDetails: React.FC = () => {
         try {
             const updatedTask = await toggleTaskCompletion(task.id);
             setTask(updatedTask);
-            
-            const statusMessage = updatedTask.status === 'done' || updatedTask.status === 2
-                ? t('task.completedSuccess', 'Task marked as completed')
-                : t('task.reopenedSuccess', 'Task reopened');
-            
+
+            const statusMessage =
+                updatedTask.status === 'done' || updatedTask.status === 2
+                    ? t('task.completedSuccess', 'Task marked as completed')
+                    : t('task.reopenedSuccess', 'Task reopened');
+
             showSuccessToast(statusMessage);
         } catch (error) {
             console.error('Error toggling task completion:', error);
-            showErrorToast(t('task.toggleError', 'Failed to update task status'));
+            showErrorToast(
+                t('task.toggleError', 'Failed to update task status')
+            );
         }
     };
 
@@ -149,8 +151,10 @@ const TaskDetails: React.FC = () => {
             if (task?.id) {
                 const updated = await updateTask(task.id, updatedTask);
                 setTask(updated);
-                showSuccessToast(t('task.updateSuccess', 'Task updated successfully'));
-                
+                showSuccessToast(
+                    t('task.updateSuccess', 'Task updated successfully')
+                );
+
                 // Reload subtasks in case they changed
                 if (updated.id) {
                     try {
@@ -179,7 +183,9 @@ const TaskDetails: React.FC = () => {
         if (taskToDelete?.id) {
             try {
                 await deleteTask(taskToDelete.id);
-                showSuccessToast(t('task.deleteSuccess', 'Task deleted successfully'));
+                showSuccessToast(
+                    t('task.deleteSuccess', 'Task deleted successfully')
+                );
                 navigate('/today'); // Navigate back to today view after deletion
             } catch (error) {
                 console.error('Error deleting task:', error);
@@ -219,7 +225,10 @@ const TaskDetails: React.FC = () => {
                             {error || t('task.notFound', 'Task Not Found')}
                         </h1>
                         <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-                            {t('task.notFoundDescription', 'The task you are looking for does not exist or has been deleted.')}
+                            {t(
+                                'task.notFoundDescription',
+                                'The task you are looking for does not exist or has been deleted.'
+                            )}
                         </p>
                         <button
                             onClick={() => navigate('/today')}
@@ -249,7 +258,11 @@ const TaskDetails: React.FC = () => {
                                 {task.name}
                             </h2>
                             {/* Project, tags, due date, and recurrence under title */}
-                            {(task.Project || (task.tags && task.tags.length > 0) || task.due_date || (task.recurrence_type && task.recurrence_type !== 'none')) && (
+                            {(task.Project ||
+                                (task.tags && task.tags.length > 0) ||
+                                task.due_date ||
+                                (task.recurrence_type &&
+                                    task.recurrence_type !== 'none')) && (
                                 <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
                                     {task.Project && (
                                         <div className="flex items-center">
@@ -262,59 +275,83 @@ const TaskDetails: React.FC = () => {
                                             </Link>
                                         </div>
                                     )}
-                                    {task.Project && task.tags && task.tags.length > 0 && (
-                                        <span className="mx-2">•</span>
-                                    )}
+                                    {task.Project &&
+                                        task.tags &&
+                                        task.tags.length > 0 && (
+                                            <span className="mx-2">•</span>
+                                        )}
                                     {task.tags && task.tags.length > 0 && (
                                         <div className="flex items-center">
                                             <TagIcon className="h-3 w-3 mr-1" />
                                             <span>
                                                 {task.tags.map((tag, index) => (
-                                                    <React.Fragment key={tag.id || tag.name}>
+                                                    <React.Fragment
+                                                        key={tag.id || tag.name}
+                                                    >
                                                         <Link
                                                             to={`/tag/${encodeURIComponent(tag.name)}`}
                                                             className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
                                                         >
                                                             {tag.name}
                                                         </Link>
-                                                        {index < task.tags!.length - 1 && ', '}
+                                                        {index <
+                                                            task.tags!.length -
+                                                                1 && ', '}
                                                     </React.Fragment>
                                                 ))}
                                             </span>
                                         </div>
                                     )}
-                                    {((task.Project) || (task.tags && task.tags.length > 0)) && task.due_date && (
-                                        <span className="mx-2">•</span>
-                                    )}
+                                    {(task.Project ||
+                                        (task.tags && task.tags.length > 0)) &&
+                                        task.due_date && (
+                                            <span className="mx-2">•</span>
+                                        )}
                                     {task.due_date && (
                                         <div className="flex items-center">
                                             <CalendarIcon className="h-3 w-3 mr-1" />
-                                            <span>{formatDueDate(task.due_date)}</span>
+                                            <span>
+                                                {formatDueDate(task.due_date)}
+                                            </span>
                                         </div>
                                     )}
-                                    {((task.Project) || (task.tags && task.tags.length > 0) || task.due_date) && 
-                                        task.recurrence_type && task.recurrence_type !== 'none' && (
-                                        <span className="mx-2">•</span>
-                                    )}
-                                    {task.recurrence_type && task.recurrence_type !== 'none' && (
-                                        <div className="flex items-center">
-                                            <ArrowPathIcon className="h-3 w-3 mr-1" />
-                                            <span>{formatRecurrence(task.recurrence_type)}</span>
-                                        </div>
-                                    )}
+                                    {(task.Project ||
+                                        (task.tags && task.tags.length > 0) ||
+                                        task.due_date) &&
+                                        task.recurrence_type &&
+                                        task.recurrence_type !== 'none' && (
+                                            <span className="mx-2">•</span>
+                                        )}
+                                    {task.recurrence_type &&
+                                        task.recurrence_type !== 'none' && (
+                                            <div className="flex items-center">
+                                                <ArrowPathIcon className="h-3 w-3 mr-1" />
+                                                <span>
+                                                    {formatRecurrence(
+                                                        task.recurrence_type
+                                                    )}
+                                                </span>
+                                            </div>
+                                        )}
                                 </div>
                             )}
                         </div>
                     </div>
                     <div className="flex space-x-2">
                         <button
-                            onClick={() => setIsTimelineExpanded(!isTimelineExpanded)}
+                            onClick={() =>
+                                setIsTimelineExpanded(!isTimelineExpanded)
+                            }
                             className={`p-2 rounded-full transition-colors duration-200 ${
                                 isTimelineExpanded
                                     ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
                                     : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
                             }`}
-                            title={isTimelineExpanded ? 'Hide Activity Timeline' : 'Show Activity Timeline'}
+                            title={
+                                isTimelineExpanded
+                                    ? 'Hide Activity Timeline'
+                                    : 'Show Activity Timeline'
+                            }
                         >
                             <ClockIcon className="h-5 w-5" />
                         </button>
@@ -348,8 +385,8 @@ const TaskDetails: React.FC = () => {
                                         {t('task.notes', 'Notes')}
                                     </h4>
                                     <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
-                                        <MarkdownRenderer 
-                                            content={task.note} 
+                                        <MarkdownRenderer
+                                            content={task.note}
                                             className="prose dark:prose-invert max-w-none"
                                         />
                                     </div>
@@ -364,11 +401,20 @@ const TaskDetails: React.FC = () => {
                                     </h4>
                                     <div className="space-y-1">
                                         {subtasks.map((subtask) => (
-                                            <div key={subtask.id} className="group">
+                                            <div
+                                                key={subtask.id}
+                                                className="group"
+                                            >
                                                 <div
-                                                    onClick={() => handleSubtaskClick(subtask)}
+                                                    onClick={() =>
+                                                        handleSubtaskClick(
+                                                            subtask
+                                                        )
+                                                    }
                                                     className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 cursor-pointer transition-all duration-200 ${
-                                                        subtask.status === 'in_progress' || subtask.status === 1
+                                                        subtask.status ===
+                                                            'in_progress' ||
+                                                        subtask.status === 1
                                                             ? 'border-green-400/60 dark:border-green-500/60'
                                                             : 'border-gray-50 dark:border-gray-800'
                                                     }`}
@@ -376,30 +422,56 @@ const TaskDetails: React.FC = () => {
                                                     <div className="px-4 py-2.5 flex items-center space-x-3">
                                                         <div className="flex-shrink-0">
                                                             <TaskPriorityIcon
-                                                                priority={subtask.priority}
-                                                                status={subtask.status}
+                                                                priority={
+                                                                    subtask.priority
+                                                                }
+                                                                status={
+                                                                    subtask.status
+                                                                }
                                                                 onToggleCompletion={async () => {
-                                                                    if (subtask.id) {
+                                                                    if (
+                                                                        subtask.id
+                                                                    ) {
                                                                         try {
-                                                                            await toggleTaskCompletion(subtask.id);
+                                                                            await toggleTaskCompletion(
+                                                                                subtask.id
+                                                                            );
                                                                             // Reload subtasks after toggling completion
-                                                                            if (task?.id) {
-                                                                                const subtasksData = await fetchSubtasks(task.id);
-                                                                                setSubtasks(subtasksData);
+                                                                            if (
+                                                                                task?.id
+                                                                            ) {
+                                                                                const subtasksData =
+                                                                                    await fetchSubtasks(
+                                                                                        task.id
+                                                                                    );
+                                                                                setSubtasks(
+                                                                                    subtasksData
+                                                                                );
                                                                             }
                                                                         } catch (error) {
-                                                                            console.error('Error toggling subtask completion:', error);
+                                                                            console.error(
+                                                                                'Error toggling subtask completion:',
+                                                                                error
+                                                                            );
                                                                         }
                                                                     }
                                                                 }}
                                                             />
                                                         </div>
-                                                        <span className={`text-base flex-1 truncate ${
-                                                            subtask.status === 'done' || subtask.status === 2 ||
-                                                            subtask.status === 'archived' || subtask.status === 3
-                                                                ? 'text-gray-500 dark:text-gray-400'
-                                                                : 'text-gray-900 dark:text-gray-100'
-                                                        }`}>
+                                                        <span
+                                                            className={`text-base flex-1 truncate ${
+                                                                subtask.status ===
+                                                                    'done' ||
+                                                                subtask.status ===
+                                                                    2 ||
+                                                                subtask.status ===
+                                                                    'archived' ||
+                                                                subtask.status ===
+                                                                    3
+                                                                    ? 'text-gray-500 dark:text-gray-400'
+                                                                    : 'text-gray-900 dark:text-gray-100'
+                                                            }`}
+                                                        >
                                                             {subtask.name}
                                                         </span>
                                                     </div>
@@ -419,7 +491,9 @@ const TaskDetails: React.FC = () => {
                         <TimelinePanel
                             taskId={task.id}
                             isExpanded={isTimelineExpanded}
-                            onToggle={() => setIsTimelineExpanded(!isTimelineExpanded)}
+                            onToggle={() =>
+                                setIsTimelineExpanded(!isTimelineExpanded)
+                            }
                         />
                     </div>
                 )}
@@ -427,7 +501,14 @@ const TaskDetails: React.FC = () => {
                 {/* Task Modal for Editing */}
                 <TaskModal
                     isOpen={isTaskModalOpen}
-                    task={task || { name: '', status: 'not_started', priority: 'medium', completed_at: null }}
+                    task={
+                        task || {
+                            name: '',
+                            status: 'not_started',
+                            priority: 'medium',
+                            completed_at: null,
+                        }
+                    }
                     onClose={() => setIsTaskModalOpen(false)}
                     onSave={handleTaskUpdate}
                     onDelete={async (taskId: number) => {
@@ -444,7 +525,10 @@ const TaskDetails: React.FC = () => {
                 {isConfirmDialogOpen && taskToDelete && (
                     <ConfirmDialog
                         title={t('task.deleteConfirmTitle', 'Delete Task')}
-                        message={t('task.deleteConfirmMessage', 'Are you sure you want to delete this task? This action cannot be undone.')}
+                        message={t(
+                            'task.deleteConfirmMessage',
+                            'Are you sure you want to delete this task? This action cannot be undone.'
+                        )}
                         onConfirm={handleDeleteConfirm}
                         onCancel={() => {
                             setIsConfirmDialogOpen(false);

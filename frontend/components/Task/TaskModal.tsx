@@ -62,9 +62,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
         tagsStore: {
             tags: availableTags,
             hasLoaded: tagsLoaded,
-            isLoading: tagsLoading,
-            isError: tagsError,
-            loadTags,
         },
     } = useStore();
     const [formData, setFormData] = useState<Task>(task);
@@ -83,10 +80,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [parentTaskLoading, setParentTaskLoading] = useState(false);
     const [taskAnalysis, setTaskAnalysis] = useState<TaskAnalysis | null>(null);
-    const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] =
-        useState(true);
+    const [taskIntelligenceEnabled] = useState(true);
     const [subtasks, setSubtasks] = useState<Task[]>([]);
-    const [subtasksLoaded, setSubtasksLoaded] = useState(false);
 
     // Collapsible section states
     const [expandedSections, setExpandedSections] = useState({
@@ -444,13 +439,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
         if (isOpen && task.id) {
             // Always use provided initial subtasks (from parent component) or empty array
             setSubtasks(initialSubtasks);
-            setSubtasksLoaded(true);
         } else if (!isOpen) {
             // Reset subtasks when modal closes
             setSubtasks([]);
-            setSubtasksLoaded(false);
         }
-    }, [isOpen, task.id]);
+    }, [isOpen, task.id, initialSubtasks]);
 
     if (!isOpen) return null;
 
@@ -707,7 +700,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                     </div>
                                 </div>
 
-
                                 {/* Section Icons - Above border, split layout */}
                                 <div className="flex-shrink-0 bg-white dark:bg-gray-800 px-3 py-2">
                                     <div className="flex items-center justify-between">
@@ -844,7 +836,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 )}
                                             </button>
                                         </div>
-
                                     </div>
                                 </div>
 
@@ -884,7 +875,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                     </button>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>

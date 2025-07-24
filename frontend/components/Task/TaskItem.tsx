@@ -130,7 +130,6 @@ import TaskModal from './TaskModal';
 import {
     toggleTaskCompletion,
     fetchSubtasks,
-    fetchTaskById,
 } from '../../utils/tasksService';
 import { isTaskOverdue } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
