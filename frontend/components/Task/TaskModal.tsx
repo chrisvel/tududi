@@ -3,18 +3,15 @@ import { createPortal } from 'react-dom';
 import { PriorityType, Task } from '../../entities/Task';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useToast } from '../Shared/ToastContext';
-import TimelinePanel from './TimelinePanel';
 import { Project } from '../../entities/Project';
 import { useStore } from '../../store/useStore';
-import { fetchTaskById, fetchSubtasks } from '../../utils/tasksService';
-import { getTaskIntelligenceEnabled } from '../../utils/profileService';
+import { fetchTaskById } from '../../utils/tasksService';
 import {
     analyzeTaskName,
     TaskAnalysis,
 } from '../../utils/taskIntelligenceService';
 import { useTranslation } from 'react-i18next';
 import {
-    ClockIcon,
     TagIcon,
     FolderIcon,
     ArrowPathIcon,
@@ -45,6 +42,7 @@ interface TaskModalProps {
     onEditParentTask?: (parentTask: Task) => void;
     autoFocusSubtasks?: boolean;
     showToast?: boolean;
+    initialSubtasks?: Task[];
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -58,9 +56,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
     onEditParentTask,
     autoFocusSubtasks,
     showToast = true,
+    initialSubtasks = [],
 }) => {
     const { tagsStore } = useStore();
-    const availableTags = tagsStore.getTags();
+    // Avoid calling getTags() during component initialization to prevent remounting
+    const availableTags = tagsStore.tags;
     const { addNewTags } = tagsStore;
     const [formData, setFormData] = useState<Task>(task);
     const [tags, setTags] = useState<string[]>(
@@ -78,11 +78,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [parentTaskLoading, setParentTaskLoading] = useState(false);
     const [taskAnalysis, setTaskAnalysis] = useState<TaskAnalysis | null>(null);
-    const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] =
-        useState(true);
-    const [isTimelineExpanded, setIsTimelineExpanded] = useState(false);
+    const [taskIntelligenceEnabled] = useState(true);
     const [subtasks, setSubtasks] = useState<Task[]>([]);
-    const [subtasksLoaded, setSubtasksLoaded] = useState(false);
 
     // Collapsible section states
     const [expandedSections, setExpandedSections] = useState({
@@ -163,21 +160,24 @@ const TaskModal: React.FC<TaskModalProps> = ({
         );
         setNewProjectName(currentProject ? currentProject.name : '');
 
-        // Fetch parent task if this is a child task
+        // Fetch parent task if this is a child task - but don't block rendering
         const fetchParentTask = async () => {
             if (task.recurring_parent_id && isOpen) {
                 setParentTaskLoading(true);
-                try {
-                    const parent = await fetchTaskById(
-                        task.recurring_parent_id
-                    );
-                    setParentTask(parent);
-                } catch (error) {
-                    console.error('Error fetching parent task:', error);
-                    setParentTask(null);
-                } finally {
-                    setParentTaskLoading(false);
-                }
+                // Use setTimeout to not block initial render
+                setTimeout(async () => {
+                    try {
+                        const parent = await fetchTaskById(
+                            task.recurring_parent_id
+                        );
+                        setParentTask(parent);
+                    } catch (error) {
+                        console.error('Error fetching parent task:', error);
+                        setParentTask(null);
+                    } finally {
+                        setParentTaskLoading(false);
+                    }
+                }, 0);
             } else {
                 setParentTask(null);
             }
@@ -186,25 +186,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
         fetchParentTask();
     }, [task, projects, isOpen, taskIntelligenceEnabled]);
 
-    // Fetch task intelligence setting when modal opens
-    useEffect(() => {
-        const fetchTaskIntelligenceSetting = async () => {
-            if (isOpen) {
-                try {
-                    const enabled = await getTaskIntelligenceEnabled();
-                    setTaskIntelligenceEnabled(enabled);
-                } catch (error) {
-                    console.error(
-                        'Error fetching task intelligence setting:',
-                        error
-                    );
-                    setTaskIntelligenceEnabled(true); // Default to enabled
-                }
-            }
-        };
-
-        fetchTaskIntelligenceSetting();
-    }, [isOpen]);
+    // Don't fetch task intelligence setting - use default enabled state
+    // This prevents unnecessary API calls when opening the modal
 
     // Auto-focus on subtasks section when modal opens
     useEffect(() => {
@@ -220,8 +203,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
         }
     }, [isOpen, autoFocusSubtasks]);
 
-    // Tags refreshing removed to prevent modal closing issues
-    // Tags will be loaded automatically when accessed via getTags() in the store
+    // Load tags when modal opens if not already loaded
+    useEffect(() => {
+        if (isOpen && !tagsStore.hasLoaded && !tagsStore.isLoading) {
+            tagsStore.loadTags();
+        }
+    }, [isOpen, tagsStore.hasLoaded, tagsStore.isLoading, tagsStore.loadTags]);
 
     const handleEditParent = () => {
         if (parentTask && onEditParentTask) {
@@ -436,28 +423,16 @@ const TaskModal: React.FC<TaskModalProps> = ({
         };
     }, [isOpen]);
 
-    // Load existing subtasks when modal opens (only if not already loaded)
+    // Load existing subtasks when modal opens - use initialSubtasks if provided, no fetching
     useEffect(() => {
-        if (isOpen && task.id && !subtasksLoaded) {
-            const loadExistingSubtasks = async () => {
-                try {
-                    const existingSubtasks = await fetchSubtasks(task.id!);
-                    setSubtasks(existingSubtasks);
-                    setSubtasksLoaded(true);
-                } catch {
-                    // Handle silently - don't show error for this
-                    setSubtasks([]);
-                    setSubtasksLoaded(true);
-                }
-            };
-
-            loadExistingSubtasks();
+        if (isOpen && task.id) {
+            // Always use provided initial subtasks (from parent component) or empty array
+            setSubtasks(initialSubtasks);
         } else if (!isOpen) {
             // Reset subtasks when modal closes
             setSubtasks([]);
-            setSubtasksLoaded(false);
         }
-    }, [isOpen, task.id, subtasksLoaded]);
+    }, [isOpen, task.id, initialSubtasks]);
 
     if (!isOpen) return null;
 
@@ -491,11 +466,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     >
                         <div className="flex flex-col lg:flex-row h-full sm:min-h-[600px] sm:max-h-[90vh]">
                             {/* Main Form Section */}
-                            <div
-                                className={`flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 sm:rounded-l-lg ${
-                                    isTimelineExpanded ? 'lg:pr-2' : ''
-                                }`}
-                            >
+                            <div className="flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 sm:rounded-lg">
                                 <div className="flex-1 relative">
                                     <div
                                         className="absolute inset-0 overflow-y-auto overflow-x-hidden"
@@ -724,21 +695,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Timeline Panel - Show when expanded on mobile only */}
-                                {isTimelineExpanded && (
-                                    <div className="lg:hidden border-t border-gray-200 dark:border-gray-700">
-                                        <TimelinePanel
-                                            taskId={task.id}
-                                            isExpanded={isTimelineExpanded}
-                                            onToggle={() =>
-                                                setIsTimelineExpanded(
-                                                    !isTimelineExpanded
-                                                )
-                                            }
-                                        />
-                                    </div>
-                                )}
-
                                 {/* Section Icons - Above border, split layout */}
                                 <div className="flex-shrink-0 bg-white dark:bg-gray-800 px-3 py-2">
                                     <div className="flex items-center justify-between">
@@ -875,31 +831,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 )}
                                             </button>
                                         </div>
-
-                                        {/* Right side: Timeline Toggle Button */}
-                                        <button
-                                            onClick={() =>
-                                                setIsTimelineExpanded(
-                                                    !isTimelineExpanded
-                                                )
-                                            }
-                                            className={`p-2 rounded-full transition-colors ${
-                                                isTimelineExpanded
-                                                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                            }`}
-                                            title={
-                                                isTimelineExpanded
-                                                    ? t(
-                                                          'timeline.hideActivityTimeline'
-                                                      )
-                                                    : t(
-                                                          'timeline.showActivityTimeline'
-                                                      )
-                                            }
-                                        >
-                                            <ClockIcon className="h-5 w-5" />
-                                        </button>
                                     </div>
                                 </div>
 
@@ -939,15 +870,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                     </button>
                                 </div>
                             </div>
-
-                            {/* Timeline Panel - Desktop Sidebar */}
-                            <TimelinePanel
-                                taskId={task.id}
-                                isExpanded={isTimelineExpanded}
-                                onToggle={() =>
-                                    setIsTimelineExpanded(!isTimelineExpanded)
-                                }
-                            />
                         </div>
                     </div>
                 </div>

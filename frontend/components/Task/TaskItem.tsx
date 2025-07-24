@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
@@ -124,11 +125,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
     );
 };
 import TaskModal from './TaskModal';
-import {
-    toggleTaskCompletion,
-    fetchSubtasks,
-    fetchTaskById,
-} from '../../utils/tasksService';
+import { toggleTaskCompletion, fetchSubtasks } from '../../utils/tasksService';
 import { isTaskOverdue } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 
@@ -151,23 +148,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
     hideProjectName = false,
     onToggleToday,
 }) => {
-    // Use task ID as key for modal state to persist across task prop changes
-    const [modalOpenTaskId, setModalOpenTaskId] = useState<number | null>(null);
-    const isModalOpen = modalOpenTaskId === task.id;
-
-    // Wrapper function for setting modal state
-    const setIsModalOpen = (value: boolean) => {
-        if (value) {
-            setModalOpenTaskId(task.id || null);
-        } else {
-            setModalOpenTaskId(null);
-        }
-    };
-
-    // Update projectList when projects prop changes
-    useEffect(() => {
-        setProjectList(projects);
-    }, [projects]);
+    const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [subtaskModalOpen, setSubtaskModalOpen] = useState(false);
     const [selectedSubtask, setSelectedSubtask] = useState<Task | null>(null);
     const [projectList, setProjectList] = useState<Project[]>(projects);
@@ -179,6 +161,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const [subtasks, setSubtasks] = useState<Task[]>([]);
     const [loadingSubtasks, setLoadingSubtasks] = useState(false);
     const [hasSubtasks, setHasSubtasks] = useState(false);
+
+    // Update projectList when projects prop changes
+    useEffect(() => {
+        setProjectList(projects);
+    }, [projects]);
 
     // Calculate completion percentage
     const calculateCompletionPercentage = () => {
@@ -248,34 +235,16 @@ const TaskItem: React.FC<TaskItemProps> = ({
         setShowSubtasks(!showSubtasks);
     };
 
-    const handleTaskClick = (e?: React.MouseEvent) => {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
+    const handleTaskClick = () => {
+        if (task.uuid) {
+            navigate(`/task/${task.uuid}`);
         }
-        // Use setTimeout to ensure state update happens after any other processing
-        setTimeout(() => {
-            setIsModalOpen(true);
-        }, 0);
     };
 
     const handleSubtaskClick = async (subtask: Task) => {
-        // If subtask has a parent_task_id, open the parent task with subtasks focus
-        if (subtask.parent_task_id) {
-            try {
-                const parentTask = await fetchTaskById(subtask.parent_task_id);
-                setParentTask(parentTask);
-                setParentTaskModalOpen(true);
-            } catch (error) {
-                console.error('Error fetching parent task:', error);
-                // Fall back to opening the subtask itself
-                setSelectedSubtask(subtask);
-                setSubtaskModalOpen(true);
-            }
-        } else {
-            // If no parent_task_id, open the subtask itself
-            setSelectedSubtask(subtask);
-            setSubtaskModalOpen(true);
+        // Navigate directly to the subtask URL
+        if (subtask.uuid) {
+            navigate(`/task/${subtask.uuid}`);
         }
     };
 
