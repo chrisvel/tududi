@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
@@ -126,11 +127,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
     );
 };
 import TaskModal from './TaskModal';
-import {
-    toggleTaskCompletion,
-    fetchSubtasks,
-    fetchTaskById,
-} from '../../utils/tasksService';
+import { toggleTaskCompletion, fetchSubtasks } from '../../utils/tasksService';
 import { isTaskOverdue } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 
@@ -153,6 +150,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     hideProjectName = false,
     onToggleToday,
 }) => {
+    const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [subtaskModalOpen, setSubtaskModalOpen] = useState(false);
     const [selectedSubtask, setSelectedSubtask] = useState<Task | null>(null);
@@ -235,26 +233,15 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     const handleTaskClick = () => {
-        setIsModalOpen(true);
+        if (task.uuid) {
+            navigate(`/task/${task.uuid}`);
+        }
     };
 
     const handleSubtaskClick = async (subtask: Task) => {
-        // If subtask has a parent_task_id, open the parent task with subtasks focus
-        if (subtask.parent_task_id) {
-            try {
-                const parentTask = await fetchTaskById(subtask.parent_task_id);
-                setParentTask(parentTask);
-                setParentTaskModalOpen(true);
-            } catch (error) {
-                console.error('Error fetching parent task:', error);
-                // Fall back to opening the subtask itself
-                setSelectedSubtask(subtask);
-                setSubtaskModalOpen(true);
-            }
-        } else {
-            // If no parent_task_id, open the subtask itself
-            setSelectedSubtask(subtask);
-            setSubtaskModalOpen(true);
+        // Navigate directly to the subtask URL
+        if (subtask.uuid) {
+            navigate(`/task/${subtask.uuid}`);
         }
     };
 
