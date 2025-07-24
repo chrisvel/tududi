@@ -94,6 +94,8 @@ The following environment variables are used to configure tududi:
 
 #### Optional Variables:
 - `PUID`, `GUID` - Run with specified user and group ID (instead of defaults 1001/1001)
+- `DB_FILE` - Path to sqlite DB file
+- `TUDUDI_UPLOAD_PATH` - Path where uploaded files are stored
 - `TUDUDI_ALLOWED_ORIGINS` - Controls CORS access for different deployment scenarios:
   - Not set: Only allows localhost origins
   - Specific domains: `https://tududi.com,http://localhost:3002`
