@@ -543,6 +543,14 @@
     "tomorrow": "TOMORROW",
     "yesterday": "YESTERDAY"
   },
+  "status": {
+    "notStarted": "Not Started",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "archived": "Archived",
+    "waiting": "Waiting",
+    "unknown": "Status {{status}}"
+  },
   "taskViews": {
     "project": {
       "withName": "You are currently viewing all tasks associated with the \"{{projectName}}\" project. You can organize tasks within this project, set their priority, and track their completion. Use this space to focus on the tasks that belong specifically to this project.",
