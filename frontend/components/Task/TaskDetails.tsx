@@ -9,7 +9,7 @@ import {
     CalendarIcon,
     ExclamationTriangleIcon,
     ArrowPathIcon,
-    ClockIcon,
+    ListBulletIcon,
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import TaskModal from './TaskModal';
@@ -28,7 +28,7 @@ import { useToast } from '../Shared/ToastContext';
 import TaskPriorityIcon from './TaskPriorityIcon';
 import LoadingScreen from '../Shared/LoadingScreen';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
-import TimelinePanel from './TimelinePanel';
+import TaskTimeline from './TaskTimeline';
 
 const TaskDetails: React.FC = () => {
     const { uuid } = useParams<{ uuid: string }>();
@@ -46,7 +46,6 @@ const TaskDetails: React.FC = () => {
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
-    const [isTimelineExpanded, setIsTimelineExpanded] = useState(false);
 
     // Date and recurrence formatting functions (from TaskHeader)
     const formatDueDate = (dueDate: string) => {
@@ -254,7 +253,7 @@ const TaskDetails: React.FC = () => {
                             onToggleCompletion={handleToggleCompletion}
                         />
                         <div className="flex flex-col">
-                            <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">
+                            <h2 className="text-2xl font-normal text-gray-900 dark:text-gray-100">
                                 {task.name}
                             </h2>
                             {/* Project, tags, due date, and recurrence under title */}
@@ -337,29 +336,12 @@ const TaskDetails: React.FC = () => {
                             )}
                         </div>
                     </div>
-                    <div className="flex space-x-2">
-                        <button
-                            onClick={() =>
-                                setIsTimelineExpanded(!isTimelineExpanded)
-                            }
-                            className={`p-2 rounded-full transition-colors duration-200 ${
-                                isTimelineExpanded
-                                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                                    : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
-                            }`}
-                            title={
-                                isTimelineExpanded
-                                    ? 'Hide Activity Timeline'
-                                    : 'Show Activity Timeline'
-                            }
-                        >
-                            <ClockIcon className="h-5 w-5" />
-                        </button>
+                    <div className="flex space-x-1">
                         <button
                             onClick={handleEdit}
-                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-full transition-colors duration-200"
+                            className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-full transition-colors duration-200"
                         >
-                            <PencilSquareIcon className="h-5 w-5" />
+                            <PencilSquareIcon className="h-4 w-4" />
                         </button>
                         <button
                             onClick={(e) => {
@@ -367,38 +349,48 @@ const TaskDetails: React.FC = () => {
                                 e.stopPropagation();
                                 handleDeleteClick();
                             }}
-                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-full transition-colors duration-200"
+                            className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-full transition-colors duration-200"
                         >
-                            <TrashIcon className="h-5 w-5" />
+                            <TrashIcon className="h-4 w-4" />
                         </button>
                     </div>
                 </div>
 
-                {/* Content - Two column layout for notes and subtasks */}
-                {(task.note || subtasks.length > 0) && (
-                    <div className="mb-8 mt-8">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* Notes Column */}
-                            {task.note && (
-                                <div>
-                                    <h4 className="text-base font-light text-gray-900 dark:text-gray-100 mb-4">
-                                        {t('task.notes', 'Notes')}
-                                    </h4>
+                {/* Content - Two column layout */}
+                <div className="mb-8 mt-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Left Column - Notes and Subtasks */}
+                        <div className="lg:col-span-2 space-y-8">
+                            {/* Notes Section - Always Visible */}
+                            <div>
+                                <h4 className="text-base font-light text-gray-900 dark:text-gray-100 mb-4">
+                                    {t('task.notes', 'Notes')}
+                                </h4>
+                                {task.note ? (
                                     <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
                                         <MarkdownRenderer
                                             content={task.note}
                                             className="prose dark:prose-invert max-w-none"
                                         />
                                     </div>
-                                </div>
-                            )}
+                                ) : (
+                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+                                        <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
+                                            <PencilSquareIcon className="h-12 w-12 mb-3 opacity-50" />
+                                            <span className="text-sm text-center">
+                                                {t('task.noNotes', 'No notes added yet')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
-                            {/* Subtasks Column */}
-                            {subtasks.length > 0 && (
-                                <div>
-                                    <h4 className="text-sm font-light text-gray-900 dark:text-gray-100 mb-4">
-                                        {t('task.subtasks', 'Subtasks')}
-                                    </h4>
+                            {/* Subtasks Section - Always Visible */}
+                            <div>
+                                <h4 className="text-base font-light text-gray-900 dark:text-gray-100 mb-4">
+                                    {t('task.subtasks', 'Subtasks')}
+                                </h4>
+                                {subtasks.length > 0 ? (
                                     <div className="space-y-1">
                                         {subtasks.map((subtask) => (
                                             <div
@@ -479,24 +471,33 @@ const TaskDetails: React.FC = () => {
                                             </div>
                                         ))}
                                     </div>
-                                </div>
-                            )}
+                                ) : (
+                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+                                        <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
+                                            <ListBulletIcon className="h-12 w-12 mb-3 opacity-50" />
+                                            <span className="text-sm text-center">
+                                                {t('task.noSubtasks', 'No subtasks yet')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Right Column - Recent Activity */}
+                        <div>
+                            <h4 className="text-base font-light text-gray-900 dark:text-gray-100 mb-4">
+                                {t('task.recentActivity', 'Recent Activity')}
+                            </h4>
+                            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+                                <TaskTimeline taskId={task.id} />
+                            </div>
                         </div>
                     </div>
-                )}
+                </div>
+                {/* End of main content sections */}
 
-                {/* Activity Timeline */}
-                {isTimelineExpanded && task?.id && (
-                    <div className="mb-8 mt-8">
-                        <TimelinePanel
-                            taskId={task.id}
-                            isExpanded={isTimelineExpanded}
-                            onToggle={() =>
-                                setIsTimelineExpanded(!isTimelineExpanded)
-                            }
-                        />
-                    </div>
-                )}
+
 
                 {/* Task Modal for Editing */}
                 <TaskModal

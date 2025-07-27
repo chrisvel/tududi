@@ -4,7 +4,6 @@ import { TaskEvent } from '../../entities/TaskEvent';
 import {
     getTaskTimeline,
     getEventTypeLabel,
-    getStatusLabel,
     getPriorityLabel,
 } from '../../utils/taskEventService';
 import {
@@ -125,6 +124,27 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
         }
     };
 
+    const getTranslatedStatusLabel = (status: number | string): string => {
+        // Handle both numeric and string status values
+        const statusMap: Record<string | number, string> = {
+            // Numeric values
+            0: t('status.notStarted'),
+            1: t('status.inProgress'),
+            2: t('status.completed'),
+            3: t('status.archived'),
+            4: t('status.waiting'),
+            // String values
+            'not_started': t('status.notStarted'),
+            'in_progress': t('status.inProgress'),
+            'done': t('status.completed'),
+            'completed': t('status.completed'),
+            'archived': t('status.archived'),
+            'waiting': t('status.waiting'),
+        };
+
+        return statusMap[status] || t('status.unknown', { status });
+    };
+
     const getEventDescription = (event: TaskEvent) => {
         const { event_type, old_value, new_value } = event;
 
@@ -136,7 +156,7 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
                 const oldStatus = old_value?.status;
                 const newStatus = new_value?.status;
                 if (oldStatus !== undefined && newStatus !== undefined) {
-                    return `${t('timeline.events.status')}: ${getStatusLabel(oldStatus)} → ${getStatusLabel(newStatus)}`;
+                    return `${t('timeline.events.status')}: ${getTranslatedStatusLabel(oldStatus)} → ${getTranslatedStatusLabel(newStatus)}`;
                 }
                 return t('timeline.events.statusChanged');
             }
@@ -152,7 +172,7 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
                 const oldDate = old_value?.due_date;
                 const newDate = new_value?.due_date;
                 if (oldDate || newDate) {
-                    return `${t('timeline.events.dueDate')}: ${oldDate || t('timeline.events.none')} → ${newDate || t('timeline.events.none')}`;
+                    return `${t('timeline.events.dueDate')}: ${formatDate(oldDate)} → ${formatDate(newDate)}`;
                 }
                 return t('timeline.events.dueDateChanged');
             }
@@ -173,6 +193,30 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
             default:
                 return getEventTypeLabel(event_type);
         }
+    };
+
+    const formatDate = (dateString: string | null) => {
+        if (!dateString) return t('timeline.events.none');
+        
+        // Handle ISO date strings (e.g., "2025-07-15T00:00:00.000Z")
+        const date = new Date(dateString);
+        
+        // Check if it's today, tomorrow, or yesterday
+        const today = new Date().toISOString().split('T')[0];
+        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        const dateOnly = date.toISOString().split('T')[0];
+        
+        if (dateOnly === today) return t('dateIndicators.today');
+        if (dateOnly === tomorrow) return t('dateIndicators.tomorrow');
+        if (dateOnly === yesterday) return t('dateIndicators.yesterday');
+        
+        // Return formatted date (e.g., "Jul 15, 2025")
+        return date.toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
     };
 
     const formatTimeAgo = (dateString: string) => {
