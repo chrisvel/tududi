@@ -468,7 +468,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                             WebkitOverflowScrolling: 'touch',
                                         }}
                                     >
-                                        <form className="h-full">
+                                        <form 
+                                            className="h-full"
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                return false;
+                                            }}
+                                        >
                                             <fieldset className="h-full flex flex-col">
                                                 {/* Task Title Section - Always Visible */}
                                                 <TaskTitleSection
@@ -479,6 +485,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                     taskIntelligenceEnabled={
                                                         taskIntelligenceEnabled
                                                     }
+                                                    onSave={handleSubmit}
                                                 />
 
                                                 {/* Content Section - Always Visible */}

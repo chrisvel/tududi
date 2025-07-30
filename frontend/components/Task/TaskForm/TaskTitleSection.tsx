@@ -14,6 +14,7 @@ interface TaskTitleSectionProps {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     taskAnalysis: TaskAnalysis | null;
     taskIntelligenceEnabled: boolean;
+    onSave?: () => void;
 }
 
 const TaskTitleSection: React.FC<TaskTitleSectionProps> = ({
@@ -22,8 +23,19 @@ const TaskTitleSection: React.FC<TaskTitleSectionProps> = ({
     onChange,
     taskAnalysis,
     taskIntelligenceEnabled,
+    onSave,
 }) => {
     const { t } = useTranslation();
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        // Handle Enter key to save changes
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if (onSave) {
+                onSave();
+            }
+        }
+    };
 
     return (
         <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-700 sm:rounded-tl-lg">
@@ -33,6 +45,7 @@ const TaskTitleSection: React.FC<TaskTitleSectionProps> = ({
                 name="name"
                 value={value}
                 onChange={onChange}
+                onKeyDown={handleKeyDown}
                 required
                 className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-none focus:outline-none focus:border-none focus:ring-0 shadow-sm py-2"
                 placeholder={t('forms.task.namePlaceholder', 'Add Task Name')}

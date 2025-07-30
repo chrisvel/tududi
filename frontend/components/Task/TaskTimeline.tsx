@@ -43,7 +43,11 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
 
             try {
                 const timeline = await getTaskTimeline(taskId);
-                setEvents(timeline);
+                // Sort events by created_at in descending order (most recent first)
+                const sortedTimeline = timeline.sort((a, b) => 
+                    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                );
+                setEvents(sortedTimeline);
             } catch (err) {
                 console.error('Error fetching task timeline:', err);
                 setError(t('timeline.failedToLoad', 'Failed to load timeline'));
@@ -279,32 +283,9 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
                 {events.map((event) => (
                     <div key={event.id} className="relative">
                         {/* Event item */}
-                        <div className="flex items-start space-x-3 py-1 relative z-10">
-                            {/* Icon */}
-                            <div
-                                className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                                    event.event_type === 'created'
-                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700'
-                                        : event.event_type === 'completed'
-                                          ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700'
-                                          : event.event_type ===
-                                                  'status_changed' &&
-                                              event.new_value?.status === 1
-                                            ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700'
-                                            : event.event_type ===
-                                                'priority_changed'
-                                              ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-700'
-                                              : 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700'
-                                }`}
-                            >
-                                {getEventIcon(
-                                    event.event_type,
-                                    event.new_value
-                                )}
-                            </div>
-
+                        <div className="py-1 relative z-10">
                             {/* Content */}
-                            <div className="flex-1 min-w-0">
+                            <div className="min-w-0">
                                 <div className="text-xs font-medium text-gray-900 dark:text-gray-100 leading-tight">
                                     {getEventDescription(event)}
                                 </div>

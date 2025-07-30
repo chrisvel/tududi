@@ -58,7 +58,7 @@ const TaskContentSection: React.FC<TaskContentSectionProps> = ({
                         className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 pr-20 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 resize-none flex-1 min-h-0 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
                         placeholder={t(
                             'forms.noteContentPlaceholder',
-                            'Add task description using Markdown formatting...\n\nExamples:\n# Heading\n**Bold text**\n*Italic text*\n- List item\n```code```'
+                            'Enter content'
                         )}
                     />
                 ) : (
