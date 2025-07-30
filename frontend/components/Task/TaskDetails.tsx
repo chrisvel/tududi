@@ -341,7 +341,7 @@ const TaskDetails: React.FC = () => {
                             onClick={handleEdit}
                             className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-full transition-colors duration-200"
                         >
-                            <PencilSquareIcon className="h-4 w-4" />
+                            <PencilSquareIcon className="h-5 w-5" />
                         </button>
                         <button
                             onClick={(e) => {
@@ -351,7 +351,7 @@ const TaskDetails: React.FC = () => {
                             }}
                             className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-full transition-colors duration-200"
                         >
-                            <TrashIcon className="h-4 w-4" />
+                            <TrashIcon className="h-5 w-5" />
                         </button>
                     </div>
                 </div>
@@ -364,7 +364,7 @@ const TaskDetails: React.FC = () => {
                             {/* Notes Section - Always Visible */}
                             <div>
                                 <h4 className="text-base font-light text-gray-900 dark:text-gray-100 mb-4">
-                                    {t('task.notes', 'Notes')}
+                                    {t('task.content', 'Content')}
                                 </h4>
                                 {task.note ? (
                                     <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
@@ -378,7 +378,7 @@ const TaskDetails: React.FC = () => {
                                         <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                                             <PencilSquareIcon className="h-12 w-12 mb-3 opacity-50" />
                                             <span className="text-sm text-center">
-                                                {t('task.noNotes', 'No notes added yet')}
+                                                {t('task.noNotes', 'No content added yet')}
                                             </span>
                                         </div>
                                     </div>
