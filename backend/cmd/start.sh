@@ -1,4 +1,5 @@
 #!/bin/sh
+# Start script for production and Docker
 set -eu
 
 backup_db() {
