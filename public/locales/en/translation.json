@@ -131,6 +131,7 @@
       "statusChanged": "Status changed",
       "priorityChanged": "Priority changed",
       "dueDateChanged": "Due date changed",
+      "recurrenceEndDateChanged": "Recurrence end date changed",
       "nameUpdated": "Name updated",
       "descriptionUpdated": "Description updated",
       "noteUpdated": "Note updated",
@@ -141,6 +142,7 @@
       "status": "Status",
       "priority": "Priority",
       "dueDate": "Due date",
+      "recurrenceEndDate": "Recurrence end date",
       "none": "None"
     }
   },
@@ -542,6 +544,14 @@
     "today": "TODAY",
     "tomorrow": "TOMORROW",
     "yesterday": "YESTERDAY"
+  },
+  "status": {
+    "notStarted": "Not Started",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "archived": "Archived",
+    "waiting": "Waiting",
+    "unknown": "Status {{status}}"
   },
   "taskViews": {
     "project": {

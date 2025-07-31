@@ -4,21 +4,12 @@ import { TaskEvent } from '../../entities/TaskEvent';
 import {
     getTaskTimeline,
     getEventTypeLabel,
-    getStatusLabel,
     getPriorityLabel,
 } from '../../utils/taskEventService';
 import {
     ClockIcon,
-    CheckCircleIcon,
     ExclamationTriangleIcon,
-    PencilIcon,
-    TagIcon,
-    CalendarIcon,
-    FolderIcon,
-    PlayIcon,
-    ArchiveBoxIcon,
     SparklesIcon,
-    AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
 
 interface TaskTimelineProps {
@@ -44,7 +35,14 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
 
             try {
                 const timeline = await getTaskTimeline(taskId);
-                setEvents(timeline);
+                // Sort events by created_at in descending order (most recent first)
+                const sortedTimeline = timeline.sort(
+                    (a, b) =>
+                        new Date(b.created_at).getTime() -
+                        new Date(a.created_at).getTime()
+                );
+                // Show all events, scrolling will handle display
+                setEvents(sortedTimeline);
             } catch (err) {
                 console.error('Error fetching task timeline:', err);
                 setError(t('timeline.failedToLoad', 'Failed to load timeline'));
@@ -56,73 +54,25 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
         fetchTimeline();
     }, [taskId]);
 
-    const getEventIcon = (eventType: string, newValue?: any) => {
-        const iconClass = 'h-3.5 w-3.5';
+    const getTranslatedStatusLabel = (status: number | string): string => {
+        // Handle both numeric and string status values
+        const statusMap: Record<string | number, string> = {
+            // Numeric values
+            0: t('status.notStarted'),
+            1: t('status.inProgress'),
+            2: t('status.completed'),
+            3: t('status.archived'),
+            4: t('status.waiting'),
+            // String values
+            not_started: t('status.notStarted'),
+            in_progress: t('status.inProgress'),
+            done: t('status.completed'),
+            completed: t('status.completed'),
+            archived: t('status.archived'),
+            waiting: t('status.waiting'),
+        };
 
-        switch (eventType) {
-            case 'created':
-                return (
-                    <SparklesIcon className={`${iconClass} text-blue-500`} />
-                );
-            case 'status_changed':
-                if (newValue?.status === 1)
-                    return (
-                        <PlayIcon className={`${iconClass} text-yellow-500`} />
-                    );
-                if (newValue?.status === 2)
-                    return (
-                        <CheckCircleIcon
-                            className={`${iconClass} text-green-500`}
-                        />
-                    );
-                if (newValue?.status === 3)
-                    return (
-                        <ArchiveBoxIcon
-                            className={`${iconClass} text-gray-500`}
-                        />
-                    );
-                return (
-                    <AdjustmentsHorizontalIcon
-                        className={`${iconClass} text-blue-500`}
-                    />
-                );
-            case 'completed':
-                return (
-                    <CheckCircleIcon
-                        className={`${iconClass} text-green-500`}
-                    />
-                );
-            case 'priority_changed':
-                return (
-                    <ExclamationTriangleIcon
-                        className={`${iconClass} text-orange-500`}
-                    />
-                );
-            case 'due_date_changed':
-                return (
-                    <CalendarIcon className={`${iconClass} text-purple-500`} />
-                );
-            case 'project_changed':
-                return (
-                    <FolderIcon className={`${iconClass} text-indigo-500`} />
-                );
-            case 'name_changed':
-            case 'description_changed':
-            case 'note_changed':
-                return <PencilIcon className={`${iconClass} text-gray-500`} />;
-            case 'tags_changed':
-                return <TagIcon className={`${iconClass} text-pink-500`} />;
-            case 'archived':
-                return (
-                    <ArchiveBoxIcon className={`${iconClass} text-gray-500`} />
-                );
-            case 'today_changed':
-                return (
-                    <CalendarIcon className={`${iconClass} text-blue-600`} />
-                );
-            default:
-                return <ClockIcon className={`${iconClass} text-gray-400`} />;
-        }
+        return statusMap[status] || t('status.unknown', { status });
     };
 
     const getEventDescription = (event: TaskEvent) => {
@@ -136,7 +86,7 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
                 const oldStatus = old_value?.status;
                 const newStatus = new_value?.status;
                 if (oldStatus !== undefined && newStatus !== undefined) {
-                    return `${t('timeline.events.status')}: ${getStatusLabel(oldStatus)} → ${getStatusLabel(newStatus)}`;
+                    return `${t('timeline.events.status')}: ${getTranslatedStatusLabel(oldStatus)} → ${getTranslatedStatusLabel(newStatus)}`;
                 }
                 return t('timeline.events.statusChanged');
             }
@@ -152,9 +102,17 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
                 const oldDate = old_value?.due_date;
                 const newDate = new_value?.due_date;
                 if (oldDate || newDate) {
-                    return `${t('timeline.events.dueDate')}: ${oldDate || t('timeline.events.none')} → ${newDate || t('timeline.events.none')}`;
+                    return `${t('timeline.events.dueDate')}: ${formatDate(oldDate)} → ${formatDate(newDate)}`;
                 }
                 return t('timeline.events.dueDateChanged');
+            }
+            case 'recurrence_end_date_changed': {
+                const oldDate = old_value?.recurrence_end_date;
+                const newDate = new_value?.recurrence_end_date;
+                if (oldDate || newDate) {
+                    return `${t('timeline.events.recurrenceEndDate')}: ${formatDate(oldDate)} → ${formatDate(newDate)}`;
+                }
+                return t('timeline.events.recurrenceEndDateChanged');
             }
             case 'name_changed':
                 return t('timeline.events.nameUpdated');
@@ -173,6 +131,34 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
             default:
                 return getEventTypeLabel(event_type);
         }
+    };
+
+    const formatDate = (dateString: string | null) => {
+        if (!dateString) return t('timeline.events.none');
+
+        // Handle ISO date strings (e.g., "2025-07-15T00:00:00.000Z")
+        const date = new Date(dateString);
+
+        // Check if it's today, tomorrow, or yesterday
+        const today = new Date().toISOString().split('T')[0];
+        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0];
+        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0];
+        const dateOnly = date.toISOString().split('T')[0];
+
+        if (dateOnly === today) return t('dateIndicators.today');
+        if (dateOnly === tomorrow) return t('dateIndicators.tomorrow');
+        if (dateOnly === yesterday) return t('dateIndicators.yesterday');
+
+        // Return formatted date (e.g., "Jul 15, 2025")
+        return date.toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
     };
 
     const formatTimeAgo = (dateString: string) => {
@@ -230,37 +216,14 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
     }
 
     return (
-        <div className="h-full overflow-y-auto">
+        <div className="max-h-[36rem] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
             <div className="space-y-2">
                 {events.map((event) => (
                     <div key={event.id} className="relative">
                         {/* Event item */}
-                        <div className="flex items-start space-x-3 py-1 relative z-10">
-                            {/* Icon */}
-                            <div
-                                className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                                    event.event_type === 'created'
-                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700'
-                                        : event.event_type === 'completed'
-                                          ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700'
-                                          : event.event_type ===
-                                                  'status_changed' &&
-                                              event.new_value?.status === 1
-                                            ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700'
-                                            : event.event_type ===
-                                                'priority_changed'
-                                              ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-700'
-                                              : 'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700'
-                                }`}
-                            >
-                                {getEventIcon(
-                                    event.event_type,
-                                    event.new_value
-                                )}
-                            </div>
-
+                        <div className="py-1 relative z-10">
                             {/* Content */}
-                            <div className="flex-1 min-w-0">
+                            <div className="min-w-0">
                                 <div className="text-xs font-medium text-gray-900 dark:text-gray-100 leading-tight">
                                     {getEventDescription(event)}
                                 </div>

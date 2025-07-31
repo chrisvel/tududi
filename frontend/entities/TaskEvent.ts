@@ -7,6 +7,7 @@ export interface TaskEvent {
         | 'status_changed'
         | 'priority_changed'
         | 'due_date_changed'
+        | 'recurrence_end_date_changed'
         | 'project_changed'
         | 'name_changed'
         | 'description_changed'

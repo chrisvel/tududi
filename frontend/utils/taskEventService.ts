@@ -187,7 +187,7 @@ export const getStatusLabel = (status: number): string => {
     const statusLabels: Record<number, string> = {
         0: 'Not Started',
         1: 'In Progress',
-        2: 'Done',
+        2: 'Completed',
         3: 'Archived',
         4: 'Waiting',
     };
