@@ -149,24 +149,6 @@ async function startServer() {
         // Create session store table
         await sessionStore.sync();
 
-        // Auto-create user if not exists
-        if (config.email && config.password) {
-            const { User } = require('./models');
-            const bcrypt = require('bcrypt');
-
-            const [user, created] = await User.findOrCreate({
-                where: { email: config.email },
-                defaults: {
-                    email: config.email,
-                    password_digest: await bcrypt.hash(config.password, 10),
-                },
-            });
-
-            if (created) {
-                console.log('Default user created:', user.email);
-            }
-        }
-
         // Initialize Telegram polling after database is ready
         await initializeTelegramPolling();
 
