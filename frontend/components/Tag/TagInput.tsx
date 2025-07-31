@@ -152,6 +152,14 @@ const TagInput: React.FC<TagInputProps> = ({
                 event.preventDefault();
                 addNewTag(inputValue.trim());
             }
+        } else if (event.key === 'Backspace') {
+            // Remove the last tag if input is empty and there are tags
+            if (inputValue === '' && tags.length > 0) {
+                event.preventDefault();
+                const updatedTags = tags.slice(0, -1);
+                setTags(updatedTags);
+                onTagsChange(updatedTags);
+            }
         }
     };
 
