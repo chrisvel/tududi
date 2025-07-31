@@ -16,15 +16,19 @@ interface ProjectItemProps {
     setIsConfirmDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const getProjectInitials = (name: string) => {
+const getProjectInitials = (name: string, maxLetters?: number) => {
     const words = name
         .trim()
         .split(' ')
         .filter((word) => word.length > 0);
+
     if (words.length === 1) {
-        return name.toUpperCase();
+        const singleWord = name.toUpperCase();
+        return maxLetters ? singleWord.substring(0, maxLetters) : singleWord;
     }
-    return words.map((word) => word[0].toUpperCase()).join('');
+
+    const initials = words.map((word) => word[0].toUpperCase()).join('');
+    return maxLetters ? initials.substring(0, maxLetters) : initials;
 };
 
 const ProjectItem: React.FC<ProjectItemProps> = ({
@@ -89,7 +93,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                     ) : (
                         <div className="w-full h-full bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity">
                             <span className="text-xs font-extrabold text-gray-500 dark:text-gray-400 opacity-20">
-                                {getProjectInitials(project.name)}
+                                {getProjectInitials(project.name, 2)}
                             </span>
                         </div>
                     )}
