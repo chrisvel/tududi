@@ -186,7 +186,7 @@ export const getEventTypeLabel = (eventType: string): string => {
 export const getStatusLabel = (status: number): string => {
     const statusLabels: Record<number, string> = {
         0: 'Not Started',
-        1: 'In Progress', 
+        1: 'In Progress',
         2: 'Completed',
         3: 'Archived',
         4: 'Waiting',
