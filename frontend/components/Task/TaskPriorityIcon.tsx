@@ -12,6 +12,28 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
     status,
     onToggleCompletion,
 }) => {
+    const getPriorityText = () => {
+        // Handle both string and numeric priority values
+        let priorityStr = priority;
+        if (typeof priority === 'number') {
+            const priorityNames = ['low', 'medium', 'high'];
+            priorityStr = priorityNames[priority] || 'low';
+        }
+
+        switch (priorityStr) {
+            case 'high':
+            case 2:
+                return 'High priority';
+            case 'medium':
+            case 1:
+                return 'Medium priority';
+            case 'low':
+            case 0:
+            default:
+                return 'Low priority';
+        }
+    };
+
     const getIconColor = () => {
         if (
             status === 'done' ||
@@ -62,6 +84,7 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
                 className={`h-5 w-5 ${colorClass} cursor-pointer flex-shrink-0`}
                 style={{ width: '20px', height: '20px' }}
                 onClick={handleClick}
+                title={getPriorityText()}
             />
         );
     } else {
@@ -70,6 +93,7 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
                 className={`h-5 w-5 ${colorClass} cursor-pointer border-2 border-current rounded-full flex-shrink-0`}
                 style={{ width: '20px', height: '20px' }}
                 onClick={handleClick}
+                title={getPriorityText()}
             />
         );
     }
