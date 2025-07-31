@@ -2,6 +2,7 @@
 
 const { User } = require('../models');
 const bcrypt = require('bcrypt');
+const _ = require('lodash');
 
 /**
  * Creates a user or updates password if user already exists
@@ -34,6 +35,8 @@ async function createOrUpdateUser(email, password) {
  * @returns {boolean} True if valid
  */
 function validateEmail(email) {
+    if (_.trim(email) === '') return false;
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
     // Check for common invalid patterns
@@ -57,7 +60,8 @@ function validateEmail(email) {
  * @returns {boolean} True if valid
  */
 function validatePassword(password) {
-    return password && password.length >= 6;
+    if (_.trim(password) === '') return false;
+    return password.length >= 6;
 }
 
 module.exports = {
