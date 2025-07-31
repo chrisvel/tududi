@@ -1236,7 +1236,12 @@ router.patch('/task/:id', async (req, res) => {
         };
 
         // If task is being moved away from today and has in_progress status, change it to not_started
-        if (today !== undefined && task.today === true && today === false && task.status === Task.STATUS.IN_PROGRESS) {
+        if (
+            today !== undefined &&
+            task.today === true &&
+            today === false &&
+            task.status === Task.STATUS.IN_PROGRESS
+        ) {
             taskAttributes.status = Task.STATUS.NOT_STARTED;
         }
 
@@ -1885,12 +1890,15 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
         // Toggle the today flag
         const newTodayValue = !task.today;
         const updateData = { today: newTodayValue };
-        
+
         // If task is being moved away from today and has in_progress status, change it to not_started
-        if (task.today === true && newTodayValue === false && task.status === Task.STATUS.IN_PROGRESS) {
+        if (
+            task.today === true &&
+            newTodayValue === false &&
+            task.status === Task.STATUS.IN_PROGRESS
+        ) {
             updateData.status = Task.STATUS.NOT_STARTED;
         }
-        
         await task.update(updateData);
 
         // Log the change
