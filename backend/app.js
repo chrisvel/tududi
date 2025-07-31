@@ -149,9 +149,6 @@ async function startServer() {
         // Create session store table
         await sessionStore.sync();
 
-        // Sync database
-        await sequelize.sync();
-
         // Auto-create user if not exists
         if (config.email && config.password) {
             const { User } = require('./models');
