@@ -55,9 +55,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                 <div className="flex items-center space-x-3 flex-1 min-w-0">
                                     <div className="flex-shrink-0">
                                         <TaskPriorityIcon
-                                            priority={
-                                                subtask.priority || 'medium'
-                                            }
+                                            priority={subtask.priority || 'low'}
                                             status={
                                                 subtask.status || 'not_started'
                                             }

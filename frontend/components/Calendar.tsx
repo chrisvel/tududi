@@ -318,7 +318,7 @@ const Calendar: React.FC = () => {
                     ...task,
                     name: task.name || task.title || `Task ${task.id}`,
                     // Ensure all required Task properties are present
-                    priority: task.priority || 'medium',
+                    priority: task.priority || 'low',
                     status: task.status || 'not_started',
                     tags: task.tags || [],
                     note: task.note || task.description || '',

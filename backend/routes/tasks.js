@@ -1020,7 +1020,7 @@ router.post('/task', async (req, res) => {
                         name: subtask.name.trim(),
                         parent_task_id: task.id,
                         user_id: req.currentUser.id,
-                        priority: Task.PRIORITY.MEDIUM,
+                        priority: Task.PRIORITY.LOW,
                         status: Task.STATUS.NOT_STARTED,
                         today: false,
                         recurrence_type: 'none',
@@ -1367,7 +1367,7 @@ router.patch('/task/:id', async (req, res) => {
                             ? typeof subtask.priority === 'string'
                                 ? Task.getPriorityValue(subtask.priority)
                                 : subtask.priority
-                            : Task.PRIORITY.MEDIUM;
+                            : Task.PRIORITY.LOW;
                     }
 
                     return Task.update(updateData, {
@@ -1395,7 +1395,7 @@ router.patch('/task/:id', async (req, res) => {
                             ? typeof subtask.priority === 'string'
                                 ? Task.getPriorityValue(subtask.priority)
                                 : subtask.priority
-                            : Task.PRIORITY.MEDIUM,
+                            : Task.PRIORITY.LOW,
                         status: subtask.status
                             ? typeof subtask.status === 'string'
                                 ? Task.getStatusValue(subtask.status)

@@ -100,7 +100,7 @@ const NoteDetails: React.FC = () => {
         try {
             const newProject = await createProject({
                 name,
-                priority: 'medium',
+                priority: 'low',
             });
             setProjects((prev) => [...prev, newProject]);
             return newProject;
