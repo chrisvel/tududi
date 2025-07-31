@@ -513,7 +513,7 @@ const InboxItems: React.FC = () => {
                                     taskToEdit || {
                                         name: '',
                                         status: 'not_started',
-                                        priority: 'medium',
+                                        priority: 'low',
                                         completed_at: null,
                                     }
                                 }

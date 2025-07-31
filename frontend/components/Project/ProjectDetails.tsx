@@ -383,7 +383,7 @@ const ProjectDetails: React.FC = () => {
                 name: actionDescription,
                 status: 'not_started',
                 project_id: projectId,
-                priority: 'medium',
+                priority: 'low',
                 completed_at: null,
             });
 

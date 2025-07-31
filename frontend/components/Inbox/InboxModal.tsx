@@ -986,7 +986,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     const newTask: Task = {
                         name: cleanedText,
                         status: 'not_started',
-                        priority: 'medium',
+                        priority: 'low',
                         tags: taskTags,
                         project_id: projectId,
                         completed_at: null,

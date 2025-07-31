@@ -106,7 +106,7 @@ const Notes: React.FC = () => {
         try {
             const newProject = await createProject({
                 name,
-                priority: 'medium',
+                priority: 'low',
             });
             return newProject;
         } catch (error) {
@@ -280,7 +280,7 @@ const Notes: React.FC = () => {
                                           id: 1,
                                           name: 'Test Project 1',
                                           active: true,
-                                          priority: 'medium',
+                                          priority: 'low',
                                       },
                                       {
                                           id: 2,

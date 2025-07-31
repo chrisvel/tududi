@@ -261,9 +261,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
     ): PriorityType => {
         if (typeof priority === 'number') {
             const priorityNames: PriorityType[] = ['low', 'medium', 'high'];
-            return priorityNames[priority] || 'medium';
+            return priorityNames[priority] || 'low';
         }
-        return priority || 'medium';
+        return priority || 'low';
     };
 
     const handleChange = (

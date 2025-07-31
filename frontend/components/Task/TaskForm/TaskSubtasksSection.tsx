@@ -43,7 +43,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         const newSubtask: Task = {
             name: newSubtaskName.trim(),
             status: 'not_started',
-            priority: 'medium',
+            priority: 'low',
             today: false,
             parent_task_id: parentTaskId, // Set the parent task ID immediately
             // Mark as new for backend processing
@@ -153,9 +153,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                 <div className="px-3 py-2.5 flex items-center space-x-3">
                                     <div className="flex-shrink-0">
                                         <TaskPriorityIcon
-                                            priority={
-                                                subtask.priority || 'medium'
-                                            }
+                                            priority={subtask.priority || 'low'}
                                             status={
                                                 subtask.status || 'not_started'
                                             }
@@ -226,7 +224,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                         <div className="flex-shrink-0">
                                             <TaskPriorityIcon
                                                 priority={
-                                                    subtask.priority || 'medium'
+                                                    subtask.priority || 'low'
                                                 }
                                                 status={
                                                     subtask.status ||
