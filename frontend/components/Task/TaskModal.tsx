@@ -468,7 +468,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                             WebkitOverflowScrolling: 'touch',
                                         }}
                                     >
-                                        <form 
+                                        <form
                                             className="h-full"
                                             onSubmit={(e) => {
                                                 e.preventDefault();

@@ -131,6 +131,7 @@
       "statusChanged": "Status changed",
       "priorityChanged": "Priority changed",
       "dueDateChanged": "Due date changed",
+      "recurrenceEndDateChanged": "Recurrence end date changed",
       "nameUpdated": "Name updated",
       "descriptionUpdated": "Description updated",
       "noteUpdated": "Note updated",
@@ -141,6 +142,7 @@
       "status": "Status",
       "priority": "Priority",
       "dueDate": "Due date",
+      "recurrenceEndDate": "Recurrence end date",
       "none": "None"
     }
   },

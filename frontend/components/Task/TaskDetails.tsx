@@ -363,22 +363,25 @@ const TaskDetails: React.FC = () => {
                         <div className="lg:col-span-2 space-y-8">
                             {/* Notes Section - Always Visible */}
                             <div>
-                                <h4 className="text-base font-light text-gray-900 dark:text-gray-100 mb-4">
+                                <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
                                     {t('task.content', 'Content')}
                                 </h4>
                                 {task.note ? (
-                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
                                         <MarkdownRenderer
                                             content={task.note}
                                             className="prose dark:prose-invert max-w-none"
                                         />
                                     </div>
                                 ) : (
-                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
                                         <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                                             <PencilSquareIcon className="h-12 w-12 mb-3 opacity-50" />
                                             <span className="text-sm text-center">
-                                                {t('task.noNotes', 'No content added yet')}
+                                                {t(
+                                                    'task.noNotes',
+                                                    'No content added yet'
+                                                )}
                                             </span>
                                         </div>
                                     </div>
@@ -387,7 +390,7 @@ const TaskDetails: React.FC = () => {
 
                             {/* Subtasks Section - Always Visible */}
                             <div>
-                                <h4 className="text-base font-light text-gray-900 dark:text-gray-100 mb-4">
+                                <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
                                     {t('task.subtasks', 'Subtasks')}
                                 </h4>
                                 {subtasks.length > 0 ? (
@@ -472,11 +475,14 @@ const TaskDetails: React.FC = () => {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
                                         <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                                             <ListBulletIcon className="h-12 w-12 mb-3 opacity-50" />
                                             <span className="text-sm text-center">
-                                                {t('task.noSubtasks', 'No subtasks yet')}
+                                                {t(
+                                                    'task.noSubtasks',
+                                                    'No subtasks yet'
+                                                )}
                                             </span>
                                         </div>
                                     </div>
@@ -486,18 +492,16 @@ const TaskDetails: React.FC = () => {
 
                         {/* Right Column - Recent Activity */}
                         <div>
-                            <h4 className="text-base font-light text-gray-900 dark:text-gray-100 mb-4">
+                            <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
                                 {t('task.recentActivity', 'Recent Activity')}
                             </h4>
-                            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+                            <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
                                 <TaskTimeline taskId={task.id} />
                             </div>
                         </div>
                     </div>
                 </div>
                 {/* End of main content sections */}
-
-
 
                 {/* Task Modal for Editing */}
                 <TaskModal

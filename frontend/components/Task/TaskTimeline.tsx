@@ -8,16 +8,8 @@ import {
 } from '../../utils/taskEventService';
 import {
     ClockIcon,
-    CheckCircleIcon,
     ExclamationTriangleIcon,
-    PencilIcon,
-    TagIcon,
-    CalendarIcon,
-    FolderIcon,
-    PlayIcon,
-    ArchiveBoxIcon,
     SparklesIcon,
-    AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
 
 interface TaskTimelineProps {
@@ -44,9 +36,12 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
             try {
                 const timeline = await getTaskTimeline(taskId);
                 // Sort events by created_at in descending order (most recent first)
-                const sortedTimeline = timeline.sort((a, b) => 
-                    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                const sortedTimeline = timeline.sort(
+                    (a, b) =>
+                        new Date(b.created_at).getTime() -
+                        new Date(a.created_at).getTime()
                 );
+                // Show all events, scrolling will handle display
                 setEvents(sortedTimeline);
             } catch (err) {
                 console.error('Error fetching task timeline:', err);
@@ -59,75 +54,6 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
         fetchTimeline();
     }, [taskId]);
 
-    const getEventIcon = (eventType: string, newValue?: any) => {
-        const iconClass = 'h-3.5 w-3.5';
-
-        switch (eventType) {
-            case 'created':
-                return (
-                    <SparklesIcon className={`${iconClass} text-blue-500`} />
-                );
-            case 'status_changed':
-                if (newValue?.status === 1)
-                    return (
-                        <PlayIcon className={`${iconClass} text-yellow-500`} />
-                    );
-                if (newValue?.status === 2)
-                    return (
-                        <CheckCircleIcon
-                            className={`${iconClass} text-green-500`}
-                        />
-                    );
-                if (newValue?.status === 3)
-                    return (
-                        <ArchiveBoxIcon
-                            className={`${iconClass} text-gray-500`}
-                        />
-                    );
-                return (
-                    <AdjustmentsHorizontalIcon
-                        className={`${iconClass} text-blue-500`}
-                    />
-                );
-            case 'completed':
-                return (
-                    <CheckCircleIcon
-                        className={`${iconClass} text-green-500`}
-                    />
-                );
-            case 'priority_changed':
-                return (
-                    <ExclamationTriangleIcon
-                        className={`${iconClass} text-orange-500`}
-                    />
-                );
-            case 'due_date_changed':
-                return (
-                    <CalendarIcon className={`${iconClass} text-purple-500`} />
-                );
-            case 'project_changed':
-                return (
-                    <FolderIcon className={`${iconClass} text-indigo-500`} />
-                );
-            case 'name_changed':
-            case 'description_changed':
-            case 'note_changed':
-                return <PencilIcon className={`${iconClass} text-gray-500`} />;
-            case 'tags_changed':
-                return <TagIcon className={`${iconClass} text-pink-500`} />;
-            case 'archived':
-                return (
-                    <ArchiveBoxIcon className={`${iconClass} text-gray-500`} />
-                );
-            case 'today_changed':
-                return (
-                    <CalendarIcon className={`${iconClass} text-blue-600`} />
-                );
-            default:
-                return <ClockIcon className={`${iconClass} text-gray-400`} />;
-        }
-    };
-
     const getTranslatedStatusLabel = (status: number | string): string => {
         // Handle both numeric and string status values
         const statusMap: Record<string | number, string> = {
@@ -138,12 +64,12 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
             3: t('status.archived'),
             4: t('status.waiting'),
             // String values
-            'not_started': t('status.notStarted'),
-            'in_progress': t('status.inProgress'),
-            'done': t('status.completed'),
-            'completed': t('status.completed'),
-            'archived': t('status.archived'),
-            'waiting': t('status.waiting'),
+            not_started: t('status.notStarted'),
+            in_progress: t('status.inProgress'),
+            done: t('status.completed'),
+            completed: t('status.completed'),
+            archived: t('status.archived'),
+            waiting: t('status.waiting'),
         };
 
         return statusMap[status] || t('status.unknown', { status });
@@ -180,6 +106,14 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
                 }
                 return t('timeline.events.dueDateChanged');
             }
+            case 'recurrence_end_date_changed': {
+                const oldDate = old_value?.recurrence_end_date;
+                const newDate = new_value?.recurrence_end_date;
+                if (oldDate || newDate) {
+                    return `${t('timeline.events.recurrenceEndDate')}: ${formatDate(oldDate)} → ${formatDate(newDate)}`;
+                }
+                return t('timeline.events.recurrenceEndDateChanged');
+            }
             case 'name_changed':
                 return t('timeline.events.nameUpdated');
             case 'description_changed':
@@ -201,20 +135,24 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
 
     const formatDate = (dateString: string | null) => {
         if (!dateString) return t('timeline.events.none');
-        
+
         // Handle ISO date strings (e.g., "2025-07-15T00:00:00.000Z")
         const date = new Date(dateString);
-        
+
         // Check if it's today, tomorrow, or yesterday
         const today = new Date().toISOString().split('T')[0];
-        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0];
+        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
+            .toISOString()
+            .split('T')[0];
         const dateOnly = date.toISOString().split('T')[0];
-        
+
         if (dateOnly === today) return t('dateIndicators.today');
         if (dateOnly === tomorrow) return t('dateIndicators.tomorrow');
         if (dateOnly === yesterday) return t('dateIndicators.yesterday');
-        
+
         // Return formatted date (e.g., "Jul 15, 2025")
         return date.toLocaleDateString(undefined, {
             year: 'numeric',
@@ -278,7 +216,7 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
     }
 
     return (
-        <div className="h-full overflow-y-auto">
+        <div className="max-h-[36rem] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
             <div className="space-y-2">
                 {events.map((event) => (
                     <div key={event.id} className="relative">
