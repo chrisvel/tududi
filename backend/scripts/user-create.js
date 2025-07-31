@@ -2,7 +2,8 @@
 
 /**
  * User Creation Script
- * Creates a new user with email and password
+ * Creates a new user with email and password.
+ * If user exists, updated password.
  * Usage: node user-create.js <email> <password>
  */
 
@@ -50,23 +51,26 @@ async function createUser() {
     try {
         console.log(`Creating user with email: ${email}`);
 
-        // Check if user already exists
-        const existingUser = await User.findOne({ where: { email } });
-        if (existingUser) {
-            console.error(`❌ User with email ${email} already exists`);
-            process.exit(1);
-        }
-
         // Hash the password manually since the hook might not be working in this context
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create the user
-        const user = await User.create({
-            email,
-            password_digest: hashedPassword,
+        // Find or create user (update password if exists)
+        const [user, created] = await User.findOrCreate({
+            where: { email },
+            defaults: {
+                email,
+                password_digest: hashedPassword,
+            },
         });
 
-        console.log('✅ User created successfully');
+        if (!created) {
+            // User exists, update password
+            await user.update({ password_digest: hashedPassword });
+            console.log('ℹ️ User exists, password updated');
+        } else {
+            console.log('✅ User created successfully');
+        }
+
         console.log(`📧 Email: ${user.email}`);
         console.log(`🆔 User ID: ${user.id}`);
         console.log(`📅 Created: ${user.created_at}`);

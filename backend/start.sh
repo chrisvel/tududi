@@ -1,11 +1,14 @@
 #!/bin/bash
-# Start script for Express backend
+# Start script for local development
 
+echo ""
+echo "============================================="
 echo "Starting Express backend..."
-echo "Make sure to set environment variables if needed:"
-echo "  TUDUDI_SESSION_SECRET=your_secret_here"
+echo "If you want to create/change a user,"
+echo "use these environment variables:"
 echo "  TUDUDI_USER_EMAIL=your_email@example.com"
 echo "  TUDUDI_USER_PASSWORD=your_password"
+echo "============================================="
 echo ""
 
 NODE_ENV=development PORT=3002 DB_FILE=db/development.sqlite3 npm start
