@@ -42,15 +42,9 @@ const NoteModal: React.FC<NoteModalProps> = ({
     onCreateProject,
 }) => {
     const { t } = useTranslation();
-    const {
-        tagsStore: {
-            tags: availableTagsStore,
-            hasLoaded: tagsLoaded,
-            isLoading: tagsLoading,
-            isError: tagsError,
-            loadTags,
-        },
-    } = useStore();
+    const { tagsStore } = useStore();
+    const availableTagsStore = tagsStore.getTags();
+    const { addNewTags } = tagsStore;
     const [formData, setFormData] = useState<Note>(
         note || {
             title: '',
@@ -145,12 +139,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
         }
     }, [isOpen, note, memoizedProjects]);
 
-    // Load tags when modal opens if not already loaded
-    useEffect(() => {
-        if (isOpen && !tagsLoaded && !tagsLoading && !tagsError) {
-            loadTags();
-        }
-    }, [isOpen, tagsLoaded, tagsLoading, tagsError, loadTags]);
+    // Tags are now loaded automatically via getTags() when needed
 
     const handleClose = useCallback(() => {
         setIsClosing(true);
@@ -311,6 +300,17 @@ const NoteModal: React.FC<NoteModalProps> = ({
         setError(null);
 
         try {
+            // Add new tags to the global store
+            const existingTagNames = availableTagsStore.map(
+                (tag: any) => tag.name
+            );
+            const newTagNames = tags.filter(
+                (tag) => !existingTagNames.includes(tag)
+            );
+            if (newTagNames.length > 0) {
+                addNewTags(newTagNames);
+            }
+
             // Convert string tags to tag objects
             const noteTags: Tag[] = tags.map((tagName) => ({ name: tagName }));
 
@@ -353,6 +353,12 @@ const NoteModal: React.FC<NoteModalProps> = ({
                 className={`fixed top-16 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 overflow-hidden sm:overflow-y-auto ${
                     isClosing ? 'opacity-0' : 'opacity-100'
                 }`}
+                onClick={(e) => {
+                    // Close modal when clicking on backdrop, but not on the modal content
+                    if (e.target === e.currentTarget) {
+                        handleClose();
+                    }
+                }}
             >
                 <div className="h-full flex items-start justify-center sm:px-4 sm:py-4">
                     <div
@@ -390,6 +396,15 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             formData.title || ''
                                                         }
                                                         onChange={handleChange}
+                                                        onKeyDown={(e) => {
+                                                            if (
+                                                                e.key ===
+                                                                'Enter'
+                                                            ) {
+                                                                e.preventDefault();
+                                                                handleSubmit();
+                                                            }
+                                                        }}
                                                         required
                                                         className="block w-full text-xl font-semibold bg-transparent text-black dark:text-white border-none focus:outline-none shadow-sm py-2"
                                                         placeholder={t(
@@ -495,26 +510,15 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                         <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                                             {t('forms.tags')}
                                                         </h3>
-                                                        {tagsLoaded ? (
-                                                            <TagInput
-                                                                onTagsChange={
-                                                                    handleTagsChange
-                                                                }
-                                                                initialTags={
-                                                                    tags
-                                                                }
-                                                                availableTags={
-                                                                    availableTagsStore
-                                                                }
-                                                            />
-                                                        ) : (
-                                                            <div className="text-gray-500 text-sm">
-                                                                {t(
-                                                                    'common.loading',
-                                                                    'Loading...'
-                                                                )}
-                                                            </div>
-                                                        )}
+                                                        <TagInput
+                                                            onTagsChange={
+                                                                handleTagsChange
+                                                            }
+                                                            initialTags={tags}
+                                                            availableTags={
+                                                                availableTagsStore
+                                                            }
+                                                        />
                                                     </div>
                                                 )}
 

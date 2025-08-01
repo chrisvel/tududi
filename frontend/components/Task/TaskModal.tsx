@@ -59,15 +59,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
     autoFocusSubtasks,
     showToast = true,
 }) => {
-    const {
-        tagsStore: {
-            tags: availableTags,
-            hasLoaded: tagsLoaded,
-            isLoading: tagsLoading,
-            isError: tagsError,
-            loadTags,
-        },
-    } = useStore();
+    const { tagsStore } = useStore();
+    const availableTags = tagsStore.getTags();
+    const { addNewTags } = tagsStore;
     const [formData, setFormData] = useState<Task>(task);
     const [tags, setTags] = useState<string[]>(
         task.tags?.map((tag) => tag.name) || []
@@ -226,12 +220,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
         }
     }, [isOpen, autoFocusSubtasks]);
 
-    // Load tags when modal opens if not already loaded
-    useEffect(() => {
-        if (isOpen && !tagsLoaded && !tagsLoading && !tagsError) {
-            loadTags();
-        }
-    }, [isOpen, tagsLoaded, tagsLoading, tagsError, loadTags]);
+    // Tags refreshing removed to prevent modal closing issues
+    // Tags will be loaded automatically when accessed via getTags() in the store
 
     const handleEditParent = () => {
         if (parentTask && onEditParentTask) {
@@ -336,6 +326,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
     };
 
     const handleSubmit = () => {
+        // Add new tags to the global store
+        const existingTagNames = availableTags.map((tag: any) => tag.name);
+        const newTagNames = tags.filter(
+            (tag) => !existingTagNames.includes(tag)
+        );
+        if (newTagNames.length > 0) {
+            addNewTags(newTagNames);
+        }
+
         // If project name is empty, clear the project_id
         const finalFormData = {
             ...formData,
@@ -407,39 +406,17 @@ const TaskModal: React.FC<TaskModalProps> = ({
         setFilteredProjects(projects || []);
     }, [projects]);
 
+    // Handle body scroll when modal opens/closes
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            const target = event.target as Element;
-
-            // Ignore clicks on dropdown menus rendered via portal
-            if (
-                target &&
-                (target.closest('.recurrence-dropdown-menu') ||
-                    target.closest('.number-dropdown-menu') ||
-                    target.closest('.date-picker-menu') ||
-                    target.closest('[class*="fixed z-50"]') ||
-                    target.closest('[class*="z-50"]'))
-            ) {
-                return;
-            }
-
-            if (
-                modalRef.current &&
-                !modalRef.current.contains(event.target as Node)
-            ) {
-                handleClose();
-            }
-        };
         if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
             // Disable body scroll when modal is open
             document.body.style.overflow = 'hidden';
         } else {
             // Re-enable body scroll when modal is closed
             document.body.style.overflow = 'unset';
         }
+
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
             // Clean up: re-enable body scroll
             document.body.style.overflow = 'unset';
         };
@@ -490,8 +467,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 className={`fixed top-16 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 overflow-hidden sm:overflow-y-auto ${
                     isClosing ? 'opacity-0' : 'opacity-100'
                 }`}
+                onClick={(e) => {
+                    // Close modal when clicking on backdrop, but not on the modal content
+                    if (e.target === e.currentTarget) {
+                        handleClose();
+                    }
+                }}
             >
-                <div className="h-full flex items-start justify-center sm:px-4 sm:py-4">
+                <div
+                    className="h-full flex items-start justify-center sm:px-4 sm:py-4"
+                    onClick={(e) => {
+                        // Close modal when clicking on centering container, but not on the modal content
+                        if (e.target === e.currentTarget) {
+                            handleClose();
+                        }
+                    }}
+                >
                     <div
                         ref={modalRef}
                         className={`bg-white dark:bg-gray-800 border-0 sm:border sm:border-gray-200 sm:dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-2xl transform transition-transform duration-300 ${
@@ -523,6 +514,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                     taskIntelligenceEnabled={
                                                         taskIntelligenceEnabled
                                                     }
+                                                    onSubmit={handleSubmit}
                                                 />
 
                                                 {/* Content Section - Always Visible */}
@@ -541,24 +533,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                                 'Tags'
                                                             )}
                                                         </h3>
-                                                        {tagsLoaded ? (
-                                                            <TaskTagsSection
-                                                                tags={tags}
-                                                                onTagsChange={
-                                                                    handleTagsChange
-                                                                }
-                                                                availableTags={
-                                                                    availableTags
-                                                                }
-                                                            />
-                                                        ) : (
-                                                            <div className="text-gray-500 text-sm">
-                                                                {t(
-                                                                    'common.loading',
-                                                                    'Loading...'
-                                                                )}
-                                                            </div>
-                                                        )}
+                                                        <TaskTagsSection
+                                                            tags={tags}
+                                                            onTagsChange={
+                                                                handleTagsChange
+                                                            }
+                                                            availableTags={
+                                                                availableTags
+                                                            }
+                                                        />
                                                     </div>
                                                 )}
 

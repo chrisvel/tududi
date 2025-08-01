@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 const AreaDetails: React.FC = () => {
     const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
-    const { areas } = useStore((state) => state.areasStore);
+    const { areas } = useStore((state: any) => state.areasStore);
     const [area, setArea] = useState<Area | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);

@@ -1,24 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useToast } from '../Shared/ToastContext';
 
 interface AutoSuggestNextActionBoxProps {
     onAddAction: (actionDescription: string) => void;
     onDismiss: () => void;
-    projectName: string;
 }
 
 const AutoSuggestNextActionBox: React.FC<AutoSuggestNextActionBoxProps> = ({
     onAddAction,
     onDismiss,
-    projectName, // eslint-disable-line @typescript-eslint/no-unused-vars
 }) => {
     const [actionDescription, setActionDescription] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const { t } = useTranslation();
-    const { showSuccessToast } = useToast();
 
     useEffect(() => {
         // Focus the input when component mounts
@@ -31,7 +27,6 @@ const AutoSuggestNextActionBox: React.FC<AutoSuggestNextActionBoxProps> = ({
         e.preventDefault();
         if (actionDescription.trim()) {
             onAddAction(actionDescription.trim());
-            showSuccessToast(t('success.nextActionAdded'));
             setActionDescription('');
         }
     };

@@ -49,9 +49,9 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const { showSuccessToast, showErrorToast } = useToast();
     const nameInputRef = useRef<HTMLInputElement>(null);
     const [saveMode, setSaveMode] = useState<'task' | 'inbox'>('inbox');
-    const {
-        tagsStore: { tags, setTags },
-    } = useStore();
+    const { tagsStore } = useStore();
+    const tags = tagsStore.getTags();
+    const { setTags } = tagsStore;
     const [showTagSuggestions, setShowTagSuggestions] = useState(false);
     const [filteredTags, setFilteredTags] = useState<Tag[]>([]);
     const [showProjectSuggestions, setShowProjectSuggestions] = useState(false);

@@ -62,7 +62,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const [isUploading, setIsUploading] = useState(false);
 
     const { tagsStore } = useStore();
-    const { tags: availableTags } = tagsStore;
+    const availableTags = tagsStore.getTags();
+    const { addNewTags } = tagsStore;
 
     const modalRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -299,6 +300,15 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         }
 
         try {
+            // Add new tags to the global store
+            const existingTagNames = availableTags.map((tag: any) => tag.name);
+            const newTagNames = tags.filter(
+                (tag) => !existingTagNames.includes(tag)
+            );
+            if (newTagNames.length > 0) {
+                addNewTags(newTagNames);
+            }
+
             let imageUrl = formData.image_url;
 
             // Upload image if a new one was selected
@@ -417,6 +427,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
                     isClosing ? 'opacity-0' : 'opacity-100'
                 }`}
+                onClick={(e) => {
+                    // Close modal when clicking on backdrop, but not on the modal content
+                    if (e.target === e.currentTarget) {
+                        handleClose();
+                    }
+                }}
             >
                 <div
                     ref={modalRef}
@@ -449,6 +465,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     name="name"
                                                     value={formData.name}
                                                     onChange={handleChange}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            handleSubmit();
+                                                        }
+                                                    }}
                                                     required
                                                     className={`block w-full text-xl font-semibold bg-transparent text-black dark:text-white border-none focus:outline-none shadow-sm py-2`}
                                                     placeholder={t(

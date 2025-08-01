@@ -43,13 +43,21 @@ const ProjectDetails: React.FC = () => {
     const { t } = useTranslation();
     const { showSuccessToast } = useToast();
 
-    // Using local state to avoid infinite loops
-    const areas = useStore((state) => state.areasStore.areas);
-    const { projects: allProjects, setProjects } = useStore(
-        (state) => state.projectsStore
-    );
+    // Load areas from store (similar to how we handle tags)
+    const { areasStore } = useStore();
+    const areas = areasStore.areas;
+
+    // Load areas when component mounts
+    useEffect(() => {
+        if (!areasStore.hasLoaded && !areasStore.isLoading) {
+            areasStore.loadAreas();
+        }
+    }, [areasStore]);
+    const [allProjects, setAllProjects] = useState<Project[]>([]);
+    // Use local state to isolate from global store changes that cause remounting
     const [project, setProject] = useState<Project | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
+
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -94,14 +102,14 @@ const ProjectDetails: React.FC = () => {
             if (allProjects.length === 0) {
                 try {
                     const projectsData = await fetchProjects();
-                    setProjects(projectsData);
+                    setAllProjects(projectsData);
                 } catch (error) {
                     console.error('Failed to fetch projects:', error);
                 }
             }
         };
         loadProjectsIfNeeded();
-    }, [allProjects.length, setProjects]);
+    }, [allProjects.length]);
 
     // Check if we should show auto-suggest form for projects with no tasks
     useEffect(() => {
@@ -128,6 +136,11 @@ const ProjectDetails: React.FC = () => {
     // Fetch project data when id changes
     useEffect(() => {
         if (!id) return;
+
+        // Skip loading if we already have the project data for this id
+        if (project && project.id?.toString() === id) {
+            return;
+        }
 
         const loadProjectData = async () => {
             try {
@@ -909,7 +922,6 @@ const ProjectDetails: React.FC = () => {
                                 }
                             }}
                             onDismiss={handleSkipNextAction}
-                            projectName={project?.name || ''}
                         />
                     </div>
                 )}

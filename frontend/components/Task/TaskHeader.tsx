@@ -134,7 +134,20 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     return (
         <div
             className={`${hasMetadata ? 'py-2' : 'py-3'} px-4 cursor-pointer group`}
-            onClick={onTaskClick}
+            role="button"
+            tabIndex={0}
+            onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onTaskClick(e);
+            }}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onTaskClick(e as any);
+                }
+            }}
         >
             {/* Full view (md and larger) */}
             <div className="hidden md:flex flex-col md:flex-row md:items-center md:justify-between">
@@ -164,7 +177,16 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <Link
                                         to={`/project/${project.id}`}
                                         className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
-                                        onClick={(e) => e.stopPropagation()}
+                                        onClick={(e) => {
+                                            // Prevent navigation if we're already on this project's page
+                                            if (
+                                                window.location.pathname ===
+                                                `/project/${project.id}`
+                                            ) {
+                                                e.preventDefault();
+                                            }
+                                            e.stopPropagation();
+                                        }}
                                     >
                                         {project.name}
                                     </Link>
@@ -185,6 +207,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 <Link
                                                     to={`/tag/${encodeURIComponent(tag.name)}`}
                                                     className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
                                                 >
                                                     {tag.name}
                                                 </Link>
@@ -232,6 +257,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     {/* Today Plan Controls */}
                     {onToggleToday && (
                         <button
+                            type="button"
                             onClick={handleTodayToggle}
                             className={`items-center justify-center ${
                                 Number(task.today_move_count) > 1
@@ -270,6 +296,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         task.status === 0 ||
                         task.status === 1) && (
                         <button
+                            type="button"
                             onClick={handlePlayToggle}
                             className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
                                 task.status === 'in_progress' ||
@@ -298,6 +325,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     {hasSubtasks &&
                         !(task.status === 'archived' || task.status === 3) && (
                             <button
+                                type="button"
                                 onClick={(e) => {
                                     if (onSubtasksToggle) {
                                         onSubtasksToggle(e);
@@ -359,7 +387,16 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <Link
                                         to={`/project/${project.id}`}
                                         className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
-                                        onClick={(e) => e.stopPropagation()}
+                                        onClick={(e) => {
+                                            // Prevent navigation if we're already on this project's page
+                                            if (
+                                                window.location.pathname ===
+                                                `/project/${project.id}`
+                                            ) {
+                                                e.preventDefault();
+                                            }
+                                            e.stopPropagation();
+                                        }}
                                     >
                                         {project.name}
                                     </Link>
@@ -374,6 +411,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 <Link
                                                     to={`/tag/${encodeURIComponent(tag.name)}`}
                                                     className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
                                                 >
                                                     {tag.name}
                                                 </Link>
@@ -410,6 +450,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         {/* Today Plan Controls - Mobile */}
                         {onToggleToday && (
                             <button
+                                type="button"
                                 onClick={handleTodayToggle}
                                 className={`items-center justify-center ${Number(task.today_move_count) > 1 ? 'px-2 h-6' : 'w-6 h-6'} rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 ${
                                     task.today
@@ -447,6 +488,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             task.status === 0 ||
                             task.status === 1) && (
                             <button
+                                type="button"
                                 onClick={handlePlayToggle}
                                 className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
                                     task.status === 'in_progress' ||
@@ -477,11 +519,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 task.status === 'archived' || task.status === 3
                             ) && (
                                 <button
+                                    type="button"
                                     onClick={(e) => {
-                                        console.log(
-                                            'Subtasks button clicked (mobile)',
-                                            e
-                                        );
                                         if (onSubtasksToggle) {
                                             onSubtasksToggle(e);
                                         }
