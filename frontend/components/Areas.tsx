@@ -22,7 +22,7 @@ const Areas: React.FC = () => {
         isLoading: loading,
         hasLoaded,
         loadAreas,
-    } = useStore((state) => state.areasStore);
+    } = useStore((state: any) => state.areasStore);
 
     const [isAreaModalOpen, setIsAreaModalOpen] = useState<boolean>(false);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
@@ -88,7 +88,7 @@ const Areas: React.FC = () => {
                 useStore
                     .getState()
                     .areasStore.setAreas(
-                        currentAreas.map((area) =>
+                        currentAreas.map((area: any) =>
                             area.id === result.id ? result : area
                         )
                     );
@@ -143,7 +143,9 @@ const Areas: React.FC = () => {
             useStore
                 .getState()
                 .areasStore.setAreas(
-                    currentAreas.filter((area) => area.id !== areaToDelete.id)
+                    currentAreas.filter(
+                        (area: any) => area.id !== areaToDelete.id
+                    )
                 );
             setIsConfirmDialogOpen(false);
             setAreaToDelete(null);
@@ -176,7 +178,7 @@ const Areas: React.FC = () => {
                     </p>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {areas.map((area) => (
+                        {areas.map((area: any) => (
                             <Link
                                 key={area.id}
                                 to={`/projects?area_id=${area.id}`}

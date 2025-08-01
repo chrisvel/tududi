@@ -47,7 +47,10 @@ interface TagsStore {
     setTags: (tags: Tag[]) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
-    loadTags: () => Promise<void>;
+    loadTags: (forceReload?: boolean) => Promise<void>;
+    getTags: () => Tag[];
+    refreshTags: () => Promise<void>;
+    addNewTags: (newTagNames: string[]) => void;
 }
 
 interface TasksStore {
@@ -92,7 +95,7 @@ interface StoreState {
     inboxStore: InboxStore;
 }
 
-export const useStore = create<StoreState>((set) => ({
+export const useStore = create<StoreState>((set: any) => ({
     notesStore: {
         notes: [],
         isLoading: false,
@@ -226,9 +229,12 @@ export const useStore = create<StoreState>((set) => ({
             set((state) => ({ tagsStore: { ...state.tagsStore, isLoading } })),
         setError: (isError) =>
             set((state) => ({ tagsStore: { ...state.tagsStore, isError } })),
-        loadTags: async () => {
+        loadTags: async (forceReload = false) => {
             const state = useStore.getState();
             if (state.tagsStore.isLoading) return;
+
+            // Skip loading if already loaded and not forcing reload
+            if (state.tagsStore.hasLoaded && !forceReload) return;
 
             const { fetchTags } = await import('../utils/tagsService');
 
@@ -258,6 +264,36 @@ export const useStore = create<StoreState>((set) => ({
                         isError: true,
                         isLoading: false,
                         hasLoaded: true,
+                    },
+                }));
+            }
+        },
+        getTags: (): Tag[] => {
+            const state: StoreState = useStore.getState();
+            // Auto-load tags if not loaded yet
+            if (!state.tagsStore.hasLoaded && !state.tagsStore.isLoading) {
+                state.tagsStore.loadTags();
+            }
+            return state.tagsStore.tags;
+        },
+        refreshTags: async () => {
+            const state = useStore.getState();
+            return state.tagsStore.loadTags(true);
+        },
+        addNewTags: (newTagNames: string[]) => {
+            const state = useStore.getState();
+            const existingTagNames = state.tagsStore.tags.map(
+                (tag: Tag) => tag.name
+            );
+            const tagsToAdd = newTagNames
+                .filter((name) => !existingTagNames.includes(name))
+                .map((name) => ({ name, id: Date.now() + Math.random() })); // Temporary ID
+
+            if (tagsToAdd.length > 0) {
+                set((state) => ({
+                    tagsStore: {
+                        ...state.tagsStore,
+                        tags: [...state.tagsStore.tags, ...tagsToAdd],
                     },
                 }));
             }

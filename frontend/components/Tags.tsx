@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     TrashIcon,
     MagnifyingGlassIcon,
@@ -19,6 +20,7 @@ import {
 import { useStore } from '../store/useStore';
 
 const Tags: React.FC = () => {
+    const { t } = useTranslation();
     const {
         tagsStore: { tags, setTags, isLoading, isError, hasLoaded, loadTags },
     } = useStore();
@@ -224,7 +226,9 @@ const Tags: React.FC = () => {
             <div className="w-full max-w-5xl">
                 {/* Tags Header */}
                 <div className="flex items-center mb-8">
-                    <h2 className="text-2xl font-light">Tags</h2>
+                    <h2 className="text-2xl font-light">
+                        {t('tags.title', 'Tags')}
+                    </h2>
                 </div>
 
                 {/* Search Bar with Icon */}
@@ -233,7 +237,10 @@ const Tags: React.FC = () => {
                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
                         <input
                             type="text"
-                            placeholder="Search tags..."
+                            placeholder={t(
+                                'tags.searchPlaceholder',
+                                'Search tags...'
+                            )}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
@@ -244,7 +251,7 @@ const Tags: React.FC = () => {
                 {/* Tags List */}
                 {filteredTags.length === 0 ? (
                     <p className="text-gray-700 dark:text-gray-300">
-                        No tags found.
+                        {t('tags.noTagsFound', 'No tags found.')}
                     </p>
                 ) : (
                     <div className="space-y-8">

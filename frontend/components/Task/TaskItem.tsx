@@ -151,7 +151,23 @@ const TaskItem: React.FC<TaskItemProps> = ({
     hideProjectName = false,
     onToggleToday,
 }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    // Use task ID as key for modal state to persist across task prop changes
+    const [modalOpenTaskId, setModalOpenTaskId] = useState<number | null>(null);
+    const isModalOpen = modalOpenTaskId === task.id;
+
+    // Wrapper function for setting modal state
+    const setIsModalOpen = (value: boolean) => {
+        if (value) {
+            setModalOpenTaskId(task.id || null);
+        } else {
+            setModalOpenTaskId(null);
+        }
+    };
+
+    // Update projectList when projects prop changes
+    useEffect(() => {
+        setProjectList(projects);
+    }, [projects]);
     const [subtaskModalOpen, setSubtaskModalOpen] = useState(false);
     const [selectedSubtask, setSelectedSubtask] = useState<Task | null>(null);
     const [projectList, setProjectList] = useState<Project[]>(projects);
@@ -232,8 +248,15 @@ const TaskItem: React.FC<TaskItemProps> = ({
         setShowSubtasks(!showSubtasks);
     };
 
-    const handleTaskClick = () => {
-        setIsModalOpen(true);
+    const handleTaskClick = (e?: React.MouseEvent) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        // Use setTimeout to ensure state update happens after any other processing
+        setTimeout(() => {
+            setIsModalOpen(true);
+        }, 0);
     };
 
     const handleSubtaskClick = async (subtask: Task) => {
@@ -461,7 +484,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
             <TaskModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                    setIsModalOpen(false);
+                }}
                 task={task}
                 onSave={handleSave}
                 onDelete={handleDelete}
