@@ -52,7 +52,7 @@ const ProjectDetails: React.FC = () => {
         if (!areasStore.hasLoaded && !areasStore.isLoading) {
             areasStore.loadAreas();
         }
-    }, [areasStore]);
+    }, [areasStore.hasLoaded, areasStore.isLoading, areasStore.loadAreas]);
     const [allProjects, setAllProjects] = useState<Project[]>([]);
     // Use local state to isolate from global store changes that cause remounting
     const [project, setProject] = useState<Project | null>(null);
@@ -712,13 +712,21 @@ const ProjectDetails: React.FC = () => {
                     {/* Edit/Delete Buttons - Bottom Right */}
                     <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button
-                            onClick={handleEditProject}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleEditProject();
+                            }}
                             className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
                         >
                             <PencilSquareIcon className="h-5 w-5" />
                         </button>
                         <button
-                            onClick={() => setIsConfirmDialogOpen(true)}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsConfirmDialogOpen(true);
+                            }}
                             className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
                         >
                             <TrashIcon className="h-5 w-5" />

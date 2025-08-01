@@ -44,7 +44,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             name: '',
             description: '',
             area_id: null,
-            active: true,
+            active: false,
             tags: [],
             priority: 'low',
             due_date_at: null,
@@ -62,7 +62,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const [isUploading, setIsUploading] = useState(false);
 
     const { tagsStore } = useStore();
-    const availableTags = tagsStore.getTags();
+    // Avoid calling getTags() during component initialization to prevent remounting
+    const availableTags = tagsStore.tags;
     const { addNewTags } = tagsStore;
 
     const modalRef = useRef<HTMLDivElement>(null);
@@ -85,14 +86,18 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const { showSuccessToast, showErrorToast } = useToast();
     const { t } = useTranslation();
 
-    // Auto-focus on the name input when modal opens
+    // Load tags when modal opens and auto-focus on the name input
     useEffect(() => {
         if (isOpen) {
+            // Load tags if not loaded yet
+            if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
+                tagsStore.loadTags();
+            }
             setTimeout(() => {
                 nameInputRef.current?.focus();
             }, 200);
         }
-    }, [isOpen]);
+    }, [isOpen, tagsStore]);
 
     // Manage body scroll when modal is open
     useEffect(() => {
@@ -127,7 +132,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 name: '',
                 description: '',
                 area_id: null,
-                active: true,
+                active: false,
                 tags: [],
                 priority: 'low',
                 due_date_at: null,
