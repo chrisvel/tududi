@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
@@ -64,6 +64,17 @@ const InboxItems: React.FC = () => {
 
     // Track the current inbox item being edited
     const [itemToEdit, setItemToEdit] = useState<number | null>(null);
+
+    // Create stable default task object to prevent infinite re-renders
+    const defaultTask = useMemo(
+        () => ({
+            name: '',
+            status: 'not_started' as const,
+            priority: 'low' as const,
+            completed_at: null,
+        }),
+        []
+    );
 
     useEffect(() => {
         // Initial data loading
@@ -509,14 +520,7 @@ const InboxItems: React.FC = () => {
                                     setIsTaskModalOpen(false);
                                     setTaskToEdit(null);
                                 }}
-                                task={
-                                    taskToEdit || {
-                                        name: '',
-                                        status: 'not_started',
-                                        priority: 'low',
-                                        completed_at: null,
-                                    }
-                                }
+                                task={taskToEdit || defaultTask}
                                 onSave={handleSaveTask}
                                 onDelete={async () => {}} // No need to delete since it's a new task
                                 projects={

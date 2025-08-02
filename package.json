@@ -1,6 +1,6 @@
 {
   "name": "tududi",
-  "version": "v0.80",
+  "version": "v0.81",
   "description": "Self-hosted task management with hierarchical organization (Areas > Projects > Tasks), multi-language support, and Telegram integration. Built with React/TypeScript frontend and functional programming Express.js backend.",
   "main": "backend/app.js",
   "directories": {

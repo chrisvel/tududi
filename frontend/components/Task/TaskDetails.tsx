@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -37,6 +37,7 @@ const TaskDetails: React.FC = () => {
     const { showSuccessToast, showErrorToast } = useToast();
 
     const projects = useStore((state) => state.projectsStore.projects);
+    const tagsStore = useStore((state) => state.tagsStore);
 
     // Local state
     const [task, setTask] = useState<Task | null>(null);
@@ -46,6 +47,36 @@ const TaskDetails: React.FC = () => {
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+    const [focusSubtasks, setFocusSubtasks] = useState(false);
+    const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
+
+    // Load tags early and check for pending modal state on mount
+    useEffect(() => {
+        // Preload tags if not already loaded
+        if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
+            tagsStore.loadTags();
+        }
+
+        try {
+            const pendingStateStr = sessionStorage.getItem('pendingModalState');
+            if (pendingStateStr) {
+                const pendingState = JSON.parse(pendingStateStr);
+                const isRecent = Date.now() - pendingState.timestamp < 2000; // Within 2 seconds
+                const isCorrectTask = pendingState.taskUuid === uuid;
+
+                if (isRecent && isCorrectTask && pendingState.isOpen) {
+                    // Use microtask to avoid lifecycle method warning
+                    queueMicrotask(() => {
+                        setIsTaskModalOpen(true);
+                        setFocusSubtasks(pendingState.focusSubtasks);
+                    });
+                    sessionStorage.removeItem('pendingModalState');
+                }
+            }
+        } catch {
+            sessionStorage.removeItem('pendingModalState');
+        }
+    }, [uuid, tagsStore]);
 
     // Date and recurrence formatting functions (from TaskHeader)
     const formatDueDate = (dueDate: string) => {
@@ -121,6 +152,7 @@ const TaskDetails: React.FC = () => {
     }, [uuid]);
 
     const handleEdit = () => {
+        setFocusSubtasks(false);
         setIsTaskModalOpen(true);
     };
 
@@ -137,6 +169,9 @@ const TaskDetails: React.FC = () => {
                     : t('task.reopenedSuccess', 'Task reopened');
 
             showSuccessToast(statusMessage);
+
+            // Refresh timeline to show status change activity
+            setTimelineRefreshKey((prev) => prev + 1);
         } catch (error) {
             console.error('Error toggling task completion:', error);
             showErrorToast(
@@ -163,6 +198,9 @@ const TaskDetails: React.FC = () => {
                         console.warn('Error reloading subtasks:', subtaskError);
                     }
                 }
+
+                // Refresh timeline to show new activity
+                setTimelineRefreshKey((prev) => prev + 1);
             }
             setIsTaskModalOpen(false);
         } catch (error) {
@@ -204,11 +242,30 @@ const TaskDetails: React.FC = () => {
         }
     };
 
-    const handleSubtaskClick = (subtask: Task) => {
-        if (subtask.uuid) {
-            navigate(`/task/${subtask.uuid}`);
-        }
-    };
+    const handleSubtaskClick = useCallback(
+        (e: React.MouseEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.nativeEvent.stopImmediatePropagation();
+
+            // Store the intent to open modal in sessionStorage (survives re-mounts)
+            const modalState = {
+                isOpen: true,
+                focusSubtasks: true,
+                taskUuid: uuid,
+                timestamp: Date.now(),
+            };
+            sessionStorage.setItem(
+                'pendingModalState',
+                JSON.stringify(modalState)
+            );
+
+            // Set state immediately
+            setFocusSubtasks(true);
+            setIsTaskModalOpen(true);
+        },
+        [uuid]
+    );
 
     if (loading) {
         return <LoadingScreen />;
@@ -401,11 +458,7 @@ const TaskDetails: React.FC = () => {
                                                 className="group"
                                             >
                                                 <div
-                                                    onClick={() =>
-                                                        handleSubtaskClick(
-                                                            subtask
-                                                        )
-                                                    }
+                                                    onClick={handleSubtaskClick}
                                                     className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 cursor-pointer transition-all duration-200 ${
                                                         subtask.status ===
                                                             'in_progress' ||
@@ -415,7 +468,12 @@ const TaskDetails: React.FC = () => {
                                                     }`}
                                                 >
                                                     <div className="px-4 py-2.5 flex items-center space-x-3">
-                                                        <div className="flex-shrink-0">
+                                                        <div
+                                                            className="flex-shrink-0"
+                                                            onClick={(e) =>
+                                                                e.stopPropagation()
+                                                            }
+                                                        >
                                                             <TaskPriorityIcon
                                                                 priority={
                                                                     subtask.priority
@@ -423,7 +481,10 @@ const TaskDetails: React.FC = () => {
                                                                 status={
                                                                     subtask.status
                                                                 }
-                                                                onToggleCompletion={async () => {
+                                                                onToggleCompletion={async (
+                                                                    e
+                                                                ) => {
+                                                                    e?.stopPropagation();
                                                                     if (
                                                                         subtask.id
                                                                     ) {
@@ -441,6 +502,15 @@ const TaskDetails: React.FC = () => {
                                                                                     );
                                                                                 setSubtasks(
                                                                                     subtasksData
+                                                                                );
+
+                                                                                // Refresh timeline to show subtask completion activity
+                                                                                setTimelineRefreshKey(
+                                                                                    (
+                                                                                        prev
+                                                                                    ) =>
+                                                                                        prev +
+                                                                                        1
                                                                                 );
                                                                             }
                                                                         } catch (error) {
@@ -496,35 +566,39 @@ const TaskDetails: React.FC = () => {
                                 {t('task.recentActivity', 'Recent Activity')}
                             </h4>
                             <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
-                                <TaskTimeline taskId={task.id} />
+                                <TaskTimeline
+                                    taskId={task.id}
+                                    refreshKey={timelineRefreshKey}
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
                 {/* End of main content sections */}
 
-                {/* Task Modal for Editing */}
-                <TaskModal
-                    isOpen={isTaskModalOpen}
-                    task={
-                        task || {
-                            name: '',
-                            status: 'not_started',
-                            priority: 'medium',
-                            completed_at: null,
-                        }
-                    }
-                    onClose={() => setIsTaskModalOpen(false)}
-                    onSave={handleTaskUpdate}
-                    onDelete={async (taskId: number) => {
-                        await deleteTask(taskId);
-                        navigate('/today');
-                    }}
-                    projects={projects}
-                    onCreateProject={handleCreateProject}
-                    showToast={false}
-                    initialSubtasks={subtasks}
-                />
+                {/* Task Modal for Editing - Only render when we have task data */}
+                {task && (
+                    <TaskModal
+                        isOpen={isTaskModalOpen}
+                        task={task}
+                        onClose={() => {
+                            setIsTaskModalOpen(false);
+                            setFocusSubtasks(false);
+                            // Clear pending state when modal is closed
+                            sessionStorage.removeItem('pendingModalState');
+                        }}
+                        onSave={handleTaskUpdate}
+                        onDelete={async (taskId: number) => {
+                            await deleteTask(taskId);
+                            navigate('/today');
+                        }}
+                        projects={projects}
+                        onCreateProject={handleCreateProject}
+                        showToast={false}
+                        initialSubtasks={subtasks}
+                        autoFocusSubtasks={focusSubtasks}
+                    />
+                )}
 
                 {/* Confirm Delete Dialog */}
                 {isConfirmDialogOpen && taskToDelete && (
