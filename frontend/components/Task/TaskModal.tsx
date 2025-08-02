@@ -66,10 +66,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [tags, setTags] = useState<string[]>(
         task.tags?.map((tag) => tag.name) || []
     );
-    const [filteredProjects, setFilteredProjects] = useState<Project[]>(
-        projects || []
-    );
+    const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
     const [newProjectName, setNewProjectName] = useState<string>('');
+
     const [isCreatingProject, setIsCreatingProject] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
@@ -81,8 +80,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [taskIntelligenceEnabled] = useState(true);
     const [subtasks, setSubtasks] = useState<Task[]>([]);
 
-    // Collapsible section states
-    const [expandedSections, setExpandedSections] = useState({
+    // Collapsible section states - subtasks is derived from autoFocusSubtasks
+    const [baseSections, setBaseSections] = useState({
         tags: false,
         project: false,
         priority: false,
@@ -91,115 +90,115 @@ const TaskModal: React.FC<TaskModalProps> = ({
         subtasks: false,
     });
 
+    // Derive expanded sections with subtasks controlled by autoFocusSubtasks
+    const expandedSections = {
+        ...baseSections,
+        subtasks: baseSections.subtasks || autoFocusSubtasks,
+    };
+
     const { showSuccessToast, showErrorToast } = useToast();
     const { t } = useTranslation();
 
     const scrollToSubtasksSection = () => {
-        setTimeout(() => {
+        const attemptScroll = (attempt = 1) => {
             const subtasksSection = document.querySelector(
                 '[data-section="subtasks"]'
-            );
+            ) as HTMLElement;
+
             if (subtasksSection) {
                 subtasksSection.scrollIntoView({
                     behavior: 'smooth',
                     block: 'end',
                 });
+            } else if (attempt <= 3) {
+                // Retry up to 3 times with increasing delays
+                setTimeout(() => attemptScroll(attempt + 1), 100 * attempt);
             }
-        }, 300); // Give time for section to expand
+        };
+
+        setTimeout(() => attemptScroll(), 100);
     };
 
-    const toggleSection = useCallback(
-        (section: keyof typeof expandedSections) => {
-            setExpandedSections((prev) => {
-                const newExpanded = {
-                    ...prev,
-                    [section]: !prev[section],
-                };
+    const toggleSection = useCallback((section: keyof typeof baseSections) => {
+        setBaseSections((prev) => {
+            const newExpanded = {
+                ...prev,
+                [section]: !prev[section],
+            };
 
-                // Auto-scroll to show the expanded section
-                if (newExpanded[section]) {
-                    // Special handling for subtasks section
-                    if (section === 'subtasks') {
-                        scrollToSubtasksSection();
-                    } else {
-                        setTimeout(() => {
-                            const scrollContainer = document.querySelector(
-                                '.absolute.inset-0.overflow-y-auto'
-                            );
-                            if (scrollContainer) {
-                                scrollContainer.scrollTo({
-                                    top: scrollContainer.scrollHeight,
-                                    behavior: 'smooth',
-                                });
-                            }
-                        }, 100); // Small delay to ensure DOM is updated
-                    }
+            // Auto-scroll to show the expanded section
+            if (newExpanded[section]) {
+                // Special handling for subtasks section
+                if (section === 'subtasks') {
+                    scrollToSubtasksSection();
+                } else {
+                    setTimeout(() => {
+                        const scrollContainer = document.querySelector(
+                            '.absolute.inset-0.overflow-y-auto'
+                        );
+                        if (scrollContainer) {
+                            scrollContainer.scrollTo({
+                                top: scrollContainer.scrollHeight,
+                                behavior: 'smooth',
+                            });
+                        }
+                    }, 100); // Small delay to ensure DOM is updated
                 }
+            }
 
-                return newExpanded;
-            });
-        },
-        []
-    );
+            return newExpanded;
+        });
+    }, []);
 
+    // Handle task updates only when the task ID changes or modal opens
     useEffect(() => {
         setFormData(task);
         setTags(task.tags?.map((tag) => tag.name) || []);
+    }, [task.id]);
 
-        // Analyze task name and show helper when modal opens (only if intelligence is enabled)
+    // Handle task analysis separately
+    useEffect(() => {
         if (isOpen && task.name && taskIntelligenceEnabled) {
             const analysis = analyzeTaskName(task.name);
             setTaskAnalysis(analysis);
         } else {
             setTaskAnalysis(null);
         }
+    }, [isOpen, task.name, taskIntelligenceEnabled]);
 
-        // Safely find the current project, handling the case where projects might be undefined
-        const currentProject = projects?.find(
-            (project) => project.id === task.project_id
-        );
-        setNewProjectName(currentProject ? currentProject.name : '');
-
-        // Fetch parent task if this is a child task - but don't block rendering
+    // Handle parent task fetching separately
+    useEffect(() => {
         const fetchParentTask = async () => {
             if (task.recurring_parent_id && isOpen) {
                 setParentTaskLoading(true);
-                // Use setTimeout to not block initial render
-                setTimeout(async () => {
-                    try {
-                        const parent = await fetchTaskById(
-                            task.recurring_parent_id
-                        );
-                        setParentTask(parent);
-                    } catch (error) {
-                        console.error('Error fetching parent task:', error);
-                        setParentTask(null);
-                    } finally {
-                        setParentTaskLoading(false);
-                    }
-                }, 0);
+                try {
+                    const parent = await fetchTaskById(
+                        task.recurring_parent_id
+                    );
+                    setParentTask(parent);
+                } catch (error) {
+                    console.error('Error fetching parent task:', error);
+                    setParentTask(null);
+                } finally {
+                    setParentTaskLoading(false);
+                }
             } else {
                 setParentTask(null);
             }
         };
 
         fetchParentTask();
-    }, [task, projects, isOpen, taskIntelligenceEnabled]);
+    }, [task.recurring_parent_id, isOpen]);
 
     // Don't fetch task intelligence setting - use default enabled state
     // This prevents unnecessary API calls when opening the modal
 
-    // Auto-focus on subtasks section when modal opens
+    // Auto-scroll to subtasks section when modal opens with autoFocusSubtasks
     useEffect(() => {
         if (isOpen && autoFocusSubtasks) {
-            // Small delay to ensure modal is fully rendered
             setTimeout(() => {
-                setExpandedSections((prev) => ({
-                    ...prev,
-                    subtasks: true,
-                }));
                 scrollToSubtasksSection();
-            }, 100);
+            }, 300);
         }
     }, [isOpen, autoFocusSubtasks]);
 
@@ -208,7 +207,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         if (isOpen && !tagsStore.hasLoaded && !tagsStore.isLoading) {
             tagsStore.loadTags();
         }
-    }, [isOpen, tagsStore.hasLoaded, tagsStore.isLoading, tagsStore.loadTags]);
+    }, [isOpen, tagsStore.hasLoaded, tagsStore.isLoading]);
 
     const handleEditParent = () => {
         if (parentTask && onEditParentTask) {
@@ -389,10 +388,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
         }, 300);
     };
 
-    useEffect(() => {
-        setFilteredProjects(projects || []);
-    }, [projects]);
-
     // Handle body scroll when modal opens/closes
     useEffect(() => {
         if (isOpen) {
@@ -432,7 +427,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             // Reset subtasks when modal closes
             setSubtasks([]);
         }
-    }, [isOpen, task.id, initialSubtasks]);
+    }, [isOpen, task.id]);
 
     if (!isOpen) return null;
 

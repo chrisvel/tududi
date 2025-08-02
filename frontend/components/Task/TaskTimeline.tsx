@@ -14,9 +14,10 @@ import {
 
 interface TaskTimelineProps {
     taskId: number | undefined;
+    refreshKey?: number;
 }
 
-const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
+const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId, refreshKey }) => {
     const { t } = useTranslation();
     const [events, setEvents] = useState<TaskEvent[]>([]);
     const [loading, setLoading] = useState(true);
@@ -52,7 +53,7 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId }) => {
         };
 
         fetchTimeline();
-    }, [taskId]);
+    }, [taskId, refreshKey]);
 
     const getTranslatedStatusLabel = (status: number | string): string => {
         // Handle both numeric and string status values
