@@ -7,6 +7,8 @@ import {
     ArrowPathIcon,
     ArrowRightIcon,
     ListBulletIcon,
+    PencilIcon,
+    TrashIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +30,9 @@ interface TaskHeaderProps {
     showSubtasks?: boolean;
     hasSubtasks?: boolean;
     onSubtasksToggle?: (e: React.MouseEvent) => void;
+    // Props for edit and delete functionality
+    onEdit?: (e: React.MouseEvent) => void;
+    onDelete?: (e: React.MouseEvent) => void;
 }
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
@@ -43,6 +48,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     showSubtasks,
     hasSubtasks,
     onSubtasksToggle,
+    // Props for edit and delete functionality
+    onEdit,
+    onDelete,
 }) => {
     const { t } = useTranslation();
 
@@ -253,104 +261,136 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center flex-wrap justify-start md:justify-end space-x-2">
-                    {/* Today Plan Controls */}
-                    {onToggleToday && (
-                        <button
-                            type="button"
-                            onClick={handleTodayToggle}
-                            className={`items-center justify-center ${
-                                Number(task.today_move_count) > 1
-                                    ? 'px-2 h-6'
-                                    : 'w-6 h-6'
-                            } rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 ${
-                                task.today
-                                    ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 flex'
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hidden group-hover:flex'
-                            }`}
-                            title={
-                                task.today
-                                    ? t(
-                                          'tasks.removeFromToday',
-                                          'Remove from today plan'
-                                      )
-                                    : t('tasks.addToToday', 'Add to today plan')
-                            }
-                        >
-                            {task.today ? (
-                                <CalendarDaysIcon className="h-3 w-3" />
-                            ) : (
-                                <CalendarIcon className="h-3 w-3" />
-                            )}
-                            {Number(task.today_move_count) > 1 && (
-                                <span className="ml-1 text-xs font-medium">
-                                    {Number(task.today_move_count)}
-                                </span>
-                            )}
-                        </button>
-                    )}
-
-                    {/* Play/In Progress Controls */}
-                    {(task.status === 'not_started' ||
-                        task.status === 'in_progress' ||
-                        task.status === 0 ||
-                        task.status === 1) && (
-                        <button
-                            type="button"
-                            onClick={handlePlayToggle}
-                            className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
-                                task.status === 'in_progress' ||
-                                task.status === 1
-                                    ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse'
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
-                            }`}
-                            title={
-                                task.status === 'in_progress' ||
-                                task.status === 1
-                                    ? t(
-                                          'tasks.setNotStarted',
-                                          'Set to not started'
-                                      )
-                                    : t(
-                                          'tasks.setInProgress',
-                                          'Set in progress'
-                                      )
-                            }
-                        >
-                            <PlayIcon className="h-3 w-3" />
-                        </button>
-                    )}
-
-                    {/* Show Subtasks Controls */}
-                    {hasSubtasks &&
-                        !(task.status === 'archived' || task.status === 3) && (
+                <div className="flex items-center justify-start md:justify-end space-x-1">
+                    {/* Button Group - All buttons together */}
+                    <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        {/* Today Plan Controls */}
+                        {onToggleToday && (
                             <button
                                 type="button"
-                                onClick={(e) => {
-                                    if (onSubtasksToggle) {
-                                        onSubtasksToggle(e);
-                                    }
-                                }}
-                                className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
-                                    showSubtasks
-                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800'
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
+                                onClick={handleTodayToggle}
+                                className={`items-center justify-center ${
+                                    Number(task.today_move_count) > 1
+                                        ? 'px-2 h-6'
+                                        : 'w-6 h-6'
+                                } rounded-full transition-all duration-200 ${
+                                    task.today
+                                        ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 opacity-100 flex'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 flex'
                                 }`}
                                 title={
-                                    showSubtasks
+                                    task.today
                                         ? t(
-                                              'tasks.hideSubtasks',
-                                              'Hide subtasks'
+                                              'tasks.removeFromToday',
+                                              'Remove from today plan'
                                           )
                                         : t(
-                                              'tasks.showSubtasks',
-                                              'Show subtasks'
+                                              'tasks.addToToday',
+                                              'Add to today plan'
                                           )
                                 }
                             >
-                                <ListBulletIcon className="h-3 w-3" />
+                                {task.today ? (
+                                    <CalendarDaysIcon className="h-3 w-3" />
+                                ) : (
+                                    <CalendarIcon className="h-3 w-3" />
+                                )}
+                                {Number(task.today_move_count) > 1 && (
+                                    <span className="ml-1 text-xs font-medium">
+                                        {Number(task.today_move_count)}
+                                    </span>
+                                )}
                             </button>
                         )}
+
+                        {/* Play/In Progress Controls */}
+                        {(task.status === 'not_started' ||
+                            task.status === 'in_progress' ||
+                            task.status === 0 ||
+                            task.status === 1) && (
+                            <button
+                                type="button"
+                                onClick={handlePlayToggle}
+                                className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                                    task.status === 'in_progress' ||
+                                    task.status === 1
+                                        ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse opacity-100'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                }`}
+                                title={
+                                    task.status === 'in_progress' ||
+                                    task.status === 1
+                                        ? t(
+                                              'tasks.setNotStarted',
+                                              'Set to not started'
+                                          )
+                                        : t(
+                                              'tasks.setInProgress',
+                                              'Set in progress'
+                                          )
+                                }
+                            >
+                                <PlayIcon className="h-3 w-3" />
+                            </button>
+                        )}
+
+                        {/* Show Subtasks Controls */}
+                        {hasSubtasks &&
+                            !(
+                                task.status === 'archived' || task.status === 3
+                            ) && (
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        if (onSubtasksToggle) {
+                                            onSubtasksToggle(e);
+                                        }
+                                    }}
+                                    className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                                        showSubtasks
+                                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800 opacity-100'
+                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                    }`}
+                                    title={
+                                        showSubtasks
+                                            ? t(
+                                                  'tasks.hideSubtasks',
+                                                  'Hide subtasks'
+                                              )
+                                            : t(
+                                                  'tasks.showSubtasks',
+                                                  'Show subtasks'
+                                              )
+                                    }
+                                >
+                                    <ListBulletIcon className="h-3 w-3" />
+                                </button>
+                            )}
+
+                        {/* Edit Button */}
+                        {onEdit && (
+                            <button
+                                type="button"
+                                onClick={onEdit}
+                                className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-800 hover:text-blue-600 dark:hover:text-blue-400"
+                                title={t('tasks.edit', 'Edit task')}
+                            >
+                                <PencilIcon className="h-3 w-3" />
+                            </button>
+                        )}
+
+                        {/* Delete Button */}
+                        {onDelete && (
+                            <button
+                                type="button"
+                                onClick={onDelete}
+                                className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-800 hover:text-red-600 dark:hover:text-red-400"
+                                title={t('tasks.delete', 'Delete task')}
+                            >
+                                <TrashIcon className="h-3 w-3" />
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -446,105 +486,133 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     </div>
 
                     {/* Mobile buttons on the right */}
-                    <div className="flex items-center space-x-2 ml-2">
-                        {/* Today Plan Controls - Mobile */}
-                        {onToggleToday && (
-                            <button
-                                type="button"
-                                onClick={handleTodayToggle}
-                                className={`items-center justify-center ${Number(task.today_move_count) > 1 ? 'px-2 h-6' : 'w-6 h-6'} rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 ${
-                                    task.today
-                                        ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 flex'
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hidden group-hover:flex'
-                                }`}
-                                title={
-                                    task.today
-                                        ? t(
-                                              'tasks.removeFromToday',
-                                              'Remove from today plan'
-                                          )
-                                        : t(
-                                              'tasks.addToToday',
-                                              'Add to today plan'
-                                          )
-                                }
-                            >
-                                {task.today ? (
-                                    <CalendarDaysIcon className="h-3 w-3" />
-                                ) : (
-                                    <CalendarIcon className="h-3 w-3" />
-                                )}
-                                {Number(task.today_move_count) > 1 && (
-                                    <span className="ml-1 text-xs font-medium">
-                                        {Number(task.today_move_count)}
-                                    </span>
-                                )}
-                            </button>
-                        )}
-
-                        {/* Play/In Progress Controls - Mobile */}
-                        {(task.status === 'not_started' ||
-                            task.status === 'in_progress' ||
-                            task.status === 0 ||
-                            task.status === 1) && (
-                            <button
-                                type="button"
-                                onClick={handlePlayToggle}
-                                className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
-                                    task.status === 'in_progress' ||
-                                    task.status === 1
-                                        ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse'
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
-                                }`}
-                                title={
-                                    task.status === 'in_progress' ||
-                                    task.status === 1
-                                        ? t(
-                                              'tasks.setNotStarted',
-                                              'Set to not started'
-                                          )
-                                        : t(
-                                              'tasks.setInProgress',
-                                              'Set in progress'
-                                          )
-                                }
-                            >
-                                <PlayIcon className="h-3 w-3" />
-                            </button>
-                        )}
-
-                        {/* Show Subtasks Controls - Mobile */}
-                        {hasSubtasks &&
-                            !(
-                                task.status === 'archived' || task.status === 3
-                            ) && (
+                    <div className="flex items-center ml-2">
+                        {/* Button Group - All buttons together - Mobile */}
+                        <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            {/* Today Plan Controls - Mobile */}
+                            {onToggleToday && (
                                 <button
                                     type="button"
-                                    onClick={(e) => {
-                                        if (onSubtasksToggle) {
-                                            onSubtasksToggle(e);
-                                        }
-                                    }}
-                                    className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
-                                        showSubtasks
-                                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800'
-                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 opacity-0 group-hover:opacity-100'
+                                    onClick={handleTodayToggle}
+                                    className={`items-center justify-center ${Number(task.today_move_count) > 1 ? 'px-2 h-6' : 'w-6 h-6'} rounded-full transition-all duration-200 ${
+                                        task.today
+                                            ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 opacity-100 flex'
+                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 flex'
                                     }`}
                                     title={
-                                        showSubtasks
+                                        task.today
                                             ? t(
-                                                  'tasks.hideSubtasks',
-                                                  'Hide subtasks'
+                                                  'tasks.removeFromToday',
+                                                  'Remove from today plan'
                                               )
                                             : t(
-                                                  'tasks.showSubtasks',
-                                                  'Show subtasks'
+                                                  'tasks.addToToday',
+                                                  'Add to today plan'
                                               )
                                     }
                                 >
-                                    <ListBulletIcon className="h-3 w-3" />
+                                    {task.today ? (
+                                        <CalendarDaysIcon className="h-3 w-3" />
+                                    ) : (
+                                        <CalendarIcon className="h-3 w-3" />
+                                    )}
+                                    {Number(task.today_move_count) > 1 && (
+                                        <span className="ml-1 text-xs font-medium">
+                                            {Number(task.today_move_count)}
+                                        </span>
+                                    )}
                                 </button>
                             )}
+
+                            {/* Play/In Progress Controls - Mobile */}
+                            {(task.status === 'not_started' ||
+                                task.status === 'in_progress' ||
+                                task.status === 0 ||
+                                task.status === 1) && (
+                                <button
+                                    type="button"
+                                    onClick={handlePlayToggle}
+                                    className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                                        task.status === 'in_progress' ||
+                                        task.status === 1
+                                            ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse opacity-100'
+                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                    }`}
+                                    title={
+                                        task.status === 'in_progress' ||
+                                        task.status === 1
+                                            ? t(
+                                                  'tasks.setNotStarted',
+                                                  'Set to not started'
+                                              )
+                                            : t(
+                                                  'tasks.setInProgress',
+                                                  'Set in progress'
+                                              )
+                                    }
+                                >
+                                    <PlayIcon className="h-3 w-3" />
+                                </button>
+                            )}
+
+                            {/* Show Subtasks Controls - Mobile */}
+                            {hasSubtasks &&
+                                !(
+                                    task.status === 'archived' ||
+                                    task.status === 3
+                                ) && (
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            if (onSubtasksToggle) {
+                                                onSubtasksToggle(e);
+                                            }
+                                        }}
+                                        className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                                            showSubtasks
+                                                ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800 opacity-100'
+                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                        }`}
+                                        title={
+                                            showSubtasks
+                                                ? t(
+                                                      'tasks.hideSubtasks',
+                                                      'Hide subtasks'
+                                                  )
+                                                : t(
+                                                      'tasks.showSubtasks',
+                                                      'Show subtasks'
+                                                  )
+                                        }
+                                    >
+                                        <ListBulletIcon className="h-3 w-3" />
+                                    </button>
+                                )}
+
+                            {/* Edit Button - Mobile */}
+                            {onEdit && (
+                                <button
+                                    type="button"
+                                    onClick={onEdit}
+                                    className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-800 hover:text-blue-600 dark:hover:text-blue-400"
+                                    title={t('tasks.edit', 'Edit task')}
+                                >
+                                    <PencilIcon className="h-3 w-3" />
+                                </button>
+                            )}
+
+                            {/* Delete Button - Mobile */}
+                            {onDelete && (
+                                <button
+                                    type="button"
+                                    onClick={onDelete}
+                                    className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-800 hover:text-red-600 dark:hover:text-red-400"
+                                    title={t('tasks.delete', 'Delete task')}
+                                >
+                                    <TrashIcon className="h-3 w-3" />
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -717,4 +785,4 @@ const TaskWithSubtasks: React.FC<TaskWithSubtasksProps> = (props) => {
 };
 
 export { TaskWithSubtasks };
-export default TaskHeader;
+export default React.memo(TaskHeader);

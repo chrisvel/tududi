@@ -128,6 +128,7 @@ import TaskModal from './TaskModal';
 import { toggleTaskCompletion, fetchSubtasks } from '../../utils/tasksService';
 import { isTaskOverdue } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
+import ConfirmDialog from '../Shared/ConfirmDialog';
 
 interface TaskItemProps {
     task: Task;
@@ -149,12 +150,14 @@ const TaskItem: React.FC<TaskItemProps> = ({
     onToggleToday,
 }) => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [subtaskModalOpen, setSubtaskModalOpen] = useState(false);
     const [selectedSubtask, setSelectedSubtask] = useState<Task | null>(null);
     const [projectList, setProjectList] = useState<Project[]>(projects);
     const [parentTaskModalOpen, setParentTaskModalOpen] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
     // Subtasks state
     const [showSubtasks, setShowSubtasks] = useState(false);
@@ -187,12 +190,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
         // Handle both 'subtasks' and 'Subtasks' property names (case sensitivity)
         const subtasksData = task.subtasks || task.Subtasks || [];
         const hasSubtasksFromData = subtasksData.length > 0;
-        setHasSubtasks(!!hasSubtasksFromData);
 
-        // Set initial subtasks state if they are already loaded
-        if (hasSubtasksFromData) {
-            setSubtasks(subtasksData);
-        }
+        // Update subtasks and hasSubtasks state based on task data
+        setHasSubtasks(hasSubtasksFromData);
+        setSubtasks(subtasksData);
     }, [task.id, task.updated_at, task.subtasks, task.Subtasks]);
 
     const loadSubtasks = async () => {
@@ -241,10 +242,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
         }
     };
 
-    const handleSubtaskClick = async (subtask: Task) => {
-        // Navigate directly to the subtask URL
-        if (subtask.uuid) {
-            navigate(`/task/${subtask.uuid}`);
+    const handleSubtaskClick = async () => {
+        // Navigate to the parent task URL (not the subtask URL)
+        if (task.uuid) {
+            navigate(`/task/${task.uuid}`);
         }
     };
 
@@ -254,9 +255,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
         setSelectedSubtask(null);
     };
 
-    const handleSubtaskDelete = async () => {
+    const handleSubtaskDelete = () => {
         if (selectedSubtask && selectedSubtask.id) {
-            await onTaskDelete(selectedSubtask.id);
+            onTaskDelete(selectedSubtask.id);
             setSubtaskModalOpen(false);
             setSelectedSubtask(null);
         }
@@ -268,9 +269,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
         setParentTask(null);
     };
 
-    const handleParentTaskDelete = async () => {
+    const handleParentTaskDelete = () => {
         if (parentTask && parentTask.id) {
-            await onTaskDelete(parentTask.id);
+            onTaskDelete(parentTask.id);
             setParentTaskModalOpen(false);
             setParentTask(null);
         }
@@ -281,9 +282,26 @@ const TaskItem: React.FC<TaskItemProps> = ({
         setIsModalOpen(false);
     };
 
+    const handleEdit = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsModalOpen(true);
+    };
+
+    const handleDeleteClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsConfirmDialogOpen(true);
+    };
+
+    const handleConfirmDelete = () => {
+        setIsConfirmDialogOpen(false);
+        handleDelete();
+    };
+
     const handleDelete = async () => {
         if (task.id) {
-            await onTaskDelete(task.id);
+            onTaskDelete(task.id);
         }
     };
 
@@ -406,6 +424,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     showSubtasks={showSubtasks}
                     hasSubtasks={hasSubtasks}
                     onSubtasksToggle={handleSubtasksToggle}
+                    onEdit={handleEdit}
+                    onDelete={handleDeleteClick}
                 />
 
                 {/* Progress bar at bottom of parent task */}
@@ -433,9 +453,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     showSubtasks={showSubtasks}
                     loadingSubtasks={loadingSubtasks}
                     subtasks={subtasks}
-                    onTaskClick={(e, task) => {
+                    onTaskClick={(e) => {
                         e.stopPropagation();
-                        handleSubtaskClick(task);
+                        handleSubtaskClick();
                     }}
                     onTaskUpdate={onTaskUpdate}
                     loadSubtasks={loadSubtasks}
@@ -453,9 +473,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
             <TaskModal
                 isOpen={isModalOpen}
-                onClose={() => {
-                    setIsModalOpen(false);
-                }}
+                onClose={() => setIsModalOpen(false)}
                 task={task}
                 onSave={handleSave}
                 onDelete={handleDelete}
@@ -493,8 +511,21 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     autoFocusSubtasks={true}
                 />
             )}
+
+            {/* Confirm Delete Dialog */}
+            {isConfirmDialogOpen && (
+                <ConfirmDialog
+                    title={t('tasks.deleteConfirmTitle', 'Delete Task')}
+                    message={t(
+                        'tasks.deleteConfirmMessage',
+                        `Are you sure you want to delete "${task.name}"? This action cannot be undone.`
+                    )}
+                    onConfirm={handleConfirmDelete}
+                    onCancel={() => setIsConfirmDialogOpen(false)}
+                />
+            )}
         </>
     );
 };
 
-export default TaskItem;
+export default React.memo(TaskItem);

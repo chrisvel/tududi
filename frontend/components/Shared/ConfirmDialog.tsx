@@ -17,8 +17,14 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     const { t } = useTranslation();
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-lg mx-4">
+        <div
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+            onClick={onCancel}
+        >
+            <div
+                className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-lg mx-4"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
                     {title}
                 </h3>

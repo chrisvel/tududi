@@ -53,8 +53,7 @@ const TasksToday: React.FC = () => {
 
     // Get tasks from store at the top level to avoid conditional hook usage
     const storeTasks = useStore((state) => state.tasksStore.tasks);
-
-    // Temporarily use local state to debug infinite loop
+    const tagsStore = useStore((state) => state.tagsStore);
 
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
@@ -212,6 +211,15 @@ const TasksToday: React.FC = () => {
                         useStore.getState().tasksStore.setTasks(fetchedTasks);
                         setIsError(false);
                     }
+                }
+
+                // Preload tags to prevent re-renders when modal opens
+                if (
+                    isMounted.current &&
+                    !tagsStore.hasLoaded &&
+                    !tagsStore.isLoading
+                ) {
+                    tagsStore.loadTags();
                 }
             } catch (error) {
                 console.error('Failed to fetch tasks:', error);
