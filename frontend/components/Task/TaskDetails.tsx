@@ -16,10 +16,8 @@ import TaskModal from './TaskModal';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import {
-    fetchTaskByUuid,
     updateTask,
     deleteTask,
-    fetchSubtasks,
     toggleTaskCompletion,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
@@ -38,11 +36,16 @@ const TaskDetails: React.FC = () => {
 
     const projects = useStore((state) => state.projectsStore.projects);
     const tagsStore = useStore((state) => state.tagsStore);
+    const tasksStore = useStore((state) => state.tasksStore);
+    const task = useStore((state) =>
+        state.tasksStore.tasks.find((t) => t.uuid === uuid)
+    );
+
+    // Get subtasks from the task data (already loaded in global store)
+    const subtasks = task?.subtasks || task?.Subtasks || [];
 
     // Local state
-    const [task, setTask] = useState<Task | null>(null);
-    const [subtasks, setSubtasks] = useState<Task[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(!task); // Only show loading if task not in store
     const [error, setError] = useState<string | null>(null);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -58,6 +61,7 @@ const TaskDetails: React.FC = () => {
         }
 
         try {
+            // Check for subtasks modal state
             const pendingStateStr = sessionStorage.getItem('pendingModalState');
             if (pendingStateStr) {
                 const pendingState = JSON.parse(pendingStateStr);
@@ -73,8 +77,28 @@ const TaskDetails: React.FC = () => {
                     sessionStorage.removeItem('pendingModalState');
                 }
             }
+
+            // Check for edit modal state
+            const pendingEditStateStr = sessionStorage.getItem(
+                'pendingTaskEditModalState'
+            );
+            if (pendingEditStateStr) {
+                const pendingEditState = JSON.parse(pendingEditStateStr);
+                const isRecent = Date.now() - pendingEditState.timestamp < 5000; // Within 5 seconds
+                const isCorrectTask = pendingEditState.taskUuid === uuid;
+
+                if (isRecent && isCorrectTask && pendingEditState.isOpen) {
+                    // Use microtask to avoid lifecycle method warning
+                    queueMicrotask(() => {
+                        setIsTaskModalOpen(true);
+                        setFocusSubtasks(false);
+                    });
+                    sessionStorage.removeItem('pendingTaskEditModalState');
+                }
+            }
         } catch {
             sessionStorage.removeItem('pendingModalState');
+            sessionStorage.removeItem('pendingTaskEditModalState');
         }
     }, [uuid, tagsStore]);
 
@@ -125,33 +149,43 @@ const TaskDetails: React.FC = () => {
                 return;
             }
 
-            try {
-                setLoading(true);
-                const taskData = await fetchTaskByUuid(uuid);
-                setTask(taskData);
-
-                // Load subtasks if this task has any
-                if (taskData.id) {
-                    try {
-                        const subtasksData = await fetchSubtasks(taskData.id);
-                        setSubtasks(subtasksData);
-                    } catch (subtaskError) {
-                        console.warn('Error loading subtasks:', subtaskError);
-                        // Don't fail the whole page if subtasks fail to load
-                    }
+            // If task is not in store, load it
+            if (!task) {
+                try {
+                    setLoading(true);
+                    await tasksStore.loadTaskByUuid(uuid);
+                } catch (fetchError) {
+                    setError('Task not found');
+                    console.error('Error fetching task:', fetchError);
+                } finally {
+                    setLoading(false);
                 }
-            } catch (fetchError) {
-                setError('Task not found');
-                console.error('Error fetching task:', fetchError);
-            } finally {
-                setLoading(false);
             }
+
+            // Subtasks are already loaded as part of the task data from the global store
         };
 
         fetchTaskData();
-    }, [uuid]);
+    }, [uuid, task, tasksStore]);
 
-    const handleEdit = () => {
+    const handleEdit = (e?: React.MouseEvent) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.nativeEvent.stopImmediatePropagation();
+        }
+
+        // Store modal state in sessionStorage to persist across re-mounts
+        const modalState = {
+            isOpen: true,
+            taskUuid: uuid,
+            timestamp: Date.now(),
+        };
+        sessionStorage.setItem(
+            'pendingTaskEditModalState',
+            JSON.stringify(modalState)
+        );
+
         setFocusSubtasks(false);
         setIsTaskModalOpen(true);
     };
@@ -161,7 +195,10 @@ const TaskDetails: React.FC = () => {
 
         try {
             const updatedTask = await toggleTaskCompletion(task.id);
-            setTask(updatedTask);
+            // Update the task in the global store
+            if (uuid) {
+                await tasksStore.loadTaskByUuid(uuid);
+            }
 
             const statusMessage =
                 updatedTask.status === 'done' || updatedTask.status === 2
@@ -183,21 +220,16 @@ const TaskDetails: React.FC = () => {
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
             if (task?.id) {
-                const updated = await updateTask(task.id, updatedTask);
-                setTask(updated);
+                await updateTask(task.id, updatedTask);
+                // Update the task in the global store
+                if (uuid) {
+                    await tasksStore.loadTaskByUuid(uuid);
+                }
                 showSuccessToast(
                     t('task.updateSuccess', 'Task updated successfully')
                 );
 
-                // Reload subtasks in case they changed
-                if (updated.id) {
-                    try {
-                        const subtasksData = await fetchSubtasks(updated.id);
-                        setSubtasks(subtasksData);
-                    } catch (subtaskError) {
-                        console.warn('Error reloading subtasks:', subtaskError);
-                    }
-                }
+                // Subtasks will be automatically updated when the task is reloaded from the global store
 
                 // Refresh timeline to show new activity
                 setTimelineRefreshKey((prev) => prev + 1);
@@ -496,13 +528,14 @@ const TaskDetails: React.FC = () => {
                                                                             if (
                                                                                 task?.id
                                                                             ) {
-                                                                                const subtasksData =
-                                                                                    await fetchSubtasks(
-                                                                                        task.id
+                                                                                // Refresh task data which includes updated subtasks
+                                                                                if (
+                                                                                    uuid
+                                                                                ) {
+                                                                                    await tasksStore.loadTaskByUuid(
+                                                                                        uuid
                                                                                     );
-                                                                                setSubtasks(
-                                                                                    subtasksData
-                                                                                );
+                                                                                }
 
                                                                                 // Refresh timeline to show subtask completion activity
                                                                                 setTimelineRefreshKey(
@@ -586,6 +619,9 @@ const TaskDetails: React.FC = () => {
                             setFocusSubtasks(false);
                             // Clear pending state when modal is closed
                             sessionStorage.removeItem('pendingModalState');
+                            sessionStorage.removeItem(
+                                'pendingTaskEditModalState'
+                            );
                         }}
                         onSave={handleTaskUpdate}
                         onDelete={async (taskId: number) => {
