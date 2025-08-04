@@ -51,3 +51,13 @@ export const deleteNote = async (noteId: number): Promise<void> => {
 
     await handleAuthResponse(response, 'Failed to delete note.');
 };
+
+export const fetchNoteBySlug = async (nanoidSlug: string): Promise<Note> => {
+    const response = await fetch(`/api/note/${nanoidSlug}`, {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+    });
+
+    await handleAuthResponse(response, 'Failed to fetch note.');
+    return await response.json();
+};

@@ -214,7 +214,7 @@ const Tasks: React.FC = () => {
                 <span>
                     {t('task.created', 'Task')}{' '}
                     <a
-                        href={`/task/${newTask.uuid}`}
+                        href={`/task/${newTask.nanoid}`}
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {newTask.name}

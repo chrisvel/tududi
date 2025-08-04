@@ -6,6 +6,38 @@ const TaskEventService = require('../services/taskEventService');
 const moment = require('moment-timezone');
 const router = express.Router();
 
+// Helper function to validate tag name (same as in tags.js)
+function validateTagName(name) {
+    if (!name || !name.trim()) {
+        return { valid: false, error: 'Tag name is required' };
+    }
+
+    const trimmedName = name.trim();
+
+    // Check for invalid characters that can break URLs or cause issues
+    const invalidChars = /[#%&{}\\<>*?/$!'":@+`|=]/;
+    if (invalidChars.test(trimmedName)) {
+        return {
+            valid: false,
+            error: 'Tag name contains invalid characters. Please avoid: # % & { } \\ < > * ? / $ ! \' " : @ + ` | =',
+        };
+    }
+
+    // Check length limits
+    if (trimmedName.length > 50) {
+        return {
+            valid: false,
+            error: 'Tag name must be 50 characters or less',
+        };
+    }
+
+    if (trimmedName.length < 1) {
+        return { valid: false, error: 'Tag name cannot be empty' };
+    }
+
+    return { valid: true, name: trimmedName };
+}
+
 // Helper function to serialize task with today move count
 async function serializeTask(task) {
     const taskJson = task.toJSON();
@@ -18,10 +50,18 @@ async function serializeTask(task) {
 
     return {
         ...taskWithoutSubtasks,
+        nanoid: task.nanoid, // Explicitly include nanoid
         tags: taskJson.Tags || [],
+        Project: taskJson.Project
+            ? {
+                  ...taskJson.Project,
+                  nanoid: taskJson.Project.nanoid, // Explicitly include Project nanoid
+              }
+            : null,
         subtasks: Subtasks
             ? Subtasks.map((subtask) => ({
                   ...subtask,
+                  nanoid: subtask.nanoid, // Also include nanoid for subtasks
                   tags: subtask.Tags || [],
                   due_date: subtask.due_date
                       ? subtask.due_date.toISOString().split('T')[0]
@@ -45,24 +85,42 @@ async function serializeTask(task) {
 async function updateTaskTags(task, tagsData, userId) {
     if (!tagsData) return;
 
-    const tagNames = tagsData
-        .map((tag) => tag.name)
-        .filter((name) => name && name.trim())
-        .filter((name, index, arr) => arr.indexOf(name) === index); // unique
+    // Validate and filter tag names
+    const validTagNames = [];
+    const invalidTags = [];
 
-    if (tagNames.length === 0) {
+    for (const tag of tagsData) {
+        const validation = validateTagName(tag.name);
+        if (validation.valid) {
+            // Check for duplicates
+            if (!validTagNames.includes(validation.name)) {
+                validTagNames.push(validation.name);
+            }
+        } else {
+            invalidTags.push({ name: tag.name, error: validation.error });
+        }
+    }
+
+    // If there are invalid tags, throw an error
+    if (invalidTags.length > 0) {
+        throw new Error(
+            `Invalid tag names: ${invalidTags.map((t) => `"${t.name}" (${t.error})`).join(', ')}`
+        );
+    }
+
+    if (validTagNames.length === 0) {
         await task.setTags([]);
         return;
     }
 
     // Find existing tags
     const existingTags = await Tag.findAll({
-        where: { user_id: userId, name: tagNames },
+        where: { user_id: userId, name: validTagNames },
     });
 
     // Create new tags
     const existingTagNames = existingTags.map((tag) => tag.name);
-    const newTagNames = tagNames.filter(
+    const newTagNames = validTagNames.filter(
         (name) => !existingTagNames.includes(name)
     );
 
@@ -225,15 +283,23 @@ async function filterTasksByParams(params, userId) {
         parent_task_id: null, // Exclude subtasks from main task lists
     };
     let includeClause = [
-        { model: Tag, attributes: ['id', 'name'], through: { attributes: [] } },
-        { model: Project, attributes: ['name'], required: false },
+        {
+            model: Tag,
+            attributes: ['id', 'name', 'nanoid'],
+            through: { attributes: [] },
+        },
+        {
+            model: Project,
+            attributes: ['id', 'name', 'nanoid'],
+            required: false,
+        },
         {
             model: Task,
             as: 'Subtasks',
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                     required: false,
                 },
@@ -365,7 +431,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         include: [
             {
                 model: Tag,
-                attributes: ['id', 'name'],
+                attributes: ['id', 'name', 'nanoid'],
                 through: { attributes: [] },
                 required: false,
             },
@@ -380,7 +446,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 include: [
                     {
                         model: Tag,
-                        attributes: ['id', 'name'],
+                        attributes: ['id', 'name', 'nanoid'],
                         through: { attributes: [] },
                         required: false,
                     },
@@ -408,7 +474,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         include: [
             {
                 model: Tag,
-                attributes: ['id', 'name'],
+                attributes: ['id', 'name', 'nanoid'],
                 through: { attributes: [] },
                 required: false,
             },
@@ -423,7 +489,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 include: [
                     {
                         model: Tag,
-                        attributes: ['id', 'name'],
+                        attributes: ['id', 'name', 'nanoid'],
                         through: { attributes: [] },
                         required: false,
                     },
@@ -463,7 +529,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         include: [
             {
                 model: Tag,
-                attributes: ['id', 'name'],
+                attributes: ['id', 'name', 'nanoid'],
                 through: { attributes: [] },
                 required: false,
             },
@@ -478,7 +544,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 include: [
                     {
                         model: Tag,
-                        attributes: ['id', 'name'],
+                        attributes: ['id', 'name', 'nanoid'],
                         through: { attributes: [] },
                         required: false,
                     },
@@ -530,7 +596,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                     required: false,
                 },
@@ -545,7 +611,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name'],
+                            attributes: ['id', 'name', 'nanoid'],
                             through: { attributes: [] },
                             required: false,
                         },
@@ -573,7 +639,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                     required: false,
                 },
@@ -588,7 +654,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name'],
+                            attributes: ['id', 'name', 'nanoid'],
                             through: { attributes: [] },
                             required: false,
                         },
@@ -627,7 +693,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 include: [
                     {
                         model: Tag,
-                        attributes: ['id', 'name'],
+                        attributes: ['id', 'name', 'nanoid'],
                         through: { attributes: [] },
                         required: false,
                     },
@@ -642,7 +708,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                         include: [
                             {
                                 model: Tag,
-                                attributes: ['id', 'name'],
+                                attributes: ['id', 'name', 'nanoid'],
                                 through: { attributes: [] },
                                 required: false,
                             },
@@ -680,7 +746,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         include: [
             {
                 model: Tag,
-                attributes: ['id', 'name'],
+                attributes: ['id', 'name', 'nanoid'],
                 through: { attributes: [] },
                 required: false,
             },
@@ -695,7 +761,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 include: [
                     {
                         model: Tag,
-                        attributes: ['id', 'name'],
+                        attributes: ['id', 'name', 'nanoid'],
                         through: { attributes: [] },
                         required: false,
                     },
@@ -831,10 +897,14 @@ router.get('/task/uuid/:uuid', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
-                { model: Project, attributes: ['name'], required: false },
+                {
+                    model: Project,
+                    attributes: ['id', 'name', 'nanoid'],
+                    required: false,
+                },
             ],
         });
 
@@ -851,6 +921,49 @@ router.get('/task/uuid/:uuid', async (req, res) => {
     }
 });
 
+// GET /api/task/nanoid/:nanoid
+router.get('/task/nanoid/:nanoid', async (req, res) => {
+    try {
+        const task = await Task.findOne({
+            where: { nanoid: req.params.nanoid, user_id: req.currentUser.id },
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name', 'nanoid'],
+                    through: { attributes: [] },
+                },
+                {
+                    model: Project,
+                    attributes: ['id', 'name', 'nanoid'],
+                    required: false,
+                },
+                {
+                    model: Task,
+                    as: 'Subtasks',
+                    include: [
+                        {
+                            model: Tag,
+                            attributes: ['id', 'name', 'nanoid'],
+                            through: { attributes: [] },
+                        },
+                    ],
+                },
+            ],
+        });
+
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found.' });
+        }
+
+        const serializedTask = await serializeTask(task);
+
+        res.json(serializedTask);
+    } catch (error) {
+        console.error('Error fetching task by nanoid:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // GET /api/task/:id
 router.get('/task/:id', async (req, res) => {
     try {
@@ -859,17 +972,21 @@ router.get('/task/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
-                { model: Project, attributes: ['name'], required: false },
+                {
+                    model: Project,
+                    attributes: ['id', 'name', 'nanoid'],
+                    required: false,
+                },
                 {
                     model: Task,
                     as: 'Subtasks',
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name'],
+                            attributes: ['id', 'name', 'nanoid'],
                             through: { attributes: [] },
                         },
                     ],
@@ -901,10 +1018,14 @@ router.get('/task/:id/subtasks', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
-                { model: Project, attributes: ['name'], required: false },
+                {
+                    model: Project,
+                    attributes: ['id', 'name', 'nanoid'],
+                    required: false,
+                },
             ],
             order: [['created_at', 'ASC']],
         });
@@ -1055,22 +1176,20 @@ router.post('/task', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
-                { model: Project, attributes: ['name'], required: false },
+                {
+                    model: Project,
+                    attributes: ['id', 'name', 'nanoid'],
+                    required: false,
+                },
             ],
         });
 
-        const taskJson = taskWithAssociations.toJSON();
+        const serializedTask = await serializeTask(taskWithAssociations);
 
-        res.status(201).json({
-            ...taskJson,
-            tags: taskJson.Tags || [],
-            due_date: taskWithAssociations.due_date
-                ? taskWithAssociations.due_date.toISOString().split('T')[0]
-                : null,
-        });
+        res.status(201).json(serializedTask);
     } catch (error) {
         console.error('Error creating task:', error);
         res.status(400).json({
@@ -1115,7 +1234,7 @@ router.patch('/task/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
             ],
@@ -1575,10 +1694,14 @@ router.patch('/task/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
-                { model: Project, attributes: ['name'], required: false },
+                {
+                    model: Project,
+                    attributes: ['id', 'name', 'nanoid'],
+                    required: false,
+                },
             ],
         });
 
@@ -1605,17 +1728,21 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
-                { model: Project, attributes: ['name'], required: false },
+                {
+                    model: Project,
+                    attributes: ['id', 'name', 'nanoid'],
+                    required: false,
+                },
                 {
                     model: Task,
                     as: 'Subtasks',
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name'],
+                            attributes: ['id', 'name', 'nanoid'],
                             through: { attributes: [] },
                         },
                     ],
@@ -1876,10 +2003,14 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
-                { model: Project, attributes: ['name'], required: false },
+                {
+                    model: Project,
+                    attributes: ['id', 'name', 'nanoid'],
+                    required: false,
+                },
             ],
         });
 

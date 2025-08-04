@@ -11,12 +11,13 @@ import MarkdownRenderer from './MarkdownRenderer';
 interface NoteCardProps {
     note: {
         id?: string | number;
+        nanoid?: string;
         title: string;
         content?: string;
-        tags?: { name: string }[];
-        Tags?: { name: string }[];
-        project?: { name: string; id?: number };
-        Project?: { name: string; id?: number };
+        tags?: { name: string; nanoid?: string }[];
+        Tags?: { name: string; nanoid?: string }[];
+        project?: { name: string; id?: number; nanoid?: string };
+        Project?: { name: string; id?: number; nanoid?: string };
     };
     onEdit?: (note: any) => void;
     onDelete?: (note: any) => void;
@@ -61,7 +62,14 @@ const NoteCard: React.FC<NoteCardProps> = ({
     return (
         <div className="relative group">
             <Link
-                to={`/note/${note.id}`}
+                to={
+                    note.nanoid
+                        ? `/note/${note.nanoid}-${note.title
+                              .toLowerCase()
+                              .replace(/[^a-z0-9]+/g, '-')
+                              .replace(/^-|-$/g, '')}`
+                        : `/note/${note.id}`
+                }
                 className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col hover:opacity-80 transition-opacity duration-300 ease-in-out cursor-pointer"
                 style={{
                     minHeight: '280px',
@@ -118,10 +126,19 @@ const NoteCard: React.FC<NoteCardProps> = ({
                         <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2 min-w-0 flex-1">
                             {showProject && project && (
                                 <button
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        navigate(`/project/${project.id}`);
+                                        if (project.nanoid) {
+                                            navigate(
+                                                `/project/${project.nanoid}-${project.name
+                                                    .toLowerCase()
+                                                    .replace(/[^a-z0-9]+/g, '-')
+                                                    .replace(/^-|-$/g, '')}`
+                                            );
+                                        } else {
+                                            navigate(`/project/${project.id}`);
+                                        }
                                     }}
                                     className="flex items-center min-w-0 hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors bg-transparent border-none p-0 cursor-pointer"
                                 >
@@ -144,9 +161,24 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
-                                                        navigate(
-                                                            `/tag/${encodeURIComponent(tag.name)}`
-                                                        );
+                                                        if (tag.nanoid) {
+                                                            navigate(
+                                                                `/tag/${tag.nanoid}-${tag.name
+                                                                    .toLowerCase()
+                                                                    .replace(
+                                                                        /[^a-z0-9]+/g,
+                                                                        '-'
+                                                                    )
+                                                                    .replace(
+                                                                        /^-|-$/g,
+                                                                        ''
+                                                                    )}`
+                                                            );
+                                                        } else {
+                                                            navigate(
+                                                                `/tag/${encodeURIComponent(tag.name)}`
+                                                            );
+                                                        }
                                                     }}
                                                     className="hover:text-gray-700 dark:hover:text-gray-300 hover:underline transition-colors bg-transparent border-none p-0 cursor-pointer"
                                                 >

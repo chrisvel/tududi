@@ -1,13 +1,46 @@
 const express = require('express');
 const { Tag, Task, Note, Project, sequelize } = require('../models');
+const { extractNanoidFromSlug } = require('../utils/slug-utils');
 const router = express.Router();
+
+// Helper function to validate tag name
+function validateTagName(name) {
+    if (!name || !name.trim()) {
+        return { valid: false, error: 'Tag name is required' };
+    }
+
+    const trimmedName = name.trim();
+
+    // Check for invalid characters that can break URLs or cause issues
+    const invalidChars = /[#%&{}\\<>*?/$!'":@+`|=]/;
+    if (invalidChars.test(trimmedName)) {
+        return {
+            valid: false,
+            error: 'Tag name contains invalid characters. Please avoid: # % & { } \\ < > * ? / $ ! \' " : @ + ` | =',
+        };
+    }
+
+    // Check length limits
+    if (trimmedName.length > 50) {
+        return {
+            valid: false,
+            error: 'Tag name must be 50 characters or less',
+        };
+    }
+
+    if (trimmedName.length < 1) {
+        return { valid: false, error: 'Tag name cannot be empty' };
+    }
+
+    return { valid: true, name: trimmedName };
+}
 
 // GET /api/tags
 router.get('/tags', async (req, res) => {
     try {
         const tags = await Tag.findAll({
             where: { user_id: req.currentUser.id },
-            attributes: ['id', 'name'],
+            attributes: ['id', 'name', 'nanoid'],
             order: [['name', 'ASC']],
         });
         res.json(tags);
@@ -17,19 +50,28 @@ router.get('/tags', async (req, res) => {
     }
 });
 
-// GET /api/tag/:identifier (supports both ID and name)
+// GET /api/tag/:identifier (supports both ID, name, and nanoid-slug)
 router.get('/tag/:identifier', async (req, res) => {
     try {
         const identifier = req.params.identifier;
         let whereClause;
 
-        // Check if identifier is a number (ID) or string (name)
+        // Check if identifier is numeric (ID), nanoid-slug, or tag name
         if (/^\d+$/.test(identifier)) {
             // It's a numeric ID
             whereClause = {
                 id: parseInt(identifier),
                 user_id: req.currentUser.id,
             };
+        } else if (identifier.includes('-') && identifier.length > 21) {
+            // It's likely a nanoid-slug, extract the nanoid
+            const nanoid = extractNanoidFromSlug(identifier);
+            if (!nanoid) {
+                return res
+                    .status(400)
+                    .json({ error: 'Invalid tag identifier' });
+            }
+            whereClause = { nanoid: nanoid, user_id: req.currentUser.id };
         } else {
             // It's a tag name - decode URI component to handle special characters
             const tagName = decodeURIComponent(identifier);
@@ -38,7 +80,7 @@ router.get('/tag/:identifier', async (req, res) => {
 
         const tag = await Tag.findOne({
             where: whereClause,
-            attributes: ['id', 'name'],
+            attributes: ['id', 'name', 'nanoid'],
         });
 
         if (!tag) {
@@ -57,17 +99,19 @@ router.post('/tag', async (req, res) => {
     try {
         const { name } = req.body;
 
-        if (!name || !name.trim()) {
-            return res.status(400).json({ error: 'Tag name is required' });
+        const validation = validateTagName(name);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
         }
 
         const tag = await Tag.create({
-            name: name.trim(),
+            name: validation.name,
             user_id: req.currentUser.id,
         });
 
         res.status(201).json({
             id: tag.id,
+            nanoid: tag.nanoid, // Explicitly include nanoid
             name: tag.name,
         });
     } catch (error) {
@@ -107,11 +151,12 @@ router.patch('/tag/:identifier', async (req, res) => {
 
         const { name } = req.body;
 
-        if (!name || !name.trim()) {
-            return res.status(400).json({ error: 'Tag name is required' });
+        const validation = validateTagName(name);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
         }
 
-        await tag.update({ name: name.trim() });
+        await tag.update({ name: validation.name });
 
         res.json({
             id: tag.id,

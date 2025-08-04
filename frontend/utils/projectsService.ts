@@ -102,3 +102,17 @@ export const deleteProject = async (projectId: number): Promise<void> => {
 
     await handleAuthResponse(response, 'Failed to delete project.');
 };
+
+export const fetchProjectBySlug = async (
+    nanoidSlug: string
+): Promise<Project> => {
+    const response = await fetch(`/api/project/${nanoidSlug}`, {
+        credentials: 'include',
+        headers: {
+            Accept: 'application/json',
+        },
+    });
+
+    await handleAuthResponse(response, 'Failed to fetch project.');
+    return await response.json();
+};

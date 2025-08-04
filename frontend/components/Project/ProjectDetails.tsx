@@ -18,7 +18,7 @@ import NoteCard from '../Shared/NoteCard';
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
 import {
-    fetchProjectById,
+    fetchProjectBySlug,
     updateProject,
     deleteProject,
     fetchProjects,
@@ -38,7 +38,7 @@ import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
 import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
 
 const ProjectDetails: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const { nanoidSlug } = useParams<{ nanoidSlug: string }>();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { showSuccessToast } = useToast();
@@ -133,12 +133,19 @@ const ProjectDetails: React.FC = () => {
         setOrderBy(sortParam);
     }, []);
 
-    // Fetch project data when id changes
+    // Fetch project data when nanoidSlug changes
     useEffect(() => {
-        if (!id) return;
+        if (!nanoidSlug) return;
 
-        // Skip loading if we already have the project data for this id
-        if (project && project.id?.toString() === id) {
+        // Skip loading if we already have the project data for this nanoidSlug
+        if (
+            project &&
+            project.nanoid &&
+            `${project.nanoid}-${project.name
+                ?.toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '')}` === nanoidSlug
+        ) {
             return;
         }
 
@@ -150,7 +157,7 @@ const ProjectDetails: React.FC = () => {
                 }
                 setError(false);
 
-                const projectData = await fetchProjectById(id);
+                const projectData = await fetchProjectBySlug(nanoidSlug);
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
 
@@ -181,7 +188,7 @@ const ProjectDetails: React.FC = () => {
         };
 
         loadProjectData();
-    }, [id]);
+    }, [nanoidSlug]);
 
     const handleTaskCreate = async (taskName: string) => {
         if (!project) {
@@ -202,7 +209,7 @@ const ProjectDetails: React.FC = () => {
                 <span>
                     {t('task.created', 'Task')}{' '}
                     <a
-                        href={`/task/${newTask.uuid}`}
+                        href={`/task/${newTask.nanoid}`}
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {newTask.name}
@@ -341,10 +348,10 @@ const ProjectDetails: React.FC = () => {
             );
         } catch {
             // Optionally refetch data on error to ensure consistency
-            if (id) {
+            if (nanoidSlug) {
                 // Refetch project data on error to ensure consistency
                 try {
-                    const projectData = await fetchProjectById(id);
+                    const projectData = await fetchProjectBySlug(nanoidSlug);
                     setProject(projectData);
                     setTasks(projectData.tasks || projectData.Tasks || []);
                     const fetchedNotes =
@@ -409,7 +416,7 @@ const ProjectDetails: React.FC = () => {
                 <span>
                     {t('task.created', 'Task')}{' '}
                     <a
-                        href={`/task/${newTask.uuid}`}
+                        href={`/task/${newTask.nanoid}`}
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {newTask.name}
@@ -687,9 +694,25 @@ const ProjectDetails: React.FC = () => {
                                             <button
                                                 onClick={() => {
                                                     // Navigate to tag details page
-                                                    navigate(
-                                                        `/tag/${encodeURIComponent(tag.name)}`
-                                                    );
+                                                    if (tag.nanoid) {
+                                                        const slug = tag.name
+                                                            .toLowerCase()
+                                                            .replace(
+                                                                /[^a-z0-9]+/g,
+                                                                '-'
+                                                            )
+                                                            .replace(
+                                                                /^-|-$/g,
+                                                                ''
+                                                            );
+                                                        navigate(
+                                                            `/tag/${tag.nanoid}-${slug}`
+                                                        );
+                                                    } else {
+                                                        navigate(
+                                                            `/tag/${encodeURIComponent(tag.name)}`
+                                                        );
+                                                    }
                                                 }}
                                                 className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
                                             >

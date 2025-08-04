@@ -60,3 +60,15 @@ export const deleteTag = async (tagId: number): Promise<void> => {
 
     await handleAuthResponse(response, 'Failed to delete tag.');
 };
+
+export const fetchTagBySlug = async (nanoidSlug: string): Promise<Tag> => {
+    const response = await fetch(`/api/tag/${nanoidSlug}`, {
+        credentials: 'include',
+        headers: {
+            Accept: 'application/json',
+        },
+    });
+
+    await handleAuthResponse(response, 'Failed to fetch tag.');
+    return await response.json();
+};

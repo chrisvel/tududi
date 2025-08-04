@@ -263,7 +263,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 <div className="flex items-center">
                                     <FolderIcon className="h-3 w-3 mr-1" />
                                     <Link
-                                        to={`/project/${project.id}`}
+                                        to={
+                                            project.nanoid
+                                                ? `/project/${project.nanoid}-${project.name
+                                                      .toLowerCase()
+                                                      .replace(
+                                                          /[^a-z0-9]+/g,
+                                                          '-'
+                                                      )
+                                                      .replace(/^-|-$/g, '')}`
+                                                : `/project/${project.id}`
+                                        }
                                         className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
                                         onClick={(e) => {
                                             // Prevent navigation if we're already on this project's page
@@ -293,7 +303,29 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         {task.tags.map((tag, index) => (
                                             <React.Fragment key={tag.name}>
                                                 <Link
-                                                    to={`/tag/${encodeURIComponent(tag.name)}`}
+                                                    to={
+                                                        tag.nanoid
+                                                            ? `/tag/${tag.nanoid}-${tag.name
+                                                                  .toLowerCase()
+                                                                  .replace(
+                                                                      /[^a-z0-9]+/g,
+                                                                      '-'
+                                                                  )
+                                                                  .replace(
+                                                                      /^-|-$/g,
+                                                                      ''
+                                                                  )}`
+                                                            : `/tag/${tag.name
+                                                                  .toLowerCase()
+                                                                  .replace(
+                                                                      /[^a-z0-9]+/g,
+                                                                      '-'
+                                                                  )
+                                                                  .replace(
+                                                                      /^-|-$/g,
+                                                                      ''
+                                                                  )}`
+                                                    }
                                                     className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
                                                     onClick={(e) =>
                                                         e.stopPropagation()
@@ -499,7 +531,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 <div className="flex items-center">
                                     <FolderIcon className="h-3 w-3 mr-1" />
                                     <Link
-                                        to={`/project/${project.id}`}
+                                        to={
+                                            project.nanoid
+                                                ? `/project/${project.nanoid}-${project.name
+                                                      .toLowerCase()
+                                                      .replace(
+                                                          /[^a-z0-9]+/g,
+                                                          '-'
+                                                      )
+                                                      .replace(/^-|-$/g, '')}`
+                                                : `/project/${project.id}`
+                                        }
                                         className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
                                         onClick={(e) => {
                                             // Prevent navigation if we're already on this project's page
@@ -523,7 +565,29 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         {task.tags.map((tag, index) => (
                                             <React.Fragment key={tag.name}>
                                                 <Link
-                                                    to={`/tag/${encodeURIComponent(tag.name)}`}
+                                                    to={
+                                                        tag.nanoid
+                                                            ? `/tag/${tag.nanoid}-${tag.name
+                                                                  .toLowerCase()
+                                                                  .replace(
+                                                                      /[^a-z0-9]+/g,
+                                                                      '-'
+                                                                  )
+                                                                  .replace(
+                                                                      /^-|-$/g,
+                                                                      ''
+                                                                  )}`
+                                                            : `/tag/${tag.name
+                                                                  .toLowerCase()
+                                                                  .replace(
+                                                                      /[^a-z0-9]+/g,
+                                                                      '-'
+                                                                  )
+                                                                  .replace(
+                                                                      /^-|-$/g,
+                                                                      ''
+                                                                  )}`
+                                                    }
                                                     className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
                                                     onClick={(e) =>
                                                         e.stopPropagation()

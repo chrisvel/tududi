@@ -297,7 +297,20 @@ const Tags: React.FC = () => {
                                                     {/* Tag Name and Metrics - inline */}
                                                     <div className="flex items-center space-x-3 flex-grow">
                                                         <Link
-                                                            to={`/tag/${encodeURIComponent(tag.name)}`}
+                                                            to={
+                                                                tag.nanoid
+                                                                    ? `/tag/${tag.nanoid}-${tag.name
+                                                                          .toLowerCase()
+                                                                          .replace(
+                                                                              /[^a-z0-9]+/g,
+                                                                              '-'
+                                                                          )
+                                                                          .replace(
+                                                                              /^-|-$/g,
+                                                                              ''
+                                                                          )}`
+                                                                    : `/tag/${encodeURIComponent(tag.name)}`
+                                                            }
                                                             className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
                                                         >
                                                             {tag.name}

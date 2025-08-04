@@ -300,7 +300,15 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
             }
         } else {
             // Handle project click - navigate to project page
-            navigate(`/project/${item.id}`);
+            if (item.nanoid) {
+                const slug = item.name
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-|-$/g, '');
+                navigate(`/project/${item.nanoid}-${slug}`);
+            } else {
+                navigate(`/project/${item.id}`);
+            }
         }
     };
 

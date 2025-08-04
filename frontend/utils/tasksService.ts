@@ -97,6 +97,16 @@ export const fetchTaskByUuid = async (uuid: string): Promise<Task> => {
     return await response.json();
 };
 
+export const fetchTaskByNanoid = async (nanoid: string): Promise<Task> => {
+    const response = await fetch(`/api/task/nanoid/${nanoid}`, {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+    });
+
+    await handleAuthResponse(response, 'Failed to fetch task.');
+    return await response.json();
+};
+
 export const fetchSubtasks = async (parentTaskId: number): Promise<Task[]> => {
     const response = await fetch(`/api/task/${parentTaskId}/subtasks`, {
         credentials: 'include',

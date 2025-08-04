@@ -237,15 +237,15 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     const handleTaskClick = () => {
-        if (task.uuid) {
-            navigate(`/task/${task.uuid}`);
+        if (task.nanoid) {
+            navigate(`/task/${task.nanoid}`);
         }
     };
 
     const handleSubtaskClick = async () => {
         // Navigate to the parent task URL (not the subtask URL)
-        if (task.uuid) {
-            navigate(`/task/${task.uuid}`);
+        if (task.nanoid) {
+            navigate(`/task/${task.nanoid}`);
         }
     };
 
@@ -255,9 +255,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
         setSelectedSubtask(null);
     };
 
-    const handleSubtaskDelete = () => {
+    const handleSubtaskDelete = async () => {
         if (selectedSubtask && selectedSubtask.id) {
-            onTaskDelete(selectedSubtask.id);
+            await onTaskDelete(selectedSubtask.id);
             setSubtaskModalOpen(false);
             setSelectedSubtask(null);
         }
@@ -269,9 +269,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
         setParentTask(null);
     };
 
-    const handleParentTaskDelete = () => {
+    const handleParentTaskDelete = async () => {
         if (parentTask && parentTask.id) {
-            onTaskDelete(parentTask.id);
+            await onTaskDelete(parentTask.id);
             setParentTaskModalOpen(false);
             setParentTask(null);
         }

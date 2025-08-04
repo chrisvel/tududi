@@ -176,7 +176,7 @@ const App: React.FC = () => {
                             />
                             <Route path="/today" element={<TasksToday />} />
                             <Route
-                                path="/task/:uuid"
+                                path="/task/:nanoid"
                                 element={<TaskDetails />}
                             />
                             <Route
@@ -199,18 +199,21 @@ const App: React.FC = () => {
                             <Route path="/inbox" element={<InboxItems />} />
                             <Route path="/projects" element={<Projects />} />
                             <Route
-                                path="/project/:id"
+                                path="/project/:nanoidSlug"
                                 element={<ProjectDetails />}
                             />
                             <Route path="/areas" element={<Areas />} />
                             <Route path="/area/:id" element={<AreaDetails />} />
                             <Route path="/tags" element={<Tags />} />
                             <Route
-                                path="/tag/:identifier"
+                                path="/tag/:nanoidSlug"
                                 element={<TagDetails />}
                             />
                             <Route path="/notes" element={<Notes />} />
-                            <Route path="/note/:id" element={<NoteDetails />} />
+                            <Route
+                                path="/note/:nanoidSlug"
+                                element={<NoteDetails />}
+                            />
                             <Route path="/calendar" element={<Calendar />} />
                             <Route
                                 path="/profile"

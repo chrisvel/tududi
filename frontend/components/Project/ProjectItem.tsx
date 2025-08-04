@@ -56,7 +56,16 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             }}
         >
             {viewMode === 'cards' && (
-                <Link to={`/project/${project.id}`}>
+                <Link
+                    to={
+                        project.nanoid
+                            ? `/project/${project.nanoid}-${project.name
+                                  .toLowerCase()
+                                  .replace(/[^a-z0-9]+/g, '-')
+                                  .replace(/^-|-$/g, '')}`
+                            : `/project/${project.id}`
+                    }
+                >
                     <div
                         className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg relative cursor-pointer hover:opacity-90 transition-opacity"
                         style={{ height: '140px' }}
@@ -81,7 +90,14 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
 
             {viewMode === 'list' && (
                 <Link
-                    to={`/project/${project.id}`}
+                    to={
+                        project.nanoid
+                            ? `/project/${project.nanoid}-${project.name
+                                  .toLowerCase()
+                                  .replace(/[^a-z0-9]+/g, '-')
+                                  .replace(/^-|-$/g, '')}`
+                            : `/project/${project.id}`
+                    }
                     className="w-10 h-10 mr-3 flex-shrink-0"
                 >
                     {project.image_url ? (
@@ -109,7 +125,14 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             >
                 <div className="flex items-center">
                     <Link
-                        to={`/project/${project.id}`}
+                        to={
+                            project.nanoid
+                                ? `/project/${project.nanoid}-${project.name
+                                      .toLowerCase()
+                                      .replace(/[^a-z0-9]+/g, '-')
+                                      .replace(/^-|-$/g, '')}`
+                                : `/project/${project.id}`
+                        }
                         className={`${
                             viewMode === 'cards'
                                 ? 'text-lg font-semibold text-gray-900 dark:text-gray-100 hover:underline line-clamp-2'
