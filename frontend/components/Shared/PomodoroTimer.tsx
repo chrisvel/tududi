@@ -27,6 +27,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ className = '' }) => {
     const [timeLeft, setTimeLeft] = useState(DEFAULT_TIME);
     const [isRunning, setIsRunning] = useState(false);
     const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+    const [startTime, setStartTime] = useState<number | null>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // Load state from localStorage on mount
@@ -37,24 +38,26 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ className = '' }) => {
                 const state: PomodoroState = JSON.parse(savedState);
                 if (state.isActive) {
                     setIsActive(true);
-                    setTimeLeft(state.timeLeft);
-                    setIsRunning(state.isRunning);
+                    setStartTime(state.startTime || null);
 
                     // If timer was running, calculate how much time has passed
                     if (state.isRunning && state.startTime) {
                         const elapsed = Math.floor(
                             (Date.now() - state.startTime) / 1000
                         );
-                        const newTimeLeft = Math.max(
-                            0,
-                            state.timeLeft - elapsed
-                        );
+                        const newTimeLeft = Math.max(0, DEFAULT_TIME - elapsed);
+
                         setTimeLeft(newTimeLeft);
                         if (newTimeLeft > 0) {
                             setIsRunning(true);
                         } else {
                             setIsRunning(false);
+                            setShowCompletionMessage(true);
                         }
+                    } else {
+                        // Timer was paused, use the saved timeLeft
+                        setTimeLeft(state.timeLeft);
+                        setIsRunning(state.isRunning);
                     }
                 }
             } catch (error) {
@@ -69,12 +72,10 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ className = '' }) => {
             isActive,
             timeLeft,
             isRunning,
-            startTime: isRunning
-                ? Date.now() - (DEFAULT_TIME - timeLeft) * 1000
-                : undefined,
+            startTime: startTime || undefined,
         };
         localStorage.setItem(POMODORO_STORAGE_KEY, JSON.stringify(state));
-    }, [isActive, timeLeft, isRunning]);
+    }, [isActive, timeLeft, isRunning, startTime]);
 
     useEffect(() => {
         if (isRunning && timeLeft > 0) {
@@ -112,15 +113,22 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ className = '' }) => {
         setIsActive(true);
         setTimeLeft(DEFAULT_TIME);
         setIsRunning(false);
+        setStartTime(null);
     };
 
     const handlePlayPause = () => {
+        if (!isRunning) {
+            // Starting the timer - set start time based on current progress
+            const elapsedTime = DEFAULT_TIME - timeLeft;
+            setStartTime(Date.now() - elapsedTime * 1000);
+        }
         setIsRunning(!isRunning);
     };
 
     const handleReset = () => {
         setIsRunning(false);
         setTimeLeft(DEFAULT_TIME);
+        setStartTime(null);
         setShowCompletionMessage(false);
     };
 
@@ -128,6 +136,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ className = '' }) => {
         setIsActive(false);
         setIsRunning(false);
         setTimeLeft(DEFAULT_TIME);
+        setStartTime(null);
         setShowCompletionMessage(false);
         localStorage.removeItem(POMODORO_STORAGE_KEY);
     };
@@ -232,6 +241,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ className = '' }) => {
                             setShowCompletionMessage(false);
                             setIsActive(false);
                             setTimeLeft(DEFAULT_TIME);
+                            setStartTime(null);
                             localStorage.removeItem(POMODORO_STORAGE_KEY);
                         }}
                         className="w-full text-xs px-3 py-1 bg-green-600 dark:bg-green-700 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
