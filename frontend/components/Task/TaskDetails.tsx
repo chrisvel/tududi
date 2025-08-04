@@ -10,6 +10,7 @@ import {
     ExclamationTriangleIcon,
     ArrowPathIcon,
     ListBulletIcon,
+    XMarkIcon,
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import TaskModal from './TaskModal';
@@ -27,6 +28,7 @@ import TaskPriorityIcon from './TaskPriorityIcon';
 import LoadingScreen from '../Shared/LoadingScreen';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import TaskTimeline from './TaskTimeline';
+import { isTaskOverdue } from '../../utils/dateUtils';
 
 const TaskDetails: React.FC = () => {
     const { uuid } = useParams<{ uuid: string }>();
@@ -52,6 +54,8 @@ const TaskDetails: React.FC = () => {
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
     const [focusSubtasks, setFocusSubtasks] = useState(false);
     const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
+    const [isOverdueAlertDismissed, setIsOverdueAlertDismissed] =
+        useState(false);
 
     // Load tags early and check for pending modal state on mount
     useEffect(() => {
@@ -444,6 +448,42 @@ const TaskDetails: React.FC = () => {
                         </button>
                     </div>
                 </div>
+
+                {/* Overdue Alert */}
+                {isTaskOverdue(task) && !isOverdueAlertDismissed && (
+                    <div className="mb-6 mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 rounded-r-lg relative">
+                        <button
+                            onClick={() => setIsOverdueAlertDismissed(true)}
+                            className="absolute top-2 right-2 p-1 text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors"
+                            aria-label={t('common.close', 'Close')}
+                        >
+                            <XMarkIcon className="h-4 w-4" />
+                        </button>
+                        <div className="flex items-start pr-8">
+                            <ExclamationTriangleIcon className="h-5 w-5 text-amber-600 dark:text-amber-400 mr-3 flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                                    {t(
+                                        'task.overdueAlert',
+                                        "This task was in your plan yesterday and wasn't completed."
+                                    )}
+                                </p>
+                                <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                                    {task.today_move_count &&
+                                    task.today_move_count > 1
+                                        ? t(
+                                              'task.overdueMultipleDays',
+                                              `This task has been postponed ${task.today_move_count} times.`
+                                          )
+                                        : t(
+                                              'task.overdueYesterday',
+                                              'Consider prioritizing this task or breaking it into smaller steps.'
+                                          )}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Content - Two column layout */}
                 <div className="mb-8 mt-8">

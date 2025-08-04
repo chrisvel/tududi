@@ -111,7 +111,11 @@
     "addToToday": "Toevoegen aan het plan van vandaag",
     "removeFromToday": "Verwijderen van het plan van vandaag",
     "setInProgress": "Instellen op in uitvoering",
-    "setNotStarted": "Instellen op niet gestart"
+    "setNotStarted": "Instellen op niet gestart",
+    "showSubtasks": "Toon subtaken",
+    "hideSubtasks": "Verberg subtaken",
+    "edit": "Bewerk taak",
+    "delete": "Verwijder taak"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",
@@ -134,7 +138,9 @@
       "status": "Status",
       "priority": "Prioriteit",
       "dueDate": "Vervaldatum",
-      "none": "Geen"
+      "none": "Geen",
+      "recurrenceEndDateChanged": "Einddatum van herhaling gewijzigd",
+      "recurrenceEndDate": "Einddatum van herhaling"
     },
     "justNow": "Net nu",
     "minutesAgo": "{{minutes}}m geleden",
@@ -464,7 +470,9 @@
     "archived": "Gearchiveerd",
     "unknown": "Onbekend",
     "telegramConnected": "Telegram verbonden en aan het polleren",
-    "telegramConnectionProblem": "Probleem met Telegram-verbinding"
+    "telegramConnectionProblem": "Probleem met Telegram-verbinding",
+    "completed": "Voltooid",
+    "waiting": "Wachten"
   },
   "project": {
     "name": "Projectnaam",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Maak het beschrijvender!",
       "suggestion": "Probeer meer details toe te voegen zoals \"Bel de tandarts om een afspraak voor een reiniging te plannen\" in plaats van alleen \"Bel de tandarts\""
-    }
+    },
+    "overdueAlert": "Deze taak stond gisteren in je planning en is niet voltooid.",
+    "overdueYesterday": "Overweeg deze taak prioriteit te geven of deze in kleinere stappen op te splitsen.",
+    "overdueMultipleDays": "Deze taak is {{count}} keer uitgesteld.",
+    "content": "Inhoud",
+    "noNotes": "Nog geen inhoud toegevoegd",
+    "subtasks": "Subtaken",
+    "noSubtasks": "Nog geen subtaken",
+    "recentActivity": "Recente Activiteit"
   },
   "projects": {
     "loading": "Projecten laden...",

@@ -306,7 +306,11 @@
     "tasksCompleted": "tareas completadas",
     "metrics": "Métricas",
     "setInProgress": "Establecer en progreso",
-    "setNotStarted": "Establecer como no iniciado"
+    "setNotStarted": "Establecer como no iniciado",
+    "showSubtasks": "Mostrar subtareas",
+    "hideSubtasks": "Ocultar subtareas",
+    "edit": "Editar tarea",
+    "delete": "Eliminar tarea"
   },
   "timeline": {
     "activityTimeline": "Línea de Tiempo de Actividad",
@@ -329,7 +333,9 @@
       "status": "Estado",
       "priority": "Prioridad",
       "dueDate": "Fecha de vencimiento",
-      "none": "Ninguno"
+      "none": "Ninguno",
+      "recurrenceEndDateChanged": "Fecha de finalización de la recurrencia cambiada",
+      "recurrenceEndDate": "Fecha de finalización de la recurrencia"
     },
     "justNow": "Justo ahora",
     "minutesAgo": "{{minutes}}m hace",
@@ -520,7 +526,9 @@
     "archived": "Archivado",
     "unknown": "Desconocido",
     "telegramConnected": "Telegram conectado y sondeando",
-    "telegramConnectionProblem": "Problema de conexión de Telegram"
+    "telegramConnectionProblem": "Problema de conexión de Telegram",
+    "completed": "Completado",
+    "waiting": "Esperando"
   },
   "project": {
     "name": "Nombre del Proyecto",
@@ -564,7 +572,15 @@
     "updated": "Tarea",
     "updatedSuccessfully": "actualizada con éxito!",
     "deleted": "Tarea",
-    "deletedSuccessfully": "eliminada con éxito!"
+    "deletedSuccessfully": "eliminada con éxito!",
+    "overdueAlert": "Esta tarea estaba en tu plan ayer y no se completó.",
+    "overdueYesterday": "Considera priorizar esta tarea o dividirla en pasos más pequeños.",
+    "overdueMultipleDays": "Esta tarea ha sido pospuesta {{count}} veces.",
+    "content": "Contenido",
+    "noNotes": "No se ha añadido contenido aún",
+    "subtasks": "Subtareas",
+    "noSubtasks": "No hay subtareas aún",
+    "recentActivity": "Actividad Reciente"
   },
   "dateIndicators": {
     "today": "HOY",

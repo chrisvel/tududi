@@ -111,7 +111,11 @@
     "addToToday": "添加到今天计划",
     "removeFromToday": "从今天计划中移除",
     "setInProgress": "设置为进行中",
-    "setNotStarted": "设置为未开始"
+    "setNotStarted": "设置为未开始",
+    "showSubtasks": "显示子任务",
+    "hideSubtasks": "隐藏子任务",
+    "edit": "编辑任务",
+    "delete": "删除任务"
   },
   "timeline": {
     "activityTimeline": "活动时间线",
@@ -134,7 +138,9 @@
       "status": "状态",
       "priority": "优先级",
       "dueDate": "截止日期",
-      "none": "无"
+      "none": "无",
+      "recurrenceEndDateChanged": "重复结束日期已更改",
+      "recurrenceEndDate": "重复结束日期"
     },
     "justNow": "刚刚",
     "minutesAgo": "{{minutes}}分钟前",
@@ -464,7 +470,9 @@
     "archived": "已归档",
     "unknown": "未知",
     "telegramConnected": "Telegram 已连接并正在轮询",
-    "telegramConnectionProblem": "Telegram 连接问题"
+    "telegramConnectionProblem": "Telegram 连接问题",
+    "completed": "已完成",
+    "waiting": "等待中"
   },
   "project": {
     "name": "项目名称",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "让它更具描述性！",
       "suggestion": "尝试添加更多细节，例如 \"打电话给牙医安排清洁预约\" 而不仅仅是 \"打电话给牙医\""
-    }
+    },
+    "overdueAlert": "此任务昨天在您的计划中，但未完成。",
+    "overdueYesterday": "考虑优先处理此任务或将其拆分为更小的步骤。",
+    "overdueMultipleDays": "此任务已推迟 {{count }} 次。",
+    "content": "内容",
+    "noNotes": "尚未添加内容",
+    "subtasks": "子任务",
+    "noSubtasks": "尚无子任务",
+    "recentActivity": "最近活动"
   },
   "projects": {
     "loading": "加载项目中...",

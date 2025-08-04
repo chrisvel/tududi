@@ -111,7 +111,11 @@
     "addToToday": "Добави към плана за днес",
     "removeFromToday": "Премахни от плана за днес",
     "setInProgress": "Задай в процес",
-    "setNotStarted": "Задай като не започната"
+    "setNotStarted": "Задай като не започната",
+    "showSubtasks": "Покажи подзадачи",
+    "hideSubtasks": "Скрий подзадачи",
+    "edit": "Редактиране на задача",
+    "delete": "Изтриване на задача"
   },
   "timeline": {
     "activityTimeline": "Хронология на активността",
@@ -134,7 +138,9 @@
       "status": "Статус",
       "priority": "Приоритет",
       "dueDate": "Срок",
-      "none": "Няма"
+      "none": "Няма",
+      "recurrenceEndDateChanged": "Дата на края на повторението е променена",
+      "recurrenceEndDate": "Дата на края на повторението"
     },
     "justNow": "Току-що",
     "minutesAgo": "{{minutes}}м. назад",
@@ -464,7 +470,9 @@
     "archived": "Архивирано",
     "unknown": "Неизвестно",
     "telegramConnected": "Telegram свързан и проверява",
-    "telegramConnectionProblem": "Проблем с връзката на Telegram"
+    "telegramConnectionProblem": "Проблем с връзката на Telegram",
+    "completed": "Завършено",
+    "waiting": "В очакване"
   },
   "project": {
     "name": "Име на проекта",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Направете го по-описателно!",
       "suggestion": "Опитайте да добавите повече детайли като \"Обадете се на зъболекаря, за да насрочите час за почистване\" вместо просто \"Обадете се на зъболекаря\""
-    }
+    },
+    "overdueAlert": "Тази задача беше в плана ви вчера и не беше завършена.",
+    "overdueYesterday": "Помислете за приоритизиране на тази задача или разделянето ѝ на по-малки стъпки.",
+    "overdueMultipleDays": "Тази задача е отложена {{count}} пъти.",
+    "content": "Съдържание",
+    "noNotes": "Все още не е добавено съдържание",
+    "subtasks": "Подзадачи",
+    "noSubtasks": "Все още няма подзадачи",
+    "recentActivity": "Наскоро извършена дейност"
   },
   "projects": {
     "loading": "Зареждане на проекти...",

@@ -111,7 +111,11 @@
     "tasksCompleted": "завдання виконані",
     "metrics": "Метрики",
     "setInProgress": "Встановити в процесі",
-    "setNotStarted": "Встановити як не розпочате"
+    "setNotStarted": "Встановити як не розпочате",
+    "showSubtasks": "Показати підзадачі",
+    "hideSubtasks": "Сховати підзадачі",
+    "edit": "Редагувати задачу",
+    "delete": "Видалити задачу"
   },
   "timeline": {
     "activityTimeline": "Хронологія Активності",
@@ -134,7 +138,9 @@
       "status": "Статус",
       "priority": "Пріоритет",
       "dueDate": "Термін",
-      "none": "Немає"
+      "none": "Немає",
+      "recurrenceEndDateChanged": "Дата закінчення повторення змінена",
+      "recurrenceEndDate": "Дата закінчення повторення"
     },
     "justNow": "Щойно",
     "minutesAgo": "{{minutes}}м тому",
@@ -576,7 +582,15 @@
     "updated": "Завдання",
     "updatedSuccessfully": "успішно оновлено!",
     "deleted": "Завдання",
-    "deletedSuccessfully": "успішно видалено!"
+    "deletedSuccessfully": "успішно видалено!",
+    "overdueAlert": "Це завдання було у вашому плані вчора і не було завершено.",
+    "overdueYesterday": "Розгляньте можливість пріоритизувати це завдання або розбити його на менші етапи.",
+    "overdueMultipleDays": "Це завдання було відкладено {{count}} разів.",
+    "content": "Зміст",
+    "noNotes": "Ще не додано жодного змісту",
+    "subtasks": "Підзавдання",
+    "noSubtasks": "Ще немає підзавдань",
+    "recentActivity": "Остання активність"
   },
   "calendar": {
     "month": "Місяць",
@@ -691,7 +705,9 @@
     "archived": "Архівовано",
     "unknown": "Невідомо",
     "telegramConnected": "Telegram підключено та опитування",
-    "telegramConnectionProblem": "Проблема з підключенням Telegram"
+    "telegramConnectionProblem": "Проблема з підключенням Telegram",
+    "completed": "Завершено",
+    "waiting": "Очікування"
   },
   "dateIndicators": {
     "today": "СЬОГОДНІ",

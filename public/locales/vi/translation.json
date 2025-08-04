@@ -111,7 +111,11 @@
     "addToToday": "Thêm vào kế hoạch hôm nay",
     "removeFromToday": "Gỡ bỏ khỏi kế hoạch hôm nay",
     "setInProgress": "Đặt thành đang tiến hành",
-    "setNotStarted": "Đặt thành chưa bắt đầu"
+    "setNotStarted": "Đặt thành chưa bắt đầu",
+    "showSubtasks": "Hiện các công việc con",
+    "hideSubtasks": "Ẩn các công việc con",
+    "edit": "Chỉnh sửa công việc",
+    "delete": "Xóa công việc"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",
@@ -134,7 +138,9 @@
       "status": "Trạng thái",
       "priority": "Độ ưu tiên",
       "dueDate": "Ngày đến hạn",
-      "none": "Không có"
+      "none": "Không có",
+      "recurrenceEndDateChanged": "Ngày kết thúc chu kỳ đã thay đổi",
+      "recurrenceEndDate": "Ngày kết thúc chu kỳ"
     },
     "justNow": "Vừa xong",
     "minutesAgo": "{{minutes}} phút trước",
@@ -464,7 +470,9 @@
     "archived": "Đã lưu trữ",
     "unknown": "Không xác định",
     "telegramConnected": "Telegram đã kết nối và đang kiểm tra",
-    "telegramConnectionProblem": "Vấn đề kết nối Telegram"
+    "telegramConnectionProblem": "Vấn đề kết nối Telegram",
+    "completed": "Đã hoàn thành",
+    "waiting": "Đang chờ"
   },
   "project": {
     "name": "Tên Dự Án",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Hãy làm cho nó mô tả hơn!",
       "suggestion": "Cố gắng thêm nhiều chi tiết như \"Gọi nha sĩ để đặt lịch hẹn làm sạch\" thay vì chỉ \"Gọi nha sĩ\""
-    }
+    },
+    "overdueAlert": "Nhiệm vụ này đã có trong kế hoạch của bạn hôm qua và chưa được hoàn thành.",
+    "overdueYesterday": "Hãy xem xét ưu tiên nhiệm vụ này hoặc chia nhỏ nó thành các bước nhỏ hơn.",
+    "overdueMultipleDays": "Nhiệm vụ này đã bị hoãn lại {{count}} lần.",
+    "content": "Nội dung",
+    "noNotes": "Chưa có nội dung nào được thêm vào",
+    "subtasks": "Công việc con",
+    "noSubtasks": "Chưa có công việc con nào",
+    "recentActivity": "Hoạt động gần đây"
   },
   "projects": {
     "loading": "Đang tải dự án...",

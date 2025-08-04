@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import {
     CalendarDaysIcon,
     CalendarIcon,
     PlayIcon,
     ArrowPathIcon,
-    ArrowRightIcon,
     ListBulletIcon,
     PencilIcon,
     TrashIcon,
+    EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
 import { TagIcon, FolderIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
@@ -43,7 +44,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     hideProjectName = false,
     onToggleToday,
     onTaskUpdate,
-    isOverdue = false,
     // Props for subtasks functionality
     showSubtasks,
     hasSubtasks,
@@ -53,6 +53,92 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     onDelete,
 }) => {
     const { t } = useTranslation();
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [dropdownPosition, setDropdownPosition] = useState({
+        top: 0,
+        left: 0,
+    });
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const dropdownId = useRef(
+        `dropdown-${Math.random().toString(36).substr(2, 9)}`
+    ).current;
+
+    // Calculate dropdown position
+    const calculateDropdownPosition = () => {
+        if (buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect();
+            const dropdownHeight = 300; // Approximate dropdown height
+            const dropdownWidth = 192; // w-48 = 192px
+            const padding = 8; // Padding from screen edges
+
+            // Default position: below and to the left of the button
+            let top = rect.bottom + window.scrollY + 4;
+            let left = rect.right - dropdownWidth;
+
+            // Ensure dropdown doesn't go off the left edge
+            if (left < padding) {
+                left = padding;
+            }
+
+            // Ensure dropdown doesn't go off the right edge
+            if (left + dropdownWidth > window.innerWidth - padding) {
+                left = window.innerWidth - dropdownWidth - padding;
+            }
+
+            // If dropdown would go below viewport, position it above the button
+            if (rect.bottom + dropdownHeight > window.innerHeight - padding) {
+                top = rect.top + window.scrollY - dropdownHeight - 4;
+                // Ensure it doesn't go above the top of the viewport
+                if (top < window.scrollY + padding) {
+                    top = window.scrollY + padding;
+                }
+            }
+
+            const position = { top, left };
+            setDropdownPosition(position);
+        }
+    };
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (isDropdownOpen && buttonRef.current) {
+                const target = event.target as Node;
+                const isOutsideButton = !buttonRef.current.contains(target);
+                const currentDropdown = document.querySelector(
+                    `[data-dropdown-id="${dropdownId}"]`
+                );
+                const isOutsideDropdown = !currentDropdown?.contains(target);
+
+                if (isOutsideButton && isOutsideDropdown) {
+                    setIsDropdownOpen(false);
+                }
+            }
+        };
+
+        // Listen for custom event to close this dropdown when another opens
+        const handleCloseOtherDropdowns = (event: CustomEvent) => {
+            if (event.detail.dropdownId !== dropdownId && isDropdownOpen) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        if (isDropdownOpen) {
+            document.addEventListener('click', handleClickOutside);
+            document.addEventListener(
+                'closeOtherDropdowns',
+                handleCloseOtherDropdowns as EventListener
+            );
+        }
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+            document.removeEventListener(
+                'closeOtherDropdowns',
+                handleCloseOtherDropdowns as EventListener
+            );
+        };
+    }, [isDropdownOpen, dropdownId]);
 
     const formatDueDate = (dueDate: string) => {
         const today = new Date().toISOString().split('T')[0];
@@ -170,12 +256,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             <span className="text-md text-gray-900 dark:text-gray-100">
                                 {task.name}
                             </span>
-                            {isOverdue && (
-                                <ArrowRightIcon
-                                    className="ml-2 h-4 w-4 text-amber-600 dark:text-amber-400 opacity-60"
-                                    title="This task was in your plan yesterday and wasn't completed."
-                                />
-                            )}
                         </div>
                         {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
                         <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
@@ -406,17 +486,11 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         />
                     </div>
 
-                    {/* Task content - 65% width */}
-                    <div className="ml-2 flex-1 w-[65%] min-w-0">
+                    {/* Task content - full width */}
+                    <div className="ml-2 flex-1 min-w-0">
                         {/* Task Title */}
                         <div className="font-light text-md text-gray-900 dark:text-gray-100">
                             <span className="break-words">{task.name}</span>
-                            {isOverdue && (
-                                <ArrowRightIcon
-                                    className="ml-2 h-4 w-4 text-amber-600 dark:text-amber-400 opacity-60"
-                                    title="This task was in your plan yesterday and wasn't completed."
-                                />
-                            )}
                         </div>
 
                         {/* Project, tags, due date, and recurrence */}
@@ -485,135 +559,170 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         </div>
                     </div>
 
-                    {/* Mobile buttons on the right */}
+                    {/* Mobile 3-dot dropdown menu */}
                     <div className="flex items-center ml-2">
-                        {/* Button Group - All buttons together - Mobile */}
-                        <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            {/* Today Plan Controls - Mobile */}
-                            {onToggleToday && (
-                                <button
-                                    type="button"
-                                    onClick={handleTodayToggle}
-                                    className={`items-center justify-center ${Number(task.today_move_count) > 1 ? 'px-2 h-6' : 'w-6 h-6'} rounded-full transition-all duration-200 ${
-                                        task.today
-                                            ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 opacity-100 flex'
-                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 flex'
-                                    }`}
-                                    title={
-                                        task.today
-                                            ? t(
-                                                  'tasks.removeFromToday',
-                                                  'Remove from today plan'
-                                              )
-                                            : t(
-                                                  'tasks.addToToday',
-                                                  'Add to today plan'
-                                              )
-                                    }
-                                >
-                                    {task.today ? (
-                                        <CalendarDaysIcon className="h-3 w-3" />
-                                    ) : (
-                                        <CalendarIcon className="h-3 w-3" />
-                                    )}
-                                    {Number(task.today_move_count) > 1 && (
-                                        <span className="ml-1 text-xs font-medium">
-                                            {Number(task.today_move_count)}
-                                        </span>
-                                    )}
-                                </button>
-                            )}
+                        <button
+                            ref={buttonRef}
+                            type="button"
+                            data-dropdown-button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                const newOpenState = !isDropdownOpen;
 
-                            {/* Play/In Progress Controls - Mobile */}
-                            {(task.status === 'not_started' ||
-                                task.status === 'in_progress' ||
-                                task.status === 0 ||
-                                task.status === 1) && (
-                                <button
-                                    type="button"
-                                    onClick={handlePlayToggle}
-                                    className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
-                                        task.status === 'in_progress' ||
-                                        task.status === 1
-                                            ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse opacity-100'
-                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                    }`}
-                                    title={
-                                        task.status === 'in_progress' ||
-                                        task.status === 1
-                                            ? t(
-                                                  'tasks.setNotStarted',
-                                                  'Set to not started'
-                                              )
-                                            : t(
-                                                  'tasks.setInProgress',
-                                                  'Set in progress'
-                                              )
-                                    }
-                                >
-                                    <PlayIcon className="h-3 w-3" />
-                                </button>
-                            )}
+                                // Close other dropdowns when opening this one
+                                if (newOpenState) {
+                                    document.dispatchEvent(
+                                        new CustomEvent('closeOtherDropdowns', {
+                                            detail: { dropdownId },
+                                        })
+                                    );
+                                    // Calculate position BEFORE opening to prevent blink
+                                    calculateDropdownPosition();
+                                }
 
-                            {/* Show Subtasks Controls - Mobile */}
-                            {hasSubtasks &&
-                                !(
-                                    task.status === 'archived' ||
-                                    task.status === 3
-                                ) && (
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            if (onSubtasksToggle) {
-                                                onSubtasksToggle(e);
-                                            }
-                                        }}
-                                        className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
-                                            showSubtasks
-                                                ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800 opacity-100'
-                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                        }`}
-                                        title={
-                                            showSubtasks
+                                setIsDropdownOpen(newOpenState);
+                            }}
+                            className="flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                            <EllipsisVerticalIcon className="h-5 w-5" />
+                        </button>
+                    </div>
+
+                    {/* Dropdown Menu - Rendered via Portal */}
+                    {isDropdownOpen &&
+                        createPortal(
+                            <div
+                                data-dropdown-id={dropdownId}
+                                className="fixed w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[9999]"
+                                style={{
+                                    top: dropdownPosition.top,
+                                    left: dropdownPosition.left,
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="py-1">
+                                    {/* Today Plan Controls */}
+                                    {onToggleToday && (
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleTodayToggle(e);
+                                                setIsDropdownOpen(false);
+                                            }}
+                                            className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex justify-between items-center"
+                                        >
+                                            <span>
+                                                {task.today
+                                                    ? t(
+                                                          'tasks.removeFromToday',
+                                                          'Remove from today plan'
+                                                      )
+                                                    : t(
+                                                          'tasks.addToToday',
+                                                          'Add to today plan'
+                                                      )}
+                                            </span>
+                                            {Number(task.today_move_count) >
+                                                1 && (
+                                                <span className="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">
+                                                    {Number(
+                                                        task.today_move_count
+                                                    )}
+                                                </span>
+                                            )}
+                                        </button>
+                                    )}
+
+                                    {/* Play/In Progress Controls */}
+                                    {(task.status === 'not_started' ||
+                                        task.status === 'in_progress' ||
+                                        task.status === 0 ||
+                                        task.status === 1) && (
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handlePlayToggle(e);
+                                                setIsDropdownOpen(false);
+                                            }}
+                                            className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        >
+                                            {task.status === 'in_progress' ||
+                                            task.status === 1
                                                 ? t(
-                                                      'tasks.hideSubtasks',
-                                                      'Hide subtasks'
+                                                      'tasks.setNotStarted',
+                                                      'Set to not started'
                                                   )
                                                 : t(
-                                                      'tasks.showSubtasks',
-                                                      'Show subtasks'
-                                                  )
-                                        }
-                                    >
-                                        <ListBulletIcon className="h-3 w-3" />
-                                    </button>
-                                )}
+                                                      'tasks.setInProgress',
+                                                      'Set in progress'
+                                                  )}
+                                        </button>
+                                    )}
 
-                            {/* Edit Button - Mobile */}
-                            {onEdit && (
-                                <button
-                                    type="button"
-                                    onClick={onEdit}
-                                    className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-800 hover:text-blue-600 dark:hover:text-blue-400"
-                                    title={t('tasks.edit', 'Edit task')}
-                                >
-                                    <PencilIcon className="h-3 w-3" />
-                                </button>
-                            )}
+                                    {/* Show Subtasks Controls */}
+                                    {hasSubtasks &&
+                                        !(
+                                            task.status === 'archived' ||
+                                            task.status === 3
+                                        ) && (
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (onSubtasksToggle) {
+                                                        onSubtasksToggle(e);
+                                                    }
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                                className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            >
+                                                {showSubtasks
+                                                    ? t(
+                                                          'tasks.hideSubtasks',
+                                                          'Hide subtasks'
+                                                      )
+                                                    : t(
+                                                          'tasks.showSubtasks',
+                                                          'Show subtasks'
+                                                      )}
+                                            </button>
+                                        )}
 
-                            {/* Delete Button - Mobile */}
-                            {onDelete && (
-                                <button
-                                    type="button"
-                                    onClick={onDelete}
-                                    className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-800 hover:text-red-600 dark:hover:text-red-400"
-                                    title={t('tasks.delete', 'Delete task')}
-                                >
-                                    <TrashIcon className="h-3 w-3" />
-                                </button>
-                            )}
-                        </div>
-                    </div>
+                                    {/* Edit Button */}
+                                    {onEdit && (
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onEdit(e);
+                                                setIsDropdownOpen(false);
+                                            }}
+                                            className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        >
+                                            {t('tasks.edit', 'Edit task')}
+                                        </button>
+                                    )}
+
+                                    {/* Delete Button */}
+                                    {onDelete && (
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onDelete(e);
+                                                setIsDropdownOpen(false);
+                                            }}
+                                            className="w-full px-4 py-2 text-sm text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                        >
+                                            {t('tasks.delete', 'Delete task')}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>,
+                            document.body
+                        )}
                 </div>
             </div>
         </div>

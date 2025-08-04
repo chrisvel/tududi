@@ -111,7 +111,11 @@
     "addToToday": "Bugün planına ekle",
     "removeFromToday": "Bugün planından çıkar",
     "setInProgress": "Devam ediyor olarak ayarla",
-    "setNotStarted": "Başlamadı olarak ayarla"
+    "setNotStarted": "Başlamadı olarak ayarla",
+    "showSubtasks": "Alt görevleri göster",
+    "hideSubtasks": "Alt görevleri gizle",
+    "edit": "Görevi düzenle",
+    "delete": "Görevi sil"
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",
@@ -134,7 +138,9 @@
       "status": "Durum",
       "priority": "Öncelik",
       "dueDate": "Son tarih",
-      "none": "Yok"
+      "none": "Yok",
+      "recurrenceEndDateChanged": "Tekrar son tarihi değiştirildi",
+      "recurrenceEndDate": "Tekrar son tarihi"
     },
     "justNow": "Şu anda",
     "minutesAgo": "{{minutes}}d önce",
@@ -464,7 +470,9 @@
     "archived": "Arşivlendi",
     "unknown": "Bilinmiyor",
     "telegramConnected": "Telegram bağlı ve sorgulama yapılıyor",
-    "telegramConnectionProblem": "Telegram bağlantı sorunu"
+    "telegramConnectionProblem": "Telegram bağlantı sorunu",
+    "completed": "Tamamlandı",
+    "waiting": "Bekliyor"
   },
   "project": {
     "name": "Proje Adı",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Daha açıklayıcı hale getirin!",
       "suggestion": "\"Temizlik randevusu ayarlamak için dişçiyi ara\" gibi daha fazla detay eklemeyi deneyin, sadece \"Dişçiyi ara\" demek yerine"
-    }
+    },
+    "overdueAlert": "Bu görev dün planınızdaydı ve tamamlanmadı.",
+    "overdueYesterday": "Bu görevi önceliklendirmeyi veya daha küçük adımlara ayırmayı düşünün.",
+    "overdueMultipleDays": "Bu görev {{count}} kez ertelendi.",
+    "content": "İçerik",
+    "noNotes": "Henüz içerik eklenmedi",
+    "subtasks": "Alt görevler",
+    "noSubtasks": "Henüz alt görev yok",
+    "recentActivity": "Son Aktivite"
   },
   "projects": {
     "loading": "Projeler yükleniyor...",
