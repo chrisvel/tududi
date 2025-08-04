@@ -627,7 +627,8 @@
     "noNotes": "Содержимое ещё не добавлено",
     "subtasks": "Подзадачи",
     "noSubtasks": "Подзадач пока нет",
-    "recentActivity": "Недавняя активность"
+    "recentActivity": "Недавняя активность",
+    "noActivityYet": "Пока нет активности"
   },
   "projects": {
     "loading": "Загрузка проектов...",

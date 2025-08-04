@@ -680,7 +680,8 @@
     "noNotes": "まだ内容が追加されていません",
     "subtasks": "サブタスク",
     "noSubtasks": "まだサブタスクはありません",
-    "recentActivity": "最近の活動"
+    "recentActivity": "最近の活動",
+    "noActivityYet": "まだアクティビティはありません"
   },
   "calendar": {
     "month": "月",

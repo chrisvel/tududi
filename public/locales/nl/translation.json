@@ -627,7 +627,8 @@
     "noNotes": "Nog geen inhoud toegevoegd",
     "subtasks": "Subtaken",
     "noSubtasks": "Nog geen subtaken",
-    "recentActivity": "Recente Activiteit"
+    "recentActivity": "Recente Activiteit",
+    "noActivityYet": "Nog geen activiteit"
   },
   "projects": {
     "loading": "Projecten laden...",

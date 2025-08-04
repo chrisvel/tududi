@@ -627,7 +627,8 @@
     "noNotes": "Nie dodano jeszcze treści",
     "subtasks": "Podzadania",
     "noSubtasks": "Brak podzadań",
-    "recentActivity": "Ostatnia aktywność"
+    "recentActivity": "Ostatnia aktywność",
+    "noActivityYet": "Brak aktywności jeszcze"
   },
   "projects": {
     "loading": "Ładowanie projektów...",

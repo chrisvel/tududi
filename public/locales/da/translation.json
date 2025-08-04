@@ -627,7 +627,8 @@
     "noNotes": "Ingen indhold tilføjet endnu",
     "subtasks": "Underopgaver",
     "noSubtasks": "Ingen underopgaver endnu",
-    "recentActivity": "Seneste aktivitet"
+    "recentActivity": "Seneste aktivitet",
+    "noActivityYet": "Ingen aktivitet endnu"
   },
   "projects": {
     "loading": "Indlæser projekter...",

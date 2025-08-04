@@ -627,7 +627,8 @@
     "noNotes": "Belum ada konten yang ditambahkan",
     "subtasks": "Subtugas",
     "noSubtasks": "Belum ada subtugas",
-    "recentActivity": "Aktivitas Terbaru"
+    "recentActivity": "Aktivitas Terbaru",
+    "noActivityYet": "Belum ada aktivitas"
   },
   "projects": {
     "loading": "Memuat proyek...",

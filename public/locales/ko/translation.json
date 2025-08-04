@@ -627,7 +627,8 @@
     "noNotes": "아직 추가된 내용이 없습니다",
     "subtasks": "하위 작업",
     "noSubtasks": "아직 하위 작업이 없습니다",
-    "recentActivity": "최근 활동"
+    "recentActivity": "최근 활동",
+    "noActivityYet": "아직 활동이 없습니다"
   },
   "projects": {
     "loading": "프로젝트 로딩 중...",

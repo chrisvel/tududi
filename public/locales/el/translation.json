@@ -580,7 +580,8 @@
     "noNotes": "Δεν έχει προστεθεί περιεχόμενο ακόμα",
     "subtasks": "Υποεργασίες",
     "noSubtasks": "Δεν υπάρχουν υποεργασίες ακόμα",
-    "recentActivity": "Πρόσφατη Δραστηριότητα"
+    "recentActivity": "Πρόσφατη Δραστηριότητα",
+    "noActivityYet": "Δεν υπάρχει καμία δραστηριότητα ακόμα"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",

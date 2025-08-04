@@ -627,7 +627,8 @@
     "noNotes": "Še ni dodane vsebine",
     "subtasks": "Podnaloge",
     "noSubtasks": "Še ni podnalog",
-    "recentActivity": "Nedavna dejavnost"
+    "recentActivity": "Nedavna dejavnost",
+    "noActivityYet": "Še ni dejavnosti"
   },
   "projects": {
     "loading": "Nalagam projekte...",

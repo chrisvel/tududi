@@ -633,7 +633,8 @@
     "noNotes": "No content added yet",
     "subtasks": "Subtasks",
     "noSubtasks": "No subtasks yet",
-    "recentActivity": "Recent Activity"
+    "recentActivity": "Recent Activity",
+    "noActivityYet": "No activity yet"
   },
   "projects": {
     "loading": "Loading projects...",

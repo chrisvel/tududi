@@ -627,7 +627,8 @@
     "noNotes": "尚未添加内容",
     "subtasks": "子任务",
     "noSubtasks": "尚无子任务",
-    "recentActivity": "最近活动"
+    "recentActivity": "最近活动",
+    "noActivityYet": "尚无活动"
   },
   "projects": {
     "loading": "加载项目中...",

@@ -627,7 +627,8 @@
     "noNotes": "Nu a fost adăugat încă niciun conținut",
     "subtasks": "Subsarci",
     "noSubtasks": "Nu există subsarci încă",
-    "recentActivity": "Activitate recentă"
+    "recentActivity": "Activitate recentă",
+    "noActivityYet": "Nicio activitate încă"
   },
   "projects": {
     "loading": "Se încarcă proiectele...",

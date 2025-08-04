@@ -590,7 +590,8 @@
     "noNotes": "Ще не додано жодного змісту",
     "subtasks": "Підзавдання",
     "noSubtasks": "Ще немає підзавдань",
-    "recentActivity": "Остання активність"
+    "recentActivity": "Остання активність",
+    "noActivityYet": "Ще немає активності"
   },
   "calendar": {
     "month": "Місяць",
