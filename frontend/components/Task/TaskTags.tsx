@@ -17,7 +17,16 @@ const TaskTags: React.FC<TaskTagsProps> = ({
     const navigate = useNavigate();
 
     const handleTagClick = (tag: Tag) => {
-        navigate(`/tag/${encodeURIComponent(tag.name)}`);
+        if (tag.nanoid) {
+            const slug = tag.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            navigate(`/tag/${tag.nanoid}-${slug}`);
+        } else {
+            // Fallback to old URL format if nanoid is not available
+            navigate(`/tag/${encodeURIComponent(tag.name)}`);
+        }
     };
 
     // Don't render anything if there are no tags

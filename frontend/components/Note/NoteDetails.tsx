@@ -11,7 +11,7 @@ import NoteModal from './NoteModal';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import { Note } from '../../entities/Note';
 import {
-    fetchNotes,
+    fetchNoteBySlug,
     deleteNote as apiDeleteNote,
     updateNote as apiUpdateNote,
 } from '../../utils/notesService';
@@ -19,7 +19,7 @@ import { createProject, fetchProjects } from '../../utils/projectsService';
 import { Project } from '../../entities/Project';
 
 const NoteDetails: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const { nanoidSlug } = useParams<{ nanoidSlug: string }>();
     const [note, setNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
@@ -36,8 +36,7 @@ const NoteDetails: React.FC = () => {
         const fetchNote = async () => {
             try {
                 setIsLoading(true);
-                const notes = await fetchNotes();
-                const foundNote = notes.find((n: Note) => n.id === Number(id));
+                const foundNote = await fetchNoteBySlug(nanoidSlug!);
                 setNote(foundNote || null);
                 if (!foundNote) {
                     setIsError(true);
@@ -50,7 +49,7 @@ const NoteDetails: React.FC = () => {
             }
         };
         fetchNote();
-    }, [id]);
+    }, [nanoidSlug]);
 
     // Load projects for the modal
     useEffect(() => {
@@ -157,7 +156,26 @@ const NoteDetails: React.FC = () => {
                                         <div className="flex items-center">
                                             <FolderIcon className="h-3 w-3 mr-1" />
                                             <Link
-                                                to={`/project/${(note.project || note.Project)?.id}`}
+                                                to={
+                                                    (
+                                                        note.project ||
+                                                        note.Project
+                                                    )?.nanoid
+                                                        ? `/project/${(note.project || note.Project)?.nanoid}-${(
+                                                              note.project ||
+                                                              note.Project
+                                                          )?.name
+                                                              .toLowerCase()
+                                                              .replace(
+                                                                  /[^a-z0-9]+/g,
+                                                                  '-'
+                                                              )
+                                                              .replace(
+                                                                  /^-|-$/g,
+                                                                  ''
+                                                              )}`
+                                                        : `/project/${(note.project || note.Project)?.id}`
+                                                }
                                                 className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
                                             >
                                                 {

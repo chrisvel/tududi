@@ -181,7 +181,14 @@ const Areas: React.FC = () => {
                         {areas.map((area: any) => (
                             <Link
                                 key={area.id}
-                                to={`/projects?area_id=${area.id}`}
+                                to={
+                                    area.nanoid
+                                        ? `/projects?area=${area.nanoid}-${area.name
+                                              .toLowerCase()
+                                              .replace(/[^a-z0-9]+/g, '-')
+                                              .replace(/^-|-$/g, '')}`
+                                        : `/projects?area_id=${area.id}`
+                                }
                                 className={`bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer ${
                                     dropdownOpen === area.id ? 'z-50' : ''
                                 }`}

@@ -11,4 +11,4 @@ echo "  TUDUDI_USER_PASSWORD=your_password"
 echo "============================================="
 echo ""
 
-NODE_ENV=development PORT=3002 DB_FILE=db/development.sqlite3 npm start
+NODE_ENV=development PORT=3002 DB_FILE=db/development.sqlite3 ./cmd/start.sh

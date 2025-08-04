@@ -337,7 +337,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 <span>
                     {t('task.updated', 'Task')}{' '}
                     <a
-                        href={`/task/${formData.uuid}`}
+                        href={`/task/${formData.nanoid}`}
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {formData.name}
@@ -362,7 +362,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     <span>
                         {t('task.deleted', 'Task')}{' '}
                         <a
-                            href={`/task/${formData.uuid}`}
+                            href={`/task/${formData.nanoid}`}
                             className="text-green-200 underline hover:text-green-100"
                         >
                             {formData.name}

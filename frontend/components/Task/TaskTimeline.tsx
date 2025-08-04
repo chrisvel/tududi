@@ -209,9 +209,11 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId, refreshKey }) => {
 
     if (events.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center h-32 text-gray-500 dark:text-gray-400">
-                <ClockIcon className="h-6 w-6 mb-2" />
-                <span className="text-sm">No activity yet</span>
+            <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
+                <ClockIcon className="h-12 w-12 mb-3 opacity-50" />
+                <span className="text-sm text-center">
+                    {t('task.noActivityYet', 'No activity yet')}
+                </span>
             </div>
         );
     }

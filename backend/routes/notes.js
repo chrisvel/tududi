@@ -1,7 +1,40 @@
 const express = require('express');
 const { Note, Tag, Project, sequelize } = require('../models');
 const { Op } = require('sequelize');
+const { extractNanoidFromSlug } = require('../utils/slug-utils');
 const router = express.Router();
+
+// Helper function to validate tag name (same as in tags.js)
+function validateTagName(name) {
+    if (!name || !name.trim()) {
+        return { valid: false, error: 'Tag name is required' };
+    }
+
+    const trimmedName = name.trim();
+
+    // Check for invalid characters that can break URLs or cause issues
+    const invalidChars = /[#%&{}\\<>*?/$!'":@+`|=]/;
+    if (invalidChars.test(trimmedName)) {
+        return {
+            valid: false,
+            error: 'Tag name contains invalid characters. Please avoid: # % & { } \\ < > * ? / $ ! \' " : @ + ` | =',
+        };
+    }
+
+    // Check length limits
+    if (trimmedName.length > 50) {
+        return {
+            valid: false,
+            error: 'Tag name must be 50 characters or less',
+        };
+    }
+
+    if (trimmedName.length < 1) {
+        return { valid: false, error: 'Tag name cannot be empty' };
+    }
+
+    return { valid: true, name: trimmedName };
+}
 
 // Helper function to update note tags
 async function updateNoteTags(note, tagsArray, userId) {
@@ -11,11 +44,31 @@ async function updateNoteTags(note, tagsArray, userId) {
     }
 
     try {
-        const tagNames = tagsArray.filter(
-            (name, index, arr) => arr.indexOf(name) === index
-        ); // unique
+        // Validate and filter tag names
+        const validTagNames = [];
+        const invalidTags = [];
+
+        for (const name of tagsArray) {
+            const validation = validateTagName(name);
+            if (validation.valid) {
+                // Check for duplicates
+                if (!validTagNames.includes(validation.name)) {
+                    validTagNames.push(validation.name);
+                }
+            } else {
+                invalidTags.push({ name, error: validation.error });
+            }
+        }
+
+        // If there are invalid tags, throw an error
+        if (invalidTags.length > 0) {
+            throw new Error(
+                `Invalid tag names: ${invalidTags.map((t) => `"${t.name}" (${t.error})`).join(', ')}`
+            );
+        }
+
         const tags = await Promise.all(
-            tagNames.map(async (name) => {
+            validTagNames.map(async (name) => {
                 const [tag] = await Tag.findOrCreate({
                     where: { name, user_id: userId },
                     defaults: { name, user_id: userId },
@@ -26,6 +79,7 @@ async function updateNoteTags(note, tagsArray, userId) {
         await note.setTags(tags);
     } catch (error) {
         console.error('Failed to update tags:', error.message);
+        throw error; // Re-throw to handle at route level
     }
 }
 
@@ -41,8 +95,16 @@ router.get('/notes', async (req, res) => {
 
         let whereClause = { user_id: req.session.userId };
         let includeClause = [
-            { model: Tag, through: { attributes: [] } },
-            { model: Project, required: false, attributes: ['id', 'name'] },
+            {
+                model: Tag,
+                attributes: ['id', 'name', 'nanoid'],
+                through: { attributes: [] },
+            },
+            {
+                model: Project,
+                required: false,
+                attributes: ['id', 'name', 'nanoid'],
+            },
         ];
 
         // Filter by tag
@@ -65,18 +127,47 @@ router.get('/notes', async (req, res) => {
     }
 });
 
-// GET /api/note/:id
+// GET /api/note/:id (supports both numeric ID and nanoid-slug)
 router.get('/note/:id', async (req, res) => {
     try {
         if (!req.session || !req.session.userId) {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
+        const identifier = req.params.id;
+        let whereClause;
+
+        // Check if identifier is numeric (regular ID) or nanoid-slug
+        if (/^\d+$/.test(identifier)) {
+            // It's a numeric ID
+            whereClause = {
+                id: parseInt(identifier),
+                user_id: req.session.userId,
+            };
+        } else {
+            // It's a nanoid-slug, extract the nanoid
+            const nanoid = extractNanoidFromSlug(identifier);
+            if (!nanoid) {
+                return res
+                    .status(400)
+                    .json({ error: 'Invalid note identifier' });
+            }
+            whereClause = { nanoid: nanoid, user_id: req.session.userId };
+        }
+
         const note = await Note.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            where: whereClause,
             include: [
-                { model: Tag, through: { attributes: [] } },
-                { model: Project, required: false, attributes: ['id', 'name'] },
+                {
+                    model: Tag,
+                    attributes: ['id', 'name', 'nanoid'],
+                    through: { attributes: [] },
+                },
+                {
+                    model: Project,
+                    required: false,
+                    attributes: ['id', 'name', 'nanoid'],
+                },
             ],
         });
 
@@ -134,12 +225,23 @@ router.post('/note', async (req, res) => {
         // Reload note with associations
         const noteWithAssociations = await Note.findByPk(note.id, {
             include: [
-                { model: Tag, through: { attributes: [] } },
-                { model: Project, required: false, attributes: ['id', 'name'] },
+                {
+                    model: Tag,
+                    attributes: ['id', 'name', 'nanoid'],
+                    through: { attributes: [] },
+                },
+                {
+                    model: Project,
+                    required: false,
+                    attributes: ['id', 'name', 'nanoid'],
+                },
             ],
         });
 
-        res.status(201).json(noteWithAssociations);
+        res.status(201).json({
+            ...noteWithAssociations.toJSON(),
+            nanoid: noteWithAssociations.nanoid, // Explicitly include nanoid
+        });
     } catch (error) {
         console.error('Error creating note:', error);
         res.status(400).json({
@@ -205,8 +307,16 @@ router.patch('/note/:id', async (req, res) => {
         // Reload note with associations
         const noteWithAssociations = await Note.findByPk(note.id, {
             include: [
-                { model: Tag, through: { attributes: [] } },
-                { model: Project, required: false, attributes: ['id', 'name'] },
+                {
+                    model: Tag,
+                    attributes: ['id', 'name', 'nanoid'],
+                    through: { attributes: [] },
+                },
+                {
+                    model: Project,
+                    required: false,
+                    attributes: ['id', 'name', 'nanoid'],
+                },
             ],
         });
 

@@ -6,7 +6,40 @@ const config = getConfig();
 const fs = require('fs');
 const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
 const { Op } = require('sequelize');
+const { extractNanoidFromSlug } = require('../utils/slug-utils');
 const router = express.Router();
+
+// Helper function to validate tag name (same as in tags.js)
+function validateTagName(name) {
+    if (!name || !name.trim()) {
+        return { valid: false, error: 'Tag name is required' };
+    }
+
+    const trimmedName = name.trim();
+
+    // Check for invalid characters that can break URLs or cause issues
+    const invalidChars = /[#%&{}\\<>*?/$!'":@+`|=]/;
+    if (invalidChars.test(trimmedName)) {
+        return {
+            valid: false,
+            error: 'Tag name contains invalid characters. Please avoid: # % & { } \\ < > * ? / $ ! \' " : @ + ` | =',
+        };
+    }
+
+    // Check length limits
+    if (trimmedName.length > 50) {
+        return {
+            valid: false,
+            error: 'Tag name must be 50 characters or less',
+        };
+    }
+
+    if (trimmedName.length < 1) {
+        return { valid: false, error: 'Tag name cannot be empty' };
+    }
+
+    return { valid: true, name: trimmedName };
+}
 
 // Helper function to safely format dates
 const formatDate = (date) => {
@@ -59,24 +92,42 @@ const upload = multer({
 async function updateProjectTags(project, tagsData, userId) {
     if (!tagsData) return;
 
-    const tagNames = tagsData
-        .map((tag) => tag.name)
-        .filter((name) => name && name.trim())
-        .filter((name, index, arr) => arr.indexOf(name) === index); // unique
+    // Validate and filter tag names
+    const validTagNames = [];
+    const invalidTags = [];
 
-    if (tagNames.length === 0) {
+    for (const tag of tagsData) {
+        const validation = validateTagName(tag.name);
+        if (validation.valid) {
+            // Check for duplicates
+            if (!validTagNames.includes(validation.name)) {
+                validTagNames.push(validation.name);
+            }
+        } else {
+            invalidTags.push({ name: tag.name, error: validation.error });
+        }
+    }
+
+    // If there are invalid tags, throw an error
+    if (invalidTags.length > 0) {
+        throw new Error(
+            `Invalid tag names: ${invalidTags.map((t) => `"${t.name}" (${t.error})`).join(', ')}`
+        );
+    }
+
+    if (validTagNames.length === 0) {
         await project.setTags([]);
         return;
     }
 
     // Find existing tags
     const existingTags = await Tag.findAll({
-        where: { user_id: userId, name: tagNames },
+        where: { user_id: userId, name: validTagNames },
     });
 
     // Create new tags
     const existingTagNames = existingTags.map((tag) => tag.name);
-    const newTagNames = tagNames.filter(
+    const newTagNames = validTagNames.filter(
         (name) => !existingTagNames.includes(name)
     );
 
@@ -116,7 +167,7 @@ router.get('/projects', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const { active, pin_to_sidebar, area_id } = req.query;
+        const { active, pin_to_sidebar, area_id, area } = req.query;
 
         let whereClause = { user_id: req.session.userId };
 
@@ -134,8 +185,21 @@ router.get('/projects', async (req, res) => {
             whereClause.pin_to_sidebar = false;
         }
 
-        // Filter by area
-        if (area_id && area_id !== '') {
+        // Filter by area - support both numeric area_id and nanoid-slug area
+        if (area && area !== '') {
+            // Extract nanoid from nanoid-slug format
+            const nanoid = extractNanoidFromSlug(area);
+            if (nanoid) {
+                const areaRecord = await Area.findOne({
+                    where: { nanoid: nanoid, user_id: req.session.userId },
+                    attributes: ['id'],
+                });
+                if (areaRecord) {
+                    whereClause.area_id = areaRecord.id;
+                }
+            }
+        } else if (area_id && area_id !== '') {
+            // Legacy support for numeric area_id
             whereClause.area_id = area_id;
         }
 
@@ -154,7 +218,7 @@ router.get('/projects', async (req, res) => {
                 },
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
             ],
@@ -211,15 +275,36 @@ router.get('/projects', async (req, res) => {
     }
 });
 
-// GET /api/project/:id
+// GET /api/project/:id (supports both numeric ID and nanoid-slug)
 router.get('/project/:id', async (req, res) => {
     try {
         if (!req.session || !req.session.userId) {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
+        const identifier = req.params.id;
+        let whereClause;
+
+        // Check if identifier is numeric (regular ID) or nanoid-slug
+        if (/^\d+$/.test(identifier)) {
+            // It's a numeric ID
+            whereClause = {
+                id: parseInt(identifier),
+                user_id: req.session.userId,
+            };
+        } else {
+            // It's a nanoid-slug, extract the nanoid
+            const nanoid = extractNanoidFromSlug(identifier);
+            if (!nanoid) {
+                return res
+                    .status(400)
+                    .json({ error: 'Invalid project identifier' });
+            }
+            whereClause = { nanoid: nanoid, user_id: req.session.userId };
+        }
+
         const project = await Project.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            where: whereClause,
             include: [
                 {
                     model: Task,
@@ -231,7 +316,7 @@ router.get('/project/:id', async (req, res) => {
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name'],
+                            attributes: ['id', 'name', 'nanoid'],
                             through: { attributes: [] },
                             required: false,
                         },
@@ -241,7 +326,7 @@ router.get('/project/:id', async (req, res) => {
                             include: [
                                 {
                                     model: Tag,
-                                    attributes: ['id', 'name'],
+                                    attributes: ['id', 'name', 'nanoid'],
                                     through: { attributes: [] },
                                     required: false,
                                 },
@@ -263,7 +348,7 @@ router.get('/project/:id', async (req, res) => {
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name'],
+                            attributes: ['id', 'name', 'nanoid'],
                             through: { attributes: [] },
                         },
                     ],
@@ -271,7 +356,7 @@ router.get('/project/:id', async (req, res) => {
                 { model: Area, required: false, attributes: ['id', 'name'] },
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
             ],
@@ -377,7 +462,7 @@ router.post('/project', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
             ],
@@ -387,6 +472,7 @@ router.post('/project', async (req, res) => {
 
         res.status(201).json({
             ...projectJson,
+            nanoid: projectWithAssociations.nanoid, // Explicitly include nanoid
             tags: projectJson.Tags || [], // Normalize Tags to tags
             due_date_at: formatDate(projectWithAssociations.due_date_at),
         });
@@ -451,7 +537,7 @@ router.patch('/project/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name'],
+                    attributes: ['id', 'name', 'nanoid'],
                     through: { attributes: [] },
                 },
             ],

@@ -436,7 +436,20 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                                             key={projectRef}
                                                         >
                                                             <Link
-                                                                to={`/project/${matchingProject.id}`}
+                                                                to={
+                                                                    matchingProject.nanoid
+                                                                        ? `/project/${matchingProject.nanoid}-${matchingProject.name
+                                                                              .toLowerCase()
+                                                                              .replace(
+                                                                                  /[^a-z0-9]+/g,
+                                                                                  '-'
+                                                                              )
+                                                                              .replace(
+                                                                                  /^-|-$/g,
+                                                                                  ''
+                                                                              )}`
+                                                                        : `/project/${matchingProject.id}`
+                                                                }
                                                                 className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
                                                             >
                                                                 {projectRef}

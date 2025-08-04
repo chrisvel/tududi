@@ -20,6 +20,7 @@ import {
     updateTask,
     deleteTask,
     toggleTaskCompletion,
+    fetchTaskByNanoid,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
@@ -31,16 +32,16 @@ import TaskTimeline from './TaskTimeline';
 import { isTaskOverdue } from '../../utils/dateUtils';
 
 const TaskDetails: React.FC = () => {
-    const { uuid } = useParams<{ uuid: string }>();
+    const { nanoid } = useParams<{ nanoid: string }>();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
 
-    const projects = useStore((state) => state.projectsStore.projects);
-    const tagsStore = useStore((state) => state.tagsStore);
-    const tasksStore = useStore((state) => state.tasksStore);
-    const task = useStore((state) =>
-        state.tasksStore.tasks.find((t) => t.uuid === uuid)
+    const projects = useStore((state: any) => state.projectsStore.projects);
+    const tagsStore = useStore((state: any) => state.tagsStore);
+    const tasksStore = useStore((state: any) => state.tasksStore);
+    const task = useStore((state: any) =>
+        state.tasksStore.tasks.find((t: Task) => t.nanoid === nanoid)
     );
 
     // Get subtasks from the task data (already loaded in global store)
@@ -70,7 +71,7 @@ const TaskDetails: React.FC = () => {
             if (pendingStateStr) {
                 const pendingState = JSON.parse(pendingStateStr);
                 const isRecent = Date.now() - pendingState.timestamp < 2000; // Within 2 seconds
-                const isCorrectTask = pendingState.taskUuid === uuid;
+                const isCorrectTask = pendingState.taskId === nanoid;
 
                 if (isRecent && isCorrectTask && pendingState.isOpen) {
                     // Use microtask to avoid lifecycle method warning
@@ -89,7 +90,7 @@ const TaskDetails: React.FC = () => {
             if (pendingEditStateStr) {
                 const pendingEditState = JSON.parse(pendingEditStateStr);
                 const isRecent = Date.now() - pendingEditState.timestamp < 5000; // Within 5 seconds
-                const isCorrectTask = pendingEditState.taskUuid === uuid;
+                const isCorrectTask = pendingEditState.taskId === nanoid;
 
                 if (isRecent && isCorrectTask && pendingEditState.isOpen) {
                     // Use microtask to avoid lifecycle method warning
@@ -104,7 +105,7 @@ const TaskDetails: React.FC = () => {
             sessionStorage.removeItem('pendingModalState');
             sessionStorage.removeItem('pendingTaskEditModalState');
         }
-    }, [uuid, tagsStore]);
+    }, [nanoid, tagsStore]);
 
     // Date and recurrence formatting functions (from TaskHeader)
     const formatDueDate = (dueDate: string) => {
@@ -147,8 +148,8 @@ const TaskDetails: React.FC = () => {
 
     useEffect(() => {
         const fetchTaskData = async () => {
-            if (!uuid) {
-                setError('No task UUID provided');
+            if (!nanoid) {
+                setError('No task nanoid provided');
                 setLoading(false);
                 return;
             }
@@ -157,7 +158,9 @@ const TaskDetails: React.FC = () => {
             if (!task) {
                 try {
                     setLoading(true);
-                    await tasksStore.loadTaskByUuid(uuid);
+                    const fetchedTask = await fetchTaskByNanoid(nanoid);
+                    // Add the task to the store
+                    tasksStore.setTasks([...tasksStore.tasks, fetchedTask]);
                 } catch (fetchError) {
                     setError('Task not found');
                     console.error('Error fetching task:', fetchError);
@@ -170,7 +173,7 @@ const TaskDetails: React.FC = () => {
         };
 
         fetchTaskData();
-    }, [uuid, task, tasksStore]);
+    }, [nanoid, task, tasksStore]);
 
     const handleEdit = (e?: React.MouseEvent) => {
         if (e) {
@@ -182,7 +185,7 @@ const TaskDetails: React.FC = () => {
         // Store modal state in sessionStorage to persist across re-mounts
         const modalState = {
             isOpen: true,
-            taskUuid: uuid,
+            taskId: nanoid,
             timestamp: Date.now(),
         };
         sessionStorage.setItem(
@@ -200,8 +203,16 @@ const TaskDetails: React.FC = () => {
         try {
             const updatedTask = await toggleTaskCompletion(task.id);
             // Update the task in the global store
-            if (uuid) {
-                await tasksStore.loadTaskByUuid(uuid);
+            if (nanoid) {
+                const updatedTask = await fetchTaskByNanoid(nanoid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.nanoid === nanoid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
             }
 
             const statusMessage =
@@ -226,8 +237,16 @@ const TaskDetails: React.FC = () => {
             if (task?.id) {
                 await updateTask(task.id, updatedTask);
                 // Update the task in the global store
-                if (uuid) {
-                    await tasksStore.loadTaskByUuid(uuid);
+                if (nanoid) {
+                    const updatedTask = await fetchTaskByNanoid(nanoid);
+                    const existingIndex = tasksStore.tasks.findIndex(
+                        (t: Task) => t.nanoid === nanoid
+                    );
+                    if (existingIndex >= 0) {
+                        const updatedTasks = [...tasksStore.tasks];
+                        updatedTasks[existingIndex] = updatedTask;
+                        tasksStore.setTasks(updatedTasks);
+                    }
                 }
                 showSuccessToast(
                     t('task.updateSuccess', 'Task updated successfully')
@@ -288,7 +307,7 @@ const TaskDetails: React.FC = () => {
             const modalState = {
                 isOpen: true,
                 focusSubtasks: true,
-                taskUuid: uuid,
+                taskId: nanoid,
                 timestamp: Date.now(),
             };
             sessionStorage.setItem(
@@ -300,7 +319,7 @@ const TaskDetails: React.FC = () => {
             setFocusSubtasks(true);
             setIsTaskModalOpen(true);
         },
-        [uuid]
+        [nanoid]
     );
 
     if (loading) {
@@ -360,8 +379,21 @@ const TaskDetails: React.FC = () => {
                                         <div className="flex items-center">
                                             <FolderIcon className="h-3 w-3 mr-1" />
                                             <Link
-                                                to={`/project/${task.Project.id}`}
-                                                className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+                                                to={
+                                                    task.Project.nanoid
+                                                        ? `/project/${task.Project.nanoid}-${task.Project.name
+                                                              .toLowerCase()
+                                                              .replace(
+                                                                  /[^a-z0-9]+/g,
+                                                                  '-'
+                                                              )
+                                                              .replace(
+                                                                  /^-|-$/g,
+                                                                  ''
+                                                              )}`
+                                                        : `/project/${task.Project.id}`
+                                                }
+                                                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline"
                                             >
                                                 {task.Project.name}
                                             </Link>
@@ -376,21 +408,43 @@ const TaskDetails: React.FC = () => {
                                         <div className="flex items-center">
                                             <TagIcon className="h-3 w-3 mr-1" />
                                             <span>
-                                                {task.tags.map((tag, index) => (
-                                                    <React.Fragment
-                                                        key={tag.id || tag.name}
-                                                    >
-                                                        <Link
-                                                            to={`/tag/${encodeURIComponent(tag.name)}`}
-                                                            className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:underline"
+                                                {task.tags.map(
+                                                    (
+                                                        tag: any,
+                                                        index: number
+                                                    ) => (
+                                                        <React.Fragment
+                                                            key={
+                                                                tag.id ||
+                                                                tag.name
+                                                            }
                                                         >
-                                                            {tag.name}
-                                                        </Link>
-                                                        {index <
-                                                            task.tags!.length -
-                                                                1 && ', '}
-                                                    </React.Fragment>
-                                                ))}
+                                                            <Link
+                                                                to={
+                                                                    tag.nanoid
+                                                                        ? `/tag/${tag.nanoid}-${tag.name
+                                                                              .toLowerCase()
+                                                                              .replace(
+                                                                                  /[^a-z0-9]+/g,
+                                                                                  '-'
+                                                                              )
+                                                                              .replace(
+                                                                                  /^-|-$/g,
+                                                                                  ''
+                                                                              )}`
+                                                                        : `/tag/${encodeURIComponent(tag.name)}`
+                                                                }
+                                                                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline"
+                                                            >
+                                                                {tag.name}
+                                                            </Link>
+                                                            {index <
+                                                                task.tags!
+                                                                    .length -
+                                                                    1 && ', '}
+                                                        </React.Fragment>
+                                                    )
+                                                )}
                                             </span>
                                         </div>
                                     )}
@@ -524,7 +578,7 @@ const TaskDetails: React.FC = () => {
                                 </h4>
                                 {subtasks.length > 0 ? (
                                     <div className="space-y-1">
-                                        {subtasks.map((subtask) => (
+                                        {subtasks.map((subtask: Task) => (
                                             <div
                                                 key={subtask.id}
                                                 className="group"
@@ -554,7 +608,7 @@ const TaskDetails: React.FC = () => {
                                                                     subtask.status
                                                                 }
                                                                 onToggleCompletion={async (
-                                                                    e
+                                                                    e?: React.MouseEvent
                                                                 ) => {
                                                                     e?.stopPropagation();
                                                                     if (
@@ -570,11 +624,36 @@ const TaskDetails: React.FC = () => {
                                                                             ) {
                                                                                 // Refresh task data which includes updated subtasks
                                                                                 if (
-                                                                                    uuid
+                                                                                    nanoid
                                                                                 ) {
-                                                                                    await tasksStore.loadTaskByUuid(
-                                                                                        uuid
-                                                                                    );
+                                                                                    const updatedTask =
+                                                                                        await fetchTaskByNanoid(
+                                                                                            nanoid
+                                                                                        );
+                                                                                    const existingIndex =
+                                                                                        tasksStore.tasks.findIndex(
+                                                                                            (
+                                                                                                t: Task
+                                                                                            ) =>
+                                                                                                t.nanoid ===
+                                                                                                nanoid
+                                                                                        );
+                                                                                    if (
+                                                                                        existingIndex >=
+                                                                                        0
+                                                                                    ) {
+                                                                                        const updatedTasks =
+                                                                                            [
+                                                                                                ...tasksStore.tasks,
+                                                                                            ];
+                                                                                        updatedTasks[
+                                                                                            existingIndex
+                                                                                        ] =
+                                                                                            updatedTask;
+                                                                                        tasksStore.setTasks(
+                                                                                            updatedTasks
+                                                                                        );
+                                                                                    }
                                                                                 }
 
                                                                                 // Refresh timeline to show subtask completion activity

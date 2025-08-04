@@ -5,6 +5,7 @@ import { Note } from './Note';
 
 export interface Project {
     id?: number;
+    nanoid?: string;
     name: string;
     description?: string;
     active: boolean;

@@ -1,4 +1,5 @@
 const { DataTypes } = require('sequelize');
+const { nanoid } = require('nanoid/non-secure');
 
 module.exports = (sequelize) => {
     const Project = sequelize.define(
@@ -8,6 +9,12 @@ module.exports = (sequelize) => {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true,
+            },
+            nanoid: {
+                type: DataTypes.STRING(21),
+                allowNull: false,
+                unique: true,
+                defaultValue: () => nanoid(),
             },
             name: {
                 type: DataTypes.STRING,
