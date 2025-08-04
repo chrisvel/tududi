@@ -437,7 +437,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active'],
+                attributes: ['id', 'name', 'active', 'nanoid'],
                 required: false,
             },
             {
@@ -480,7 +480,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active'],
+                attributes: ['id', 'name', 'active', 'nanoid'],
                 required: false,
             },
             {
@@ -535,7 +535,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active'],
+                attributes: ['id', 'name', 'active', 'nanoid'],
                 required: false,
             },
             {
@@ -602,7 +602,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'active'],
+                    attributes: ['id', 'name', 'active', 'nanoid'],
                     required: false,
                 },
                 {
@@ -645,7 +645,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'active'],
+                    attributes: ['id', 'name', 'active', 'nanoid'],
                     required: false,
                 },
                 {
@@ -699,7 +699,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                     },
                     {
                         model: Project,
-                        attributes: ['id', 'name', 'active'],
+                        attributes: ['id', 'name', 'active', 'nanoid'],
                         required: false,
                     },
                     {
@@ -752,7 +752,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active'],
+                attributes: ['id', 'name', 'active', 'nanoid'],
                 required: false,
             },
             {
