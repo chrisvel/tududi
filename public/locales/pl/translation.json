@@ -111,7 +111,11 @@
     "addToToday": "Dodaj do planu na dzisiaj",
     "removeFromToday": "Usuń z planu na dzisiaj",
     "setInProgress": "Ustaw jako w trakcie",
-    "setNotStarted": "Ustaw jako nie rozpoczęte"
+    "setNotStarted": "Ustaw jako nie rozpoczęte",
+    "showSubtasks": "Pokaż podzadania",
+    "hideSubtasks": "Ukryj podzadania",
+    "edit": "Edytuj zadanie",
+    "delete": "Usuń zadanie"
   },
   "timeline": {
     "activityTimeline": "Oś czasu aktywności",
@@ -134,7 +138,9 @@
       "status": "Status",
       "priority": "Priorytet",
       "dueDate": "Termin",
-      "none": "Brak"
+      "none": "Brak",
+      "recurrenceEndDateChanged": "Data zakończenia powtarzania została zmieniona",
+      "recurrenceEndDate": "Data zakończenia powtarzania"
     },
     "justNow": "Właśnie teraz",
     "minutesAgo": "{{minutes}}m temu",
@@ -464,7 +470,9 @@
     "archived": "Zarchiwizowane",
     "unknown": "Nieznany",
     "telegramConnected": "Telegram połączony i sprawdzanie",
-    "telegramConnectionProblem": "Problem z połączeniem Telegram"
+    "telegramConnectionProblem": "Problem z połączeniem Telegram",
+    "completed": "Zakończone",
+    "waiting": "Oczekiwanie"
   },
   "project": {
     "name": "Nazwa projektu",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Uczyń to bardziej opisowym!",
       "suggestion": "Spróbuj dodać więcej szczegółów, takich jak \"Zadzwoń do dentysty, aby umówić się na wizytę na czyszczenie\" zamiast po prostu \"Zadzwoń do dentysty\""
-    }
+    },
+    "overdueAlert": "To zadanie było w Twoim planie wczoraj i nie zostało ukończone.",
+    "overdueYesterday": "Rozważ nadanie priorytetu temu zadaniu lub podzielenie go na mniejsze kroki.",
+    "overdueMultipleDays": "To zadanie zostało odłożone {{count}} razy.",
+    "content": "Treść",
+    "noNotes": "Nie dodano jeszcze treści",
+    "subtasks": "Podzadania",
+    "noSubtasks": "Brak podzadań",
+    "recentActivity": "Ostatnia aktywność"
   },
   "projects": {
     "loading": "Ładowanie projektów...",

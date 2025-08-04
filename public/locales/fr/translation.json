@@ -111,7 +111,11 @@
     "addToToday": "Ajouter au plan d'aujourd'hui",
     "removeFromToday": "Retirer du plan d'aujourd'hui",
     "setInProgress": "Définir en cours",
-    "setNotStarted": "Définir comme non commencé"
+    "setNotStarted": "Définir comme non commencé",
+    "showSubtasks": "Afficher les sous-tâches",
+    "hideSubtasks": "Masquer les sous-tâches",
+    "edit": "Modifier la tâche",
+    "delete": "Supprimer la tâche"
   },
   "timeline": {
     "activityTimeline": "Chronologie d'Activité",
@@ -134,7 +138,9 @@
       "status": "Statut",
       "priority": "Priorité",
       "dueDate": "Date d'échéance",
-      "none": "Aucun"
+      "none": "Aucun",
+      "recurrenceEndDateChanged": "Date de fin de récurrence modifiée",
+      "recurrenceEndDate": "Date de fin de récurrence"
     },
     "justNow": "À l'instant",
     "minutesAgo": "{{minutes}}m auparavant",
@@ -464,7 +470,9 @@
     "archived": "Archivé",
     "unknown": "Inconnu",
     "telegramConnected": "Telegram connecté et en cours de sondage",
-    "telegramConnectionProblem": "Problème de connexion à Telegram"
+    "telegramConnectionProblem": "Problème de connexion à Telegram",
+    "completed": "Terminé",
+    "waiting": "En attente"
   },
   "project": {
     "name": "Nom du projet",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Rendez-le plus descriptif !",
       "suggestion": "Essayez d'ajouter plus de détails comme \"Appeler le dentiste pour prendre un rendez-vous de nettoyage\" au lieu de simplement \"Appeler le dentiste\""
-    }
+    },
+    "overdueAlert": "Cette tâche était dans votre plan hier et n'a pas été complétée.",
+    "overdueYesterday": "Envisagez de prioriser cette tâche ou de la décomposer en étapes plus petites.",
+    "overdueMultipleDays": "Cette tâche a été reportée {{count}} fois.",
+    "content": "Contenu",
+    "noNotes": "Aucun contenu ajouté pour le moment",
+    "subtasks": "Sous-tâches",
+    "noSubtasks": "Aucune sous-tâche pour le moment",
+    "recentActivity": "Activité récente"
   },
   "projects": {
     "loading": "Chargement des projets...",

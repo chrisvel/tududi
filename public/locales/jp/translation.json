@@ -111,7 +111,11 @@
     "tasksCompleted": "タスク完了",
     "metrics": "メトリクス",
     "setInProgress": "進行中に設定",
-    "setNotStarted": "未開始に設定"
+    "setNotStarted": "未開始に設定",
+    "showSubtasks": "サブタスクを表示",
+    "hideSubtasks": "サブタスクを非表示",
+    "edit": "タスクを編集",
+    "delete": "タスクを削除"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",
@@ -134,7 +138,9 @@
       "status": "ステータス",
       "priority": "優先度",
       "dueDate": "期限",
-      "none": "なし"
+      "none": "なし",
+      "recurrenceEndDateChanged": "繰り返し終了日が変更されました",
+      "recurrenceEndDate": "繰り返し終了日"
     },
     "justNow": "たった今",
     "minutesAgo": "{{minutes}}分前",
@@ -666,7 +672,15 @@
     "updated": "タスク",
     "updatedSuccessfully": "が正常に更新されました！",
     "deleted": "タスク",
-    "deletedSuccessfully": "が正常に削除されました！"
+    "deletedSuccessfully": "が正常に削除されました！",
+    "overdueAlert": "このタスクは昨日の計画に含まれていましたが、完了していません。",
+    "overdueYesterday": "このタスクを優先するか、より小さなステップに分けることを検討してください。",
+    "overdueMultipleDays": "このタスクは{{count}}回延期されています。",
+    "content": "内容",
+    "noNotes": "まだ内容が追加されていません",
+    "subtasks": "サブタスク",
+    "noSubtasks": "まだサブタスクはありません",
+    "recentActivity": "最近の活動"
   },
   "calendar": {
     "month": "月",
@@ -738,7 +752,9 @@
     "archived": "アーカイブ",
     "unknown": "不明",
     "telegramConnected": "Telegramが接続され、ポーリング中",
-    "telegramConnectionProblem": "Telegram接続の問題"
+    "telegramConnectionProblem": "Telegram接続の問題",
+    "completed": "完了",
+    "waiting": "待機中"
   },
   "dateIndicators": {
     "today": "今日",

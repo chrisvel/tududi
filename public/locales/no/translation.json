@@ -111,7 +111,11 @@
     "addToToday": "Legg til i dagens plan",
     "removeFromToday": "Fjern fra dagens plan",
     "setInProgress": "Sett i gang",
-    "setNotStarted": "Sett til ikke startet"
+    "setNotStarted": "Sett til ikke startet",
+    "showSubtasks": "Vis undertasker",
+    "hideSubtasks": "Skjul undertasker",
+    "edit": "Rediger oppgave",
+    "delete": "Slett oppgave"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -134,7 +138,9 @@
       "status": "Status",
       "priority": "Prioritet",
       "dueDate": "Forfallsdato",
-      "none": "Ingen"
+      "none": "Ingen",
+      "recurrenceEndDateChanged": "Endringsdato for gjentakelse endret",
+      "recurrenceEndDate": "Endringsdato for gjentakelse"
     },
     "justNow": "Akkurat nå",
     "minutesAgo": "{{minutes}}m siden",
@@ -464,7 +470,9 @@
     "archived": "Arkivert",
     "unknown": "Ukjent",
     "telegramConnected": "Telegram tilkoblet og henter data",
-    "telegramConnectionProblem": "Telegram tilkoblingsproblem"
+    "telegramConnectionProblem": "Telegram tilkoblingsproblem",
+    "completed": "Fullført",
+    "waiting": "Venter"
   },
   "project": {
     "name": "Prosjektnavn",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Gjør det mer beskrivende!",
       "suggestion": "Prøv å legge til flere detaljer som \"Ring tannlegen for å avtale rengjøringsavtale\" i stedet for bare \"Ring tannlegen\""
-    }
+    },
+    "overdueAlert": "Denne oppgaven var i planen din i går og ble ikke fullført.",
+    "overdueYesterday": "Vurder å prioritere denne oppgaven eller dele den opp i mindre trinn.",
+    "overdueMultipleDays": "Denne oppgaven har blitt utsatt {{count}} ganger.",
+    "content": "Innhold",
+    "noNotes": "Ingen innhold lagt til ennå",
+    "subtasks": "Undertasker",
+    "noSubtasks": "Ingen undertasker ennå",
+    "recentActivity": "Nylig aktivitet"
   },
   "projects": {
     "loading": "Laster prosjekter...",

@@ -111,7 +111,11 @@
     "addToToday": "Adicionar ao plano de hoje",
     "removeFromToday": "Remover do plano de hoje",
     "setInProgress": "Definir como em progresso",
-    "setNotStarted": "Definir como não iniciado"
+    "setNotStarted": "Definir como não iniciado",
+    "showSubtasks": "Mostrar subtarefas",
+    "hideSubtasks": "Ocultar subtarefas",
+    "edit": "Editar tarefa",
+    "delete": "Excluir tarefa"
   },
   "timeline": {
     "activityTimeline": "Linha do Tempo de Atividades",
@@ -134,7 +138,9 @@
       "status": "Status",
       "priority": "Prioridade",
       "dueDate": "Data de vencimento",
-      "none": "Nenhum"
+      "none": "Nenhum",
+      "recurrenceEndDateChanged": "Data de término da recorrência alterada",
+      "recurrenceEndDate": "Data de término da recorrência"
     },
     "justNow": "Agora mesmo",
     "minutesAgo": "{{minutes}}m atrás",
@@ -464,7 +470,9 @@
     "archived": "Arquivado",
     "unknown": "Desconhecido",
     "telegramConnected": "Telegram conectado e recebendo dados",
-    "telegramConnectionProblem": "Problema de conexão com o Telegram"
+    "telegramConnectionProblem": "Problema de conexão com o Telegram",
+    "completed": "Concluído",
+    "waiting": "Aguardando"
   },
   "project": {
     "name": "Nome do Projeto",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Torne-o mais descritivo!",
       "suggestion": "Tente adicionar mais detalhes como \"Ligar para o dentista para agendar a limpeza\" em vez de apenas \"Ligar para o dentista\""
-    }
+    },
+    "overdueAlert": "Esta tarefa estava no seu plano ontem e não foi concluída.",
+    "overdueYesterday": "Considere priorizar esta tarefa ou dividi-la em etapas menores.",
+    "overdueMultipleDays": "Esta tarefa foi adiada {{count}} vezes.",
+    "content": "Conteúdo",
+    "noNotes": "Nenhum conteúdo adicionado ainda",
+    "subtasks": "Subtarefas",
+    "noSubtasks": "Nenhuma subtarefa ainda",
+    "recentActivity": "Atividade Recente"
   },
   "projects": {
     "loading": "Carregando projetos...",

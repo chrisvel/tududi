@@ -306,7 +306,11 @@
     "addToToday": "Προσθήκη στο σημερινό σχέδιο",
     "removeFromToday": "Αφαίρεση από το σημερινό σχέδιο",
     "setInProgress": "Ορισμός ως 'Σε Εξέλιξη'",
-    "setNotStarted": "Ορισμός ως 'Δεν Έχει Ξεκινήσει'"
+    "setNotStarted": "Ορισμός ως 'Δεν Έχει Ξεκινήσει'",
+    "showSubtasks": "Εμφάνιση υποκαθηκόντων",
+    "hideSubtasks": "Απόκρυψη υποκαθηκόντων",
+    "edit": "Επεξεργασία καθήκοντος",
+    "delete": "Διαγραφή καθήκοντος"
   },
   "timeline": {
     "activityTimeline": "Χρονοδιάγραμμα Δραστηριότητας",
@@ -329,7 +333,9 @@
       "status": "Κατάσταση",
       "priority": "Προτεραιότητα",
       "dueDate": "Ημερομηνία λήξης",
-      "none": "Καμία"
+      "none": "Καμία",
+      "recurrenceEndDateChanged": "Η ημερομηνία λήξης επανάληψης άλλαξε",
+      "recurrenceEndDate": "Η ημερομηνία λήξης επανάληψης"
     },
     "justNow": "Μόλις τώρα",
     "minutesAgo": "{{minutes}} λεπτά πριν",
@@ -526,7 +532,9 @@
     "archived": "Αρχειοθετημένο",
     "unknown": "Άγνωστο",
     "telegramConnected": "Το Telegram είναι συνδεδεμένο και αναζητά",
-    "telegramConnectionProblem": "Πρόβλημα σύνδεσης με το Telegram"
+    "telegramConnectionProblem": "Πρόβλημα σύνδεσης με το Telegram",
+    "completed": "Ολοκληρώθηκε",
+    "waiting": "Σε αναμονή"
   },
   "task": {
     "labels": {
@@ -564,7 +572,15 @@
     "updated": "Εργασία",
     "updatedSuccessfully": "ενημερώθηκε επιτυχώς!",
     "deleted": "Εργασία",
-    "deletedSuccessfully": "διαγράφηκε επιτυχώς!"
+    "deletedSuccessfully": "διαγράφηκε επιτυχώς!",
+    "overdueAlert": "Αυτή η εργασία ήταν στο σχέδιο σας χθες και δεν ολοκληρώθηκε.",
+    "overdueYesterday": "Σκεφτείτε να δώσετε προτεραιότητα σε αυτή την εργασία ή να την χωρίσετε σε μικρότερα βήματα.",
+    "overdueMultipleDays": "Αυτή η εργασία έχει αναβληθεί {{count}} φορές.",
+    "content": "Περιεχόμενο",
+    "noNotes": "Δεν έχει προστεθεί περιεχόμενο ακόμα",
+    "subtasks": "Υποεργασίες",
+    "noSubtasks": "Δεν υπάρχουν υποεργασίες ακόμα",
+    "recentActivity": "Πρόσφατη Δραστηριότητα"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",

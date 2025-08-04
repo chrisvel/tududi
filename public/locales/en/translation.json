@@ -111,7 +111,11 @@
     "addToToday": "Add to today plan",
     "removeFromToday": "Remove from today plan",
     "setInProgress": "Set in progress",
-    "setNotStarted": "Set to not started"
+    "setNotStarted": "Set to not started",
+    "showSubtasks": "Show subtasks",
+    "hideSubtasks": "Hide subtasks",
+    "edit": "Edit task",
+    "delete": "Delete task"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",
@@ -621,7 +625,15 @@
     "nameHelper": {
       "title": "Make it more descriptive!",
       "suggestion": "Try adding more details like \"Call dentist to schedule cleaning appointment\" instead of just \"Call dentist\""
-    }
+    },
+    "overdueAlert": "This task was in your plan yesterday and wasn't completed.",
+    "overdueYesterday": "Consider prioritizing this task or breaking it into smaller steps.",
+    "overdueMultipleDays": "This task has been postponed {{count}} times.",
+    "content": "Content",
+    "noNotes": "No content added yet",
+    "subtasks": "Subtasks",
+    "noSubtasks": "No subtasks yet",
+    "recentActivity": "Recent Activity"
   },
   "projects": {
     "loading": "Loading projects...",

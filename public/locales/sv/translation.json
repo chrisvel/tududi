@@ -111,7 +111,11 @@
     "addToToday": "Lägg till i dagens plan",
     "removeFromToday": "Ta bort från dagens plan",
     "setInProgress": "Sätt i pågående",
-    "setNotStarted": "Sätt till ej påbörjad"
+    "setNotStarted": "Sätt till ej påbörjad",
+    "showSubtasks": "Visa deluppgifter",
+    "hideSubtasks": "Dölj deluppgifter",
+    "edit": "Redigera uppgift",
+    "delete": "Ta bort uppgift"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -141,7 +145,9 @@
       "status": "Status",
       "priority": "Prioritet",
       "dueDate": "Förfallodatum",
-      "none": "Inga"
+      "none": "Inga",
+      "recurrenceEndDateChanged": "Återkommande slutdatum ändrat",
+      "recurrenceEndDate": "Återkommande slutdatum"
     }
   },
   "profile": {
@@ -464,7 +470,9 @@
     "archived": "Arkiverad",
     "unknown": "Okänd",
     "telegramConnected": "Telegram ansluten och polling",
-    "telegramConnectionProblem": "Problem med Telegram-anslutning"
+    "telegramConnectionProblem": "Problem med Telegram-anslutning",
+    "completed": "Slutförd",
+    "waiting": "Väntar"
   },
   "project": {
     "name": "Projektets namn",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Gör den mer beskrivande!",
       "suggestion": "Försök att lägga till mer information som \"Ring tandläkaren för att boka tid för rengöring\" istället för bara \"Ring tandläkaren\""
-    }
+    },
+    "overdueAlert": "Denna uppgift var i din plan igår och blev inte slutförd.",
+    "overdueYesterday": "Överväg att prioritera denna uppgift eller dela upp den i mindre steg.",
+    "overdueMultipleDays": "Denna uppgift har blivit uppskjuten {{count}} gånger.",
+    "content": "Innehåll",
+    "noNotes": "Inga anteckningar tillagda än",
+    "subtasks": "Deluppgifter",
+    "noSubtasks": "Inga deluppgifter än",
+    "recentActivity": "Senaste aktivitet"
   },
   "projects": {
     "loading": "Laddar projekt...",

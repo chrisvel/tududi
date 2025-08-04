@@ -111,7 +111,11 @@
     "addToToday": "Tambahkan ke rencana hari ini",
     "removeFromToday": "Hapus dari rencana hari ini",
     "setInProgress": "Tandai sebagai sedang berlangsung",
-    "setNotStarted": "Tandai sebagai belum dimulai"
+    "setNotStarted": "Tandai sebagai belum dimulai",
+    "showSubtasks": "Tampilkan subtugas",
+    "hideSubtasks": "Sembunyikan subtugas",
+    "edit": "Edit tugas",
+    "delete": "Hapus tugas"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",
@@ -134,7 +138,9 @@
       "status": "Status",
       "priority": "Prioritas",
       "dueDate": "Tanggal jatuh tempo",
-      "none": "Tidak ada"
+      "none": "Tidak ada",
+      "recurrenceEndDateChanged": "Tanggal akhir pengulangan telah diubah",
+      "recurrenceEndDate": "Tanggal akhir pengulangan"
     },
     "justNow": "Baru saja",
     "minutesAgo": "{{minutes}}m yang lalu",
@@ -464,7 +470,9 @@
     "archived": "Arsip",
     "unknown": "Tidak Diketahui",
     "telegramConnected": "Telegram terhubung dan memeriksa",
-    "telegramConnectionProblem": "Masalah koneksi Telegram"
+    "telegramConnectionProblem": "Masalah koneksi Telegram",
+    "completed": "Selesai",
+    "waiting": "Menunggu"
   },
   "project": {
     "name": "Nama Proyek",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Buat lebih deskriptif!",
       "suggestion": "Cobalah menambahkan lebih banyak detail seperti \"Hubungi dokter gigi untuk menjadwalkan janji pembersihan\" alih-alih hanya \"Hubungi dokter gigi\""
-    }
+    },
+    "overdueAlert": "Tugas ini ada dalam rencana Anda kemarin dan belum diselesaikan.",
+    "overdueYesterday": "Pertimbangkan untuk memprioritaskan tugas ini atau membaginya menjadi langkah-langkah yang lebih kecil.",
+    "overdueMultipleDays": "Tugas ini telah ditunda {{count}} kali.",
+    "content": "Konten",
+    "noNotes": "Belum ada konten yang ditambahkan",
+    "subtasks": "Subtugas",
+    "noSubtasks": "Belum ada subtugas",
+    "recentActivity": "Aktivitas Terbaru"
   },
   "projects": {
     "loading": "Memuat proyek...",

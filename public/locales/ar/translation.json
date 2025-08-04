@@ -111,7 +111,11 @@
     "addToToday": "إضافة إلى خطة اليوم",
     "removeFromToday": "إزالة من خطة اليوم",
     "setInProgress": "تعيين قيد التنفيذ",
-    "setNotStarted": "تعيين لم يبدأ بعد"
+    "setNotStarted": "تعيين لم يبدأ بعد",
+    "showSubtasks": "عرض المهام الفرعية",
+    "hideSubtasks": "إخفاء المهام الفرعية",
+    "edit": "تعديل المهمة",
+    "delete": "حذف المهمة"
   },
   "timeline": {
     "activityTimeline": "جدول الأنشطة",
@@ -134,7 +138,9 @@
       "status": "الحالة",
       "priority": "الأولوية",
       "dueDate": "تاريخ الاستحقاق",
-      "none": "لا شيء"
+      "none": "لا شيء",
+      "recurrenceEndDateChanged": "تاريخ انتهاء التكرار تم تغييره",
+      "recurrenceEndDate": "تاريخ انتهاء التكرار"
     },
     "justNow": "الآن",
     "minutesAgo": "{{minutes}} دقيقة مضت",
@@ -464,7 +470,9 @@
     "archived": "مؤرشف",
     "unknown": "غير معروف",
     "telegramConnected": "تم الاتصال بتليجرام وجاري الاستطلاع",
-    "telegramConnectionProblem": "مشكلة في اتصال تليجرام"
+    "telegramConnectionProblem": "مشكلة في اتصال تليجرام",
+    "completed": "مكتمل",
+    "waiting": "في الانتظار"
   },
   "project": {
     "name": "اسم المشروع",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "اجعلها أكثر وصفًا!",
       "suggestion": "حاول إضافة المزيد من التفاصيل مثل \"اتصل بطبيب الأسنان لتحديد موعد التنظيف\" بدلاً من \"اتصل بطبيب الأسنان\""
-    }
+    },
+    "overdueAlert": "كانت هذه المهمة في خطتك بالأمس ولم تكتمل.",
+    "overdueYesterday": "فكر في إعطاء أولوية لهذه المهمة أو تقسيمها إلى خطوات أصغر.",
+    "overdueMultipleDays": "تم تأجيل هذه المهمة {{count}} مرات.",
+    "content": "المحتوى",
+    "noNotes": "لم يتم إضافة محتوى بعد",
+    "subtasks": "المهام الفرعية",
+    "noSubtasks": "لا توجد مهام فرعية بعد",
+    "recentActivity": "النشاط الأخير"
   },
   "projects": {
     "loading": "جارٍ تحميل المشاريع...",

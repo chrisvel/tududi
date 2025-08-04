@@ -111,7 +111,11 @@
     "addToToday": "Lisää tänään suunnitelmaan",
     "removeFromToday": "Poista tänään suunnitelmasta",
     "setInProgress": "Aseta käynnissä olevaksi",
-    "setNotStarted": "Aseta aloittamatta"
+    "setNotStarted": "Aseta aloittamatta",
+    "showSubtasks": "Näytä alitehtävät",
+    "hideSubtasks": "Piilota alitehtävät",
+    "edit": "Muokkaa tehtävää",
+    "delete": "Poista tehtävä"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",
@@ -134,7 +138,9 @@
       "status": "Tila",
       "priority": "Prioriteetti",
       "dueDate": "Eräpäivä",
-      "none": "Ei mitään"
+      "none": "Ei mitään",
+      "recurrenceEndDateChanged": "Toistuvuuden päättymispäivämäärä on muuttunut",
+      "recurrenceEndDate": "Toistuvuuden päättymispäivämäärä"
     },
     "justNow": "Juuri nyt",
     "minutesAgo": "{{minutes}}m sitten",
@@ -464,7 +470,9 @@
     "archived": "Arkistoitu",
     "unknown": "Tuntematon",
     "telegramConnected": "Telegram yhdistetty ja kyselyssä",
-    "telegramConnectionProblem": "Telegram-yhteysongelma"
+    "telegramConnectionProblem": "Telegram-yhteysongelma",
+    "completed": "Valmis",
+    "waiting": "Odottaa"
   },
   "project": {
     "name": "Projektin nimi",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Tee siitä kuvaavampi!",
       "suggestion": "Yritä lisätä enemmän yksityiskohtia, kuten \"Soita hammaslääkärille aikatauluttaaksesi puhdistusajan\" sen sijaan, että sanoisit vain \"Soita hammaslääkärille\""
-    }
+    },
+    "overdueAlert": "Tämä tehtävä oli suunnitelmassasi eilen eikä sitä ole suoritettu.",
+    "overdueYesterday": "Harkitse tämän tehtävän priorisoimista tai jakamista pienempiin vaiheisiin.",
+    "overdueMultipleDays": "Tätä tehtävää on siirretty {{count}} kertaa.",
+    "content": "Sisältö",
+    "noNotes": "Ei vielä lisättyä sisältöä",
+    "subtasks": "Ala-tehtävät",
+    "noSubtasks": "Ei vielä ala-tehtäviä",
+    "recentActivity": "Viimeaikainen toiminta"
   },
   "projects": {
     "loading": "Ladataan projekteja...",

@@ -160,11 +160,11 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
                             </p>
                         )}
                     </div>
-                    <div className="flex items-center space-x-3">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                         <button
                             onClick={handleStartTask}
                             disabled={isUpdating}
-                            className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-sm font-medium rounded-md transition-colors"
+                            className="flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-sm font-medium rounded-md transition-colors w-full sm:w-auto"
                         >
                             <PlayIcon className="h-4 w-4 mr-2" />
                             {isUpdating
@@ -175,7 +175,7 @@ const NextTaskSuggestion: React.FC<NextTaskSuggestionProps> = ({
                             <button
                                 onClick={handleGiveMeSomethingElse}
                                 disabled={isUpdating}
-                                className="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-md transition-colors"
+                                className="flex items-center justify-center px-4 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-md transition-colors w-full sm:w-auto"
                             >
                                 <ArrowPathIcon className="h-4 w-4 mr-2" />
                                 {t(

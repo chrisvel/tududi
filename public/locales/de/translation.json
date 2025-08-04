@@ -111,7 +111,11 @@
     "addNewTask": "Neue Aufgabe hinzufügen",
     "metrics": "Metriken",
     "setInProgress": "In Bearbeitung setzen",
-    "setNotStarted": "Auf nicht begonnen setzen"
+    "setNotStarted": "Auf nicht begonnen setzen",
+    "showSubtasks": "Unteraufgaben anzeigen",
+    "hideSubtasks": "Unteraufgaben ausblenden",
+    "edit": "Aufgabe bearbeiten",
+    "delete": "Aufgabe löschen"
   },
   "timeline": {
     "activityTimeline": "Aktivitätsverlauf",
@@ -134,7 +138,9 @@
       "status": "Status",
       "priority": "Priorität",
       "dueDate": "Fälligkeitsdatum",
-      "none": "Keine"
+      "none": "Keine",
+      "recurrenceEndDateChanged": "Das Enddatum der Wiederholung wurde geändert",
+      "recurrenceEndDate": "Enddatum der Wiederholung"
     },
     "justNow": "Gerade eben",
     "minutesAgo": "{{minutes}}m her",
@@ -550,7 +556,15 @@
     "updated": "Aufgabe",
     "updatedSuccessfully": "erfolgreich aktualisiert!",
     "deleted": "Aufgabe",
-    "deletedSuccessfully": "erfolgreich gelöscht!"
+    "deletedSuccessfully": "erfolgreich gelöscht!",
+    "overdueAlert": "Diese Aufgabe war gestern in Ihrem Plan und wurde nicht abgeschlossen.",
+    "overdueYesterday": "Erwägen Sie, diese Aufgabe zu priorisieren oder in kleinere Schritte zu unterteilen.",
+    "overdueMultipleDays": "Diese Aufgabe wurde {{count}} Mal verschoben.",
+    "content": "Inhalt",
+    "noNotes": "Noch kein Inhalt hinzugefügt",
+    "subtasks": "Unteraufgaben",
+    "noSubtasks": "Noch keine Unteraufgaben",
+    "recentActivity": "Aktuelle Aktivitäten"
   },
   "calendar": {
     "month": "Monat",
@@ -674,7 +688,9 @@
     "archived": "Archiviert",
     "unknown": "Unbekannt",
     "telegramConnected": "Telegram verbunden und abfragt",
-    "telegramConnectionProblem": "Telegram-Verbindungsproblem"
+    "telegramConnectionProblem": "Telegram-Verbindungsproblem",
+    "completed": "Abgeschlossen",
+    "waiting": "Warten"
   },
   "dateIndicators": {
     "today": "HEUTE",

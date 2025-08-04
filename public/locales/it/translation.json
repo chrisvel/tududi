@@ -111,7 +111,11 @@
     "addToToday": "Aggiungi al piano di oggi",
     "removeFromToday": "Rimuovi dal piano di oggi",
     "setInProgress": "Imposta in corso",
-    "setNotStarted": "Imposta come non iniziata"
+    "setNotStarted": "Imposta come non iniziata",
+    "showSubtasks": "Mostra sottocompiti",
+    "hideSubtasks": "Nascondi sottocompiti",
+    "edit": "Modifica attività",
+    "delete": "Elimina attività"
   },
   "timeline": {
     "activityTimeline": "Timeline delle Attività",
@@ -134,7 +138,9 @@
       "status": "Stato",
       "priority": "Priorità",
       "dueDate": "Data di scadenza",
-      "none": "Nessuno"
+      "none": "Nessuno",
+      "recurrenceEndDateChanged": "Data di fine ricorrenza cambiata",
+      "recurrenceEndDate": "Data di fine ricorrenza"
     },
     "justNow": "Proprio adesso",
     "minutesAgo": "{{minutes}}m fa",
@@ -464,7 +470,9 @@
     "archived": "Archiviata",
     "unknown": "Sconosciuto",
     "telegramConnected": "Telegram connesso e in polling",
-    "telegramConnectionProblem": "Problema di connessione a Telegram"
+    "telegramConnectionProblem": "Problema di connessione a Telegram",
+    "completed": "Completato",
+    "waiting": "In attesa"
   },
   "project": {
     "name": "Nome Progetto",
@@ -612,7 +620,15 @@
     "nameHelper": {
       "title": "Rendila più descrittiva!",
       "suggestion": "Prova ad aggiungere più dettagli come \"Chiamare il dentista per programmare l'appuntamento per la pulizia\" invece di solo \"Chiamare il dentista\""
-    }
+    },
+    "overdueAlert": "Questo compito era nel tuo piano ieri e non è stato completato.",
+    "overdueYesterday": "Considera di dare priorità a questo compito o di suddividerlo in passaggi più piccoli.",
+    "overdueMultipleDays": "Questo compito è stato posticipato {{count}} volte.",
+    "content": "Contenuto",
+    "noNotes": "Nessun contenuto aggiunto ancora",
+    "subtasks": "Sottocompiti",
+    "noSubtasks": "Nessun sottocompito ancora",
+    "recentActivity": "Attività recente"
   },
   "projects": {
     "loading": "Caricamento progetti...",

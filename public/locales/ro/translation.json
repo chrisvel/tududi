@@ -111,7 +111,11 @@
     "addToToday": "Adaugă la planul de astăzi",
     "removeFromToday": "Elimină din planul de astăzi",
     "setInProgress": "Setează în desfășurare",
-    "setNotStarted": "Setează ca neluat în lucru"
+    "setNotStarted": "Setează ca neluat în lucru",
+    "showSubtasks": "Arată subtask-uri",
+    "hideSubtasks": "Ascunde subtask-uri",
+    "edit": "Editează task-ul",
+    "delete": "Șterge task-ul"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",
@@ -134,7 +138,9 @@
       "status": "Status",
       "priority": "Prioritate",
       "dueDate": "Data limită",
-      "none": "Niciunul"
+      "none": "Niciunul",
+      "recurrenceEndDateChanged": "Data de încheiere a recurenței a fost modificată",
+      "recurrenceEndDate": "Data de încheiere a recurenței"
     },
     "justNow": "Chiar acum",
     "minutesAgo": "{{minutes}}m în urmă",
@@ -464,7 +470,9 @@
     "archived": "Arhivat",
     "unknown": "Necunoscut",
     "telegramConnected": "Telegram conectat și polling",
-    "telegramConnectionProblem": "Problemă de conectare Telegram"
+    "telegramConnectionProblem": "Problemă de conectare Telegram",
+    "completed": "Finalizat",
+    "waiting": "În așteptare"
   },
   "project": {
     "name": "Numele Proiectului",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Faceți-l mai descriptiv!",
       "suggestion": "Încercați să adăugați mai multe detalii, cum ar fi \"Sunați dentistul pentru a programa o întâlnire pentru curățare\" în loc de doar \"Sunați dentistul\""
-    }
+    },
+    "overdueAlert": "Această sarcină a fost în planul tău ieri și nu a fost finalizată.",
+    "overdueYesterday": "Ia în considerare prioritizarea acestei sarcini sau împărțirea ei în pași mai mici.",
+    "overdueMultipleDays": "Această sarcină a fost amânată de {{count}} ori.",
+    "content": "Conținut",
+    "noNotes": "Nu a fost adăugat încă niciun conținut",
+    "subtasks": "Subsarci",
+    "noSubtasks": "Nu există subsarci încă",
+    "recentActivity": "Activitate recentă"
   },
   "projects": {
     "loading": "Se încarcă proiectele...",

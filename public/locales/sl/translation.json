@@ -111,7 +111,11 @@
     "addToToday": "Dodaj v današnji načrt",
     "removeFromToday": "Odstrani iz današnjega načrta",
     "setInProgress": "Nastavi v poteku",
-    "setNotStarted": "Nastavi na ni začeto"
+    "setNotStarted": "Nastavi na ni začeto",
+    "showSubtasks": "Prikaži podnaloge",
+    "hideSubtasks": "Skrij podnaloge",
+    "edit": "Uredi nalogo",
+    "delete": "Izbriši nalogo"
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",
@@ -141,7 +145,9 @@
       "status": "Status",
       "priority": "Prioriteta",
       "dueDate": "Rok",
-      "none": "Nič"
+      "none": "Nič",
+      "recurrenceEndDateChanged": "Datum konca ponavljanja se je spremenil",
+      "recurrenceEndDate": "Datum konca ponavljanja"
     }
   },
   "profile": {
@@ -464,7 +470,9 @@
     "archived": "Arhivirano",
     "unknown": "Neznano",
     "telegramConnected": "Telegram povezan in preverja",
-    "telegramConnectionProblem": "Težava s povezavo Telegram"
+    "telegramConnectionProblem": "Težava s povezavo Telegram",
+    "completed": "Dokončano",
+    "waiting": "Čaka"
   },
   "project": {
     "name": "Ime projekta",
@@ -611,7 +619,15 @@
     "nameHelper": {
       "title": "Naredite ga bolj opisnega!",
       "suggestion": "Poskusite dodati več podrobnosti, kot je \"Pokličite zobozdravnika, da se dogovorite za termin čiščenja\" namesto samo \"Pokličite zobozdravnika\""
-    }
+    },
+    "overdueAlert": "Ta naloga je bila v vašem načrtu včeraj in ni bila dokončana.",
+    "overdueYesterday": "Razmislite o prioriteti te naloge ali jo razdelite na manjše korake.",
+    "overdueMultipleDays": "Ta naloga je bila prestavljena {{count}}-krat.",
+    "content": "Vsebina",
+    "noNotes": "Še ni dodane vsebine",
+    "subtasks": "Podnaloge",
+    "noSubtasks": "Še ni podnalog",
+    "recentActivity": "Nedavna dejavnost"
   },
   "projects": {
     "loading": "Nalagam projekte...",
