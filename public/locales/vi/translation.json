@@ -627,7 +627,8 @@
     "noNotes": "Chưa có nội dung nào được thêm vào",
     "subtasks": "Công việc con",
     "noSubtasks": "Chưa có công việc con nào",
-    "recentActivity": "Hoạt động gần đây"
+    "recentActivity": "Hoạt động gần đây",
+    "noActivityYet": "Chưa có hoạt động nào"
   },
   "projects": {
     "loading": "Đang tải dự án...",

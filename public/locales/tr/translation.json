@@ -627,7 +627,8 @@
     "noNotes": "Henüz içerik eklenmedi",
     "subtasks": "Alt görevler",
     "noSubtasks": "Henüz alt görev yok",
-    "recentActivity": "Son Aktivite"
+    "recentActivity": "Son Aktivite",
+    "noActivityYet": "Henüz hiçbir etkinlik yok"
   },
   "projects": {
     "loading": "Projeler yükleniyor...",

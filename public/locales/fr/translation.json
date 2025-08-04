@@ -627,7 +627,8 @@
     "noNotes": "Aucun contenu ajouté pour le moment",
     "subtasks": "Sous-tâches",
     "noSubtasks": "Aucune sous-tâche pour le moment",
-    "recentActivity": "Activité récente"
+    "recentActivity": "Activité récente",
+    "noActivityYet": "Aucune activité pour le moment"
   },
   "projects": {
     "loading": "Chargement des projets...",

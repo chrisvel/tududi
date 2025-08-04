@@ -627,7 +627,8 @@
     "noNotes": "Ingen innhold lagt til ennå",
     "subtasks": "Undertasker",
     "noSubtasks": "Ingen undertasker ennå",
-    "recentActivity": "Nylig aktivitet"
+    "recentActivity": "Nylig aktivitet",
+    "noActivityYet": "Ingen aktivitet ennå"
   },
   "projects": {
     "loading": "Laster prosjekter...",

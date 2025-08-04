@@ -564,7 +564,8 @@
     "noNotes": "Noch kein Inhalt hinzugefügt",
     "subtasks": "Unteraufgaben",
     "noSubtasks": "Noch keine Unteraufgaben",
-    "recentActivity": "Aktuelle Aktivitäten"
+    "recentActivity": "Aktuelle Aktivitäten",
+    "noActivityYet": "Noch keine Aktivität"
   },
   "calendar": {
     "month": "Monat",

@@ -627,7 +627,8 @@
     "noNotes": "لم يتم إضافة محتوى بعد",
     "subtasks": "المهام الفرعية",
     "noSubtasks": "لا توجد مهام فرعية بعد",
-    "recentActivity": "النشاط الأخير"
+    "recentActivity": "النشاط الأخير",
+    "noActivityYet": "لا توجد نشاطات بعد"
   },
   "projects": {
     "loading": "جارٍ تحميل المشاريع...",

@@ -628,7 +628,8 @@
     "noNotes": "Nessun contenuto aggiunto ancora",
     "subtasks": "Sottocompiti",
     "noSubtasks": "Nessun sottocompito ancora",
-    "recentActivity": "Attività recente"
+    "recentActivity": "Attività recente",
+    "noActivityYet": "Nessuna attività ancora"
   },
   "projects": {
     "loading": "Caricamento progetti...",

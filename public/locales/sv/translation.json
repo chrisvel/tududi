@@ -627,7 +627,8 @@
     "noNotes": "Inga anteckningar tillagda än",
     "subtasks": "Deluppgifter",
     "noSubtasks": "Inga deluppgifter än",
-    "recentActivity": "Senaste aktivitet"
+    "recentActivity": "Senaste aktivitet",
+    "noActivityYet": "Ingen aktivitet än"
   },
   "projects": {
     "loading": "Laddar projekt...",

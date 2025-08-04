@@ -627,7 +627,8 @@
     "noNotes": "Ei vielä lisättyä sisältöä",
     "subtasks": "Ala-tehtävät",
     "noSubtasks": "Ei vielä ala-tehtäviä",
-    "recentActivity": "Viimeaikainen toiminta"
+    "recentActivity": "Viimeaikainen toiminta",
+    "noActivityYet": "Ei vielä toimintaa"
   },
   "projects": {
     "loading": "Ladataan projekteja...",

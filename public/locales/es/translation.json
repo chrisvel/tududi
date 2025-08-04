@@ -580,7 +580,8 @@
     "noNotes": "No se ha añadido contenido aún",
     "subtasks": "Subtareas",
     "noSubtasks": "No hay subtareas aún",
-    "recentActivity": "Actividad Reciente"
+    "recentActivity": "Actividad Reciente",
+    "noActivityYet": "No hay actividad aún"
   },
   "dateIndicators": {
     "today": "HOY",
