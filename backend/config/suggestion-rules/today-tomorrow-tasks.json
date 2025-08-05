@@ -1,0 +1,29 @@
+{
+    "id": "specific_time_today_tomorrow",
+    "name": "Today/Tomorrow Tasks → Due Date",
+    "description": "When text mentions today or tomorrow, set specific due dates",
+    "priority": 280,
+    "examples": [
+        "Call dentist today +Health",
+        "Submit proposal tomorrow +Sales",
+        "Finish report by tomorrow +Work",
+        "Schedule meeting for today +Management"
+    ],
+    "conditions": {
+        "and": [
+            {
+                "type": "contains_keywords",
+                "value": ["today", "tomorrow"]
+            },
+            { "type": "starts_with_verb", "value": true }
+        ]
+    },
+    "action": {
+        "suggested_type": "task",
+        "suggested_reason": "time_specific",
+        "suggested_priority": "medium",
+        "suggested_due_date": {
+            "type": "extracted"
+        }
+    }
+}

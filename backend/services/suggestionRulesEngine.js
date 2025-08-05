@@ -6,6 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const InboxProcessingService = require('./inboxProcessingService');
+const suggestionRulesConfig = require('../config/suggestion-rules');
 
 class SuggestionRulesEngine {
     constructor() {
@@ -14,25 +15,23 @@ class SuggestionRulesEngine {
     }
 
     /**
-     * Load rules from configuration file
+     * Load rules from individual JSON files
      */
     loadRules() {
         try {
-            const rulesPath = path.join(
-                __dirname,
-                '../config/suggestion-rules.json'
-            );
-            const rulesData = fs.readFileSync(rulesPath, 'utf8');
-            const config = JSON.parse(rulesData);
-
-            if (!config.rules || !Array.isArray(config.rules)) {
+            if (
+                !suggestionRulesConfig.rules ||
+                !Array.isArray(suggestionRulesConfig.rules)
+            ) {
                 throw new Error(
                     'Invalid rules configuration: rules property must be an array'
                 );
             }
 
-            this.rules = config.rules.sort((a, b) => b.priority - a.priority); // Higher priority first
-            console.log(`Loaded ${this.rules.length} suggestion rules`);
+            this.rules = suggestionRulesConfig.rules; // Already sorted by priority in loadSuggestionRules
+            console.log(
+                `Loaded ${this.rules.length} suggestion rules from individual files`
+            );
         } catch (error) {
             console.error('Failed to load suggestion rules:', error);
             this.rules = [];
@@ -40,10 +39,17 @@ class SuggestionRulesEngine {
     }
 
     /**
-     * Reload rules from configuration file (for hot reloading)
+     * Reload rules from individual files (for hot reloading)
      */
     reloadRules() {
-        this.loadRules();
+        // Clear the require cache for the suggestion rules module
+        delete require.cache[require.resolve('../config/suggestion-rules')];
+        // Re-require the module to get fresh data
+        const freshConfig = require('../config/suggestion-rules');
+        this.rules = freshConfig.rules;
+        console.log(
+            `Reloaded ${this.rules.length} suggestion rules from individual files`
+        );
     }
 
     /**
@@ -279,7 +285,6 @@ class SuggestionRulesEngine {
             rule_id: primaryRule.id,
             rule_name: primaryRule.name,
         };
-
 
         // Combine suggestions from all matching rules
         const allSuggestedTags = [];

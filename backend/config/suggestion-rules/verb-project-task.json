@@ -1,0 +1,21 @@
+{
+    "id": "verb_with_project_task",
+    "name": "Verb + Project → Task",
+    "description": "When text starts with a verb and has a project, suggest creating a task",
+    "priority": 100,
+    "examples": [
+        "Call the doctor +Health",
+        "Review quarterly reports +Business",
+        "Update website content +Marketing"
+    ],
+    "conditions": {
+        "and": [
+            { "type": "has_project", "value": true },
+            { "type": "starts_with_verb", "value": true }
+        ]
+    },
+    "action": {
+        "suggested_type": "task",
+        "suggested_reason": "verb_detected"
+    }
+}

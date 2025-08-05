@@ -298,63 +298,6 @@ const containsUrl = (text) => {
 };
 
 /**
- * Check if text should be treated as long content
- * @param {string} text - Text to check
- * @returns {boolean} True if text is considered long
- */
-const isLongText = (text) => {
-    if (!text) return false;
-
-    const trimmed = text.trim();
-
-    // Consider it long if:
-    // 1. More than 100 characters
-    // 2. Contains multiple sentences (2+ periods)
-    // 3. Contains line breaks
-    // 4. Contains more than 15 words
-
-    const charCount = trimmed.length;
-    const sentenceCount = (trimmed.match(/[.!?]+/g) || []).length;
-    const hasLineBreaks = /[\r\n]/.test(trimmed);
-    const wordCount = trimmed.split(/\s+/).length;
-
-    return (
-        charCount > 100 ||
-        sentenceCount >= 2 ||
-        hasLineBreaks ||
-        wordCount > 15
-    );
-};
-
-/**
- * Check if text contains code snippets or programming syntax
- * @param {string} text - Text to check
- * @returns {boolean} True if text contains code patterns
- */
-const containsCode = (text) => {
-    if (!text || typeof text !== 'string') {
-        return false;
-    }
-    
-    const trimmed = text.trim();
-    
-    // Strong code indicators that are unlikely to be in regular text
-    const strongCodePatterns = [
-        /```[\s\S]*?```/,  // Code blocks
-        /\b(function|const|let|var)\s+\w+\s*[=(]/,  // Variable/function declarations
-        /\w+\s*\([^)]*\)\s*\{/,  // Function calls with braces
-        /console\.(log|error|warn|info)/,  // Console methods
-        /\b(SELECT|INSERT|UPDATE|DELETE)\s+.*FROM\b/i,  // SQL statements
-        /^(git|npm|yarn|docker)\s+\w+/m,  // Command line tools
-        /\/\/.*\n.*[{}();]/,  // Comments followed by code-like syntax
-        /\{[^}]*;[^}]*\}/,  // Code blocks with semicolons inside
-        /<[^>]+>/,  // HTML tags
-    ];
-    
-    return strongCodePatterns.some(pattern => pattern.test(trimmed));
-};
-
-/**
  * Generate suggestion for an inbox item using rules engine
  * @param {string} content - Original content
  * @param {string[]} tags - Parsed tags
@@ -416,22 +359,22 @@ const processInboxItem = (content) => {
         parsed_priority: priority,
         cleaned_content: cleanedContent,
         suggested_type: suggestion.type,
-        suggested_reason: suggestion.reason,
+        suggested_reason: suggestion.reason
     };
-
+    
     // Add enhanced metadata from suggestion if available
     if (suggestion.priority) {
         result.suggested_priority = suggestion.priority;
     }
-
+    
     if (suggestion.tags && Array.isArray(suggestion.tags)) {
         result.suggested_tags = suggestion.tags;
     }
-
+    
     if (suggestion.due_date) {
         result.suggested_due_date = suggestion.due_date;
     }
-
+    
     return result;
 };
 
@@ -443,8 +386,6 @@ module.exports = {
     isActionVerb,
     startsWithVerb,
     containsUrl,
-    containsCode,
-    isLongText,
 
     // Parsing functions
     parseHashtags,

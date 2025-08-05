@@ -28,29 +28,32 @@ const isLongText = (text: string, threshold: number = 150): boolean => {
 };
 
 // Helper function to generate title from content
-const generateTitleFromContent = (content: string, maxLength: number = 80): string => {
+const generateTitleFromContent = (
+    content: string,
+    maxLength: number = 80
+): string => {
     const cleanText = content.trim();
-    
+
     // If text is short enough, use it as is
     if (cleanText.length <= maxLength) {
         return cleanText;
     }
-    
+
     // For long text, try to find a natural break point
     const title = cleanText.substring(0, maxLength);
-    
+
     // Try to break at sentence end
     const sentenceEnd = title.lastIndexOf('. ');
     if (sentenceEnd > maxLength * 0.5) {
         return title.substring(0, sentenceEnd + 1).trim();
     }
-    
+
     // Try to break at word boundary
     const lastSpace = title.lastIndexOf(' ');
     if (lastSpace > maxLength * 0.7) {
         return title.substring(0, lastSpace).trim() + '...';
     }
-    
+
     // Fallback: truncate with ellipsis
     return title.trim() + '...';
 };
@@ -60,8 +63,10 @@ export const createInboxItem = async (
     source?: string
 ): Promise<InboxItem> => {
     // Generate title for long text
-    const title = isLongText(content) ? generateTitleFromContent(content) : undefined;
-    
+    const title = isLongText(content)
+        ? generateTitleFromContent(content)
+        : undefined;
+
     const body: any = { content };
     if (source) {
         body.source = source;
@@ -89,8 +94,10 @@ export const updateInboxItem = async (
     content: string
 ): Promise<InboxItem> => {
     // Generate title for long text updates
-    const title = isLongText(content) ? generateTitleFromContent(content) : undefined;
-    
+    const title = isLongText(content)
+        ? generateTitleFromContent(content)
+        : undefined;
+
     const body: any = { content };
     if (title) {
         body.title = title;

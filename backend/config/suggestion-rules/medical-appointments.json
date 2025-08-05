@@ -1,0 +1,34 @@
+{
+    "id": "medical_appointment",
+    "name": "Medical Appointments → Medium Priority",
+    "description": "Medical-related tasks get medium priority and health tag",
+    "priority": 200,
+    "examples": [
+        "Doctor appointment next week",
+        "Call dentist to schedule cleaning",
+        "Schedule medical checkup +Health",
+        "Visit clinic for blood test"
+    ],
+    "conditions": {
+        "and": [
+            {
+                "type": "contains_keywords",
+                "value": [
+                    "doctor",
+                    "dentist",
+                    "medical",
+                    "appointment",
+                    "checkup",
+                    "clinic",
+                    "hospital"
+                ]
+            }
+        ]
+    },
+    "action": {
+        "suggested_type": "task",
+        "suggested_reason": "medical_appointment",
+        "suggested_priority": "medium",
+        "suggested_tags": ["health"]
+    }
+}

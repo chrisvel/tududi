@@ -617,7 +617,6 @@ const InboxItems: React.FC = () => {
                                 await handleProcessItem(itemToEdit);
                             }
                         }}
-                        projects={projects}
                     />
                 )}
             </div>

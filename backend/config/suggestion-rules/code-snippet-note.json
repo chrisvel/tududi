@@ -1,0 +1,21 @@
+{
+    "id": "code_snippet_note",
+    "name": "Code Snippet → Code Note",
+    "description": "When text contains code patterns, suggest creating a note with code tag",
+    "priority": 250,
+    "examples": [
+        "// Convert hashtags to Tag objects const hashtagTags = uniqueTagNames.map((tagName) => { return existingTag || { name: tagName }; });",
+        "SELECT * FROM users WHERE active = 1;",
+        "def process_data(data): return data.filter(lambda x: x.valid)",
+        "git add . && git commit -m \"Update feature\"",
+        ".button { background-color: #007bff; color: white; }"
+    ],
+    "conditions": {
+        "and": [{ "type": "contains_code", "value": true }]
+    },
+    "action": {
+        "suggested_type": "note",
+        "suggested_reason": "code_snippet_detected",
+        "suggested_tags": ["code"]
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "id": "url_with_project_note",
+    "name": "URL + Project → Bookmark Note",
+    "description": "When text contains a URL and has a project, suggest creating a bookmark note",
+    "priority": 200,
+    "examples": [
+        "https://docs.react.dev/learn +Development",
+        "https://example.com/api-docs +\"Backend API\"",
+        "Useful tutorial: https://youtube.com/watch?v=abc123 +Learning"
+    ],
+    "conditions": {
+        "and": [
+            { "type": "has_project", "value": true },
+            { "type": "contains_url", "value": true }
+        ]
+    },
+    "action": {
+        "suggested_type": "note",
+        "suggested_reason": "url_detected"
+    }
+}

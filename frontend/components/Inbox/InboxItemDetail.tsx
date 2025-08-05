@@ -56,17 +56,19 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         suggested_tags?: string[];
         suggested_due_date?: string;
     } | null>(null);
-    const [removedSuggestedTags, setRemovedSuggestedTags] = useState<string[]>([]);
+    const [removedSuggestedTags, setRemovedSuggestedTags] = useState<string[]>(
+        []
+    );
 
     // Helper function to parse hashtags from text (consecutive groups anywhere)
     const parseHashtags = (text: string): string[] => {
         const trimmedText = text.trim();
         const matches: string[] = [];
-        
+
         // Split text into words
         const words = trimmedText.split(/\s+/);
         if (words.length === 0) return matches;
-        
+
         // Find all consecutive groups of tags/projects
         let i = 0;
         while (i < words.length) {
@@ -74,27 +76,35 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             if (words[i].startsWith('#') || words[i].startsWith('+')) {
                 // Found start of a group, collect all consecutive tags/projects
                 let groupEnd = i;
-                while (groupEnd < words.length && (words[groupEnd].startsWith('#') || words[groupEnd].startsWith('+'))) {
+                while (
+                    groupEnd < words.length &&
+                    (words[groupEnd].startsWith('#') ||
+                        words[groupEnd].startsWith('+'))
+                ) {
                     groupEnd++;
                 }
-                
+
                 // Process all hashtags in this group
                 for (let j = i; j < groupEnd; j++) {
                     if (words[j].startsWith('#')) {
                         const tagName = words[j].substring(1);
-                        if (tagName && /^[a-zA-Z0-9_-]+$/.test(tagName) && !matches.includes(tagName)) {
+                        if (
+                            tagName &&
+                            /^[a-zA-Z0-9_-]+$/.test(tagName) &&
+                            !matches.includes(tagName)
+                        ) {
                             matches.push(tagName);
                         }
                     }
                 }
-                
+
                 // Skip to end of this group
                 i = groupEnd;
             } else {
                 i++;
             }
         }
-        
+
         return matches;
     };
 
@@ -102,10 +112,10 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const parseProjectRefs = (text: string): string[] => {
         const trimmedText = text.trim();
         const matches: string[] = [];
-        
+
         // Tokenize the text handling quoted strings properly
         const tokens = tokenizeText(trimmedText);
-        
+
         // Find consecutive groups of tags/projects
         let i = 0;
         while (i < tokens.length) {
@@ -113,47 +123,54 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
                 // Found start of a group, collect all consecutive tags/projects
                 let groupEnd = i;
-                while (groupEnd < tokens.length && (tokens[groupEnd].startsWith('#') || tokens[groupEnd].startsWith('+'))) {
+                while (
+                    groupEnd < tokens.length &&
+                    (tokens[groupEnd].startsWith('#') ||
+                        tokens[groupEnd].startsWith('+'))
+                ) {
                     groupEnd++;
                 }
-                
+
                 // Process all project references in this group
                 for (let j = i; j < groupEnd; j++) {
                     if (tokens[j].startsWith('+')) {
                         let projectName = tokens[j].substring(1);
-                        
+
                         // Handle quoted project names
-                        if (projectName.startsWith('"') && projectName.endsWith('"')) {
+                        if (
+                            projectName.startsWith('"') &&
+                            projectName.endsWith('"')
+                        ) {
                             projectName = projectName.slice(1, -1);
                         }
-                        
+
                         if (projectName && !matches.includes(projectName)) {
                             matches.push(projectName);
                         }
                     }
                 }
-                
+
                 // Skip to end of this group
                 i = groupEnd;
             } else {
                 i++;
             }
         }
-        
+
         return matches;
     };
-    
+
     // Helper function to tokenize text handling quoted strings
     const tokenizeText = (text: string): string[] => {
         const tokens: string[] = [];
         let currentToken = '';
         let inQuotes = false;
         let i = 0;
-        
+
         while (i < text.length) {
             const char = text[i];
-            
-            if (char === '"' && (i === 0 || text[i-1] === '+')) {
+
+            if (char === '"' && (i === 0 || text[i - 1] === '+')) {
                 // Start of a quoted string after +
                 inQuotes = true;
                 currentToken += char;
@@ -173,12 +190,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             }
             i++;
         }
-        
+
         // Add final token
         if (currentToken) {
             tokens.push(currentToken);
         }
-        
+
         return tokens;
     };
 
@@ -187,13 +204,16 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         const trimmedText = text.trim();
         const tokens = tokenizeText(trimmedText);
         const cleanedTokens: string[] = [];
-        
+
         let i = 0;
         while (i < tokens.length) {
             // Check if current token starts a tag/project group
             if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
                 // Skip this entire consecutive group
-                while (i < tokens.length && (tokens[i].startsWith('#') || tokens[i].startsWith('+'))) {
+                while (
+                    i < tokens.length &&
+                    (tokens[i].startsWith('#') || tokens[i].startsWith('+'))
+                ) {
                     i++;
                 }
             } else {
@@ -202,7 +222,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 i++;
             }
         }
-        
+
         return cleanedTokens.join(' ').trim();
     };
 
@@ -211,13 +231,13 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         const trimmedText = text.trim();
         const priorityRegex = /!(?:high|medium|low)\b/gi;
         const matches = trimmedText.match(priorityRegex);
-        
+
         if (matches && matches.length > 0) {
             // Return the last priority found (in case of multiple)
             const lastMatch = matches[matches.length - 1];
             return lastMatch.substring(1).toLowerCase(); // Remove ! and convert to lowercase
         }
-        
+
         return null;
     };
 
@@ -225,43 +245,53 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const parseDueDate = (text: string): string | null => {
         const trimmedText = text.trim().toLowerCase();
         const now = new Date();
-        
+
         // Check for "today"
         if (trimmedText.includes('today')) {
             return now.toISOString().split('T')[0];
         }
-        
+
         // Check for "tomorrow"
         if (trimmedText.includes('tomorrow')) {
             const tomorrow = new Date(now);
             tomorrow.setDate(tomorrow.getDate() + 1);
             return tomorrow.toISOString().split('T')[0];
         }
-        
+
         // Check for "by [day]" patterns
-        const dayMatches = trimmedText.match(/(by|next)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/);
+        const dayMatches = trimmedText.match(
+            /(by|next)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/
+        );
         if (dayMatches) {
             const dayName = dayMatches[2];
             const targetDay = getNextWeekday(dayName);
             return targetDay.toISOString().split('T')[0];
         }
-        
+
         return null;
     };
 
     // Helper function to get next occurrence of a weekday
     const getNextWeekday = (dayName: string): Date => {
-        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const days = [
+            'sunday',
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+        ];
         const targetDay = days.indexOf(dayName.toLowerCase());
-        
+
         const now = new Date();
         const currentDay = now.getDay();
-        
+
         let daysToAdd = targetDay - currentDay;
         if (daysToAdd <= 0) {
             daysToAdd += 7; // Next week
         }
-        
+
         const result = new Date(now);
         result.setDate(result.getDate() + daysToAdd);
         return result;
@@ -270,14 +300,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     // Helper function to get filtered suggested tags (excluding user-removed ones)
     const getFilteredSuggestedTags = (): string[] => {
         if (!analysisResult?.suggested_tags) return [];
-        return analysisResult.suggested_tags.filter(tag => 
-            !removedSuggestedTags.includes(tag.toLowerCase())
+        return analysisResult.suggested_tags.filter(
+            (tag) => !removedSuggestedTags.includes(tag.toLowerCase())
         );
     };
 
     // Helper function to remove a suggested tag
     const removeSuggestedTag = (tagName: string) => {
-        setRemovedSuggestedTags(prev => [...prev, tagName.toLowerCase()]);
+        setRemovedSuggestedTags((prev) => [...prev, tagName.toLowerCase()]);
     };
 
     // Analyze the inbox item content for intelligent suggestions
@@ -315,9 +345,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const cleanedContent = cleanTextFromTagsAndProjects(item.content);
     const LONG_TEXT_THRESHOLD = 150; // Characters threshold for considering text as "long"
     const isLongText = item.content.trim().length > LONG_TEXT_THRESHOLD;
-    
-
-
 
     const handleConvertToTask = async () => {
         try {
@@ -337,14 +364,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             }
 
             // Combine explicit tags with filtered suggested tags from analysis
-            const allTagNames = [
-                ...hashtags,
-                ...getFilteredSuggestedTags()
-            ];
-            
+            const allTagNames = [...hashtags, ...getFilteredSuggestedTags()];
+
             // Remove duplicates (case-insensitive)
-            const uniqueTagNames = allTagNames.filter((tagName, index, array) => 
-                array.findIndex(t => t.toLowerCase() === tagName.toLowerCase()) === index
+            const uniqueTagNames = allTagNames.filter(
+                (tagName, index, array) =>
+                    array.findIndex(
+                        (t) => t.toLowerCase() === tagName.toLowerCase()
+                    ) === index
             );
 
             // Convert to Tag objects
@@ -359,14 +386,15 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             let projectId = undefined;
             const allProjectRefs = [
                 ...projectRefs,
-                ...(analysisResult?.parsed_projects || [])
+                ...(analysisResult?.parsed_projects || []),
             ];
-            
+
             if (allProjectRefs.length > 0) {
                 // Look for an existing project with the first project reference name
                 const projectName = allProjectRefs[0];
                 const matchingProject = projects.find(
-                    (project) => project.name.toLowerCase() === projectName.toLowerCase()
+                    (project) =>
+                        project.name.toLowerCase() === projectName.toLowerCase()
                 );
                 if (matchingProject) {
                     projectId = matchingProject.id;
@@ -375,10 +403,16 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
             // Get priority from analysis or parsed text or default to medium
             const parsedPriority = parsePriority(item.content);
-            const finalPriority = analysisResult?.parsed_priority || analysisResult?.suggested_priority || parsedPriority || 'medium';
+            const finalPriority =
+                analysisResult?.parsed_priority ||
+                analysisResult?.suggested_priority ||
+                parsedPriority ||
+                'medium';
 
             // Get due date from analysis
-            const dueDate = analysisResult?.suggested_due_date || parseDueDate(item.content);
+            const dueDate =
+                analysisResult?.suggested_due_date ||
+                parseDueDate(item.content);
 
             const newTask: Task = {
                 name: cleanedContent || item.content,
@@ -397,11 +431,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             }
         } catch (error) {
             console.error('Error analyzing inbox item:', error);
-            
+
             // Fallback to basic conversion if analysis fails
             const taskTags = hashtags.map((hashtagName) => {
                 const existingTag = tags.find(
-                    (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
+                    (tag) =>
+                        tag.name.toLowerCase() === hashtagName.toLowerCase()
                 );
                 return existingTag || { name: hashtagName };
             });
@@ -410,7 +445,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             if (projectRefs.length > 0) {
                 const projectName = projectRefs[0];
                 const matchingProject = projects.find(
-                    (project) => project.name.toLowerCase() === projectName.toLowerCase()
+                    (project) =>
+                        project.name.toLowerCase() === projectName.toLowerCase()
                 );
                 if (matchingProject) {
                     projectId = matchingProject.id;
@@ -420,7 +456,11 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             const newTask: Task = {
                 name: cleanedContent || item.content,
                 status: 'not_started',
-                priority: parsePriority(item.content) as 'low' | 'medium' | 'high' || 'medium',
+                priority:
+                    (parsePriority(item.content) as
+                        | 'low'
+                        | 'medium'
+                        | 'high') || 'medium',
                 tags: taskTags,
                 project_id: projectId,
                 due_date: parseDueDate(item.content) || undefined,
@@ -526,14 +566,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         }
 
         // Combine explicit tags with filtered suggested tags from analysis
-        const allTagNames = [
-            ...hashtags,
-            ...getFilteredSuggestedTags()
-        ];
-        
+        const allTagNames = [...hashtags, ...getFilteredSuggestedTags()];
+
         // Remove duplicates (case-insensitive)
-        const uniqueTagNames = allTagNames.filter((tagName, index, array) => 
-            array.findIndex(t => t.toLowerCase() === tagName.toLowerCase()) === index
+        const uniqueTagNames = allTagNames.filter(
+            (tagName, index, array) =>
+                array.findIndex(
+                    (t) => t.toLowerCase() === tagName.toLowerCase()
+                ) === index
         );
 
         // Convert hashtags to Tag objects
@@ -550,34 +590,35 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         const tagObjects = [...hashtagTags, ...bookmarkTag];
 
         // Use cleaned content for note title if no URL title was extracted
-        const finalTitle = title === content ? (cleanedContent || item.content) : title;
+        const finalTitle =
+            title === content ? cleanedContent || item.content : title;
         const finalContent = cleanedContent || item.content;
-        
+
         // Find the project to assign (use first project reference if any)
         let projectId = undefined;
         const allProjectRefs = [
             ...projectRefs,
-            ...(analysisResult?.parsed_projects || [])
+            ...(analysisResult?.parsed_projects || []),
         ];
-        
+
         if (allProjectRefs.length > 0) {
             // Look for an existing project with the first project reference name
             const projectName = allProjectRefs[0];
             const matchingProject = projects.find(
-                (project) => project.name.toLowerCase() === projectName.toLowerCase()
+                (project) =>
+                    project.name.toLowerCase() === projectName.toLowerCase()
             );
             if (matchingProject) {
                 projectId = matchingProject.id;
             }
         }
-        
+
         const newNote: Note = {
             title: finalTitle,
             content: finalContent,
             tags: tagObjects,
             project_id: projectId,
         };
-        
 
         if (item.id !== undefined) {
             openNoteModal(newNote, item.id);
@@ -621,24 +662,33 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                         // Combine explicit and filtered suggested tags
                         const allTags = [
                             ...hashtags,
-                            ...getFilteredSuggestedTags()
+                            ...getFilteredSuggestedTags(),
                         ];
                         const uniqueTags = [...new Set(allTags)]; // Remove duplicates
 
                         // Combine explicit and suggested projects
                         const allProjects = [
                             ...projectRefs,
-                            ...(analysisResult?.parsed_projects || [])
+                            ...(analysisResult?.parsed_projects || []),
                         ];
                         const uniqueProjects = [...new Set(allProjects)]; // Remove duplicates
 
                         // Get priority
-                        const priority = analysisResult?.parsed_priority || analysisResult?.suggested_priority || parsePriority(item.content);
-                        
-                        // Get due date
-                        const dueDate = analysisResult?.suggested_due_date || parseDueDate(item.content);
+                        const priority =
+                            analysisResult?.parsed_priority ||
+                            analysisResult?.suggested_priority ||
+                            parsePriority(item.content);
 
-                        const hasAnyMetadata = uniqueTags.length > 0 || uniqueProjects.length > 0 || priority || dueDate;
+                        // Get due date
+                        const dueDate =
+                            analysisResult?.suggested_due_date ||
+                            parseDueDate(item.content);
+
+                        const hasAnyMetadata =
+                            uniqueTags.length > 0 ||
+                            uniqueProjects.length > 0 ||
+                            priority ||
+                            dueDate;
 
                         return hasAnyMetadata ? (
                             <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
@@ -649,34 +699,46 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                         <span>{uniqueProjects.join(', ')}</span>
                                     </div>
                                 )}
-                                
+
                                 {/* Add spacing */}
-                                {uniqueProjects.length > 0 && (uniqueTags.length > 0 || priority || dueDate) && (
-                                    <span className="mx-1">•</span>
-                                )}
-                                
+                                {uniqueProjects.length > 0 &&
+                                    (uniqueTags.length > 0 ||
+                                        priority ||
+                                        dueDate) && (
+                                        <span className="mx-1">•</span>
+                                    )}
+
                                 {/* Tags display */}
                                 {uniqueTags.length > 0 && (
                                     <div className="flex items-center">
                                         <TagIcon className="h-3 w-3 mr-1" />
                                         <div className="flex flex-wrap gap-1">
                                             {uniqueTags.map((tag) => {
-                                                const isExplicit = hashtags.includes(tag);
-                                                const isSuggested = !isExplicit && analysisResult?.suggested_tags?.includes(tag);
-                                                
+                                                const isExplicit =
+                                                    hashtags.includes(tag);
+                                                const isSuggested =
+                                                    !isExplicit &&
+                                                    analysisResult?.suggested_tags?.includes(
+                                                        tag
+                                                    );
+
                                                 return (
-                                                    <span 
+                                                    <span
                                                         key={tag}
                                                         className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                                                            isExplicit 
-                                                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' 
+                                                            isExplicit
+                                                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
                                                                 : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
                                                         }`}
                                                     >
                                                         {tag}
                                                         {isSuggested && (
                                                             <button
-                                                                onClick={() => removeSuggestedTag(tag)}
+                                                                onClick={() =>
+                                                                    removeSuggestedTag(
+                                                                        tag
+                                                                    )
+                                                                }
                                                                 className="ml-1 text-gray-400 hover:text-red-500 focus:outline-none"
                                                                 title="Remove suggested tag"
                                                             >
@@ -691,19 +753,22 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                 )}
 
                                 {/* Add spacing */}
-                                {uniqueTags.length > 0 && (priority || dueDate) && (
-                                    <span className="mx-1">•</span>
-                                )}
+                                {uniqueTags.length > 0 &&
+                                    (priority || dueDate) && (
+                                        <span className="mx-1">•</span>
+                                    )}
 
                                 {/* Priority display */}
                                 {priority && (
-                                    <div className={`flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                                        priority === 'high' 
-                                            ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
-                                            : priority === 'medium'
-                                            ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
-                                            : 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
-                                    }`}>
+                                    <div
+                                        className={`flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                                            priority === 'high'
+                                                ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
+                                                : priority === 'medium'
+                                                  ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
+                                                  : 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                                        }`}
+                                    >
                                         <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
                                         {priority}
                                     </div>
@@ -719,21 +784,30 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                     <div className="flex items-center px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 rounded text-xs font-medium">
                                         <CalendarIcon className="h-3 w-3 mr-1" />
                                         {(() => {
-                                            const today = new Date().toISOString().split('T')[0];
+                                            const today = new Date()
+                                                .toISOString()
+                                                .split('T')[0];
                                             const tomorrow = new Date();
-                                            tomorrow.setDate(tomorrow.getDate() + 1);
-                                            const tomorrowStr = tomorrow.toISOString().split('T')[0];
-                                            
-                                            if (dueDate === today) return 'Today';
-                                            if (dueDate === tomorrowStr) return 'Tomorrow';
-                                            return new Date(dueDate).toLocaleDateString();
+                                            tomorrow.setDate(
+                                                tomorrow.getDate() + 1
+                                            );
+                                            const tomorrowStr = tomorrow
+                                                .toISOString()
+                                                .split('T')[0];
+
+                                            if (dueDate === today)
+                                                return 'Today';
+                                            if (dueDate === tomorrowStr)
+                                                return 'Tomorrow';
+                                            return new Date(
+                                                dueDate
+                                            ).toLocaleDateString();
                                         })()}
                                     </div>
                                 )}
                             </div>
                         ) : null;
                     })()}
-
                 </div>
 
                 <div className="flex items-center justify-start space-x-1 shrink-0">
