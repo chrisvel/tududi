@@ -16,7 +16,7 @@ module.exports = {
                 { name: 'projects', hasUid: false },
                 { name: 'notes', hasUid: false },
                 { name: 'tags', hasUid: false },
-                { name: 'tasks', hasUid: false } // Keep existing uuid column, add new uid column
+                { name: 'tasks', hasUid: false }, // Keep existing uuid column, add new uid column
             ];
 
             // 1. Add uid columns to all tables
@@ -65,7 +65,6 @@ module.exports = {
                     name: `${table.name}_uid_unique_index`,
                 });
             }
-
         } finally {
             // Re-enable foreign key constraints
             await queryInterface.sequelize.query('PRAGMA foreign_keys = ON');
@@ -75,19 +74,27 @@ module.exports = {
     async down(queryInterface, Sequelize) {
         // Remove unique indexes and uid columns
         const tables = ['areas', 'projects', 'notes', 'tags', 'tasks'];
-        
+
         for (const tableName of tables) {
             try {
-                await queryInterface.removeIndex(tableName, `${tableName}_uid_unique_index`);
+                await queryInterface.removeIndex(
+                    tableName,
+                    `${tableName}_uid_unique_index`
+                );
             } catch (error) {
                 // Index might not exist
-                console.log(`${tableName}_uid_unique_index not found, skipping removal`);
+                console.log(
+                    `${tableName}_uid_unique_index not found, skipping removal`
+                );
             }
 
             try {
                 await queryInterface.removeColumn(tableName, 'uid');
             } catch (error) {
-                console.log(`Error removing uid column from ${tableName}:`, error.message);
+                console.log(
+                    `Error removing uid column from ${tableName}:`,
+                    error.message
+                );
             }
         }
     },

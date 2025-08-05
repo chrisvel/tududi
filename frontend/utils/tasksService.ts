@@ -97,7 +97,6 @@ export const fetchTaskByUid = async (uid: string): Promise<Task> => {
     return await response.json();
 };
 
-
 export const fetchSubtasks = async (parentTaskId: number): Promise<Task[]> => {
     const response = await fetch(`/api/task/${parentTaskId}/subtasks`, {
         credentials: 'include',

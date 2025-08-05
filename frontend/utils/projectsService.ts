@@ -103,9 +103,7 @@ export const deleteProject = async (projectId: number): Promise<void> => {
     await handleAuthResponse(response, 'Failed to delete project.');
 };
 
-export const fetchProjectBySlug = async (
-    uidSlug: string
-): Promise<Project> => {
+export const fetchProjectBySlug = async (uidSlug: string): Promise<Project> => {
     const response = await fetch(`/api/project/${uidSlug}`, {
         credentials: 'include',
         headers: {

@@ -893,11 +893,13 @@ router.get('/tasks', async (req, res) => {
 router.get('/task', async (req, res) => {
     try {
         const { uid } = req.query;
-        
+
         if (_.isEmpty(uid)) {
-            return res.status(400).json({ error: 'uid query parameter is required' });
+            return res
+                .status(400)
+                .json({ error: 'uid query parameter is required' });
         }
-        
+
         const task = await Task.findOne({
             where: { uid: uid, user_id: req.currentUser.id },
             include: [
@@ -926,7 +928,6 @@ router.get('/task', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 // GET /api/task/:id
 router.get('/task/:id', async (req, res) => {
