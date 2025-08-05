@@ -1,7 +1,8 @@
 const express = require('express');
 const { Tag, Task, Note, Project, sequelize } = require('../models');
-const { extractNanoidFromSlug } = require('../utils/slug-utils');
+const { extractUidFromSlug } = require('../utils/slug-utils');
 const router = express.Router();
+const _ = require('lodash');
 
 // Helper function to validate tag name
 function validateTagName(name) {
@@ -40,7 +41,7 @@ router.get('/tags', async (req, res) => {
     try {
         const tags = await Tag.findAll({
             where: { user_id: req.currentUser.id },
-            attributes: ['id', 'name', 'nanoid'],
+            attributes: ['id', 'name', 'uid'],
             order: [['name', 'ASC']],
         });
         res.json(tags);
@@ -50,37 +51,27 @@ router.get('/tags', async (req, res) => {
     }
 });
 
-// GET /api/tag/:identifier (supports both ID, name, and nanoid-slug)
-router.get('/tag/:identifier', async (req, res) => {
+// GET /api/tag/:identifier (supports both ID, name, and uid-slug)
+router.get('/tag', async (req, res) => {
     try {
-        const identifier = req.params.identifier;
-        let whereClause;
+        const { id, uid, name } = req.query;
 
-        // Check if identifier is numeric (ID), nanoid-slug, or tag name
-        if (/^\d+$/.test(identifier)) {
-            // It's a numeric ID
-            whereClause = {
-                id: parseInt(identifier),
-                user_id: req.currentUser.id,
-            };
-        } else if (identifier.includes('-') && identifier.length > 21) {
-            // It's likely a nanoid-slug, extract the nanoid
-            const nanoid = extractNanoidFromSlug(identifier);
-            if (!nanoid) {
-                return res
-                    .status(400)
-                    .json({ error: 'Invalid tag identifier' });
-            }
-            whereClause = { nanoid: nanoid, user_id: req.currentUser.id };
-        } else {
-            // It's a tag name - decode URI component to handle special characters
-            const tagName = decodeURIComponent(identifier);
-            whereClause = { name: tagName, user_id: req.currentUser.id };
+        let whereClause = {
+            user_id: req.currentUser.id,
+        };
+        if (!_.isEmpty(id)) {
+            whereClause.id = parseInt(id, 10);
+        }
+        if (!_.isEmpty(uid)) {
+            whereClause.uid = uid;
+        }
+        if (!_.isEmpty(name)) {
+            whereClause.name = decodeURIComponent(name);
         }
 
         const tag = await Tag.findOne({
             where: whereClause,
-            attributes: ['id', 'name', 'nanoid'],
+            attributes: ['name', 'uid'],
         });
 
         if (!tag) {
@@ -111,7 +102,7 @@ router.post('/tag', async (req, res) => {
 
         res.status(201).json({
             id: tag.id,
-            nanoid: tag.nanoid, // Explicitly include nanoid
+            uid: tag.uid, // Explicitly include uid
             name: tag.name,
         });
     } catch (error) {

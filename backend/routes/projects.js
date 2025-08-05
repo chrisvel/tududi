@@ -6,7 +6,7 @@ const config = getConfig();
 const fs = require('fs');
 const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
 const { Op } = require('sequelize');
-const { extractNanoidFromSlug } = require('../utils/slug-utils');
+const { extractUidFromSlug } = require('../utils/slug-utils');
 const router = express.Router();
 
 // Helper function to validate tag name (same as in tags.js)
@@ -185,13 +185,13 @@ router.get('/projects', async (req, res) => {
             whereClause.pin_to_sidebar = false;
         }
 
-        // Filter by area - support both numeric area_id and nanoid-slug area
+        // Filter by area - support both numeric area_id and uid-slug area
         if (area && area !== '') {
-            // Extract nanoid from nanoid-slug format
-            const nanoid = extractNanoidFromSlug(area);
-            if (nanoid) {
+            // Extract uid from uid-slug format
+            const uid = extractUidFromSlug(area);
+            if (uid) {
                 const areaRecord = await Area.findOne({
-                    where: { nanoid: nanoid, user_id: req.session.userId },
+                    where: { uid: uid, user_id: req.session.userId },
                     attributes: ['id'],
                 });
                 if (areaRecord) {
@@ -218,7 +218,7 @@ router.get('/projects', async (req, res) => {
                 },
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
             ],
@@ -275,7 +275,7 @@ router.get('/projects', async (req, res) => {
     }
 });
 
-// GET /api/project/:id (supports both numeric ID and nanoid-slug)
+// GET /api/project/:id (supports both numeric ID and uid-slug)
 router.get('/project/:id', async (req, res) => {
     try {
         if (!req.session || !req.session.userId) {
@@ -285,7 +285,7 @@ router.get('/project/:id', async (req, res) => {
         const identifier = req.params.id;
         let whereClause;
 
-        // Check if identifier is numeric (regular ID) or nanoid-slug
+        // Check if identifier is numeric (regular ID) or uid-slug
         if (/^\d+$/.test(identifier)) {
             // It's a numeric ID
             whereClause = {
@@ -293,14 +293,14 @@ router.get('/project/:id', async (req, res) => {
                 user_id: req.session.userId,
             };
         } else {
-            // It's a nanoid-slug, extract the nanoid
-            const nanoid = extractNanoidFromSlug(identifier);
-            if (!nanoid) {
+            // It's a uid-slug, extract the uid
+            const uid = extractUidFromSlug(identifier);
+            if (!uid) {
                 return res
                     .status(400)
                     .json({ error: 'Invalid project identifier' });
             }
-            whereClause = { nanoid: nanoid, user_id: req.session.userId };
+            whereClause = { uid: uid, user_id: req.session.userId };
         }
 
         const project = await Project.findOne({
@@ -316,7 +316,7 @@ router.get('/project/:id', async (req, res) => {
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name', 'nanoid'],
+                            attributes: ['id', 'name', 'uid'],
                             through: { attributes: [] },
                             required: false,
                         },
@@ -326,7 +326,7 @@ router.get('/project/:id', async (req, res) => {
                             include: [
                                 {
                                     model: Tag,
-                                    attributes: ['id', 'name', 'nanoid'],
+                                    attributes: ['id', 'name', 'uid'],
                                     through: { attributes: [] },
                                     required: false,
                                 },
@@ -348,7 +348,7 @@ router.get('/project/:id', async (req, res) => {
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name', 'nanoid'],
+                            attributes: ['id', 'name', 'uid'],
                             through: { attributes: [] },
                         },
                     ],
@@ -356,7 +356,7 @@ router.get('/project/:id', async (req, res) => {
                 { model: Area, required: false, attributes: ['id', 'name'] },
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
             ],
@@ -462,7 +462,7 @@ router.post('/project', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
             ],
@@ -472,7 +472,7 @@ router.post('/project', async (req, res) => {
 
         res.status(201).json({
             ...projectJson,
-            nanoid: projectWithAssociations.nanoid, // Explicitly include nanoid
+            uid: projectWithAssociations.uid, // Explicitly include uid
             tags: projectJson.Tags || [], // Normalize Tags to tags
             due_date_at: formatDate(projectWithAssociations.due_date_at),
         });
@@ -537,7 +537,7 @@ router.patch('/project/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
             ],

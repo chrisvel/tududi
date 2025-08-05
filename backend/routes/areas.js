@@ -11,7 +11,7 @@ router.get('/areas', async (req, res) => {
 
         const areas = await Area.findAll({
             where: { user_id: req.session.userId },
-            attributes: ['id', 'nanoid', 'name', 'description'],
+            attributes: ['id', 'uid', 'name', 'description'],
             order: [['name', 'ASC']],
         });
 
@@ -67,7 +67,7 @@ router.post('/areas', async (req, res) => {
 
         res.status(201).json({
             ...area.toJSON(),
-            nanoid: area.nanoid, // Explicitly include nanoid
+            uid: area.uid, // Explicitly include uid
         });
     } catch (error) {
         console.error('Error creating area:', error);

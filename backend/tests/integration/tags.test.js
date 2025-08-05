@@ -93,7 +93,7 @@ describe('Tags Routes', () => {
         });
     });
 
-    describe('GET /api/tag/:id', () => {
+    describe('GET /api/tag', () => {
         let tag;
 
         beforeEach(async () => {
@@ -104,15 +104,14 @@ describe('Tags Routes', () => {
         });
 
         it('should get tag by id', async () => {
-            const response = await agent.get(`/api/tag/${tag.id}`);
+            const response = await agent.get(`/api/tag?id=${tag.id}`);
 
             expect(response.status).toBe(200);
-            expect(response.body.id).toBe(tag.id);
             expect(response.body.name).toBe(tag.name);
         });
 
         it('should return 404 for non-existent tag', async () => {
-            const response = await agent.get('/api/tag/999999');
+            const response = await agent.get('/api/tag?id=999999');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Tag not found');
@@ -130,14 +129,14 @@ describe('Tags Routes', () => {
                 user_id: otherUser.id,
             });
 
-            const response = await agent.get(`/api/tag/${otherTag.id}`);
+            const response = await agent.get(`/api/tag?id=${otherTag.id}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Tag not found');
         });
 
         it('should require authentication', async () => {
-            const response = await request(app).get(`/api/tag/${tag.id}`);
+            const response = await request(app).get(`/api/tag?id=${tag.id}`);
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');

@@ -1,7 +1,7 @@
 const express = require('express');
 const { Note, Tag, Project, sequelize } = require('../models');
 const { Op } = require('sequelize');
-const { extractNanoidFromSlug } = require('../utils/slug-utils');
+const { extractUidFromSlug } = require('../utils/slug-utils');
 const router = express.Router();
 
 // Helper function to validate tag name (same as in tags.js)
@@ -97,13 +97,13 @@ router.get('/notes', async (req, res) => {
         let includeClause = [
             {
                 model: Tag,
-                attributes: ['id', 'name', 'nanoid'],
+                attributes: ['id', 'name', 'uid'],
                 through: { attributes: [] },
             },
             {
                 model: Project,
                 required: false,
-                attributes: ['id', 'name', 'nanoid'],
+                attributes: ['id', 'name', 'uid'],
             },
         ];
 
@@ -127,7 +127,7 @@ router.get('/notes', async (req, res) => {
     }
 });
 
-// GET /api/note/:id (supports both numeric ID and nanoid-slug)
+// GET /api/note/:id (supports both numeric ID and uid-slug)
 router.get('/note/:id', async (req, res) => {
     try {
         if (!req.session || !req.session.userId) {
@@ -137,7 +137,7 @@ router.get('/note/:id', async (req, res) => {
         const identifier = req.params.id;
         let whereClause;
 
-        // Check if identifier is numeric (regular ID) or nanoid-slug
+        // Check if identifier is numeric (regular ID) or uid-slug
         if (/^\d+$/.test(identifier)) {
             // It's a numeric ID
             whereClause = {
@@ -145,14 +145,14 @@ router.get('/note/:id', async (req, res) => {
                 user_id: req.session.userId,
             };
         } else {
-            // It's a nanoid-slug, extract the nanoid
-            const nanoid = extractNanoidFromSlug(identifier);
-            if (!nanoid) {
+            // It's a uid-slug, extract the uid
+            const uid = extractUidFromSlug(identifier);
+            if (!uid) {
                 return res
                     .status(400)
                     .json({ error: 'Invalid note identifier' });
             }
-            whereClause = { nanoid: nanoid, user_id: req.session.userId };
+            whereClause = { uid: uid, user_id: req.session.userId };
         }
 
         const note = await Note.findOne({
@@ -160,13 +160,13 @@ router.get('/note/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
                     required: false,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                 },
             ],
         });
@@ -227,20 +227,20 @@ router.post('/note', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
                     required: false,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                 },
             ],
         });
 
         res.status(201).json({
             ...noteWithAssociations.toJSON(),
-            nanoid: noteWithAssociations.nanoid, // Explicitly include nanoid
+            uid: noteWithAssociations.uid, // Explicitly include uid
         });
     } catch (error) {
         console.error('Error creating note:', error);
@@ -309,13 +309,13 @@ router.patch('/note/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
                     required: false,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                 },
             ],
         });
