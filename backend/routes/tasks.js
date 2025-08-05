@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const RecurringTaskService = require('../services/recurringTaskService');
 const TaskEventService = require('../services/taskEventService');
 const moment = require('moment-timezone');
+const _ = require('lodash');
 const router = express.Router();
 
 // Helper function to validate tag name (same as in tags.js)
