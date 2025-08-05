@@ -1,6 +1,6 @@
 export interface Area {
     id?: number;
-    nanoid?: string;
+    uid?: string;
     name: string;
     description?: string;
     active?: boolean;

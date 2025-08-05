@@ -19,7 +19,7 @@ import { Tag } from '../../entities/Tag';
 
 const TagDetails: React.FC = () => {
     const { t } = useTranslation();
-    const { nanoidSlug } = useParams<{ nanoidSlug: string }>();
+    const { uidSlug } = useParams<{ uidSlug: string }>();
     const [tag, setTag] = useState<Tag | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
@@ -37,11 +37,11 @@ const TagDetails: React.FC = () => {
     useEffect(() => {
         const fetchTagData = async () => {
             try {
-                // First fetch tag details using nanoid-slug
+                // First fetch tag details using uid-slug
                 const { fetchTagBySlug } = await import(
                     '../../utils/tagsService'
                 );
-                const tagData = await fetchTagBySlug(nanoidSlug!);
+                const tagData = await fetchTagBySlug(uidSlug!);
                 setTag(tagData);
 
                 // Now fetch entities that have this tag using the tag name
@@ -87,7 +87,7 @@ const TagDetails: React.FC = () => {
             }
         };
         fetchTagData();
-    }, [nanoidSlug, t]);
+    }, [uidSlug, t]);
 
     // Task handlers
     const handleTaskUpdate = async (updatedTask: Task) => {
@@ -155,12 +155,12 @@ const TagDetails: React.FC = () => {
     };
 
     const handleEditProject = (project: Project) => {
-        if (project.nanoid) {
+        if (project.uid) {
             const slug = project.name
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-|-$/g, '');
-            navigate(`/project/${project.nanoid}-${slug}/edit`);
+            navigate(`/project/${project.uid}-${slug}/edit`);
         } else {
             navigate(`/project/${project.id}/edit`);
         }
@@ -280,8 +280,8 @@ const TagDetails: React.FC = () => {
                                         <div className="flex items-center flex-wrap gap-2">
                                             <Link
                                                 to={
-                                                    note.nanoid
-                                                        ? `/note/${note.nanoid}-${note.title
+                                                    note.uid
+                                                        ? `/note/${note.uid}-${note.title
                                                               .toLowerCase()
                                                               .replace(
                                                                   /[^a-z0-9]+/g,

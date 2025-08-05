@@ -19,7 +19,7 @@ import { createProject, fetchProjects } from '../../utils/projectsService';
 import { Project } from '../../entities/Project';
 
 const NoteDetails: React.FC = () => {
-    const { nanoidSlug } = useParams<{ nanoidSlug: string }>();
+    const { uidSlug } = useParams<{ uidSlug: string }>();
     const [note, setNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
@@ -36,7 +36,7 @@ const NoteDetails: React.FC = () => {
         const fetchNote = async () => {
             try {
                 setIsLoading(true);
-                const foundNote = await fetchNoteBySlug(nanoidSlug!);
+                const foundNote = await fetchNoteBySlug(uidSlug!);
                 setNote(foundNote || null);
                 if (!foundNote) {
                     setIsError(true);
@@ -49,7 +49,7 @@ const NoteDetails: React.FC = () => {
             }
         };
         fetchNote();
-    }, [nanoidSlug]);
+    }, [uidSlug]);
 
     // Load projects for the modal
     useEffect(() => {
@@ -160,8 +160,8 @@ const NoteDetails: React.FC = () => {
                                                     (
                                                         note.project ||
                                                         note.Project
-                                                    )?.nanoid
-                                                        ? `/project/${(note.project || note.Project)?.nanoid}-${(
+                                                    )?.uid
+                                                        ? `/project/${(note.project || note.Project)?.uid}-${(
                                                               note.project ||
                                                               note.Project
                                                           )?.name

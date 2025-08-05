@@ -298,8 +298,8 @@ const Tags: React.FC = () => {
                                                     <div className="flex items-center space-x-3 flex-grow">
                                                         <Link
                                                             to={
-                                                                tag.nanoid
-                                                                    ? `/tag/${tag.nanoid}-${tag.name
+                                                                tag.uid
+                                                                    ? `/tag/${tag.uid}-${tag.name
                                                                           .toLowerCase()
                                                                           .replace(
                                                                               /[^a-z0-9]+/g,

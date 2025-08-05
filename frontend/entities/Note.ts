@@ -2,7 +2,7 @@ import { Tag } from './Tag';
 
 export interface Note {
     id?: number;
-    nanoid?: string;
+    uid?: string;
     title: string;
     content: string;
     created_at?: string;
@@ -12,12 +12,12 @@ export interface Note {
     Tags?: Tag[]; // Sequelize association naming (capitalized)
     project?: {
         id: number;
-        nanoid?: string;
+        uid?: string;
         name: string;
     };
     Project?: {
         id: number;
-        nanoid?: string;
+        uid?: string;
         name: string;
     }; // Sequelize association naming (capitalized)
 }

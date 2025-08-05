@@ -20,7 +20,7 @@ import {
     updateTask,
     deleteTask,
     toggleTaskCompletion,
-    fetchTaskByNanoid,
+    fetchTaskByUid,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
@@ -32,7 +32,7 @@ import TaskTimeline from './TaskTimeline';
 import { isTaskOverdue } from '../../utils/dateUtils';
 
 const TaskDetails: React.FC = () => {
-    const { nanoid } = useParams<{ nanoid: string }>();
+    const { uid } = useParams<{ uid: string }>();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
@@ -41,7 +41,7 @@ const TaskDetails: React.FC = () => {
     const tagsStore = useStore((state: any) => state.tagsStore);
     const tasksStore = useStore((state: any) => state.tasksStore);
     const task = useStore((state: any) =>
-        state.tasksStore.tasks.find((t: Task) => t.nanoid === nanoid)
+        state.tasksStore.tasks.find((t: Task) => t.uid === uid)
     );
 
     // Get subtasks from the task data (already loaded in global store)
@@ -71,7 +71,7 @@ const TaskDetails: React.FC = () => {
             if (pendingStateStr) {
                 const pendingState = JSON.parse(pendingStateStr);
                 const isRecent = Date.now() - pendingState.timestamp < 2000; // Within 2 seconds
-                const isCorrectTask = pendingState.taskId === nanoid;
+                const isCorrectTask = pendingState.taskId === uid;
 
                 if (isRecent && isCorrectTask && pendingState.isOpen) {
                     // Use microtask to avoid lifecycle method warning
@@ -90,7 +90,7 @@ const TaskDetails: React.FC = () => {
             if (pendingEditStateStr) {
                 const pendingEditState = JSON.parse(pendingEditStateStr);
                 const isRecent = Date.now() - pendingEditState.timestamp < 5000; // Within 5 seconds
-                const isCorrectTask = pendingEditState.taskId === nanoid;
+                const isCorrectTask = pendingEditState.taskId === uid;
 
                 if (isRecent && isCorrectTask && pendingEditState.isOpen) {
                     // Use microtask to avoid lifecycle method warning
@@ -105,7 +105,7 @@ const TaskDetails: React.FC = () => {
             sessionStorage.removeItem('pendingModalState');
             sessionStorage.removeItem('pendingTaskEditModalState');
         }
-    }, [nanoid, tagsStore]);
+    }, [uid, tagsStore]);
 
     // Date and recurrence formatting functions (from TaskHeader)
     const formatDueDate = (dueDate: string) => {
@@ -148,8 +148,8 @@ const TaskDetails: React.FC = () => {
 
     useEffect(() => {
         const fetchTaskData = async () => {
-            if (!nanoid) {
-                setError('No task nanoid provided');
+            if (!uid) {
+                setError('No task uid provided');
                 setLoading(false);
                 return;
             }
@@ -158,7 +158,7 @@ const TaskDetails: React.FC = () => {
             if (!task) {
                 try {
                     setLoading(true);
-                    const fetchedTask = await fetchTaskByNanoid(nanoid);
+                    const fetchedTask = await fetchTaskByUid(uid);
                     // Add the task to the store
                     tasksStore.setTasks([...tasksStore.tasks, fetchedTask]);
                 } catch (fetchError) {
@@ -173,7 +173,7 @@ const TaskDetails: React.FC = () => {
         };
 
         fetchTaskData();
-    }, [nanoid, task, tasksStore]);
+    }, [uid, task, tasksStore]);
 
     const handleEdit = (e?: React.MouseEvent) => {
         if (e) {
@@ -185,7 +185,7 @@ const TaskDetails: React.FC = () => {
         // Store modal state in sessionStorage to persist across re-mounts
         const modalState = {
             isOpen: true,
-            taskId: nanoid,
+            taskId: uid,
             timestamp: Date.now(),
         };
         sessionStorage.setItem(
@@ -203,10 +203,10 @@ const TaskDetails: React.FC = () => {
         try {
             const updatedTask = await toggleTaskCompletion(task.id);
             // Update the task in the global store
-            if (nanoid) {
-                const updatedTask = await fetchTaskByNanoid(nanoid);
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
                 const existingIndex = tasksStore.tasks.findIndex(
-                    (t: Task) => t.nanoid === nanoid
+                    (t: Task) => t.uid === uid
                 );
                 if (existingIndex >= 0) {
                     const updatedTasks = [...tasksStore.tasks];
@@ -237,10 +237,10 @@ const TaskDetails: React.FC = () => {
             if (task?.id) {
                 await updateTask(task.id, updatedTask);
                 // Update the task in the global store
-                if (nanoid) {
-                    const updatedTask = await fetchTaskByNanoid(nanoid);
+                if (uid) {
+                    const updatedTask = await fetchTaskByUid(uid);
                     const existingIndex = tasksStore.tasks.findIndex(
-                        (t: Task) => t.nanoid === nanoid
+                        (t: Task) => t.uid === uid
                     );
                     if (existingIndex >= 0) {
                         const updatedTasks = [...tasksStore.tasks];
@@ -307,7 +307,7 @@ const TaskDetails: React.FC = () => {
             const modalState = {
                 isOpen: true,
                 focusSubtasks: true,
-                taskId: nanoid,
+                taskId: uid,
                 timestamp: Date.now(),
             };
             sessionStorage.setItem(
@@ -319,7 +319,7 @@ const TaskDetails: React.FC = () => {
             setFocusSubtasks(true);
             setIsTaskModalOpen(true);
         },
-        [nanoid]
+        [uid]
     );
 
     if (loading) {
@@ -380,8 +380,8 @@ const TaskDetails: React.FC = () => {
                                             <FolderIcon className="h-3 w-3 mr-1" />
                                             <Link
                                                 to={
-                                                    task.Project.nanoid
-                                                        ? `/project/${task.Project.nanoid}-${task.Project.name
+                                                    task.Project.uid
+                                                        ? `/project/${task.Project.uid}-${task.Project.name
                                                               .toLowerCase()
                                                               .replace(
                                                                   /[^a-z0-9]+/g,
@@ -421,8 +421,8 @@ const TaskDetails: React.FC = () => {
                                                         >
                                                             <Link
                                                                 to={
-                                                                    tag.nanoid
-                                                                        ? `/tag/${tag.nanoid}-${tag.name
+                                                                    tag.uid
+                                                                        ? `/tag/${tag.uid}-${tag.name
                                                                               .toLowerCase()
                                                                               .replace(
                                                                                   /[^a-z0-9]+/g,
@@ -624,19 +624,19 @@ const TaskDetails: React.FC = () => {
                                                                             ) {
                                                                                 // Refresh task data which includes updated subtasks
                                                                                 if (
-                                                                                    nanoid
+                                                                                    uid
                                                                                 ) {
                                                                                     const updatedTask =
-                                                                                        await fetchTaskByNanoid(
-                                                                                            nanoid
+                                                                                        await fetchTaskByUid(
+                                                                                            uid
                                                                                         );
                                                                                     const existingIndex =
                                                                                         tasksStore.tasks.findIndex(
                                                                                             (
                                                                                                 t: Task
                                                                                             ) =>
-                                                                                                t.nanoid ===
-                                                                                                nanoid
+                                                                                                t.uid ===
+                                                                                                uid
                                                                                         );
                                                                                     if (
                                                                                         existingIndex >=

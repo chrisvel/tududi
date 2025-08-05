@@ -39,7 +39,7 @@ import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 
 const ProjectDetails: React.FC = () => {
-    const { nanoidSlug } = useParams<{ nanoidSlug: string }>();
+    const { uidSlug } = useParams<{ uidSlug: string }>();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { showSuccessToast } = useToast();
@@ -134,18 +134,18 @@ const ProjectDetails: React.FC = () => {
         setOrderBy(sortParam);
     }, []);
 
-    // Fetch project data when nanoidSlug changes
+    // Fetch project data when uidSlug changes
     useEffect(() => {
-        if (!nanoidSlug) return;
+        if (!uidSlug) return;
 
-        // Skip loading if we already have the project data for this nanoidSlug
+        // Skip loading if we already have the project data for this uidSlug
         if (
             project &&
-            project.nanoid &&
-            `${project.nanoid}-${project.name
+            project.uid &&
+            `${project.uid}-${project.name
                 ?.toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-|-$/g, '')}` === nanoidSlug
+                .replace(/^-|-$/g, '')}` === uidSlug
         ) {
             return;
         }
@@ -158,7 +158,7 @@ const ProjectDetails: React.FC = () => {
                 }
                 setError(false);
 
-                const projectData = await fetchProjectBySlug(nanoidSlug);
+                const projectData = await fetchProjectBySlug(uidSlug);
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
 
@@ -189,7 +189,7 @@ const ProjectDetails: React.FC = () => {
         };
 
         loadProjectData();
-    }, [nanoidSlug]);
+    }, [uidSlug]);
 
     const handleTaskCreate = async (taskName: string) => {
         if (!project) {
@@ -210,7 +210,7 @@ const ProjectDetails: React.FC = () => {
                 <span>
                     {t('task.created', 'Task')}{' '}
                     <a
-                        href={`/task/${newTask.nanoid}`}
+                        href={`/task/${newTask.uid}`}
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {newTask.name}
@@ -349,10 +349,10 @@ const ProjectDetails: React.FC = () => {
             );
         } catch {
             // Optionally refetch data on error to ensure consistency
-            if (nanoidSlug) {
+            if (uidSlug) {
                 // Refetch project data on error to ensure consistency
                 try {
-                    const projectData = await fetchProjectBySlug(nanoidSlug);
+                    const projectData = await fetchProjectBySlug(uidSlug);
                     setProject(projectData);
                     setTasks(projectData.tasks || projectData.Tasks || []);
                     const fetchedNotes =
@@ -417,7 +417,7 @@ const ProjectDetails: React.FC = () => {
                 <span>
                     {t('task.created', 'Task')}{' '}
                     <a
-                        href={`/task/${newTask.nanoid}`}
+                        href={`/task/${newTask.uid}`}
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {newTask.name}
@@ -689,7 +689,7 @@ const ProjectDetails: React.FC = () => {
                                             <button
                                                 onClick={() => {
                                                     // Navigate to tag details page
-                                                    if (tag.nanoid) {
+                                                    if (tag.uid) {
                                                         const slug = tag.name
                                                             .toLowerCase()
                                                             .replace(
@@ -701,7 +701,7 @@ const ProjectDetails: React.FC = () => {
                                                                 ''
                                                             );
                                                         navigate(
-                                                            `/tag/${tag.nanoid}-${slug}`
+                                                            `/tag/${tag.uid}-${slug}`
                                                         );
                                                     } else {
                                                         navigate(

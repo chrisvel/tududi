@@ -104,9 +104,9 @@ export const deleteProject = async (projectId: number): Promise<void> => {
 };
 
 export const fetchProjectBySlug = async (
-    nanoidSlug: string
+    uidSlug: string
 ): Promise<Project> => {
-    const response = await fetch(`/api/project/${nanoidSlug}`, {
+    const response = await fetch(`/api/project/${uidSlug}`, {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
