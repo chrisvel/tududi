@@ -333,7 +333,6 @@ class InboxProcessingService {
         );
     }
 
-
     /**
      * Check if text contains code snippets or programming syntax
      * @param {string} text - Text to check
@@ -343,23 +342,23 @@ class InboxProcessingService {
         if (!text || typeof text !== 'string') {
             return false;
         }
-        
+
         const trimmed = text.trim();
-        
+
         // Strong code indicators that are unlikely to be in regular text
         const strongCodePatterns = [
-            /```[\s\S]*?```/,  // Code blocks
-            /\b(function|const|let|var)\s+\w+\s*[=(]/,  // Variable/function declarations
-            /\w+\s*\([^)]*\)\s*\{/,  // Function calls with braces
-            /console\.(log|error|warn|info)/,  // Console methods
-            /\b(SELECT|INSERT|UPDATE|DELETE)\s+.*FROM\b/i,  // SQL statements
-            /^(git|npm|yarn|docker)\s+\w+/m,  // Command line tools
-            /\/\/.*\n.*[{}();]/,  // Comments followed by code-like syntax
-            /\{[^}]*;[^}]*\}/,  // Code blocks with semicolons inside
-            /<[^>]+>/,  // HTML tags
+            /```[\s\S]*?```/, // Code blocks
+            /\b(function|const|let|var)\s+\w+\s*[=(]/, // Variable/function declarations
+            /\w+\s*\([^)]*\)\s*\{/, // Function calls with braces
+            /console\.(log|error|warn|info)/, // Console methods
+            /\b(SELECT|INSERT|UPDATE|DELETE)\s+.*FROM\b/i, // SQL statements
+            /^(git|npm|yarn|docker)\s+\w+/m, // Command line tools
+            /\/\/.*\n.*[{}();]/, // Comments followed by code-like syntax
+            /\{[^}]*;[^}]*\}/, // Code blocks with semicolons inside
+            /<[^>]+>/, // HTML tags
         ];
-        
-        return strongCodePatterns.some(pattern => pattern.test(trimmed));
+
+        return strongCodePatterns.some((pattern) => pattern.test(trimmed));
     }
 
     /**
@@ -454,7 +453,6 @@ class InboxProcessingService {
         if (suggestion.due_date) {
             result.suggested_due_date = suggestion.due_date;
         }
-
 
         return result;
     }

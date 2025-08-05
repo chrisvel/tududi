@@ -1,0 +1,21 @@
+{
+    "id": "long_text_note",
+    "name": "Long Text → Note",
+    "description": "When text is long (multiple sentences, paragraphs, or over 100 characters), suggest creating a note",
+    "priority": 150,
+    "examples": [
+        "Meeting notes from today's quarterly review: We discussed the Q3 performance metrics and identified several areas for improvement. The sales team exceeded their targets by 15% while the marketing team launched three successful campaigns. Next quarter we need to focus on customer retention and expanding into new markets. Action items include hiring two new sales reps and investing in better analytics tools.",
+        "Project requirements and specifications:\n\nThe new mobile app should have the following features:\n- User authentication and profiles\n- Real-time messaging\n- Push notifications\n- Offline mode support\n- Integration with existing backend API\n\nTimeline: 3 months for MVP, additional 2 months for advanced features.",
+        "Research findings on market trends. After analyzing competitor pricing and customer feedback, we found that users prefer subscription models over one-time purchases. The average price point should be between $9-15 per month to remain competitive while maintaining profitability."
+    ],
+    "conditions": {
+        "or": [
+            { "type": "is_long_text", "value": true },
+            { "type": "text_length", "operator": "gt", "value": 100 }
+        ]
+    },
+    "action": {
+        "suggested_type": "note",
+        "suggested_reason": "long_text_content"
+    }
+}

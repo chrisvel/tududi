@@ -16,20 +16,14 @@ const requireAdmin = (req, res, next) => {
 // GET /api/admin/rules - Get all suggestion rules
 router.get('/admin/rules', requireAdmin, async (req, res) => {
     try {
-        const rulesPath = path.join(
-            __dirname,
-            '../config/suggestion-rules.json'
-        );
-        const rulesData = fs.readFileSync(rulesPath, 'utf8');
-        const config = JSON.parse(rulesData);
+        const { loadSuggestionRules } = require('../config/suggestion-rules');
+        const config = loadSuggestionRules();
 
         res.json({
             rules: config.rules || [],
             condition_types: config.condition_types || {},
             total_rules: (config.rules || []).length,
-            rules_by_priority: (config.rules || []).sort(
-                (a, b) => b.priority - a.priority
-            ),
+            rules_by_priority: config.rules || [], // Already sorted by priority
         });
     } catch (error) {
         console.error('Error loading rules:', error);
@@ -40,12 +34,8 @@ router.get('/admin/rules', requireAdmin, async (req, res) => {
 // GET /api/admin/rules/stats - Get rules statistics
 router.get('/admin/rules/stats', requireAdmin, async (req, res) => {
     try {
-        const rulesPath = path.join(
-            __dirname,
-            '../config/suggestion-rules.json'
-        );
-        const rulesData = fs.readFileSync(rulesPath, 'utf8');
-        const config = JSON.parse(rulesData);
+        const { loadSuggestionRules } = require('../config/suggestion-rules');
+        const config = loadSuggestionRules();
         const rules = config.rules || [];
 
         // Calculate statistics

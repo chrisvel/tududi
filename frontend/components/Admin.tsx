@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useToast } from './Shared/ToastContext';
 import LoadingScreen from './Shared/LoadingScreen';
-import { CogIcon, ChartBarIcon, BeakerIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import {
+    CogIcon,
+    ChartBarIcon,
+    BeakerIcon,
+    ArrowPathIcon,
+} from '@heroicons/react/24/outline';
 
 interface Rule {
     id: string;
@@ -34,12 +38,13 @@ interface RulesStats {
 }
 
 const Admin: React.FC = () => {
-    const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
     const [isLoading, setIsLoading] = useState(true);
     const [rulesData, setRulesData] = useState<RulesData | null>(null);
     const [rulesStats, setRulesStats] = useState<RulesStats | null>(null);
-    const [activeTab, setActiveTab] = useState<'overview' | 'rules' | 'test'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'rules' | 'test'>(
+        'overview'
+    );
     const [testText, setTestText] = useState('');
     const [testResult, setTestResult] = useState<any>(null);
     const [isTestLoading, setIsTestLoading] = useState(false);
@@ -49,7 +54,7 @@ const Admin: React.FC = () => {
             setIsLoading(true);
             const [rulesResponse, statsResponse] = await Promise.all([
                 fetch('/api/admin/rules'),
-                fetch('/api/admin/rules/stats')
+                fetch('/api/admin/rules/stats'),
             ]);
 
             if (rulesResponse.ok && statsResponse.ok) {
@@ -71,7 +76,7 @@ const Admin: React.FC = () => {
     const handleReloadRules = async () => {
         try {
             const response = await fetch('/api/admin/rules/reload', {
-                method: 'POST'
+                method: 'POST',
             });
 
             if (response.ok) {
@@ -97,9 +102,9 @@ const Admin: React.FC = () => {
             const response = await fetch('/api/admin/rules/test', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text: testText })
+                body: JSON.stringify({ text: testText }),
             });
 
             if (response.ok) {
@@ -124,53 +129,6 @@ const Admin: React.FC = () => {
         return <LoadingScreen />;
     }
 
-    const renderCondition = (condition: any, depth: number = 0): React.ReactNode => {
-        const indent = '  '.repeat(depth);
-
-        if (condition.and) {
-            return (
-                <div className="ml-4">
-                    <span className="text-blue-600 font-semibold">AND:</span>
-                    {condition.and.map((subCondition: any, index: number) => (
-                        <div key={index} className="ml-4">
-                            {renderCondition(subCondition, depth + 1)}
-                        </div>
-                    ))}
-                </div>
-            );
-        }
-
-        if (condition.or) {
-            return (
-                <div className="ml-4">
-                    <span className="text-orange-600 font-semibold">OR:</span>
-                    {condition.or.map((subCondition: any, index: number) => (
-                        <div key={index} className="ml-4">
-                            {renderCondition(subCondition, depth + 1)}
-                        </div>
-                    ))}
-                </div>
-            );
-        }
-
-        return (
-            <div className="text-sm">
-                <span className="font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                    {condition.type}
-                </span>
-                {condition.operator && (
-                    <span className="text-purple-600 mx-2">{condition.operator}</span>
-                )}
-                <span className="text-green-600">
-                    {Array.isArray(condition.value) 
-                        ? `[${condition.value.join(', ')}]`
-                        : JSON.stringify(condition.value)
-                    }
-                </span>
-            </div>
-        );
-    };
-
     const renderOverview = () => (
         <div className="space-y-6">
             {/* Stats Cards */}
@@ -179,7 +137,9 @@ const Admin: React.FC = () => {
                     <div className="flex items-center">
                         <CogIcon className="h-8 w-8 text-blue-500" />
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Rules</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                Total Rules
+                            </p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                                 {rulesStats?.total_rules || 0}
                             </p>
@@ -193,7 +153,9 @@ const Admin: React.FC = () => {
                             T
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Task Rules</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                Task Rules
+                            </p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                                 {rulesStats?.task_rules || 0}
                             </p>
@@ -207,7 +169,9 @@ const Admin: React.FC = () => {
                             N
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Note Rules</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                Note Rules
+                            </p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                                 {rulesStats?.note_rules || 0}
                             </p>
@@ -219,9 +183,15 @@ const Admin: React.FC = () => {
                     <div className="flex items-center">
                         <ChartBarIcon className="h-8 w-8 text-purple-500" />
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Condition Types</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                Condition Types
+                            </p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-white">
-                                {rulesStats ? Object.keys(rulesStats.condition_types_used).length : 0}
+                                {rulesStats
+                                    ? Object.keys(
+                                          rulesStats.condition_types_used
+                                      ).length
+                                    : 0}
                             </p>
                         </div>
                     </div>
@@ -230,44 +200,62 @@ const Admin: React.FC = () => {
 
             {/* Priority Distribution */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-4">Priority Distribution</h3>
+                <h3 className="text-lg font-semibold mb-4">
+                    Priority Distribution
+                </h3>
                 <div className="space-y-2">
-                    {rulesStats && Object.entries(rulesStats.priority_distribution)
-                        .sort(([a], [b]) => parseInt(b) - parseInt(a))
-                        .map(([priority, count]) => (
-                            <div key={priority} className="flex items-center justify-between">
-                                <span className="text-sm font-medium">Priority {priority}</span>
-                                <div className="flex items-center">
-                                    <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-2">
-                                        <div 
-                                            className="bg-blue-500 h-2 rounded-full" 
-                                            style={{ 
-                                                width: `${(count / (rulesStats.total_rules || 1)) * 100}%` 
-                                            }}
-                                        ></div>
+                    {rulesStats &&
+                        Object.entries(rulesStats.priority_distribution)
+                            .sort(([a], [b]) => parseInt(b) - parseInt(a))
+                            .map(([priority, count]) => (
+                                <div
+                                    key={priority}
+                                    className="flex items-center justify-between"
+                                >
+                                    <span className="text-sm font-medium">
+                                        Priority {priority}
+                                    </span>
+                                    <div className="flex items-center">
+                                        <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-2">
+                                            <div
+                                                className="bg-blue-500 h-2 rounded-full"
+                                                style={{
+                                                    width: `${(count / (rulesStats.total_rules || 1)) * 100}%`,
+                                                }}
+                                            ></div>
+                                        </div>
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            {count}
+                                        </span>
                                     </div>
-                                    <span className="text-sm text-gray-600 dark:text-gray-400">{count}</span>
                                 </div>
-                            </div>
-                        ))
-                    }
+                            ))}
                 </div>
             </div>
 
             {/* Most Common Reasons */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-4">Most Common Suggestion Reasons</h3>
+                <h3 className="text-lg font-semibold mb-4">
+                    Most Common Suggestion Reasons
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {rulesStats && Object.entries(rulesStats.most_common_reasons)
-                        .sort(([,a], [,b]) => b - a)
-                        .slice(0, 6)
-                        .map(([reason, count]) => (
-                            <div key={reason} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded">
-                                <span className="text-sm font-medium">{reason}</span>
-                                <span className="text-sm text-gray-600 dark:text-gray-400">{count} rules</span>
-                            </div>
-                        ))
-                    }
+                    {rulesStats &&
+                        Object.entries(rulesStats.most_common_reasons)
+                            .sort(([, a], [, b]) => b - a)
+                            .slice(0, 6)
+                            .map(([reason, count]) => (
+                                <div
+                                    key={reason}
+                                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded"
+                                >
+                                    <span className="text-sm font-medium">
+                                        {reason}
+                                    </span>
+                                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                                        {count} rules
+                                    </span>
+                                </div>
+                            ))}
                 </div>
             </div>
         </div>
@@ -298,7 +286,10 @@ const Admin: React.FC = () => {
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {rulesData?.rules_by_priority.map((rule) => (
-                            <tr key={rule.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <tr
+                                key={rule.id}
+                                className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                            >
                                 <td className="px-6 py-4">
                                     <div>
                                         <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -315,11 +306,14 @@ const Admin: React.FC = () => {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 py-1 text-xs font-medium rounded ${
-                                        rule.action.suggested_type === 'task' 
-                                            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                                            : 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
-                                    }`}>
+                                    <span
+                                        className={`px-2 py-1 text-xs font-medium rounded ${
+                                            rule.action.suggested_type ===
+                                            'task'
+                                                ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                                                : 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
+                                        }`}
+                                    >
                                         {rule.action.suggested_type}
                                     </span>
                                 </td>
@@ -329,21 +323,30 @@ const Admin: React.FC = () => {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4">
-                                    {rule.examples && rule.examples.length > 0 ? (
+                                    {rule.examples &&
+                                    rule.examples.length > 0 ? (
                                         <div className="space-y-1">
-                                            {rule.examples.slice(0, 2).map((example, index) => (
-                                                <div key={index} className="text-xs font-mono bg-gray-100 dark:bg-gray-700 p-1 rounded border-l-2 border-blue-300">
-                                                    {example}
-                                                </div>
-                                            ))}
+                                            {rule.examples
+                                                .slice(0, 2)
+                                                .map((example, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="text-xs font-mono bg-gray-100 dark:bg-gray-700 p-1 rounded border-l-2 border-blue-300"
+                                                    >
+                                                        {example}
+                                                    </div>
+                                                ))}
                                             {rule.examples.length > 2 && (
                                                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                                                    +{rule.examples.length - 2} more
+                                                    +{rule.examples.length - 2}{' '}
+                                                    more
                                                 </div>
                                             )}
                                         </div>
                                     ) : (
-                                        <span className="text-sm text-gray-400">No examples</span>
+                                        <span className="text-sm text-gray-400">
+                                            No examples
+                                        </span>
                                     )}
                                 </td>
                             </tr>
@@ -357,8 +360,10 @@ const Admin: React.FC = () => {
     const renderTestInterface = () => (
         <div className="space-y-6">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-4">Test Rules Engine</h3>
-                
+                <h3 className="text-lg font-semibold mb-4">
+                    Test Rules Engine
+                </h3>
+
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -382,7 +387,7 @@ const Admin: React.FC = () => {
                             <BeakerIcon className="h-4 w-4 mr-2" />
                             {isTestLoading ? 'Testing...' : 'Test Rules'}
                         </button>
-                        
+
                         <button
                             onClick={() => setTestText('')}
                             className="px-3 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
@@ -393,15 +398,17 @@ const Admin: React.FC = () => {
 
                     {/* Quick Examples */}
                     <div className="mt-4">
-                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quick Examples (click to test):</h4>
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Quick Examples (click to test):
+                        </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                             {[
-                                "Call the doctor +Health",
-                                "https://docs.react.dev +Development", 
-                                "Send email to client +ProjectX",
-                                "Urgent meeting with stakeholders +CriticalProject",
-                                "Interesting idea about AI features +Innovation",
-                                "API documentation review +\"Backend Development\""
+                                'Call the doctor +Health',
+                                'https://docs.react.dev +Development',
+                                'Send email to client +ProjectX',
+                                'Urgent meeting with stakeholders +CriticalProject',
+                                'Interesting idea about AI features +Innovation',
+                                'API documentation review +"Backend Development"',
                             ].map((example, index) => (
                                 <button
                                     key={index}
@@ -417,8 +424,10 @@ const Admin: React.FC = () => {
 
                 {testResult && (
                     <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Test Results:</h4>
-                        
+                        <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                            Test Results:
+                        </h4>
+
                         <div className="space-y-2 text-sm">
                             <div>
                                 <span className="font-medium">Input: </span>
@@ -426,36 +435,57 @@ const Admin: React.FC = () => {
                                     {testResult.input}
                                 </span>
                             </div>
-                            
+
                             <div>
-                                <span className="font-medium">Parsed Tags: </span>
-                                <span>{testResult.result.parsed_tags.join(', ') || 'None'}</span>
+                                <span className="font-medium">
+                                    Parsed Tags:{' '}
+                                </span>
+                                <span>
+                                    {testResult.result.parsed_tags.join(', ') ||
+                                        'None'}
+                                </span>
                             </div>
-                            
+
                             <div>
-                                <span className="font-medium">Parsed Projects: </span>
-                                <span>{testResult.result.parsed_projects.join(', ') || 'None'}</span>
+                                <span className="font-medium">
+                                    Parsed Projects:{' '}
+                                </span>
+                                <span>
+                                    {testResult.result.parsed_projects.join(
+                                        ', '
+                                    ) || 'None'}
+                                </span>
                             </div>
-                            
+
                             <div>
-                                <span className="font-medium">Cleaned Content: </span>
+                                <span className="font-medium">
+                                    Cleaned Content:{' '}
+                                </span>
                                 <span className="font-mono bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">
                                     {testResult.result.cleaned_content}
                                 </span>
                             </div>
-                            
+
                             <div>
-                                <span className="font-medium">Suggestion: </span>
+                                <span className="font-medium">
+                                    Suggestion:{' '}
+                                </span>
                                 {testResult.result.suggested_type ? (
-                                    <span className={`px-2 py-1 text-xs font-medium rounded ${
-                                        testResult.result.suggested_type === 'task' 
-                                            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                                            : 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
-                                    }`}>
-                                        {testResult.result.suggested_type} ({testResult.result.suggested_reason})
+                                    <span
+                                        className={`px-2 py-1 text-xs font-medium rounded ${
+                                            testResult.result.suggested_type ===
+                                            'task'
+                                                ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                                                : 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
+                                        }`}
+                                    >
+                                        {testResult.result.suggested_type} (
+                                        {testResult.result.suggested_reason})
                                     </span>
                                 ) : (
-                                    <span className="text-gray-500">No suggestion</span>
+                                    <span className="text-gray-500">
+                                        No suggestion
+                                    </span>
                                 )}
                             </div>
                         </div>
@@ -472,7 +502,9 @@ const Admin: React.FC = () => {
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center">
                         <CogIcon className="h-6 w-6 mr-2" />
-                        <h1 className="text-2xl font-light">Rules Engine Admin</h1>
+                        <h1 className="text-2xl font-light">
+                            Rules Engine Admin
+                        </h1>
                     </div>
                     <button
                         onClick={handleReloadRules}
@@ -489,7 +521,7 @@ const Admin: React.FC = () => {
                         {[
                             { id: 'overview', label: 'Overview' },
                             { id: 'rules', label: 'Rules' },
-                            { id: 'test', label: 'Test' }
+                            { id: 'test', label: 'Test' },
                         ].map((tab) => (
                             <button
                                 key={tab.id}

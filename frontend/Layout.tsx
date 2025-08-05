@@ -27,6 +27,7 @@ import {
 } from './utils/projectsService';
 import { createTask, updateTask } from './utils/tasksService';
 import { isAuthError } from './utils/authUtils';
+import GlobalKeyboardHandler from './components/KeyboardShortcuts/GlobalKeyboardHandler';
 
 interface LayoutProps {
     currentUser: User;
@@ -409,6 +410,7 @@ const Layout: React.FC<LayoutProps> = ({
 
     return (
         <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+            <GlobalKeyboardHandler />
             <Navbar
                 isDarkMode={isDarkMode}
                 toggleDarkMode={toggleDarkMode}
@@ -452,7 +454,6 @@ const Layout: React.FC<LayoutProps> = ({
                         isOpen={isTaskModalOpen}
                         onClose={closeTaskModal}
                         onSave={handleSaveTask}
-                        projects={projects}
                     />
                 ) : (
                     <TaskModal
