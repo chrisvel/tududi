@@ -109,7 +109,10 @@ export function createProjectUrl(project: {
  * @param note - Note object with uid and title
  * @returns The note URL path (e.g., "/note/abc123-meeting-notes")
  */
-export function createNoteUrl(note: { uid?: string; title: string }): string {
+export function createNoteUrl(note: {
+    uid?: string;
+    title: string;
+}): string {
     if (!note.uid) {
         throw new Error('Note uid is required');
     }
@@ -129,3 +132,4 @@ export function createTagUrl(tag: { uid?: string; name: string }): string {
     const uidSlug = createUidSlug(tag.uid, tag.name);
     return `/tag/${uidSlug}`;
 }
+

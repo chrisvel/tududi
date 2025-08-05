@@ -65,7 +65,7 @@ export const deleteTag = async (tagId: number): Promise<void> => {
 export const fetchTagBySlug = async (uidSlug: string): Promise<Tag> => {
     // Extract uid from uidSlug using proper extraction function
     const uid = extractUidFromSlug(uidSlug);
-
+    
     const response = await fetch(`/api/tag?uid=${encodeURIComponent(uid)}`, {
         credentials: 'include',
         headers: {

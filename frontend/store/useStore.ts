@@ -482,7 +482,9 @@ export const useStore = create<StoreState>((set: any) => ({
                 set((state) => ({
                     tasksStore: {
                         ...state.tasksStore,
-                        tasks: state.tasksStore.tasks.some((t) => t.uid === uid)
+                        tasks: state.tasksStore.tasks.some(
+                            (t) => t.uid === uid
+                        )
                             ? state.tasksStore.tasks.map((t) =>
                                   t.uid === uid ? task : t
                               )
