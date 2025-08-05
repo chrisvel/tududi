@@ -36,6 +36,7 @@ import { isAuthError } from '../../utils/authUtils';
 import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
 import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
+import LoadingSpinner from '../Shared/LoadingSpinner';
 
 const ProjectDetails: React.FC = () => {
     const { nanoidSlug } = useParams<{ nanoidSlug: string }>();
@@ -626,13 +627,7 @@ const ProjectDetails: React.FC = () => {
     }, [tasks, showCompleted, orderBy]);
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-                <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                    Loading project details...
-                </div>
-            </div>
-        );
+        return <LoadingSpinner message="Loading project details..." />;
     }
 
     if (error) {
