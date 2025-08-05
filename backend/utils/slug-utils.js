@@ -23,58 +23,58 @@ function createSlug(text, maxLength = 50) {
 }
 
 /**
- * Creates a nanoid-slug URL for a given entity
- * @param {string} nanoid - The nanoid of the entity
+ * Creates a uid-slug URL for a given entity
+ * @param {string} uid - The uid of the entity
  * @param {string} name - The name/title of the entity
  * @param {number} maxSlugLength - Maximum length of the slug part (default: 40)
- * @returns {string} The nanoid-slug URL part (e.g., "abc123-clean-the-backyard")
+ * @returns {string} The uid-slug URL part (e.g., "abc123-clean-the-backyard")
  */
-function createNanoidSlug(nanoid, name, maxSlugLength = 40) {
-    if (!nanoid) throw new Error('Nanoid is required');
+function createUidSlug(uid, name, maxSlugLength = 40) {
+    if (!uid) throw new Error('UID is required');
 
     const slug = createSlug(name, maxSlugLength);
-    return slug ? `${nanoid}-${slug}` : nanoid;
+    return slug ? `${uid}-${slug}` : uid;
 }
 
 /**
- * Extracts nanoid from a nanoid-slug URL part
- * @param {string} nanoidSlug - The nanoid-slug (e.g., "abc123-clean-the-backyard")
- * @returns {string} The extracted nanoid
+ * Extracts uid from a uid-slug URL part
+ * @param {string} uidSlug - The uid-slug (e.g., "abc123-clean-the-backyard")
+ * @returns {string} The extracted uid
  */
-function extractNanoidFromSlug(nanoidSlug) {
-    if (!nanoidSlug) return '';
+function extractUidFromSlug(uidSlug) {
+    if (!uidSlug) return '';
 
-    // Nanoid is always 21 characters by default, extract the first part before the first hyphen
-    // But handle cases where the nanoid itself might contain hyphens
-    const parts = nanoidSlug.split('-');
+    // UID is always 15 characters by our custom implementation, extract the first part before the first hyphen
+    // But handle cases where the uid itself might contain hyphens
+    const parts = uidSlug.split('-');
     if (parts.length === 1) {
-        // No slug, just nanoid
+        // No slug, just uid
         return parts[0];
     }
 
-    // Look for the nanoid part (21 chars) - it should be the first part
+    // Look for the uid part (15 chars) - it should be the first part
     const firstPart = parts[0];
-    if (firstPart.length === 21) {
+    if (firstPart.length === 15) {
         return firstPart;
     }
 
-    // Fallback: try to find 21-character alphanumeric string
-    const nanoidMatch = nanoidSlug.match(/^([A-Za-z0-9_-]{21})/);
-    return nanoidMatch ? nanoidMatch[1] : nanoidSlug.split('-')[0];
+    // Fallback: try to find 15-character alphanumeric string
+    const uidMatch = uidSlug.match(/^([0-9abcdefghijkmnpqrstuvwxyz]{15})/);
+    return uidMatch ? uidMatch[1] : uidSlug.split('-')[0];
 }
 
 /**
- * Validates if a string looks like a valid nanoid
+ * Validates if a string looks like a valid uid
  * @param {string} str - String to validate
- * @returns {boolean} True if it looks like a nanoid
+ * @returns {boolean} True if it looks like a uid
  */
-function isValidNanoid(str) {
-    return /^[A-Za-z0-9_-]{21}$/.test(str);
+function isValidUid(str) {
+    return /^[0-9abcdefghijkmnpqrstuvwxyz]{15}$/.test(str);
 }
 
 module.exports = {
     createSlug,
-    createNanoidSlug,
-    extractNanoidFromSlug,
-    isValidNanoid,
+    createUidSlug,
+    extractUidFromSlug,
+    isValidUid,
 };

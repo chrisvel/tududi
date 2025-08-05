@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('./models');
+const { uid } = require('../utils/uid');
 
 const CalendarToken = sequelize.define(
     'CalendarToken',
@@ -8,6 +9,12 @@ const CalendarToken = sequelize.define(
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
+        },
+        uid: {
+            type: DataTypes.STRING(),
+            allowNull: false,
+            unique: true,
+            defaultValue: uid,
         },
         user_id: {
             type: DataTypes.INTEGER,

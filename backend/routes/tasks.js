@@ -50,18 +50,18 @@ async function serializeTask(task) {
 
     return {
         ...taskWithoutSubtasks,
-        nanoid: task.nanoid, // Explicitly include nanoid
+        uid: task.uid, // Explicitly include uid
         tags: taskJson.Tags || [],
         Project: taskJson.Project
             ? {
                   ...taskJson.Project,
-                  nanoid: taskJson.Project.nanoid, // Explicitly include Project nanoid
+                  uid: taskJson.Project.uid, // Explicitly include Project uid
               }
             : null,
         subtasks: Subtasks
             ? Subtasks.map((subtask) => ({
                   ...subtask,
-                  nanoid: subtask.nanoid, // Also include nanoid for subtasks
+                  uid: subtask.uid, // Also include uid for subtasks
                   tags: subtask.Tags || [],
                   due_date: subtask.due_date
                       ? subtask.due_date.toISOString().split('T')[0]
@@ -285,12 +285,12 @@ async function filterTasksByParams(params, userId) {
     let includeClause = [
         {
             model: Tag,
-            attributes: ['id', 'name', 'nanoid'],
+            attributes: ['id', 'name', 'uid'],
             through: { attributes: [] },
         },
         {
             model: Project,
-            attributes: ['id', 'name', 'nanoid'],
+            attributes: ['id', 'name', 'uid'],
             required: false,
         },
         {
@@ -299,7 +299,7 @@ async function filterTasksByParams(params, userId) {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                     required: false,
                 },
@@ -431,13 +431,13 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         include: [
             {
                 model: Tag,
-                attributes: ['id', 'name', 'nanoid'],
+                attributes: ['id', 'name', 'uid'],
                 through: { attributes: [] },
                 required: false,
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active', 'nanoid'],
+                attributes: ['id', 'name', 'active', 'uid'],
                 required: false,
             },
             {
@@ -446,7 +446,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 include: [
                     {
                         model: Tag,
-                        attributes: ['id', 'name', 'nanoid'],
+                        attributes: ['id', 'name', 'uid'],
                         through: { attributes: [] },
                         required: false,
                     },
@@ -474,13 +474,13 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         include: [
             {
                 model: Tag,
-                attributes: ['id', 'name', 'nanoid'],
+                attributes: ['id', 'name', 'uid'],
                 through: { attributes: [] },
                 required: false,
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active', 'nanoid'],
+                attributes: ['id', 'name', 'active', 'uid'],
                 required: false,
             },
             {
@@ -489,7 +489,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 include: [
                     {
                         model: Tag,
-                        attributes: ['id', 'name', 'nanoid'],
+                        attributes: ['id', 'name', 'uid'],
                         through: { attributes: [] },
                         required: false,
                     },
@@ -529,13 +529,13 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         include: [
             {
                 model: Tag,
-                attributes: ['id', 'name', 'nanoid'],
+                attributes: ['id', 'name', 'uid'],
                 through: { attributes: [] },
                 required: false,
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active', 'nanoid'],
+                attributes: ['id', 'name', 'active', 'uid'],
                 required: false,
             },
             {
@@ -544,7 +544,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 include: [
                     {
                         model: Tag,
-                        attributes: ['id', 'name', 'nanoid'],
+                        attributes: ['id', 'name', 'uid'],
                         through: { attributes: [] },
                         required: false,
                     },
@@ -596,13 +596,13 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                     required: false,
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'active', 'nanoid'],
+                    attributes: ['id', 'name', 'active', 'uid'],
                     required: false,
                 },
                 {
@@ -611,7 +611,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name', 'nanoid'],
+                            attributes: ['id', 'name', 'uid'],
                             through: { attributes: [] },
                             required: false,
                         },
@@ -639,13 +639,13 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                     required: false,
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'active', 'nanoid'],
+                    attributes: ['id', 'name', 'active', 'uid'],
                     required: false,
                 },
                 {
@@ -654,7 +654,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name', 'nanoid'],
+                            attributes: ['id', 'name', 'uid'],
                             through: { attributes: [] },
                             required: false,
                         },
@@ -693,13 +693,13 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 include: [
                     {
                         model: Tag,
-                        attributes: ['id', 'name', 'nanoid'],
+                        attributes: ['id', 'name', 'uid'],
                         through: { attributes: [] },
                         required: false,
                     },
                     {
                         model: Project,
-                        attributes: ['id', 'name', 'active', 'nanoid'],
+                        attributes: ['id', 'name', 'active', 'uid'],
                         required: false,
                     },
                     {
@@ -708,7 +708,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                         include: [
                             {
                                 model: Tag,
-                                attributes: ['id', 'name', 'nanoid'],
+                                attributes: ['id', 'name', 'uid'],
                                 through: { attributes: [] },
                                 required: false,
                             },
@@ -746,13 +746,13 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         include: [
             {
                 model: Tag,
-                attributes: ['id', 'name', 'nanoid'],
+                attributes: ['id', 'name', 'uid'],
                 through: { attributes: [] },
                 required: false,
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active', 'nanoid'],
+                attributes: ['id', 'name', 'active', 'uid'],
                 required: false,
             },
             {
@@ -761,7 +761,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 include: [
                     {
                         model: Tag,
-                        attributes: ['id', 'name', 'nanoid'],
+                        attributes: ['id', 'name', 'uid'],
                         through: { attributes: [] },
                         required: false,
                     },
@@ -889,20 +889,26 @@ router.get('/tasks', async (req, res) => {
     }
 });
 
-// GET /api/task/uuid/:uuid
-router.get('/task/uuid/:uuid', async (req, res) => {
+// GET /api/task?uid=...
+router.get('/task', async (req, res) => {
     try {
+        const { uid } = req.query;
+        
+        if (_.isEmpty(uid)) {
+            return res.status(400).json({ error: 'uid query parameter is required' });
+        }
+        
         const task = await Task.findOne({
-            where: { uuid: req.params.uuid, user_id: req.currentUser.id },
+            where: { uid: uid, user_id: req.currentUser.id },
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     required: false,
                 },
             ],
@@ -916,53 +922,11 @@ router.get('/task/uuid/:uuid', async (req, res) => {
 
         res.json(serializedTask);
     } catch (error) {
-        console.error('Error fetching task by UUID:', error);
+        console.error('Error fetching task by UID:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// GET /api/task/nanoid/:nanoid
-router.get('/task/nanoid/:nanoid', async (req, res) => {
-    try {
-        const task = await Task.findOne({
-            where: { nanoid: req.params.nanoid, user_id: req.currentUser.id },
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
-                    through: { attributes: [] },
-                },
-                {
-                    model: Project,
-                    attributes: ['id', 'name', 'nanoid'],
-                    required: false,
-                },
-                {
-                    model: Task,
-                    as: 'Subtasks',
-                    include: [
-                        {
-                            model: Tag,
-                            attributes: ['id', 'name', 'nanoid'],
-                            through: { attributes: [] },
-                        },
-                    ],
-                },
-            ],
-        });
-
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found.' });
-        }
-
-        const serializedTask = await serializeTask(task);
-
-        res.json(serializedTask);
-    } catch (error) {
-        console.error('Error fetching task by nanoid:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
 
 // GET /api/task/:id
 router.get('/task/:id', async (req, res) => {
@@ -972,12 +936,12 @@ router.get('/task/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     required: false,
                 },
                 {
@@ -986,7 +950,7 @@ router.get('/task/:id', async (req, res) => {
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name', 'nanoid'],
+                            attributes: ['id', 'name', 'uid'],
                             through: { attributes: [] },
                         },
                     ],
@@ -1018,12 +982,12 @@ router.get('/task/:id/subtasks', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     required: false,
                 },
             ],
@@ -1176,12 +1140,12 @@ router.post('/task', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     required: false,
                 },
             ],
@@ -1234,7 +1198,7 @@ router.patch('/task/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
             ],
@@ -1694,12 +1658,12 @@ router.patch('/task/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     required: false,
                 },
             ],
@@ -1728,12 +1692,12 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     required: false,
                 },
                 {
@@ -1742,7 +1706,7 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
                     include: [
                         {
                             model: Tag,
-                            attributes: ['id', 'name', 'nanoid'],
+                            attributes: ['id', 'name', 'uid'],
                             through: { attributes: [] },
                         },
                     ],
@@ -2003,12 +1967,12 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'nanoid'],
+                    attributes: ['id', 'name', 'uid'],
                     required: false,
                 },
             ],

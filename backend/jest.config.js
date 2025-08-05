@@ -21,6 +21,6 @@ module.exports = {
     testTimeout: 30000,
     maxWorkers: '100%',
     moduleNameMapper: {
-        '^nanoid/non-secure$': '<rootDir>/tests/mocks/nanoid.js',
+        '^nanoid$': '<rootDir>/tests/mocks/nanoid.js',
     },
 };

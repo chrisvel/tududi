@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const { nanoid } = require('nanoid/non-secure');
+const { uid } = require('../utils/uid');
 
 module.exports = (sequelize) => {
     const Task = sequelize.define(
@@ -10,17 +10,17 @@ module.exports = (sequelize) => {
                 primaryKey: true,
                 autoIncrement: true,
             },
+            uid: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+                defaultValue: uid,
+            },
             uuid: {
                 type: DataTypes.UUID,
                 allowNull: false,
                 unique: true,
                 defaultValue: DataTypes.UUIDV4,
-            },
-            nanoid: {
-                type: DataTypes.STRING(21),
-                allowNull: false,
-                unique: true,
-                defaultValue: () => nanoid(),
             },
             name: {
                 type: DataTypes.STRING,
