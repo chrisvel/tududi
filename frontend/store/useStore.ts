@@ -67,7 +67,7 @@ interface TasksStore {
     toggleTaskCompletion: (taskId: number) => Promise<Task>;
     toggleTaskToday: (taskId: number) => Promise<Task>;
     loadTaskById: (taskId: number) => Promise<Task>;
-    loadTaskByUuid: (uuid: string) => Promise<Task>;
+    loadTaskByUid: (uid: string) => Promise<Task>;
     loadSubtasks: (parentTaskId: number) => Promise<Task[]>;
     addTask: (task: Task) => void;
     removeTask: (taskId: number) => void;
@@ -475,25 +475,25 @@ export const useStore = create<StoreState>((set: any) => ({
                 throw error;
             }
         },
-        loadTaskByUuid: async (uuid) => {
-            const { fetchTaskByUuid } = await import('../utils/tasksService');
+        loadTaskByUid: async (uid) => {
+            const { fetchTaskByUid } = await import('../utils/tasksService');
             try {
-                const task = await fetchTaskByUuid(uuid);
+                const task = await fetchTaskByUid(uid);
                 set((state) => ({
                     tasksStore: {
                         ...state.tasksStore,
                         tasks: state.tasksStore.tasks.some(
-                            (t) => t.uuid === uuid
+                            (t) => t.uid === uid
                         )
                             ? state.tasksStore.tasks.map((t) =>
-                                  t.uuid === uuid ? task : t
+                                  t.uid === uid ? task : t
                               )
                             : [task, ...state.tasksStore.tasks],
                     },
                 }));
                 return task;
             } catch (error) {
-                console.error('loadTaskByUuid: Failed to load task:', error);
+                console.error('loadTaskByUid: Failed to load task:', error);
                 set((state) => ({
                     tasksStore: { ...state.tasksStore, isError: true },
                 }));

@@ -58,8 +58,8 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             {viewMode === 'cards' && (
                 <Link
                     to={
-                        project.nanoid
-                            ? `/project/${project.nanoid}-${project.name
+                        project.uid
+                            ? `/project/${project.uid}-${project.name
                                   .toLowerCase()
                                   .replace(/[^a-z0-9]+/g, '-')
                                   .replace(/^-|-$/g, '')}`
@@ -91,8 +91,8 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
             {viewMode === 'list' && (
                 <Link
                     to={
-                        project.nanoid
-                            ? `/project/${project.nanoid}-${project.name
+                        project.uid
+                            ? `/project/${project.uid}-${project.name
                                   .toLowerCase()
                                   .replace(/[^a-z0-9]+/g, '-')
                                   .replace(/^-|-$/g, '')}`
@@ -126,8 +126,8 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                 <div className="flex items-center">
                     <Link
                         to={
-                            project.nanoid
-                                ? `/project/${project.nanoid}-${project.name
+                            project.uid
+                                ? `/project/${project.uid}-${project.name
                                       .toLowerCase()
                                       .replace(/[^a-z0-9]+/g, '-')
                                       .replace(/^-|-$/g, '')}`

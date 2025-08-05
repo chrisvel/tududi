@@ -1,5 +1,6 @@
 import { Tag } from '../entities/Tag';
 import { handleAuthResponse } from './authUtils';
+import { extractUidFromSlug } from './slugUtils';
 
 export const fetchTags = async (): Promise<Tag[]> => {
     try {
@@ -61,8 +62,11 @@ export const deleteTag = async (tagId: number): Promise<void> => {
     await handleAuthResponse(response, 'Failed to delete tag.');
 };
 
-export const fetchTagBySlug = async (nanoidSlug: string): Promise<Tag> => {
-    const response = await fetch(`/api/tag/${nanoidSlug}`, {
+export const fetchTagBySlug = async (uidSlug: string): Promise<Tag> => {
+    // Extract uid from uidSlug using proper extraction function
+    const uid = extractUidFromSlug(uidSlug);
+    
+    const response = await fetch(`/api/tag?uid=${encodeURIComponent(uid)}`, {
         credentials: 'include',
         headers: {
             Accept: 'application/json',

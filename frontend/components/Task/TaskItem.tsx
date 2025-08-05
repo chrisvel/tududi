@@ -237,15 +237,15 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     const handleTaskClick = () => {
-        if (task.nanoid) {
-            navigate(`/task/${task.nanoid}`);
+        if (task.uid) {
+            navigate(`/task/${task.uid}`);
         }
     };
 
     const handleSubtaskClick = async () => {
         // Navigate to the parent task URL (not the subtask URL)
-        if (task.nanoid) {
-            navigate(`/task/${task.nanoid}`);
+        if (task.uid) {
+            navigate(`/task/${task.uid}`);
         }
     };
 

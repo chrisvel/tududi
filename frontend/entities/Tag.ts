@@ -1,5 +1,5 @@
 export interface Tag {
     id?: number;
-    nanoid?: string;
+    uid?: string;
     name: string;
 }

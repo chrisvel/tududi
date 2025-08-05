@@ -21,100 +21,101 @@ export function createSlug(text: string, maxLength: number = 50): string {
 }
 
 /**
- * Creates a nanoid-slug URL for a given entity
- * @param nanoid - The nanoid of the entity
+ * Creates a uid-slug URL for a given entity
+ * @param uid - The uid of the entity
  * @param name - The name/title of the entity
  * @param maxSlugLength - Maximum length of the slug part (default: 40)
- * @returns The nanoid-slug URL part (e.g., "abc123-clean-the-backyard")
+ * @returns The uid-slug URL part (e.g., "abc123-clean-the-backyard")
  */
-export function createNanoidSlug(
-    nanoid: string,
+export function createUidSlug(
+    uid: string,
     name: string,
     maxSlugLength: number = 40
 ): string {
-    if (!nanoid) throw new Error('Nanoid is required');
+    if (!uid) throw new Error('UID is required');
 
     const slug = createSlug(name, maxSlugLength);
-    return slug ? `${nanoid}-${slug}` : nanoid;
+    return slug ? `${uid}-${slug}` : uid;
 }
 
 /**
- * Extracts nanoid from a nanoid-slug URL part
- * @param nanoidSlug - The nanoid-slug (e.g., "abc123-clean-the-backyard")
- * @returns The extracted nanoid
+ * Extracts uid from a uid-slug URL part
+ * @param uidSlug - The uid-slug (e.g., "abc123-clean-the-backyard")
+ * @returns The extracted uid
  */
-export function extractNanoidFromSlug(nanoidSlug: string): string {
-    if (!nanoidSlug) return '';
+export function extractUidFromSlug(uidSlug: string): string {
+    if (!uidSlug) return '';
 
-    // Nanoid is always 21 characters by default, extract the first part before the first hyphen
-    // But handle cases where the nanoid itself might contain hyphens
-    const parts = nanoidSlug.split('-');
+    // UID is always 15 characters by our custom implementation, extract the first part before the first hyphen
+    // But handle cases where the uid itself might contain hyphens
+    const parts = uidSlug.split('-');
     if (parts.length === 1) {
-        // No slug, just nanoid
+        // No slug, just uid
         return parts[0];
     }
 
-    // Look for the nanoid part (21 chars) - it should be the first part
+    // Look for the uid part (15 chars) - it should be the first part
     const firstPart = parts[0];
-    if (firstPart.length === 21) {
+    if (firstPart.length === 15) {
         return firstPart;
     }
 
-    // Fallback: try to find 21-character alphanumeric string
-    const nanoidMatch = nanoidSlug.match(/^([A-Za-z0-9_-]{21})/);
-    return nanoidMatch ? nanoidMatch[1] : nanoidSlug.split('-')[0];
+    // Fallback: try to find 15-character alphanumeric string
+    const uidMatch = uidSlug.match(/^([0-9abcdefghijkmnpqrstuvwxyz]{15})/);
+    return uidMatch ? uidMatch[1] : uidSlug.split('-')[0];
 }
 
 /**
- * Validates if a string looks like a valid nanoid
+ * Validates if a string looks like a valid uid
  * @param str - String to validate
- * @returns True if it looks like a nanoid
+ * @returns True if it looks like a uid
  */
-export function isValidNanoid(str: string): boolean {
-    return /^[A-Za-z0-9_-]{21}$/.test(str);
+export function isValidUid(str: string): boolean {
+    return /^[0-9abcdefghijkmnpqrstuvwxyz]{15}$/.test(str);
 }
 
 /**
- * Creates a project URL using nanoid-slug format
- * @param project - Project object with nanoid and name
+ * Creates a project URL using uid-slug format
+ * @param project - Project object with uid and name
  * @returns The project URL path (e.g., "/project/abc123-clean-the-backyard")
  */
 export function createProjectUrl(project: {
-    nanoid?: string;
+    uid?: string;
     name: string;
 }): string {
-    if (!project.nanoid) {
-        throw new Error('Project nanoid is required');
+    if (!project.uid) {
+        throw new Error('Project uid is required');
     }
-    const nanoidSlug = createNanoidSlug(project.nanoid, project.name);
-    return `/project/${nanoidSlug}`;
+    const uidSlug = createUidSlug(project.uid, project.name);
+    return `/project/${uidSlug}`;
 }
 
 /**
- * Creates a note URL using nanoid-slug format
- * @param note - Note object with nanoid and title
+ * Creates a note URL using uid-slug format
+ * @param note - Note object with uid and title
  * @returns The note URL path (e.g., "/note/abc123-meeting-notes")
  */
 export function createNoteUrl(note: {
-    nanoid?: string;
+    uid?: string;
     title: string;
 }): string {
-    if (!note.nanoid) {
-        throw new Error('Note nanoid is required');
+    if (!note.uid) {
+        throw new Error('Note uid is required');
     }
-    const nanoidSlug = createNanoidSlug(note.nanoid, note.title);
-    return `/note/${nanoidSlug}`;
+    const uidSlug = createUidSlug(note.uid, note.title);
+    return `/note/${uidSlug}`;
 }
 
 /**
- * Creates a tag URL using nanoid-slug format
- * @param tag - Tag object with nanoid and name
+ * Creates a tag URL using uid-slug format
+ * @param tag - Tag object with uid and name
  * @returns The tag URL path (e.g., "/tag/abc123-work-tag")
  */
-export function createTagUrl(tag: { nanoid?: string; name: string }): string {
-    if (!tag.nanoid) {
-        throw new Error('Tag nanoid is required');
+export function createTagUrl(tag: { uid?: string; name: string }): string {
+    if (!tag.uid) {
+        throw new Error('Tag uid is required');
     }
-    const nanoidSlug = createNanoidSlug(tag.nanoid, tag.name);
-    return `/tag/${nanoidSlug}`;
+    const uidSlug = createUidSlug(tag.uid, tag.name);
+    return `/tag/${uidSlug}`;
 }
+

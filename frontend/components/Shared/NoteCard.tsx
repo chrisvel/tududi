@@ -11,13 +11,13 @@ import MarkdownRenderer from './MarkdownRenderer';
 interface NoteCardProps {
     note: {
         id?: string | number;
-        nanoid?: string;
+        uid?: string;
         title: string;
         content?: string;
-        tags?: { name: string; nanoid?: string }[];
-        Tags?: { name: string; nanoid?: string }[];
-        project?: { name: string; id?: number; nanoid?: string };
-        Project?: { name: string; id?: number; nanoid?: string };
+        tags?: { name: string; uid?: string }[];
+        Tags?: { name: string; uid?: string }[];
+        project?: { name: string; id?: number; uid?: string };
+        Project?: { name: string; id?: number; uid?: string };
     };
     onEdit?: (note: any) => void;
     onDelete?: (note: any) => void;
@@ -63,8 +63,8 @@ const NoteCard: React.FC<NoteCardProps> = ({
         <div className="relative group">
             <Link
                 to={
-                    note.nanoid
-                        ? `/note/${note.nanoid}-${note.title
+                    note.uid
+                        ? `/note/${note.uid}-${note.title
                               .toLowerCase()
                               .replace(/[^a-z0-9]+/g, '-')
                               .replace(/^-|-$/g, '')}`
@@ -129,9 +129,9 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                     onClick={async (e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        if (project.nanoid) {
+                                        if (project.uid) {
                                             navigate(
-                                                `/project/${project.nanoid}-${project.name
+                                                `/project/${project.uid}-${project.name
                                                     .toLowerCase()
                                                     .replace(/[^a-z0-9]+/g, '-')
                                                     .replace(/^-|-$/g, '')}`
@@ -161,9 +161,9 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
-                                                        if (tag.nanoid) {
+                                                        if (tag.uid) {
                                                             navigate(
-                                                                `/tag/${tag.nanoid}-${tag.name
+                                                                `/tag/${tag.uid}-${tag.name
                                                                     .toLowerCase()
                                                                     .replace(
                                                                         /[^a-z0-9]+/g,

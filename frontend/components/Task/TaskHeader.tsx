@@ -264,8 +264,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <FolderIcon className="h-3 w-3 mr-1" />
                                     <Link
                                         to={
-                                            project.nanoid
-                                                ? `/project/${project.nanoid}-${project.name
+                                            project.uid
+                                                ? `/project/${project.uid}-${project.name
                                                       .toLowerCase()
                                                       .replace(
                                                           /[^a-z0-9]+/g,
@@ -304,8 +304,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             <React.Fragment key={tag.name}>
                                                 <Link
                                                     to={
-                                                        tag.nanoid
-                                                            ? `/tag/${tag.nanoid}-${tag.name
+                                                        tag.uid
+                                                            ? `/tag/${tag.uid}-${tag.name
                                                                   .toLowerCase()
                                                                   .replace(
                                                                       /[^a-z0-9]+/g,
@@ -532,8 +532,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     <FolderIcon className="h-3 w-3 mr-1" />
                                     <Link
                                         to={
-                                            project.nanoid
-                                                ? `/project/${project.nanoid}-${project.name
+                                            project.uid
+                                                ? `/project/${project.uid}-${project.name
                                                       .toLowerCase()
                                                       .replace(
                                                           /[^a-z0-9]+/g,
@@ -566,8 +566,8 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             <React.Fragment key={tag.name}>
                                                 <Link
                                                     to={
-                                                        tag.nanoid
-                                                            ? `/tag/${tag.nanoid}-${tag.name
+                                                        tag.uid
+                                                            ? `/tag/${tag.uid}-${tag.name
                                                                   .toLowerCase()
                                                                   .replace(
                                                                       /[^a-z0-9]+/g,

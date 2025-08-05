@@ -437,8 +437,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                                         >
                                                             <Link
                                                                 to={
-                                                                    matchingProject.nanoid
-                                                                        ? `/project/${matchingProject.nanoid}-${matchingProject.name
+                                                                    matchingProject.uid
+                                                                        ? `/project/${matchingProject.uid}-${matchingProject.name
                                                                               .toLowerCase()
                                                                               .replace(
                                                                                   /[^a-z0-9]+/g,

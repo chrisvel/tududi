@@ -182,8 +182,8 @@ const Areas: React.FC = () => {
                             <Link
                                 key={area.id}
                                 to={
-                                    area.nanoid
-                                        ? `/projects?area=${area.nanoid}-${area.name
+                                    area.uid
+                                        ? `/projects?area=${area.uid}-${area.name
                                               .toLowerCase()
                                               .replace(/[^a-z0-9]+/g, '-')
                                               .replace(/^-|-$/g, '')}`

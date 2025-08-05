@@ -307,7 +307,7 @@ const InboxItems: React.FC = () => {
                 <span>
                     {t('task.created', 'Task')}{' '}
                     <a
-                        href={`/task/${createdTask.nanoid}`}
+                        href={`/task/${createdTask.uid}`}
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {createdTask.name}

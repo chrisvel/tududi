@@ -4,7 +4,7 @@ import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskModal from './TaskModal';
 import {
-    fetchTaskByUuid,
+    fetchTaskByUid,
     fetchTaskById,
     updateTask,
     deleteTask,
@@ -13,7 +13,7 @@ import { createProject } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
 
 const TaskView: React.FC = () => {
-    const { uuid } = useParams<{ uuid: string }>();
+    const { uid } = useParams<{ uid: string }>();
     const navigate = useNavigate();
     const store = useStore();
     const [task, setTask] = useState<Task | null>(null);
@@ -23,14 +23,14 @@ const TaskView: React.FC = () => {
 
     useEffect(() => {
         const fetchTask = async () => {
-            if (!uuid) {
-                setError('No task UUID provided');
+            if (!uid) {
+                setError('No task UID provided');
                 setLoading(false);
                 return;
             }
 
             try {
-                const taskData = await fetchTaskByUuid(uuid);
+                const taskData = await fetchTaskByUid(uid);
 
                 // Check if this is a subtask and redirect to parent if so
                 if (taskData.parent_task_id) {
@@ -60,7 +60,7 @@ const TaskView: React.FC = () => {
         };
 
         fetchTask();
-    }, [uuid]);
+    }, [uid]);
 
     const handleClose = () => {
         navigate(-1); // Go back to previous page
