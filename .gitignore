@@ -30,3 +30,9 @@ backend/dist/
 
 # Webpack output
 public/assets/
+
+# TypeScript build info
+.tsbuildinfo
+
+# Webpack cache
+.webpack/

@@ -7,6 +7,12 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   entry: './frontend/index.tsx',
+  cache: {
+    type: 'filesystem',
+    buildDependencies: {
+      config: [__filename],
+    },
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].[contenthash].js',
@@ -67,21 +73,30 @@ module.exports = {
       {
         test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              presets: [
-                '@babel/preset-env',
-                '@babel/preset-react',
-                '@babel/preset-typescript',
-              ],
-              plugins: [
-                isDevelopment && 'react-refresh/babel',
-              ].filter(Boolean),
+        use: {
+          loader: 'swc-loader',
+          options: {
+            jsc: {
+              parser: {
+                syntax: 'typescript',
+                tsx: true,
+                decorators: false,
+                dynamicImport: true,
+              },
+              transform: {
+                react: {
+                  runtime: 'automatic',
+                  development: isDevelopment,
+                  refresh: isDevelopment,
+                },
+              },
+              target: 'es2018',
+            },
+            module: {
+              type: 'es6',
             },
           },
-        ],
+        },
       },
       {
         test: /\.css$/i,

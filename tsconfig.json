@@ -1,15 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "lib": ["es2017", "dom"],
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
     "module": "esnext",
-    "moduleResolution": "node", 
-    "jsx": "react",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
     "types": ["node"]
   },
-  "include": ["frontend/**/*"]
+  "include": ["frontend/**/*"],
+  "exclude": ["node_modules", "dist", "backend"]
 }
