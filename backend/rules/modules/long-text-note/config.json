@@ -2,7 +2,7 @@
     "id": "long_text_note",
     "name": "Long Text → Note",
     "description": "When text is long (multiple sentences, paragraphs, or over 100 characters), suggest creating a note",
-    "priority": 150,
+    "priority": 290,
     "examples": [
         "Meeting notes from today's quarterly review: We discussed the Q3 performance metrics and identified several areas for improvement. The sales team exceeded their targets by 15% while the marketing team launched three successful campaigns. Next quarter we need to focus on customer retention and expanding into new markets. Action items include hiring two new sales reps and investing in better analytics tools.",
         "Project requirements and specifications:\n\nThe new mobile app should have the following features:\n- User authentication and profiles\n- Real-time messaging\n- Push notifications\n- Offline mode support\n- Integration with existing backend API\n\nTimeline: 3 months for MVP, additional 2 months for advanced features.",

@@ -16,14 +16,27 @@ const requireAdmin = (req, res, next) => {
 // GET /api/admin/rules - Get all suggestion rules
 router.get('/admin/rules', requireAdmin, async (req, res) => {
     try {
-        const { loadSuggestionRules } = require('../config/suggestion-rules');
-        const config = loadSuggestionRules();
+        const rulesEngine = require('../services/suggestionRulesEngine');
+        const rules = rulesEngine.getRules();
+
+        // Convert modular rules to expected format
+        const formattedRules = rules.map((rule) => ({
+            id: rule.id,
+            name: rule.name,
+            description: rule.description,
+            priority: rule.priority,
+            examples: rule.examples || [],
+            conditions: rule.conditions,
+            action: rule.action,
+        }));
 
         res.json({
-            rules: config.rules || [],
-            condition_types: config.condition_types || {},
-            total_rules: (config.rules || []).length,
-            rules_by_priority: config.rules || [], // Already sorted by priority
+            rules: formattedRules,
+            condition_types: {}, // Legacy field, not used in modular system
+            total_rules: formattedRules.length,
+            rules_by_priority: formattedRules.sort(
+                (a, b) => b.priority - a.priority
+            ),
         });
     } catch (error) {
         console.error('Error loading rules:', error);
@@ -34,9 +47,8 @@ router.get('/admin/rules', requireAdmin, async (req, res) => {
 // GET /api/admin/rules/stats - Get rules statistics
 router.get('/admin/rules/stats', requireAdmin, async (req, res) => {
     try {
-        const { loadSuggestionRules } = require('../config/suggestion-rules');
-        const config = loadSuggestionRules();
-        const rules = config.rules || [];
+        const rulesEngine = require('../services/suggestionRulesEngine');
+        const rules = rulesEngine.getRules();
 
         // Calculate statistics
         const stats = {
