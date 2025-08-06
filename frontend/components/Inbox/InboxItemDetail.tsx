@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import {
     TrashIcon,
     PencilIcon,
@@ -657,7 +658,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                         </p>
                     )}
 
-                    {/* Enhanced metadata display with intelligent analysis */}
+                    {/* Metadata display matching TaskHeader format */}
                     {(() => {
                         // Combine explicit and filtered suggested tags
                         const allTags = [
@@ -685,35 +686,75 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                             parseDueDate(item.content);
 
                         const hasAnyMetadata =
-                            uniqueTags.length > 0 ||
                             uniqueProjects.length > 0 ||
-                            priority ||
-                            dueDate;
+                            uniqueTags.length > 0 ||
+                            dueDate ||
+                            priority;
 
                         return hasAnyMetadata ? (
-                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 flex-wrap gap-1">
+                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                                 {/* Projects display first */}
                                 {uniqueProjects.length > 0 && (
                                     <div className="flex items-center">
                                         <FolderIcon className="h-3 w-3 mr-1" />
-                                        <span>{uniqueProjects.join(', ')}</span>
+                                        <span>
+                                            {uniqueProjects.map(
+                                                (projectName, index) => {
+                                                    const matchingProject =
+                                                        projects.find(
+                                                            (p) =>
+                                                                p.name.toLowerCase() ===
+                                                                projectName.toLowerCase()
+                                                        );
+
+                                                    return (
+                                                        <React.Fragment
+                                                            key={projectName}
+                                                        >
+                                                            {matchingProject ? (
+                                                                <Link
+                                                                    to={`/project/${matchingProject.id}`}
+                                                                    className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                                    onClick={(
+                                                                        e
+                                                                    ) =>
+                                                                        e.stopPropagation()
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        projectName
+                                                                    }
+                                                                </Link>
+                                                            ) : (
+                                                                <span>
+                                                                    {
+                                                                        projectName
+                                                                    }
+                                                                </span>
+                                                            )}
+                                                            {index <
+                                                                uniqueProjects.length -
+                                                                    1 && ', '}
+                                                        </React.Fragment>
+                                                    );
+                                                }
+                                            )}
+                                        </span>
                                     </div>
                                 )}
 
                                 {/* Add spacing */}
                                 {uniqueProjects.length > 0 &&
-                                    (uniqueTags.length > 0 ||
-                                        priority ||
-                                        dueDate) && (
-                                        <span className="mx-1">•</span>
+                                    uniqueTags.length > 0 && (
+                                        <span className="mx-2">•</span>
                                     )}
 
                                 {/* Tags display */}
                                 {uniqueTags.length > 0 && (
                                     <div className="flex items-center">
                                         <TagIcon className="h-3 w-3 mr-1" />
-                                        <div className="flex flex-wrap gap-1">
-                                            {uniqueTags.map((tag) => {
+                                        <span>
+                                            {uniqueTags.map((tag, index) => {
                                                 const isExplicit =
                                                     hashtags.includes(tag);
                                                 const isSuggested =
@@ -723,86 +764,91 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                                     );
 
                                                 return (
-                                                    <span
-                                                        key={tag}
-                                                        className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                                                            isExplicit
-                                                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-                                                                : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
-                                                        }`}
-                                                    >
-                                                        {tag}
+                                                    <React.Fragment key={tag}>
+                                                        <Link
+                                                            to={`/tag/${encodeURIComponent(tag)}`}
+                                                            className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                            onClick={(e) =>
+                                                                e.stopPropagation()
+                                                            }
+                                                        >
+                                                            {tag}
+                                                        </Link>
                                                         {isSuggested && (
                                                             <button
-                                                                onClick={() =>
+                                                                onClick={(
+                                                                    e
+                                                                ) => {
+                                                                    e.stopPropagation();
                                                                     removeSuggestedTag(
                                                                         tag
-                                                                    )
-                                                                }
+                                                                    );
+                                                                }}
                                                                 className="ml-1 text-gray-400 hover:text-red-500 focus:outline-none"
                                                                 title="Remove suggested tag"
                                                             >
                                                                 ×
                                                             </button>
                                                         )}
-                                                    </span>
+                                                        {index <
+                                                            uniqueTags.length -
+                                                                1 && ', '}
+                                                    </React.Fragment>
                                                 );
                                             })}
-                                        </div>
+                                        </span>
                                     </div>
                                 )}
 
                                 {/* Add spacing */}
-                                {uniqueTags.length > 0 &&
-                                    (priority || dueDate) && (
-                                        <span className="mx-1">•</span>
-                                    )}
-
-                                {/* Priority display */}
-                                {priority && (
-                                    <div
-                                        className={`flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                                            priority === 'high'
-                                                ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
-                                                : priority === 'medium'
-                                                  ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400'
-                                                  : 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
-                                        }`}
-                                    >
-                                        <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
-                                        {priority}
-                                    </div>
-                                )}
-
-                                {/* Add spacing */}
-                                {priority && dueDate && (
-                                    <span className="mx-1">•</span>
-                                )}
+                                {(uniqueProjects.length > 0 ||
+                                    uniqueTags.length > 0) &&
+                                    dueDate && <span className="mx-2">•</span>}
 
                                 {/* Due date display */}
                                 {dueDate && (
-                                    <div className="flex items-center px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 rounded text-xs font-medium">
+                                    <div className="flex items-center">
                                         <CalendarIcon className="h-3 w-3 mr-1" />
-                                        {(() => {
-                                            const today = new Date()
-                                                .toISOString()
-                                                .split('T')[0];
-                                            const tomorrow = new Date();
-                                            tomorrow.setDate(
-                                                tomorrow.getDate() + 1
-                                            );
-                                            const tomorrowStr = tomorrow
-                                                .toISOString()
-                                                .split('T')[0];
+                                        <span>
+                                            {(() => {
+                                                const today = new Date()
+                                                    .toISOString()
+                                                    .split('T')[0];
+                                                const tomorrow = new Date();
+                                                tomorrow.setDate(
+                                                    tomorrow.getDate() + 1
+                                                );
+                                                const tomorrowStr = tomorrow
+                                                    .toISOString()
+                                                    .split('T')[0];
 
-                                            if (dueDate === today)
-                                                return 'Today';
-                                            if (dueDate === tomorrowStr)
-                                                return 'Tomorrow';
-                                            return new Date(
-                                                dueDate
-                                            ).toLocaleDateString();
-                                        })()}
+                                                if (dueDate === today)
+                                                    return 'Today';
+                                                if (dueDate === tomorrowStr)
+                                                    return 'Tomorrow';
+                                                return new Date(
+                                                    dueDate
+                                                ).toLocaleDateString();
+                                            })()}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Add spacing */}
+                                {(uniqueProjects.length > 0 ||
+                                    uniqueTags.length > 0 ||
+                                    dueDate) &&
+                                    priority && <span className="mx-2">•</span>}
+
+                                {/* Priority display - no background colors */}
+                                {priority && (
+                                    <div className="flex items-center">
+                                        <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
+                                        <span className="text-gray-500 dark:text-gray-400">
+                                            {priority.charAt(0).toUpperCase() +
+                                                priority.slice(1)}{' '}
+                                            Priority
+                                        </span>
                                     </div>
                                 )}
                             </div>

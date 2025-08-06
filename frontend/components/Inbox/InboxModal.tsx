@@ -705,22 +705,6 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const shouldKeepSpecificTag = (tag: string, text: string): boolean => {
         const textLower = text.toLowerCase();
 
-        // Keep health tag if text still contains medical keywords
-        if (tag === 'health') {
-            const medicalKeywords = [
-                'doctor',
-                'dentist',
-                'medical',
-                'appointment',
-                'checkup',
-                'clinic',
-                'hospital',
-            ];
-            return medicalKeywords.some((keyword) =>
-                textLower.includes(keyword)
-            );
-        }
-
         // Keep urgent tag if text still contains urgent keywords
         if (tag === 'urgent') {
             const urgentKeywords = [
