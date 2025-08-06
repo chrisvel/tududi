@@ -4,14 +4,55 @@ set -eu
 
 backup_db() {
   db_dir=$(dirname "$DB_FILE")
-    backup_count=$(find "$db_dir" -maxdepth 1 -name "db-backup-*.sqlite3" -type f | wc -l)
-
-  if [ "$backup_count" -ge 4 ]; then
-    # Delete the oldest backup file in the DB directory
-    oldest_backup=$(ls -t "$db_dir"/db-backup-*.sqlite3 2>/dev/null | tail -n 1)
-    if [ -n "$oldest_backup" ]; then
-      rm "$oldest_backup"
-      echo "Deleted oldest backup: $oldest_backup"
+  today=$(date +"%Y%m%d")
+  # Calculate 7 days ago using epoch time (POSIX-compliant, works with BusyBox)
+  current_epoch=$(date +%s)
+  week_ago_epoch=$((current_epoch - 604800))  # 7 days = 604800 seconds
+  # BusyBox date accepts @seconds_since_1970 format
+  week_ago=$(date -d "@$week_ago_epoch" +"%Y%m%d")
+  
+  # Clean up old backups
+  for backup in "$db_dir"/db-backup-*.sqlite3; do
+    [ -f "$backup" ] || continue
+    
+    # Extract date from filename (db-backup-YYYYMMDDHHMMSS.sqlite3)
+    backup_date=$(basename "$backup" | sed 's/db-backup-\([0-9]\{8\}\).*/\1/')
+    
+    # Skip if we can't extract a valid date
+    [ -n "$backup_date" ] || continue
+    
+    # Delete backups older than one week
+    if [ "$backup_date" -lt "$week_ago" ]; then
+      rm "$backup"
+      echo "Deleted old backup (>1 week): $(basename "$backup")"
+      continue
+    fi
+    
+    # For dates before today (but within the week), keep only the most recent backup
+    if [ "$backup_date" != "$today" ]; then
+      # For this date, find all backups and keep only the newest
+      day_backups=$(ls -t "$db_dir"/db-backup-${backup_date}*.sqlite3 2>/dev/null)
+      first=true
+      for old_backup in $day_backups; do
+        if [ "$first" = true ]; then
+          first=false
+          continue  # Skip the newest one
+        fi
+        rm "$old_backup"
+        echo "Deleted duplicate backup: $(basename "$old_backup")"
+      done
+    fi
+  done
+  
+  # Count today's backups
+  today_backup_count=$(find "$db_dir" -maxdepth 1 -name "db-backup-${today}*.sqlite3" -type f | wc -l)
+  
+  # If we have 4 or more backups from today, delete the oldest one from today
+  if [ "$today_backup_count" -ge 4 ]; then
+    oldest_today_backup=$(ls -t "$db_dir"/db-backup-${today}*.sqlite3 2>/dev/null | tail -n 1)
+    if [ -n "$oldest_today_backup" ]; then
+      rm "$oldest_today_backup"
+      echo "Deleted oldest backup from today: $(basename "$oldest_today_backup")"
     fi
   fi
 
