@@ -1,0 +1,78 @@
+{
+    "long_text_notes": [
+        {
+            "name": "Quarterly Meeting Notes",
+            "text": "Meeting notes from today's quarterly review: We discussed the Q3 performance metrics and identified several areas for improvement. The sales team exceeded their targets by 15% while the marketing team launched three successful campaigns. Next quarter we need to focus on customer retention and expanding into new markets. Action items include hiring two new sales reps and investing in better analytics tools.",
+            "expected_type": "note",
+            "expected_reason": "long_text_content"
+        },
+        {
+            "name": "Daily Standup Notes",
+            "text": "Daily standup notes for today's meeting: John finished the user authentication module, Sarah is working on the payment integration, and Mike identified a bug in the notification system. Blockers include waiting for API documentation from the third-party service.",
+            "expected_type": "note",
+            "expected_reason": "long_text_content"
+        },
+        {
+            "name": "Conference Notes",
+            "text": "Conference notes from today's React summit: The keynote covered React 18 features including concurrent rendering, automatic batching, and new hooks. Key takeaways include the importance of Suspense for data fetching and the new useId hook for accessibility improvements.",
+            "expected_type": "note",
+            "expected_reason": "long_text_content"
+        },
+        {
+            "name": "Interview Notes",
+            "text": "Interview notes from today's candidate screening: Jane Smith has 5 years of React experience, strong problem-solving skills, and good communication. Technical assessment went well, she solved the algorithm problem efficiently. Recommended for next round.",
+            "expected_type": "note",
+            "expected_reason": "long_text_content"
+        },
+        {
+            "name": "Research Notes",
+            "text": "Research notes from today's market analysis: Competitor pricing ranges from $10-25/month, most successful products focus on simplicity, customer support is a key differentiator. Mobile usage accounts for 60% of traffic across the industry.",
+            "expected_type": "note",
+            "expected_reason": "long_text_content"
+        }
+    ],
+    "actionable_tasks": [
+        {
+            "name": "Call Client Today",
+            "text": "Call the client today about project requirements +Work",
+            "expected_type": "task",
+            "expected_reason": "time_specific"
+        },
+        {
+            "name": "Submit Report Today",
+            "text": "Submit the quarterly report today before 5pm +Finance",
+            "expected_type": "task",
+            "expected_reason": "time_specific"
+        },
+        {
+            "name": "Schedule Meeting",
+            "text": "Schedule meeting with client today to discuss requirements +Sales",
+            "expected_type": "task",
+            "expected_reason": "time_specific"
+        }
+    ],
+    "long_text_fallback": [
+        {
+            "name": "General Long Text",
+            "text": "This is a long piece of text that doesn't follow any specific pattern but is clearly meant to be informational. It contains various details and explanations that would be useful to keep as a note for future reference. The content is descriptive rather than actionable and should be stored as a note for later review and analysis.",
+            "expected_type": "note",
+            "expected_reason": "long_text_content"
+        }
+    ],
+    "edge_cases": [
+        {
+            "name": "Short Meeting Reference",
+            "text": "Meeting notes: Quick sync",
+            "expected_type": null,
+            "expected_reason": null,
+            "description": "Short text shouldn't trigger note-taking pattern due to is_long_text requirement"
+        },
+        {
+            "name": "Task with Meeting Context",
+            "text": "Schedule meeting notes review with team tomorrow +Work",
+            "expected_type": "task",
+            "expected_reason": "time_specific",
+            "description": "This is an actionable task, even though it mentions meeting notes"
+        }
+    ]
+}

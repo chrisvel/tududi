@@ -20,7 +20,6 @@ import { useStore } from '../../store/useStore';
 
 interface InboxItemDetailProps {
     item: InboxItem;
-    onProcess: (id: number) => void;
     onDelete: (id: number) => void;
     onUpdate?: (id: number, content: string) => Promise<void>;
     openTaskModal: (task: Task, inboxItemId?: number) => void;
@@ -31,7 +30,6 @@ interface InboxItemDetailProps {
 
 const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     item,
-    onProcess, // eslint-disable-line @typescript-eslint/no-unused-vars
     onDelete,
     onUpdate,
     openTaskModal,
@@ -304,11 +302,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         return analysisResult.suggested_tags.filter(
             (tag) => !removedSuggestedTags.includes(tag.toLowerCase())
         );
-    };
-
-    // Helper function to remove a suggested tag
-    const removeSuggestedTag = (tagName: string) => {
-        setRemovedSuggestedTags((prev) => [...prev, tagName.toLowerCase()]);
     };
 
     // Analyze the inbox item content for intelligent suggestions
@@ -647,13 +640,27 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         >
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-2 gap-2">
                 <div className="flex-1">
-                    {/* Display title for long text, otherwise show cleaned content */}
+                    {/* Display title for long text, otherwise show cleaned content - clickable to edit */}
                     {item.title && isLongText ? (
-                        <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
+                        <p
+                            className="text-base font-medium text-gray-900 dark:text-gray-300 break-words cursor-pointer"
+                            onClick={() => {
+                                if (onUpdate && item.id !== undefined) {
+                                    onUpdate(item.id, item.content);
+                                }
+                            }}
+                        >
                             {item.title}
                         </p>
                     ) : (
-                        <p className="text-base font-medium text-gray-900 dark:text-gray-300 break-words">
+                        <p
+                            className="text-base font-medium text-gray-900 dark:text-gray-300 break-words cursor-pointer"
+                            onClick={() => {
+                                if (onUpdate && item.id !== undefined) {
+                                    onUpdate(item.id, item.content);
+                                }
+                            }}
+                        >
                             {cleanedContent || item.content}
                         </p>
                     )}
@@ -755,14 +762,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                         <TagIcon className="h-3 w-3 mr-1" />
                                         <span>
                                             {uniqueTags.map((tag, index) => {
-                                                const isExplicit =
-                                                    hashtags.includes(tag);
-                                                const isSuggested =
-                                                    !isExplicit &&
-                                                    analysisResult?.suggested_tags?.includes(
-                                                        tag
-                                                    );
-
                                                 return (
                                                     <React.Fragment key={tag}>
                                                         <Link
@@ -774,22 +773,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                                         >
                                                             {tag}
                                                         </Link>
-                                                        {isSuggested && (
-                                                            <button
-                                                                onClick={(
-                                                                    e
-                                                                ) => {
-                                                                    e.stopPropagation();
-                                                                    removeSuggestedTag(
-                                                                        tag
-                                                                    );
-                                                                }}
-                                                                className="ml-1 text-gray-400 hover:text-red-500 focus:outline-none"
-                                                                title="Remove suggested tag"
-                                                            >
-                                                                ×
-                                                            </button>
-                                                        )}
                                                         {index <
                                                             uniqueTags.length -
                                                                 1 && ', '}

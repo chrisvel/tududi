@@ -20,6 +20,39 @@ router.get('/tags', async (req, res) => {
     }
 });
 
+// GET /api/tag (with query parameters: id, uid, or name)
+router.get('/tag', async (req, res) => {
+    try {
+        let whereClause = { user_id: req.currentUser.id };
+
+        if (req.query.id) {
+            whereClause.id = parseInt(req.query.id);
+        } else if (req.query.uid) {
+            whereClause.uid = req.query.uid;
+        } else if (req.query.name) {
+            whereClause.name = req.query.name;
+        } else {
+            return res.status(400).json({
+                error: 'Missing required query parameter: id, uid, or name',
+            });
+        }
+
+        const tag = await Tag.findOne({
+            where: whereClause,
+            attributes: ['id', 'uid', 'name'],
+        });
+
+        if (!tag) {
+            return res.status(404).json({ error: 'Tag not found' });
+        }
+
+        res.json(tag);
+    } catch (error) {
+        console.error('Error fetching tag:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // GET /api/tag/:identifier (supports both ID and name)
 router.get('/tag/:identifier', async (req, res) => {
     try {
