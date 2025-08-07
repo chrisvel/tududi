@@ -1807,6 +1807,10 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
 // DELETE /api/task/:id
 router.delete('/task/:id', async (req, res) => {
     try {
+        if (!req.currentUser) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
+
         const task = await Task.findOne({
             where: { id: req.params.id, user_id: req.currentUser.id },
         });

@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Project, User, Area } = require('../../models');
+const { Project, User, Area, Task, Note, Tag } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Projects Routes', () => {
@@ -270,6 +270,85 @@ describe('Projects Routes', () => {
             // Verify project is deleted
             const deletedProject = await Project.findByPk(project.id);
             expect(deletedProject).toBeNull();
+        });
+
+        it('should cascade delete related tasks, notes, and tag associations when deleting project', async () => {
+            // Create tasks associated with the project
+            const task1 = await Task.create({
+                name: 'Task 1',
+                user_id: user.id,
+                project_id: project.id,
+            });
+            const task2 = await Task.create({
+                name: 'Task 2',
+                user_id: user.id,
+                project_id: project.id,
+            });
+
+            // Create notes associated with the project
+            const note1 = await Note.create({
+                content: 'Note 1',
+                user_id: user.id,
+                project_id: project.id,
+            });
+            const note2 = await Note.create({
+                content: 'Note 2',
+                user_id: user.id,
+                project_id: project.id,
+            });
+
+            // Create tags and associate with project
+            const tag1 = await Tag.create({
+                name: 'tag1',
+                user_id: user.id,
+            });
+            const tag2 = await Tag.create({
+                name: 'tag2',
+                user_id: user.id,
+            });
+            await project.setTags([tag1, tag2]);
+
+            // Delete the project
+            const response = await agent.delete(`/api/project/${project.id}`);
+            expect(response.status).toBe(200);
+
+            // Verify project is deleted
+            const deletedProject = await Project.findByPk(project.id);
+            expect(deletedProject).toBeNull();
+
+            // Verify all tasks are deleted
+            const remainingTasks = await Task.findAll({
+                where: { project_id: project.id },
+            });
+            expect(remainingTasks.length).toBe(0);
+
+            // Verify specific tasks are deleted
+            const deletedTask1 = await Task.findByPk(task1.id);
+            expect(deletedTask1).toBeNull();
+            const deletedTask2 = await Task.findByPk(task2.id);
+            expect(deletedTask2).toBeNull();
+
+            // Verify all notes are deleted
+            const remainingNotes = await Note.findAll({
+                where: { project_id: project.id },
+            });
+            expect(remainingNotes.length).toBe(0);
+
+            // Verify specific notes are deleted
+            const deletedNote1 = await Note.findByPk(note1.id);
+            expect(deletedNote1).toBeNull();
+            const deletedNote2 = await Note.findByPk(note2.id);
+            expect(deletedNote2).toBeNull();
+
+            // Verify tags still exist (they should not be deleted)
+            const tag1Still = await Tag.findByPk(tag1.id);
+            expect(tag1Still).not.toBeNull();
+            const tag2Still = await Tag.findByPk(tag2.id);
+            expect(tag2Still).not.toBeNull();
+
+            // Verify project-tag associations are removed
+            const projectTags = await tag1.getProjects();
+            expect(projectTags.length).toBe(0);
         });
 
         it('should return 404 for non-existent project', async () => {

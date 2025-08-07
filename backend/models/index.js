@@ -41,16 +41,24 @@ Area.hasMany(Project, { foreignKey: 'area_id' });
 
 User.hasMany(Task, { foreignKey: 'user_id' });
 Task.belongsTo(User, { foreignKey: 'user_id' });
-Task.belongsTo(Project, { foreignKey: 'project_id', allowNull: true });
-Project.hasMany(Task, { foreignKey: 'project_id' });
+Task.belongsTo(Project, {
+    foreignKey: 'project_id',
+    allowNull: true,
+    onDelete: 'CASCADE',
+});
+Project.hasMany(Task, { foreignKey: 'project_id', onDelete: 'CASCADE' });
 
 User.hasMany(Tag, { foreignKey: 'user_id' });
 Tag.belongsTo(User, { foreignKey: 'user_id' });
 
 User.hasMany(Note, { foreignKey: 'user_id' });
 Note.belongsTo(User, { foreignKey: 'user_id' });
-Note.belongsTo(Project, { foreignKey: 'project_id', allowNull: true });
-Project.hasMany(Note, { foreignKey: 'project_id' });
+Note.belongsTo(Project, {
+    foreignKey: 'project_id',
+    allowNull: true,
+    onDelete: 'CASCADE',
+});
+Project.hasMany(Note, { foreignKey: 'project_id', onDelete: 'CASCADE' });
 
 User.hasMany(InboxItem, { foreignKey: 'user_id' });
 InboxItem.belongsTo(User, { foreignKey: 'user_id' });
@@ -108,11 +116,13 @@ Project.belongsToMany(Tag, {
     through: 'projects_tags',
     foreignKey: 'project_id',
     otherKey: 'tag_id',
+    onDelete: 'CASCADE',
 });
 Tag.belongsToMany(Project, {
     through: 'projects_tags',
     foreignKey: 'tag_id',
     otherKey: 'project_id',
+    onDelete: 'CASCADE',
 });
 
 module.exports = {

@@ -4,11 +4,102 @@ const path = require('path');
 const { getConfig } = require('../config/config');
 const config = getConfig();
 const fs = require('fs');
-const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
+const {
+    Project,
+    Task,
+    Tag,
+    Area,
+    Note,
+    TaskEvent,
+    sequelize,
+} = require('../models');
 const { Op } = require('sequelize');
 const { extractUidFromSlug } = require('../utils/slug-utils');
 const { validateTagName } = require('../utils/validation');
 const router = express.Router();
+
+// Helper function to delete a task and all its dependencies
+const deleteTaskAndDependencies = async (taskId, transaction) => {
+    // Delete task events for this task
+    await TaskEvent.destroy({
+        where: { task_id: taskId },
+        transaction,
+    });
+
+    // Delete task-tag associations for this task
+    await sequelize.models.tasks_tags.destroy({
+        where: { task_id: taskId },
+        transaction,
+    });
+
+    // Clear self-referencing foreign keys for tasks that reference this task
+    await Task.update(
+        { recurring_parent_id: null },
+        { where: { recurring_parent_id: taskId }, transaction }
+    );
+
+    await Task.update(
+        { parent_task_id: null },
+        { where: { parent_task_id: taskId }, transaction }
+    );
+
+    // Finally delete the task itself
+    await Task.destroy({
+        where: { id: taskId },
+        transaction,
+    });
+};
+
+// Helper function to delete a project and all its dependencies
+const deleteProjectAndDependencies = async (projectId, userId) => {
+    const transaction = await sequelize.transaction();
+
+    try {
+        // Find the project first to ensure it exists and belongs to the user
+        const project = await Project.findOne({
+            where: { id: projectId, user_id: userId },
+            transaction,
+        });
+
+        if (!project) {
+            await transaction.rollback();
+            return { success: false, message: 'Project not found.' };
+        }
+
+        // Get all tasks associated with the project
+        const projectTasks = await Task.findAll({
+            where: { project_id: projectId },
+            attributes: ['id'],
+            transaction,
+        });
+
+        // Delete each task and its dependencies sequentially
+        for (const task of projectTasks) {
+            await deleteTaskAndDependencies(task.id, transaction);
+        }
+
+        // Delete all notes associated with the project
+        await Note.destroy({
+            where: { project_id: projectId },
+            transaction,
+        });
+
+        // Delete project-tag associations (projects_tags table)
+        await sequelize.models.projects_tags.destroy({
+            where: { project_id: projectId },
+            transaction,
+        });
+
+        // Finally delete the project itself
+        await project.destroy({ transaction });
+
+        await transaction.commit();
+        return { success: true, message: 'Project successfully deleted' };
+    } catch (error) {
+        await transaction.rollback();
+        throw error;
+    }
+};
 
 // Helper function to safely format dates
 const formatDate = (date) => {
@@ -537,16 +628,16 @@ router.delete('/project/:id', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const project = await Project.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
-        });
+        const result = await deleteProjectAndDependencies(
+            req.params.id,
+            req.session.userId
+        );
 
-        if (!project) {
-            return res.status(404).json({ error: 'Project not found.' });
+        if (!result.success) {
+            return res.status(404).json({ error: result.message });
         }
 
-        await project.destroy();
-        res.json({ message: 'Project successfully deleted' });
+        res.json({ message: result.message });
     } catch (error) {
         console.error('Error deleting project:', error);
         res.status(400).json({
