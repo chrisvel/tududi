@@ -8,8 +8,14 @@ backup_db() {
   # Calculate 7 days ago using epoch time (POSIX-compliant, works with BusyBox)
   current_epoch=$(date +%s)
   week_ago_epoch=$((current_epoch - 604800))  # 7 days = 604800 seconds
-  # BusyBox date accepts @seconds_since_1970 format
-  week_ago=$(date -d "@$week_ago_epoch" +"%Y%m%d")
+  # Use -r for macOS/BSD date, -d for Linux/BusyBox
+  if date -r "$week_ago_epoch" +"%Y%m%d" >/dev/null 2>&1; then
+    # macOS/BSD style
+    week_ago=$(date -r "$week_ago_epoch" +"%Y%m%d")
+  else
+    # Linux/BusyBox style
+    week_ago=$(date -d "@$week_ago_epoch" +"%Y%m%d")
+  fi
   
   # Clean up old backups
   for backup in "$db_dir"/db-backup-*.sqlite3; do
