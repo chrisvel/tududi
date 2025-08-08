@@ -23,6 +23,8 @@ test('user can login and reach Today page', async ({ page, baseURL }) => {
   // Expect redirect to Today view
   await expect(page).toHaveURL(/\/today$/);
 
-  // Basic sanity check: page shows some Today UI elements
-  await expect(page.getByText(/Today/i)).toBeVisible();
+  // Basic sanity check: unique control on Today page
+  await expect(
+    page.getByRole('button', { name: /Today Page Settings/i })
+  ).toBeVisible();
 });

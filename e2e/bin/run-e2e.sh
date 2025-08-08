@@ -102,4 +102,13 @@ yellow "Running Playwright tests..."
 APP_URL="$FRONTEND_URL" \
 E2E_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
 E2E_PASSWORD="${E2E_PASSWORD:-password123}" \
-npm test
+bash -c '
+  if [ "${E2E_MODE:-}" = "ui" ]; then
+    npm run test:ui
+  elif [ "${E2E_MODE:-}" = "headed" ]; then
+    # Respect E2E_SLOWMO and run only Firefox
+    npx playwright test --headed --project=Firefox
+  else
+    npm test
+  fi
+'
