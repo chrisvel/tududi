@@ -8,6 +8,7 @@ const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const { extractUidFromSlug } = require('../utils/slug-utils');
 const { validateTagName } = require('../utils/validation');
+const { uid } = require('../utils/uid');
 const router = express.Router();
 
 // Helper function to safely format dates
@@ -244,36 +245,21 @@ router.get('/projects', async (req, res) => {
     }
 });
 
-// GET /api/project/:id (supports both numeric ID and uid-slug)
-router.get('/project/:id', async (req, res) => {
+// GET /api/project/:uidSlug (UID-slug format only)
+router.get('/project/:uidSlug', async (req, res) => {
     try {
         if (!req.session || !req.session.userId) {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const identifier = req.params.id;
-        let whereClause;
-
-        // Check if identifier is numeric (regular ID) or uid-slug
-        if (/^\d+$/.test(identifier)) {
-            // It's a numeric ID
-            whereClause = {
-                id: parseInt(identifier),
-                user_id: req.session.userId,
-            };
-        } else {
-            // It's a uid-slug, extract the uid
-            const uid = extractUidFromSlug(identifier);
-            if (!uid) {
-                return res
-                    .status(400)
-                    .json({ error: 'Invalid project identifier' });
-            }
-            whereClause = { uid: uid, user_id: req.session.userId };
-        }
+        // Extract UID from the slug (part before first hyphen)
+        const uidPart = req.params.uidSlug.split('-')[0];
 
         const project = await Project.findOne({
-            where: whereClause,
+            where: {
+                uid: uidPart,
+                user_id: req.session.userId,
+            },
             include: [
                 {
                     model: Task,
@@ -411,7 +397,11 @@ router.post('/project', async (req, res) => {
             return res.status(400).json({ error: 'Project name is required' });
         }
 
+        // Generate UID explicitly to avoid Sequelize caching issues
+        const projectUid = uid();
+
         const projectData = {
+            uid: projectUid,
             name: name.trim(),
             description: description || '',
             area_id: area_id || null,
@@ -424,26 +414,22 @@ router.post('/project', async (req, res) => {
         };
 
         const project = await Project.create(projectData);
-        await updateProjectTags(project, tagsData, req.session.userId);
 
-        // Reload project with associations
-        const projectWithAssociations = await Project.findByPk(project.id, {
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                },
-            ],
-        });
-
-        const projectJson = projectWithAssociations.toJSON();
+        // Update tags if provided, but don't let tag errors break project creation
+        try {
+            await updateProjectTags(project, tagsData, req.session.userId);
+        } catch (tagError) {
+            console.warn(
+                'Tag update failed, but project created successfully:',
+                tagError.message
+            );
+        }
 
         res.status(201).json({
-            ...projectJson,
-            uid: projectWithAssociations.uid, // Explicitly include uid
-            tags: projectJson.Tags || [], // Normalize Tags to tags
-            due_date_at: formatDate(projectWithAssociations.due_date_at),
+            ...project.toJSON(),
+            uid: projectUid, // Use the UID we explicitly generated
+            tags: [], // Start with empty tags - they can be added later
+            due_date_at: formatDate(project.due_date_at),
         });
     } catch (error) {
         console.error('Error creating project:', error);

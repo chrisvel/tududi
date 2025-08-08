@@ -199,7 +199,7 @@ const ProjectDetails: React.FC = () => {
         try {
             const newTask = await createTask({
                 name: taskName,
-                status: 'not_started',
+                status: 0, // Use numeric status: 0 = not_started
                 project_id: project.id,
                 completed_at: null,
             });
@@ -402,9 +402,9 @@ const ProjectDetails: React.FC = () => {
         try {
             const newTask = await createTask({
                 name: actionDescription,
-                status: 'not_started',
+                status: 0, // Use numeric status: 0 = not_started
                 project_id: projectId,
-                priority: 'low',
+                priority: 0, // Use numeric priority: 0 = low
                 completed_at: null,
             });
 
@@ -957,7 +957,7 @@ const ProjectDetails: React.FC = () => {
                     <>
                         <div
                             className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                                !showAutoSuggestForm && !showCompleted
+                                !showAutoSuggestForm
                                     ? 'opacity-100 max-h-96 transform translate-y-0'
                                     : 'opacity-0 max-h-0 transform -translate-y-2'
                             }`}

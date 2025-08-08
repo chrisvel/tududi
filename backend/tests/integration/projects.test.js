@@ -136,8 +136,12 @@ describe('Projects Routes', () => {
             });
         });
 
-        it('should get project by id', async () => {
-            const response = await agent.get(`/api/project/${project.id}`);
+        it('should get project by uid-slug format', async () => {
+            // Create a slug from the project UID and name
+            const sluggedName = project.name.toLowerCase().replace(/\s+/g, '-');
+            const uidSlug = `${project.uid}-${sluggedName}`;
+
+            const response = await agent.get(`/api/project/${uidSlug}`);
 
             expect(response.status).toBe(200);
             expect(response.body.id).toBe(project.id);
@@ -146,7 +150,9 @@ describe('Projects Routes', () => {
         });
 
         it('should return 404 for non-existent project', async () => {
-            const response = await agent.get('/api/project/999999');
+            const response = await agent.get(
+                '/api/project/nonexistent-uid-slug'
+            );
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Project not found');

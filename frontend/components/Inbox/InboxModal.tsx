@@ -1091,9 +1091,6 @@ const InboxModal: React.FC<InboxModalProps> = ({
                             return;
                         } else {
                             // If no note creation handler, fall back to inbox mode
-                            console.log(
-                                'No note creation handler, falling back to inbox'
-                            );
                         }
                     } catch (error: any) {
                         console.error('Error in note creation flow:', error);
@@ -1143,7 +1140,6 @@ const InboxModal: React.FC<InboxModalProps> = ({
                         throw error;
                     }
                 } else {
-                    console.log('Taking inbox creation path');
                     try {
                         // For inbox mode, store the original text with tags/projects
                         // Tags and projects will be created and assigned when the item is processed later

@@ -102,12 +102,6 @@ const Areas: React.FC = () => {
                 const currentAreas = useStore.getState().areasStore.areas;
                 const newAreas = [...currentAreas, result];
                 useStore.getState().areasStore.setAreas(newAreas);
-
-                // Force a re-fetch to ensure consistency
-                setTimeout(async () => {
-                    const freshAreas = await fetchAreas();
-                    useStore.getState().areasStore.setAreas(freshAreas);
-                }, 100);
             }
 
             // Close modal only on success
