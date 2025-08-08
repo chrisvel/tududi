@@ -216,7 +216,26 @@ class InboxProcessingService {
     }
 
     /**
-     * Clean text by removing tags and project references (consecutive groups anywhere)
+     * Parse priority from text using !high, !medium, !low syntax
+     * @param {string} text - Text to parse
+     * @returns {string|null} Priority level or null if none found
+     */
+    static parsePriority(text) {
+        const trimmedText = text.trim();
+        const priorityRegex = /!(?:high|medium|low)\b/gi;
+        const matches = trimmedText.match(priorityRegex);
+
+        if (matches && matches.length > 0) {
+            // Return the last priority found (in case of multiple)
+            const lastMatch = matches[matches.length - 1];
+            return lastMatch.substring(1).toLowerCase(); // Remove ! and convert to lowercase
+        }
+
+        return null;
+    }
+
+    /**
+     * Clean text by removing tags, project references, and priority indicators
      * @param {string} text - Text to clean
      * @returns {string} Cleaned text
      */
@@ -227,14 +246,24 @@ class InboxProcessingService {
 
         let i = 0;
         while (i < tokens.length) {
-            // Check if current token starts a tag/project group
-            if (tokens[i].startsWith('#') || tokens[i].startsWith('+')) {
-                // Skip this entire consecutive group
-                while (
-                    i < tokens.length &&
-                    (tokens[i].startsWith('#') || tokens[i].startsWith('+'))
-                ) {
+            // Check if current token starts a tag/project group or is a priority indicator
+            if (
+                tokens[i].startsWith('#') ||
+                tokens[i].startsWith('+') ||
+                tokens[i].match(/^!(?:high|medium|low)$/i)
+            ) {
+                // Skip this entire consecutive group (for tags/projects) or single priority token
+                if (tokens[i].match(/^!(?:high|medium|low)$/i)) {
+                    // Just skip this single priority token
                     i++;
+                } else {
+                    // Skip entire consecutive group of tags/projects
+                    while (
+                        i < tokens.length &&
+                        (tokens[i].startsWith('#') || tokens[i].startsWith('+'))
+                    ) {
+                        i++;
+                    }
                 }
             } else {
                 // Keep regular tokens
@@ -276,7 +305,64 @@ class InboxProcessingService {
     }
 
     /**
-     * Generate suggestion for an inbox item
+     * Check if text should be treated as long content
+     * @param {string} text - Text to check
+     * @returns {boolean} True if text is considered long
+     */
+    static isLongText(text) {
+        if (!text) return false;
+
+        const trimmed = text.trim();
+
+        // Consider it long if:
+        // 1. More than 100 characters
+        // 2. Contains multiple sentences (2+ periods)
+        // 3. Contains line breaks
+        // 4. Contains more than 15 words
+
+        const charCount = trimmed.length;
+        const sentenceCount = (trimmed.match(/[.!?]+/g) || []).length;
+        const hasLineBreaks = /[\r\n]/.test(trimmed);
+        const wordCount = trimmed.split(/\s+/).length;
+
+        return (
+            charCount > 100 ||
+            sentenceCount >= 2 ||
+            hasLineBreaks ||
+            wordCount > 15
+        );
+    }
+
+    /**
+     * Check if text contains code snippets or programming syntax
+     * @param {string} text - Text to check
+     * @returns {boolean} True if text contains code patterns
+     */
+    static containsCode(text) {
+        if (!text || typeof text !== 'string') {
+            return false;
+        }
+
+        const trimmed = text.trim();
+
+        // Strong code indicators that are unlikely to be in regular text
+        const strongCodePatterns = [
+            /```[\s\S]*?```/, // Code blocks
+            /\b(function|const|let|var)\s+\w+\s*[=(]/, // Variable/function declarations
+            /\w+\s*\([^)]*\)\s*\{/, // Function calls with braces
+            /console\.(log|error|warn|info)/, // Console methods
+            /\b(SELECT|INSERT|UPDATE|DELETE)\s+.*FROM\b/i, // SQL statements
+            /^(git|npm|yarn|docker)\s+\w+/m, // Command line tools
+            /\/\/.*\n.*[{}();]/, // Comments followed by code-like syntax
+            /\{[^}]*;[^}]*\}/, // Code blocks with semicolons inside
+            /<[^>]+>/, // HTML tags
+        ];
+
+        return strongCodePatterns.some((pattern) => pattern.test(trimmed));
+    }
+
+    /**
+     * Generate suggestion for an inbox item using rules engine
      * @param {string} content - Original content
      * @param {string[]} tags - Parsed tags
      * @param {string[]} projects - Parsed projects
@@ -284,42 +370,46 @@ class InboxProcessingService {
      * @returns {object} Suggestion object
      */
     static generateSuggestion(content, tags, projects, cleanedContent) {
-        const hasProject = projects.length > 0;
-        const hasBookmarkTag = tags.some(
-            (tag) => tag.toLowerCase() === 'bookmark'
-        );
-        const textStartsWithVerb = this.startsWithVerb(cleanedContent);
-        const containsUrl = this.containsUrl(content);
+        try {
+            const rulesEngine = require('./suggestionRulesEngine');
+            return rulesEngine.generateSuggestion(
+                content,
+                tags,
+                projects,
+                cleanedContent
+            );
+        } catch (error) {
+            console.error(
+                'Error using rules engine, falling back to hardcoded logic:',
+                error
+            );
 
-        if (!hasProject) {
+            // Fallback to hardcoded logic if rules engine fails
+            const hasProject = projects.length > 0;
+            const hasBookmarkTag = tags.some(
+                (tag) => tag.toLowerCase() === 'bookmark'
+            );
+            const textStartsWithVerb = this.startsWithVerb(cleanedContent);
+            const containsUrl = this.containsUrl(content);
+
+            if (!hasProject) {
+                return { type: null, reason: null };
+            }
+
+            if (hasBookmarkTag) {
+                return { type: 'note', reason: 'bookmark_tag' };
+            }
+
+            if (containsUrl) {
+                return { type: 'note', reason: 'url_detected' };
+            }
+
+            if (textStartsWithVerb) {
+                return { type: 'task', reason: 'verb_detected' };
+            }
+
             return { type: null, reason: null };
         }
-
-        // Suggest note for bookmark items with project (explicit bookmark tag)
-        if (hasBookmarkTag) {
-            return {
-                type: 'note',
-                reason: 'bookmark_tag',
-            };
-        }
-
-        // Suggest note for URLs with project (auto-bookmark)
-        if (containsUrl) {
-            return {
-                type: 'note',
-                reason: 'url_detected',
-            };
-        }
-
-        // Suggest task for items with project that start with a verb
-        if (textStartsWithVerb) {
-            return {
-                type: 'task',
-                reason: 'verb_detected',
-            };
-        }
-
-        return { type: null, reason: null };
     }
 
     /**
@@ -331,6 +421,7 @@ class InboxProcessingService {
         // Parse the content
         const tags = this.parseHashtags(content);
         const projects = this.parseProjectRefs(content);
+        const priority = this.parsePriority(content);
         const cleanedContent = this.cleanTextFromTagsAndProjects(content);
 
         // Generate suggestion
@@ -341,13 +432,29 @@ class InboxProcessingService {
             cleanedContent
         );
 
-        return {
+        const result = {
             parsed_tags: tags,
             parsed_projects: projects,
+            parsed_priority: priority,
             cleaned_content: cleanedContent,
             suggested_type: suggestion.type,
             suggested_reason: suggestion.reason,
         };
+
+        // Add enhanced metadata from suggestion if available
+        if (suggestion.priority) {
+            result.suggested_priority = suggestion.priority;
+        }
+
+        if (suggestion.tags && Array.isArray(suggestion.tags)) {
+            result.suggested_tags = suggestion.tags;
+        }
+
+        if (suggestion.due_date) {
+            result.suggested_due_date = suggestion.due_date;
+        }
+
+        return result;
     }
 }
 

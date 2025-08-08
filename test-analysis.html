@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Analysis</title>
+</head>
+<body>
+    <h1>Test Analysis API</h1>
+    <input type="text" id="textInput" placeholder="Enter text to analyze" style="width: 400px; padding: 10px;">
+    <button onclick="analyzeText()">Analyze</button>
+    <div id="results" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #f9f9f9;">
+        Results will appear here...
+    </div>
+
+    <script>
+        async function analyzeText() {
+            const text = document.getElementById('textInput').value;
+            const resultsDiv = document.getElementById('results');
+            
+            if (!text.trim()) {
+                resultsDiv.innerHTML = 'Please enter some text';
+                return;
+            }
+            
+            try {
+                resultsDiv.innerHTML = 'Analyzing...';
+                
+                const response = await fetch('/api/inbox/analyze-text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ content: text }),
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    resultsDiv.innerHTML = `
+                        <h3>Analysis Result:</h3>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `Error: ${response.statusText}`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        // Test the exact scenario
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('textInput');
+            input.value = 'Call doctor for an appointment tomorrow';
+            analyzeText();
+        });
+    </script>
+</body>
+</html>

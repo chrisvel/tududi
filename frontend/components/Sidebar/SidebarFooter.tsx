@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Note } from '../../entities/Note';
 import { Area } from '../../entities/Area';
 import { useTelegramStatus } from '../../contexts/TelegramStatusContext';
+import ProtectedAdminLink from '../Admin/ProtectedAdminLink';
 
 interface SidebarFooterProps {
     currentUser: { email: string };
@@ -265,6 +266,9 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                                     />
                                 </div>
                             )}
+
+                            {/* Protected Admin Link */}
+                            <ProtectedAdminLink />
 
                             {/* Dark Mode Toggle */}
                             <button
