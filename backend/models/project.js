@@ -14,7 +14,7 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: false,
                 unique: true,
-                defaultValue: uid,
+                defaultValue: () => uid(),
             },
             name: {
                 type: DataTypes.STRING,
@@ -27,7 +27,7 @@ module.exports = (sequelize) => {
             active: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
-                defaultValue: false,
+                defaultValue: true,
             },
             pin_to_sidebar: {
                 type: DataTypes.BOOLEAN,

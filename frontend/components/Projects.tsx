@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
     MagnifyingGlassIcon,
     Squares2X2Icon,
@@ -38,9 +38,15 @@ const Projects: React.FC = () => {
     } = useStore((state) => state.projectsStore);
     const { isLoading, isError } = useStore((state) => state.projectsStore);
 
-    const [isProjectModalOpen, setIsProjectModalOpen] =
-        useState<boolean>(false);
-    const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
+    // Try using a ref to avoid React state conflicts
+    const modalStateRef = useRef({
+        isOpen: false,
+        projectToEdit: null as Project | null,
+    });
+    const [modalState, setModalState] = useState({
+        isOpen: false,
+        projectToEdit: null as Project | null,
+    });
     const [projectToDelete, setProjectToDelete] = useState<Project | null>(
         null
     );
@@ -107,26 +113,37 @@ const Projects: React.FC = () => {
         loadProjects();
     }, []);
 
-    // Handle click outside to close dropdown
+    // Modal state tracking removed after fixing the issue
+
+    // Handle click outside to close dropdown and escape key
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
+            if (activeDropdown === null) return;
+
             const target = event.target as Element;
-            // Check if the click is on a dropdown or its children
-            const dropdownElement = target.closest('.dropdown-container');
-            if (!dropdownElement && activeDropdown !== null) {
+
+            // Check if clicking inside any dropdown container
+            const isInsideDropdown = target.closest('.dropdown-container');
+
+            if (!isInsideDropdown) {
+                setActiveDropdown(null);
+            }
+        };
+
+        const handleEscapeKey = (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && activeDropdown !== null) {
                 setActiveDropdown(null);
             }
         };
 
         if (activeDropdown !== null) {
-            // Use setTimeout to avoid immediate triggering
-            setTimeout(() => {
-                document.addEventListener('mousedown', handleClickOutside);
-            }, 100);
+            document.addEventListener('click', handleClickOutside, true);
+            document.addEventListener('keydown', handleEscapeKey);
         }
 
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('click', handleClickOutside, true);
+            document.removeEventListener('keydown', handleEscapeKey);
         };
     }, [activeDropdown]);
 
@@ -150,13 +167,19 @@ const Projects: React.FC = () => {
             setProjectsError(true);
         } finally {
             setProjectsLoading(false);
-            setIsProjectModalOpen(false);
+            setModalState({ isOpen: false, projectToEdit: null });
         }
     };
 
     const handleEditProject = (project: Project) => {
-        setProjectToEdit(project);
-        setIsProjectModalOpen(true);
+        modalStateRef.current = {
+            isOpen: true,
+            projectToEdit: project,
+        };
+        setModalState({
+            isOpen: true,
+            projectToEdit: project,
+        });
     };
 
     const handleDeleteProject = async () => {
@@ -448,12 +471,11 @@ const Projects: React.FC = () => {
                 </div>
             </div>
 
-            {isProjectModalOpen && (
+            {modalState.isOpen && (
                 <ProjectModal
-                    isOpen={isProjectModalOpen}
+                    isOpen={modalState.isOpen}
                     onClose={() => {
-                        setIsProjectModalOpen(false);
-                        setProjectToEdit(null);
+                        setModalState({ isOpen: false, projectToEdit: null });
                     }}
                     onSave={handleSaveProject}
                     onDelete={async (projectId) => {
@@ -466,13 +488,15 @@ const Projects: React.FC = () => {
                             );
                             setProjects(updatedProjects);
 
-                            setIsProjectModalOpen(false);
-                            setProjectToEdit(null);
+                            setModalState({
+                                isOpen: false,
+                                projectToEdit: null,
+                            });
                         } catch (error) {
                             console.error('Error deleting project:', error);
                         }
                     }}
-                    project={projectToEdit || undefined}
+                    project={modalState.projectToEdit || undefined}
                     areas={areas}
                 />
             )}

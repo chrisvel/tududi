@@ -1289,6 +1289,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                         tags: taskTags,
                         project_id: projectId,
                         due_date: dueDate || undefined,
+                        completed_at: null,
                     };
 
                     try {
@@ -1480,6 +1481,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                         tags: taskTags,
                         project_id: projectId,
                         due_date: dueDate || undefined,
+                        completed_at: null,
                     };
 
                     try {

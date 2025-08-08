@@ -149,7 +149,6 @@ const Tags: React.FC = () => {
     };
 
     const handleEditTag = (tag: Tag) => {
-        console.log('🏷️ handleEditTag called:', tag);
         setSelectedTag(tag);
         setIsTagModalOpen(true);
     };

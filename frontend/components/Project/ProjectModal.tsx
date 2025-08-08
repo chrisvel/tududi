@@ -39,12 +39,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     project,
     areas,
 }) => {
+    const [modalJustOpened, setModalJustOpened] = useState(false);
     const [formData, setFormData] = useState<Project>(
         project || {
             name: '',
             description: '',
             area_id: null,
-            active: false,
+            active: true,
             tags: [],
             priority: 'low',
             due_date_at: null,
@@ -80,7 +81,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         image: false,
         priority: false,
         dueDate: false,
-        active: false,
+        active: true,
     });
 
     const { showSuccessToast, showErrorToast } = useToast();
@@ -89,9 +90,15 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     // Load tags when modal opens and auto-focus on the name input
     useEffect(() => {
         if (isOpen) {
-            // Load tags if not loaded yet
+            // Load tags with a delay to avoid conflicts with modal state
             if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
-                tagsStore.loadTags();
+                // Delay tag loading to avoid immediate state conflicts
+                setTimeout(() => {
+                    if (isOpen) {
+                        // Only load if modal is still open
+                        tagsStore.loadTags();
+                    }
+                }, 300);
             }
             setTimeout(() => {
                 nameInputRef.current?.focus();
@@ -132,7 +139,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 name: '',
                 description: '',
                 area_id: null,
-                active: false,
+                active: true,
                 tags: [],
                 priority: 'low',
                 due_date_at: null,
@@ -233,6 +240,17 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             tags: newTags.map((name) => ({ name })),
         }));
     }, []);
+
+    // Track when modal opens to prevent immediate backdrop clicks
+    useEffect(() => {
+        if (isOpen) {
+            setModalJustOpened(true);
+            const timer = setTimeout(() => {
+                setModalJustOpened(false);
+            }, 200); // Prevent backdrop clicks for 200ms after opening
+            return () => clearTimeout(timer);
+        }
+    }, [isOpen]);
 
     const handleDueDateChange = (value: string) => {
         setFormData((prev) => ({
@@ -434,7 +452,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 }`}
                 onClick={(e) => {
                     // Close modal when clicking on backdrop, but not on the modal content
-                    if (e.target === e.currentTarget) {
+                    // Also prevent immediate closes after modal opens
+                    if (e.target === e.currentTarget && !modalJustOpened) {
                         handleClose();
                     }
                 }}
@@ -904,8 +923,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             </div>
             {showConfirmDialog && (
                 <ConfirmDialog
-                    title="Delete Project"
-                    message="Are you sure you want to delete this project? This action cannot be undone."
+                    title={t('modals.deleteProject.title', 'Delete Project')}
+                    message={t(
+                        'modals.deleteProject.message',
+                        'Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?'
+                    )}
                     onConfirm={handleDeleteConfirm}
                     onCancel={() => setShowConfirmDialog(false)}
                 />

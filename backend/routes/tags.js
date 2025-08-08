@@ -1,5 +1,7 @@
 const express = require('express');
 const { Tag, Task, Note, Project, sequelize } = require('../models');
+const { extractUidFromSlug } = require('../utils/slug-utils');
+const { validateTagName } = require('../utils/validation');
 const router = express.Router();
 const _ = require('lodash');
 

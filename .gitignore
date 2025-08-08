@@ -4,6 +4,8 @@
 *.sqlite3-wal
 certs/
 .DS_Store
+.cursor
+CLAUDE.local.md
 
 .byebug_history
 node_modules

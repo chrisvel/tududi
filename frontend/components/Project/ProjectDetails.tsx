@@ -199,7 +199,7 @@ const ProjectDetails: React.FC = () => {
         try {
             const newTask = await createTask({
                 name: taskName,
-                status: 'not_started',
+                status: 0, // Use numeric status: 0 = not_started
                 project_id: project.id,
                 completed_at: null,
             });
@@ -402,9 +402,9 @@ const ProjectDetails: React.FC = () => {
         try {
             const newTask = await createTask({
                 name: actionDescription,
-                status: 'not_started',
+                status: 0, // Use numeric status: 0 = not_started
                 project_id: projectId,
-                priority: 'low',
+                priority: 0, // Use numeric priority: 0 = low
                 completed_at: null,
             });
 
@@ -957,7 +957,7 @@ const ProjectDetails: React.FC = () => {
                     <>
                         <div
                             className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                                !showAutoSuggestForm && !showCompleted
+                                !showAutoSuggestForm
                                     ? 'opacity-100 max-h-96 transform translate-y-0'
                                     : 'opacity-0 max-h-0 transform -translate-y-2'
                             }`}
@@ -1059,8 +1059,14 @@ const ProjectDetails: React.FC = () => {
                 )}
                 {isConfirmDialogOpen && !noteToDelete && (
                     <ConfirmDialog
-                        title="Delete Project"
-                        message={`Are you sure you want to delete the project "${project.name}"?`}
+                        title={t(
+                            'modals.deleteProject.title',
+                            'Delete Project'
+                        )}
+                        message={t(
+                            'modals.deleteProject.message',
+                            'Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?'
+                        )}
                         onConfirm={handleDeleteProject}
                         onCancel={() => setIsConfirmDialogOpen(false)}
                     />

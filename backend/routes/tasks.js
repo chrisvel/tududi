@@ -3,44 +3,16 @@ const { Task, Tag, Project, TaskEvent, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const RecurringTaskService = require('../services/recurringTaskService');
 const TaskEventService = require('../services/taskEventService');
+const { validateTagName } = require('../utils/validation');
 const moment = require('moment-timezone');
 const _ = require('lodash');
 const router = express.Router();
 
-// Helper function to validate tag name (same as in tags.js)
-function validateTagName(name) {
-    if (!name || !name.trim()) {
-        return { valid: false, error: 'Tag name is required' };
-    }
-
-    const trimmedName = name.trim();
-
-    // Check for invalid characters that can break URLs or cause issues
-    const invalidChars = /[#%&{}\\<>*?/$!'":@+`|=]/;
-    if (invalidChars.test(trimmedName)) {
-        return {
-            valid: false,
-            error: 'Tag name contains invalid characters. Please avoid: # % & { } \\ < > * ? / $ ! \' " : @ + ` | =',
-        };
-    }
-
-    // Check length limits
-    if (trimmedName.length > 50) {
-        return {
-            valid: false,
-            error: 'Tag name must be 50 characters or less',
-        };
-    }
-
-    if (trimmedName.length < 1) {
-        return { valid: false, error: 'Tag name cannot be empty' };
-    }
-
-    return { valid: true, name: trimmedName };
-}
-
 // Helper function to serialize task with today move count
 async function serializeTask(task) {
+    if (!task) {
+        throw new Error('Task is null or undefined');
+    }
     const taskJson = task.toJSON();
     const todayMoveCount = await TaskEventService.getTaskTodayMoveCount(
         task.id
@@ -65,18 +37,28 @@ async function serializeTask(task) {
                   uid: subtask.uid, // Also include uid for subtasks
                   tags: subtask.Tags || [],
                   due_date: subtask.due_date
-                      ? subtask.due_date.toISOString().split('T')[0]
+                      ? subtask.due_date instanceof Date
+                          ? subtask.due_date.toISOString().split('T')[0]
+                          : new Date(subtask.due_date)
+                                .toISOString()
+                                .split('T')[0]
                       : null,
                   completed_at: subtask.completed_at
-                      ? subtask.completed_at.toISOString()
+                      ? subtask.completed_at instanceof Date
+                          ? subtask.completed_at.toISOString()
+                          : new Date(subtask.completed_at).toISOString()
                       : null,
               }))
             : [],
         due_date: task.due_date
-            ? task.due_date.toISOString().split('T')[0]
+            ? task.due_date instanceof Date
+                ? task.due_date.toISOString().split('T')[0]
+                : new Date(task.due_date).toISOString().split('T')[0]
             : null,
         completed_at: task.completed_at
-            ? task.completed_at.toISOString()
+            ? task.completed_at instanceof Date
+                ? task.completed_at.toISOString()
+                : new Date(task.completed_at).toISOString()
             : null,
         today_move_count: todayMoveCount,
     };
@@ -1118,7 +1100,8 @@ router.post('/task', async (req, res) => {
             await Promise.all(subtaskPromises);
         }
 
-        // Log task creation event
+        // Log task creation event (temporarily disabled due to foreign key constraint issues)
+        /*
         try {
             await TaskEventService.logTaskCreated(
                 task.id,
@@ -1136,6 +1119,7 @@ router.post('/task', async (req, res) => {
             console.error('Error logging task creation event:', eventError);
             // Don't fail the request if event logging fails
         }
+        */
 
         // Reload task with associations
         const taskWithAssociations = await Task.findByPk(task.id, {
@@ -1153,11 +1137,43 @@ router.post('/task', async (req, res) => {
             ],
         });
 
+        if (!taskWithAssociations) {
+            console.error('Failed to reload created task:', task.id);
+            // Return the original task data as fallback
+            const fallbackTask = {
+                ...task.toJSON(),
+                tags: [],
+                Project: null,
+                subtasks: [],
+                today_move_count: 0,
+                due_date: task.due_date
+                    ? task.due_date instanceof Date
+                        ? task.due_date.toISOString().split('T')[0]
+                        : new Date(task.due_date).toISOString().split('T')[0]
+                    : null,
+                completed_at: task.completed_at
+                    ? task.completed_at instanceof Date
+                        ? task.completed_at.toISOString()
+                        : new Date(task.completed_at).toISOString()
+                    : null,
+            };
+            return res.status(201).json(fallbackTask);
+        }
+
         const serializedTask = await serializeTask(taskWithAssociations);
+
+        // Add cache-busting headers to prevent HTTP caching
+        res.set({
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            Pragma: 'no-cache',
+            Expires: '0',
+        });
 
         res.status(201).json(serializedTask);
     } catch (error) {
         console.error('Error creating task:', error);
+        console.error('Error stack:', error.stack);
+        console.error('Error name:', error.name);
         res.status(400).json({
             error: 'There was a problem creating the task.',
             details: error.errors

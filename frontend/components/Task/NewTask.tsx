@@ -70,7 +70,8 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
             try {
                 await onTaskCreate(taskText);
                 // Success toast is now handled by the parent component
-            } catch {
+            } catch (error) {
+                console.error('NewTask: Error creating task:', error);
                 setTaskName(taskText);
                 showErrorToast(
                     t('errors.taskCreate', 'Failed to create task.')

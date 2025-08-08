@@ -92,6 +92,12 @@ export const updateProject = async (
 };
 
 export const deleteProject = async (projectId: number): Promise<void> => {
+    if (!projectId || projectId === null || projectId === undefined) {
+        throw new Error('Cannot delete project: Invalid project ID');
+    }
+
+    console.log('Attempting to delete project with ID:', projectId);
+
     const response = await fetch(`/api/project/${projectId}`, {
         method: 'DELETE',
         credentials: 'include',
@@ -99,6 +105,16 @@ export const deleteProject = async (projectId: number): Promise<void> => {
             Accept: 'application/json',
         },
     });
+
+    console.log('Delete response status:', response.status);
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Delete failed with response:', errorText);
+        throw new Error(
+            `Failed to delete project: ${response.status} - ${errorText}`
+        );
+    }
 
     await handleAuthResponse(response, 'Failed to delete project.');
 };
