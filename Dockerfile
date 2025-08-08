@@ -1,7 +1,7 @@
 ###############
 # BUILD STAGE #
 ###############
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 RUN apk add --no-cache --virtual .build-deps \
     python3 \
@@ -34,7 +34,7 @@ RUN npm cache clean --force && \
 ####################
 # Production stage #
 ####################
-FROM node:20-alpine AS production
+FROM node:22-alpine AS production
 
 ENV APP_UID=1001
 ENV APP_GID=1001
