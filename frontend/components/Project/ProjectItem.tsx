@@ -42,7 +42,6 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     setIsConfirmDialogOpen,
 }) => {
     const { t } = useTranslation();
-    // console.log('ProjectItem rendered for:', project.name, 'viewMode:', viewMode, 'handlers:', !!handleEditProject, !!setProjectToDelete);
     return (
         <div
             className={`${
@@ -148,52 +147,87 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             <button
                                 className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none"
                                 onClick={(e) => {
+                                    e.preventDefault();
                                     e.stopPropagation();
-                                    setActiveDropdown(
-                                        activeDropdown === project.id
-                                            ? null
-                                            : (project.id ?? null)
-                                    );
+                                    const projectId = project.id;
+                                    if (projectId !== undefined) {
+                                        setActiveDropdown(
+                                            activeDropdown === projectId
+                                                ? null
+                                                : projectId
+                                        );
+                                    }
                                 }}
                                 aria-label={t('projectItem.toggleDropdownMenu')}
                             >
                                 <EllipsisVerticalIcon className="h-5 w-5" />
                             </button>
 
-                            {activeDropdown === project.id && (
-                                <div className="absolute right-0 mt-2 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
-                                    <button
-                                        onClick={() => {
-                                            handleEditProject(project);
-                                            setActiveDropdown(null);
-                                        }}
-                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
-                                    >
-                                        {t('projectItem.edit')}
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setProjectToDelete(project);
-                                            setIsConfirmDialogOpen(true);
-                                            setActiveDropdown(null);
-                                        }}
-                                        className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
-                                    >
-                                        {t('projectItem.delete')}
-                                    </button>
-                                </div>
-                            )}
+                            {project.id !== undefined &&
+                                activeDropdown === project.id && (
+                                    <div className="absolute right-0 mt-2 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-10">
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                handleEditProject(project);
+                                                setActiveDropdown(null);
+                                            }}
+                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                        >
+                                            {t('projectItem.edit')}
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                if (
+                                                    project.id === undefined ||
+                                                    project.id === null
+                                                ) {
+                                                    console.error(
+                                                        'Cannot delete project: Invalid ID',
+                                                        project
+                                                    );
+                                                    return;
+                                                }
+                                                setProjectToDelete(project);
+                                                setIsConfirmDialogOpen(true);
+                                                setActiveDropdown(null);
+                                            }}
+                                            className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                        >
+                                            {t('projectItem.delete')}
+                                        </button>
+                                    </div>
+                                )}
                         </>
                     ) : (
                         <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <button
-                                onClick={() => handleEditProject(project)}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleEditProject(project);
+                                }}
                                 className="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                             >
                                 <PencilSquareIcon className="h-5 w-5" />
                             </button>
                             <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (
+                                        project.id === undefined ||
+                                        project.id === null
+                                    ) {
+                                        console.error(
+                                            'Cannot delete project: Invalid ID',
+                                            project
+                                        );
+                                        return;
+                                    }
                                     setProjectToDelete(project);
                                     setIsConfirmDialogOpen(true);
                                 }}

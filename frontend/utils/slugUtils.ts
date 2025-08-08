@@ -1,5 +1,7 @@
+import slugify from 'slugify';
+
 /**
- * Creates a URL-safe slug from a string
+ * Creates a URL-safe slug from a string with proper transliteration
  * @param text - The text to slugify
  * @param maxLength - Maximum length of the slug (default: 50)
  * @returns The slugified text
@@ -7,17 +9,29 @@
 export function createSlug(text: string, maxLength: number = 50): string {
     if (!text) return '';
 
-    return (
-        text
+    let slug = slugify(text, {
+        lower: true,
+        strict: true,
+        locale: 'en',
+        trim: true,
+    });
+
+    // If slugify returns empty (unsupported script), fallback to ASCII-only approach
+    if (!slug) {
+        slug = text
             .toLowerCase()
             .trim()
-            // Remove or replace special characters
-            .replace(/[^\w\s-]/g, '') // Remove non-word chars except spaces and hyphens
-            .replace(/[\s_-]+/g, '-') // Replace spaces, underscores, multiple hyphens with single hyphen
-            .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
-            .substring(0, maxLength) // Limit length
-            .replace(/-$/, '')
-    ); // Remove trailing hyphen if created by substring
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+            .replace(/[^a-z0-9\s-]/g, '') // Keep only ASCII letters, numbers, spaces, hyphens
+            .replace(/[\s_-]+/g, '-') // Replace spaces/underscores/multiple hyphens with single hyphen
+            .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+    }
+
+    // Trim to maxLength and ensure no trailing hyphens
+    return slug.length <= maxLength
+        ? slug
+        : slug.substring(0, maxLength).replace(/-+$/, '');
 }
 
 /**
