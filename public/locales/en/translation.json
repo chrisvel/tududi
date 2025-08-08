@@ -355,7 +355,7 @@
     },
     "deleteProject": {
       "title": "Delete Project",
-      "message": "Are you sure you want to delete the project \"{{projectName}}\"?"
+      "message": "Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?"
     }
   },
   "forms": {
