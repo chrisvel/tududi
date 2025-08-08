@@ -11,6 +11,7 @@
     "dev": "npm run frontend:dev",
     "build": "npm run frontend:build",
     "test": "npm run backend:test",
+    "test:ui": "bash e2e/bin/run-e2e.sh",
     "test:watch": "npm run frontend:test:watch",
     "test:coverage": "npm run frontend:test:coverage && npm run backend:test:coverage",
     "frontend:dev": "webpack serve --config webpack.config.js --hot",
