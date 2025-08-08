@@ -1,13 +1,18 @@
 ###############
 # BUILD STAGE #
 ###############
-FROM node:22-alpine AS builder
+# Use Playwright image with browsers and deps preinstalled for running E2E tests
+FROM mcr.microsoft.com/playwright:v1.54.2-jammy AS builder
 
-RUN apk add --no-cache --virtual .build-deps \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    build-essential \
     python3 \
-    make \
-    g++ \
-    sqlite-dev
+    pkg-config \
+    libsqlite3-dev \
+    sqlite3 \
+    bash \
+    curl && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -25,10 +30,13 @@ RUN NODE_ENV=production npm run frontend:build
 # Run backend tests
 RUN npm run backend:test
 
+# Uncomment to run E2E tests (browsers already present in this base image)
+#ENV CI=1
+#RUN npm run test:ui
+
 # Cleanup
 RUN npm cache clean --force && \
-    rm -rf ~/.npm /tmp/* && \
-    apk del .build-deps
+    rm -rf ~/.npm /tmp/*
 
 
 ####################
@@ -48,6 +56,7 @@ RUN apk add --no-cache --virtual .runtime-deps \
     curl \
     procps-ng \
     dumb-init \
+    bash \
     su-exec && \
     rm -rf /var/cache/apk/* /tmp/* && \
     rm -rf /usr/share/man /usr/share/doc /usr/share/info
