@@ -44,7 +44,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             name: '',
             description: '',
             area_id: null,
-            active: false,
+            active: true,
             tags: [],
             priority: 'low',
             due_date_at: null,
@@ -80,7 +80,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         image: false,
         priority: false,
         dueDate: false,
-        active: false,
+        active: true,
     });
 
     const { showSuccessToast, showErrorToast } = useToast();
@@ -132,7 +132,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 name: '',
                 description: '',
                 area_id: null,
-                active: false,
+                active: true,
                 tags: [],
                 priority: 'low',
                 due_date_at: null,
@@ -904,8 +904,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             </div>
             {showConfirmDialog && (
                 <ConfirmDialog
-                    title="Delete Project"
-                    message="Are you sure you want to delete this project? This action cannot be undone."
+                    title={t('modals.deleteProject.title', 'Delete Project')}
+                    message={t(
+                        'modals.deleteProject.message',
+                        'Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?'
+                    )}
                     onConfirm={handleDeleteConfirm}
                     onCancel={() => setShowConfirmDialog(false)}
                 />
