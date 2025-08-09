@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "start": "npm run backend:start",
+    "start": "bash scripts/start-all-dev.sh",
     "dev": "npm run frontend:dev",
     "build": "npm run frontend:build",
     "test": "npm run backend:test",
