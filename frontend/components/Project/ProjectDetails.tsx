@@ -6,6 +6,7 @@ import {
     PencilSquareIcon,
     TrashIcon,
     TagIcon,
+    PlusCircleIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
@@ -32,6 +33,7 @@ import {
     updateNote,
     deleteNote as apiDeleteNote,
 } from '../../utils/notesService';
+import { createNote } from '../../utils/notesService';
 import { isAuthError } from '../../utils/authUtils';
 import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
@@ -522,29 +524,36 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
-    const handleUpdateNote = async (noteData: Partial<Note>) => {
+    // Create or update note and keep local notes list in sync
+    const handleSaveNote = async (noteData: Note) => {
         try {
-            if (selectedNote?.id) {
-                const updatedNote = await updateNote(
-                    selectedNote.id,
-                    noteData as Note
-                );
-
-                // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
-                if (updatedNote.Tags && !updatedNote.tags) {
-                    updatedNote.tags = updatedNote.Tags;
-                }
-
-                setNotes(
-                    notes.map((n) =>
-                        n.id === selectedNote.id ? updatedNote : n
-                    )
-                );
-                setIsNoteModalOpen(false);
-                setSelectedNote(null);
+            let savedNote: Note;
+            if (noteData.id) {
+                savedNote = await updateNote(noteData.id, noteData);
+            } else {
+                savedNote = await createNote(noteData);
             }
+
+            // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
+            if ((savedNote as any).Tags && !(savedNote as any).tags) {
+                (savedNote as any).tags = (savedNote as any).Tags;
+            }
+
+            // If updated note moved to another project, remove it from this list
+            if (savedNote.id && savedNote.project_id !== project?.id) {
+                setNotes(notes.filter((n) => n.id !== savedNote.id));
+            } else if (noteData.id) {
+                setNotes(
+                    notes.map((n) => (n.id === savedNote.id ? savedNote : n))
+                );
+            } else {
+                setNotes([savedNote, ...notes]);
+            }
+
+            setIsNoteModalOpen(false);
+            setSelectedNote(null);
         } catch {
-            // Error updating note - silently handled
+            // Error saving note - silently handled
         }
     };
 
@@ -1014,12 +1023,36 @@ const ProjectDetails: React.FC = () => {
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-gray-500 dark:text-gray-400">
-                                {t(
-                                    'project.noNotes',
-                                    'No notes for this project.'
-                                )}
-                            </p>
+                            <div className="text-gray-500 dark:text-gray-400">
+                                <p>
+                                    {t(
+                                        'project.noNotes',
+                                        'No notes for this project.'
+                                    )}
+                                </p>
+                                <button
+                                    type="button"
+                                    className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                                    onClick={() => {
+                                        if (!project?.id || !project.name)
+                                            return;
+                                        setSelectedNote({
+                                            title: '',
+                                            content: '',
+                                            tags: [],
+                                            project: {
+                                                id: project.id,
+                                                name: project.name,
+                                            },
+                                            project_id: project.id,
+                                        });
+                                        setIsNoteModalOpen(true);
+                                    }}
+                                >
+                                    <PlusCircleIcon className="h-5 w-5" />
+                                    {t('noteCreation', 'Create New Note')}
+                                </button>
+                            </div>
                         )}
                     </div>
                 )}
@@ -1040,7 +1073,7 @@ const ProjectDetails: React.FC = () => {
                             setIsNoteModalOpen(false);
                             setSelectedNote(null);
                         }}
-                        onSave={handleUpdateNote}
+                        onSave={handleSaveNote}
                         note={selectedNote}
                         projects={allProjects}
                     />
