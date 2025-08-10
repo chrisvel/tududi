@@ -50,6 +50,12 @@ const getHighestUpdateId = (updates) => {
     return Math.max(...updates.map((u) => u.update_id));
 };
 
+// Build a unique processed update key shared across users of same bot token
+const getProcessedUpdateKey = (user, updateId) => {
+    const tokenPart = user.telegram_bot_token || `user-${user.id}`;
+    return `${tokenPart}-${updateId}`;
+};
+
 // Create message parameters
 const createMessageParams = (
     chatId,
@@ -136,6 +142,7 @@ const makeHttpPostRequest = (url, postData, options) => {
 // Side effect function to get Telegram updates
 const getTelegramUpdates = async (token, offset) => {
     try {
+        // Keep a low timeout to avoid blocking HTTP server in tests/CI
         const url = createTelegramUrl(token, 'getUpdates', {
             offset: offset.toString(),
             timeout: '1',
@@ -261,8 +268,26 @@ const processMessage = async (user, update) => {
     const chatId = message.chat.id.toString();
     const messageId = message.message_id;
 
+    // If this user already has a chat bound and it doesn't match this update, ignore
+    if (user.telegram_chat_id && user.telegram_chat_id !== chatId) {
+        return;
+    }
+
     // Update chat ID if needed and send welcome message for new users
     if (!user.telegram_chat_id) {
+        // Ensure no other user with the same bot token already owns this chat
+        const existingOwner = await User.findOne({
+            where: {
+                telegram_bot_token: user.telegram_bot_token,
+                telegram_chat_id: chatId,
+            },
+        });
+
+        if (existingOwner && existingOwner.id !== user.id) {
+            // Another user already owns this chat for this token; ignore
+            return;
+        }
+
         await updateUserChatId(user.id, chatId);
         user.telegram_chat_id = chatId; // Update local object
 
@@ -294,7 +319,7 @@ const processMessage = async (user, update) => {
         }
 
         // Create inbox item for regular messages (with duplicate check)
-        const inboxItem = await createInboxItem(text, user.id, messageId);
+        await createInboxItem(text, user.id, messageId);
 
         // Send confirmation
         await sendTelegramMessage(
@@ -324,7 +349,7 @@ const processUpdates = async (user, updates) => {
 
     // Filter out already processed updates
     const newUpdates = updates.filter((update) => {
-        const updateKey = `${user.id}-${update.update_id}`;
+        const updateKey = getProcessedUpdateKey(user, update.update_id);
         return !pollerState.processedUpdates.has(updateKey);
     });
 
@@ -344,13 +369,12 @@ const processUpdates = async (user, updates) => {
     // Process each new update
     for (const update of newUpdates) {
         try {
-            const updateKey = `${user.id}-${update.update_id}`;
+            const updateKey = getProcessedUpdateKey(user, update.update_id);
 
             if (update.message && update.message.text) {
-                await processMessage(user, update);
-
-                // Mark update as processed
+                // Mark update as processed BEFORE processing to avoid races
                 pollerState.processedUpdates.add(updateKey);
+                await processMessage(user, update);
 
                 // Clean up old processed updates (keep only last 1000 to prevent memory leak)
                 if (pollerState.processedUpdates.size > 1000) {
