@@ -202,9 +202,21 @@ const fetchSuggestedTasks = async (userId, excludedIds) =>
     });
 
 // Side effect function to send telegram message
-const sendTelegramMessage = async (token, chatId, message) => {
+const sendTelegramMessage = async (
+    token,
+    chatId,
+    message,
+    replyToMessageId = null,
+    options = {}
+) => {
     const poller = TelegramPoller;
-    return await poller.sendTelegramMessage(token, chatId, message);
+    return await poller.sendTelegramMessage(
+        token,
+        chatId,
+        message,
+        replyToMessageId,
+        options
+    );
 };
 
 // Side effect function to update user tracking fields
