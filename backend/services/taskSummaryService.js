@@ -273,7 +273,9 @@ const sendSummaryToUser = async (userId) => {
         await sendTelegramMessage(
             user.telegram_bot_token,
             user.telegram_chat_id,
-            summary
+            summary,
+            null,
+            { parseMode: 'MarkdownV2' }
         );
 
         // Update tracking fields
