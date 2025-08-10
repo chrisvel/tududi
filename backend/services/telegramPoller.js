@@ -51,10 +51,18 @@ const getHighestUpdateId = (updates) => {
 };
 
 // Create message parameters
-const createMessageParams = (chatId, text, replyToMessageId = null) => {
+const createMessageParams = (
+    chatId,
+    text,
+    replyToMessageId = null,
+    parseMode = undefined
+) => {
     const params = { chat_id: chatId, text: text };
     if (replyToMessageId) {
         params.reply_to_message_id = replyToMessageId;
+    }
+    if (parseMode) {
+        params.parse_mode = parseMode;
     }
     return params;
 };
@@ -144,18 +152,20 @@ const sendTelegramMessage = async (
     token,
     chatId,
     text,
-    replyToMessageId = null
+    replyToMessageId = null,
+    options = {}
 ) => {
     try {
         const messageParams = createMessageParams(
             chatId,
             text,
-            replyToMessageId
+            replyToMessageId,
+            options.parseMode
         );
         const postData = JSON.stringify(messageParams);
         const url = createTelegramUrl(token, 'sendMessage');
 
-        const options = {
+        const requestOptions = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -163,7 +173,7 @@ const sendTelegramMessage = async (
             },
         };
 
-        return await makeHttpPostRequest(url, postData, options);
+        return await makeHttpPostRequest(url, postData, requestOptions);
     } catch (error) {
         throw error;
     }
