@@ -63,6 +63,12 @@ const createMessageParams = (
     }
     if (parseMode) {
         params.parse_mode = parseMode;
+    } else if (
+        typeof text === 'string' &&
+        text.startsWith("📋 *Today's Task Summary*")
+    ) {
+        // Ensure Task Summary messages render as MarkdownV2
+        params.parse_mode = 'MarkdownV2';
     }
     return params;
 };
