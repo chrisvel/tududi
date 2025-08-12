@@ -176,6 +176,28 @@ describe('Projects Routes', () => {
             expect(response.body.error).toBe('Project not found');
         });
 
+        it("should return 403 for other user's projects when accessed by uid-slug", async () => {
+            const bcrypt = require('bcrypt');
+            const otherUser = await User.create({
+                email: 'other2@example.com',
+                password_digest: await bcrypt.hash('password123', 10),
+            });
+
+            const otherProject = await Project.create({
+                name: 'Secret Project',
+                user_id: otherUser.id,
+            });
+
+            // Build proper uid-slug
+            const sluggedName = otherProject.name.toLowerCase().replace(/\s+/g, '-');
+            const uidSlug = `${otherProject.uid}-${sluggedName}`;
+
+            const response = await agent.get(`/api/project/${uidSlug}`);
+
+            expect(response.status).toBe(403);
+            expect(response.body.error).toBe('Forbidden');
+        });
+
         it('should require authentication', async () => {
             const response = await request(app).get(
                 `/api/project/${project.id}`
