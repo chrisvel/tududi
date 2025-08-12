@@ -8,9 +8,10 @@ class RecurringTaskService {
     /**
      * Generate new tasks from recurring task templates
      * @param {number} userId - Optional user ID to limit processing
+     * @param {number} lookAheadDays - Number of days to look ahead for generating tasks (default: 7)
      * @returns {Promise<Array>} Array of newly created tasks
      */
-    static async generateRecurringTasks(userId = null) {
+    static async generateRecurringTasks(userId = null, lookAheadDays = 7) {
         try {
             const whereClause = {
                 recurrence_type: { [Op.ne]: 'none' },
@@ -29,11 +30,15 @@ class RecurringTaskService {
 
             const newTasks = [];
             const now = new Date();
+            const lookAheadDate = new Date(
+                now.getTime() + lookAheadDays * 24 * 60 * 60 * 1000
+            );
 
             for (const task of recurringTasks) {
                 const generatedTasks = await this.processRecurringTask(
                     task,
-                    now
+                    now,
+                    lookAheadDate
                 );
                 newTasks.push(...generatedTasks);
             }
@@ -49,28 +54,99 @@ class RecurringTaskService {
      * Process a single recurring task and generate new instances if needed
      * @param {Object} task - The recurring task template
      * @param {Date} now - Current timestamp
+     * @param {Date} lookAheadDate - Date to generate tasks up to (default: now)
      * @returns {Promise<Array>} Array of newly created task instances
      */
-    static async processRecurringTask(task, now) {
+    static async processRecurringTask(task, now, lookAheadDate = null) {
         const newTasks = [];
+        const generateUpTo = lookAheadDate || now;
 
         // Skip if recurrence has ended
         if (task.recurrence_end_date && now > task.recurrence_end_date) {
             return newTasks;
         }
 
-        let nextDueDate = this.calculateNextDueDate(task, now);
+        // Special handling for the initial due date - if the task has a due_date
+        // and no instances have been generated yet, check if the original due_date
+        // falls within our generation window
+        if (!task.last_generated_date && task.due_date) {
+            const originalDueDate = new Date(task.due_date.getTime());
 
-        // Generate tasks up to current date
-        while (nextDueDate && nextDueDate <= now) {
-            // Check if this due date already has a task instance
-            const existingTask = await Task.findOne({
-                where: {
+            // If the original due date is within our generation window, create it
+            if (originalDueDate <= generateUpTo) {
+                // Use date range to handle potential precision issues
+                const startOfDay = new Date(originalDueDate);
+                startOfDay.setUTCHours(0, 0, 0, 0);
+                const endOfDay = new Date(originalDueDate);
+                endOfDay.setUTCHours(23, 59, 59, 999);
+
+                const whereClause = {
                     user_id: task.user_id,
-                    name: task.name,
-                    due_date: nextDueDate,
-                    project_id: task.project_id,
+                    recurring_parent_id: task.id,
+                    due_date: {
+                        [Op.between]: [startOfDay, endOfDay]
+                    },
+                };
+
+                // Only add project_id to where clause if it's not null/undefined
+                if (task.project_id !== null && task.project_id !== undefined) {
+                    whereClause.project_id = task.project_id;
+                } else {
+                    whereClause.project_id = null;
+                }
+
+                const existingTask = await Task.findOne({
+                    where: whereClause,
+                });
+
+                if (!existingTask) {
+                    const newTask = await this.createTaskInstance(
+                        task,
+                        originalDueDate
+                    );
+                    newTasks.push(newTask);
+                }
+
+                // Update last generated date if the original due date has passed
+                if (originalDueDate <= now) {
+                    task.last_generated_date = originalDueDate;
+                    await task.save();
+                }
+            }
+        }
+
+        // Now generate subsequent recurring instances
+        let nextDueDate = this.calculateNextDueDate(
+            task,
+            task.last_generated_date || task.due_date || now
+        );
+
+        // Generate tasks up to the look-ahead date
+        while (nextDueDate && nextDueDate <= generateUpTo) {
+            // Check if this due date already has a task instance
+            // Use date range to handle potential precision issues
+            const startOfDay = new Date(nextDueDate);
+            startOfDay.setUTCHours(0, 0, 0, 0);
+            const endOfDay = new Date(nextDueDate);
+            endOfDay.setUTCHours(23, 59, 59, 999);
+
+            const whereClause = {
+                user_id: task.user_id,
+                recurring_parent_id: task.id,
+                due_date: {
+                    [Op.between]: [startOfDay, endOfDay]
                 },
+            };
+
+            // Only add project_id to where clause if it's not null/undefined
+            if (task.project_id !== null && task.project_id !== undefined) {
+                whereClause.project_id = task.project_id;
+            } else {
+                whereClause.project_id = null;
+            }
+
+            const existingTask = await Task.findOne({
+                where: whereClause,
             });
 
             if (!existingTask) {
@@ -81,11 +157,13 @@ class RecurringTaskService {
                 newTasks.push(newTask);
             }
 
-            // Update last generated date
-            task.last_generated_date = nextDueDate;
-            await task.save();
+            // Update last generated date only for tasks that are due today or in the past
+            if (nextDueDate <= now) {
+                task.last_generated_date = nextDueDate;
+                await task.save();
+            }
 
-            // Calculate next due date
+            // Calculate next due date from this one
             nextDueDate = this.calculateNextDueDate(task, nextDueDate);
 
             // Safety check to prevent infinite loops
@@ -141,14 +219,9 @@ class RecurringTaskService {
             return null;
         }
 
-        const baseDate = task.completion_based
-            ? task.last_generated_date || task.created_at
-            : task.due_date || task.created_at;
-
-        // If no base date is available, use fromDate
-        const startDate = baseDate
-            ? new Date(Math.max(fromDate.getTime(), baseDate.getTime()))
-            : new Date(fromDate.getTime());
+        // Use the fromDate parameter directly for calculation instead of baseDate logic
+        // This ensures we always move forward from the provided date
+        const startDate = new Date(fromDate.getTime());
 
         switch (task.recurrence_type) {
             case 'daily':
@@ -437,10 +510,18 @@ class RecurringTaskService {
         }
 
         // Check if this due date already has a task instance
+        // Use date range to handle potential precision issues
+        const startOfDay = new Date(nextDueDate);
+        startOfDay.setUTCHours(0, 0, 0, 0);
+        const endOfDay = new Date(nextDueDate);
+        endOfDay.setUTCHours(23, 59, 59, 999);
+
         const whereClause = {
             user_id: task.user_id,
-            name: task.name,
-            due_date: nextDueDate,
+            recurring_parent_id: task.id,
+            due_date: {
+                [Op.between]: [startOfDay, endOfDay]
+            },
         };
 
         // Only add project_id to where clause if it's not null/undefined

@@ -6,9 +6,13 @@ import {
     getPostHeaders,
 } from './authUtils';
 
+export interface GroupedTasks {
+    [groupName: string]: Task[];
+}
+
 export const fetchTasks = async (
     query = ''
-): Promise<{ tasks: Task[]; metrics: Metrics }> => {
+): Promise<{ tasks: Task[]; metrics: Metrics; groupedTasks?: GroupedTasks }> => {
     const response = await fetch(`/api/tasks${query}`, {
         credentials: 'include',
         headers: getDefaultHeaders(),
@@ -25,7 +29,11 @@ export const fetchTasks = async (
         throw new Error('Metrics data is not included.');
     }
 
-    return { tasks: result.tasks, metrics: result.metrics };
+    return { 
+        tasks: result.tasks, 
+        metrics: result.metrics,
+        groupedTasks: result.groupedTasks
+    };
 };
 
 export const createTask = async (taskData: Task): Promise<Task> => {
@@ -116,4 +124,20 @@ export const toggleTaskToday = async (taskId: number): Promise<Task> => {
 
     await handleAuthResponse(response, 'Failed to toggle task today status.');
     return await response.json();
+};
+
+export interface TaskIteration {
+    date: string;
+    utc_date: string;
+}
+
+export const fetchTaskNextIterations = async (taskId: number): Promise<TaskIteration[]> => {
+    const response = await fetch(`/api/task/${taskId}/next-iterations`, {
+        credentials: 'include',
+        headers: getDefaultHeaders(),
+    });
+
+    await handleAuthResponse(response, 'Failed to fetch task iterations.');
+    const result = await response.json();
+    return result.iterations || [];
 };
