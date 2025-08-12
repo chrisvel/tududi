@@ -1,5 +1,6 @@
 const express = require('express');
 const { User } = require('../models');
+const { isAdmin } = require('../services/rolesService');
 const packageJson = require('../../package.json');
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.get('/current_user', async (req, res) => {
         if (req.session && req.session.userId) {
             const user = await User.findByPk(req.session.userId);
             if (user) {
+                const admin = await isAdmin(user.id);
                 return res.json({
                     user: {
                         id: user.id,
@@ -21,6 +23,7 @@ router.get('/current_user', async (req, res) => {
                         language: user.language,
                         appearance: user.appearance,
                         timezone: user.timezone,
+                        is_admin: admin,
                     },
                 });
             }
@@ -64,6 +67,7 @@ router.post('/login', async (req, res) => {
             });
         });
 
+        const admin = await isAdmin(user.id);
         res.json({
             user: {
                 id: user.id,
@@ -71,6 +75,7 @@ router.post('/login', async (req, res) => {
                 language: user.language,
                 appearance: user.appearance,
                 timezone: user.timezone,
+                is_admin: admin,
             },
         });
     } catch (error) {

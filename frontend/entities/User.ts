@@ -5,4 +5,5 @@ export interface User {
     appearance: string;
     timezone: string;
     avatarUrl?: string;
+    is_admin?: boolean;
 }

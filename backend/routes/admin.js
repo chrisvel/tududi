@@ -38,3 +38,99 @@ router.post('/admin/set-admin-role', async (req, res) => {
 });
 
 module.exports = router;
+
+// --- Admin Users Management ---
+// NOTE: app.js already mounts this router under requireAuth
+
+// Middleware to ensure admin access
+async function requireAdmin(req, res, next) {
+  try {
+    const requesterId = req.currentUser?.id || req.session?.userId;
+    if (!requesterId) return res.status(401).json({ error: 'Authentication required' });
+    const admin = await isAdmin(requesterId);
+    if (!admin) return res.status(403).json({ error: 'Forbidden' });
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/admin/users - list users with role and creation date
+router.get('/admin/users', requireAdmin, async (req, res) => {
+  try {
+    const users = await User.findAll({ attributes: ['id', 'email', 'created_at'] });
+    // Fetch roles in bulk
+    const roles = await Role.findAll({ attributes: ['user_id', 'is_admin'] });
+    const userIdToRole = new Map(roles.map(r => [r.user_id, r.is_admin]));
+    const result = users.map(u => ({
+      id: u.id,
+      email: u.email,
+      created_at: u.created_at,
+      role: userIdToRole.get(u.id) ? 'admin' : 'user',
+    }));
+    res.json(result);
+  } catch (err) {
+    console.error('Error listing users:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /api/admin/users - create a user (default role: user)
+router.post('/admin/users', requireAdmin, async (req, res) => {
+  try {
+    const { email, password, role } = req.body || {};
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+    // Very basic validation consistent with login rules
+    if (typeof email !== 'string' || !email.includes('@')) {
+      return res.status(400).json({ error: 'Invalid email' });
+    }
+    if (typeof password !== 'string' || password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+    // Create user; model hook will hash password
+    const user = await User.create({ email, password });
+    // Optionally assign admin role if requested and allowed
+    const makeAdmin = role === 'admin';
+    if (makeAdmin) {
+      await Role.findOrCreate({ where: { user_id: user.id }, defaults: { user_id: user.id, is_admin: true } });
+    }
+    res.status(201).json({ id: user.id, email: user.email, created_at: user.created_at, role: makeAdmin ? 'admin' : 'user' });
+  } catch (err) {
+    console.error('Error creating user:', err);
+    // Unique constraint
+    if (err?.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ error: 'Email already exists' });
+    }
+    res.status(400).json({ error: 'There was a problem creating the user.' });
+  }
+});
+
+// DELETE /api/admin/users/:id - delete a user, prevent self-delete
+router.delete('/admin/users/:id', requireAdmin, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const requesterId = req.currentUser?.id || req.session?.userId;
+    if (!Number.isFinite(id)) return res.status(400).json({ error: 'Invalid user id' });
+    if (id === requesterId) return res.status(400).json({ error: 'Cannot delete your own account' });
+
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    // Prevent deleting the last remaining admin
+    const targetRole = await Role.findOne({ where: { user_id: id } });
+    if (targetRole?.is_admin) {
+      const adminCount = await Role.count({ where: { is_admin: true } });
+      if (adminCount <= 1) {
+        return res.status(400).json({ error: 'Cannot delete the last remaining admin' });
+      }
+    }
+
+    await user.destroy();
+    res.status(204).send();
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(400).json({ error: 'There was a problem deleting the user.' });
+  }
+});

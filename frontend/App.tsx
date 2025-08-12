@@ -52,8 +52,10 @@ const App: React.FC = () => {
             const data = await response.json();
             if (data.user) {
                 setCurrentUser(data.user);
+                (window as any).__CURRENT_USER__ = data.user;
             } else {
                 setCurrentUser(null);
+                (window as any).__CURRENT_USER__ = null;
             }
         } catch {
             setCurrentUser(null);
@@ -72,6 +74,7 @@ const App: React.FC = () => {
         const handleUserLoggedIn = (event: CustomEvent) => {
             const user = event.detail;
             setCurrentUser(user);
+            (window as any).__CURRENT_USER__ = user;
         };
 
         window.addEventListener(
@@ -243,6 +246,20 @@ const App: React.FC = () => {
                                 }
                             />
                             <Route path="/about" element={<About />} />
+                            <Route
+                                path="/admin/users"
+                                element={
+                                    currentUser.is_admin ? (
+                                        <React.Suspense fallback={<div className="p-4">Loading...</div>}>
+                                            {React.createElement(
+                                                React.lazy(() => import('./components/Admin/AdminUsersPage'))
+                                            )}
+                                        </React.Suspense>
+                                    ) : (
+                                        <Navigate to="/today" replace />
+                                    )
+                                }
+                            />
                             <Route path="*" element={<NotFound />} />
                         </Route>
                     </>
