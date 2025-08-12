@@ -5,11 +5,13 @@ const { getConfig } = require('../config/config');
 const config = getConfig();
 const fs = require('fs');
 const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
+const permissionsService = require('../services/permissionsService');
 const { Op } = require('sequelize');
 const { extractUidFromSlug } = require('../utils/slug-utils');
 const { validateTagName } = require('../utils/validation');
 const { uid } = require('../utils/uid');
 const router = express.Router();
+const { hasAccess } = require('../middleware/authorize');
 
 // Helper function to safely format dates
 const formatDate = (date) => {
@@ -139,7 +141,12 @@ router.get('/projects', async (req, res) => {
 
         const { active, pin_to_sidebar, area_id, area } = req.query;
 
-        let whereClause = { user_id: req.session.userId };
+        // Base: owned or shared projects
+        const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
+            'project',
+            req.session.userId
+        );
+        let whereClause = ownedOrShared;
 
         // Filter by active status
         if (active === 'true') {
@@ -161,16 +168,19 @@ router.get('/projects', async (req, res) => {
             const uid = extractUidFromSlug(area);
             if (uid) {
                 const areaRecord = await Area.findOne({
-                    where: { uid: uid, user_id: req.session.userId },
+                    where: { uid: uid },
                     attributes: ['id'],
                 });
                 if (areaRecord) {
-                    whereClause.area_id = areaRecord.id;
+                    // add to AND filter
+                    whereClause = {
+                        [Op.and]: [whereClause, { area_id: areaRecord.id }],
+                    };
                 }
             }
         } else if (area_id && area_id !== '') {
             // Legacy support for numeric area_id
-            whereClause.area_id = area_id;
+            whereClause = { [Op.and]: [whereClause, { area_id }] };
         }
 
         const projects = await Project.findAll({
@@ -246,20 +256,24 @@ router.get('/projects', async (req, res) => {
 });
 
 // GET /api/project/:uidSlug (UID-slug format only)
-router.get('/project/:uidSlug', async (req, res) => {
+router.get(
+    '/project/:uidSlug',
+    hasAccess(
+        'ro',
+        'project',
+        async (req) => {
+            const uidPart = req.params.uidSlug.split('-')[0];
+            const p = await Project.findOne({ where: { uid: uidPart }, attributes: ['uid'] });
+            return p?.uid;
+        },
+        { notFoundMessage: 'Project not found' }
+    ),
+    async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
-        // Extract UID from the slug (part before first hyphen)
+        // Extract UID from slug and fetch full project with associations
         const uidPart = req.params.uidSlug.split('-')[0];
-
         const project = await Project.findOne({
-            where: {
-                uid: uidPart,
-                user_id: req.session.userId,
-            },
+            where: { uid: uidPart },
             include: [
                 {
                     model: Task,
@@ -330,15 +344,14 @@ router.get('/project/:uidSlug', async (req, res) => {
             ? projectJson.Tasks.map((task) => {
                   const normalizedTask = {
                       ...task,
-                      tags: task.Tags || [], // Normalize Tags to tags for each task
-                      subtasks: task.Subtasks || [], // Normalize Subtasks to subtasks for each task
+                      tags: task.Tags || [],
+                      subtasks: task.Subtasks || [],
                       due_date: task.due_date
                           ? typeof task.due_date === 'string'
                               ? task.due_date.split('T')[0]
                               : task.due_date.toISOString().split('T')[0]
                           : null,
                   };
-                  // Remove the original Tags and Subtasks properties to avoid confusion
                   delete normalizedTask.Tags;
                   delete normalizedTask.Subtasks;
                   return normalizedTask;
@@ -350,9 +363,8 @@ router.get('/project/:uidSlug', async (req, res) => {
             ? projectJson.Notes.map((note) => {
                   const normalizedNote = {
                       ...note,
-                      tags: note.Tags || [], // Normalize Tags to tags for each note
+                      tags: note.Tags || [],
                   };
-                  // Remove the original Tags property to avoid confusion
                   delete normalizedNote.Tags;
                   return normalizedNote;
               })
@@ -360,9 +372,9 @@ router.get('/project/:uidSlug', async (req, res) => {
 
         const result = {
             ...projectJson,
-            tags: projectJson.Tags || [], // Normalize Tags to tags
-            Tasks: normalizedTasks, // Keep as Tasks (capital T) to match expected structure
-            Notes: normalizedNotes, // Include normalized notes with tags
+            tags: projectJson.Tags || [],
+            Tasks: normalizedTasks,
+            Notes: normalizedNotes,
             due_date_at: formatDate(project.due_date_at),
         };
 
@@ -371,7 +383,8 @@ router.get('/project/:uidSlug', async (req, res) => {
         console.error('Error fetching project:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-});
+}
+);
 
 // POST /api/project
 router.post('/project', async (req, res) => {
@@ -415,6 +428,7 @@ router.post('/project', async (req, res) => {
             user_id: req.session.userId,
         };
 
+        // Create is always allowed for the authenticated user; project is owned by creator
         const project = await Project.create(projectData);
 
         // Update tags if provided, but don't let tag errors break project creation
@@ -445,19 +459,25 @@ router.post('/project', async (req, res) => {
 });
 
 // PATCH /api/project/:id
-router.patch('/project/:id', async (req, res) => {
+router.patch(
+    '/project/:id',
+    hasAccess(
+        'rw',
+        'project',
+        async (req) => {
+            const p = await Project.findByPk(req.params.id, { attributes: ['uid'] });
+            return p?.uid;
+        },
+        { notFoundMessage: 'Project not found.' }
+    ),
+    async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
-        const project = await Project.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
-        });
-
+        // Load project and check RW access (owner/admin or shared rw)
+        const project = await Project.findByPk(req.params.id);
         if (!project) {
             return res.status(404).json({ error: 'Project not found.' });
         }
+        // access ensured by middleware
 
         const {
             name,
@@ -516,22 +536,28 @@ router.patch('/project/:id', async (req, res) => {
                 : [error.message],
         });
     }
-});
+}
+);
 
 // DELETE /api/project/:id
-router.delete('/project/:id', async (req, res) => {
+router.delete(
+    '/project/:id',
+    hasAccess(
+        'rw',
+        'project',
+        async (req) => {
+            const p = await Project.findByPk(req.params.id, { attributes: ['uid'] });
+            return p?.uid;
+        },
+        { notFoundMessage: 'Project not found.' }
+    ),
+    async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
-        const project = await Project.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
-        });
-
+        const project = await Project.findByPk(req.params.id);
         if (!project) {
             return res.status(404).json({ error: 'Project not found.' });
         }
+        // access ensured by middleware
 
         // Use a transaction to ensure atomicity
         await sequelize.transaction(async (transaction) => {
@@ -568,6 +594,7 @@ router.delete('/project/:id', async (req, res) => {
             error: 'There was a problem deleting the project.',
         });
     }
-});
+}
+);
 
 module.exports = router;

@@ -243,8 +243,8 @@ describe('Projects Routes', () => {
                 .patch(`/api/project/${otherProject.id}`)
                 .send({ name: 'Updated' });
 
-            expect(response.status).toBe(404);
-            expect(response.body.error).toBe('Project not found.');
+            expect(response.status).toBe(403);
+            expect(response.body.error).toBe('Forbidden');
         });
 
         it('should require authentication', async () => {
@@ -301,8 +301,8 @@ describe('Projects Routes', () => {
                 `/api/project/${otherProject.id}`
             );
 
-            expect(response.status).toBe(404);
-            expect(response.body.error).toBe('Project not found.');
+            expect(response.status).toBe(403);
+            expect(response.body.error).toBe('Forbidden');
         });
 
         it('should require authentication', async () => {
