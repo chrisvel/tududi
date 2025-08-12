@@ -12,7 +12,11 @@ export interface GroupedTasks {
 
 export const fetchTasks = async (
     query = ''
-): Promise<{ tasks: Task[]; metrics: Metrics; groupedTasks?: GroupedTasks }> => {
+): Promise<{
+    tasks: Task[];
+    metrics: Metrics;
+    groupedTasks?: GroupedTasks;
+}> => {
     const response = await fetch(`/api/tasks${query}`, {
         credentials: 'include',
         headers: getDefaultHeaders(),
@@ -29,10 +33,10 @@ export const fetchTasks = async (
         throw new Error('Metrics data is not included.');
     }
 
-    return { 
-        tasks: result.tasks, 
+    return {
+        tasks: result.tasks,
         metrics: result.metrics,
-        groupedTasks: result.groupedTasks
+        groupedTasks: result.groupedTasks,
     };
 };
 
@@ -131,8 +135,15 @@ export interface TaskIteration {
     utc_date: string;
 }
 
-export const fetchTaskNextIterations = async (taskId: number): Promise<TaskIteration[]> => {
-    const response = await fetch(`/api/task/${taskId}/next-iterations`, {
+export const fetchTaskNextIterations = async (
+    taskId: number,
+    startFromDate?: string
+): Promise<TaskIteration[]> => {
+    const url = startFromDate
+        ? `/api/task/${taskId}/next-iterations?startFromDate=${startFromDate}`
+        : `/api/task/${taskId}/next-iterations`;
+
+    const response = await fetch(url, {
         credentials: 'include',
         headers: getDefaultHeaders(),
     });

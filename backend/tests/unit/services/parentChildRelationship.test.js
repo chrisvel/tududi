@@ -441,11 +441,29 @@ describe('Parent-Child Relationship Functionality', () => {
 
             const children = [];
 
-            // Generate 5 child tasks
+            // Generate 5 child tasks by simulating completion on different days
             for (let i = 0; i < 5; i++) {
+                // Simulate completing the task on different days
+                const completionDate = new Date();
+                completionDate.setDate(completionDate.getDate() + i);
+
+                // Mock the calculateNextDueDate to return different dates
+                const originalCalculateNextDueDate =
+                    RecurringTaskService.calculateNextDueDate;
+                RecurringTaskService.calculateNextDueDate = jest.fn(() => {
+                    const nextDate = new Date(completionDate);
+                    nextDate.setDate(nextDate.getDate() + 1); // Next day
+                    return nextDate;
+                });
+
                 await parentTask.update({ status: Task.STATUS.DONE });
                 const nextTask =
                     await RecurringTaskService.handleTaskCompletion(parentTask);
+
+                // Restore original method
+                RecurringTaskService.calculateNextDueDate =
+                    originalCalculateNextDueDate;
+
                 if (nextTask) {
                     children.push(nextTask);
                 }

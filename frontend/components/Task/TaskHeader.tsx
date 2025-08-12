@@ -34,6 +34,7 @@ interface TaskHeaderProps {
     // Props for edit and delete functionality
     onEdit?: (e: React.MouseEvent) => void;
     onDelete?: (e: React.MouseEvent) => void;
+    isUpcomingView?: boolean;
 }
 
 const TaskHeader: React.FC<TaskHeaderProps> = ({
@@ -51,6 +52,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
     // Props for edit and delete functionality
     onEdit,
     onDelete,
+    isUpcomingView = false,
 }) => {
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -218,12 +220,13 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         }
     };
 
-    // Check if task has metadata (project, tags, due_date, recurrence_type)
+    // Check if task has metadata (project, tags, due_date, recurrence_type, or recurring_parent_id)
     const hasMetadata =
         (project && !hideProjectName) ||
         (task.tags && task.tags.length > 0) ||
         task.due_date ||
-        (task.recurrence_type && task.recurrence_type !== 'none');
+        (task.recurrence_type && task.recurrence_type !== 'none') ||
+        task.recurring_parent_id;
 
     return (
         <div
@@ -252,258 +255,386 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         onToggleCompletion={onToggleCompletion}
                     />
                     <div className="flex flex-col">
-                        <div className="flex items-center">
-                            <span className="text-md text-gray-900 dark:text-gray-100">
-                                {task.name}
-                            </span>
-                        </div>
-                        {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
-                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                            {project && !hideProjectName && (
-                                <div className="flex items-center">
-                                    <FolderIcon className="h-3 w-3 mr-1" />
-                                    <Link
-                                        to={
-                                            project.uid
-                                                ? `/project/${project.uid}-${project.name
-                                                      .toLowerCase()
-                                                      .replace(
-                                                          /[^a-z0-9]+/g,
-                                                          '-'
-                                                      )
-                                                      .replace(/^-|-$/g, '')}`
-                                                : `/project/${project.id}`
-                                        }
-                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
-                                        onClick={(e) => {
-                                            // Prevent navigation if we're already on this project's page
-                                            if (
-                                                window.location.pathname ===
-                                                `/project/${project.id}`
-                                            ) {
-                                                e.preventDefault();
-                                            }
-                                            e.stopPropagation();
-                                        }}
-                                    >
-                                        {project.name}
-                                    </Link>
-                                </div>
-                            )}
-                            {project &&
-                                !hideProjectName &&
-                                task.tags &&
-                                task.tags.length > 0 && (
-                                    <span className="mx-2">•</span>
-                                )}
-                            {task.tags && task.tags.length > 0 && (
-                                <div className="flex items-center">
-                                    <TagIcon className="h-3 w-3 mr-1" />
-                                    <span>
-                                        {task.tags.map((tag, index) => (
-                                            <React.Fragment key={tag.name}>
-                                                <Link
-                                                    to={
-                                                        tag.uid
-                                                            ? `/tag/${tag.uid}-${tag.name
-                                                                  .toLowerCase()
-                                                                  .replace(
-                                                                      /[^a-z0-9]+/g,
-                                                                      '-'
-                                                                  )
-                                                                  .replace(
-                                                                      /^-|-$/g,
-                                                                      ''
-                                                                  )}`
-                                                            : `/tag/${tag.name
-                                                                  .toLowerCase()
-                                                                  .replace(
-                                                                      /[^a-z0-9]+/g,
-                                                                      '-'
-                                                                  )
-                                                                  .replace(
-                                                                      /^-|-$/g,
-                                                                      ''
-                                                                  )}`
-                                                    }
-                                                    className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
-                                                    onClick={(e) =>
-                                                        e.stopPropagation()
-                                                    }
-                                                >
-                                                    {tag.name}
-                                                </Link>
-                                                {index <
-                                                    task.tags!.length - 1 &&
-                                                    ', '}
-                                            </React.Fragment>
-                                        ))}
+                        {isUpcomingView ? (
+                            <div className="w-full">
+                                {/* Full width title that wraps */}
+                                <div className="w-full mb-0.5">
+                                    <span className="text-sm font-normal text-gray-900 dark:text-gray-300 dark:font-light break-words tracking-tight">
+                                        {task.name}
                                     </span>
                                 </div>
-                            )}
-                            {((project && !hideProjectName) ||
-                                (task.tags && task.tags.length > 0)) &&
-                                task.due_date && (
-                                    <span className="mx-2">•</span>
+                                {/* Show project and tags info in upcoming view */}
+                                {project && !hideProjectName && (
+                                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                        <FolderIcon className="h-3 w-3 mr-1" />
+                                        <Link
+                                            to={
+                                                project.uid
+                                                    ? `/project/${project.uid}-${project.name
+                                                          .toLowerCase()
+                                                          .replace(
+                                                              /[^a-z0-9]+/g,
+                                                              '-'
+                                                          )
+                                                          .replace(
+                                                              /^-|-$/g,
+                                                              ''
+                                                          )}`
+                                                    : `/project/${project.id}`
+                                            }
+                                            className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                            onClick={(e) => {
+                                                // Prevent navigation if we're already on this project's page
+                                                if (
+                                                    window.location.pathname ===
+                                                    `/project/${project.id}`
+                                                ) {
+                                                    e.preventDefault();
+                                                }
+                                                e.stopPropagation();
+                                            }}
+                                        >
+                                            {project.name}
+                                        </Link>
+                                    </div>
                                 )}
-                            {task.due_date && (
-                                <div className="flex items-center">
-                                    <CalendarIcon className="h-3 w-3 mr-1" />
-                                    <span>{formatDueDate(task.due_date)}</span>
-                                </div>
-                            )}
-                            {((project && !hideProjectName) ||
-                                (task.tags && task.tags.length > 0) ||
-                                task.due_date) &&
-                                task.recurrence_type &&
-                                task.recurrence_type !== 'none' && (
-                                    <span className="mx-2">•</span>
+                                {project &&
+                                    !hideProjectName &&
+                                    task.tags &&
+                                    task.tags.length > 0 && (
+                                        <span className="mx-2 text-xs text-gray-500 dark:text-gray-400">
+                                            •
+                                        </span>
+                                    )}
+                                {task.tags && task.tags.length > 0 && (
+                                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                        <TagIcon className="h-3 w-3 mr-1" />
+                                        <span>
+                                            {task.tags.map((tag, index) => (
+                                                <React.Fragment key={tag.name}>
+                                                    <Link
+                                                        to={
+                                                            tag.uid
+                                                                ? `/tag/${tag.uid}-${tag.name
+                                                                      .toLowerCase()
+                                                                      .replace(
+                                                                          /[^a-z0-9]+/g,
+                                                                          '-'
+                                                                      )
+                                                                      .replace(
+                                                                          /^-|-$/g,
+                                                                          ''
+                                                                      )}`
+                                                                : `/tag/${tag.name
+                                                                      .toLowerCase()
+                                                                      .replace(
+                                                                          /[^a-z0-9]+/g,
+                                                                          '-'
+                                                                      )
+                                                                      .replace(
+                                                                          /^-|-$/g,
+                                                                          ''
+                                                                      )}`
+                                                        }
+                                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                        onClick={(e) =>
+                                                            e.stopPropagation()
+                                                        }
+                                                    >
+                                                        {tag.name}
+                                                    </Link>
+                                                    {index <
+                                                        task.tags!.length - 1 &&
+                                                        ', '}
+                                                </React.Fragment>
+                                            ))}
+                                        </span>
+                                    </div>
                                 )}
-                            {task.recurrence_type &&
-                                task.recurrence_type !== 'none' && (
+                            </div>
+                        ) : (
+                            <div className="flex items-center">
+                                <span className="text-md font-normal text-gray-900 dark:text-gray-300 dark:font-light">
+                                    {task.name}
+                                </span>
+                            </div>
+                        )}
+                        {/* Project, tags, due date, and recurrence in same row, with spacing when they exist */}
+                        {!isUpcomingView && (
+                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                {project && !hideProjectName && (
+                                    <div className="flex items-center">
+                                        <FolderIcon className="h-3 w-3 mr-1" />
+                                        <Link
+                                            to={
+                                                project.uid
+                                                    ? `/project/${project.uid}-${project.name
+                                                          .toLowerCase()
+                                                          .replace(
+                                                              /[^a-z0-9]+/g,
+                                                              '-'
+                                                          )
+                                                          .replace(
+                                                              /^-|-$/g,
+                                                              ''
+                                                          )}`
+                                                    : `/project/${project.id}`
+                                            }
+                                            className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                            onClick={(e) => {
+                                                // Prevent navigation if we're already on this project's page
+                                                if (
+                                                    window.location.pathname ===
+                                                    `/project/${project.id}`
+                                                ) {
+                                                    e.preventDefault();
+                                                }
+                                                e.stopPropagation();
+                                            }}
+                                        >
+                                            {project.name}
+                                        </Link>
+                                    </div>
+                                )}
+                                {project &&
+                                    !hideProjectName &&
+                                    task.tags &&
+                                    task.tags.length > 0 && (
+                                        <span className="mx-2">•</span>
+                                    )}
+                                {task.tags && task.tags.length > 0 && (
+                                    <div className="flex items-center">
+                                        <TagIcon className="h-3 w-3 mr-1" />
+                                        <span>
+                                            {task.tags.map((tag, index) => (
+                                                <React.Fragment key={tag.name}>
+                                                    <Link
+                                                        to={
+                                                            tag.uid
+                                                                ? `/tag/${tag.uid}-${tag.name
+                                                                      .toLowerCase()
+                                                                      .replace(
+                                                                          /[^a-z0-9]+/g,
+                                                                          '-'
+                                                                      )
+                                                                      .replace(
+                                                                          /^-|-$/g,
+                                                                          ''
+                                                                      )}`
+                                                                : `/tag/${tag.name
+                                                                      .toLowerCase()
+                                                                      .replace(
+                                                                          /[^a-z0-9]+/g,
+                                                                          '-'
+                                                                      )
+                                                                      .replace(
+                                                                          /^-|-$/g,
+                                                                          ''
+                                                                      )}`
+                                                        }
+                                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                        onClick={(e) =>
+                                                            e.stopPropagation()
+                                                        }
+                                                    >
+                                                        {tag.name}
+                                                    </Link>
+                                                    {index <
+                                                        task.tags!.length - 1 &&
+                                                        ', '}
+                                                </React.Fragment>
+                                            ))}
+                                        </span>
+                                    </div>
+                                )}
+                                {((project && !hideProjectName) ||
+                                    (task.tags && task.tags.length > 0)) &&
+                                    task.due_date && (
+                                        <span className="mx-2">•</span>
+                                    )}
+                                {task.due_date && (
+                                    <div className="flex items-center">
+                                        <CalendarIcon className="h-3 w-3 mr-1" />
+                                        <span>
+                                            {formatDueDate(task.due_date)}
+                                        </span>
+                                    </div>
+                                )}
+                                {((project && !hideProjectName) ||
+                                    (task.tags && task.tags.length > 0) ||
+                                    task.due_date) &&
+                                    task.recurrence_type &&
+                                    task.recurrence_type !== 'none' && (
+                                        <span className="mx-2">•</span>
+                                    )}
+                                {task.recurrence_type &&
+                                    task.recurrence_type !== 'none' && (
+                                        <div className="flex items-center">
+                                            <ArrowPathIcon className="h-3 w-3 mr-1" />
+                                            <span>
+                                                {formatRecurrence(
+                                                    task.recurrence_type
+                                                )}
+                                            </span>
+                                        </div>
+                                    )}
+                                {((project && !hideProjectName) ||
+                                    (task.tags && task.tags.length > 0) ||
+                                    task.due_date ||
+                                    (task.recurrence_type &&
+                                        task.recurrence_type !== 'none')) &&
+                                    task.recurring_parent_id && (
+                                        <span className="mx-2">•</span>
+                                    )}
+                                {task.recurring_parent_id && (
                                     <div className="flex items-center">
                                         <ArrowPathIcon className="h-3 w-3 mr-1" />
                                         <span>
-                                            {formatRecurrence(
-                                                task.recurrence_type
+                                            {t(
+                                                'recurrence.instance',
+                                                'Recurring task instance'
                                             )}
                                         </span>
                                     </div>
                                 )}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-                <div className="flex items-center justify-start md:justify-end space-x-1">
-                    {/* Button Group - All buttons together */}
-                    <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        {/* Today Plan Controls */}
-                        {onToggleToday && (
-                            <button
-                                type="button"
-                                onClick={handleTodayToggle}
-                                className={`items-center justify-center ${
-                                    Number(task.today_move_count) > 1
-                                        ? 'px-2 h-6'
-                                        : 'w-6 h-6'
-                                } rounded-full transition-all duration-200 ${
-                                    task.today
-                                        ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 opacity-100 flex'
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 flex'
-                                }`}
-                                title={
-                                    task.today
-                                        ? t(
-                                              'tasks.removeFromToday',
-                                              'Remove from today plan'
-                                          )
-                                        : t(
-                                              'tasks.addToToday',
-                                              'Add to today plan'
-                                          )
-                                }
-                            >
-                                {task.today ? (
-                                    <CalendarDaysIcon className="h-3 w-3" />
-                                ) : (
-                                    <CalendarIcon className="h-3 w-3" />
-                                )}
-                                {Number(task.today_move_count) > 1 && (
-                                    <span className="ml-1 text-xs font-medium">
-                                        {Number(task.today_move_count)}
-                                    </span>
-                                )}
-                            </button>
-                        )}
-
-                        {/* Play/In Progress Controls */}
-                        {(task.status === 'not_started' ||
-                            task.status === 'in_progress' ||
-                            task.status === 0 ||
-                            task.status === 1) && (
-                            <button
-                                type="button"
-                                onClick={handlePlayToggle}
-                                className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
-                                    task.status === 'in_progress' ||
-                                    task.status === 1
-                                        ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse opacity-100'
-                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                }`}
-                                title={
-                                    task.status === 'in_progress' ||
-                                    task.status === 1
-                                        ? t(
-                                              'tasks.setNotStarted',
-                                              'Set to not started'
-                                          )
-                                        : t(
-                                              'tasks.setInProgress',
-                                              'Set in progress'
-                                          )
-                                }
-                            >
-                                <PlayIcon className="h-3 w-3" />
-                            </button>
-                        )}
-
-                        {/* Show Subtasks Controls */}
-                        {hasSubtasks &&
-                            !(
-                                task.status === 'archived' || task.status === 3
-                            ) && (
+                {!isUpcomingView && (
+                    <div className="flex items-center justify-start md:justify-end space-x-1">
+                        {/* Button Group - All buttons together */}
+                        <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            {/* Today Plan Controls */}
+                            {onToggleToday && (
                                 <button
                                     type="button"
-                                    onClick={(e) => {
-                                        if (onSubtasksToggle) {
-                                            onSubtasksToggle(e);
-                                        }
-                                    }}
-                                    className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
-                                        showSubtasks
-                                            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800 opacity-100'
-                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                    onClick={handleTodayToggle}
+                                    className={`items-center justify-center ${
+                                        Number(task.today_move_count) > 1
+                                            ? 'px-2 h-6'
+                                            : 'w-6 h-6'
+                                    } rounded-full transition-all duration-200 ${
+                                        task.today
+                                            ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 opacity-100 flex'
+                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 flex'
                                     }`}
                                     title={
-                                        showSubtasks
+                                        task.today
                                             ? t(
-                                                  'tasks.hideSubtasks',
-                                                  'Hide subtasks'
+                                                  'tasks.removeFromToday',
+                                                  'Remove from today plan'
                                               )
                                             : t(
-                                                  'tasks.showSubtasks',
-                                                  'Show subtasks'
+                                                  'tasks.addToToday',
+                                                  'Add to today plan'
                                               )
                                     }
                                 >
-                                    <ListBulletIcon className="h-3 w-3" />
+                                    {task.today ? (
+                                        <CalendarDaysIcon className="h-3 w-3" />
+                                    ) : (
+                                        <CalendarIcon className="h-3 w-3" />
+                                    )}
+                                    {Number(task.today_move_count) > 1 && (
+                                        <span className="ml-1 text-xs font-medium">
+                                            {Number(task.today_move_count)}
+                                        </span>
+                                    )}
                                 </button>
                             )}
 
-                        {/* Edit Button */}
-                        {onEdit && (
-                            <button
-                                type="button"
-                                onClick={onEdit}
-                                className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-800 hover:text-blue-600 dark:hover:text-blue-400"
-                                title={t('tasks.edit', 'Edit task')}
-                            >
-                                <PencilIcon className="h-3 w-3" />
-                            </button>
-                        )}
+                            {/* Play/In Progress Controls */}
+                            {(task.status === 'not_started' ||
+                                task.status === 'in_progress' ||
+                                task.status === 0 ||
+                                task.status === 1) && (
+                                <button
+                                    type="button"
+                                    onClick={handlePlayToggle}
+                                    className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                                        task.status === 'in_progress' ||
+                                        task.status === 1
+                                            ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 animate-pulse opacity-100'
+                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                    }`}
+                                    title={
+                                        task.status === 'in_progress' ||
+                                        task.status === 1
+                                            ? t(
+                                                  'tasks.setNotStarted',
+                                                  'Set to not started'
+                                              )
+                                            : t(
+                                                  'tasks.setInProgress',
+                                                  'Set in progress'
+                                              )
+                                    }
+                                >
+                                    <PlayIcon className="h-3 w-3" />
+                                </button>
+                            )}
 
-                        {/* Delete Button */}
-                        {onDelete && (
-                            <button
-                                type="button"
-                                onClick={onDelete}
-                                className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-800 hover:text-red-600 dark:hover:text-red-400"
-                                title={t('tasks.delete', 'Delete task')}
-                            >
-                                <TrashIcon className="h-3 w-3" />
-                            </button>
-                        )}
+                            {/* Show Subtasks Controls */}
+                            {hasSubtasks &&
+                                !(
+                                    task.status === 'archived' ||
+                                    task.status === 3
+                                ) && (
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            if (onSubtasksToggle) {
+                                                onSubtasksToggle(e);
+                                            }
+                                        }}
+                                        className={`flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 ${
+                                            showSubtasks
+                                                ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800 opacity-100'
+                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                        }`}
+                                        title={
+                                            showSubtasks
+                                                ? t(
+                                                      'tasks.hideSubtasks',
+                                                      'Hide subtasks'
+                                                  )
+                                                : t(
+                                                      'tasks.showSubtasks',
+                                                      'Show subtasks'
+                                                  )
+                                        }
+                                    >
+                                        <ListBulletIcon className="h-3 w-3" />
+                                    </button>
+                                )}
+
+                            {/* Edit Button */}
+                            {onEdit && (
+                                <button
+                                    type="button"
+                                    onClick={onEdit}
+                                    className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-800 hover:text-blue-600 dark:hover:text-blue-400"
+                                    title={t('tasks.edit', 'Edit task')}
+                                >
+                                    <PencilIcon className="h-3 w-3" />
+                                </button>
+                            )}
+
+                            {/* Delete Button */}
+                            {onDelete && (
+                                <button
+                                    type="button"
+                                    onClick={onDelete}
+                                    className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-800 hover:text-red-600 dark:hover:text-red-400"
+                                    title={t('tasks.delete', 'Delete task')}
+                                >
+                                    <TrashIcon className="h-3 w-3" />
+                                </button>
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* Mobile view (below md breakpoint) */}
@@ -521,7 +652,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     {/* Task content - full width */}
                     <div className="ml-2 flex-1 min-w-0">
                         {/* Task Title */}
-                        <div className="font-light text-md text-gray-900 dark:text-gray-100">
+                        <div className="font-light text-md text-gray-900 dark:text-gray-300 dark:font-extralight">
                             <span className="break-words">{task.name}</span>
                         </div>
 
@@ -603,7 +734,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     </span>
                                 </div>
                             )}
-                            {task.due_date && (
+                            {!isUpcomingView && task.due_date && (
                                 <div className="flex items-center">
                                     <CalendarIcon className="h-3 w-3 mr-1" />
                                     <span>{formatDueDate(task.due_date)}</span>
@@ -620,6 +751,17 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         </span>
                                     </div>
                                 )}
+                            {task.recurring_parent_id && (
+                                <div className="flex items-center">
+                                    <ArrowPathIcon className="h-3 w-3 mr-1" />
+                                    <span>
+                                        {t(
+                                            'recurrence.instance',
+                                            'Recurring task instance'
+                                        )}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
 

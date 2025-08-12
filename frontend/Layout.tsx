@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from './components/Shared/ToastContext';
+import { SidebarProvider } from './contexts/SidebarContext';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import './styles/tailwind.css';
@@ -408,140 +409,140 @@ const Layout: React.FC<LayoutProps> = ({
     }
 
     return (
-        <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
-            <Navbar
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-                currentUser={currentUser}
-                setCurrentUser={setCurrentUser}
-                isSidebarOpen={isSidebarOpen}
-                setIsSidebarOpen={setIsSidebarOpen}
-                openTaskModal={openTaskModal}
-            />
-            <Sidebar
-                isSidebarOpen={isSidebarOpen}
-                setIsSidebarOpen={setIsSidebarOpen}
-                currentUser={currentUser}
-                isDarkMode={isDarkMode}
-                toggleDarkMode={toggleDarkMode}
-                openTaskModal={openTaskModal}
-                openProjectModal={openProjectModal}
-                openNoteModal={openNoteModal}
-                openAreaModal={openAreaModal}
-                openTagModal={openTagModal}
-                notes={notes}
-                areas={areas}
-                tags={tags}
-            />
+        <SidebarProvider isSidebarOpen={isSidebarOpen}>
+            <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+                <Navbar
+                    isDarkMode={isDarkMode}
+                    toggleDarkMode={toggleDarkMode}
+                    currentUser={currentUser}
+                    setCurrentUser={setCurrentUser}
+                    isSidebarOpen={isSidebarOpen}
+                    setIsSidebarOpen={setIsSidebarOpen}
+                    openTaskModal={openTaskModal}
+                />
+                <Sidebar
+                    isSidebarOpen={isSidebarOpen}
+                    setIsSidebarOpen={setIsSidebarOpen}
+                    currentUser={currentUser}
+                    isDarkMode={isDarkMode}
+                    toggleDarkMode={toggleDarkMode}
+                    openTaskModal={openTaskModal}
+                    openProjectModal={openProjectModal}
+                    openNoteModal={openNoteModal}
+                    openAreaModal={openAreaModal}
+                    openTagModal={openTagModal}
+                    notes={notes}
+                    areas={areas}
+                    tags={tags}
+                />
 
-            <div
-                className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
-            >
-                <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 min-h-screen overflow-y-auto">
-                    <div className="flex-grow py-6 px-2 md:px-6 pt-24">
-                        <div className="w-full max-w-5xl mx-auto">
-                            {children}
+                <div
+                    className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
+                >
+                    <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 min-h-screen overflow-y-auto">
+                        <div className="flex-grow py-6 px-2 md:px-6 pt-24">
+                            <div className="w-full">{children}</div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {isTaskModalOpen &&
-                (taskModalType === 'simplified' ? (
-                    <InboxModal
-                        isOpen={isTaskModalOpen}
-                        onClose={closeTaskModal}
-                        onSave={handleSaveTask}
-                        projects={projects}
-                    />
-                ) : (
-                    <TaskModal
-                        isOpen={isTaskModalOpen}
-                        onClose={closeTaskModal}
-                        task={{
-                            name: '',
-                            status: 'not_started',
-                            completed_at: null,
+                {isTaskModalOpen &&
+                    (taskModalType === 'simplified' ? (
+                        <InboxModal
+                            isOpen={isTaskModalOpen}
+                            onClose={closeTaskModal}
+                            onSave={handleSaveTask}
+                            projects={projects}
+                        />
+                    ) : (
+                        <TaskModal
+                            isOpen={isTaskModalOpen}
+                            onClose={closeTaskModal}
+                            task={{
+                                name: '',
+                                status: 'not_started',
+                                completed_at: null,
+                            }}
+                            onSave={handleSaveTask}
+                            onDelete={async () => {}}
+                            projects={projects}
+                            onCreateProject={handleCreateProject}
+                        />
+                    ))}
+
+                {isProjectModalOpen && (
+                    <ProjectModal
+                        isOpen={isProjectModalOpen}
+                        onClose={closeProjectModal}
+                        onSave={handleSaveProject}
+                        onDelete={async (projectId) => {
+                            try {
+                                const { deleteProject } = await import(
+                                    './utils/projectsService'
+                                );
+                                await deleteProject(projectId);
+
+                                // Update global projects store
+                                const currentProjects =
+                                    useStore.getState().projectsStore.projects;
+                                useStore
+                                    .getState()
+                                    .projectsStore.setProjects(
+                                        currentProjects.filter(
+                                            (p) => p.id !== projectId
+                                        )
+                                    );
+
+                                closeProjectModal();
+                            } catch (error) {
+                                console.error('Error deleting project:', error);
+                            }
                         }}
-                        onSave={handleSaveTask}
-                        onDelete={async () => {}}
+                        areas={areas}
+                    />
+                )}
+
+                {isNoteModalOpen && (
+                    <NoteModal
+                        isOpen={isNoteModalOpen}
+                        onClose={closeNoteModal}
+                        onSave={handleSaveNote}
+                        onDelete={async (noteId) => {
+                            try {
+                                const { deleteNote } = await import(
+                                    './utils/notesService'
+                                );
+                                await deleteNote(noteId);
+                                closeNoteModal();
+                            } catch (error) {
+                                console.error('Error deleting note:', error);
+                            }
+                        }}
+                        note={selectedNote}
                         projects={projects}
                         onCreateProject={handleCreateProject}
                     />
-                ))}
+                )}
 
-            {isProjectModalOpen && (
-                <ProjectModal
-                    isOpen={isProjectModalOpen}
-                    onClose={closeProjectModal}
-                    onSave={handleSaveProject}
-                    onDelete={async (projectId) => {
-                        try {
-                            const { deleteProject } = await import(
-                                './utils/projectsService'
-                            );
-                            await deleteProject(projectId);
+                {isAreaModalOpen && (
+                    <AreaModal
+                        isOpen={isAreaModalOpen}
+                        onClose={closeAreaModal}
+                        onSave={handleSaveArea}
+                        area={selectedArea}
+                    />
+                )}
 
-                            // Update global projects store
-                            const currentProjects =
-                                useStore.getState().projectsStore.projects;
-                            useStore
-                                .getState()
-                                .projectsStore.setProjects(
-                                    currentProjects.filter(
-                                        (p) => p.id !== projectId
-                                    )
-                                );
-
-                            closeProjectModal();
-                        } catch (error) {
-                            console.error('Error deleting project:', error);
-                        }
-                    }}
-                    areas={areas}
-                />
-            )}
-
-            {isNoteModalOpen && (
-                <NoteModal
-                    isOpen={isNoteModalOpen}
-                    onClose={closeNoteModal}
-                    onSave={handleSaveNote}
-                    onDelete={async (noteId) => {
-                        try {
-                            const { deleteNote } = await import(
-                                './utils/notesService'
-                            );
-                            await deleteNote(noteId);
-                            closeNoteModal();
-                        } catch (error) {
-                            console.error('Error deleting note:', error);
-                        }
-                    }}
-                    note={selectedNote}
-                    projects={projects}
-                    onCreateProject={handleCreateProject}
-                />
-            )}
-
-            {isAreaModalOpen && (
-                <AreaModal
-                    isOpen={isAreaModalOpen}
-                    onClose={closeAreaModal}
-                    onSave={handleSaveArea}
-                    area={selectedArea}
-                />
-            )}
-
-            {isTagModalOpen && (
-                <TagModal
-                    isOpen={isTagModalOpen}
-                    onClose={closeTagModal}
-                    onSave={handleSaveTag}
-                    tag={selectedTag}
-                />
-            )}
-        </div>
+                {isTagModalOpen && (
+                    <TagModal
+                        isOpen={isTagModalOpen}
+                        onClose={closeTagModal}
+                        onSave={handleSaveTag}
+                        tag={selectedTag}
+                    />
+                )}
+            </div>
+        </SidebarProvider>
     );
 };
 

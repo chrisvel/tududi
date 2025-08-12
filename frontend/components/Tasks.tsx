@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useSidebar } from '../contexts/SidebarContext';
 import TaskList from './Task/TaskList';
 import GroupedTaskList from './Task/GroupedTaskList';
 import NewTask from './Task/NewTask';
@@ -9,7 +10,11 @@ import { Task } from '../entities/Task';
 import { Project } from '../entities/Project';
 import { getTitleAndIcon } from './Task/getTitleAndIcon';
 import { getDescription } from './Task/getDescription';
-import { createTask, toggleTaskToday, GroupedTasks } from '../utils/tasksService';
+import {
+    createTask,
+    toggleTaskToday,
+    GroupedTasks,
+} from '../utils/tasksService';
 import { useToast } from './Shared/ToastContext';
 import { SortOption } from './Shared/SortFilterButton';
 import {
@@ -37,6 +42,7 @@ const getSearchPlaceholder = (language: string): string => {
 const Tasks: React.FC = () => {
     const { t, i18n } = useTranslation();
     const { showSuccessToast } = useToast();
+    const { isSidebarOpen } = useSidebar();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
     const [groupedTasks, setGroupedTasks] = useState<GroupedTasks | null>(null);
@@ -48,6 +54,7 @@ const Tasks: React.FC = () => {
     const [isInfoExpanded, setIsInfoExpanded] = useState(false); // Collapsed by default
     const [isSearchExpanded, setIsSearchExpanded] = useState(false); // Collapsed by default
     const [showCompleted, setShowCompleted] = useState(false); // Show completed tasks toggle
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
     const dropdownRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
@@ -140,17 +147,21 @@ const Tasks: React.FC = () => {
             try {
                 const tagId = query.get('tag');
                 const type = query.get('type');
-                
+
                 // Fetch all tasks (both completed and non-completed) for client-side filtering
                 const allTasksUrl = new URLSearchParams(location.search);
                 // Add special parameter to get ALL tasks (completed and non-completed)
                 allTasksUrl.set('client_side_filtering', 'true');
-                
+
                 // Add groupBy=day for upcoming tasks
                 if (type === 'upcoming') {
                     allTasksUrl.set('groupBy', 'day');
+                    // Always show 7 days (whole week including tomorrow)
+                    allTasksUrl.set('maxDays', '7');
+                    allTasksUrl.set('sidebarOpen', isSidebarOpen.toString());
+                    allTasksUrl.set('isMobile', isMobile.toString());
                 }
-                
+
                 const searchParams = allTasksUrl.toString();
 
                 const [tasksResponse, projectsResponse] = await Promise.all([
@@ -182,7 +193,20 @@ const Tasks: React.FC = () => {
         };
 
         fetchData();
-    }, [location]);
+    }, [location, isSidebarOpen, isMobile]);
+
+    // Handle window resize for mobile detection
+    useEffect(() => {
+        const handleResize = () => {
+            const newIsMobile = window.innerWidth < 768;
+            if (newIsMobile !== isMobile) {
+                setIsMobile(newIsMobile);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [isMobile]);
 
     // Listen for task creation from other components (e.g., Layout modal)
     useEffect(() => {
@@ -374,13 +398,29 @@ const Tasks: React.FC = () => {
         return status !== 'done' && type !== 'upcoming';
     };
 
+    const isUpcomingView = query.get('type') === 'upcoming';
+
     return (
-        <div className="flex justify-center px-4 lg:px-2">
-            <div className="w-full max-w-5xl">
+        <div
+            className={
+                isUpcomingView
+                    ? 'w-full px-2 sm:px-4 lg:px-6'
+                    : 'flex justify-center px-4 lg:px-2'
+            }
+        >
+            <div
+                className={`w-full ${isUpcomingView ? 'max-w-none' : 'max-w-5xl'}`}
+            >
                 {/* Title row with info button and filters dropdown on the right */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
+                <div
+                    className={`flex flex-col sm:flex-row items-start sm:items-center justify-between ${isUpcomingView ? 'mb-4 sm:mb-6' : 'mb-8'}`}
+                >
                     <div className="flex items-center mb-2 sm:mb-0">
-                        <h2 className="text-2xl font-light">{title}</h2>
+                        <h2
+                            className={`${isUpcomingView ? 'text-lg sm:text-xl' : 'text-2xl'} font-medium`}
+                        >
+                            {title}
+                        </h2>
                         {tag && (
                             <div className="ml-4 flex items-center space-x-2">
                                 <button
@@ -397,7 +437,9 @@ const Tasks: React.FC = () => {
                         )}
                     </div>
                     {/* Info expand/collapse button, search button, show completed toggle, and sort dropdown */}
-                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+                    <div
+                        className={`flex items-center gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0 ${isUpcomingView ? 'md:fixed md:right-4 md:top-20 md:px-3 md:py-2 md:z-20' : 'flex-wrap'}`}
+                    >
                         <button
                             onClick={() => setIsInfoExpanded((v) => !v)}
                             className={`flex items-center hover:bg-blue-100/50 dark:hover:bg-blue-800/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg${isInfoExpanded ? ' bg-blue-50/70 dark:bg-blue-900/20' : ''} p-2`}
@@ -431,7 +473,9 @@ const Tasks: React.FC = () => {
                             className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
                                 isSearchExpanded
                                     ? 'bg-blue-50/70 dark:bg-blue-900/20'
-                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                    : isUpcomingView
+                                      ? 'hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
+                                      : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
                             }`}
                             aria-expanded={isSearchExpanded}
                             aria-label={
@@ -452,38 +496,40 @@ const Tasks: React.FC = () => {
                                     : 'Search Tasks'}
                             </span>
                         </button>
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                                Show completed
-                            </span>
-                            <button
-                                onClick={() => setShowCompleted((v) => !v)}
-                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                                    showCompleted
-                                        ? 'bg-blue-600'
-                                        : 'bg-gray-200 dark:bg-gray-600'
-                                }`}
-                                aria-pressed={showCompleted}
-                                aria-label={
-                                    showCompleted
-                                        ? 'Hide completed tasks'
-                                        : 'Show completed tasks'
-                                }
-                                title={
-                                    showCompleted
-                                        ? 'Hide completed tasks'
-                                        : 'Show completed tasks'
-                                }
-                            >
-                                <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        {!isUpcomingView && (
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                    Show completed
+                                </span>
+                                <button
+                                    onClick={() => setShowCompleted((v) => !v)}
+                                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                                         showCompleted
-                                            ? 'translate-x-4'
-                                            : 'translate-x-0.5'
+                                            ? 'bg-blue-600'
+                                            : 'bg-gray-200 dark:bg-gray-600'
                                     }`}
-                                />
-                            </button>
-                        </div>
+                                    aria-pressed={showCompleted}
+                                    aria-label={
+                                        showCompleted
+                                            ? 'Hide completed tasks'
+                                            : 'Show completed tasks'
+                                    }
+                                    title={
+                                        showCompleted
+                                            ? 'Hide completed tasks'
+                                            : 'Show completed tasks'
+                                    }
+                                >
+                                    <span
+                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                            showCompleted
+                                                ? 'translate-x-4'
+                                                : 'translate-x-0.5'
+                                        }`}
+                                    />
+                                </button>
+                            </div>
+                        )}
                         <SortFilter
                             sortOptions={sortOptions}
                             sortValue={orderBy}
@@ -552,17 +598,21 @@ const Tasks: React.FC = () => {
                     <>
                         {/* New Task Form */}
                         {isNewTaskAllowed() && (
-                            <NewTask
-                                onTaskCreate={async (taskName: string) =>
-                                    await handleTaskCreate({
-                                        name: taskName,
-                                        status: 'not_started',
-                                    })
-                                }
-                            />
+                            <div className="mb-1.5">
+                                <NewTask
+                                    onTaskCreate={async (taskName: string) =>
+                                        await handleTaskCreate({
+                                            name: taskName,
+                                            status: 'not_started',
+                                        })
+                                    }
+                                />
+                            </div>
                         )}
 
-                        {displayTasks.length > 0 || (groupedTasks && Object.keys(groupedTasks).length > 0) ? (
+                        {displayTasks.length > 0 ||
+                        (groupedTasks &&
+                            Object.keys(groupedTasks).length > 0) ? (
                             query.get('type') === 'upcoming' ? (
                                 <GroupedTaskList
                                     tasks={displayTasks}
@@ -577,6 +627,7 @@ const Tasks: React.FC = () => {
                                     hideProjectName={false}
                                     onToggleToday={undefined} // Don't show "Add to Today" in upcoming view
                                     showCompletedTasks={showCompleted}
+                                    searchQuery={taskSearchQuery}
                                 />
                             ) : (
                                 <TaskList

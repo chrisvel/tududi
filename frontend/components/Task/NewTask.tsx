@@ -83,8 +83,8 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
     return (
         <div>
             <div className="flex items-center justify-between py-3 px-4 border-b border-gray-200 dark:border-gray-800 rounded-lg shadow-sm bg-white dark:bg-gray-900">
-                <span className="text-xl text-gray-500 dark:text-gray-400 mr-4">
-                    <PlusCircleIcon className="h-6 w-6" />
+                <span className="text-xl text-gray-500 dark:text-gray-400 mr-2">
+                    <PlusCircleIcon className="h-5 w-5" />
                 </span>
                 <input
                     type="text"

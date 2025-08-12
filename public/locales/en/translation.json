@@ -468,9 +468,11 @@
     "inProgress": "In Progress",
     "done": "Done",
     "archived": "Archived",
-    "unknown": "Unknown",
     "telegramConnected": "Telegram connected and polling",
-    "telegramConnectionProblem": "Telegram connection problem"
+    "telegramConnectionProblem": "Telegram connection problem",
+    "completed": "Completed",
+    "waiting": "Waiting",
+    "unknown": "Status {{status}}"
   },
   "project": {
     "name": "Project Name",
@@ -545,17 +547,9 @@
     "todayHeader": "dddd, MMMM do, yyyy"
   },
   "dateIndicators": {
-    "today": "TODAY",
-    "tomorrow": "TOMORROW",
-    "yesterday": "YESTERDAY"
-  },
-  "status": {
-    "notStarted": "Not Started",
-    "inProgress": "In Progress",
-    "completed": "Completed",
-    "archived": "Archived",
-    "waiting": "Waiting",
-    "unknown": "Status {{status}}"
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday"
   },
   "taskViews": {
     "project": {

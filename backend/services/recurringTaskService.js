@@ -84,7 +84,7 @@ class RecurringTaskService {
                     user_id: task.user_id,
                     recurring_parent_id: task.id,
                     due_date: {
-                        [Op.between]: [startOfDay, endOfDay]
+                        [Op.between]: [startOfDay, endOfDay],
                     },
                 };
 
@@ -134,7 +134,7 @@ class RecurringTaskService {
                 user_id: task.user_id,
                 recurring_parent_id: task.id,
                 due_date: {
-                    [Op.between]: [startOfDay, endOfDay]
+                    [Op.between]: [startOfDay, endOfDay],
                 },
             };
 
@@ -520,7 +520,7 @@ class RecurringTaskService {
             user_id: task.user_id,
             recurring_parent_id: task.id,
             due_date: {
-                [Op.between]: [startOfDay, endOfDay]
+                [Op.between]: [startOfDay, endOfDay],
             },
         };
 

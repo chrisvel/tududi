@@ -11,7 +11,7 @@ describe('Timezone Fixes Integration Tests', () => {
     beforeEach(async () => {
         // Create test user with specific timezone
         testUser = await createTestUser({
-            timezone: 'America/New_York' // EST/EDT timezone
+            timezone: 'America/New_York', // EST/EDT timezone
         });
 
         // Create authenticated agent
@@ -30,22 +30,19 @@ describe('Timezone Fixes Integration Tests', () => {
     describe('Task Creation with Due Dates', () => {
         it('should store due dates in UTC and return them in user timezone', async () => {
             // Create task due Jan 15, 2024 (in user's timezone)
-            const createRes = await agent
-                .post('/api/task')
-                .send({
-                    name: 'Test Task',
-                    due_date: '2024-01-15' // This should be interpreted as Jan 15 in EST
-                });
+            const createRes = await agent.post('/api/task').send({
+                name: 'Test Task',
+                due_date: '2024-01-15', // This should be interpreted as Jan 15 in EST
+            });
 
             expect(createRes.statusCode).toBe(201);
-            
+
             const createdTask = createRes.body;
             expect(createdTask.due_date).toBe('2024-01-15'); // Should return in user timezone format
 
             // Check that it's stored as UTC in database
             const taskFromDb = await Task.findByPk(createdTask.id);
-            
-            
+
             // Should be stored as end of day Jan 15 in EST, which is Jan 16 04:59:59 UTC
             expect(taskFromDb.due_date).toBeInstanceOf(Date);
             const storedDateUTC = taskFromDb.due_date.toISOString();
@@ -56,18 +53,16 @@ describe('Timezone Fixes Integration Tests', () => {
             // Set user timezone to Pacific (UTC-8)
             await testUser.update({ timezone: 'America/Los_Angeles' });
 
-            const createRes = await agent
-                .post('/api/task')
-                .send({
-                    name: 'Pacific Task',
-                    due_date: '2024-01-15'
-                });
+            const createRes = await agent.post('/api/task').send({
+                name: 'Pacific Task',
+                due_date: '2024-01-15',
+            });
 
             expect(createRes.statusCode).toBe(201);
-            
+
             // Check database storage
             const taskFromDb = await Task.findByPk(createRes.body.id);
-            
+
             // Should be stored as end of day Jan 15 in PST, which is Jan 16 07:59:59 UTC
             const storedDateUTC = taskFromDb.due_date.toISOString();
             expect(storedDateUTC).toBe('2024-01-16T07:59:59.999Z');
@@ -81,8 +76,14 @@ describe('Timezone Fixes Integration Tests', () => {
 
             // Create tasks with different due dates
             const today = moment.tz(userTimezone).format('YYYY-MM-DD');
-            const tomorrow = moment.tz(userTimezone).add(1, 'day').format('YYYY-MM-DD');
-            const nextWeek = moment.tz(userTimezone).add(8, 'days').format('YYYY-MM-DD');
+            const tomorrow = moment
+                .tz(userTimezone)
+                .add(1, 'day')
+                .format('YYYY-MM-DD');
+            const nextWeek = moment
+                .tz(userTimezone)
+                .add(8, 'days')
+                .format('YYYY-MM-DD');
 
             // Create three tasks
             await agent
@@ -98,15 +99,14 @@ describe('Timezone Fixes Integration Tests', () => {
                 .send({ name: 'Due Next Week', due_date: nextWeek });
 
             // Fetch upcoming tasks
-            const upcomingRes = await agent
-                .get('/api/tasks?type=upcoming');
+            const upcomingRes = await agent.get('/api/tasks?type=upcoming');
 
             expect(upcomingRes.statusCode).toBe(200);
-            
+
             const upcomingTasks = upcomingRes.body.tasks;
-            
+
             // Should include tasks due today and tomorrow, but not next week (8 days out)
-            const taskNames = upcomingTasks.map(task => task.name);
+            const taskNames = upcomingTasks.map((task) => task.name);
             expect(taskNames).toContain('Due Today');
             expect(taskNames).toContain('Due Tomorrow');
             expect(taskNames).not.toContain('Due Next Week');
@@ -122,12 +122,13 @@ describe('Timezone Fixes Integration Tests', () => {
                 .post('/api/task')
                 .send({ name: 'DST Task', due_date: dstDate });
 
-            const taskRes = await agent
-                .get('/api/tasks');
+            const taskRes = await agent.get('/api/tasks');
 
             expect(taskRes.statusCode).toBe(200);
-            
-            const dstTask = taskRes.body.tasks.find(task => task.name === 'DST Task');
+
+            const dstTask = taskRes.body.tasks.find(
+                (task) => task.name === 'DST Task'
+            );
             expect(dstTask.due_date).toBe(dstDate);
         });
     });
@@ -152,7 +153,11 @@ describe('Timezone Fixes Integration Tests', () => {
             // Verify database storage
             const taskFromDb = await Task.findByPk(taskId);
             // Should be stored as end of day Jan 20 in EST
-            const expectedUTC = moment.tz('2024-01-20', 'America/New_York').endOf('day').utc().toDate();
+            const expectedUTC = moment
+                .tz('2024-01-20', 'America/New_York')
+                .endOf('day')
+                .utc()
+                .toDate();
             expect(taskFromDb.due_date.getTime()).toBe(expectedUTC.getTime());
         });
 
@@ -193,30 +198,34 @@ describe('Timezone Fixes Integration Tests', () => {
             await testUser.update({ timezone: 'America/New_York' });
 
             // Create task due "today" in user's timezone
-            const todayInEST = moment.tz('America/New_York').format('YYYY-MM-DD');
-            
+            const todayInEST = moment
+                .tz('America/New_York')
+                .format('YYYY-MM-DD');
+
             await agent
                 .post('/api/task')
                 .send({ name: 'Today Task', due_date: todayInEST });
 
-            // Create task due "yesterday" in user's timezone  
-            const yesterdayInEST = moment.tz('America/New_York').subtract(1, 'day').format('YYYY-MM-DD');
-            
+            // Create task due "yesterday" in user's timezone
+            const yesterdayInEST = moment
+                .tz('America/New_York')
+                .subtract(1, 'day')
+                .format('YYYY-MM-DD');
+
             await agent
                 .post('/api/task')
                 .send({ name: 'Yesterday Task', due_date: yesterdayInEST });
 
             // Fetch tasks with metrics
-            const tasksRes = await agent
-                .get('/api/tasks');
+            const tasksRes = await agent.get('/api/tasks');
 
             expect(tasksRes.statusCode).toBe(200);
-            
+
             // Both tasks should appear in tasks_due_today since they're overdue
             const { metrics } = tasksRes.body;
             expect(metrics.tasks_due_today.length).toBeGreaterThanOrEqual(2);
-            
-            const taskNames = metrics.tasks_due_today.map(task => task.name);
+
+            const taskNames = metrics.tasks_due_today.map((task) => task.name);
             expect(taskNames).toContain('Today Task');
             expect(taskNames).toContain('Yesterday Task');
         });

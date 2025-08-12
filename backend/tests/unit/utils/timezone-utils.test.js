@@ -10,14 +10,14 @@ const {
     processDueDateForStorage,
     processDueDateForResponse,
     isValidTimezone,
-    getSafeTimezone
+    getSafeTimezone,
 } = require('../../../utils/timezone-utils');
 const moment = require('moment-timezone');
 
 describe('timezone-utils', () => {
     // Mock current time for consistent testing
     const MOCK_DATE = '2024-01-15T12:00:00Z'; // Monday, Jan 15, 2024 at noon UTC
-    
+
     beforeEach(() => {
         // Mock current time
         jest.useFakeTimers();
@@ -30,22 +30,34 @@ describe('timezone-utils', () => {
 
     describe('dateStringToUTC', () => {
         it('should convert date string to UTC at start of day', () => {
-            const result = dateStringToUTC('2024-01-15', 'America/New_York', 'start');
-            
+            const result = dateStringToUTC(
+                '2024-01-15',
+                'America/New_York',
+                'start'
+            );
+
             // 2024-01-15 00:00:00 in EST is 2024-01-15 05:00:00 UTC (EST is UTC-5)
             expect(result).toEqual(new Date('2024-01-15T05:00:00.000Z'));
         });
 
         it('should convert date string to UTC at end of day', () => {
-            const result = dateStringToUTC('2024-01-15', 'America/New_York', 'end');
-            
+            const result = dateStringToUTC(
+                '2024-01-15',
+                'America/New_York',
+                'end'
+            );
+
             // 2024-01-15 23:59:59.999 in EST is 2024-01-16 04:59:59.999 UTC
             expect(result.toISOString()).toBe('2024-01-16T04:59:59.999Z');
         });
 
         it('should handle Pacific timezone', () => {
-            const result = dateStringToUTC('2024-01-15', 'America/Los_Angeles', 'start');
-            
+            const result = dateStringToUTC(
+                '2024-01-15',
+                'America/Los_Angeles',
+                'start'
+            );
+
             // 2024-01-15 00:00:00 in PST is 2024-01-15 08:00:00 UTC (PST is UTC-8)
             expect(result).toEqual(new Date('2024-01-15T08:00:00.000Z'));
         });
@@ -103,7 +115,7 @@ describe('timezone-utils', () => {
     describe('getDayBoundsInUTC', () => {
         it('should get day bounds in UTC', () => {
             const result = getDayBoundsInUTC('2024-01-15', 'America/New_York');
-            
+
             expect(result.start).toEqual(new Date('2024-01-15T05:00:00.000Z'));
             expect(result.end.toISOString()).toBe('2024-01-16T04:59:59.999Z');
         });
@@ -117,7 +129,7 @@ describe('timezone-utils', () => {
     describe('getTodayBoundsInUTC', () => {
         it('should get today bounds in user timezone', () => {
             const result = getTodayBoundsInUTC('America/New_York');
-            
+
             // Today in EST is 2024-01-15, so bounds should be start/end of that day in UTC
             expect(result.start).toEqual(new Date('2024-01-15T05:00:00.000Z'));
             expect(result.end.toISOString()).toBe('2024-01-16T04:59:59.999Z');
@@ -127,7 +139,7 @@ describe('timezone-utils', () => {
     describe('getUpcomingRangeInUTC', () => {
         it('should get upcoming 7 days range by default', () => {
             const result = getUpcomingRangeInUTC('America/New_York');
-            
+
             // Should start from today (2024-01-15) and go 7 days ahead
             expect(result.start).toEqual(new Date('2024-01-15T05:00:00.000Z'));
             // 7 days from Jan 15 is Jan 22, end of day in EST
@@ -136,7 +148,7 @@ describe('timezone-utils', () => {
 
         it('should handle custom day count', () => {
             const result = getUpcomingRangeInUTC('America/New_York', 3);
-            
+
             expect(result.start).toEqual(new Date('2024-01-15T05:00:00.000Z'));
             // 3 days from Jan 15 is Jan 18, end of day in EST
             expect(result.end.toISOString()).toBe('2024-01-19T04:59:59.999Z');
@@ -189,28 +201,40 @@ describe('timezone-utils', () => {
 
     describe('processDueDateForStorage', () => {
         it('should convert due date to UTC for storage', () => {
-            const result = processDueDateForStorage('2024-01-15', 'America/New_York');
-            
+            const result = processDueDateForStorage(
+                '2024-01-15',
+                'America/New_York'
+            );
+
             // Should be end of day in EST converted to UTC
             expect(result.toISOString()).toBe('2024-01-16T04:59:59.999Z');
         });
 
         it('should return null for empty date', () => {
             expect(processDueDateForStorage('', 'America/New_York')).toBeNull();
-            expect(processDueDateForStorage(null, 'America/New_York')).toBeNull();
-            expect(processDueDateForStorage('  ', 'America/New_York')).toBeNull();
+            expect(
+                processDueDateForStorage(null, 'America/New_York')
+            ).toBeNull();
+            expect(
+                processDueDateForStorage('  ', 'America/New_York')
+            ).toBeNull();
         });
     });
 
     describe('processDueDateForResponse', () => {
         it('should convert UTC due date to user timezone string', () => {
             const utcDate = new Date('2024-01-16T04:59:59.999Z'); // End of Jan 15 in EST
-            const result = processDueDateForResponse(utcDate, 'America/New_York');
+            const result = processDueDateForResponse(
+                utcDate,
+                'America/New_York'
+            );
             expect(result).toBe('2024-01-15');
         });
 
         it('should return null for null date', () => {
-            expect(processDueDateForResponse(null, 'America/New_York')).toBeNull();
+            expect(
+                processDueDateForResponse(null, 'America/New_York')
+            ).toBeNull();
         });
     });
 
@@ -233,7 +257,9 @@ describe('timezone-utils', () => {
 
     describe('getSafeTimezone', () => {
         it('should return valid timezone as-is', () => {
-            expect(getSafeTimezone('America/New_York')).toBe('America/New_York');
+            expect(getSafeTimezone('America/New_York')).toBe(
+                'America/New_York'
+            );
         });
 
         it('should return UTC for invalid timezone', () => {
@@ -252,15 +278,23 @@ describe('timezone-utils', () => {
         it('should handle DST spring forward correctly', () => {
             // In 2024, DST starts March 10 at 2 AM (becomes 3 AM)
             // Before DST (EST is UTC-5), After DST (EDT is UTC-4)
-            const result = dateStringToUTC('2024-03-10', 'America/New_York', 'start');
+            const result = dateStringToUTC(
+                '2024-03-10',
+                'America/New_York',
+                'start'
+            );
             // March 10 at midnight should still be EST (UTC-5)
             expect(result).toEqual(new Date('2024-03-10T05:00:00.000Z'));
         });
 
         it('should handle fall back correctly', () => {
             jest.setSystemTime(new Date('2024-11-03T12:00:00Z')); // DST ends November 3, 2024
-            
-            const result = dateStringToUTC('2024-11-03', 'America/New_York', 'start');
+
+            const result = dateStringToUTC(
+                '2024-11-03',
+                'America/New_York',
+                'start'
+            );
             // November 3 at 2 AM becomes 1 AM (fall back to EST)
             // At midnight, it should still be EDT (UTC-4)
             expect(result).toEqual(new Date('2024-11-03T04:00:00.000Z'));
@@ -269,18 +303,30 @@ describe('timezone-utils', () => {
 
     describe('edge cases', () => {
         it('should handle leap year dates', () => {
-            const result = dateStringToUTC('2024-02-29', 'America/New_York', 'start');
+            const result = dateStringToUTC(
+                '2024-02-29',
+                'America/New_York',
+                'start'
+            );
             expect(result).toEqual(new Date('2024-02-29T05:00:00.000Z'));
         });
 
         it('should handle year boundaries', () => {
-            const result = dateStringToUTC('2024-01-01', 'America/New_York', 'start');
+            const result = dateStringToUTC(
+                '2024-01-01',
+                'America/New_York',
+                'start'
+            );
             expect(result).toEqual(new Date('2024-01-01T05:00:00.000Z'));
         });
 
         it('should handle international date line', () => {
             // Date in Samoa (UTC+13)
-            const result = dateStringToUTC('2024-01-15', 'Pacific/Apia', 'start');
+            const result = dateStringToUTC(
+                '2024-01-15',
+                'Pacific/Apia',
+                'start'
+            );
             // Samoa is 13 hours ahead of UTC
             expect(result).toEqual(new Date('2024-01-14T11:00:00.000Z'));
         });

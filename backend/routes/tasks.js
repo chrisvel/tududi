@@ -16,16 +16,21 @@ const _ = require('lodash');
 const router = express.Router();
 
 // Helper function to group tasks by actual day names
-async function groupTasksByDay(tasks, userTimezone) {
+async function groupTasksByDay(
+    tasks,
+    userTimezone,
+    maxDays = 14,
+    orderBy = 'created_at:desc'
+) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const groupedTasks = {};
     const tasksByDate = new Map();
 
     const now = moment.tz(safeTimezone);
-    const twoWeeksFromNow = now.clone().add(2, 'weeks').endOf('day');
+    const cutoffDate = now.clone().add(maxDays, 'days').endOf('day');
 
     // Group tasks by their exact due date
-    tasks.forEach(task => {
+    tasks.forEach((task) => {
         if (!task.due_date) {
             // Tasks with no due date go to a special "No Due Date" group
             if (!tasksByDate.has('no-date')) {
@@ -36,19 +41,15 @@ async function groupTasksByDay(tasks, userTimezone) {
         }
 
         const taskDueDate = moment.tz(task.due_date, safeTimezone);
-        
-        // Only group tasks within the next 2 weeks, everything else goes to "Later"
-        if (taskDueDate.isAfter(twoWeeksFromNow)) {
-            if (!tasksByDate.has('later')) {
-                tasksByDate.set('later', []);
-            }
-            tasksByDate.get('later').push(task);
-            return;
+
+        // Skip tasks beyond the specified days
+        if (taskDueDate.isAfter(cutoffDate)) {
+            return; // Don't include tasks beyond the cutoff date
         }
 
         // Use YYYY-MM-DD as the key for grouping by exact date
         const dateKey = taskDueDate.format('YYYY-MM-DD');
-        
+
         if (!tasksByDate.has(dateKey)) {
             tasksByDate.set(dateKey, []);
         }
@@ -57,66 +58,104 @@ async function groupTasksByDay(tasks, userTimezone) {
 
     // Convert the map to the final grouped structure with day names
     const sortedDates = Array.from(tasksByDate.keys())
-        .filter(key => key !== 'no-date' && key !== 'later')
+        .filter((key) => key !== 'no-date' && key !== 'later')
         .sort(); // Sort dates chronologically
 
     // Add date groups in chronological order
-    sortedDates.forEach(dateKey => {
+    sortedDates.forEach((dateKey) => {
         const dateMoment = moment.tz(dateKey, safeTimezone);
         const dayName = dateMoment.format('dddd'); // e.g., "Monday", "Tuesday"
         const dateDisplay = dateMoment.format('MMMM D'); // e.g., "August 12"
         const isToday = dateMoment.isSame(now, 'day');
         const isTomorrow = dateMoment.isSame(now.clone().add(1, 'day'), 'day');
-        
+
+        // Skip today's tasks - we only want upcoming tasks
+        if (isToday) {
+            return; // Skip today's tasks
+        }
+
         // Create a descriptive group name
         let groupName;
-        if (isToday) {
-            groupName = `Today - ${dayName}, ${dateDisplay}`;
-        } else if (isTomorrow) {
-            groupName = `Tomorrow - ${dayName}, ${dateDisplay}`;
+        if (isTomorrow) {
+            groupName = 'Tomorrow';
         } else {
             groupName = `${dayName}, ${dateDisplay}`;
         }
 
         const tasks = tasksByDate.get(dateKey);
-        
-        // Sort tasks within each day by time, then by priority
+
+        // Sort tasks within each day based on orderBy parameter
+        const [orderColumn, orderDirection = 'desc'] = orderBy.split(':');
         tasks.sort((a, b) => {
-            const timeA = moment.tz(a.due_date, safeTimezone);
-            const timeB = moment.tz(b.due_date, safeTimezone);
-            
-            // First sort by time of day
-            const timeComparison = timeA.hour() * 60 + timeA.minute() - (timeB.hour() * 60 + timeB.minute());
-            if (timeComparison !== 0) return timeComparison;
-            
-            // Then sort by priority (higher priority first)
-            return (b.priority || 0) - (a.priority || 0);
+            let comparison = 0;
+
+            switch (orderColumn) {
+                case 'priority':
+                    comparison = (a.priority || 0) - (b.priority || 0);
+                    break;
+                case 'name':
+                    comparison = (a.name || '').localeCompare(b.name || '');
+                    break;
+                case 'due_date':
+                    if (a.due_date && b.due_date) {
+                        const timeA = moment.tz(a.due_date, safeTimezone);
+                        const timeB = moment.tz(b.due_date, safeTimezone);
+                        comparison =
+                            timeA.hour() * 60 +
+                            timeA.minute() -
+                            (timeB.hour() * 60 + timeB.minute());
+                    } else if (a.due_date && !b.due_date) {
+                        comparison = -1;
+                    } else if (!a.due_date && b.due_date) {
+                        comparison = 1;
+                    }
+                    break;
+                case 'created_at':
+                default:
+                    comparison =
+                        new Date(a.created_at || 0) -
+                        new Date(b.created_at || 0);
+                    break;
+            }
+
+            // Apply direction (desc = reverse order)
+            return orderDirection === 'desc' ? -comparison : comparison;
         });
 
         groupedTasks[groupName] = tasks;
     });
 
-    // Add special groups at the end
-    if (tasksByDate.has('later')) {
-        const laterTasks = tasksByDate.get('later');
-        laterTasks.sort((a, b) => {
-            // Sort by due date, then priority
-            if (a.due_date && b.due_date) {
-                const dateComparison = new Date(a.due_date) - new Date(b.due_date);
-                if (dateComparison !== 0) return dateComparison;
-            }
-            return (b.priority || 0) - (a.priority || 0);
-        });
-        groupedTasks['Later'] = laterTasks;
-    }
+    // Removed "Later" group as requested
 
     if (tasksByDate.has('no-date')) {
         const noDateTasks = tasksByDate.get('no-date');
+        const [orderColumn, orderDirection = 'desc'] = orderBy.split(':');
         noDateTasks.sort((a, b) => {
-            // Sort by priority, then by creation date
-            const priorityComparison = (b.priority || 0) - (a.priority || 0);
-            if (priorityComparison !== 0) return priorityComparison;
-            return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+            let comparison = 0;
+
+            switch (orderColumn) {
+                case 'priority':
+                    comparison = (a.priority || 0) - (b.priority || 0);
+                    break;
+                case 'name':
+                    comparison = (a.name || '').localeCompare(b.name || '');
+                    break;
+                case 'due_date':
+                    // For no-date tasks, fall back to created_at
+                    comparison =
+                        new Date(a.created_at || 0) -
+                        new Date(b.created_at || 0);
+                    break;
+                case 'created_at':
+                default:
+                    comparison =
+                        new Date(a.created_at || 0) -
+                        new Date(b.created_at || 0);
+                    break;
+            }
+
+            // Apply direction (desc = reverse order)
+            return orderDirection === 'desc' ? -comparison : comparison;
         });
         groupedTasks['No Due Date'] = noDateTasks;
     }
@@ -428,8 +467,8 @@ async function filterTasksByParams(params, userId, userTimezone) {
                 [Op.and]: [
                     { recurrence_type: { [Op.ne]: 'none' } },
                     { recurrence_type: { [Op.not]: null } },
-                    { recurring_parent_id: null }
-                ]
+                    { recurring_parent_id: null },
+                ],
             };
             break;
         }
@@ -471,6 +510,11 @@ async function filterTasksByParams(params, userId, userTimezone) {
     if (params.tag) {
         includeClause[0].where = { name: params.tag };
         includeClause[0].required = true;
+    }
+
+    // Filter by priority
+    if (params.priority) {
+        whereClause.priority = Task.getPriorityValue(params.priority);
     }
 
     let orderClause = [['created_at', 'DESC']];
@@ -957,27 +1001,45 @@ router.get('/tasks', async (req, res) => {
     try {
         // Generate recurring tasks for upcoming view to ensure future instances are available
         if (req.query.type === 'upcoming') {
-            console.log('🔄 GENERATING recurring tasks for upcoming view (7 days)');
+            console.log(
+                '🔄 GENERATING recurring tasks for upcoming view (7 days)'
+            );
             await RecurringTaskService.generateRecurringTasks(
                 req.currentUser.id,
                 7
             );
         }
 
-        const tasks = await filterTasksByParams(req.query, req.currentUser.id, req.currentUser.timezone);
-        
+        const tasks = await filterTasksByParams(
+            req.query,
+            req.currentUser.id,
+            req.currentUser.timezone
+        );
+
         // Debug logging for upcoming view
         if (req.query.type === 'upcoming') {
             console.log('🔍 UPCOMING TASKS DEBUG:');
-            tasks.forEach(task => {
-                console.log(`- ID: ${task.id}, Name: "${task.name}", Due: ${task.due_date}, Recur: ${task.recurrence_type}, Parent: ${task.recurring_parent_id}`);
+            tasks.forEach((task) => {
+                console.log(
+                    `- ID: ${task.id}, Name: "${task.name}", Due: ${task.due_date}, Recur: ${task.recurrence_type}, Parent: ${task.recurring_parent_id}`
+                );
             });
         }
 
         // Group upcoming tasks by day of week if requested
         let groupedTasks = null;
         if (req.query.type === 'upcoming' && req.query.groupBy === 'day') {
-            groupedTasks = await groupTasksByDay(tasks, req.currentUser.timezone);
+            // Always show 7 days (whole week including tomorrow)
+            const maxDays = req.query.maxDays
+                ? parseInt(req.query.maxDays, 10)
+                : 7;
+
+            groupedTasks = await groupTasksByDay(
+                tasks,
+                req.currentUser.timezone,
+                maxDays,
+                req.query.order_by || 'created_at:desc'
+            );
         }
         const metrics = await computeTaskMetrics(
             req.currentUser.id,
@@ -1035,7 +1097,9 @@ router.get('/tasks', async (req, res) => {
         // Add grouped tasks if requested
         if (groupedTasks) {
             response.groupedTasks = {};
-            for (const [groupName, groupTasks] of Object.entries(groupedTasks)) {
+            for (const [groupName, groupTasks] of Object.entries(
+                groupedTasks
+            )) {
                 response.groupedTasks[groupName] = await Promise.all(
                     groupTasks.map((task) =>
                         serializeTask(task, req.currentUser.timezone)
@@ -1085,7 +1149,10 @@ router.get('/task', async (req, res) => {
             return res.status(404).json({ error: 'Task not found.' });
         }
 
-        const serializedTask = await serializeTask(task, req.currentUser.timezone);
+        const serializedTask = await serializeTask(
+            task,
+            req.currentUser.timezone
+        );
 
         res.json(serializedTask);
     } catch (error) {
@@ -1128,7 +1195,10 @@ router.get('/task/:id', async (req, res) => {
             return res.status(404).json({ error: 'Task not found.' });
         }
 
-        const serializedTask = await serializeTask(task, req.currentUser.timezone);
+        const serializedTask = await serializeTask(
+            task,
+            req.currentUser.timezone
+        );
 
         res.json(serializedTask);
     } catch (error) {
@@ -1161,7 +1231,9 @@ router.get('/task/:id/subtasks', async (req, res) => {
         });
 
         const serializedSubtasks = await Promise.all(
-            subtasks.map((subtask) => serializeTask(subtask, req.currentUser.timezone))
+            subtasks.map((subtask) =>
+                serializeTask(subtask, req.currentUser.timezone)
+            )
         );
 
         res.json(serializedSubtasks);
@@ -1345,7 +1417,10 @@ router.post('/task', async (req, res) => {
             return res.status(201).json(fallbackTask);
         }
 
-        const serializedTask = await serializeTask(taskWithAssociations, req.currentUser.timezone);
+        const serializedTask = await serializeTask(
+            taskWithAssociations,
+            req.currentUser.timezone
+        );
 
         // Add cache-busting headers to prevent HTTP caching
         res.set({
@@ -1876,7 +1951,10 @@ router.patch('/task/:id', async (req, res) => {
         });
 
         // Use serializeTask to include subtasks data
-        const serializedTask = await serializeTask(taskWithAssociations, req.currentUser.timezone);
+        const serializedTask = await serializeTask(
+            taskWithAssociations,
+            req.currentUser.timezone
+        );
 
         res.json(serializedTask);
     } catch (error) {
@@ -2219,7 +2297,10 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
         }
 
         // Use serializeTask helper to ensure consistent response format including tags
-        const serializedTask = await serializeTask(task, req.currentUser.timezone);
+        const serializedTask = await serializeTask(
+            task,
+            req.currentUser.timezone
+        );
         res.json(serializedTask);
     } catch (error) {
         console.error('Error toggling task today flag:', error);
@@ -2231,13 +2312,13 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
 router.get('/task/:id/next-iterations', async (req, res) => {
     try {
         const taskId = parseInt(req.params.id);
-        
+
         // Find the task
         const task = await Task.findOne({
             where: {
                 id: taskId,
-                user_id: req.currentUser.id
-            }
+                user_id: req.currentUser.id,
+            },
         });
 
         if (!task) {
@@ -2251,26 +2332,32 @@ router.get('/task/:id/next-iterations', async (req, res) => {
 
         // Calculate next 5 iteration dates
         const iterations = [];
-        
-        // For next iterations, we want to show future dates from today
-        // regardless of the task's creation date or last generated date
-        const today = new Date();
-        today.setUTCHours(0, 0, 0, 0);
-        
+
+        // Allow starting from a specific date (for child tasks) or default to today
+        const startFromDate = req.query.startFromDate;
+        const startDate = startFromDate ? new Date(startFromDate) : new Date();
+        startDate.setUTCHours(0, 0, 0, 0);
+
         // Calculate next iteration directly using recurrence logic
-        let nextDate = new Date(today);
-        
-        // For daily recurrence, start from tomorrow
+        let nextDate = new Date(startDate);
+
+        // For daily recurrence, start from the next day after startDate
         if (task.recurrence_type === 'daily') {
-            nextDate.setDate(nextDate.getDate() + (task.recurrence_interval || 1));
+            nextDate.setDate(
+                nextDate.getDate() + (task.recurrence_interval || 1)
+            );
         } else if (task.recurrence_type === 'weekly') {
             // For weekly, find next occurrence of the target weekday
             const interval = task.recurrence_interval || 1;
-            if (task.recurrence_weekday !== null && task.recurrence_weekday !== undefined) {
+            if (
+                task.recurrence_weekday !== null &&
+                task.recurrence_weekday !== undefined
+            ) {
                 const currentWeekday = nextDate.getDay();
-                const daysUntilTarget = (task.recurrence_weekday - currentWeekday + 7) % 7;
+                const daysUntilTarget =
+                    (task.recurrence_weekday - currentWeekday + 7) % 7;
                 if (daysUntilTarget === 0) {
-                    // If today is the target weekday, move to next week
+                    // If startDate is the target weekday, move to next week
                     nextDate.setDate(nextDate.getDate() + interval * 7);
                 } else {
                     nextDate.setDate(nextDate.getDate() + daysUntilTarget);
@@ -2279,31 +2366,47 @@ router.get('/task/:id/next-iterations', async (req, res) => {
                 nextDate.setDate(nextDate.getDate() + interval * 7);
             }
         } else {
-            // For other types, use the RecurringTaskService method but calculate from today
-            nextDate = RecurringTaskService.calculateNextDueDate(task, today);
+            // For other types, use the RecurringTaskService method but calculate from startDate
+            nextDate = RecurringTaskService.calculateNextDueDate(
+                task,
+                startDate
+            );
         }
 
         for (let i = 0; i < 5 && nextDate; i++) {
             // Check if recurrence has an end date and we've exceeded it
-            if (task.recurrence_end_date && nextDate > task.recurrence_end_date) {
-                break;
+            if (task.recurrence_end_date) {
+                const endDate = new Date(task.recurrence_end_date);
+                if (nextDate > endDate) {
+                    break;
+                }
             }
 
             iterations.push({
-                date: processDueDateForResponse(nextDate, getSafeTimezone(req.currentUser.timezone)),
-                utc_date: nextDate.toISOString()
+                date: processDueDateForResponse(
+                    nextDate,
+                    getSafeTimezone(req.currentUser.timezone)
+                ),
+                utc_date: nextDate.toISOString(),
             });
 
             // Calculate the next iteration by adding the interval
             if (task.recurrence_type === 'daily') {
                 nextDate = new Date(nextDate);
-                nextDate.setDate(nextDate.getDate() + (task.recurrence_interval || 1));
+                nextDate.setDate(
+                    nextDate.getDate() + (task.recurrence_interval || 1)
+                );
             } else if (task.recurrence_type === 'weekly') {
                 nextDate = new Date(nextDate);
-                nextDate.setDate(nextDate.getDate() + (task.recurrence_interval || 1) * 7);
+                nextDate.setDate(
+                    nextDate.getDate() + (task.recurrence_interval || 1) * 7
+                );
             } else {
                 // For monthly and other complex recurrences, use the service method
-                nextDate = RecurringTaskService.calculateNextDueDate(task, nextDate);
+                nextDate = RecurringTaskService.calculateNextDueDate(
+                    task,
+                    nextDate
+                );
             }
         }
 
