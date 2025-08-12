@@ -201,8 +201,8 @@ describe('Tasks Routes', () => {
                 .patch(`/api/task/${otherTask.id}`)
                 .send({ name: 'Updated' });
 
-            expect(response.status).toBe(404);
-            expect(response.body.error).toBe('Task not found.');
+            expect(response.status).toBe(403);
+            expect(response.body.error).toBe('Forbidden');
         });
 
         it('should require authentication', async () => {
@@ -257,8 +257,8 @@ describe('Tasks Routes', () => {
 
             const response = await agent.delete(`/api/task/${otherTask.id}`);
 
-            expect(response.status).toBe(404);
-            expect(response.body.error).toBe('Task not found.');
+            expect(response.status).toBe(403);
+            expect(response.body.error).toBe('Forbidden');
         }, 10000); // 10 second timeout for this specific test
 
         it('should require authentication', async () => {

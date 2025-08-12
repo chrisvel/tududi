@@ -1,6 +1,8 @@
 const express = require('express');
 const { Task, Tag, Project, TaskEvent, sequelize } = require('../models');
 const { Op } = require('sequelize');
+const permissionsService = require('../services/permissionsService');
+const { hasAccess } = require('../middleware/authorize');
 const {
     generateRecurringTasks,
     handleTaskCompletion,
@@ -454,16 +456,19 @@ async function undoneAllSubtasks(parentTaskId, userId) {
 
 // Filter tasks by parameters
 async function filterTasksByParams(params, userId, userTimezone) {
-    // Disable search functionality for upcoming view
-    if (params.type === 'upcoming') {
+// Include owned or shared tasks; exclude subtasks by default
+    const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
+        'task',
+         'userId'
+             );
+if (params.type === 'upcoming') {
         // Remove search-related parameters to prevent search functionality
         params = { ...params, client_side_filtering: false };
         delete params.search;
     }
-
     let whereClause = {
-        user_id: userId,
-        parent_task_id: null, // Exclude subtasks from main task lists
+        ...ownedOrShared,
+        parent_task_id: null,
     };
 
     // Include both recurring templates and instances, but handle them appropriately
@@ -567,7 +572,7 @@ async function filterTasksByParams(params, userId, userTimezone) {
             // Override the default whereClause to include recurring instances
             // NOTE: Search functionality is disabled for upcoming view - ignore client_side_filtering
             whereClause = {
-                user_id: userId,
+                ...ownedOrShared,
                 parent_task_id: null, // Exclude subtasks from main task lists
                 due_date: {
                     [Op.between]: [upcomingRange.start, upcomingRange.end],
@@ -699,19 +704,19 @@ async function filterTasksByParams(params, userId, userTimezone) {
 
 // Compute task metrics
 async function computeTaskMetrics(userId, userTimezone = 'UTC') {
+    const visibleTasksWhere = await permissionsService.ownershipOrPermissionWhere('task', userId);
     const totalOpenTasks = await Task.count({
-        where: {
-            user_id: userId,
+            where: { ...visibleTasksWhere,
             status: { [Op.ne]: Task.STATUS.DONE },
-            parent_task_id: null, // Exclude subtasks
-            recurring_parent_id: null, // Exclude recurring instances
-        },
-    });
+                     parent_task_id: null, // Exclude subtasks
+                                 recurring_parent_id: null, // Exclude recurring instances 
+                                        }
+                                            });
 
     const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const tasksPendingOverMonth = await Task.count({
         where: {
-            user_id: userId,
+            ...visibleTasksWhere,
             status: { [Op.ne]: Task.STATUS.DONE },
             created_at: { [Op.lt]: oneMonthAgo },
             parent_task_id: null, // Exclude subtasks
@@ -721,7 +726,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
 
     const tasksInProgress = await Task.findAll({
         where: {
-            user_id: userId,
+            ...visibleTasksWhere,
             status: { [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'] },
             parent_task_id: null, // Exclude subtasks
             recurring_parent_id: null, // Exclude recurring instances
@@ -758,7 +763,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
     // Get tasks in today plan
     const todayPlanTasks = await Task.findAll({
         where: {
-            user_id: userId,
+            ...visibleTasksWhere,
             today: true,
             status: {
                 [Op.notIn]: [
@@ -809,7 +814,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
 
     const tasksDueToday = await Task.findAll({
         where: {
-            user_id: userId,
+            ...visibleTasksWhere,
             status: {
                 [Op.notIn]: [
                     Task.STATUS.DONE,
@@ -889,7 +894,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         // Get tasks without projects (excluding someday tagged tasks)
         const nonProjectTasks = await Task.findAll({
             where: {
-                user_id: userId,
+                ...visibleTasksWhere,
                 status: {
                     [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
                 },
@@ -934,7 +939,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         // Get tasks with projects (excluding someday tagged tasks)
         const projectTasks = await Task.findAll({
             where: {
-                user_id: userId,
+                ...visibleTasksWhere,
                 status: {
                     [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
                 },
@@ -1315,8 +1320,10 @@ router.get('/task', async (req, res) => {
                 .json({ error: 'uid query parameter is required' });
         }
 
-        const task = await Task.findOne({
-            where: { uid: uid, user_id: req.currentUser.id },
+    const task = await Task.findOne({
+        where: {
+            uid: uid,
+        },
             include: [
                 {
                     model: Tag,
@@ -1345,6 +1352,16 @@ router.get('/task', async (req, res) => {
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
+        }
+
+        // Ensure read access to the task
+        const access = await permissionsService.getAccess(
+            req.currentUser.id,
+            'task',
+            task.uid
+        );
+        if (access === 'none') {
+            return res.status(403).json({ error: 'Forbidden' });
         }
 
         const serializedTask = await serializeTask(
@@ -1360,10 +1377,24 @@ router.get('/task', async (req, res) => {
 });
 
 // GET /api/task/:id
-router.get('/task/:id', async (req, res) => {
+router.get(
+    '/task/:id',
+    hasAccess(
+        'ro',
+        'task',
+        async (req) => {
+            const t = await Task.findOne({
+                where: { id: req.params.id },
+                attributes: ['uid'],
+            });
+            return t?.uid;
+        },
+        { notFoundMessage: 'Task not found.' }
+    ),
+    async (req, res) => {
     try {
         const task = await Task.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
+            where: { id: req.params.id },
             include: [
                 {
                     model: Tag,
@@ -1389,9 +1420,9 @@ router.get('/task/:id', async (req, res) => {
             ],
         });
 
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found.' });
-        }
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found.' });
+            }
 
         const serializedTask = await serializeTask(
             task,
@@ -1399,20 +1430,34 @@ router.get('/task/:id', async (req, res) => {
             { skipDisplayNameTransform: true }
         );
 
-        res.json(serializedTask);
-    } catch (error) {
-        console.error('Error fetching task:', error);
-        res.status(500).json({ error: 'Internal server error' });
+            res.json(serializedTask);
+        } catch (error) {
+            console.error('Error fetching task:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
-});
+);
 
 // GET /api/task/:id/subtasks
 router.get('/task/:id/subtasks', async (req, res) => {
     try {
+        // Ensure parent visibility first
+        const parent = await Task.findOne({ where: { id: req.params.id } });
+        if (!parent) {
+            return res.json([]);
+        }
+        const pAccess = await permissionsService.getAccess(
+            req.currentUser.id,
+            'task',
+            parent.uid
+        );
+        if (pAccess === 'none') {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
         const subtasks = await Task.findAll({
             where: {
                 parent_task_id: req.params.id,
-                user_id: req.currentUser.id,
             },
             include: [
                 {
@@ -1513,21 +1558,37 @@ router.post('/task', async (req, res) => {
 
         // Handle project assignment
         if (project_id && project_id.toString().trim()) {
-            const project = await Project.findOne({
-                where: { id: project_id, user_id: req.currentUser.id },
-            });
+            const project = await Project.findOne({ where: { id: project_id } });
             if (!project) {
                 return res.status(400).json({ error: 'Invalid project.' });
+            }
+            const projectAccess = await permissionsService.getAccess(
+                req.currentUser.id,
+                'project',
+                project.uid
+            );
+            const isOwner = project.user_id === req.currentUser.id;
+            const canWrite = isOwner || projectAccess === 'rw' || projectAccess === 'admin';
+            if (!canWrite) {
+                return res.status(403).json({ error: 'Forbidden' });
             }
             taskAttributes.project_id = project_id;
         }
 
         // Handle parent task assignment
         if (parent_task_id && parent_task_id.toString().trim()) {
-            const parentTask = await Task.findOne({
-                where: { id: parent_task_id, user_id: req.currentUser.id },
-            });
+            const parentTask = await Task.findOne({ where: { id: parent_task_id } });
             if (!parentTask) {
+                return res.status(400).json({ error: 'Invalid parent task.' });
+            }
+            const parentAccess = await permissionsService.getAccess(
+                req.currentUser.id,
+                'task',
+                parentTask.uid
+            );
+            const isOwner = parentTask.user_id === req.currentUser.id;
+            const canWrite = isOwner || parentAccess === 'rw' || parentAccess === 'admin';
+            if (!canWrite) {
                 return res.status(400).json({ error: 'Invalid parent task.' });
             }
             taskAttributes.parent_task_id = parent_task_id;
@@ -1644,7 +1705,18 @@ router.post('/task', async (req, res) => {
 });
 
 // PATCH /api/task/:id
-router.patch('/task/:id', async (req, res) => {
+router.patch(
+    '/task/:id',
+    hasAccess(
+        'rw',
+        'task',
+        async (req) => {
+            const t = await Task.findOne({ where: { id: req.params.id }, attributes: ['uid'] });
+            return t?.uid;
+        },
+        { notFoundMessage: 'Task not found.' }
+    ),
+    async (req, res) => {
     try {
         const {
             name,
@@ -1672,7 +1744,7 @@ router.patch('/task/:id', async (req, res) => {
         const tagsData = tags || Tags;
 
         const task = await Task.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
+            where: { id: req.params.id },
             include: [
                 {
                     model: Tag,
@@ -1685,6 +1757,7 @@ router.patch('/task/:id', async (req, res) => {
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
         }
+        // access ensured by middleware
 
         // Capture old values for event logging
         const oldValues = {
@@ -1837,11 +1910,19 @@ router.patch('/task/:id', async (req, res) => {
 
         // Handle project assignment
         if (project_id && project_id.toString().trim()) {
-            const project = await Project.findOne({
-                where: { id: project_id, user_id: req.currentUser.id },
-            });
+            const project = await Project.findOne({ where: { id: project_id } });
             if (!project) {
                 return res.status(400).json({ error: 'Invalid project.' });
+            }
+            const projectAccess = await permissionsService.getAccess(
+                req.currentUser.id,
+                'project',
+                project.uid
+            );
+            const isOwner = project.user_id === req.currentUser.id;
+            const canWrite = isOwner || projectAccess === 'rw' || projectAccess === 'admin';
+            if (!canWrite) {
+                return res.status(403).json({ error: 'Forbidden' });
             }
             taskAttributes.project_id = project_id;
         } else {
@@ -2234,13 +2315,25 @@ router.patch('/task/:id', async (req, res) => {
                 : [error.message],
         });
     }
-});
+}
+);
 
 // PATCH /api/task/:id/toggle_completion
-router.patch('/task/:id/toggle_completion', async (req, res) => {
+router.patch(
+    '/task/:id/toggle_completion',
+    hasAccess(
+        'rw',
+        'task',
+        async (req) => {
+            const t = await Task.findOne({ where: { id: req.params.id }, attributes: ['uid'] });
+            return t?.uid;
+        },
+        { notFoundMessage: 'Task not found.' }
+    ),
+    async (req, res) => {
     try {
         const task = await Task.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
+            where: { id: req.params.id },
             include: [
                 {
                     model: Tag,
@@ -2269,6 +2362,7 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
         }
+        // access ensured by middleware
 
         // Track if parent-child logic was executed
         let parentChildLogicExecuted = false;
@@ -2383,13 +2477,25 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
             details: error.message,
         });
     }
-});
+}
+);
 
 // DELETE /api/task/:id
-router.delete('/task/:id', async (req, res) => {
+router.delete(
+    '/task/:id',
+    hasAccess(
+        'rw',
+        'task',
+        async (req) => {
+            const t = await Task.findOne({ where: { id: req.params.id }, attributes: ['uid'] });
+            return t?.uid;
+        },
+        { notFoundMessage: 'Task not found.' }
+    ),
+    async (req, res) => {
     try {
         const task = await Task.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
+            where: { id: req.params.id },
         });
 
         if (!task) {
@@ -2516,7 +2622,8 @@ router.delete('/task/:id', async (req, res) => {
             error: 'There was a problem deleting the task.',
         });
     }
-});
+}
+);
 
 // POST /api/tasks/generate-recurring
 router.post('/tasks/generate-recurring', async (req, res) => {
@@ -2539,10 +2646,21 @@ router.post('/tasks/generate-recurring', async (req, res) => {
 });
 
 // PATCH /api/task/:id/toggle-today
-router.patch('/task/:id/toggle-today', async (req, res) => {
+router.patch(
+    '/task/:id/toggle-today',
+    hasAccess(
+        'rw',
+        'task',
+        async (req) => {
+            const t = await Task.findOne({ where: { id: req.params.id }, attributes: ['uid'] });
+            return t?.uid;
+        },
+        { notFoundMessage: 'Task not found.' }
+    ),
+    async (req, res) => {
     try {
         const task = await Task.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
+            where: { id: req.params.id },
             include: [
                 {
                     model: Tag,
@@ -2560,6 +2678,8 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
         }
+
+        // access ensured by middleware
 
         // Toggle the today flag
         const newTodayValue = !task.today;
@@ -2601,7 +2721,8 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
         console.error('Error toggling task today flag:', error);
         res.status(500).json({ error: 'Failed to update task today flag' });
     }
-});
+}
+);
 
 // GET /api/task/:id/next-iterations
 router.get('/task/:id/next-iterations', async (req, res) => {

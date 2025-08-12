@@ -4,6 +4,8 @@ const { Op } = require('sequelize');
 const { extractUidFromSlug } = require('../utils/slug-utils');
 const { validateTagName } = require('../utils/validation');
 const router = express.Router();
+const permissionsService = require('../services/permissionsService');
+const { hasAccess } = require('../middleware/authorize');
 
 // Helper function to update note tags
 async function updateNoteTags(note, tagsArray, userId) {
@@ -62,7 +64,10 @@ router.get('/notes', async (req, res) => {
         const orderBy = req.query.order_by || 'title:asc';
         const [orderColumn, orderDirection] = orderBy.split(':');
 
-        let whereClause = { user_id: req.session.userId };
+        const whereClause = await permissionsService.ownershipOrPermissionWhere(
+            'note',
+            req.session.userId
+        );
         let includeClause = [
             {
                 model: Tag,
@@ -97,31 +102,34 @@ router.get('/notes', async (req, res) => {
 });
 
 // GET /api/note/:id (supports both numeric ID and uid-slug)
-router.get('/note/:id', async (req, res) => {
+router.get(
+    '/note/:id',
+    hasAccess(
+        'ro',
+        'note',
+        async (req) => {
+            const identifier = req.params.id;
+            if (/^\d+$/.test(identifier)) {
+                const n = await Note.findOne({ where: { id: parseInt(identifier) }, attributes: ['uid'] });
+                return n?.uid;
+            }
+            const uid = extractUidFromSlug(identifier);
+            return uid;
+        },
+        { notFoundMessage: 'Note not found.' }
+    ),
+    async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const identifier = req.params.id;
         let whereClause;
-
-        // Check if identifier is numeric (regular ID) or uid-slug
         if (/^\d+$/.test(identifier)) {
-            // It's a numeric ID
-            whereClause = {
-                id: parseInt(identifier),
-                user_id: req.session.userId,
-            };
+            whereClause = { id: parseInt(identifier) };
         } else {
-            // It's a uid-slug, extract the uid
             const uid = extractUidFromSlug(identifier);
             if (!uid) {
-                return res
-                    .status(400)
-                    .json({ error: 'Invalid note identifier' });
+                return res.status(400).json({ error: 'Invalid note identifier' });
             }
-            whereClause = { uid: uid, user_id: req.session.userId };
+            whereClause = { uid };
         }
 
         const note = await Note.findOne({
@@ -143,13 +151,15 @@ router.get('/note/:id', async (req, res) => {
         if (!note) {
             return res.status(404).json({ error: 'Note not found.' });
         }
+        // access ensured by middleware
 
         res.json(note);
     } catch (error) {
         console.error('Error fetching note:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-});
+}
+);
 
 // POST /api/note
 router.post('/note', async (req, res) => {
@@ -168,11 +178,19 @@ router.post('/note', async (req, res) => {
 
         // Handle project assignment
         if (project_id && project_id.toString().trim()) {
-            const project = await Project.findOne({
-                where: { id: project_id, user_id: req.session.userId },
-            });
+            const project = await Project.findOne({ where: { id: project_id } });
             if (!project) {
                 return res.status(400).json({ error: 'Invalid project.' });
+            }
+            const projectAccess = await permissionsService.getAccess(
+                req.session.userId,
+                'project',
+                project.uid
+            );
+            const isOwner = project.user_id === req.session.userId;
+            const canWrite = isOwner || projectAccess === 'rw' || projectAccess === 'admin';
+            if (!canWrite) {
+                return res.status(403).json({ error: 'Forbidden' });
             }
             noteAttributes.project_id = project_id;
         }
@@ -223,19 +241,27 @@ router.post('/note', async (req, res) => {
 });
 
 // PATCH /api/note/:id
-router.patch('/note/:id', async (req, res) => {
+router.patch(
+    '/note/:id',
+    hasAccess(
+        'rw',
+        'note',
+        async (req) => {
+            const n = await Note.findOne({ where: { id: req.params.id }, attributes: ['uid'] });
+            return n?.uid;
+        },
+        { notFoundMessage: 'Note not found.' }
+    ),
+    async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const note = await Note.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            where: { id: req.params.id },
         });
 
         if (!note) {
             return res.status(404).json({ error: 'Note not found.' });
         }
+        // access ensured by middleware
 
         const { title, content, project_id, tags } = req.body;
 
@@ -246,11 +272,19 @@ router.patch('/note/:id', async (req, res) => {
         // Handle project assignment
         if (project_id !== undefined) {
             if (project_id && project_id.toString().trim()) {
-                const project = await Project.findOne({
-                    where: { id: project_id, user_id: req.session.userId },
-                });
+                const project = await Project.findOne({ where: { id: project_id } });
                 if (!project) {
                     return res.status(400).json({ error: 'Invalid project.' });
+                }
+                const projectAccess = await permissionsService.getAccess(
+                    req.session.userId,
+                    'project',
+                    project.uid
+                );
+                const isOwner = project.user_id === req.session.userId;
+                const canWrite = isOwner || projectAccess === 'rw' || projectAccess === 'admin';
+                if (!canWrite) {
+                    return res.status(403).json({ error: 'Forbidden' });
                 }
                 updateData.project_id = project_id;
             } else {
@@ -299,22 +333,31 @@ router.patch('/note/:id', async (req, res) => {
                 : [error.message],
         });
     }
-});
+}
+);
 
 // DELETE /api/note/:id
-router.delete('/note/:id', async (req, res) => {
+router.delete(
+    '/note/:id',
+    hasAccess(
+        'rw',
+        'note',
+        async (req) => {
+            const n = await Note.findOne({ where: { id: req.params.id }, attributes: ['uid'] });
+            return n?.uid;
+        },
+        { notFoundMessage: 'Note not found.' }
+    ),
+    async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const note = await Note.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            where: { id: req.params.id },
         });
 
         if (!note) {
             return res.status(404).json({ error: 'Note not found.' });
         }
+        // access ensured by middleware
 
         await note.destroy();
         res.json({ message: 'Note deleted successfully.' });
@@ -324,6 +367,7 @@ router.delete('/note/:id', async (req, res) => {
             error: 'There was a problem deleting the note.',
         });
     }
-});
+}
+);
 
 module.exports = router;
