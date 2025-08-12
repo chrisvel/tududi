@@ -2,13 +2,14 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import TaskList from './Task/TaskList';
+import GroupedTaskList from './Task/GroupedTaskList';
 import NewTask from './Task/NewTask';
 import SortFilter from './Shared/SortFilter';
 import { Task } from '../entities/Task';
 import { Project } from '../entities/Project';
 import { getTitleAndIcon } from './Task/getTitleAndIcon';
 import { getDescription } from './Task/getDescription';
-import { createTask, toggleTaskToday } from '../utils/tasksService';
+import { createTask, toggleTaskToday, GroupedTasks } from '../utils/tasksService';
 import { useToast } from './Shared/ToastContext';
 import { SortOption } from './Shared/SortFilterButton';
 import {
@@ -38,6 +39,7 @@ const Tasks: React.FC = () => {
     const { showSuccessToast } = useToast();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
+    const [groupedTasks, setGroupedTasks] = useState<GroupedTasks | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
@@ -137,10 +139,18 @@ const Tasks: React.FC = () => {
             setError(null);
             try {
                 const tagId = query.get('tag');
+                const type = query.get('type');
+                
                 // Fetch all tasks (both completed and non-completed) for client-side filtering
                 const allTasksUrl = new URLSearchParams(location.search);
                 // Add special parameter to get ALL tasks (completed and non-completed)
                 allTasksUrl.set('client_side_filtering', 'true');
+                
+                // Add groupBy=day for upcoming tasks
+                if (type === 'upcoming') {
+                    allTasksUrl.set('groupBy', 'day');
+                }
+                
                 const searchParams = allTasksUrl.toString();
 
                 const [tasksResponse, projectsResponse] = await Promise.all([
@@ -153,6 +163,7 @@ const Tasks: React.FC = () => {
                 if (tasksResponse.ok) {
                     const tasksData = await tasksResponse.json();
                     setTasks(tasksData.tasks || []);
+                    setGroupedTasks(tasksData.groupedTasks || null);
                 } else {
                     throw new Error('Failed to fetch tasks.');
                 }
@@ -359,7 +370,8 @@ const Tasks: React.FC = () => {
     const description = getDescription(query, projects, t);
 
     const isNewTaskAllowed = () => {
-        return status !== 'done';
+        const type = query.get('type');
+        return status !== 'done' && type !== 'upcoming';
     };
 
     return (
@@ -550,19 +562,36 @@ const Tasks: React.FC = () => {
                             />
                         )}
 
-                        {displayTasks.length > 0 ? (
-                            <TaskList
-                                tasks={displayTasks}
-                                onTaskCreate={handleTaskCreate}
-                                onTaskUpdate={handleTaskUpdate}
-                                onTaskCompletionToggle={
-                                    handleTaskCompletionToggle
-                                }
-                                onTaskDelete={handleTaskDelete}
-                                projects={projects}
-                                onToggleToday={handleToggleToday}
-                                showCompletedTasks={showCompleted}
-                            />
+                        {displayTasks.length > 0 || (groupedTasks && Object.keys(groupedTasks).length > 0) ? (
+                            query.get('type') === 'upcoming' ? (
+                                <GroupedTaskList
+                                    tasks={displayTasks}
+                                    groupedTasks={groupedTasks}
+                                    onTaskCreate={handleTaskCreate}
+                                    onTaskUpdate={handleTaskUpdate}
+                                    onTaskCompletionToggle={
+                                        handleTaskCompletionToggle
+                                    }
+                                    onTaskDelete={handleTaskDelete}
+                                    projects={projects}
+                                    hideProjectName={false}
+                                    onToggleToday={undefined} // Don't show "Add to Today" in upcoming view
+                                    showCompletedTasks={showCompleted}
+                                />
+                            ) : (
+                                <TaskList
+                                    tasks={displayTasks}
+                                    onTaskCreate={handleTaskCreate}
+                                    onTaskUpdate={handleTaskUpdate}
+                                    onTaskCompletionToggle={
+                                        handleTaskCompletionToggle
+                                    }
+                                    onTaskDelete={handleTaskDelete}
+                                    projects={projects}
+                                    onToggleToday={handleToggleToday}
+                                    showCompletedTasks={showCompleted}
+                                />
+                            )
                         ) : (
                             <div className="flex justify-center items-center mt-4">
                                 <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">

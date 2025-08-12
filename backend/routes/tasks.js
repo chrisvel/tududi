@@ -4,12 +4,128 @@ const { Op } = require('sequelize');
 const RecurringTaskService = require('../services/recurringTaskService');
 const TaskEventService = require('../services/taskEventService');
 const { validateTagName } = require('../utils/validation');
+const {
+    getSafeTimezone,
+    getUpcomingRangeInUTC,
+    getTodayBoundsInUTC,
+    processDueDateForStorage,
+    processDueDateForResponse,
+} = require('../utils/timezone-utils');
 const moment = require('moment-timezone');
 const _ = require('lodash');
 const router = express.Router();
 
+// Helper function to group tasks by actual day names
+async function groupTasksByDay(tasks, userTimezone) {
+    const safeTimezone = getSafeTimezone(userTimezone);
+    const groupedTasks = {};
+    const tasksByDate = new Map();
+
+    const now = moment.tz(safeTimezone);
+    const twoWeeksFromNow = now.clone().add(2, 'weeks').endOf('day');
+
+    // Group tasks by their exact due date
+    tasks.forEach(task => {
+        if (!task.due_date) {
+            // Tasks with no due date go to a special "No Due Date" group
+            if (!tasksByDate.has('no-date')) {
+                tasksByDate.set('no-date', []);
+            }
+            tasksByDate.get('no-date').push(task);
+            return;
+        }
+
+        const taskDueDate = moment.tz(task.due_date, safeTimezone);
+        
+        // Only group tasks within the next 2 weeks, everything else goes to "Later"
+        if (taskDueDate.isAfter(twoWeeksFromNow)) {
+            if (!tasksByDate.has('later')) {
+                tasksByDate.set('later', []);
+            }
+            tasksByDate.get('later').push(task);
+            return;
+        }
+
+        // Use YYYY-MM-DD as the key for grouping by exact date
+        const dateKey = taskDueDate.format('YYYY-MM-DD');
+        
+        if (!tasksByDate.has(dateKey)) {
+            tasksByDate.set(dateKey, []);
+        }
+        tasksByDate.get(dateKey).push(task);
+    });
+
+    // Convert the map to the final grouped structure with day names
+    const sortedDates = Array.from(tasksByDate.keys())
+        .filter(key => key !== 'no-date' && key !== 'later')
+        .sort(); // Sort dates chronologically
+
+    // Add date groups in chronological order
+    sortedDates.forEach(dateKey => {
+        const dateMoment = moment.tz(dateKey, safeTimezone);
+        const dayName = dateMoment.format('dddd'); // e.g., "Monday", "Tuesday"
+        const dateDisplay = dateMoment.format('MMMM D'); // e.g., "August 12"
+        const isToday = dateMoment.isSame(now, 'day');
+        const isTomorrow = dateMoment.isSame(now.clone().add(1, 'day'), 'day');
+        
+        // Create a descriptive group name
+        let groupName;
+        if (isToday) {
+            groupName = `Today - ${dayName}, ${dateDisplay}`;
+        } else if (isTomorrow) {
+            groupName = `Tomorrow - ${dayName}, ${dateDisplay}`;
+        } else {
+            groupName = `${dayName}, ${dateDisplay}`;
+        }
+
+        const tasks = tasksByDate.get(dateKey);
+        
+        // Sort tasks within each day by time, then by priority
+        tasks.sort((a, b) => {
+            const timeA = moment.tz(a.due_date, safeTimezone);
+            const timeB = moment.tz(b.due_date, safeTimezone);
+            
+            // First sort by time of day
+            const timeComparison = timeA.hour() * 60 + timeA.minute() - (timeB.hour() * 60 + timeB.minute());
+            if (timeComparison !== 0) return timeComparison;
+            
+            // Then sort by priority (higher priority first)
+            return (b.priority || 0) - (a.priority || 0);
+        });
+
+        groupedTasks[groupName] = tasks;
+    });
+
+    // Add special groups at the end
+    if (tasksByDate.has('later')) {
+        const laterTasks = tasksByDate.get('later');
+        laterTasks.sort((a, b) => {
+            // Sort by due date, then priority
+            if (a.due_date && b.due_date) {
+                const dateComparison = new Date(a.due_date) - new Date(b.due_date);
+                if (dateComparison !== 0) return dateComparison;
+            }
+            return (b.priority || 0) - (a.priority || 0);
+        });
+        groupedTasks['Later'] = laterTasks;
+    }
+
+    if (tasksByDate.has('no-date')) {
+        const noDateTasks = tasksByDate.get('no-date');
+        noDateTasks.sort((a, b) => {
+            // Sort by priority, then by creation date
+            const priorityComparison = (b.priority || 0) - (a.priority || 0);
+            if (priorityComparison !== 0) return priorityComparison;
+            return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        });
+        groupedTasks['No Due Date'] = noDateTasks;
+    }
+
+    return groupedTasks;
+}
+
 // Helper function to serialize task with today move count
-async function serializeTask(task) {
+async function serializeTask(task, userTimezone = 'UTC') {
     if (!task) {
         throw new Error('Task is null or undefined');
     }
@@ -17,6 +133,7 @@ async function serializeTask(task) {
     const todayMoveCount = await TaskEventService.getTaskTodayMoveCount(
         task.id
     );
+    const safeTimezone = getSafeTimezone(userTimezone);
 
     // Include subtasks if they exist
     const { Subtasks, ...taskWithoutSubtasks } = taskJson;
@@ -24,6 +141,7 @@ async function serializeTask(task) {
     return {
         ...taskWithoutSubtasks,
         uid: task.uid, // Explicitly include uid
+        due_date: processDueDateForResponse(taskJson.due_date, safeTimezone),
         tags: taskJson.Tags || [],
         Project: taskJson.Project
             ? {
@@ -36,13 +154,10 @@ async function serializeTask(task) {
                   ...subtask,
                   uid: subtask.uid, // Also include uid for subtasks
                   tags: subtask.Tags || [],
-                  due_date: subtask.due_date
-                      ? subtask.due_date instanceof Date
-                          ? subtask.due_date.toISOString().split('T')[0]
-                          : new Date(subtask.due_date)
-                                .toISOString()
-                                .split('T')[0]
-                      : null,
+                  due_date: processDueDateForResponse(
+                      subtask.due_date,
+                      safeTimezone
+                  ),
                   completed_at: subtask.completed_at
                       ? subtask.completed_at instanceof Date
                           ? subtask.completed_at.toISOString()
@@ -50,11 +165,6 @@ async function serializeTask(task) {
                       : null,
               }))
             : [],
-        due_date: task.due_date
-            ? task.due_date instanceof Date
-                ? task.due_date.toISOString().split('T')[0]
-                : new Date(task.due_date).toISOString().split('T')[0]
-            : null,
         completed_at: task.completed_at
             ? task.completed_at instanceof Date
                 ? task.completed_at.toISOString()
@@ -260,7 +370,7 @@ async function undoneAllSubtasks(parentTaskId, userId) {
 }
 
 // Filter tasks by parameters
-async function filterTasksByParams(params, userId) {
+async function filterTasksByParams(params, userId, userTimezone) {
     let whereClause = {
         user_id: userId,
         parent_task_id: null, // Exclude subtasks from main task lists
@@ -303,15 +413,26 @@ async function filterTasksByParams(params, userId) {
                 ],
             }; // Exclude completed and archived tasks (both integer and string values)
             break;
-        case 'upcoming':
+        case 'upcoming': {
+            const safeTimezone = getSafeTimezone(userTimezone);
+            const upcomingRange = getUpcomingRangeInUTC(safeTimezone, 7);
+
             whereClause.due_date = {
-                [Op.between]: [
-                    new Date(),
-                    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-                ],
+                [Op.between]: [upcomingRange.start, upcomingRange.end],
             };
             whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+            // Exclude recurring templates from upcoming view - we only want the instances
+            // Templates have recurrence_type set but no recurring_parent_id
+            // Instances have recurring_parent_id set but recurrence_type 'none'
+            whereClause[Op.not] = {
+                [Op.and]: [
+                    { recurrence_type: { [Op.ne]: 'none' } },
+                    { recurrence_type: { [Op.not]: null } },
+                    { recurring_parent_id: null }
+                ]
+            };
             break;
+        }
         case 'next':
             whereClause.due_date = null;
             whereClause.project_id = null;
@@ -327,6 +448,14 @@ async function filterTasksByParams(params, userId) {
             break;
         case 'waiting':
             whereClause.status = Task.STATUS.WAITING;
+            break;
+        case 'all':
+            if (params.status === 'done') {
+                whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
+            } else if (!params.client_side_filtering) {
+                // Only exclude completed tasks if not doing client-side filtering
+                whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+            }
             break;
         default:
             if (params.status === 'done') {
@@ -486,8 +615,9 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         ],
     });
 
-    const today = new Date();
-    today.setHours(23, 59, 59, 999);
+    // Get tasks due today in user's timezone
+    const safeTimezone = getSafeTimezone(userTimezone);
+    const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
     const tasksDueToday = await Task.findAll({
         where: {
@@ -501,11 +631,11 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 ],
             },
             [Op.or]: [
-                { due_date: { [Op.lte]: today } },
+                { due_date: { [Op.lte]: todayBounds.end } },
                 sequelize.literal(`EXISTS (
           SELECT 1 FROM projects 
           WHERE projects.id = Task.project_id 
-          AND projects.due_date_at <= '${today.toISOString()}'
+          AND projects.due_date_at <= '${todayBounds.end.toISOString()}'
         )`),
             ],
         },
@@ -825,33 +955,71 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
 // GET /api/tasks
 router.get('/tasks', async (req, res) => {
     try {
-        const tasks = await filterTasksByParams(req.query, req.currentUser.id);
+        // Generate recurring tasks for upcoming view to ensure future instances are available
+        if (req.query.type === 'upcoming') {
+            console.log('🔄 GENERATING recurring tasks for upcoming view (7 days)');
+            await RecurringTaskService.generateRecurringTasks(
+                req.currentUser.id,
+                7
+            );
+        }
+
+        const tasks = await filterTasksByParams(req.query, req.currentUser.id, req.currentUser.timezone);
+        
+        // Debug logging for upcoming view
+        if (req.query.type === 'upcoming') {
+            console.log('🔍 UPCOMING TASKS DEBUG:');
+            tasks.forEach(task => {
+                console.log(`- ID: ${task.id}, Name: "${task.name}", Due: ${task.due_date}, Recur: ${task.recurrence_type}, Parent: ${task.recurring_parent_id}`);
+            });
+        }
+
+        // Group upcoming tasks by day of week if requested
+        let groupedTasks = null;
+        if (req.query.type === 'upcoming' && req.query.groupBy === 'day') {
+            groupedTasks = await groupTasksByDay(tasks, req.currentUser.timezone);
+        }
         const metrics = await computeTaskMetrics(
             req.currentUser.id,
             req.currentUser.timezone
         );
 
-        res.json({
-            tasks: await Promise.all(tasks.map((task) => serializeTask(task))),
+        const response = {
+            tasks: await Promise.all(
+                tasks.map((task) =>
+                    serializeTask(task, req.currentUser.timezone)
+                )
+            ),
             metrics: {
                 total_open_tasks: metrics.total_open_tasks,
                 tasks_pending_over_month: metrics.tasks_pending_over_month,
                 tasks_in_progress_count: metrics.tasks_in_progress_count,
                 tasks_in_progress: await Promise.all(
-                    metrics.tasks_in_progress.map((task) => serializeTask(task))
+                    metrics.tasks_in_progress.map((task) =>
+                        serializeTask(task, req.currentUser.timezone)
+                    )
                 ),
                 tasks_due_today: await Promise.all(
-                    metrics.tasks_due_today.map((task) => serializeTask(task))
+                    metrics.tasks_due_today.map((task) =>
+                        serializeTask(task, req.currentUser.timezone)
+                    )
                 ),
                 today_plan_tasks: await Promise.all(
-                    metrics.today_plan_tasks.map((task) => serializeTask(task))
+                    metrics.today_plan_tasks.map((task) =>
+                        serializeTask(task, req.currentUser.timezone)
+                    )
                 ),
                 suggested_tasks: await Promise.all(
-                    metrics.suggested_tasks.map((task) => serializeTask(task))
+                    metrics.suggested_tasks.map((task) =>
+                        serializeTask(task, req.currentUser.timezone)
+                    )
                 ),
                 tasks_completed_today: await Promise.all(
                     metrics.tasks_completed_today.map(async (task) => {
-                        const serialized = await serializeTask(task);
+                        const serialized = await serializeTask(
+                            task,
+                            req.currentUser.timezone
+                        );
                         return {
                             ...serialized,
                             completed_at: task.completed_at
@@ -862,7 +1030,21 @@ router.get('/tasks', async (req, res) => {
                 ),
                 weekly_completions: metrics.weekly_completions,
             },
-        });
+        };
+
+        // Add grouped tasks if requested
+        if (groupedTasks) {
+            response.groupedTasks = {};
+            for (const [groupName, groupTasks] of Object.entries(groupedTasks)) {
+                response.groupedTasks[groupName] = await Promise.all(
+                    groupTasks.map((task) =>
+                        serializeTask(task, req.currentUser.timezone)
+                    )
+                );
+            }
+        }
+
+        res.json(response);
     } catch (error) {
         console.error('Error fetching tasks:', error);
         if (error.message === 'Invalid order column specified.') {
@@ -903,7 +1085,7 @@ router.get('/task', async (req, res) => {
             return res.status(404).json({ error: 'Task not found.' });
         }
 
-        const serializedTask = await serializeTask(task);
+        const serializedTask = await serializeTask(task, req.currentUser.timezone);
 
         res.json(serializedTask);
     } catch (error) {
@@ -946,7 +1128,7 @@ router.get('/task/:id', async (req, res) => {
             return res.status(404).json({ error: 'Task not found.' });
         }
 
-        const serializedTask = await serializeTask(task);
+        const serializedTask = await serializeTask(task, req.currentUser.timezone);
 
         res.json(serializedTask);
     } catch (error) {
@@ -979,7 +1161,7 @@ router.get('/task/:id/subtasks', async (req, res) => {
         });
 
         const serializedSubtasks = await Promise.all(
-            subtasks.map((subtask) => serializeTask(subtask))
+            subtasks.map((subtask) => serializeTask(subtask, req.currentUser.timezone))
         );
 
         res.json(serializedSubtasks);
@@ -1029,7 +1211,10 @@ router.post('/task', async (req, res) => {
                         ? Task.getPriorityValue(priority)
                         : priority
                     : Task.PRIORITY.LOW,
-            due_date: due_date || null,
+            due_date: processDueDateForStorage(
+                due_date,
+                getSafeTimezone(req.currentUser.timezone)
+            ),
             status:
                 status !== undefined
                     ? typeof status === 'string'
@@ -1160,7 +1345,7 @@ router.post('/task', async (req, res) => {
             return res.status(201).json(fallbackTask);
         }
 
-        const serializedTask = await serializeTask(taskWithAssociations);
+        const serializedTask = await serializeTask(taskWithAssociations, req.currentUser.timezone);
 
         // Add cache-busting headers to prevent HTTP caching
         res.set({
@@ -1304,7 +1489,10 @@ router.patch('/task/:id', async (req, res) => {
                         : status
                     : Task.STATUS.NOT_STARTED,
             note,
-            due_date: due_date || null,
+            due_date: processDueDateForStorage(
+                due_date,
+                getSafeTimezone(req.currentUser.timezone)
+            ),
             today: today !== undefined ? today : task.today,
             recurrence_type:
                 recurrence_type !== undefined
@@ -1688,7 +1876,7 @@ router.patch('/task/:id', async (req, res) => {
         });
 
         // Use serializeTask to include subtasks data
-        const serializedTask = await serializeTask(taskWithAssociations);
+        const serializedTask = await serializeTask(taskWithAssociations, req.currentUser.timezone);
 
         res.json(serializedTask);
     } catch (error) {
@@ -1823,7 +2011,7 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
         }
 
         // Use serializeTask to include subtasks data
-        const response = await serializeTask(task);
+        const response = await serializeTask(task, req.currentUser.timezone);
 
         // If parent-child logic was executed, we might need to reload data
         // For now, let the frontend handle the refresh to avoid complex reloading logic
@@ -2031,11 +2219,98 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
         }
 
         // Use serializeTask helper to ensure consistent response format including tags
-        const serializedTask = await serializeTask(task);
+        const serializedTask = await serializeTask(task, req.currentUser.timezone);
         res.json(serializedTask);
     } catch (error) {
         console.error('Error toggling task today flag:', error);
         res.status(500).json({ error: 'Failed to update task today flag' });
+    }
+});
+
+// GET /api/task/:id/next-iterations
+router.get('/task/:id/next-iterations', async (req, res) => {
+    try {
+        const taskId = parseInt(req.params.id);
+        
+        // Find the task
+        const task = await Task.findOne({
+            where: {
+                id: taskId,
+                user_id: req.currentUser.id
+            }
+        });
+
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        // Check if task has recurrence
+        if (!task.recurrence_type || task.recurrence_type === 'none') {
+            return res.json({ iterations: [] });
+        }
+
+        // Calculate next 5 iteration dates
+        const iterations = [];
+        
+        // For next iterations, we want to show future dates from today
+        // regardless of the task's creation date or last generated date
+        const today = new Date();
+        today.setUTCHours(0, 0, 0, 0);
+        
+        // Calculate next iteration directly using recurrence logic
+        let nextDate = new Date(today);
+        
+        // For daily recurrence, start from tomorrow
+        if (task.recurrence_type === 'daily') {
+            nextDate.setDate(nextDate.getDate() + (task.recurrence_interval || 1));
+        } else if (task.recurrence_type === 'weekly') {
+            // For weekly, find next occurrence of the target weekday
+            const interval = task.recurrence_interval || 1;
+            if (task.recurrence_weekday !== null && task.recurrence_weekday !== undefined) {
+                const currentWeekday = nextDate.getDay();
+                const daysUntilTarget = (task.recurrence_weekday - currentWeekday + 7) % 7;
+                if (daysUntilTarget === 0) {
+                    // If today is the target weekday, move to next week
+                    nextDate.setDate(nextDate.getDate() + interval * 7);
+                } else {
+                    nextDate.setDate(nextDate.getDate() + daysUntilTarget);
+                }
+            } else {
+                nextDate.setDate(nextDate.getDate() + interval * 7);
+            }
+        } else {
+            // For other types, use the RecurringTaskService method but calculate from today
+            nextDate = RecurringTaskService.calculateNextDueDate(task, today);
+        }
+
+        for (let i = 0; i < 5 && nextDate; i++) {
+            // Check if recurrence has an end date and we've exceeded it
+            if (task.recurrence_end_date && nextDate > task.recurrence_end_date) {
+                break;
+            }
+
+            iterations.push({
+                date: processDueDateForResponse(nextDate, getSafeTimezone(req.currentUser.timezone)),
+                utc_date: nextDate.toISOString()
+            });
+
+            // Calculate the next iteration by adding the interval
+            if (task.recurrence_type === 'daily') {
+                nextDate = new Date(nextDate);
+                nextDate.setDate(nextDate.getDate() + (task.recurrence_interval || 1));
+            } else if (task.recurrence_type === 'weekly') {
+                nextDate = new Date(nextDate);
+                nextDate.setDate(nextDate.getDate() + (task.recurrence_interval || 1) * 7);
+            } else {
+                // For monthly and other complex recurrences, use the service method
+                nextDate = RecurringTaskService.calculateNextDueDate(task, nextDate);
+            }
+        }
+
+        res.json({ iterations });
+    } catch (error) {
+        console.error('Error getting next iterations:', error);
+        res.status(500).json({ error: 'Failed to get next iterations' });
     }
 });
 
