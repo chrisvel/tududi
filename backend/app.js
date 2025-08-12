@@ -105,6 +105,8 @@ app.get('/api/health', (req, res) => {
 app.use('/api', require('./routes/auth'));
 app.use('/api', requireAuth, require('./routes/tasks'));
 app.use('/api', requireAuth, require('./routes/projects'));
+app.use('/api', requireAuth, require('./routes/admin'));
+app.use('/api', requireAuth, require('./routes/shares'));
 app.use('/api', requireAuth, require('./routes/areas'));
 app.use('/api', requireAuth, require('./routes/notes'));
 app.use('/api', requireAuth, require('./routes/tags'));
