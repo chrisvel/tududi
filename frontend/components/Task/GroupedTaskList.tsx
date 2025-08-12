@@ -1,5 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import React, { useState, useMemo } from 'react';
+import {
+    ChevronRightIcon,
+    ChevronDownIcon,
+    ArrowPathIcon,
+} from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import TaskItem from './TaskItem';
 import { Project } from '../../entities/Project';
@@ -17,6 +21,7 @@ interface GroupedTaskListProps {
     hideProjectName?: boolean;
     onToggleToday?: (taskId: number) => Promise<void>;
     showCompletedTasks?: boolean;
+    searchQuery?: string;
 }
 
 interface TaskGroup {
@@ -34,36 +39,17 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
     hideProjectName = false,
     onToggleToday,
     showCompletedTasks = false,
+    searchQuery = '',
 }) => {
     const { t } = useTranslation();
-    
-    // Initialize with all groups expanded by default
-    const getInitialExpandedGroups = () => {
-        const expanded = new Set<string>();
-        if (groupedTasks) {
-            Object.keys(groupedTasks).forEach(groupName => {
-                expanded.add(groupName); // Expand all groups by default
-            });
-        }
-        return expanded;
-    };
-    
-    const [expandedDayGroups, setExpandedDayGroups] = useState<Set<string>>(getInitialExpandedGroups);
-    const [expandedRecurringGroups, setExpandedRecurringGroups] = useState<Set<number>>(new Set());
+
+    const [expandedRecurringGroups, setExpandedRecurringGroups] = useState<
+        Set<number>
+    >(new Set());
 
     // If we have day-based groupedTasks from API, use those instead of recurring groups
-    const shouldUseDayGrouping = groupedTasks && Object.keys(groupedTasks).length > 0;
-
-    // Update expanded groups when groupedTasks changes (expand all by default)
-    useEffect(() => {
-        if (shouldUseDayGrouping && groupedTasks) {
-            const newExpanded = new Set<string>();
-            Object.keys(groupedTasks).forEach(groupName => {
-                newExpanded.add(groupName); // Expand all groups by default
-            });
-            setExpandedDayGroups(newExpanded);
-        }
-    }, [groupedTasks, shouldUseDayGrouping]);
+    const shouldUseDayGrouping =
+        groupedTasks && Object.keys(groupedTasks).length > 0;
 
     // Group tasks by recurring template (legacy behavior)
     const { recurringGroups, standaloneTask } = useMemo(() => {
@@ -93,8 +79,8 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                 const parentId = task.recurring_parent_id;
                 if (!groups.has(parentId)) {
                     // Find the template task in the current results
-                    let template = filteredTasks.find(t => t.id === parentId);
-                    
+                    let template = filteredTasks.find((t) => t.id === parentId);
+
                     // If template not found in results, create a placeholder using the instance data
                     if (!template) {
                         // Create a virtual template task based on the instance
@@ -113,9 +99,14 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                 if (group) {
                     group.instances.push(task);
                 }
-            } else if (task.recurrence_type && task.recurrence_type !== 'none') {
+            } else if (
+                task.recurrence_type &&
+                task.recurrence_type !== 'none'
+            ) {
                 // This is a recurring template - check if it has instances
-                const instances = filteredTasks.filter(t => t.recurring_parent_id === task.id);
+                const instances = filteredTasks.filter(
+                    (t) => t.recurring_parent_id === task.id
+                );
                 if (instances.length > 0) {
                     groups.set(task.id!, { template: task, instances });
                 } else {
@@ -128,16 +119,19 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
             }
         });
 
-        return { recurringGroups: Array.from(groups.values()), standaloneTask: standalone };
+        return {
+            recurringGroups: Array.from(groups.values()),
+            standaloneTask: standalone,
+        };
     }, [tasks, showCompletedTasks, shouldUseDayGrouping]);
 
-    // Filter grouped tasks for completed status
+    // Filter grouped tasks for completed status and search query
     const filteredGroupedTasks = useMemo(() => {
         if (!shouldUseDayGrouping || !groupedTasks) return {};
 
         const filtered: GroupedTasks = {};
         Object.entries(groupedTasks).forEach(([groupName, groupTasks]) => {
-            const filteredTasks = showCompletedTasks
+            let filteredTasks = showCompletedTasks
                 ? groupTasks
                 : groupTasks.filter((task) => {
                       const isCompleted =
@@ -147,33 +141,31 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                           task.status === 3;
                       return !isCompleted;
                   });
-            
+
+            // Apply search filter if search query provided
+            if (searchQuery.trim()) {
+                const query = searchQuery.toLowerCase();
+                filteredTasks = filteredTasks.filter(
+                    (task) =>
+                        task.name.toLowerCase().includes(query) ||
+                        task.note?.toLowerCase().includes(query)
+                );
+            }
+
             if (filteredTasks.length > 0) {
                 filtered[groupName] = filteredTasks;
             }
         });
         return filtered;
-    }, [groupedTasks, showCompletedTasks, shouldUseDayGrouping]);
+    }, [groupedTasks, showCompletedTasks, shouldUseDayGrouping, searchQuery]);
 
     const toggleRecurringGroup = (templateId: number) => {
-        setExpandedRecurringGroups(prev => {
+        setExpandedRecurringGroups((prev) => {
             const newSet = new Set(prev);
             if (newSet.has(templateId)) {
                 newSet.delete(templateId);
             } else {
                 newSet.add(templateId);
-            }
-            return newSet;
-        });
-    };
-
-    const toggleDayGroup = (groupName: string) => {
-        setExpandedDayGroups(prev => {
-            const newSet = new Set(prev);
-            if (newSet.has(groupName)) {
-                newSet.delete(groupName);
-            } else {
-                newSet.add(groupName);
             }
             return newSet;
         });
@@ -195,63 +187,8 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
     // Render day-based grouping if available
     if (shouldUseDayGrouping) {
         return (
-            <div className="task-list-container">
-                {Object.entries(filteredGroupedTasks).map(([groupName, dayTasks]) => {
-                    const isExpanded = expandedDayGroups.has(groupName);
-                    const taskCount = dayTasks.length;
-                    
-                    return (
-                        <div key={groupName} className="day-group mb-6">
-                            {/* Day header */}
-                            <div className="flex items-center justify-between mb-3">
-                                <button
-                                    onClick={() => toggleDayGroup(groupName)}
-                                    className="flex items-center space-x-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg p-2 transition-colors group"
-                                >
-                                    <div className="flex items-center space-x-2">
-                                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-700 dark:group-hover:text-blue-300">
-                                            {groupName}
-                                        </h3>
-                                        <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
-                                            {taskCount}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        {isExpanded ? (
-                                            <ChevronDownIcon className="h-4 w-4 text-gray-400 group-hover:text-blue-500" />
-                                        ) : (
-                                            <ChevronRightIcon className="h-4 w-4 text-gray-400 group-hover:text-blue-500" />
-                                        )}
-                                    </div>
-                                </button>
-                            </div>
-
-                            {/* Day tasks - only show when expanded */}
-                            {isExpanded && (
-                                <div className="ml-4 space-y-2">
-                                    {dayTasks.map((task) => (
-                                        <div 
-                                            key={task.id} 
-                                            className="task-item-wrapper transition-all duration-200 ease-in-out"
-                                        >
-                                            <TaskItem
-                                                task={task}
-                                                onTaskUpdate={onTaskUpdate}
-                                                onTaskCompletionToggle={onTaskCompletionToggle}
-                                                onTaskDelete={onTaskDelete}
-                                                projects={projects}
-                                                hideProjectName={hideProjectName}
-                                                onToggleToday={onToggleToday}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-
-                {Object.keys(filteredGroupedTasks).length === 0 && (
+            <div className="task-board-container">
+                {Object.keys(filteredGroupedTasks).length === 0 ? (
                     <div className="flex justify-center items-center mt-4">
                         <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
                             <svg
@@ -268,7 +205,10 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                 />
                             </svg>
                             <p className="text-2xl font-light text-center text-gray-600 dark:text-gray-300 mb-2">
-                                {t('tasks.noTasksAvailable', 'No tasks available.')}
+                                {t(
+                                    'tasks.noTasksAvailable',
+                                    'No tasks available.'
+                                )}
                             </p>
                             <p className="text-base text-center text-gray-400 dark:text-gray-400">
                                 {t(
@@ -278,6 +218,66 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                             </p>
                         </div>
                     </div>
+                ) : (
+                    /* Responsive board layout */
+                    <div className="pb-4">
+                        {/* Mobile: Stack vertically, Desktop: Horizontal board */}
+                        <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full">
+                            {Object.entries(filteredGroupedTasks).map(
+                                ([groupName, dayTasks]) => {
+                                    return (
+                                        <div
+                                            key={groupName}
+                                            className="day-column w-full md:flex-1 md:min-w-64"
+                                        >
+                                            {/* Day column header */}
+                                            <div className="pb-3 mb-4">
+                                                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                                    {groupName}
+                                                </h3>
+                                            </div>
+
+                                            {/* Day column tasks */}
+                                            <div className="space-y-1.5">
+                                                {dayTasks.map((task) => (
+                                                    <TaskItem
+                                                        key={task.id}
+                                                        task={task}
+                                                        onTaskUpdate={
+                                                            onTaskUpdate
+                                                        }
+                                                        onTaskCompletionToggle={
+                                                            onTaskCompletionToggle
+                                                        }
+                                                        onTaskDelete={
+                                                            onTaskDelete
+                                                        }
+                                                        projects={projects}
+                                                        hideProjectName={
+                                                            hideProjectName
+                                                        }
+                                                        onToggleToday={
+                                                            onToggleToday
+                                                        }
+                                                        isUpcomingView={true}
+                                                    />
+                                                ))}
+
+                                                {/* Empty state for columns with no tasks */}
+                                                {dayTasks.length === 0 && (
+                                                    <div className="text-center py-8 text-gray-400 dark:text-gray-600">
+                                                        <p className="text-sm">
+                                                            No tasks scheduled
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                            )}
+                        </div>
+                    </div>
                 )}
             </div>
         );
@@ -285,7 +285,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
 
     // Legacy: Render recurring task grouping
     return (
-        <div className="task-list-container">
+        <div className="task-list-container space-y-1.5">
             {/* Standalone tasks */}
             {standaloneTask.map((task) => (
                 <div
@@ -306,11 +306,17 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
 
             {/* Grouped recurring tasks */}
             {recurringGroups.map((group) => {
-                const isVirtualTemplate = (group.template as any).isVirtualTemplate;
-                const isExpanded = expandedRecurringGroups.has(group.template.id!) || isVirtualTemplate; // Auto-expand virtual templates
-                
+                const isVirtualTemplate = (group.template as any)
+                    .isVirtualTemplate;
+                const isExpanded =
+                    expandedRecurringGroups.has(group.template.id!) ||
+                    isVirtualTemplate; // Auto-expand virtual templates
+
                 return (
-                    <div key={group.template.id} className="recurring-task-group mb-2">
+                    <div
+                        key={group.template.id}
+                        className="recurring-task-group mb-2"
+                    >
                         {/* Show template only if it's not virtual */}
                         {!isVirtualTemplate && (
                             <div className="relative">
@@ -319,7 +325,9 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                         <TaskItem
                                             task={group.template}
                                             onTaskUpdate={onTaskUpdate}
-                                            onTaskCompletionToggle={onTaskCompletionToggle}
+                                            onTaskCompletionToggle={
+                                                onTaskCompletionToggle
+                                            }
                                             onTaskDelete={onTaskDelete}
                                             projects={projects}
                                             hideProjectName={hideProjectName}
@@ -327,16 +335,21 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                         />
                                     </div>
                                 </div>
-                                
+
                                 {/* Recurring instances count and expand button */}
                                 {group.instances.length > 0 && (
                                     <button
-                                        onClick={() => toggleRecurringGroup(group.template.id!)}
+                                        onClick={() =>
+                                            toggleRecurringGroup(
+                                                group.template.id!
+                                            )
+                                        }
                                         className="absolute top-3 right-3 flex items-center space-x-2 px-3 py-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
                                     >
                                         <ArrowPathIcon className="h-3 w-3" />
                                         <span>
-                                            {group.instances.length} {t('task.upcoming', 'upcoming')}
+                                            {group.instances.length}{' '}
+                                            {t('task.upcoming', 'upcoming')}
                                         </span>
                                         {isExpanded ? (
                                             <ChevronDownIcon className="h-3 w-3" />
@@ -347,13 +360,16 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                 )}
                             </div>
                         )}
-                        
+
                         {/* For virtual templates, show a simple header */}
                         {isVirtualTemplate && group.instances.length > 0 && (
                             <div className="mb-2 flex items-center space-x-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                                 <ArrowPathIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                                 <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                                    {group.template.name} - {formatRecurrence(group.template.recurrence_type!)}
+                                    {group.template.name} -{' '}
+                                    {formatRecurrence(
+                                        group.template.recurrence_type!
+                                    )}
                                 </span>
                                 <span className="text-xs text-blue-600 dark:text-blue-400">
                                     {group.instances.length} upcoming
@@ -363,22 +379,40 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
 
                         {/* Expanded instances */}
                         {isExpanded && group.instances.length > 0 && (
-                            <div className={`mt-2 space-y-1 border-l-2 border-blue-200 dark:border-blue-800 pl-4 ${!isVirtualTemplate ? 'ml-8' : 'ml-4'}`}>
+                            <div
+                                className={`mt-2 space-y-1.5 border-l-2 border-blue-200 dark:border-blue-800 pl-4 ${!isVirtualTemplate ? 'ml-8' : 'ml-4'}`}
+                            >
                                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center">
                                     <ArrowPathIcon className="h-3 w-3 mr-1" />
-                                    {formatRecurrence(group.template.recurrence_type!)} instances
+                                    {formatRecurrence(
+                                        group.template.recurrence_type!
+                                    )}{' '}
+                                    instances
                                 </div>
                                 {group.instances
-                                    .sort((a, b) => new Date(a.due_date || '').getTime() - new Date(b.due_date || '').getTime())
+                                    .sort(
+                                        (a, b) =>
+                                            new Date(
+                                                a.due_date || ''
+                                            ).getTime() -
+                                            new Date(b.due_date || '').getTime()
+                                    )
                                     .map((instance) => (
-                                        <div key={instance.id} className="opacity-75 hover:opacity-100 transition-opacity">
+                                        <div
+                                            key={instance.id}
+                                            className="opacity-75 hover:opacity-100 transition-opacity"
+                                        >
                                             <TaskItem
                                                 task={instance}
                                                 onTaskUpdate={onTaskUpdate}
-                                                onTaskCompletionToggle={onTaskCompletionToggle}
+                                                onTaskCompletionToggle={
+                                                    onTaskCompletionToggle
+                                                }
                                                 onTaskDelete={onTaskDelete}
                                                 projects={projects}
-                                                hideProjectName={hideProjectName}
+                                                hideProjectName={
+                                                    hideProjectName
+                                                }
                                                 onToggleToday={onToggleToday}
                                             />
                                         </div>

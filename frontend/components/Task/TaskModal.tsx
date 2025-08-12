@@ -91,9 +91,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
     });
 
     // Derive expanded sections with subtasks controlled by autoFocusSubtasks
+    // and recurrence expanded for child tasks
     const expandedSections = {
         ...baseSections,
         subtasks: baseSections.subtasks || autoFocusSubtasks,
+        recurrence: baseSections.recurrence || !!task.recurring_parent_id, // Auto-expand for child tasks
     };
 
     const { showSuccessToast, showErrorToast } = useToast();

@@ -38,7 +38,7 @@ const TaskList: React.FC<TaskListProps> = ({
           });
 
     return (
-        <div className="task-list-container">
+        <div className="task-list-container space-y-1.5">
             {filteredTasks.length > 0 ? (
                 filteredTasks.map((task) => (
                     <div

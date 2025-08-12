@@ -965,7 +965,7 @@ const ProjectDetails: React.FC = () => {
                 {activeTab === 'tasks' && (
                     <>
                         <div
-                            className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                            className={`transition-all duration-300 ease-in-out overflow-hidden mb-1.5 ${
                                 !showAutoSuggestForm
                                     ? 'opacity-100 max-h-96 transform translate-y-0'
                                     : 'opacity-0 max-h-0 transform -translate-y-2'

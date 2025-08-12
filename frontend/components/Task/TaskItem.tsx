@@ -41,11 +41,11 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                         className="ml-12 group"
                     >
                         <div
-                            className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 cursor-pointer transition-all duration-200 ${
+                            className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 cursor-pointer transition-all duration-200 ${
                                 subtask.status === 'in_progress' ||
                                 subtask.status === 1
-                                    ? 'border-green-400/60 dark:border-green-500/60'
-                                    : 'border-gray-50 dark:border-gray-800'
+                                    ? 'border-2 border-green-400/60 dark:border-green-500/60'
+                                    : ''
                             }`}
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -138,6 +138,7 @@ interface TaskItemProps {
     projects: Project[];
     hideProjectName?: boolean;
     onToggleToday?: (taskId: number) => Promise<void>;
+    isUpcomingView?: boolean;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -148,6 +149,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     projects,
     hideProjectName = false,
     onToggleToday,
+    isUpcomingView = false,
 }) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -406,10 +408,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
     return (
         <>
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 mt-1 relative overflow-hidden transition-all duration-200 ease-in-out ${
+                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-hidden transition-all duration-200 ease-in-out ${
                     isInProgress
                         ? 'border-2 border-green-400/60 dark:border-green-500/60'
-                        : 'md:dark:border-2 md:dark:border-gray-800'
+                        : ''
                 }`}
             >
                 <TaskHeader
@@ -426,6 +428,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     onSubtasksToggle={handleSubtasksToggle}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
+                    isUpcomingView={isUpcomingView}
                 />
 
                 {/* Progress bar at bottom of parent task */}

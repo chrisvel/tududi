@@ -22,6 +22,7 @@ import {
     deleteTask,
     toggleTaskCompletion,
     fetchTaskByUid,
+    fetchTaskById,
     fetchTaskNextIterations,
     TaskIteration,
 } from '../../utils/tasksService';
@@ -62,6 +63,8 @@ const TaskDetails: React.FC = () => {
         useState(false);
     const [nextIterations, setNextIterations] = useState<TaskIteration[]>([]);
     const [loadingIterations, setLoadingIterations] = useState(false);
+    const [parentTask, setParentTask] = useState<Task | null>(null);
+    const [loadingParent, setLoadingParent] = useState(false);
 
     // Load tags early and check for pending modal state on mount
     useEffect(() => {
@@ -180,10 +183,15 @@ const TaskDetails: React.FC = () => {
         fetchTaskData();
     }, [uid, task, tasksStore]);
 
-    // Load next iterations for recurring tasks
+    // Load next iterations for recurring tasks (both parent tasks and child tasks)
     useEffect(() => {
         const loadNextIterations = async () => {
-            if (task?.id && task.recurrence_type && task.recurrence_type !== 'none') {
+            // For parent tasks, use the task's own ID
+            if (
+                task?.id &&
+                task.recurrence_type &&
+                task.recurrence_type !== 'none'
+            ) {
                 try {
                     setLoadingIterations(true);
                     const iterations = await fetchTaskNextIterations(task.id);
@@ -194,13 +202,74 @@ const TaskDetails: React.FC = () => {
                 } finally {
                     setLoadingIterations(false);
                 }
+            }
+            // For child tasks, use the parent task's ID and start from the child's due date
+            else if (
+                task?.recurring_parent_id &&
+                parentTask?.id &&
+                parentTask.recurrence_type &&
+                parentTask.recurrence_type !== 'none'
+            ) {
+                try {
+                    setLoadingIterations(true);
+
+                    // If child task has a due date, start iterations from that date
+                    const startFromDate = task.due_date
+                        ? task.due_date.split('T')[0]
+                        : undefined;
+                    const iterations = await fetchTaskNextIterations(
+                        parentTask.id,
+                        startFromDate
+                    );
+
+                    setNextIterations(iterations);
+                } catch (error) {
+                    console.error(
+                        'Error loading next iterations for child task:',
+                        error
+                    );
+                    setNextIterations([]);
+                } finally {
+                    setLoadingIterations(false);
+                }
             } else {
                 setNextIterations([]);
             }
         };
 
         loadNextIterations();
-    }, [task?.id, task?.recurrence_type, task?.last_generated_date, task?.due_date]);
+    }, [
+        task?.id,
+        task?.recurrence_type,
+        task?.last_generated_date,
+        task?.due_date,
+        task?.recurring_parent_id,
+        parentTask?.id,
+        parentTask?.recurrence_type,
+        parentTask?.last_generated_date,
+    ]);
+
+    // Load parent task for child tasks (recurring instances)
+    useEffect(() => {
+        const loadParentTask = async () => {
+            if (task?.recurring_parent_id) {
+                try {
+                    setLoadingParent(true);
+                    const parent = await fetchTaskById(
+                        task.recurring_parent_id
+                    );
+                    setParentTask(parent);
+                } catch (error) {
+                    console.error('Error fetching parent task:', error);
+                    setParentTask(null);
+                } finally {
+                    setLoadingParent(false);
+                }
+            }
+        };
+
+        loadParentTask();
+    }, [task?.recurring_parent_id]);
 
     const handleEdit = (e?: React.MouseEvent) => {
         if (e) {
@@ -400,7 +469,8 @@ const TaskDetails: React.FC = () => {
                                 (task.tags && task.tags.length > 0) ||
                                 task.due_date ||
                                 (task.recurrence_type &&
-                                    task.recurrence_type !== 'none')) && (
+                                    task.recurrence_type !== 'none') ||
+                                task.recurring_parent_id) && (
                                 <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
                                     {task.Project && (
                                         <div className="flex items-center">
@@ -506,6 +576,25 @@ const TaskDetails: React.FC = () => {
                                                 </span>
                                             </div>
                                         )}
+                                    {(task.Project ||
+                                        (task.tags && task.tags.length > 0) ||
+                                        task.due_date ||
+                                        (task.recurrence_type &&
+                                            task.recurrence_type !== 'none')) &&
+                                        task.recurring_parent_id && (
+                                            <span className="mx-2">•</span>
+                                        )}
+                                    {task.recurring_parent_id && (
+                                        <div className="flex items-center">
+                                            <ArrowPathIcon className="h-3 w-3 mr-1" />
+                                            <span>
+                                                {t(
+                                                    'recurrence.instance',
+                                                    'Recurring task instance'
+                                                )}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -738,73 +827,210 @@ const TaskDetails: React.FC = () => {
                                 )}
                             </div>
 
-                            {/* Recurring Setup Section - Only show for recurring tasks */}
-                            {task.recurrence_type && task.recurrence_type !== 'none' && (
+                            {/* Recurring Setup Section - Show for recurring tasks or child tasks */}
+                            {((task.recurrence_type &&
+                                task.recurrence_type !== 'none') ||
+                                task.recurring_parent_id) && (
                                 <div>
                                     <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                                        {t('task.recurringSetup', 'Recurring Setup')}
+                                        {t(
+                                            'task.recurringSetup',
+                                            'Recurring Setup'
+                                        )}
                                     </h4>
                                     <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
-                                        {/* Recurrence Configuration */}
-                                        <div className="mb-4">
-                                            <div className="flex items-center mb-2">
-                                                <ArrowPathIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                    {formatRecurrence(task.recurrence_type)}
-                                                </span>
-                                                {task.recurrence_interval && task.recurrence_interval > 1 && (
-                                                    <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                                                        ({t('recurrence.every', 'Every')} {task.recurrence_interval})
+                                        {/* Show info for child tasks */}
+                                        {task.recurring_parent_id && (
+                                            <div className="mb-4">
+                                                <div className="flex items-center mb-2">
+                                                    <ArrowPathIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
+                                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        {t(
+                                                            'task.instanceOf',
+                                                            'This is an instance of a recurring task'
+                                                        )}
                                                     </span>
+                                                </div>
+                                                {loadingParent && (
+                                                    <div className="flex items-center py-2">
+                                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 mr-2"></div>
+                                                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                                                            {t(
+                                                                'common.loading',
+                                                                'Loading parent task...'
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                {parentTask && (
+                                                    <div className="ml-6">
+                                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                                            <strong>
+                                                                {t(
+                                                                    'task.parentTask',
+                                                                    'Parent Task'
+                                                                )}
+                                                                :
+                                                            </strong>{' '}
+                                                            <Link
+                                                                to={`/task/${parentTask.uid}`}
+                                                                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-medium"
+                                                            >
+                                                                {
+                                                                    parentTask.name
+                                                                }
+                                                            </Link>
+                                                        </p>
+                                                    </div>
                                                 )}
                                             </div>
-                                            {task.recurrence_end_date && (
-                                                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                                                    <CalendarIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                                                    <span>
-                                                        {t('recurrence.endsOn', 'Ends on')} {formatDueDate(task.recurrence_end_date)}
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </div>
+                                        )}
 
-                                        {/* Next Iterations */}
-                                        <div>
-                                            <div className="flex items-center mb-3">
-                                                <ClockIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                    {t('task.nextOccurrences', 'Next 5 Occurrences')}
-                                                </span>
+                                        {/* Recurrence Configuration - Use parent task data for child tasks */}
+                                        {(task.recurrence_type &&
+                                            task.recurrence_type !== 'none') ||
+                                        (parentTask?.recurrence_type &&
+                                            parentTask.recurrence_type !==
+                                                'none') ? (
+                                            <div className="mb-4">
+                                                <div className="flex items-center mb-2">
+                                                    <ArrowPathIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
+                                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        {formatRecurrence(
+                                                            task.recurring_parent_id &&
+                                                                parentTask?.recurrence_type
+                                                                ? parentTask.recurrence_type
+                                                                : task.recurrence_type
+                                                        )}
+                                                    </span>
+                                                    {((task.recurring_parent_id &&
+                                                        parentTask?.recurrence_interval &&
+                                                        parentTask.recurrence_interval >
+                                                            1) ||
+                                                        (!task.recurring_parent_id &&
+                                                            task.recurrence_interval &&
+                                                            task.recurrence_interval >
+                                                                1)) && (
+                                                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                                                            (
+                                                            {t(
+                                                                'recurrence.every',
+                                                                'Every'
+                                                            )}{' '}
+                                                            {task.recurring_parent_id &&
+                                                            parentTask?.recurrence_interval
+                                                                ? parentTask.recurrence_interval
+                                                                : task.recurrence_interval}
+                                                            )
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {((task.recurring_parent_id &&
+                                                    parentTask?.recurrence_end_date) ||
+                                                    (!task.recurring_parent_id &&
+                                                        task.recurrence_end_date)) && (
+                                                    <div className="flex items-center text-sm">
+                                                        <CalendarIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
+                                                        <span className="text-gray-500 dark:text-gray-400">
+                                                            {t(
+                                                                'recurrence.endsOn',
+                                                                'Ends on'
+                                                            )}{' '}
+                                                            {formatDueDate(
+                                                                task.recurring_parent_id &&
+                                                                    parentTask?.recurrence_end_date
+                                                                    ? parentTask.recurrence_end_date
+                                                                    : task.recurrence_end_date!
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                {((task.recurring_parent_id &&
+                                                    parentTask?.completion_based) ||
+                                                    (!task.recurring_parent_id &&
+                                                        task.completion_based)) && (
+                                                    <div className="flex items-center mt-2">
+                                                        <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+                                                            {t(
+                                                                'recurrence.completionBased',
+                                                                'Completion-based'
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
-                                            
-                                            {loadingIterations ? (
-                                                <div className="flex items-center justify-center py-4">
-                                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                                                    <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                                                        {t('common.loading', 'Loading...')}
+                                        ) : null}
+
+                                        {/* Next Iterations - Show for both parent and child tasks */}
+                                        {((task.recurrence_type &&
+                                            task.recurrence_type !== 'none') ||
+                                            (task.recurring_parent_id &&
+                                                parentTask?.recurrence_type &&
+                                                parentTask.recurrence_type !==
+                                                    'none')) && (
+                                            <div>
+                                                <div className="flex items-center mb-3">
+                                                    <ClockIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
+                                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        {task.recurring_parent_id
+                                                            ? t(
+                                                                  'task.nextOccurrencesAfterThis',
+                                                                  'Next 5 Occurrences After This'
+                                                              )
+                                                            : t(
+                                                                  'task.nextOccurrences',
+                                                                  'Next 5 Occurrences'
+                                                              )}
                                                     </span>
                                                 </div>
-                                            ) : nextIterations.length > 0 ? (
-                                                <div className="space-y-2">
-                                                    {nextIterations.map((iteration, index) => (
-                                                        <div key={index} className="flex items-center py-1 px-2 rounded bg-gray-50 dark:bg-gray-800">
-                                                            <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
-                                                                <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                                                                    {index + 1}
-                                                                </span>
-                                                            </div>
-                                                            <span className="text-sm text-gray-700 dark:text-gray-300">
-                                                                {formatDueDate(iteration.date)}
-                                                            </span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <div className="text-sm text-gray-500 dark:text-gray-400 py-2">
-                                                    {t('task.noMoreIterations', 'No more iterations scheduled')}
-                                                </div>
-                                            )}
-                                        </div>
+
+                                                {loadingIterations ? (
+                                                    <div className="flex items-center justify-center py-4">
+                                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                                                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                                                            {t(
+                                                                'common.loading',
+                                                                'Loading...'
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                ) : nextIterations.length >
+                                                  0 ? (
+                                                    <div className="space-y-2">
+                                                        {nextIterations.map(
+                                                            (
+                                                                iteration,
+                                                                index
+                                                            ) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="flex items-center py-1 px-2 rounded bg-gray-50 dark:bg-gray-800"
+                                                                >
+                                                                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
+                                                                        <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                                                                            {index +
+                                                                                1}
+                                                                        </span>
+                                                                    </div>
+                                                                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                                                                        {formatDueDate(
+                                                                            iteration.date
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                            )
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-sm text-gray-500 dark:text-gray-400 py-2">
+                                                        {t(
+                                                            'task.noMoreIterations',
+                                                            'No more iterations scheduled'
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
