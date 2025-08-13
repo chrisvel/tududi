@@ -1,12 +1,17 @@
 const express = require('express');
 const { TaskEvent } = require('../models');
-const TaskEventService = require('../services/taskEventService');
+const {
+    getTaskTimeline,
+    getTaskCompletionTime,
+    getUserProductivityMetrics,
+    getTaskActivitySummary,
+} = require('../services/taskEventService');
 const router = express.Router();
 
 // GET /api/task/:id/timeline - Get task event timeline
 router.get('/task/:id/timeline', async (req, res) => {
     try {
-        const timeline = await TaskEventService.getTaskTimeline(req.params.id);
+        const timeline = await getTaskTimeline(req.params.id);
 
         // Filter to only show events for tasks owned by the current user
         const userTimeline = timeline.filter(
@@ -23,9 +28,7 @@ router.get('/task/:id/timeline', async (req, res) => {
 // GET /api/task/:id/completion-time - Get task completion analytics
 router.get('/task/:id/completion-time', async (req, res) => {
     try {
-        const completionTime = await TaskEventService.getTaskCompletionTime(
-            req.params.id
-        );
+        const completionTime = await getTaskCompletionTime(req.params.id);
 
         if (!completionTime) {
             return res
@@ -45,7 +48,7 @@ router.get('/user/productivity-metrics', async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
 
-        const metrics = await TaskEventService.getUserProductivityMetrics(
+        const metrics = await getUserProductivityMetrics(
             req.currentUser.id,
             startDate ? new Date(startDate) : null,
             endDate ? new Date(endDate) : null
@@ -69,7 +72,7 @@ router.get('/user/activity-summary', async (req, res) => {
                 .json({ error: 'startDate and endDate are required' });
         }
 
-        const activitySummary = await TaskEventService.getTaskActivitySummary(
+        const activitySummary = await getTaskActivitySummary(
             req.currentUser.id,
             new Date(startDate),
             new Date(endDate)
@@ -113,9 +116,7 @@ router.get('/tasks/completion-analytics', async (req, res) => {
         // Get completion time analytics for each task
         const analytics = [];
         for (const task of completedTasks) {
-            const completionTime = await TaskEventService.getTaskCompletionTime(
-                task.id
-            );
+            const completionTime = await getTaskCompletionTime(task.id);
             if (completionTime) {
                 analytics.push({
                     task_id: task.id,

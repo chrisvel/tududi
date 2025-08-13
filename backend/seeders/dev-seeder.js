@@ -533,7 +533,10 @@ async function seedDatabase() {
 
         // Create task events for AI pattern learning
         console.log('📊 Creating task events for AI pattern recognition...');
-        const TaskEventService = require('../services/taskEventService');
+        const {
+            logTaskCreated,
+            logStatusChange,
+        } = require('../services/taskEventService');
 
         // Create events for completed tasks to show user patterns
         const completedTasks = tasks.filter((t) => t.status === 2);
@@ -541,7 +544,7 @@ async function seedDatabase() {
             // Just first 20 to avoid too much data
             try {
                 // Create task creation event
-                await TaskEventService.logTaskCreated(
+                await logTaskCreated(
                     task.id,
                     testUser.id,
                     {
@@ -556,23 +559,15 @@ async function seedDatabase() {
                 // Create status change to in_progress
                 if (Math.random() < 0.7) {
                     // 70% had in_progress phase
-                    await TaskEventService.logStatusChange(
-                        task.id,
-                        testUser.id,
-                        0,
-                        1,
-                        { source: 'web' }
-                    );
+                    await logStatusChange(task.id, testUser.id, 0, 1, {
+                        source: 'web',
+                    });
                 }
 
                 // Create completion event
-                await TaskEventService.logStatusChange(
-                    task.id,
-                    testUser.id,
-                    1,
-                    2,
-                    { source: 'web' }
-                );
+                await logStatusChange(task.id, testUser.id, 1, 2, {
+                    source: 'web',
+                });
             } catch (eventError) {
                 console.log(
                     `Skipping event creation for task ${task.id}: ${eventError.message}`
@@ -584,7 +579,7 @@ async function seedDatabase() {
         const inProgressTasks = tasks.filter((t) => t.status === 1);
         for (const task of inProgressTasks.slice(0, 10)) {
             try {
-                await TaskEventService.logTaskCreated(
+                await logTaskCreated(
                     task.id,
                     testUser.id,
                     {
@@ -596,13 +591,9 @@ async function seedDatabase() {
                     { source: 'web' }
                 );
 
-                await TaskEventService.logStatusChange(
-                    task.id,
-                    testUser.id,
-                    0,
-                    1,
-                    { source: 'web' }
-                );
+                await logStatusChange(task.id, testUser.id, 0, 1, {
+                    source: 'web',
+                });
             } catch (eventError) {
                 console.log(
                     `Skipping event creation for task ${task.id}: ${eventError.message}`

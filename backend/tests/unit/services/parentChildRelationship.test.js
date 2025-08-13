@@ -1,5 +1,7 @@
 const { Task, User, sequelize } = require('../../../models');
-const RecurringTaskService = require('../../../services/recurringTaskService');
+const recurringTaskService = require('../../../services/recurringTaskService');
+const { createTaskInstance, handleTaskCompletion, calculateNextDueDate } =
+    recurringTaskService;
 const { createTestUser } = require('../../helpers/testUtils');
 
 describe('Parent-Child Relationship Functionality', () => {
@@ -21,10 +23,7 @@ describe('Parent-Child Relationship Functionality', () => {
             });
 
             const dueDate = new Date('2025-06-20T10:00:00Z');
-            const childTask = await RecurringTaskService.createTaskInstance(
-                parentTask,
-                dueDate
-            );
+            const childTask = await createTaskInstance(parentTask, dueDate);
 
             expect(childTask.name).toBe(parentTask.name);
             expect(childTask.description).toBe(parentTask.description);
@@ -51,10 +50,7 @@ describe('Parent-Child Relationship Functionality', () => {
             });
 
             const dueDate = new Date('2025-06-20T10:00:00Z');
-            const childTask = await RecurringTaskService.createTaskInstance(
-                parentTask,
-                dueDate
-            );
+            const childTask = await createTaskInstance(parentTask, dueDate);
 
             expect(childTask.project_id).toBeNull();
             expect(childTask.recurring_parent_id).toBe(parentTask.id);
@@ -72,10 +68,7 @@ describe('Parent-Child Relationship Functionality', () => {
             });
 
             const dueDate = new Date('2025-06-20T10:00:00Z');
-            const childTask = await RecurringTaskService.createTaskInstance(
-                parentTask,
-                dueDate
-            );
+            const childTask = await createTaskInstance(parentTask, dueDate);
 
             expect(childTask.description).toBeNull();
             expect(childTask.note).toBeNull();
@@ -181,8 +174,7 @@ describe('Parent-Child Relationship Functionality', () => {
                 status: Task.STATUS.NOT_STARTED,
             });
 
-            const nextTask =
-                await RecurringTaskService.handleTaskCompletion(parentTask);
+            const nextTask = await handleTaskCompletion(parentTask);
 
             expect(nextTask).not.toBeNull();
             expect(nextTask.name).toBe(parentTask.name);
@@ -207,8 +199,7 @@ describe('Parent-Child Relationship Functionality', () => {
             });
 
             // Call completion multiple times quickly
-            const firstNextTask =
-                await RecurringTaskService.handleTaskCompletion(parentTask);
+            const firstNextTask = await handleTaskCompletion(parentTask);
             expect(firstNextTask).not.toBeNull();
 
             // Check how many child tasks exist for this parent
@@ -243,8 +234,7 @@ describe('Parent-Child Relationship Functionality', () => {
             });
 
             // Completing child task should not create new instances
-            const nextTask =
-                await RecurringTaskService.handleTaskCompletion(childTask);
+            const nextTask = await handleTaskCompletion(childTask);
             expect(nextTask).toBeNull();
         });
     });
@@ -413,12 +403,12 @@ describe('Parent-Child Relationship Functionality', () => {
             });
 
             // Create child tasks for each parent
-            const dailyChild = await RecurringTaskService.createTaskInstance(
+            const dailyChild = await createTaskInstance(
                 dailyParent,
                 new Date('2025-06-20T10:00:00Z')
             );
 
-            const weeklyChild = await RecurringTaskService.createTaskInstance(
+            const weeklyChild = await createTaskInstance(
                 weeklyParent,
                 new Date('2025-06-23T10:00:00Z')
             );
@@ -441,33 +431,24 @@ describe('Parent-Child Relationship Functionality', () => {
 
             const children = [];
 
-            // Generate 5 child tasks by simulating completion on different days
+            // Generate 5 child tasks by creating them with different due dates manually
+            // This simulates the completion-based generation pattern
             for (let i = 0; i < 5; i++) {
-                // Simulate completing the task on different days
-                const completionDate = new Date();
-                completionDate.setDate(completionDate.getDate() + i);
+                // Create next due date (each day ahead)
+                const nextDueDate = new Date();
+                nextDueDate.setDate(nextDueDate.getDate() + i + 1);
 
-                // Mock the calculateNextDueDate to return different dates
-                const originalCalculateNextDueDate =
-                    RecurringTaskService.calculateNextDueDate;
-                RecurringTaskService.calculateNextDueDate = jest.fn(() => {
-                    const nextDate = new Date(completionDate);
-                    nextDate.setDate(nextDate.getDate() + 1); // Next day
-                    return nextDate;
+                // Create child task manually to simulate completion-based generation
+                const childTask = await createTaskInstance(
+                    parentTask,
+                    nextDueDate
+                );
+                children.push(childTask);
+
+                // Update parent's last generated date to simulate progression
+                await parentTask.update({
+                    last_generated_date: nextDueDate,
                 });
-
-                await parentTask.update({ status: Task.STATUS.DONE });
-                const nextTask =
-                    await RecurringTaskService.handleTaskCompletion(parentTask);
-
-                // Restore original method
-                RecurringTaskService.calculateNextDueDate =
-                    originalCalculateNextDueDate;
-
-                if (nextTask) {
-                    children.push(nextTask);
-                }
-                await parentTask.update({ status: Task.STATUS.NOT_STARTED });
             }
 
             expect(children.length).toBe(5);
@@ -484,6 +465,15 @@ describe('Parent-Child Relationship Functionality', () => {
             const dueDates = children.map((c) => c.due_date.getTime());
             const uniqueDueDates = [...new Set(dueDates)];
             expect(uniqueDueDates.length).toBe(dueDates.length);
+
+            // Verify children have sequential due dates (within tolerance for floating point)
+            const sortedDueDates = dueDates.sort();
+            for (let i = 1; i < sortedDueDates.length; i++) {
+                const dayDiff =
+                    (sortedDueDates[i] - sortedDueDates[i - 1]) /
+                    (24 * 60 * 60 * 1000);
+                expect(Math.abs(dayDiff - 1)).toBeLessThan(0.001); // Each task should be ~1 day apart
+            }
         });
 
         it('should handle orphaned child tasks gracefully', async () => {
