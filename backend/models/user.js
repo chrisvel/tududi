@@ -93,6 +93,12 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            telegram_allowed_users: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+                comment:
+                    'Comma-separated list of allowed Telegram usernames or user IDs',
+            },
             task_intelligence_enabled: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
