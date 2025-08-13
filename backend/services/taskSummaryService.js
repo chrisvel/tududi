@@ -186,12 +186,20 @@ const fetchCompletedTodayTasks = async (userId, today, tomorrow) =>
     });
 
 // Side effect function to fetch suggested tasks
-const fetchSuggestedTasks = async (userId, excludedIds) =>
-    await Task.findAll({
+const fetchSuggestedTasks = async (userId, excludedIds) => {
+    // Create date limit for suggested tasks (30 days from now)
+    const maxSuggestionDate = new Date();
+    maxSuggestionDate.setDate(maxSuggestionDate.getDate() + 30);
+
+    return await Task.findAll({
         where: {
             user_id: userId,
             status: { [Op.ne]: 2 }, // not done
             id: { [Op.notIn]: excludedIds },
+            [Op.or]: [
+                { due_date: null }, // tasks without due dates
+                { due_date: { [Op.lte]: maxSuggestionDate } }, // tasks due within 30 days
+            ],
         },
         include: [{ model: Project, attributes: ['name'] }],
         order: [
@@ -200,6 +208,7 @@ const fetchSuggestedTasks = async (userId, excludedIds) =>
         ],
         limit: 5,
     });
+};
 
 // Side effect function to send telegram message
 const sendTelegramMessage = async (
