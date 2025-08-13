@@ -3,6 +3,8 @@ const { User, Permission } = require('../models');
 const { execAction } = require('../services/execAction');
 const router = express.Router();
 
+const permissionsService = require('../services/permissionsService');
+
 // POST /api/shares
 router.post('/shares', async (req, res) => {
   try {
@@ -12,6 +14,12 @@ router.post('/shares', async (req, res) => {
     const { resource_type, resource_uid, target_user_email, access_level } = req.body;
     if (!resource_type || !resource_uid || !target_user_email || !access_level) {
       return res.status(400).json({ error: 'Missing parameters' });
+    }
+    // Only owner (or admin) can grant shares
+    const actorAccess = await permissionsService.getAccess(req.session.userId, resource_type, resource_uid);
+    const isOwnerOrAdmin = actorAccess === 'admin' || actorAccess === 'rw';
+    if (!isOwnerOrAdmin) {
+      return res.status(403).json({ error: 'Forbidden' });
     }
     const target = await User.findOne({ where: { email: target_user_email } });
     if (!target) return res.status(404).json({ error: 'Target user not found' });
@@ -40,6 +48,12 @@ router.delete('/shares', async (req, res) => {
     const { resource_type, resource_uid, target_user_id } = req.body;
     if (!resource_type || !resource_uid || !target_user_id) {
       return res.status(400).json({ error: 'Missing parameters' });
+    }
+    // Only owner (or admin) can revoke shares
+    const actorAccess = await permissionsService.getAccess(req.session.userId, resource_type, resource_uid);
+    const isOwnerOrAdmin = actorAccess === 'admin' || actorAccess === 'rw';
+    if (!isOwnerOrAdmin) {
+      return res.status(403).json({ error: 'Forbidden' });
     }
 
     await execAction({
@@ -72,7 +86,15 @@ router.get('/shares', async (req, res) => {
       attributes: ['user_id', 'access_level', 'created_at'],
       raw: true,
     });
-    res.json({ shares: rows });
+    // Attach emails for display
+    const userIds = Array.from(new Set(rows.map((r) => r.user_id))).filter(Boolean);
+    let usersById = {};
+    if (userIds.length) {
+      const users = await User.findAll({ where: { id: userIds }, attributes: ['id', 'email'], raw: true });
+      usersById = users.reduce((acc, u) => { acc[u.id] = u.email; return acc; }, {});
+    }
+    const withEmails = rows.map((r) => ({ ...r, email: usersById[r.user_id] || null }));
+    res.json({ shares: withEmails });
   } catch (err) {
     console.error('Error listing shares:', err);
     res.status(400).json({ error: 'Unable to list shares' });

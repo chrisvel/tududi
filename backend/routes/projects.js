@@ -230,6 +230,7 @@ router.get('/projects', async (req, res) => {
                     taskStatus.total > 0
                         ? Math.round((taskStatus.done / taskStatus.total) * 100)
                         : 0,
+                user_id: project.user_id,
             };
         });
 
@@ -376,6 +377,7 @@ router.get(
             Tasks: normalizedTasks,
             Notes: normalizedNotes,
             due_date_at: formatDate(project.due_date_at),
+            user_id: project.user_id,
         };
 
         res.json(result);

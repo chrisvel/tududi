@@ -371,6 +371,7 @@ const TagDetails: React.FC = () => {
                                         setIsConfirmDialogOpen={
                                             setIsConfirmDialogOpen
                                         }
+                                        onOpenShare={() => { /* noop in tag view */ }}
                                     />
                                 );
                             })}
