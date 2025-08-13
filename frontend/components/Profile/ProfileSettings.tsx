@@ -1441,7 +1441,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                         type="text"
                                         name="telegram_allowed_users"
                                         value={
-                                            formData.telegram_allowed_users || ''
+                                            formData.telegram_allowed_users ||
+                                            ''
                                         }
                                         onChange={handleChange}
                                         placeholder="@username1, 123456789, @username2"
@@ -1456,7 +1457,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                         </p>
                                         <div className="space-y-1">
                                             <p className="font-semibold text-gray-600 dark:text-gray-300">
-                                                {t('profile.examples', 'Examples:')}
+                                                {t(
+                                                    'profile.examples',
+                                                    'Examples:'
+                                                )}
                                             </p>
                                             <ul className="list-disc list-inside ml-2 space-y-0.5">
                                                 <li>
@@ -1464,21 +1468,30 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                                         @alice, @bob
                                                     </span>
                                                     {' - '}
-                                                    {t('profile.exampleUsernames', 'Allow specific usernames')}
+                                                    {t(
+                                                        'profile.exampleUsernames',
+                                                        'Allow specific usernames'
+                                                    )}
                                                 </li>
                                                 <li>
                                                     <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">
                                                         123456789, 987654321
                                                     </span>
                                                     {' - '}
-                                                    {t('profile.exampleUserIds', 'Allow specific user IDs')}
+                                                    {t(
+                                                        'profile.exampleUserIds',
+                                                        'Allow specific user IDs'
+                                                    )}
                                                 </li>
                                                 <li>
                                                     <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">
                                                         @alice, 123456789
                                                     </span>
                                                     {' - '}
-                                                    {t('profile.exampleMixed', 'Mix usernames and user IDs')}
+                                                    {t(
+                                                        'profile.exampleMixed',
+                                                        'Mix usernames and user IDs'
+                                                    )}
                                                 </li>
                                             </ul>
                                         </div>
