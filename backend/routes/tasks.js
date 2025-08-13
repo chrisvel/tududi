@@ -1,8 +1,23 @@
 const express = require('express');
 const { Task, Tag, Project, TaskEvent, sequelize } = require('../models');
 const { Op } = require('sequelize');
-const RecurringTaskService = require('../services/recurringTaskService');
-const TaskEventService = require('../services/taskEventService');
+const {
+    generateRecurringTasks,
+    handleTaskCompletion,
+    calculateNextDueDate,
+} = require('../services/recurringTaskService');
+const {
+    logEvent,
+    logTaskCreated,
+    logStatusChange,
+    logPriorityChange,
+    logDueDateChange,
+    logProjectChange,
+    logNameChange,
+    logDescriptionChange,
+    logTaskUpdate,
+    getTaskTodayMoveCount,
+} = require('../services/taskEventService');
 const { validateTagName } = require('../utils/validation');
 const {
     getSafeTimezone,
@@ -169,9 +184,7 @@ async function serializeTask(task, userTimezone = 'UTC') {
         throw new Error('Task is null or undefined');
     }
     const taskJson = task.toJSON();
-    const todayMoveCount = await TaskEventService.getTaskTodayMoveCount(
-        task.id
-    );
+    const todayMoveCount = await getTaskTodayMoveCount(task.id);
     const safeTimezone = getSafeTimezone(userTimezone);
 
     // Include subtasks if they exist
@@ -1004,10 +1017,7 @@ router.get('/tasks', async (req, res) => {
             console.log(
                 '🔄 GENERATING recurring tasks for upcoming view (7 days)'
             );
-            await RecurringTaskService.generateRecurringTasks(
-                req.currentUser.id,
-                7
-            );
+            await generateRecurringTasks(req.currentUser.id, 7);
         }
 
         const tasks = await filterTasksByParams(
@@ -1360,7 +1370,7 @@ router.post('/task', async (req, res) => {
         // Log task creation event (temporarily disabled due to foreign key constraint issues)
         /*
         try {
-            await TaskEventService.logTaskCreated(
+            await logTaskCreated(
                 task.id,
                 req.currentUser.id,
                 {
@@ -1896,12 +1906,9 @@ router.patch('/task/:id', async (req, res) => {
 
             // Log all changes
             if (Object.keys(changes).length > 0) {
-                await TaskEventService.logTaskUpdate(
-                    task.id,
-                    req.currentUser.id,
-                    changes,
-                    { source: 'web' }
-                );
+                await logTaskUpdate(task.id, req.currentUser.id, changes, {
+                    source: 'web',
+                });
             }
 
             // Check for tag changes (this is more complex due to the array comparison)
@@ -1918,7 +1925,7 @@ router.patch('/task/:id', async (req, res) => {
                 if (
                     JSON.stringify(oldTagNames) !== JSON.stringify(newTagNames)
                 ) {
-                    await TaskEventService.logEvent({
+                    await logEvent({
                         taskId: task.id,
                         userId: req.currentUser.id,
                         eventType: 'tags_changed',
@@ -2085,7 +2092,7 @@ router.patch('/task/:id/toggle_completion', async (req, res) => {
         // Handle recurring task completion
         let nextTask = null;
         if (newStatus === Task.STATUS.DONE || newStatus === 'done') {
-            nextTask = await RecurringTaskService.handleTaskCompletion(task);
+            nextTask = await handleTaskCompletion(task);
         }
 
         // Use serializeTask to include subtasks data
@@ -2224,9 +2231,7 @@ router.delete('/task/:id', async (req, res) => {
 // POST /api/tasks/generate-recurring
 router.post('/tasks/generate-recurring', async (req, res) => {
     try {
-        const newTasks = await RecurringTaskService.generateRecurringTasks(
-            req.currentUser.id
-        );
+        const newTasks = await generateRecurringTasks(req.currentUser.id);
 
         res.json({
             message: `Generated ${newTasks.length} recurring tasks`,
@@ -2282,7 +2287,7 @@ router.patch('/task/:id/toggle-today', async (req, res) => {
 
         // Log the change
         try {
-            await TaskEventService.logEvent({
+            await logEvent({
                 taskId: task.id,
                 userId: req.currentUser.id,
                 eventType: 'today_changed',
@@ -2367,10 +2372,7 @@ router.get('/task/:id/next-iterations', async (req, res) => {
             }
         } else {
             // For other types, use the RecurringTaskService method but calculate from startDate
-            nextDate = RecurringTaskService.calculateNextDueDate(
-                task,
-                startDate
-            );
+            nextDate = calculateNextDueDate(task, startDate);
         }
 
         for (let i = 0; i < 5 && nextDate; i++) {
@@ -2403,10 +2405,7 @@ router.get('/task/:id/next-iterations', async (req, res) => {
                 );
             } else {
                 // For monthly and other complex recurrences, use the service method
-                nextDate = RecurringTaskService.calculateNextDueDate(
-                    task,
-                    nextDate
-                );
+                nextDate = calculateNextDueDate(task, nextDate);
             }
         }
 

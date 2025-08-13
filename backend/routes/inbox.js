@@ -1,6 +1,6 @@
 const express = require('express');
 const { InboxItem } = require('../models');
-const InboxProcessingService = require('../services/inboxProcessingService');
+const { processInboxItem } = require('../services/inboxProcessingService');
 const router = express.Router();
 
 // GET /api/inbox
@@ -182,7 +182,7 @@ router.post('/inbox/analyze-text', async (req, res) => {
         }
 
         // Process the text using the inbox processing service
-        const result = InboxProcessingService.processInboxItem(content);
+        const result = processInboxItem(content);
 
         res.json(result);
     } catch (error) {

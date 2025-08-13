@@ -1,7 +1,6 @@
 const cron = require('node-cron');
 const { User } = require('../models');
 const TaskSummaryService = require('./taskSummaryService');
-const RecurringTaskService = require('./recurringTaskService');
 const { setConfig, getConfig } = require('../config/config');
 const config = getConfig();
 
@@ -127,7 +126,8 @@ const processSummariesForFrequency = async (frequency) => {
 // Function to process recurring tasks (contains side effects)
 const processRecurringTasks = async () => {
     try {
-        const newTasks = await RecurringTaskService.generateRecurringTasks();
+        const { generateRecurringTasks } = require('./recurringTaskService');
+        const newTasks = await generateRecurringTasks();
         return newTasks;
     } catch (error) {
         throw error;
