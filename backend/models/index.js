@@ -123,7 +123,10 @@ User.hasOne(Role, { foreignKey: 'user_id' });
 Role.belongsTo(User, { foreignKey: 'user_id' });
 
 Permission.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
-Permission.belongsTo(User, { foreignKey: 'granted_by_user_id', as: 'GrantedBy' });
+Permission.belongsTo(User, {
+    foreignKey: 'granted_by_user_id',
+    as: 'GrantedBy',
+});
 // Optional backrefs if needed later:
 // User.hasMany(Permission, { foreignKey: 'user_id', as: 'Permissions' });
 

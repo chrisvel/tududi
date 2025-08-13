@@ -178,7 +178,12 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                                 e.preventDefault();
                                                 e.stopPropagation();
                                                 if (!isOwner) {
-                                                    showErrorToast(t('errors.permissionDenied', 'Permission denied'));
+                                                    showErrorToast(
+                                                        t(
+                                                            'errors.permissionDenied',
+                                                            'Permission denied'
+                                                        )
+                                                    );
                                                     setActiveDropdown(null);
                                                     return;
                                                 }
@@ -200,7 +205,10 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                                 }}
                                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
                                             >
-                                                {t('projectItem.share', 'Share')}
+                                                {t(
+                                                    'projectItem.share',
+                                                    'Share'
+                                                )}
                                             </button>
                                         )}
                                         <button
@@ -236,7 +244,12 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     e.preventDefault();
                                     e.stopPropagation();
                                     if (!isOwner) {
-                                        showErrorToast(t('errors.permissionDenied', 'Permission denied'));
+                                        showErrorToast(
+                                            t(
+                                                'errors.permissionDenied',
+                                                'Permission denied'
+                                            )
+                                        );
                                         return;
                                     }
                                     handleEditProject(project);

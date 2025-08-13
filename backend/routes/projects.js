@@ -142,10 +142,11 @@ router.get('/projects', async (req, res) => {
         const { active, pin_to_sidebar, area_id, area } = req.query;
 
         // Base: owned or shared projects
-        const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
-            'project',
-            req.session.userId
-        );
+        const ownedOrShared =
+            await permissionsService.ownershipOrPermissionWhere(
+                'project',
+                req.session.userId
+            );
         let whereClause = ownedOrShared;
 
         // Filter by active status
@@ -264,128 +265,135 @@ router.get(
         'project',
         async (req) => {
             const uidPart = req.params.uidSlug.split('-')[0];
-            const p = await Project.findOne({ where: { uid: uidPart }, attributes: ['uid'] });
+            const p = await Project.findOne({
+                where: { uid: uidPart },
+                attributes: ['uid'],
+            });
             return p?.uid;
         },
         { notFoundMessage: 'Project not found' }
     ),
     async (req, res) => {
-    try {
-        // Extract UID from slug and fetch full project with associations
-        const uidPart = req.params.uidSlug.split('-')[0];
-        const project = await Project.findOne({
-            where: { uid: uidPart },
-            include: [
-                {
-                    model: Task,
-                    required: false,
-                    where: {
-                        parent_task_id: null,
+        try {
+            // Extract UID from slug and fetch full project with associations
+            const uidPart = req.params.uidSlug.split('-')[0];
+            const project = await Project.findOne({
+                where: { uid: uidPart },
+                include: [
+                    {
+                        model: Task,
+                        required: false,
+                        where: {
+                            parent_task_id: null,
                         recurring_parent_id: null, // Exclude recurring task instances, only show templates
-                        // Include ALL tasks regardless of status for client-side filtering
+                            // Include ALL tasks regardless of status for client-side filtering
+                        },
+                        include: [
+                            {
+                                model: Tag,
+                                attributes: ['id', 'name', 'uid'],
+                                through: { attributes: [] },
+                                required: false,
+                            },
+                            {
+                                model: Task,
+                                as: 'Subtasks',
+                                include: [
+                                    {
+                                        model: Tag,
+                                        attributes: ['id', 'name', 'uid'],
+                                        through: { attributes: [] },
+                                        required: false,
+                                    },
+                                ],
+                                required: false,
+                            },
+                        ],
                     },
-                    include: [
-                        {
-                            model: Tag,
-                            attributes: ['id', 'name', 'uid'],
-                            through: { attributes: [] },
-                            required: false,
-                        },
-                        {
-                            model: Task,
-                            as: 'Subtasks',
-                            include: [
-                                {
-                                    model: Tag,
-                                    attributes: ['id', 'name', 'uid'],
-                                    through: { attributes: [] },
-                                    required: false,
-                                },
-                            ],
-                            required: false,
-                        },
-                    ],
-                },
-                {
-                    model: Note,
-                    required: false,
-                    attributes: [
-                        'id',
+                    {
+                        model: Note,
+                        required: false,
+                        attributes: [
+                            'id',
                         'uid',
-                        'title',
-                        'content',
-                        'created_at',
-                        'updated_at',
-                    ],
-                    include: [
-                        {
-                            model: Tag,
-                            attributes: ['id', 'name', 'uid'],
-                            through: { attributes: [] },
-                        },
-                    ],
-                },
-                { model: Area, required: false, attributes: ['id', 'name'] },
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                },
-            ],
-        });
+                            'title',
+                            'content',
+                            'created_at',
+                            'updated_at',
+                        ],
+                        include: [
+                            {
+                                model: Tag,
+                                attributes: ['id', 'name', 'uid'],
+                                through: { attributes: [] },
+                            },
+                        ],
+                    },
+                    {
+                        model: Area,
+                        required: false,
+                        attributes: ['id', 'name'],
+                    },
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name', 'uid'],
+                        through: { attributes: [] },
+                    },
+                ],
+            });
 
-        if (!project) {
-            return res.status(404).json({ error: 'Project not found' });
+            if (!project) {
+                return res.status(404).json({ error: 'Project not found' });
+            }
+
+            const projectJson = project.toJSON();
+
+            // Normalize task data to match frontend expectations
+            const normalizedTasks = projectJson.Tasks
+                ? projectJson.Tasks.map((task) => {
+                      const normalizedTask = {
+                          ...task,
+                          tags: task.Tags || [],
+                          subtasks: task.Subtasks || [],
+                          due_date: task.due_date
+                              ? typeof task.due_date === 'string'
+                                  ? task.due_date.split('T')[0]
+                                  : task.due_date.toISOString().split('T')[0]
+                              : null,
+                      };
+                      delete normalizedTask.Tags;
+                      delete normalizedTask.Subtasks;
+                      return normalizedTask;
+                  })
+                : [];
+
+            // Normalize note data to match frontend expectations
+            const normalizedNotes = projectJson.Notes
+                ? projectJson.Notes.map((note) => {
+                      const normalizedNote = {
+                          ...note,
+                          tags: note.Tags || [],
+                      };
+                      delete normalizedNote.Tags;
+                      return normalizedNote;
+                  })
+                : [];
+
+            const result = {
+                ...projectJson,
+                tags: projectJson.Tags || [],
+                Tasks: normalizedTasks,
+                Notes: normalizedNotes,
+                due_date_at: formatDate(project.due_date_at),
+                user_id: project.user_id,
+            };
+
+            res.json(result);
+        } catch (error) {
+            console.error('Error fetching project:', error);
+            res.status(500).json({ error: 'Internal server error' });
         }
-
-        const projectJson = project.toJSON();
-
-        // Normalize task data to match frontend expectations
-        const normalizedTasks = projectJson.Tasks
-            ? projectJson.Tasks.map((task) => {
-                  const normalizedTask = {
-                      ...task,
-                      tags: task.Tags || [],
-                      subtasks: task.Subtasks || [],
-                      due_date: task.due_date
-                          ? typeof task.due_date === 'string'
-                              ? task.due_date.split('T')[0]
-                              : task.due_date.toISOString().split('T')[0]
-                          : null,
-                  };
-                  delete normalizedTask.Tags;
-                  delete normalizedTask.Subtasks;
-                  return normalizedTask;
-              })
-            : [];
-
-        // Normalize note data to match frontend expectations
-        const normalizedNotes = projectJson.Notes
-            ? projectJson.Notes.map((note) => {
-                  const normalizedNote = {
-                      ...note,
-                      tags: note.Tags || [],
-                  };
-                  delete normalizedNote.Tags;
-                  return normalizedNote;
-              })
-            : [];
-
-        const result = {
-            ...projectJson,
-            tags: projectJson.Tags || [],
-            Tasks: normalizedTasks,
-            Notes: normalizedNotes,
-            due_date_at: formatDate(project.due_date_at),
-            user_id: project.user_id,
-        };
-
-        res.json(result);
-    } catch (error) {
-        console.error('Error fetching project:', error);
-        res.status(500).json({ error: 'Internal server error' });
     }
-}
 );
 
 // POST /api/project
@@ -467,78 +475,80 @@ router.patch(
         'rw',
         'project',
         async (req) => {
-            const p = await Project.findByPk(req.params.id, { attributes: ['uid'] });
+            const p = await Project.findByPk(req.params.id, {
+                attributes: ['uid'],
+            });
             return p?.uid;
         },
         { notFoundMessage: 'Project not found.' }
     ),
     async (req, res) => {
-    try {
-        // Load project and check RW access (owner/admin or shared rw)
-        const project = await Project.findByPk(req.params.id);
-        if (!project) {
-            return res.status(404).json({ error: 'Project not found.' });
+        try {
+            // Load project and check RW access (owner/admin or shared rw)
+            const project = await Project.findByPk(req.params.id);
+            if (!project) {
+                return res.status(404).json({ error: 'Project not found.' });
+            }
+            // access ensured by middleware
+
+            const {
+                name,
+                description,
+                area_id,
+                active,
+                pin_to_sidebar,
+                priority,
+                due_date_at,
+                image_url,
+                tags,
+                Tags,
+            } = req.body;
+
+            // Handle both tags and Tags (Sequelize association format)
+            const tagsData = tags || Tags;
+
+            const updateData = {};
+            if (name !== undefined) updateData.name = name;
+            if (description !== undefined) updateData.description = description;
+            if (area_id !== undefined) updateData.area_id = area_id;
+            if (active !== undefined) updateData.active = active;
+            if (pin_to_sidebar !== undefined)
+                updateData.pin_to_sidebar = pin_to_sidebar;
+            if (priority !== undefined) updateData.priority = priority;
+            if (due_date_at !== undefined) updateData.due_date_at = due_date_at;
+            if (image_url !== undefined) updateData.image_url = image_url;
+
+            await project.update(updateData);
+            await updateProjectTags(project, tagsData, req.session.userId);
+
+            // Reload project with associations
+            const projectWithAssociations = await Project.findByPk(project.id, {
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name', 'uid'],
+                        through: { attributes: [] },
+                    },
+                ],
+            });
+
+            const projectJson = projectWithAssociations.toJSON();
+
+            res.json({
+                ...projectJson,
+                tags: projectJson.Tags || [], // Normalize Tags to tags
+                due_date_at: formatDate(projectWithAssociations.due_date_at),
+            });
+        } catch (error) {
+            console.error('Error updating project:', error);
+            res.status(400).json({
+                error: 'There was a problem updating the project.',
+                details: error.errors
+                    ? error.errors.map((e) => e.message)
+                    : [error.message],
+            });
         }
-        // access ensured by middleware
-
-        const {
-            name,
-            description,
-            area_id,
-            active,
-            pin_to_sidebar,
-            priority,
-            due_date_at,
-            image_url,
-            tags,
-            Tags,
-        } = req.body;
-
-        // Handle both tags and Tags (Sequelize association format)
-        const tagsData = tags || Tags;
-
-        const updateData = {};
-        if (name !== undefined) updateData.name = name;
-        if (description !== undefined) updateData.description = description;
-        if (area_id !== undefined) updateData.area_id = area_id;
-        if (active !== undefined) updateData.active = active;
-        if (pin_to_sidebar !== undefined)
-            updateData.pin_to_sidebar = pin_to_sidebar;
-        if (priority !== undefined) updateData.priority = priority;
-        if (due_date_at !== undefined) updateData.due_date_at = due_date_at;
-        if (image_url !== undefined) updateData.image_url = image_url;
-
-        await project.update(updateData);
-        await updateProjectTags(project, tagsData, req.session.userId);
-
-        // Reload project with associations
-        const projectWithAssociations = await Project.findByPk(project.id, {
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                },
-            ],
-        });
-
-        const projectJson = projectWithAssociations.toJSON();
-
-        res.json({
-            ...projectJson,
-            tags: projectJson.Tags || [], // Normalize Tags to tags
-            due_date_at: formatDate(projectWithAssociations.due_date_at),
-        });
-    } catch (error) {
-        console.error('Error updating project:', error);
-        res.status(400).json({
-            error: 'There was a problem updating the project.',
-            details: error.errors
-                ? error.errors.map((e) => e.message)
-                : [error.message],
-        });
     }
-}
 );
 
 // DELETE /api/project/:id
@@ -548,18 +558,20 @@ router.delete(
         'rw',
         'project',
         async (req) => {
-            const p = await Project.findByPk(req.params.id, { attributes: ['uid'] });
+            const p = await Project.findByPk(req.params.id, {
+                attributes: ['uid'],
+            });
             return p?.uid;
         },
         { notFoundMessage: 'Project not found.' }
     ),
     async (req, res) => {
-    try {
-        const project = await Project.findByPk(req.params.id);
-        if (!project) {
-            return res.status(404).json({ error: 'Project not found.' });
-        }
-        // access ensured by middleware
+        try {
+            const project = await Project.findByPk(req.params.id);
+            if (!project) {
+                return res.status(404).json({ error: 'Project not found.' });
+            }
+            // access ensured by middleware
 
         // Use a transaction to ensure atomicity
         await sequelize.transaction(async (transaction) => {
@@ -589,14 +601,14 @@ router.delete(
             }
         });
 
-        res.json({ message: 'Project successfully deleted' });
-    } catch (error) {
-        console.error('Error deleting project:', error);
-        res.status(400).json({
-            error: 'There was a problem deleting the project.',
-        });
+            res.json({ message: 'Project successfully deleted' });
+        } catch (error) {
+            console.error('Error deleting project:', error);
+            res.status(400).json({
+                error: 'There was a problem deleting the project.',
+            });
+        }
     }
-}
 );
 
 module.exports = router;

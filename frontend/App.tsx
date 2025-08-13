@@ -250,9 +250,20 @@ const App: React.FC = () => {
                                 path="/admin/users"
                                 element={
                                     currentUser.is_admin ? (
-                                        <React.Suspense fallback={<div className="p-4">Loading...</div>}>
+                                        <React.Suspense
+                                            fallback={
+                                                <div className="p-4">
+                                                    Loading...
+                                                </div>
+                                            }
+                                        >
                                             {React.createElement(
-                                                React.lazy(() => import('./components/Admin/AdminUsersPage'))
+                                                React.lazy(
+                                                    () =>
+                                                        import(
+                                                            './components/Admin/AdminUsersPage'
+                                                        )
+                                                )
                                             )}
                                         </React.Suspense>
                                     ) : (

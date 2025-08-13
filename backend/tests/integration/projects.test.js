@@ -189,7 +189,9 @@ describe('Projects Routes', () => {
             });
 
             // Build proper uid-slug
-            const sluggedName = otherProject.name.toLowerCase().replace(/\s+/g, '-');
+            const sluggedName = otherProject.name
+                .toLowerCase()
+                .replace(/\s+/g, '-');
             const uidSlug = `${otherProject.uid}-${sluggedName}`;
 
             const response = await agent.get(`/api/project/${uidSlug}`);

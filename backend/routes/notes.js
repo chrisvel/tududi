@@ -110,7 +110,10 @@ router.get(
         async (req) => {
             const identifier = req.params.id;
             if (/^\d+$/.test(identifier)) {
-                const n = await Note.findOne({ where: { id: parseInt(identifier) }, attributes: ['uid'] });
+                const n = await Note.findOne({
+                    where: { id: parseInt(identifier) },
+                    attributes: ['uid'],
+                });
                 return n?.uid;
             }
             const uid = extractUidFromSlug(identifier);
@@ -119,46 +122,48 @@ router.get(
         { notFoundMessage: 'Note not found.' }
     ),
     async (req, res) => {
-    try {
-        const identifier = req.params.id;
-        let whereClause;
-        if (/^\d+$/.test(identifier)) {
-            whereClause = { id: parseInt(identifier) };
-        } else {
-            const uid = extractUidFromSlug(identifier);
-            if (!uid) {
-                return res.status(400).json({ error: 'Invalid note identifier' });
+        try {
+            const identifier = req.params.id;
+            let whereClause;
+            if (/^\d+$/.test(identifier)) {
+                whereClause = { id: parseInt(identifier) };
+            } else {
+                const uid = extractUidFromSlug(identifier);
+                if (!uid) {
+                    return res
+                        .status(400)
+                        .json({ error: 'Invalid note identifier' });
+                }
+                whereClause = { uid };
             }
-            whereClause = { uid };
+
+            const note = await Note.findOne({
+                where: whereClause,
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name', 'uid'],
+                        through: { attributes: [] },
+                    },
+                    {
+                        model: Project,
+                        required: false,
+                        attributes: ['id', 'name', 'uid'],
+                    },
+                ],
+            });
+
+            if (!note) {
+                return res.status(404).json({ error: 'Note not found.' });
+            }
+            // access ensured by middleware
+
+            res.json(note);
+        } catch (error) {
+            console.error('Error fetching note:', error);
+            res.status(500).json({ error: 'Internal server error' });
         }
-
-        const note = await Note.findOne({
-            where: whereClause,
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                },
-                {
-                    model: Project,
-                    required: false,
-                    attributes: ['id', 'name', 'uid'],
-                },
-            ],
-        });
-
-        if (!note) {
-            return res.status(404).json({ error: 'Note not found.' });
-        }
-        // access ensured by middleware
-
-        res.json(note);
-    } catch (error) {
-        console.error('Error fetching note:', error);
-        res.status(500).json({ error: 'Internal server error' });
     }
-}
 );
 
 // POST /api/note
@@ -178,7 +183,9 @@ router.post('/note', async (req, res) => {
 
         // Handle project assignment
         if (project_id && project_id.toString().trim()) {
-            const project = await Project.findOne({ where: { id: project_id } });
+            const project = await Project.findOne({
+                where: { id: project_id },
+            });
             if (!project) {
                 return res.status(400).json({ error: 'Invalid project.' });
             }
@@ -188,7 +195,8 @@ router.post('/note', async (req, res) => {
                 project.uid
             );
             const isOwner = project.user_id === req.session.userId;
-            const canWrite = isOwner || projectAccess === 'rw' || projectAccess === 'admin';
+            const canWrite =
+                isOwner || projectAccess === 'rw' || projectAccess === 'admin';
             if (!canWrite) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
@@ -247,93 +255,105 @@ router.patch(
         'rw',
         'note',
         async (req) => {
-            const n = await Note.findOne({ where: { id: req.params.id }, attributes: ['uid'] });
+            const n = await Note.findOne({
+                where: { id: req.params.id },
+                attributes: ['uid'],
+            });
             return n?.uid;
         },
         { notFoundMessage: 'Note not found.' }
     ),
     async (req, res) => {
-    try {
-        const note = await Note.findOne({
-            where: { id: req.params.id },
-        });
+        try {
+            const note = await Note.findOne({
+                where: { id: req.params.id },
+            });
 
-        if (!note) {
-            return res.status(404).json({ error: 'Note not found.' });
-        }
-        // access ensured by middleware
-
-        const { title, content, project_id, tags } = req.body;
-
-        const updateData = {};
-        if (title !== undefined) updateData.title = title;
-        if (content !== undefined) updateData.content = content;
-
-        // Handle project assignment
-        if (project_id !== undefined) {
-            if (project_id && project_id.toString().trim()) {
-                const project = await Project.findOne({ where: { id: project_id } });
-                if (!project) {
-                    return res.status(400).json({ error: 'Invalid project.' });
-                }
-                const projectAccess = await permissionsService.getAccess(
-                    req.session.userId,
-                    'project',
-                    project.uid
-                );
-                const isOwner = project.user_id === req.session.userId;
-                const canWrite = isOwner || projectAccess === 'rw' || projectAccess === 'admin';
-                if (!canWrite) {
-                    return res.status(403).json({ error: 'Forbidden' });
-                }
-                updateData.project_id = project_id;
-            } else {
-                updateData.project_id = null;
+            if (!note) {
+                return res.status(404).json({ error: 'Note not found.' });
             }
-        }
+            // access ensured by middleware
 
-        await note.update(updateData);
+            const { title, content, project_id, tags } = req.body;
 
-        // Handle tags if provided
-        if (tags !== undefined) {
-            let tagNames = [];
-            if (Array.isArray(tags)) {
-                if (tags.every((t) => typeof t === 'string')) {
-                    tagNames = tags;
-                } else if (tags.every((t) => typeof t === 'object' && t.name)) {
-                    tagNames = tags.map((t) => t.name);
+            const updateData = {};
+            if (title !== undefined) updateData.title = title;
+            if (content !== undefined) updateData.content = content;
+
+            // Handle project assignment
+            if (project_id !== undefined) {
+                if (project_id && project_id.toString().trim()) {
+                    const project = await Project.findOne({
+                        where: { id: project_id },
+                    });
+                    if (!project) {
+                        return res
+                            .status(400)
+                            .json({ error: 'Invalid project.' });
+                    }
+                    const projectAccess = await permissionsService.getAccess(
+                        req.session.userId,
+                        'project',
+                        project.uid
+                    );
+                    const isOwner = project.user_id === req.session.userId;
+                    const canWrite =
+                        isOwner ||
+                        projectAccess === 'rw' ||
+                        projectAccess === 'admin';
+                    if (!canWrite) {
+                        return res.status(403).json({ error: 'Forbidden' });
+                    }
+                    updateData.project_id = project_id;
+                } else {
+                    updateData.project_id = null;
                 }
             }
-            await updateNoteTags(note, tagNames, req.session.userId);
+
+            await note.update(updateData);
+
+            // Handle tags if provided
+            if (tags !== undefined) {
+                let tagNames = [];
+                if (Array.isArray(tags)) {
+                    if (tags.every((t) => typeof t === 'string')) {
+                        tagNames = tags;
+                    } else if (
+                        tags.every((t) => typeof t === 'object' && t.name)
+                    ) {
+                        tagNames = tags.map((t) => t.name);
+                    }
+                }
+                await updateNoteTags(note, tagNames, req.session.userId);
+            }
+
+            // Reload note with associations
+            const noteWithAssociations = await Note.findByPk(note.id, {
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name', 'uid'],
+                        through: { attributes: [] },
+                    },
+                    {
+                        model: Project,
+                        required: false,
+                        attributes: ['id', 'name', 'uid'],
+                    },
+                ],
+            });
+
+            res.json(noteWithAssociations);
+        } catch (error) {
+            console.error('Error updating note:', error);
+            res.status(400).json({
+                error: 'There was a problem updating the note.',
+                details: error.errors
+                    ? error.errors.map((e) => e.message)
+                    : [error.message],
+            });
         }
-
-        // Reload note with associations
-        const noteWithAssociations = await Note.findByPk(note.id, {
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                },
-                {
-                    model: Project,
-                    required: false,
-                    attributes: ['id', 'name', 'uid'],
-                },
-            ],
-        });
-
-        res.json(noteWithAssociations);
-    } catch (error) {
-        console.error('Error updating note:', error);
-        res.status(400).json({
-            error: 'There was a problem updating the note.',
-            details: error.errors
-                ? error.errors.map((e) => e.message)
-                : [error.message],
-        });
     }
-}
 );
 
 // DELETE /api/note/:id
@@ -343,31 +363,34 @@ router.delete(
         'rw',
         'note',
         async (req) => {
-            const n = await Note.findOne({ where: { id: req.params.id }, attributes: ['uid'] });
+            const n = await Note.findOne({
+                where: { id: req.params.id },
+                attributes: ['uid'],
+            });
             return n?.uid;
         },
         { notFoundMessage: 'Note not found.' }
     ),
     async (req, res) => {
-    try {
-        const note = await Note.findOne({
-            where: { id: req.params.id },
-        });
+        try {
+            const note = await Note.findOne({
+                where: { id: req.params.id },
+            });
 
-        if (!note) {
-            return res.status(404).json({ error: 'Note not found.' });
+            if (!note) {
+                return res.status(404).json({ error: 'Note not found.' });
+            }
+            // access ensured by middleware
+
+            await note.destroy();
+            res.json({ message: 'Note deleted successfully.' });
+        } catch (error) {
+            console.error('Error deleting note:', error);
+            res.status(400).json({
+                error: 'There was a problem deleting the note.',
+            });
         }
-        // access ensured by middleware
-
-        await note.destroy();
-        res.json({ message: 'Note deleted successfully.' });
-    } catch (error) {
-        console.error('Error deleting note:', error);
-        res.status(400).json({
-            error: 'There was a problem deleting the note.',
-        });
     }
-}
 );
 
 module.exports = router;

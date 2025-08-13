@@ -19,7 +19,9 @@ async function createUser() {
     const [email, password, isAdminArg] = process.argv.slice(2);
 
     if (!email || password === undefined) {
-        console.error('Usage: npm run user:create <email> <password> [is_admin]');
+        console.error(
+            'Usage: npm run user:create <email> <password> [is_admin]'
+        );
         console.error(
             'Example: npm run user:create admin@example.com mypassword123 true'
         );

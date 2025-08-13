@@ -66,7 +66,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                 icon: <ShieldCheckIcon className="h-5 w-5" />,
             } as any);
         }
-    } catch {}
+    } catch {
+        // ignore missing window state
+    }
 
     const isActive = (path: string, query?: string) => {
         // Handle special case for paths without query parameters

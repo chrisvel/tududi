@@ -317,7 +317,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 await onTaskDelete(task.id);
             } catch (error: any) {
                 console.error('Task delete failed:', error);
-                showErrorToast(t('errors.permissionDenied', 'Permission denied'));
+                showErrorToast(
+                    t('errors.permissionDenied', 'Permission denied')
+                );
             }
         }
     };

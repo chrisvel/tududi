@@ -55,7 +55,10 @@ const Projects: React.FC = () => {
     );
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
         useState<boolean>(false);
-    const [shareModal, setShareModal] = useState<{ isOpen: boolean; project: Project | null }>({ isOpen: false, project: null });
+    const [shareModal, setShareModal] = useState<{
+        isOpen: boolean;
+        project: Project | null;
+    }>({ isOpen: false, project: null });
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
@@ -210,10 +213,12 @@ const Projects: React.FC = () => {
         } catch (error: any) {
             console.error('Error deleting project:', error);
             // Show permission denied if 403-like message, else generic
-            const msg = (typeof error?.message === 'string' && /403|Forbidden|permission/i.test(error.message))
-                ? t('errors.permissionDenied', 'Permission denied')
-                : t('projects.deleteError', 'Failed to delete project');
-            try { showErrorToast(msg); } catch {}
+            const msg =
+                typeof error?.message === 'string' &&
+                /403|Forbidden|permission/i.test(error.message)
+                    ? t('errors.permissionDenied', 'Permission denied')
+                    : t('projects.deleteError', 'Failed to delete project');
+            showErrorToast(msg);
         } finally {
             setProjectsLoading(false);
             setIsConfirmDialogOpen(false);
@@ -487,7 +492,9 @@ const Projects: React.FC = () => {
                                 handleEditProject={handleEditProject}
                                 setProjectToDelete={setProjectToDelete}
                                 setIsConfirmDialogOpen={setIsConfirmDialogOpen}
-                                onOpenShare={(p) => setShareModal({ isOpen: true, project: p })}
+                                onOpenShare={(p) =>
+                                    setShareModal({ isOpen: true, project: p })
+                                }
                             />
                         ))
                     )}
@@ -538,7 +545,9 @@ const Projects: React.FC = () => {
             {shareModal.isOpen && shareModal.project && (
                 <ProjectShareModal
                     isOpen={shareModal.isOpen}
-                    onClose={() => setShareModal({ isOpen: false, project: null })}
+                    onClose={() =>
+                        setShareModal({ isOpen: false, project: null })
+                    }
                     project={shareModal.project}
                 />
             )}
