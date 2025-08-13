@@ -37,6 +37,17 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
     onEditParent, // eslint-disable-line @typescript-eslint/no-unused-vars
     onParentRecurrenceChange,
 }) => {
+    // Helper function to convert ISO date string to YYYY-MM-DD format for DatePicker
+    const formatDateForPicker = (dateString?: string) => {
+        if (!dateString) return '';
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return '';
+            return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+        } catch {
+            return dateString; // Return as-is if it's already in the correct format
+        }
+    };
     const { t } = useTranslation();
     const [editingParentRecurrence, setEditingParentRecurrence] =
         useState(false);
@@ -255,7 +266,7 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
                 )}
             </label>
             <DatePicker
-                value={recurrenceEndDate || ''}
+                value={formatDateForPicker(recurrenceEndDate)}
                 onChange={(value) =>
                     (customOnChange || onChange)(
                         'recurrence_end_date',
@@ -486,7 +497,7 @@ const RecurrenceInput: React.FC<RecurrenceInputProps> = ({
                         )}
                     </label>
                     <DatePicker
-                        value={recurrenceEndDate || ''}
+                        value={formatDateForPicker(recurrenceEndDate)}
                         onChange={(value) =>
                             onChange('recurrence_end_date', value || null)
                         }
