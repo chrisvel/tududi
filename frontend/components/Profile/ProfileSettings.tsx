@@ -44,6 +44,7 @@ interface Profile {
     avatar_image: string | null;
     telegram_bot_token: string | null;
     telegram_chat_id: string | null;
+    telegram_allowed_users: string | null;
     task_summary_enabled: boolean;
     task_summary_frequency: string;
     task_intelligence_enabled: boolean;
@@ -103,6 +104,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         timezone: 'UTC',
         avatar_image: '',
         telegram_bot_token: '',
+        telegram_allowed_users: '',
         task_intelligence_enabled: true,
         task_summary_enabled: false,
         task_summary_frequency: 'daily',
@@ -259,6 +261,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     timezone: data.timezone || 'UTC',
                     avatar_image: data.avatar_image || '',
                     telegram_bot_token: data.telegram_bot_token || '',
+                    telegram_allowed_users: data.telegram_allowed_users || '',
                     task_intelligence_enabled:
                         data.task_intelligence_enabled !== undefined
                             ? data.task_intelligence_enabled
@@ -643,6 +646,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     updatedProfile.telegram_bot_token !== undefined
                         ? updatedProfile.telegram_bot_token
                         : prev.telegram_bot_token || '',
+                telegram_allowed_users:
+                    updatedProfile.telegram_allowed_users !== undefined
+                        ? updatedProfile.telegram_allowed_users
+                        : prev.telegram_allowed_users || '',
                 task_intelligence_enabled:
                     updatedProfile.task_intelligence_enabled !== undefined
                         ? updatedProfile.task_intelligence_enabled
@@ -1421,6 +1428,61 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             'Create a bot with @BotFather on Telegram and paste the token here.'
                                         )}
                                     </p>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {t(
+                                            'profile.telegramAllowedUsers',
+                                            'Allowed Users'
+                                        )}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="telegram_allowed_users"
+                                        value={
+                                            formData.telegram_allowed_users || ''
+                                        }
+                                        onChange={handleChange}
+                                        placeholder="@username1, 123456789, @username2"
+                                        className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    />
+                                    <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                                        <p>
+                                            {t(
+                                                'profile.telegramAllowedUsersDescription',
+                                                'Control who can send messages to your bot. Leave empty to allow all users.'
+                                            )}
+                                        </p>
+                                        <div className="space-y-1">
+                                            <p className="font-semibold text-gray-600 dark:text-gray-300">
+                                                {t('profile.examples', 'Examples:')}
+                                            </p>
+                                            <ul className="list-disc list-inside ml-2 space-y-0.5">
+                                                <li>
+                                                    <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">
+                                                        @alice, @bob
+                                                    </span>
+                                                    {' - '}
+                                                    {t('profile.exampleUsernames', 'Allow specific usernames')}
+                                                </li>
+                                                <li>
+                                                    <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">
+                                                        123456789, 987654321
+                                                    </span>
+                                                    {' - '}
+                                                    {t('profile.exampleUserIds', 'Allow specific user IDs')}
+                                                </li>
+                                                <li>
+                                                    <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">
+                                                        @alice, 123456789
+                                                    </span>
+                                                    {' - '}
+                                                    {t('profile.exampleMixed', 'Mix usernames and user IDs')}
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {profile?.telegram_chat_id && (

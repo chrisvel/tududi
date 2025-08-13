@@ -31,6 +31,7 @@ router.get('/profile', async (req, res) => {
                 'avatar_image',
                 'telegram_bot_token',
                 'telegram_chat_id',
+                'telegram_allowed_users',
                 'task_summary_enabled',
                 'task_summary_frequency',
                 'task_intelligence_enabled',
@@ -81,6 +82,7 @@ router.patch('/profile', async (req, res) => {
             timezone,
             avatar_image,
             telegram_bot_token,
+            telegram_allowed_users,
             task_intelligence_enabled,
             task_summary_enabled,
             task_summary_frequency,
@@ -100,6 +102,8 @@ router.patch('/profile', async (req, res) => {
             allowedUpdates.avatar_image = avatar_image;
         if (telegram_bot_token !== undefined)
             allowedUpdates.telegram_bot_token = telegram_bot_token;
+        if (telegram_allowed_users !== undefined)
+            allowedUpdates.telegram_allowed_users = telegram_allowed_users;
         if (task_intelligence_enabled !== undefined)
             allowedUpdates.task_intelligence_enabled =
                 task_intelligence_enabled;
@@ -158,6 +162,7 @@ router.patch('/profile', async (req, res) => {
                 'avatar_image',
                 'telegram_bot_token',
                 'telegram_chat_id',
+                'telegram_allowed_users',
                 'task_intelligence_enabled',
                 'task_summary_enabled',
                 'task_summary_frequency',
