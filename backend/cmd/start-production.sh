@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Production start script with .env file support
 set -eu
 
@@ -28,8 +28,6 @@ load_env_file() {
 
 # Function to validate required environment variables
 validate_env_vars() {
-    local missing_vars=()
-    
     # Check for required variables
     if [ -z "${NODE_ENV:-}" ]; then
         export NODE_ENV=production
