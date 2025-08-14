@@ -81,7 +81,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         image: false,
         priority: false,
         dueDate: false,
-        active: true,
+        active: false,
     });
 
     const { showSuccessToast, showErrorToast } = useToast();
@@ -481,7 +481,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                     >
                                         <fieldset className="h-full flex flex-col">
                                             {/* Project Title Section - Always Visible */}
-                                            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 pt-4 sm:rounded-t-lg">
+                                            <div className="pb-4 mb-4 px-4 pt-4">
                                                 <input
                                                     ref={nameInputRef}
                                                     type="text"
@@ -496,7 +496,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         }
                                                     }}
                                                     required
-                                                    className={`block w-full text-xl font-semibold bg-transparent text-black dark:text-white border-none focus:outline-none shadow-sm py-2`}
+                                                    className={`block w-full text-xl font-semibold bg-transparent text-black dark:text-white border-none focus:outline-none py-2`}
                                                     placeholder={t(
                                                         'project.name',
                                                         'Enter project name'

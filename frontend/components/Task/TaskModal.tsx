@@ -156,7 +156,17 @@ const TaskModal: React.FC<TaskModalProps> = ({
     useEffect(() => {
         setFormData(task);
         setTags(task.tags?.map((tag) => tag.name) || []);
-    }, [task.id]);
+        
+        // Initialize project name from task data
+        if (task.project_id) {
+            const currentProject = projects.find(p => p.id === task.project_id);
+            if (currentProject) {
+                setNewProjectName(currentProject.name);
+            }
+        } else {
+            setNewProjectName('');
+        }
+    }, [task.id, task.project_id, projects]);
 
     // Handle task analysis separately
     useEffect(() => {
@@ -457,7 +467,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 >
                     <div
                         ref={modalRef}
-                        className={`bg-white dark:bg-gray-800 border-0 sm:border sm:border-gray-200 sm:dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-2xl transform transition-transform duration-300 ${
+                        className={`bg-white dark:bg-gray-800 border-0 w-full sm:max-w-2xl transform transition-transform duration-300 ${
                             isClosing ? 'scale-95' : 'scale-100'
                         } h-full sm:h-auto sm:my-4`}
                     >

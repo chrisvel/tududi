@@ -38,7 +38,7 @@ const TaskTitleSection: React.FC<TaskTitleSectionProps> = ({
     };
 
     return (
-        <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-700 sm:rounded-tl-lg">
+        <div className="px-4 py-4">
             <input
                 type="text"
                 id={`task_name_${taskId}`}
@@ -47,7 +47,7 @@ const TaskTitleSection: React.FC<TaskTitleSectionProps> = ({
                 onChange={onChange}
                 onKeyDown={handleKeyDown}
                 required
-                className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-none focus:outline-none focus:border-none focus:ring-0 shadow-sm py-2"
+                className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-none focus:outline-none focus:border-none focus:ring-0 py-2"
                 placeholder={t('forms.task.namePlaceholder', 'Add Task Name')}
             />
             {taskAnalysis &&
