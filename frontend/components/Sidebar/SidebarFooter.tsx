@@ -200,7 +200,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
 
                             {/* Dropdown Menu */}
                             {isDropdownOpen && (
-                                <div className="absolute bottom-full left-0 mb-2 w-52 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                                <div className="absolute bottom-full left-0 mb-2 w-60 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                                     <div className="py-1">
                                         {dropdownItems.map(
                                             ({
