@@ -224,13 +224,13 @@ const parsePriority = (text) => {
     const trimmedText = text.trim();
     const priorityRegex = /!(?:high|medium|low)\b/gi;
     const matches = trimmedText.match(priorityRegex);
-    
+
     if (matches && matches.length > 0) {
         // Return the last priority found (in case of multiple)
         const lastMatch = matches[matches.length - 1];
         return lastMatch.substring(1).toLowerCase(); // Remove ! and convert to lowercase
     }
-    
+
     return null;
 };
 
@@ -247,14 +247,21 @@ const cleanTextFromTagsAndProjects = (text) => {
     let i = 0;
     while (i < tokens.length) {
         // Check if current token starts a tag/project group or is a priority indicator
-        if (tokens[i].startsWith('#') || tokens[i].startsWith('+') || tokens[i].match(/^!(?:high|medium|low)$/i)) {
+        if (
+            tokens[i].startsWith('#') ||
+            tokens[i].startsWith('+') ||
+            tokens[i].match(/^!(?:high|medium|low)$/i)
+        ) {
             // Skip this entire consecutive group (for tags/projects) or single priority token
             if (tokens[i].match(/^!(?:high|medium|low)$/i)) {
                 // Just skip this single priority token
                 i++;
             } else {
                 // Skip entire consecutive group of tags/projects
-                while (i < tokens.length && (tokens[i].startsWith('#') || tokens[i].startsWith('+'))) {
+                while (
+                    i < tokens.length &&
+                    (tokens[i].startsWith('#') || tokens[i].startsWith('+'))
+                ) {
                     i++;
                 }
             }
@@ -308,32 +315,42 @@ const containsUrl = (text) => {
 const generateSuggestion = (content, tags, projects, cleanedContent) => {
     try {
         const rulesEngine = require('./suggestionRulesEngine');
-        return rulesEngine.generateSuggestion(content, tags, projects, cleanedContent);
+        return rulesEngine.generateSuggestion(
+            content,
+            tags,
+            projects,
+            cleanedContent
+        );
     } catch (error) {
-        console.error('Error using rules engine, falling back to hardcoded logic:', error);
-        
+        console.error(
+            'Error using rules engine, falling back to hardcoded logic:',
+            error
+        );
+
         // Fallback to hardcoded logic if rules engine fails
         const hasProject = projects.length > 0;
-        const hasBookmarkTag = tags.some(tag => tag.toLowerCase() === 'bookmark');
+        const hasBookmarkTag = tags.some(
+            (tag) => tag.toLowerCase() === 'bookmark'
+        );
         const textStartsWithVerb = startsWithVerb(cleanedContent);
         const hasUrl = containsUrl(content);
-        
+
         if (!hasProject) {
             return { type: null, reason: null };
         }
-        
+
         if (hasBookmarkTag) {
             return { type: 'note', reason: 'bookmark_tag' };
         }
-        
+
         if (hasUrl) {
             return { type: 'note', reason: 'url_detected' };
         }
-        
+
         if (textStartsWithVerb) {
             return { type: 'task', reason: 'verb_detected' };
         }
-        
+
         return { type: null, reason: null };
     }
 };
@@ -351,7 +368,12 @@ const processInboxItem = (content) => {
     const cleanedContent = cleanTextFromTagsAndProjects(content);
 
     // Generate suggestion
-    const suggestion = generateSuggestion(content, tags, projects, cleanedContent);
+    const suggestion = generateSuggestion(
+        content,
+        tags,
+        projects,
+        cleanedContent
+    );
 
     const result = {
         parsed_tags: tags,
@@ -359,22 +381,22 @@ const processInboxItem = (content) => {
         parsed_priority: priority,
         cleaned_content: cleanedContent,
         suggested_type: suggestion.type,
-        suggested_reason: suggestion.reason
+        suggested_reason: suggestion.reason,
     };
-    
+
     // Add enhanced metadata from suggestion if available
     if (suggestion.priority) {
         result.suggested_priority = suggestion.priority;
     }
-    
+
     if (suggestion.tags && Array.isArray(suggestion.tags)) {
         result.suggested_tags = suggestion.tags;
     }
-    
+
     if (suggestion.due_date) {
         result.suggested_due_date = suggestion.due_date;
     }
-    
+
     return result;
 };
 
