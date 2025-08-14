@@ -229,6 +229,50 @@ const createInboxItem = async (content, userId, messageId) => {
     });
 };
 
+// Function to check if a Telegram user is authorized
+const isAuthorizedTelegramUser = (user, message) => {
+    // If no whitelist is configured, allow all users (default behavior)
+    if (
+        !user.telegram_allowed_users ||
+        user.telegram_allowed_users.trim() === ''
+    ) {
+        return true;
+    }
+
+    const allowedUsers = user.telegram_allowed_users
+        .split(',')
+        .map((u) => u.trim().toLowerCase())
+        .filter((u) => u.length > 0);
+
+    if (allowedUsers.length === 0) {
+        return true; // Empty whitelist means allow all
+    }
+
+    const fromUser = message.from;
+    if (!fromUser) {
+        return false; // No sender information
+    }
+
+    // Check by user ID (numeric)
+    const userId = fromUser.id.toString();
+    if (allowedUsers.includes(userId)) {
+        return true;
+    }
+
+    // Check by username (with or without @ prefix)
+    if (fromUser.username) {
+        const username = fromUser.username.toLowerCase();
+        if (
+            allowedUsers.includes(username) ||
+            allowedUsers.includes(`@${username}`)
+        ) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
 // Function to handle bot commands
 const handleBotCommand = async (command, user, chatId, messageId) => {
     const botToken = user.telegram_bot_token;
@@ -267,6 +311,14 @@ const processMessage = async (user, update) => {
     const text = message.text;
     const chatId = message.chat.id.toString();
     const messageId = message.message_id;
+
+    // Check if the user is authorized to send messages to this bot
+    if (!isAuthorizedTelegramUser(user, message)) {
+        console.log(
+            `Ignoring message from unauthorized Telegram user ${message.from.id} (@${message.from.username || 'no_username'}) for bot owner ${user.id}`
+        );
+        return; // Silently ignore unauthorized users
+    }
 
     // If this user already has a chat bound and it doesn't match this update, ignore
     if (user.telegram_chat_id && user.telegram_chat_id !== chatId) {
@@ -518,4 +570,5 @@ module.exports = {
     _getHighestUpdateId: getHighestUpdateId,
     _createMessageParams: createMessageParams,
     _createTelegramUrl: createTelegramUrl,
+    _isAuthorizedTelegramUser: isAuthorizedTelegramUser,
 };
