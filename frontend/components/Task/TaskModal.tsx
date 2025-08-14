@@ -156,10 +156,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
     useEffect(() => {
         setFormData(task);
         setTags(task.tags?.map((tag) => tag.name) || []);
-        
+
         // Initialize project name from task data
         if (task.project_id) {
-            const currentProject = projects.find(p => p.id === task.project_id);
+            const currentProject = projects.find(
+                (p) => p.id === task.project_id
+            );
             if (currentProject) {
                 setNewProjectName(currentProject.name);
             }
