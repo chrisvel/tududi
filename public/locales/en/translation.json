@@ -886,6 +886,13 @@
     "messageProcessed": "Message processed successfully",
     "failedToAddToInbox": "❌ Failed to add to inbox: {{error}}"
   },
+  "pwa": {
+    "installTitle": "Install Tududi",
+    "installDescription": "Add to home screen for quick access",
+    "install": "Install",
+    "notNow": "Not now",
+    "offline": "You are currently offline"
+  },
   "about": {
     "title": "About",
     "version": "Version",

@@ -2,6 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* PWA Safe Area Padding */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  /* Old devices fallback */
+  padding-top: constant(safe-area-inset-top);
+  padding-right: constant(safe-area-inset-right);
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-left: constant(safe-area-inset-left);
+
+  /* Modern devices */
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+
+  min-height: 100dvh;
+  background: var(--app-bg, #fff);
+  box-sizing: border-box;
+}
+
+/* Apply same safe-area padding to modals/portals/overlays */
+#modal-root, #portal-root, [data-portal-root],
+[role="dialog"][aria-modal="true"] {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  box-sizing: border-box;
+}
+
+/* Ensure fixed positioned elements respect safe areas */
+.fixed, [class*="fixed-"] {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  box-sizing: border-box;
+}
+
+/* Spinner */
 .spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
   width: 36px;
@@ -161,5 +205,70 @@ select:focus {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
+}
+
+/* PWA Install Prompt Styles */
+.pwa-prompt {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 1000;
+    border: 1px solid #e5e7eb;
+}
+
+.pwa-prompt button {
+    margin: 5px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.pwa-prompt button:first-of-type {
+    background: #3b82f6;
+    color: white;
+}
+
+.pwa-prompt button:last-of-type {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* iOS Safe Area Support */
+@supports (padding: max(0px)) {
+    .safe-area-top {
+        padding-top: max(20px, env(safe-area-inset-top));
+    }
+    
+    .safe-area-bottom {
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+    
+    .safe-area-left {
+        padding-left: max(20px, env(safe-area-inset-left));
+    }
+    
+    .safe-area-right {
+        padding-right: max(20px, env(safe-area-inset-right));
+    }
+}
+
+/* PWA Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .touch-target {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .touch-spacing {
+        margin: 8px;
+        padding: 12px;
+    }
 }
 

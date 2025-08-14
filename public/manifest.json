@@ -1,22 +1,89 @@
 {
-  "name": "tududi",
-  "short_name": "tududi",
-  "description": "A simple and effective task management application",
+  "name": "Tududi - Task Management",
+  "short_name": "Tududi",
+  "description": "Self-hosted task management with hierarchical organization",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#4a5568",
   "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["productivity", "business"],
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/favicon.ico",
-      "sizes": "16x16",
-      "type": "image/x-icon"
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Task",
+      "short_name": "Add Task",
+      "description": "Create a new task quickly",
+      "url": "/?modal=task",
+      "icons": [
+        {
+          "src": "/icons/shortcut-task.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Today's Tasks",
+      "short_name": "Today",
+      "description": "View today's tasks",
+      "url": "/tasks?view=today",
+      "icons": [
+        {
+          "src": "/icons/shortcut-today.png",
+          "sizes": "96x96"
+        }
+      ]
     }
   ]
 }
