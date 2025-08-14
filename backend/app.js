@@ -75,6 +75,13 @@ if (config.production) {
     app.use(express.static('public'));
 }
 
+// Serve icons
+if (config.production) {
+    app.use('/icons', express.static(path.join(__dirname, 'dist/icons')));
+} else {
+    app.use('/icons', express.static(path.join(__dirname, '../public/icons')));
+}
+
 // Serve locales
 if (config.production) {
     app.use('/locales', express.static(path.join(__dirname, 'dist/locales')));
@@ -82,6 +89,16 @@ if (config.production) {
     app.use(
         '/locales',
         express.static(path.join(__dirname, '../public/locales'))
+    );
+}
+
+// Serve splash screens
+if (config.production) {
+    app.use('/splash', express.static(path.join(__dirname, 'dist/splash')));
+} else {
+    app.use(
+        '/splash',
+        express.static(path.join(__dirname, '../public/splash'))
     );
 }
 
