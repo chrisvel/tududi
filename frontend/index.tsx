@@ -17,7 +17,7 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n'; // Import the i18n instance with its configuration
 
 // Service Worker Registration for PWA
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
             .then((registration) => {
@@ -39,7 +39,8 @@ if ('serviceWorker' in navigator) {
                 });
             })
             .catch((registrationError) => {
-                console.log('SW registration failed: ', registrationError);
+                console.warn('SW registration failed: ', registrationError);
+                // Don't show error to user, just log it
             });
     });
 }
@@ -67,7 +68,12 @@ if (container) {
     root = createRoot(container);
     root.render(
         <I18nextProvider i18n={i18n}>
-            <BrowserRouter>
+            <BrowserRouter
+                future={{
+                    v7_startTransition: true,
+                    v7_relativeSplatPath: true
+                }}
+            >
                 <ToastProvider>
                     <TelegramStatusProvider>
                         <App />
@@ -86,7 +92,12 @@ if (module.hot) {
         if (root) {
             root.render(
                 <I18nextProvider i18n={i18n}>
-                    <BrowserRouter>
+                    <BrowserRouter
+                        future={{
+                            v7_startTransition: true,
+                            v7_relativeSplatPath: true
+                        }}
+                    >
                         <ToastProvider>
                             <TelegramStatusProvider>
                                 <App />
