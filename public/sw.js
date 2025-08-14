@@ -4,33 +4,40 @@ if (location.protocol !== 'https:' && location.hostname !== 'localhost' && locat
   return;
 }
 
-const CACHE_NAME = 'tududi-v1.0.0';
-const STATIC_CACHE = 'tududi-static-v1.0.0';
-const DYNAMIC_CACHE = 'tududi-dynamic-v1.0.0';
+console.log('Tadudi Service Worker v1.0.1 loaded');
+
+const STATIC_CACHE = 'tududi-static-v1.0.1';
+const DYNAMIC_CACHE = 'tududi-dynamic-v1.0.1';
 
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/manifest.json'
 ];
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
+  console.log('Service Worker installing...');
+  console.log('Static assets to cache:', STATIC_ASSETS);
+  
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then((cache) => {
+        console.log('Cache opened:', STATIC_CACHE);
         // Cache assets one by one to handle failures gracefully
-        const cachePromises = STATIC_ASSETS.map(url => 
-          cache.add(url).catch(err => {
+        const cachePromises = STATIC_ASSETS.map(url => {
+          console.log('Attempting to cache:', url);
+          return cache.add(url).catch(err => {
             console.warn('Failed to cache:', url, err);
             return null; // Continue with other assets
-          })
-        );
+          });
+        });
         return Promise.all(cachePromises);
       })
-      .then(() => self.skipWaiting())
+      .then((results) => {
+        console.log('Caching completed:', results);
+        return self.skipWaiting();
+      })
       .catch(err => {
         console.error('Service Worker install failed:', err);
         // Still skip waiting even if caching fails
