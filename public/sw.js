@@ -1,13 +1,24 @@
-// Only run service worker in production (HTTPS) or localhost
-if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+console.log('Tududi Service Worker v1.0.2 loaded');
+
+// Check if we should run the service worker
+const shouldRun = location.protocol === 'https:' || 
+                  location.hostname === 'localhost' || 
+                  location.hostname === '127.0.0.1';
+
+if (!shouldRun) {
   console.warn('Service Worker requires HTTPS or localhost');
-  return;
+  // Don't return, just log the warning and continue
 }
 
-console.log('Tadudi Service Worker v1.0.1 loaded');
+// Log service worker status
+console.log('Service Worker environment check:', {
+  protocol: location.protocol,
+  hostname: location.hostname,
+  shouldRun: shouldRun
+});
 
-const STATIC_CACHE = 'tududi-static-v1.0.1';
-const DYNAMIC_CACHE = 'tududi-dynamic-v1.0.1';
+const STATIC_CACHE = 'tududi-static-v1.0.2';
+const DYNAMIC_CACHE = 'tududi-dynamic-v1.0.2';
 
 const STATIC_ASSETS = [
   '/',
