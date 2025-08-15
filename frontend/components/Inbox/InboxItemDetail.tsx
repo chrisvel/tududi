@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import {
     TrashIcon,
     PencilIcon,
@@ -9,6 +9,8 @@ import {
     FolderIcon,
     ClipboardDocumentListIcon,
     TagIcon,
+    ExclamationTriangleIcon,
+    CalendarIcon,
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
@@ -18,9 +20,8 @@ import { useStore } from '../../store/useStore';
 
 interface InboxItemDetailProps {
     item: InboxItem;
-    onProcess: (id: number) => void;
     onDelete: (id: number) => void;
-    onUpdate?: (id: number) => Promise<void>;
+    onUpdate?: (id: number, content: string) => Promise<void>;
     openTaskModal: (task: Task, inboxItemId?: number) => void;
     openProjectModal: (project: Project | null, inboxItemId?: number) => void;
     openNoteModal: (note: Note | null, inboxItemId?: number) => void;
@@ -29,7 +30,6 @@ interface InboxItemDetailProps {
 
 const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     item,
-    onProcess, // eslint-disable-line @typescript-eslint/no-unused-vars
     onDelete,
     onUpdate,
     openTaskModal,
@@ -44,6 +44,20 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const [analysisResult, setAnalysisResult] = useState<{
+        parsed_tags: string[];
+        parsed_projects: string[];
+        parsed_priority: string | null;
+        cleaned_content: string;
+        suggested_type: 'task' | 'note' | null;
+        suggested_reason: string | null;
+        suggested_priority?: string;
+        suggested_tags?: string[];
+        suggested_due_date?: string;
+    } | null>(null);
+    const [removedSuggestedTags, setRemovedSuggestedTags] = useState<string[]>(
+        []
+    );
 
     // Helper function to parse hashtags from text (consecutive groups anywhere)
     const parseHashtags = (text: string): string[] => {
@@ -211,15 +225,209 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         return cleanedTokens.join(' ').trim();
     };
 
+    // Helper function to parse priority from text using !high, !medium, !low syntax
+    const parsePriority = (text: string): string | null => {
+        const trimmedText = text.trim();
+        const priorityRegex = /!(?:high|medium|low)\b/gi;
+        const matches = trimmedText.match(priorityRegex);
+
+        if (matches && matches.length > 0) {
+            // Return the last priority found (in case of multiple)
+            const lastMatch = matches[matches.length - 1];
+            return lastMatch.substring(1).toLowerCase(); // Remove ! and convert to lowercase
+        }
+
+        return null;
+    };
+
+    // Helper function to parse due date from text
+    const parseDueDate = (text: string): string | null => {
+        const trimmedText = text.trim().toLowerCase();
+        const now = new Date();
+
+        // Check for "today"
+        if (trimmedText.includes('today')) {
+            return now.toISOString().split('T')[0];
+        }
+
+        // Check for "tomorrow"
+        if (trimmedText.includes('tomorrow')) {
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return tomorrow.toISOString().split('T')[0];
+        }
+
+        // Check for "by [day]" patterns
+        const dayMatches = trimmedText.match(
+            /(by|next)\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/
+        );
+        if (dayMatches) {
+            const dayName = dayMatches[2];
+            const targetDay = getNextWeekday(dayName);
+            return targetDay.toISOString().split('T')[0];
+        }
+
+        return null;
+    };
+
+    // Helper function to get next occurrence of a weekday
+    const getNextWeekday = (dayName: string): Date => {
+        const days = [
+            'sunday',
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+        ];
+        const targetDay = days.indexOf(dayName.toLowerCase());
+
+        const now = new Date();
+        const currentDay = now.getDay();
+
+        let daysToAdd = targetDay - currentDay;
+        if (daysToAdd <= 0) {
+            daysToAdd += 7; // Next week
+        }
+
+        const result = new Date(now);
+        result.setDate(result.getDate() + daysToAdd);
+        return result;
+    };
+
+    // Helper function to get filtered suggested tags (excluding user-removed ones)
+    const getFilteredSuggestedTags = (): string[] => {
+        if (!analysisResult?.suggested_tags) return [];
+        return analysisResult.suggested_tags.filter(
+            (tag) => !removedSuggestedTags.includes(tag.toLowerCase())
+        );
+    };
+
+    // Analyze the inbox item content for intelligent suggestions
+    useEffect(() => {
+        const analyzeItem = async () => {
+            try {
+                const response = await fetch('/api/inbox/analyze-text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ content: item.content }),
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    setAnalysisResult(result);
+                }
+            } catch (error) {
+                console.error('Error analyzing inbox item:', error);
+            }
+        };
+
+        analyzeItem();
+    }, [item.content]);
+
+    // Reset removed suggested tags when content changes
+    useEffect(() => {
+        setRemovedSuggestedTags([]);
+    }, [item.content]);
+
     const hashtags = parseHashtags(item.content);
     const projectRefs = parseProjectRefs(item.content);
     const cleanedContent = cleanTextFromTagsAndProjects(item.content);
+    const LONG_TEXT_THRESHOLD = 150; // Characters threshold for considering text as "long"
+    const isLongText = item.content.trim().length > LONG_TEXT_THRESHOLD;
 
-    const handleConvertToTask = () => {
+    const handleConvertToTask = async () => {
         try {
-            // Convert hashtags to Tag objects
+            // Get intelligent analysis for the inbox item
+            const response = await fetch('/api/inbox/analyze-text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ content: item.content }),
+            });
+
+            let analysisResult = null;
+            if (response.ok) {
+                analysisResult = await response.json();
+            }
+
+            // Combine explicit tags with filtered suggested tags from analysis
+            const allTagNames = [...hashtags, ...getFilteredSuggestedTags()];
+
+            // Remove duplicates (case-insensitive)
+            const uniqueTagNames = allTagNames.filter(
+                (tagName, index, array) =>
+                    array.findIndex(
+                        (t) => t.toLowerCase() === tagName.toLowerCase()
+                    ) === index
+            );
+
+            // Convert to Tag objects
+            const taskTags = uniqueTagNames.map((tagName) => {
+                const existingTag = tags.find(
+                    (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
+                );
+                return existingTag || { name: tagName };
+            });
+
+            // Find the project to assign (use first project reference if any)
+            let projectId = undefined;
+            const allProjectRefs = [
+                ...projectRefs,
+                ...(analysisResult?.parsed_projects || []),
+            ];
+
+            if (allProjectRefs.length > 0) {
+                // Look for an existing project with the first project reference name
+                const projectName = allProjectRefs[0];
+                const matchingProject = projects.find(
+                    (project) =>
+                        project.name.toLowerCase() === projectName.toLowerCase()
+                );
+                if (matchingProject) {
+                    projectId = matchingProject.id;
+                }
+            }
+
+            // Get priority from analysis or parsed text or default to medium
+            const parsedPriority = parsePriority(item.content);
+            const finalPriority =
+                analysisResult?.parsed_priority ||
+                analysisResult?.suggested_priority ||
+                parsedPriority ||
+                'medium';
+
+            // Get due date from analysis
+            const dueDate =
+                analysisResult?.suggested_due_date ||
+                parseDueDate(item.content);
+
+            const newTask: Task = {
+                name: cleanedContent || item.content,
+                status: 'not_started',
+                priority: finalPriority as 'low' | 'medium' | 'high',
+                tags: taskTags,
+                project_id: projectId,
+                due_date: dueDate || undefined,
+                completed_at: null,
+            };
+
+            if (item.id !== undefined) {
+                openTaskModal(newTask, item.id);
+            } else {
+                openTaskModal(newTask);
+            }
+        } catch (error) {
+            console.error('Error analyzing inbox item:', error);
+
+            // Fallback to basic conversion if analysis fails
             const taskTags = hashtags.map((hashtagName) => {
-                // Find existing tag or create a placeholder for new tag
                 const existingTag = tags.find(
                     (tag) =>
                         tag.name.toLowerCase() === hashtagName.toLowerCase()
@@ -227,10 +435,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 return existingTag || { name: hashtagName };
             });
 
-            // Find the project to assign (use first project reference if any)
             let projectId = undefined;
             if (projectRefs.length > 0) {
-                // Look for an existing project with the first project reference name
                 const projectName = projectRefs[0];
                 const matchingProject = projects.find(
                     (project) =>
@@ -244,9 +450,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             const newTask: Task = {
                 name: cleanedContent || item.content,
                 status: 'not_started',
-                priority: 'low',
+                priority:
+                    (parsePriority(item.content) as
+                        | 'low'
+                        | 'medium'
+                        | 'high') || 'medium',
                 tags: taskTags,
                 project_id: projectId,
+                due_date: parseDueDate(item.content) || undefined,
                 completed_at: null,
             };
 
@@ -255,37 +466,30 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             } else {
                 openTaskModal(newTask);
             }
-        } catch (error) {
-            console.error('Error converting to task:', error);
         }
     };
 
     const handleConvertToProject = () => {
-        try {
-            // Convert hashtags to Tag objects (ignore any existing project references)
-            const projectTags = hashtags.map((hashtagName) => {
-                // Find existing tag or create a placeholder for new tag
-                const existingTag = tags.find(
-                    (tag) =>
-                        tag.name.toLowerCase() === hashtagName.toLowerCase()
-                );
-                return existingTag || { name: hashtagName };
-            });
+        // Convert hashtags to Tag objects (ignore any existing project references)
+        const projectTags = hashtags.map((hashtagName) => {
+            // Find existing tag or create a placeholder for new tag
+            const existingTag = tags.find(
+                (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
+            );
+            return existingTag || { name: hashtagName };
+        });
 
-            const newProject: Project = {
-                name: cleanedContent || item.content,
-                description: '',
-                active: true,
-                tags: projectTags,
-            };
+        const newProject: Project = {
+            name: cleanedContent || item.content,
+            description: '',
+            active: true,
+            tags: projectTags,
+        };
 
-            if (item.id !== undefined) {
-                openProjectModal(newProject, item.id);
-            } else {
-                openProjectModal(newProject);
-            }
-        } catch (error) {
-            console.error('Error converting to project:', error);
+        if (item.id !== undefined) {
+            openProjectModal(newProject, item.id);
+        } else {
+            openProjectModal(newProject);
         }
     };
 
@@ -336,13 +540,43 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             setLoading(false);
         }
 
-        // Convert hashtags to Tag objects and include bookmark tag if needed
-        const hashtagTags = hashtags.map((hashtagName) => {
+        // Get intelligent analysis for suggested tags
+        let analysisResult = null;
+        try {
+            const response = await fetch('/api/inbox/analyze-text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ content: item.content }),
+            });
+
+            if (response.ok) {
+                analysisResult = await response.json();
+            }
+        } catch (error) {
+            console.error('Error analyzing inbox item for note:', error);
+        }
+
+        // Combine explicit tags with filtered suggested tags from analysis
+        const allTagNames = [...hashtags, ...getFilteredSuggestedTags()];
+
+        // Remove duplicates (case-insensitive)
+        const uniqueTagNames = allTagNames.filter(
+            (tagName, index, array) =>
+                array.findIndex(
+                    (t) => t.toLowerCase() === tagName.toLowerCase()
+                ) === index
+        );
+
+        // Convert hashtags to Tag objects
+        const hashtagTags = uniqueTagNames.map((tagName) => {
             // Find existing tag or create a placeholder for new tag
             const existingTag = tags.find(
-                (tag) => tag.name.toLowerCase() === hashtagName.toLowerCase()
+                (tag) => tag.name.toLowerCase() === tagName.toLowerCase()
             );
-            return existingTag || { name: hashtagName };
+            return existingTag || { name: tagName };
         });
 
         // Combine hashtag tags with bookmark tag if it's a URL
@@ -356,9 +590,14 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
         // Find the project to assign (use first project reference if any)
         let projectId = undefined;
-        if (projectRefs.length > 0) {
+        const allProjectRefs = [
+            ...projectRefs,
+            ...(analysisResult?.parsed_projects || []),
+        ];
+
+        if (allProjectRefs.length > 0) {
             // Look for an existing project with the first project reference name
-            const projectName = projectRefs[0];
+            const projectName = allProjectRefs[0];
             const matchingProject = projects.find(
                 (project) =>
                     project.name.toLowerCase() === projectName.toLowerCase()
@@ -401,114 +640,203 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         >
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-2 gap-2">
                 <div className="flex-1">
-                    <button
-                        onClick={() => {
-                            if (onUpdate && item.id !== undefined) {
-                                onUpdate(item.id);
-                            }
-                        }}
-                        className="text-base font-medium text-gray-900 dark:text-gray-300 break-words text-left cursor-pointer w-full"
-                    >
-                        {cleanedContent || item.content}
-                    </button>
+                    {/* Display title for long text, otherwise show cleaned content - clickable to edit */}
+                    {item.title && isLongText ? (
+                        <p
+                            className="text-base font-medium text-gray-900 dark:text-gray-300 break-words cursor-pointer"
+                            onClick={() => {
+                                if (onUpdate && item.id !== undefined) {
+                                    onUpdate(item.id, item.content);
+                                }
+                            }}
+                        >
+                            {item.title}
+                        </p>
+                    ) : (
+                        <p
+                            className="text-base font-medium text-gray-900 dark:text-gray-300 break-words cursor-pointer"
+                            onClick={() => {
+                                if (onUpdate && item.id !== undefined) {
+                                    onUpdate(item.id, item.content);
+                                }
+                            }}
+                        >
+                            {cleanedContent || item.content}
+                        </p>
+                    )}
 
-                    {/* Tags and Projects display - TaskHeader style */}
-                    {(hashtags.length > 0 || projectRefs.length > 0) && (
-                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            {/* Projects display first */}
-                            {projectRefs.length > 0 && (
-                                <div className="flex items-center">
-                                    <FolderIcon className="h-3 w-3 mr-1" />
-                                    <span>
-                                        {projectRefs.map(
-                                            (projectRef, index) => {
-                                                // Find matching project
-                                                const matchingProject =
-                                                    projects.find(
-                                                        (project) =>
-                                                            project.name.toLowerCase() ===
-                                                            projectRef.toLowerCase()
-                                                    );
+                    {/* Metadata display matching TaskHeader format */}
+                    {(() => {
+                        // Combine explicit and filtered suggested tags
+                        const allTags = [
+                            ...hashtags,
+                            ...getFilteredSuggestedTags(),
+                        ];
+                        const uniqueTags = [...new Set(allTags)]; // Remove duplicates
 
-                                                if (matchingProject) {
+                        // Combine explicit and suggested projects
+                        const allProjects = [
+                            ...projectRefs,
+                            ...(analysisResult?.parsed_projects || []),
+                        ];
+                        const uniqueProjects = [...new Set(allProjects)]; // Remove duplicates
+
+                        // Get priority
+                        const priority =
+                            analysisResult?.parsed_priority ||
+                            analysisResult?.suggested_priority ||
+                            parsePriority(item.content);
+
+                        // Get due date
+                        const dueDate =
+                            analysisResult?.suggested_due_date ||
+                            parseDueDate(item.content);
+
+                        const hasAnyMetadata =
+                            uniqueProjects.length > 0 ||
+                            uniqueTags.length > 0 ||
+                            dueDate ||
+                            priority;
+
+                        return hasAnyMetadata ? (
+                            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                {/* Projects display first */}
+                                {uniqueProjects.length > 0 && (
+                                    <div className="flex items-center">
+                                        <FolderIcon className="h-3 w-3 mr-1" />
+                                        <span>
+                                            {uniqueProjects.map(
+                                                (projectName, index) => {
+                                                    const matchingProject =
+                                                        projects.find(
+                                                            (p) =>
+                                                                p.name.toLowerCase() ===
+                                                                projectName.toLowerCase()
+                                                        );
+
                                                     return (
                                                         <React.Fragment
-                                                            key={projectRef}
+                                                            key={projectName}
                                                         >
-                                                            <Link
-                                                                to={
-                                                                    matchingProject.uid
-                                                                        ? `/project/${matchingProject.uid}-${matchingProject.name
-                                                                              .toLowerCase()
-                                                                              .replace(
-                                                                                  /[^a-z0-9]+/g,
-                                                                                  '-'
-                                                                              )
-                                                                              .replace(
-                                                                                  /^-|-$/g,
-                                                                                  ''
-                                                                              )}`
-                                                                        : `/project/${matchingProject.id}`
-                                                                }
-                                                                className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
-                                                            >
-                                                                {projectRef}
-                                                            </Link>
+                                                            {matchingProject ? (
+                                                                <Link
+                                                                    to={`/project/${matchingProject.id}`}
+                                                                    className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                                    onClick={(
+                                                                        e
+                                                                    ) =>
+                                                                        e.stopPropagation()
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        projectName
+                                                                    }
+                                                                </Link>
+                                                            ) : (
+                                                                <span>
+                                                                    {
+                                                                        projectName
+                                                                    }
+                                                                </span>
+                                                            )}
                                                             {index <
-                                                                projectRefs.length -
-                                                                    1 && ', '}
-                                                        </React.Fragment>
-                                                    );
-                                                } else {
-                                                    return (
-                                                        <React.Fragment
-                                                            key={projectRef}
-                                                        >
-                                                            <span>
-                                                                {projectRef}
-                                                            </span>
-                                                            {index <
-                                                                projectRefs.length -
+                                                                uniqueProjects.length -
                                                                     1 && ', '}
                                                         </React.Fragment>
                                                     );
                                                 }
-                                            }
-                                        )}
-                                    </span>
-                                </div>
-                            )}
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
 
-                            {/* Add spacing between project and tags */}
-                            {projectRefs.length > 0 && hashtags.length > 0 && (
-                                <span className="mx-2">•</span>
-                            )}
+                                {/* Add spacing */}
+                                {uniqueProjects.length > 0 &&
+                                    uniqueTags.length > 0 && (
+                                        <span className="mx-2">•</span>
+                                    )}
 
-                            {/* Tags display */}
-                            {hashtags.length > 0 && (
-                                <div className="flex items-center">
-                                    <TagIcon className="h-3 w-3 mr-1" />
-                                    <span>
-                                        {hashtags.map((hashtag, index) => {
-                                            return (
-                                                <React.Fragment key={hashtag}>
-                                                    <Link
-                                                        to={`/tag/${encodeURIComponent(hashtag)}`}
-                                                        className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
-                                                    >
-                                                        {hashtag}
-                                                    </Link>
-                                                    {index <
-                                                        hashtags.length - 1 &&
-                                                        ', '}
-                                                </React.Fragment>
-                                            );
-                                        })}
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-                    )}
+                                {/* Tags display */}
+                                {uniqueTags.length > 0 && (
+                                    <div className="flex items-center">
+                                        <TagIcon className="h-3 w-3 mr-1" />
+                                        <span>
+                                            {uniqueTags.map((tag, index) => {
+                                                return (
+                                                    <React.Fragment key={tag}>
+                                                        <Link
+                                                            to={`/tag/${encodeURIComponent(tag)}`}
+                                                            className="text-gray-500 dark:text-gray-400 hover:underline transition-colors"
+                                                            onClick={(e) =>
+                                                                e.stopPropagation()
+                                                            }
+                                                        >
+                                                            {tag}
+                                                        </Link>
+                                                        {index <
+                                                            uniqueTags.length -
+                                                                1 && ', '}
+                                                    </React.Fragment>
+                                                );
+                                            })}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Add spacing */}
+                                {(uniqueProjects.length > 0 ||
+                                    uniqueTags.length > 0) &&
+                                    dueDate && <span className="mx-2">•</span>}
+
+                                {/* Due date display */}
+                                {dueDate && (
+                                    <div className="flex items-center">
+                                        <CalendarIcon className="h-3 w-3 mr-1" />
+                                        <span>
+                                            {(() => {
+                                                const today = new Date()
+                                                    .toISOString()
+                                                    .split('T')[0];
+                                                const tomorrow = new Date();
+                                                tomorrow.setDate(
+                                                    tomorrow.getDate() + 1
+                                                );
+                                                const tomorrowStr = tomorrow
+                                                    .toISOString()
+                                                    .split('T')[0];
+
+                                                if (dueDate === today)
+                                                    return 'Today';
+                                                if (dueDate === tomorrowStr)
+                                                    return 'Tomorrow';
+                                                return new Date(
+                                                    dueDate
+                                                ).toLocaleDateString();
+                                            })()}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Add spacing */}
+                                {(uniqueProjects.length > 0 ||
+                                    uniqueTags.length > 0 ||
+                                    dueDate) &&
+                                    priority && <span className="mx-2">•</span>}
+
+                                {/* Priority display - no background colors */}
+                                {priority && (
+                                    <div className="flex items-center">
+                                        <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
+                                        <span className="text-gray-500 dark:text-gray-400">
+                                            {priority.charAt(0).toUpperCase() +
+                                                priority.slice(1)}{' '}
+                                            Priority
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        ) : null;
+                    })()}
                 </div>
 
                 <div className="flex items-center justify-start space-x-1 shrink-0">
@@ -518,7 +846,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     <button
                         onClick={() => {
                             if (onUpdate && item.id !== undefined) {
-                                onUpdate(item.id);
+                                onUpdate(item.id, item.content);
                             }
                         }}
                         className={`p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
