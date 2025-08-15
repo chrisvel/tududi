@@ -408,7 +408,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     return (
         <>
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-hidden transition-all duration-200 ease-in-out ${
+                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-all duration-200 ease-in-out ${
                     isInProgress
                         ? 'border-2 border-green-400/60 dark:border-green-500/60'
                         : ''

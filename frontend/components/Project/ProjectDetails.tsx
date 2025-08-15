@@ -974,9 +974,9 @@ const ProjectDetails: React.FC = () => {
                             <NewTask onTaskCreate={handleTaskCreate} />
                         </div>
 
-                        <div className="transition-all duration-300 ease-in-out">
+                        <div className="transition-all duration-300 ease-in-out overflow-visible">
                             {displayTasks.length > 0 ? (
-                                <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
+                                <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 overflow-visible">
                                     <TaskList
                                         tasks={displayTasks}
                                         onTaskUpdate={handleTaskUpdate}

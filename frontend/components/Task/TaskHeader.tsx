@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import {
     CalendarDaysIcon,
@@ -56,50 +55,10 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 }) => {
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [dropdownPosition, setDropdownPosition] = useState({
-        top: 0,
-        left: 0,
-    });
     const buttonRef = useRef<HTMLButtonElement>(null);
     const dropdownId = useRef(
         `dropdown-${Math.random().toString(36).substr(2, 9)}`
     ).current;
-
-    // Calculate dropdown position
-    const calculateDropdownPosition = () => {
-        if (buttonRef.current) {
-            const rect = buttonRef.current.getBoundingClientRect();
-            const dropdownHeight = 300; // Approximate dropdown height
-            const dropdownWidth = 192; // w-48 = 192px
-            const padding = 8; // Padding from screen edges
-
-            // Default position: below and to the left of the button
-            let top = rect.bottom + window.scrollY + 4;
-            let left = rect.right - dropdownWidth;
-
-            // Ensure dropdown doesn't go off the left edge
-            if (left < padding) {
-                left = padding;
-            }
-
-            // Ensure dropdown doesn't go off the right edge
-            if (left + dropdownWidth > window.innerWidth - padding) {
-                left = window.innerWidth - dropdownWidth - padding;
-            }
-
-            // If dropdown would go below viewport, position it above the button
-            if (rect.bottom + dropdownHeight > window.innerHeight - padding) {
-                top = rect.top + window.scrollY - dropdownHeight - 4;
-                // Ensure it doesn't go above the top of the viewport
-                if (top < window.scrollY + padding) {
-                    top = window.scrollY + padding;
-                }
-            }
-
-            const position = { top, left };
-            setDropdownPosition(position);
-        }
-    };
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -766,7 +725,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     </div>
 
                     {/* Mobile 3-dot dropdown menu */}
-                    <div className="flex items-center ml-2">
+                    <div className="flex items-center ml-2 relative">
                         <button
                             ref={buttonRef}
                             type="button"
@@ -782,8 +741,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                             detail: { dropdownId },
                                         })
                                     );
-                                    // Calculate position BEFORE opening to prevent blink
-                                    calculateDropdownPosition();
                                 }
 
                                 setIsDropdownOpen(newOpenState);
@@ -792,17 +749,22 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         >
                             <EllipsisVerticalIcon className="h-5 w-5" />
                         </button>
-                    </div>
 
-                    {/* Dropdown Menu - Rendered via Portal */}
-                    {isDropdownOpen &&
-                        createPortal(
+                        {/* Dropdown Menu - Positioned Relatively */}
+                        {isDropdownOpen && (
                             <div
                                 data-dropdown-id={dropdownId}
-                                className="fixed w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[9999]"
+                                className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] transform-gpu"
                                 style={{
-                                    top: dropdownPosition.top,
-                                    left: dropdownPosition.left,
+                                    // Prevent dropdown from being cut off at the bottom of viewport
+                                    transform:
+                                        buttonRef.current &&
+                                        buttonRef.current.getBoundingClientRect()
+                                            .bottom +
+                                            200 >
+                                            window.innerHeight
+                                            ? 'translateY(-100%) translateY(-8px)'
+                                            : 'none',
                                 }}
                                 onClick={(e) => e.stopPropagation()}
                             >
@@ -926,9 +888,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         </button>
                                     )}
                                 </div>
-                            </div>,
-                            document.body
+                            </div>
                         )}
+                    </div>
                 </div>
             </div>
         </div>
