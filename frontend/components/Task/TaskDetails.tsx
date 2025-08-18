@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -393,31 +393,6 @@ const TaskDetails: React.FC = () => {
         }
     };
 
-    const handleSubtaskClick = useCallback(
-        (e: React.MouseEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-            e.nativeEvent.stopImmediatePropagation();
-
-            // Store the intent to open modal in sessionStorage (survives re-mounts)
-            const modalState = {
-                isOpen: true,
-                focusSubtasks: true,
-                taskId: uid,
-                timestamp: Date.now(),
-            };
-            sessionStorage.setItem(
-                'pendingModalState',
-                JSON.stringify(modalState)
-            );
-
-            // Set state immediately
-            setFocusSubtasks(true);
-            setIsTaskModalOpen(true);
-        },
-        [uid]
-    );
-
     if (loading) {
         return <LoadingScreen />;
     }
@@ -700,8 +675,7 @@ const TaskDetails: React.FC = () => {
                                                 className="group"
                                             >
                                                 <div
-                                                    onClick={handleSubtaskClick}
-                                                    className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 cursor-pointer transition-all duration-200 ${
+                                                    className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 transition-all duration-200 ${
                                                         subtask.status ===
                                                             'in_progress' ||
                                                         subtask.status === 1
@@ -813,22 +787,13 @@ const TaskDetails: React.FC = () => {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div
-                                        onClick={handleSubtaskClick}
-                                        className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6 cursor-pointer hover:border-blue-200 dark:hover:border-blue-700 transition-colors duration-200"
-                                    >
+                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
                                         <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                                             <ListBulletIcon className="h-12 w-12 mb-3 opacity-50" />
                                             <span className="text-sm text-center">
                                                 {t(
                                                     'task.noSubtasks',
                                                     'No subtasks yet'
-                                                )}
-                                            </span>
-                                            <span className="text-xs text-center mt-2 text-blue-500 dark:text-blue-400">
-                                                {t(
-                                                    'task.clickToAddSubtasks',
-                                                    'Click to add subtasks'
                                                 )}
                                             </span>
                                         </div>
