@@ -1152,6 +1152,18 @@ router.get('/task', async (req, res) => {
                     attributes: ['id', 'name', 'uid'],
                     required: false,
                 },
+                {
+                    model: Task,
+                    as: 'Subtasks',
+                    required: false,
+                    include: [
+                        {
+                            model: Tag,
+                            attributes: ['id', 'name', 'uid'],
+                            through: { attributes: [] },
+                        },
+                    ],
+                },
             ],
         });
 
@@ -1793,8 +1805,9 @@ router.patch('/task/:id', async (req, res) => {
         }
 
         // Log task update events
-        const changes = {};
         try {
+            const changes = {};
+
             // Check for changes in each field
             if (name !== undefined && name !== oldValues.name) {
                 changes.name = { oldValue: oldValues.name, newValue: name };
@@ -1938,92 +1951,6 @@ router.patch('/task/:id', async (req, res) => {
         } catch (eventError) {
             console.error('Error logging task update events:', eventError);
             // Don't fail the request if event logging fails
-        }
-
-        // Handle smart recurrence update: cleanup future instances and regenerate
-        try {
-            const recurrenceChanged =
-                changes.recurrence_type ||
-                changes.recurrence_interval ||
-                changes.recurrence_end_date ||
-                changes.recurrence_weekday ||
-                changes.recurrence_month_day ||
-                changes.recurrence_week_of_month ||
-                changes.completion_based;
-
-            if (recurrenceChanged && task.recurrence_type !== 'none') {
-                console.log(
-                    `🔄 Recurrence settings changed for task ${task.id}, cleaning up future instances`
-                );
-
-                // Find existing child instances
-                const childTasks = await Task.findAll({
-                    where: { recurring_parent_id: task.id },
-                });
-
-                if (childTasks.length > 0) {
-                    const now = new Date();
-
-                    // Separate future and past instances (same logic as deletion)
-                    const futureInstances = childTasks.filter(
-                        (child) =>
-                            child.status === Task.STATUS.NOT_STARTED &&
-                            !child.completed_at &&
-                            (!child.due_date || new Date(child.due_date) >= now)
-                    );
-
-                    const pastInstances = childTasks.filter(
-                        (child) =>
-                            child.status === Task.STATUS.DONE ||
-                            child.completed_at ||
-                            child.status === Task.STATUS.IN_PROGRESS ||
-                            (child.due_date && new Date(child.due_date) < now)
-                    );
-
-                    console.log(
-                        `🗑️ Recurrence update cleanup: ${futureInstances.length} future, ${pastInstances.length} past instances`
-                    );
-
-                    // Delete future instances (they haven't been worked on yet)
-                    if (futureInstances.length > 0) {
-                        const futureIds = futureInstances.map(
-                            (task) => task.id
-                        );
-
-                        // Clean up related data for future instances
-                        await TaskEvent.destroy({
-                            where: { task_id: { [Op.in]: futureIds } },
-                            force: true,
-                        });
-
-                        await sequelize.query(
-                            'DELETE FROM tasks_tags WHERE task_id IN (' +
-                                futureIds.map(() => '?').join(',') +
-                                ')',
-                            { replacements: futureIds }
-                        );
-
-                        // Delete future instances
-                        await Task.destroy({
-                            where: { id: { [Op.in]: futureIds } },
-                            force: true,
-                        });
-                    }
-
-                    console.log(
-                        `✅ Cleaned up ${futureInstances.length} future instances for recurrence update`
-                    );
-                }
-
-                // Generate new instances with updated pattern
-                await generateRecurringTasks(req.currentUser.id, 7);
-                console.log(
-                    `🔄 Generated new instances with updated recurrence pattern`
-                );
-            }
-        } catch (recurrenceError) {
-            console.error('Error handling recurrence update:', recurrenceError);
-            // Don't fail the request if recurrence cleanup fails
         }
 
         // Reload task with associations
@@ -2220,75 +2147,16 @@ router.delete('/task/:id', async (req, res) => {
             return res.status(404).json({ error: 'Task not found.' });
         }
 
-        // Handle recurring parent task deletion with smart cleanup
+        // Check for child tasks - prevent deletion of parent tasks with children
         const childTasks = await Task.findAll({
             where: { recurring_parent_id: req.params.id },
         });
 
+        // If this is a recurring parent task with children, prevent deletion
         if (childTasks.length > 0) {
-            const now = new Date();
-
-            // Separate future and past instances
-            const futureInstances = childTasks.filter(
-                (child) =>
-                    child.status === Task.STATUS.NOT_STARTED &&
-                    !child.completed_at &&
-                    (!child.due_date || new Date(child.due_date) >= now)
-            );
-
-            const pastInstances = childTasks.filter(
-                (child) =>
-                    child.status === Task.STATUS.DONE ||
-                    child.completed_at ||
-                    child.status === Task.STATUS.IN_PROGRESS ||
-                    (child.due_date && new Date(child.due_date) < now)
-            );
-
-            console.log(
-                `🗑️ Recurring parent deletion: ${futureInstances.length} future, ${pastInstances.length} past instances`
-            );
-
-            // Delete future instances (they haven't been worked on yet)
-            if (futureInstances.length > 0) {
-                const futureIds = futureInstances.map((task) => task.id);
-
-                // Clean up related data for future instances
-                await TaskEvent.destroy({
-                    where: { task_id: { [Op.in]: futureIds } },
-                    force: true,
-                });
-
-                await sequelize.query(
-                    'DELETE FROM tasks_tags WHERE task_id IN (' +
-                        futureIds.map(() => '?').join(',') +
-                        ')',
-                    { replacements: futureIds }
-                );
-
-                // Delete future instances
-                await Task.destroy({
-                    where: { id: { [Op.in]: futureIds } },
-                    force: true,
-                });
-            }
-
-            // Orphan past instances (preserve work done)
-            if (pastInstances.length > 0) {
-                await Task.update(
-                    { recurring_parent_id: null },
-                    {
-                        where: {
-                            id: {
-                                [Op.in]: pastInstances.map((task) => task.id),
-                            },
-                        },
-                    }
-                );
-            }
-
-            console.log(
-                `✅ Cleaned up ${futureInstances.length} future instances, orphaned ${pastInstances.length} past instances`
-            );
+            return res
+                .status(400)
+                .json({ error: 'There was a problem deleting the task.' });
         }
 
         const taskEvents = await TaskEvent.findAll({

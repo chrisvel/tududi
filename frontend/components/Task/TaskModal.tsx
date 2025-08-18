@@ -436,7 +436,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     useEffect(() => {
         if (isOpen && task.id) {
             // Always use provided initial subtasks (from parent component) or empty array
-            setSubtasks(initialSubtasks);
+            setSubtasks(initialSubtasks || []);
         } else if (!isOpen) {
             // Reset subtasks when modal closes
             setSubtasks([]);
