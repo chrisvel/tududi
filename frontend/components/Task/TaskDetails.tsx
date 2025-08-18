@@ -334,13 +334,13 @@ const TaskDetails: React.FC = () => {
                 await updateTask(task.id, updatedTask);
                 // Update the task in the global store
                 if (uid) {
-                    const updatedTask = await fetchTaskByUid(uid);
+                    const updatedTaskFromServer = await fetchTaskByUid(uid);
                     const existingIndex = tasksStore.tasks.findIndex(
                         (t: Task) => t.uid === uid
                     );
                     if (existingIndex >= 0) {
                         const updatedTasks = [...tasksStore.tasks];
-                        updatedTasks[existingIndex] = updatedTask;
+                        updatedTasks[existingIndex] = updatedTaskFromServer;
                         tasksStore.setTasks(updatedTasks);
                     }
                 }
@@ -813,13 +813,22 @@ const TaskDetails: React.FC = () => {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
+                                    <div
+                                        onClick={handleSubtaskClick}
+                                        className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6 cursor-pointer hover:border-blue-200 dark:hover:border-blue-700 transition-colors duration-200"
+                                    >
                                         <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                                             <ListBulletIcon className="h-12 w-12 mb-3 opacity-50" />
                                             <span className="text-sm text-center">
                                                 {t(
                                                     'task.noSubtasks',
                                                     'No subtasks yet'
+                                                )}
+                                            </span>
+                                            <span className="text-xs text-center mt-2 text-blue-500 dark:text-blue-400">
+                                                {t(
+                                                    'task.clickToAddSubtasks',
+                                                    'Click to add subtasks'
                                                 )}
                                             </span>
                                         </div>
@@ -1074,7 +1083,7 @@ const TaskDetails: React.FC = () => {
                         projects={projects}
                         onCreateProject={handleCreateProject}
                         showToast={false}
-                        initialSubtasks={subtasks}
+                        initialSubtasks={task.subtasks || task.Subtasks || []}
                         autoFocusSubtasks={focusSubtasks}
                     />
                 )}
