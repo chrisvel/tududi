@@ -24,6 +24,7 @@ export interface Task {
     recurrence_week_of_month?: number;
     completion_based?: boolean;
     recurring_parent_id?: number;
+    last_generated_date?: string;
     completed_at: string | null;
     parent_task_id?: number;
     subtasks?: Task[];

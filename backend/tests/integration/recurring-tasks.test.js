@@ -566,17 +566,19 @@ describe('Recurring Tasks API', () => {
             });
         });
 
-        it('should not delete recurring parent task when child tasks exist', async () => {
+        it('should smart delete recurring parent task - remove future instances, orphan past ones', async () => {
             const response = await agent.delete(`/api/task/${parentTask.id}`);
 
-            expect(response.status).toBe(400);
-            expect(response.body.error).toBe(
-                'There was a problem deleting the task.'
-            );
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe('Task successfully deleted');
 
-            // Verify task still exists
-            const taskStillExists = await Task.findByPk(parentTask.id);
-            expect(taskStillExists).not.toBeNull();
+            // Verify parent task is deleted
+            const deletedParent = await Task.findByPk(parentTask.id);
+            expect(deletedParent).toBeNull();
+
+            // Since childTask is NOT_STARTED with no due date, it should be considered future and deleted
+            const deletedChild = await Task.findByPk(childTask.id);
+            expect(deletedChild).toBeNull();
         });
 
         it('should delete recurring child task', async () => {
