@@ -140,7 +140,9 @@
       "dueDate": "Data de vencimento",
       "none": "Nenhum",
       "recurrenceEndDateChanged": "Data de término da recorrência alterada",
-      "recurrenceEndDate": "Data de término da recorrência"
+      "recurrenceEndDate": "Data de término da recorrência",
+      "recurrence_type_changed": "Tipo de recorrência alterado",
+      "recurrence_interval_changed": "Intervalo de recorrência alterado"
     },
     "justNow": "Agora mesmo",
     "minutesAgo": "{{minutes}}m atrás",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "excluída com sucesso!",
     "suggestions": {
       "short": "Tente ser mais específico sobre o que precisa ser feito",
-      "noVerb": "Qual ação específica você precisa realizar? Tente começar com um verbo."
+      "noVerb": "Qual ação específica você precisa realizar? Tente começar com um verbo.",
+      "vague": "Tente começar com um verbo de ação como \"Ligar\", \"Escrever\", \"Agendar\" ou \"Pesquisar\""
     },
     "nameHelper": {
       "title": "Torne-o mais descritivo!",

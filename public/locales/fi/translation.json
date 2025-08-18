@@ -140,7 +140,9 @@
       "dueDate": "Eräpäivä",
       "none": "Ei mitään",
       "recurrenceEndDateChanged": "Toistuvuuden päättymispäivämäärä on muuttunut",
-      "recurrenceEndDate": "Toistuvuuden päättymispäivämäärä"
+      "recurrenceEndDate": "Toistuvuuden päättymispäivämäärä",
+      "recurrence_type_changed": "Toistotyypin muutos",
+      "recurrence_interval_changed": "Toistovälin muutos"
     },
     "justNow": "Juuri nyt",
     "minutesAgo": "{{minutes}}m sitten",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "poistettiin onnistuneesti!",
     "suggestions": {
       "short": "Yritä olla tarkempi siitä, mitä on tehtävä",
-      "noVerb": "Mitä erityistä toimintoa sinun tarvitsee tehdä? Yritä aloittaa verbillä."
+      "noVerb": "Mitä erityistä toimintoa sinun tarvitsee tehdä? Yritä aloittaa verbillä.",
+      "vague": "Yritä aloittaa toimintaverbillä kuten \"Soita\", \"Kirjoita\", \"Aikatauluta\" tai \"Tutki\""
     },
     "nameHelper": {
       "title": "Tee siitä kuvaavampi!",

@@ -140,7 +140,9 @@
       "dueDate": "Data di scadenza",
       "none": "Nessuno",
       "recurrenceEndDateChanged": "Data di fine ricorrenza cambiata",
-      "recurrenceEndDate": "Data di fine ricorrenza"
+      "recurrenceEndDate": "Data di fine ricorrenza",
+      "recurrence_type_changed": "Tipo di ricorrenza cambiato",
+      "recurrence_interval_changed": "Intervallo di ricorrenza cambiato"
     },
     "justNow": "Proprio adesso",
     "minutesAgo": "{{minutes}}m fa",
@@ -615,7 +617,8 @@
     "deletedSuccessfully": "eliminata con successo!",
     "suggestions": {
       "short": "Prova a essere più specifico su cosa deve essere fatto",
-      "noVerb": "Quale azione specifica devi intraprendere? Prova a iniziare con un verbo."
+      "noVerb": "Quale azione specifica devi intraprendere? Prova a iniziare con un verbo.",
+      "vague": "Prova a iniziare con un verbo d'azione come \"Chiama\", \"Scrivi\", \"Pianifica\" o \"Ricerca\""
     },
     "nameHelper": {
       "title": "Rendila più descrittiva!",

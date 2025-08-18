@@ -140,7 +140,9 @@
       "dueDate": "Ngày đến hạn",
       "none": "Không có",
       "recurrenceEndDateChanged": "Ngày kết thúc chu kỳ đã thay đổi",
-      "recurrenceEndDate": "Ngày kết thúc chu kỳ"
+      "recurrenceEndDate": "Ngày kết thúc chu kỳ",
+      "recurrence_type_changed": "Loại tái diễn đã thay đổi",
+      "recurrence_interval_changed": "Khoảng thời gian tái diễn đã thay đổi"
     },
     "justNow": "Vừa xong",
     "minutesAgo": "{{minutes}} phút trước",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "đã được xóa thành công!",
     "suggestions": {
       "short": "Cố gắng cụ thể hơn về những gì cần làm",
-      "noVerb": "Bạn cần thực hiện hành động cụ thể nào? Hãy thử bắt đầu bằng một động từ."
+      "noVerb": "Bạn cần thực hiện hành động cụ thể nào? Hãy thử bắt đầu bằng một động từ.",
+      "vague": "Hãy bắt đầu với một động từ hành động như \"Gọi\", \"Viết\", \"Lên lịch\", hoặc \"Nghiên cứu\""
     },
     "nameHelper": {
       "title": "Hãy làm cho nó mô tả hơn!",

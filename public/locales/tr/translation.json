@@ -140,7 +140,9 @@
       "dueDate": "Son tarih",
       "none": "Yok",
       "recurrenceEndDateChanged": "Tekrar son tarihi değiştirildi",
-      "recurrenceEndDate": "Tekrar son tarihi"
+      "recurrenceEndDate": "Tekrar son tarihi",
+      "recurrence_type_changed": "Tekrar türü değişti",
+      "recurrence_interval_changed": "Tekrar aralığı değişti"
     },
     "justNow": "Şu anda",
     "minutesAgo": "{{minutes}}d önce",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "başarıyla silindi!",
     "suggestions": {
       "short": "Ne yapılması gerektiği konusunda daha spesifik olmaya çalışın",
-      "noVerb": "Hangi spesifik eylemi gerçekleştirmeniz gerekiyor? Bir fiil ile başlamayı deneyin."
+      "noVerb": "Hangi spesifik eylemi gerçekleştirmeniz gerekiyor? Bir fiil ile başlamayı deneyin.",
+      "vague": "\"Ara\", \"Yaz\", \"Planla\" veya \"Araştır\" gibi bir eylem fiili ile başlamayı deneyin"
     },
     "nameHelper": {
       "title": "Daha açıklayıcı hale getirin!",

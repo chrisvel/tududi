@@ -140,7 +140,9 @@
       "dueDate": "Forfaldsdato",
       "none": "Ingen",
       "recurrenceEndDateChanged": "Ændret slutdato for gentagelse",
-      "recurrenceEndDate": "Slutdato for gentagelse"
+      "recurrenceEndDate": "Slutdato for gentagelse",
+      "recurrence_type_changed": "Ændret gentagelsestype",
+      "recurrence_interval_changed": "Ændret gentagelsesinterval"
     },
     "justNow": "Lige nu",
     "minutesAgo": "{{minutes}}m siden",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "slettet med succes!",
     "suggestions": {
       "short": "Prøv at være mere specifik omkring, hvad der skal gøres",
-      "noVerb": "Hvilken specifik handling skal du udføre? Prøv at starte med et verbum."
+      "noVerb": "Hvilken specifik handling skal du udføre? Prøv at starte med et verbum.",
+      "vague": "Prøv at starte med et handlingsverb som \"Ring\", \"Skriv\", \"Planlæg\" eller \"Undersøg\""
     },
     "nameHelper": {
       "title": "Gør det mere beskrivende!",

@@ -147,7 +147,9 @@
       "dueDate": "Förfallodatum",
       "none": "Inga",
       "recurrenceEndDateChanged": "Återkommande slutdatum ändrat",
-      "recurrenceEndDate": "Återkommande slutdatum"
+      "recurrenceEndDate": "Återkommande slutdatum",
+      "recurrence_type_changed": "Återkommande typ ändrad",
+      "recurrence_interval_changed": "Återkommande intervall ändrat"
     }
   },
   "profile": {
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "borttagen framgångsrikt!",
     "suggestions": {
       "short": "Försök att vara mer specifik om vad som behöver göras",
-      "noVerb": "Vilken specifik åtgärd behöver du vidta? Försök börja med ett verb."
+      "noVerb": "Vilken specifik åtgärd behöver du vidta? Försök börja med ett verb.",
+      "vague": "Försök börja med ett handlingsverb som \"Ring\", \"Skriv\", \"Schemalägg\" eller \"Forska\""
     },
     "nameHelper": {
       "title": "Gör den mer beskrivande!",

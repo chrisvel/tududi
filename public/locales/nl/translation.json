@@ -140,7 +140,9 @@
       "dueDate": "Vervaldatum",
       "none": "Geen",
       "recurrenceEndDateChanged": "Einddatum van herhaling gewijzigd",
-      "recurrenceEndDate": "Einddatum van herhaling"
+      "recurrenceEndDate": "Einddatum van herhaling",
+      "recurrence_type_changed": "Herhalings type gewijzigd",
+      "recurrence_interval_changed": "Herhalingsinterval gewijzigd"
     },
     "justNow": "Net nu",
     "minutesAgo": "{{minutes}}m geleden",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "succesvol verwijderd!",
     "suggestions": {
       "short": "Probeer specifieker te zijn over wat er gedaan moet worden",
-      "noVerb": "Welke specifieke actie moet je ondernemen? Probeer te beginnen met een werkwoord."
+      "noVerb": "Welke specifieke actie moet je ondernemen? Probeer te beginnen met een werkwoord.",
+      "vague": "Probeer te beginnen met een actie werkwoord zoals \"Bel\", \"Schrijf\", \"Plan\" of \"Onderzoek\""
     },
     "nameHelper": {
       "title": "Maak het beschrijvender!",

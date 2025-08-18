@@ -140,7 +140,9 @@
       "dueDate": "Fälligkeitsdatum",
       "none": "Keine",
       "recurrenceEndDateChanged": "Das Enddatum der Wiederholung wurde geändert",
-      "recurrenceEndDate": "Enddatum der Wiederholung"
+      "recurrenceEndDate": "Enddatum der Wiederholung",
+      "recurrence_type_changed": "Wiederholungsart geändert",
+      "recurrence_interval_changed": "Wiederholungsintervall geändert"
     },
     "justNow": "Gerade eben",
     "minutesAgo": "{{minutes}}m her",
@@ -527,7 +529,8 @@
   "task": {
     "suggestions": {
       "short": "Versuchen Sie, spezifischer zu beschreiben, was getan werden muss",
-      "noVerb": "Welche spezifische Handlung müssen Sie durchführen? Versuchen Sie, mit einem Verb zu beginnen."
+      "noVerb": "Welche spezifische Handlung müssen Sie durchführen? Versuchen Sie, mit einem Verb zu beginnen.",
+      "vague": "Versuchen Sie, mit einem Aktionsverb wie \"Anrufen\", \"Schreiben\", \"Planen\" oder \"Recherchieren\" zu beginnen"
     },
     "nameHelper": {
       "title": "Machen Sie es beschreibender!",

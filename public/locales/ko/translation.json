@@ -140,7 +140,9 @@
       "dueDate": "마감일",
       "none": "없음",
       "recurrenceEndDateChanged": "반복 종료 날짜가 변경되었습니다",
-      "recurrenceEndDate": "반복 종료 날짜"
+      "recurrenceEndDate": "반복 종료 날짜",
+      "recurrence_type_changed": "반복 유형이 변경되었습니다",
+      "recurrence_interval_changed": "반복 간격이 변경되었습니다"
     },
     "justNow": "방금",
     "minutesAgo": "{{minutes}}분 전",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "성공적으로 삭제되었습니다!",
     "suggestions": {
       "short": "무엇을 해야 하는지 더 구체적으로 작성해 보세요",
-      "noVerb": "어떤 특정한 행동을 취해야 하나요? 동사로 시작해 보세요."
+      "noVerb": "어떤 특정한 행동을 취해야 하나요? 동사로 시작해 보세요.",
+      "vague": "\"전화하기\", \"작성하기\", \"일정 잡기\" 또는 \"조사하기\"와 같은 동사로 시작해 보세요"
     },
     "nameHelper": {
       "title": "더 설명적으로 만들어 보세요!",

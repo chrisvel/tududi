@@ -335,7 +335,9 @@
       "dueDate": "Fecha de vencimiento",
       "none": "Ninguno",
       "recurrenceEndDateChanged": "Fecha de finalización de la recurrencia cambiada",
-      "recurrenceEndDate": "Fecha de finalización de la recurrencia"
+      "recurrenceEndDate": "Fecha de finalización de la recurrencia",
+      "recurrence_type_changed": "Tipo de recurrencia cambiado",
+      "recurrence_interval_changed": "Intervalo de recurrencia cambiado"
     },
     "justNow": "Justo ahora",
     "minutesAgo": "{{minutes}}m hace",
@@ -556,7 +558,8 @@
     "saveAsTask": "Guardar como Tarea",
     "suggestions": {
       "short": "Trata de ser más específico acerca de lo que necesita hacerse",
-      "noVerb": "¿Qué acción específica necesita realizar? Intente comenzar con un verbo."
+      "noVerb": "¿Qué acción específica necesita realizar? Intente comenzar con un verbo.",
+      "vague": "Intenta comenzar con un verbo de acción como \"Llamar\", \"Escribir\", \"Programar\" o \"Investigar\""
     },
     "nameHelper": {
       "title": "¡Hazlo más descriptivo!",

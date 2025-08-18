@@ -140,7 +140,9 @@
       "dueDate": "Forfallsdato",
       "none": "Ingen",
       "recurrenceEndDateChanged": "Endringsdato for gjentakelse endret",
-      "recurrenceEndDate": "Endringsdato for gjentakelse"
+      "recurrenceEndDate": "Endringsdato for gjentakelse",
+      "recurrence_type_changed": "Gjentakelsestype endret",
+      "recurrence_interval_changed": "Gjentakelsesintervall endret"
     },
     "justNow": "Akkurat nå",
     "minutesAgo": "{{minutes}}m siden",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "slettet vellykket!",
     "suggestions": {
       "short": "Prøv å være mer spesifikk om hva som må gjøres",
-      "noVerb": "Hvilken spesifikk handling må du ta? Prøv å starte med et verb."
+      "noVerb": "Hvilken spesifikk handling må du ta? Prøv å starte med et verb.",
+      "vague": "Prøv å starte med et handlingsverb som \"Ring\", \"Skriv\", \"Planlegg\" eller \"Undersøk\""
     },
     "nameHelper": {
       "title": "Gjør det mer beskrivende!",

@@ -140,7 +140,9 @@
       "dueDate": "期限",
       "none": "なし",
       "recurrenceEndDateChanged": "繰り返し終了日が変更されました",
-      "recurrenceEndDate": "繰り返し終了日"
+      "recurrenceEndDate": "繰り返し終了日",
+      "recurrence_type_changed": "繰り返しタイプが変更されました",
+      "recurrence_interval_changed": "繰り返し間隔が変更されました"
     },
     "justNow": "たった今",
     "minutesAgo": "{{minutes}}分前",
@@ -643,7 +645,8 @@
   "task": {
     "suggestions": {
       "short": "何をする必要があるかについて、より具体的に記述してください",
-      "noVerb": "どの具体的なアクションを取る必要がありますか？動詞から始めてみてください。"
+      "noVerb": "どの具体的なアクションを取る必要がありますか？動詞から始めてみてください。",
+      "vague": "「電話する」、「書く」、「スケジュールする」、または「調査する」といった動作動詞から始めてみてください"
     },
     "nameHelper": {
       "title": "もっと詳しく記述しましょう！",

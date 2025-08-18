@@ -335,7 +335,9 @@
       "dueDate": "Ημερομηνία λήξης",
       "none": "Καμία",
       "recurrenceEndDateChanged": "Η ημερομηνία λήξης επανάληψης άλλαξε",
-      "recurrenceEndDate": "Η ημερομηνία λήξης επανάληψης"
+      "recurrenceEndDate": "Η ημερομηνία λήξης επανάληψης",
+      "recurrence_type_changed": "Ο τύπος επανάληψης άλλαξε",
+      "recurrence_interval_changed": "Το διάστημα επανάληψης άλλαξε"
     },
     "justNow": "Μόλις τώρα",
     "minutesAgo": "{{minutes}} λεπτά πριν",
