@@ -513,8 +513,8 @@
   "inbox": {
     "title": "Inkorg",
     "empty": "Inkorgen är tom",
-    "emptyDescription": "Ta tillvara på tankar och idéer snabbt med ⚡-ikonen i övre navigeringsfältet eller +-knappen i sidofältet",
-    "description": "I inkorgen finns alla okategoriserade uppgifter. Uppgifter som inte har tilldelats ett projekt eller inte har ett förfallodatum kommer att visas här. Det är din 'brain dump' där du snabbt kan notera uppgifter och organisera dem senare.",
+    "emptyDescription": "Ta tillvara på dina tankar och idéer med ⚡-ikonen i övre navigeringsfältet eller +-knappen i sidofältet",
+    "description": "I inkorgen finns alla okategoriserade uppgifter. Uppgifter som inte har tilldelats ett projekt eller inte har ett förfallodatum visas här. Det är din 'brain dump' där du snabbt kan skriva ner uppgifter och organisera dem senare.",
     "captureThought": "Ta tillvara på din tanke...",
     "saveToInbox": "Spara till Inkorgen",
     "itemAdded": "Objekt tillagt i inkorgen",
