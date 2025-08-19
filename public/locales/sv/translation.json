@@ -466,16 +466,15 @@
     "high": "Hög"
   },
   "status": {
-    "notStarted": "Ej påbörjad",
+    "notStarted": "Ej Påbörjad",
     "inProgress": "Pågående",
-    "done": "Utförd",
+    "done": "Klar",
     "archived": "Arkiverad",
     "unknown": "Okänd",
     "telegramConnected": "Telegram ansluten och pollar",
     "telegramConnectionProblem": "Problem med Telegram-anslutning",
     "completed": "Slutförd",
     "waiting": "Väntar"
-
   },
   "project": {
     "name": "Projektnamn",
