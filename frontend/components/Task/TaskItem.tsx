@@ -286,7 +286,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const handleSave = async (updatedTask: Task) => {
         try {
             await onTaskUpdate(updatedTask);
-        modalStore.closeTaskModal();
+            modalStore.closeTaskModal();
         } catch (error: any) {
             console.error('Task update failed:', error);
             showErrorToast(t('errors.permissionDenied', 'Permission denied'));
@@ -313,7 +313,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const handleDelete = async () => {
         if (task.id) {
             try {
-        	    modalStore.closeTaskModal();
+                modalStore.closeTaskModal();
                 await onTaskDelete(task.id);
             } catch (error: any) {
                 console.error('Task delete failed:', error);

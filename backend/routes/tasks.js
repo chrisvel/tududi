@@ -456,12 +456,12 @@ async function undoneAllSubtasks(parentTaskId, userId) {
 
 // Filter tasks by parameters
 async function filterTasksByParams(params, userId, userTimezone) {
-// Include owned or shared tasks; exclude subtasks by default
+    // Include owned or shared tasks; exclude subtasks by default
     const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
         'task',
-         'userId'
-             );
-if (params.type === 'upcoming') {
+        'userId'
+    );
+    if (params.type === 'upcoming') {
         // Remove search-related parameters to prevent search functionality
         params = { ...params, client_side_filtering: false };
         delete params.search;
@@ -707,12 +707,13 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
     const visibleTasksWhere =
         await permissionsService.ownershipOrPermissionWhere('task', userId);
     const totalOpenTasks = await Task.count({
-            where: { ...visibleTasksWhere,
+        where: {
+            ...visibleTasksWhere,
             status: { [Op.ne]: Task.STATUS.DONE },
-                     parent_task_id: null, // Exclude subtasks
-                                 recurring_parent_id: null, // Exclude recurring instances 
-                                        }
-                                            });
+            parent_task_id: null, // Exclude subtasks
+            recurring_parent_id: null, // Exclude recurring instances
+        },
+    });
 
     const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const tasksPendingOverMonth = await Task.count({
@@ -1425,11 +1426,11 @@ router.get(
                 return res.status(404).json({ error: 'Task not found.' });
             }
 
-        const serializedTask = await serializeTask(
-            task,
-            req.currentUser.timezone,
-            { skipDisplayNameTransform: true }
-        );
+            const serializedTask = await serializeTask(
+                task,
+                req.currentUser.timezone,
+                { skipDisplayNameTransform: true }
+            );
 
             res.json(serializedTask);
         } catch (error) {
@@ -1847,10 +1848,10 @@ router.patch(
                             : status
                         : Task.STATUS.NOT_STARTED,
                 note,
-            due_date: processDueDateForStorage(
-                due_date,
-                getSafeTimezone(req.currentUser.timezone)
-            ),
+                due_date: processDueDateForStorage(
+                    due_date,
+                    getSafeTimezone(req.currentUser.timezone)
+                ),
                 today: today !== undefined ? today : task.today,
                 recurrence_type:
                     recurrence_type !== undefined
@@ -1959,77 +1960,77 @@ router.patch(
                 taskAttributes.parent_task_id = null;
             }
 
-        // Check if any recurrence settings are changing and cleanup future instances if needed
-        const recurrenceFields = [
-            'recurrence_type',
-            'recurrence_interval',
-            'recurrence_end_date',
-            'recurrence_weekday',
-            'recurrence_month_day',
-            'recurrence_week_of_month',
-            'completion_based',
-        ];
+            // Check if any recurrence settings are changing and cleanup future instances if needed
+            const recurrenceFields = [
+                'recurrence_type',
+                'recurrence_interval',
+                'recurrence_end_date',
+                'recurrence_weekday',
+                'recurrence_month_day',
+                'recurrence_week_of_month',
+                'completion_based',
+            ];
 
-        const recurrenceChanged = recurrenceFields.some((field) => {
-            const newValue = req.body[field];
-            return newValue !== undefined && newValue !== task[field];
-        });
-
-        // Only cleanup if recurrence changed AND the old task was recurring (not 'none')
-        // This prevents cleanup when changing TO 'none' from 'none'
-        if (recurrenceChanged && task.recurrence_type !== 'none') {
-            // Find child instances of this recurring task
-            const childTasks = await Task.findAll({
-                where: { recurring_parent_id: task.id },
+            const recurrenceChanged = recurrenceFields.some((field) => {
+                const newValue = req.body[field];
+                return newValue !== undefined && newValue !== task[field];
             });
 
-            if (childTasks.length > 0) {
-                const now = new Date();
-
-                // Separate future and past instances
-                const futureInstances = childTasks.filter((child) => {
-                    if (!child.due_date) return true; // Tasks without due_date are considered future (not yet scheduled)
-                    return new Date(child.due_date) > now;
+            // Only cleanup if recurrence changed AND the old task was recurring (not 'none')
+            // This prevents cleanup when changing TO 'none' from 'none'
+            if (recurrenceChanged && task.recurrence_type !== 'none') {
+                // Find child instances of this recurring task
+                const childTasks = await Task.findAll({
+                    where: { recurring_parent_id: task.id },
                 });
 
-                // Only cleanup future instances if not changing to 'none'
+                if (childTasks.length > 0) {
+                    const now = new Date();
+
+                    // Separate future and past instances
+                    const futureInstances = childTasks.filter((child) => {
+                        if (!child.due_date) return true; // Tasks without due_date are considered future (not yet scheduled)
+                        return new Date(child.due_date) > now;
+                    });
+
+                    // Only cleanup future instances if not changing to 'none'
+                    const newRecurrenceType =
+                        recurrence_type !== undefined
+                            ? recurrence_type
+                            : task.recurrence_type;
+                    if (newRecurrenceType !== 'none') {
+                        // Delete future instances since recurrence changed
+                        for (const futureInstance of futureInstances) {
+                            await futureInstance.destroy();
+                        }
+                    }
+
+                    // Past instances remain as orphaned instances (no changes needed)
+                    // This allows users to keep their completed/in-progress work
+                }
+            }
+
+            await task.update(taskAttributes);
+
+            // Generate new recurring tasks after updating recurrence settings (if still recurring)
+            if (recurrenceChanged && task.recurrence_type !== 'none') {
                 const newRecurrenceType =
                     recurrence_type !== undefined
                         ? recurrence_type
                         : task.recurrence_type;
                 if (newRecurrenceType !== 'none') {
-                    // Delete future instances since recurrence changed
-                    for (const futureInstance of futureInstances) {
-                        await futureInstance.destroy();
+                    try {
+                        // Generate new recurring tasks for the updated pattern
+                        await generateRecurringTasks(req.currentUser.id, 7);
+                    } catch (error) {
+                        console.error(
+                            'Error generating new recurring tasks after update:',
+                            error
+                        );
+                        // Don't fail the update if regeneration fails
                     }
                 }
-
-                // Past instances remain as orphaned instances (no changes needed)
-                // This allows users to keep their completed/in-progress work
             }
-        }
-
-            await task.update(taskAttributes);
-
-        // Generate new recurring tasks after updating recurrence settings (if still recurring)
-        if (recurrenceChanged && task.recurrence_type !== 'none') {
-            const newRecurrenceType =
-                recurrence_type !== undefined
-                    ? recurrence_type
-                    : task.recurrence_type;
-            if (newRecurrenceType !== 'none') {
-                try {
-                    // Generate new recurring tasks for the updated pattern
-                    await generateRecurringTasks(req.currentUser.id, 7);
-                } catch (error) {
-                    console.error(
-                        'Error generating new recurring tasks after update:',
-                        error
-                    );
-                    // Don't fail the update if regeneration fails
-                }
-            }
-        }
             await updateTaskTags(task, tagsData, req.currentUser.id);
 
             // Handle subtasks updates
@@ -2268,9 +2269,9 @@ router.patch(
 
                 // Log all changes
                 if (Object.keys(changes).length > 0) {
-                await logTaskUpdate(task.id, req.currentUser.id, changes, {
-                    source: 'web',
-                });
+                    await logTaskUpdate(task.id, req.currentUser.id, changes, {
+                        source: 'web',
+                    });
                 }
 
                 // Check for tag changes (this is more complex due to the array comparison)
@@ -2288,7 +2289,7 @@ router.patch(
                         JSON.stringify(oldTagNames) !==
                         JSON.stringify(newTagNames)
                     ) {
-                    await logEvent({
+                        await logEvent({
                             taskId: task.id,
                             userId: req.currentUser.id,
                             eventType: 'tags_changed',
@@ -2321,11 +2322,11 @@ router.patch(
             });
 
             // Use serializeTask to include subtasks data
-        const serializedTask = await serializeTask(
-            taskWithAssociations,
-            req.currentUser.timezone,
-            { skipDisplayNameTransform: true }
-        );
+            const serializedTask = await serializeTask(
+                taskWithAssociations,
+                req.currentUser.timezone,
+                { skipDisplayNameTransform: true }
+            );
 
             res.json(serializedTask);
         } catch (error) {
@@ -2476,11 +2477,14 @@ router.patch(
             // Handle recurring task completion
             let nextTask = null;
             if (newStatus === Task.STATUS.DONE || newStatus === 'done') {
-            nextTask = await handleTaskCompletion(task);
+                nextTask = await handleTaskCompletion(task);
             }
 
             // Use serializeTask to include subtasks data
-        const response = await serializeTask(task, req.currentUser.timezone);
+            const response = await serializeTask(
+                task,
+                req.currentUser.timezone
+            );
 
             // If parent-child logic was executed, we might need to reload data
             // For now, let the frontend handle the refresh to avoid complex reloading logic
@@ -2533,46 +2537,47 @@ router.delete(
             if (!task) {
                 return res.status(404).json({ error: 'Task not found.' });
             }
-        // access ensured by middleware
+            // access ensured by middleware
 
-        // Check for child tasks - prevent deletion of parent tasks with children
+            // Check for child tasks - prevent deletion of parent tasks with children
             const childTasks = await Task.findAll({
                 where: { recurring_parent_id: req.params.id },
             });
 
-        // If this is a recurring parent task with children, prevent deletion
+            // If this is a recurring parent task with children, prevent deletion
             if (childTasks.length > 0) {
-            const now = new Date();
+                const now = new Date();
 
-            // Separate past and future instances
-            const futureInstances = childTasks.filter((child) => {
-                if (!child.due_date) return true; // Tasks without due_date are considered future (not yet scheduled)
-                return new Date(child.due_date) > now;
-            });
-
-            const pastInstances = childTasks.filter((child) => {
-                if (!child.due_date) return false; // Tasks without due_date are considered future, not past
-                return new Date(child.due_date) <= now;
-            });
-
-            // Delete future instances
-            for (const futureInstance of futureInstances) {
-                await futureInstance.destroy();
-            }
-
-            // Orphan past instances (remove parent relationship)
-            for (const pastInstance of pastInstances) {
-                await pastInstance.update({
-                    recurring_parent_id: null,
-                    recurrence_type: 'none',
-                    recurrence_interval: null,
-                    recurrence_end_date: null,
-                    last_generated_date: null,
-                    recurrence_weekday: null,
-                    recurrence_month_day: null,
-                    recurrence_week_of_month: null,
-                    completion_based: false,
+                // Separate past and future instances
+                const futureInstances = childTasks.filter((child) => {
+                    if (!child.due_date) return true; // Tasks without due_date are considered future (not yet scheduled)
+                    return new Date(child.due_date) > now;
                 });
+
+                const pastInstances = childTasks.filter((child) => {
+                    if (!child.due_date) return false; // Tasks without due_date are considered future, not past
+                    return new Date(child.due_date) <= now;
+                });
+
+                // Delete future instances
+                for (const futureInstance of futureInstances) {
+                    await futureInstance.destroy();
+                }
+
+                // Orphan past instances (remove parent relationship)
+                for (const pastInstance of pastInstances) {
+                    await pastInstance.update({
+                        recurring_parent_id: null,
+                        recurrence_type: 'none',
+                        recurrence_interval: null,
+                        recurrence_end_date: null,
+                        last_generated_date: null,
+                        recurrence_weekday: null,
+                        recurrence_month_day: null,
+                        recurrence_week_of_month: null,
+                        completion_based: false,
+                    });
+                }
             }
 
             const taskEvents = await TaskEvent.findAll({
@@ -2740,7 +2745,7 @@ router.patch(
 
             // Log the change
             try {
-            await logEvent({
+                await logEvent({
                     taskId: task.id,
                     userId: req.currentUser.id,
                     eventType: 'today_changed',
@@ -2755,10 +2760,10 @@ router.patch(
             }
 
             // Use serializeTask helper to ensure consistent response format including tags
-        const serializedTask = await serializeTask(
-            task,
-            req.currentUser.timezone
-        );
+            const serializedTask = await serializeTask(
+                task,
+                req.currentUser.timezone
+            );
             res.json(serializedTask);
         } catch (error) {
             console.error('Error toggling task today flag:', error);

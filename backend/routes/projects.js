@@ -285,7 +285,7 @@ router.get(
                         required: false,
                         where: {
                             parent_task_id: null,
-                        recurring_parent_id: null, // Exclude recurring task instances, only show templates
+                            recurring_parent_id: null, // Exclude recurring task instances, only show templates
                             // Include ALL tasks regardless of status for client-side filtering
                         },
                         include: [
@@ -315,7 +315,7 @@ router.get(
                         required: false,
                         attributes: [
                             'id',
-                        'uid',
+                            'uid',
                             'title',
                             'content',
                             'created_at',
@@ -573,33 +573,35 @@ router.delete(
             }
             // access ensured by middleware
 
-        // Use a transaction to ensure atomicity
-        await sequelize.transaction(async (transaction) => {
-            // Disable foreign key constraints for this operation
-            await sequelize.query('PRAGMA foreign_keys = OFF', { transaction });
-
-            try {
-                // First, orphan all tasks associated with this project by setting project_id to NULL
-                await Task.update(
-                    { project_id: null },
-                    {
-                        where: {
-                            project_id: req.params.id,
-                            user_id: req.session.userId,
-                        },
-                        transaction,
-                    }
-                );
-
-                // Then delete the project
-                await project.destroy({ transaction });
-            } finally {
-                // Re-enable foreign key constraints
-                await sequelize.query('PRAGMA foreign_keys = ON', {
+            // Use a transaction to ensure atomicity
+            await sequelize.transaction(async (transaction) => {
+                // Disable foreign key constraints for this operation
+                await sequelize.query('PRAGMA foreign_keys = OFF', {
                     transaction,
                 });
-            }
-        });
+
+                try {
+                    // First, orphan all tasks associated with this project by setting project_id to NULL
+                    await Task.update(
+                        { project_id: null },
+                        {
+                            where: {
+                                project_id: req.params.id,
+                                user_id: req.session.userId,
+                            },
+                            transaction,
+                        }
+                    );
+
+                    // Then delete the project
+                    await project.destroy({ transaction });
+                } finally {
+                    // Re-enable foreign key constraints
+                    await sequelize.query('PRAGMA foreign_keys = ON', {
+                        transaction,
+                    });
+                }
+            });
 
             res.json({ message: 'Project successfully deleted' });
         } catch (error) {
