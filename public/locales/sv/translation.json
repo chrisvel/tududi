@@ -564,7 +564,7 @@
     "upcoming": "Denna vy visar uppgifter som är schemalagda för den kommande veckan. Den hjälper dig att förbereda dig och ligga steget före deadlines genom att ge dig en översikt över det arbete du behöver ta itu med inom kort. Uppgifter med förfallodatum inom de kommande sju dagarna visas här.",
     "someday": "\"Någon gång\"-vyn är för uppgifter som inte är brådskande och inte har ett specifikt förfallodatum. Det här är uppgifter som du kanske vill ta itu med vid något tillfälle, men de är inte en prioritet just nu. Använd den här sektionen för att hålla koll på idéer eller långsiktiga mål.",
     "completed": "Här kan du se alla uppgifter du har slutfört. Det är ett utmärkt sätt att granska dina prestationer och reflektera över det arbete du har slutfört. Du kan också hitta uppgifter som kan behöva avarkiveras eller refereras till i framtiden.",
-    "allTasks": "Du ser alla uppgifter. Detta inkluderar uppgifter från olika projekt, uppgifter utan specifika förfallodatum och uppgifter med varierande prioritet. Använd denna vy för en övergripande bild av allt på din att-göra-lista."
+    "allTasks": "Här ser du alla uppgifter. Det inkluderar uppgifter från olika projekt, utan specifika förfallodatum och med varierande prioritet. Använd denna vy för en övergripande bild av allt på din att-göra-lista."
   },
   "success": {
     "noteUpdated": "Anteckning uppdaterad!",
