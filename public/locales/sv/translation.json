@@ -106,7 +106,7 @@
     "metrics": "Mätvärden",
     "myPlanToday": "Min plan för idag",
     "noPlanToday": "Inga uppgifter har planerats för idag.",
-    "addToPlanHint": "Klicka på 🗓 'lägg till idag plan' ikonen till höger om en uppgift för att lägga till den här",
+    "addToPlanHint": "Klicka på 🗓 'lägg till i dagens plan'-ikonen till höger om en uppgift för att lägga till den här",
     "blankSlateHint": "Börja med att skapa en ny uppgift eller ändra dina filter.",
     "addToToday": "Lägg till i dagens plan",
     "removeFromToday": "Ta bort från dagens plan",
@@ -559,9 +559,9 @@
       "noName": "Du tittar på uppgifter för ett specifikt projekt. Använd detta utrymme för att hantera och följa uppgifter kopplade till detta projekt."
     },
     "today": "Detta är de uppgifter som ska vara klara idag eller uppgifter som du har schemalagt för omedelbar uppmärksamhet. Använd denna vy för att fokusera på vad som behöver slutföras idag. Markera uppgifter som slutförda, uppdatera deras status eller justera deras förfallodatum om det behövs.",
-    "inbox": "Inkorgen är där alla okategoriserade uppgifter finns. Uppgifter som inte har tilldelats ett projekt eller fått ett förfallodatum kommer att visas här. Detta är ditt \"hjärnavlopp\"-område där du snabbt kan skriva ner uppgifter och organisera dem senare.",
+    "inbox": "Inkorgen är där alla okategoriserade uppgifter finns. De som inte har tilldelats ett projekt eller fått ett förfallodatum kommer att visas här. Detta är ditt \"hjärnavlopp\"-område där du snabbt kan skriva ner uppgifter och organisera dem senare.",
     "next": "Denna vy visar alla uppgifter som är handlingsbara inom en snar framtid. Dessa uppgifter är redo att arbetas med härnäst och har inga långsiktiga deadlines. Det är en bra plats att fokusera på när du vill göra snabba framsteg med uppgifter.",
-    "upcoming": "Denna vy framhäver uppgifter som är schemalagda för den kommande veckan. Den hjälper dig att förbereda dig och ligga steget före deadlines genom att ge dig en översikt över det arbete du behöver ta itu med inom en snar framtid. Uppgifter med förfallodatum inom de kommande 7 dagarna kommer att visas här.",
+    "upcoming": "Denna vy visar uppgifter som är schemalagda för den kommande veckan. Den hjälper dig att förbereda dig och ligga steget före deadlines genom att ge dig en översikt över det arbete du behöver ta itu med inom kort. Uppgifter med förfallodatum inom de kommande sju dagarna visas här.",
     "someday": "\"Någon gång\"-vyn är för uppgifter som inte är brådskande och inte har ett specifikt förfallodatum. Det här är uppgifter som du kanske vill ta itu med vid något tillfälle, men de är inte en prioritet just nu. Använd den här sektionen för att hålla koll på idéer eller långsiktiga mål.",
     "completed": "Här kan du se alla uppgifter du har slutfört. Det är ett utmärkt sätt att granska dina prestationer och reflektera över det arbete du har slutfört. Du kan också hitta uppgifter som kan behöva avarkiveras eller refereras till i framtiden.",
     "allTasks": "Du ser alla uppgifter. Detta inkluderar uppgifter från olika projekt, uppgifter utan specifika förfallodatum och uppgifter med varierande prioritet. Använd denna vy för en övergripande bild av allt på din att-göra-lista."
