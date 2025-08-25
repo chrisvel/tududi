@@ -60,6 +60,29 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         scrollToBottom();
     };
 
+    const makeSubtask = (name: string): Task => ({
+        name: name.trim(),
+        status: 'not_started',
+        priority: 'low',
+        today: false,
+        parent_task_id: parentTaskId,
+        isNew: true,
+        _isNew: true,
+        completed_at: null,
+    } as Task);
+
+    const handleCreateSubtasks = (names: string[]) => {
+        const cleaned = names.map(n => n.trim()).filter(Boolean);
+        if (cleaned.length === 0) {
+            return;
+        }
+
+        const newOnes = cleaned.map(makeSubtask);
+        onSubtasksChange([...subtasks, ...newOnes]);
+        setNewSubtaskName('');
+        scrollToBottom();
+    };
+
     const handleDeleteSubtask = (index: number) => {
         const updatedSubtasks = subtasks.filter((_, i) => i !== index);
         onSubtasksChange(updatedSubtasks);
@@ -324,6 +347,11 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                     value={newSubtaskName}
                     onChange={(e) => setNewSubtaskName(e.target.value)}
                     onKeyDown={handleKeyPress}
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      const text = e.clipboardData.getData('text');
+                      handleCreateSubtasks(text.split(/\r?\n/));
+                    }}
                     placeholder={t('subtasks.placeholder', 'Add a subtask...')}
                     className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                 />
