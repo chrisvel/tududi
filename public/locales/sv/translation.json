@@ -316,11 +316,11 @@
     "suggestion": "Eftersom det inte finns något pågående, vad sägs om att börja med",
     "suggestionTodayPlan": "Eftersom det inte finns något pågående, vad sägs om att börja med denna uppgift från din dagens plan",
     "suggestionDueToday": "Eftersom det inte finns något pågående, vad sägs om att börja med denna uppgift som förfaller idag",
-    "suggestionSuggested": "Eftersom det inte finns något pågående, vad sägs om att börja med denna föreslagna uppgift",
-    "letsDoIt": "Ja, låt oss göra det!",
+    "suggestionSuggested": "Eftersom det inte finns något pågående, vad sägs om att börja med denna uppgift",
+    "letsDoIt": "Ja, den gör vi!",
     "starting": "Startar...",
     "startedSuccessfully": "Uppgift startad!",
-    "giveMeSomethingElse": "Ge mig något annat"
+    "giveMeSomethingElse": "Ge mig en annan"
   },
   "modals": {
     "confirmDelete": "Är du säker på att du vill ta bort?",
