@@ -37,7 +37,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         }, 100);
     };
 
-    const makeSubtask = (name: string): Task => ({
+    const newSubtask = (name: string): Task => ({
         name: name.trim(),
         status: 'not_started',
         priority: 'low',
@@ -57,7 +57,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
             return;
         }
 
-        const newOnes = cleaned.map(makeSubtask);
+        const newOnes = cleaned.map(newSubtask);
 
         onSubtasksChange([...subtasks, ...newOnes]);
         setNewSubtaskName('');
