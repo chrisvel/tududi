@@ -37,51 +37,37 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         }, 100);
     };
 
-    const handleCreateSubtask = () => {
-        if (!newSubtaskName.trim()) return;
+    const makeSubtask = (name: string): Task => ({
+        name: name.trim(),
+        status: 'not_started',
+        priority: 'low',
+        today: false,
+        parent_task_id: parentTaskId, // Set the parent task ID immediately
+        // Mark as new for backend processing
+        isNew: true,
+        // Also keep for UI purposes
+        _isNew: true,
+        completed_at: null,
+    } as Task);
 
-        const newSubtask: Task = {
-            name: newSubtaskName.trim(),
-            status: 'not_started',
-            priority: 'low',
-            today: false,
-            parent_task_id: parentTaskId, // Set the parent task ID immediately
-            // Mark as new for backend processing
-            isNew: true,
-            // Also keep for UI purposes
-            _isNew: true,
-            completed_at: null,
-        } as Task;
+    const addSubtasks = (names: string | string[]) => {
+        const list = Array.isArray(names) ? names : [names];
+        const cleaned = list.map(n => n.trim()).filter(Boolean);
+        if (cleaned.length === 0) {
+            return;
+        }
 
-        onSubtasksChange([...subtasks, newSubtask]);
+        const newOnes = cleaned.map(makeSubtask);
+
+        onSubtasksChange([...subtasks, ...newOnes]);
         setNewSubtaskName('');
 
         // Only scroll when adding new subtask, not when toggling completion
         scrollToBottom();
     };
 
-    const makeSubtask = (name: string): Task => ({
-        name: name.trim(),
-        status: 'not_started',
-        priority: 'low',
-        today: false,
-        parent_task_id: parentTaskId,
-        isNew: true,
-        _isNew: true,
-        completed_at: null,
-    } as Task);
-
-    const handleCreateSubtasks = (names: string[]) => {
-        const cleaned = names.map(n => n.trim()).filter(Boolean);
-        if (cleaned.length === 0) {
-            return;
-        }
-
-        const newOnes = cleaned.map(makeSubtask);
-        onSubtasksChange([...subtasks, ...newOnes]);
-        setNewSubtaskName('');
-        scrollToBottom();
-    };
+    const handleCreateSubtask = () => addSubtasks(newSubtaskName);
+    const handleCreateSubtasks = (names: string[]) => addSubtasks(names);
 
     const handleDeleteSubtask = (index: number) => {
         const updatedSubtasks = subtasks.filter((_, i) => i !== index);
