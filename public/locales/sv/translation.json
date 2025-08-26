@@ -310,7 +310,7 @@
     "stuckProjectsDesc": "Projekt som inte har uppdaterats nyligen",
     "issuesFound": "Hittade {{count}} produktivitetsproblem som behöver uppmärksammas",
     "reviewItems": "Klicka för att granska och förbättra ditt arbetsflöde",
-    "suggestion": "Klicka på vilket objekt som helst ovan för att öppna det och göra förbättringar."
+    "suggestion": "Klicka på ett objekt ovan för att öppna och förbättra det."
   },
   "nextTask": {
     "suggestion": "Eftersom det inte finns något pågående, vad sägs om att börja med",
