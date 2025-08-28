@@ -292,7 +292,7 @@
     "accountSettings": "Konto & Inställningar",
     "aiProductivityFeatures": "AI & Produktivitetsfunktioner",
     "botSetup": "Bot-inställningar",
-    "passwordChangeNote": "Ändringar av lösenordet sparas när du klickar på \"Spara Ändringar\" längst ner i formuläret.",
+    "passwordChangeNote": "Ändringar av lösenordet sparas när du klickar på \"Spara ändringar\" längst ner i formuläret.",
     "passwordChangeOptional": "Lämna lösenordsfälten tomma för att uppdatera andra inställningar utan att ändra ditt lösenord."
   },
   "productivity": {
