@@ -129,6 +129,7 @@ import { toggleTaskCompletion, fetchSubtasks } from '../../utils/tasksService';
 import { isTaskOverdue } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import { useStore } from '../../store/useStore';
 
 interface TaskItemProps {
     task: Task;
@@ -153,7 +154,8 @@ const TaskItem: React.FC<TaskItemProps> = ({
 }) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { modalStore } = useStore();
+    const isModalOpen = modalStore.isTaskModalOpen(task.id);
     const [subtaskModalOpen, setSubtaskModalOpen] = useState(false);
     const [selectedSubtask, setSelectedSubtask] = useState<Task | null>(null);
     const [projectList, setProjectList] = useState<Project[]>(projects);
@@ -196,7 +198,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         // Update subtasks and hasSubtasks state based on task data
         setHasSubtasks(hasSubtasksFromData);
         setSubtasks(subtasksData);
-    }, [task.id, task.updated_at, task.subtasks, task.Subtasks]);
+    }, [task.id, task.subtasks, task.Subtasks]); // Removed task.updated_at which was causing frequent re-renders
 
     const loadSubtasks = async () => {
         if (!task.id) return;
@@ -281,13 +283,13 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     const handleSave = async (updatedTask: Task) => {
         await onTaskUpdate(updatedTask);
-        setIsModalOpen(false);
+        modalStore.closeTaskModal();
     };
 
     const handleEdit = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsModalOpen(true);
+        modalStore.openTaskModal(task.id);
     };
 
     const handleDeleteClick = (e: React.MouseEvent) => {
@@ -303,6 +305,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     const handleDelete = async () => {
         if (task.id) {
+            modalStore.closeTaskModal(); // Close modal when deleting
             onTaskDelete(task.id);
         }
     };
@@ -408,7 +411,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     return (
         <>
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-hidden transition-all duration-200 ease-in-out ${
+                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-all duration-200 ease-in-out ${
                     isInProgress
                         ? 'border-2 border-green-400/60 dark:border-green-500/60'
                         : ''
@@ -476,12 +479,13 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
             <TaskModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => modalStore.closeTaskModal()}
                 task={task}
                 onSave={handleSave}
                 onDelete={handleDelete}
                 projects={projectList}
                 onCreateProject={handleCreateProject}
+                initialSubtasks={task.subtasks || task.Subtasks || []}
             />
 
             {selectedSubtask && (

@@ -147,7 +147,9 @@
       "dueDate": "Rok",
       "none": "Nič",
       "recurrenceEndDateChanged": "Datum konca ponavljanja se je spremenil",
-      "recurrenceEndDate": "Datum konca ponavljanja"
+      "recurrenceEndDate": "Datum konca ponavljanja",
+      "recurrence_type_changed": "Vrsta ponavljanja se je spremenila",
+      "recurrence_interval_changed": "Interval ponavljanja se je spremenil"
     }
   },
   "profile": {
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "uspešno izbrisano!",
     "suggestions": {
       "short": "Poskusite biti bolj specifični glede tega, kaj je treba narediti",
-      "noVerb": "Katero specifično dejanje morate izvesti? Poskusite začeti z glagolom."
+      "noVerb": "Katero specifično dejanje morate izvesti? Poskusite začeti z glagolom.",
+      "vague": "Poskusite začeti z glagolom, kot je \"Pokliči\", \"Napiši\", \"Načrtuj\" ali \"Raziskuj\""
     },
     "nameHelper": {
       "title": "Naredite ga bolj opisnega!",

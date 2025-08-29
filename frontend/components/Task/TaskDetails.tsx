@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -333,13 +333,13 @@ const TaskDetails: React.FC = () => {
                 await updateTask(task.id, updatedTask);
                 // Update the task in the global store
                 if (uid) {
-                    const updatedTask = await fetchTaskByUid(uid);
+                    const updatedTaskFromServer = await fetchTaskByUid(uid);
                     const existingIndex = tasksStore.tasks.findIndex(
                         (t: Task) => t.uid === uid
                     );
                     if (existingIndex >= 0) {
                         const updatedTasks = [...tasksStore.tasks];
-                        updatedTasks[existingIndex] = updatedTask;
+                        updatedTasks[existingIndex] = updatedTaskFromServer;
                         tasksStore.setTasks(updatedTasks);
                     }
                 }
@@ -391,31 +391,6 @@ const TaskDetails: React.FC = () => {
             throw error;
         }
     };
-
-    const handleSubtaskClick = useCallback(
-        (e: React.MouseEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-            e.nativeEvent.stopImmediatePropagation();
-
-            // Store the intent to open modal in sessionStorage (survives re-mounts)
-            const modalState = {
-                isOpen: true,
-                focusSubtasks: true,
-                taskId: uid,
-                timestamp: Date.now(),
-            };
-            sessionStorage.setItem(
-                'pendingModalState',
-                JSON.stringify(modalState)
-            );
-
-            // Set state immediately
-            setFocusSubtasks(true);
-            setIsTaskModalOpen(true);
-        },
-        [uid]
-    );
 
     if (loading) {
         return <LoadingScreen />;
@@ -699,8 +674,7 @@ const TaskDetails: React.FC = () => {
                                                 className="group"
                                             >
                                                 <div
-                                                    onClick={handleSubtaskClick}
-                                                    className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 cursor-pointer transition-all duration-200 ${
+                                                    className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 transition-all duration-200 ${
                                                         subtask.status ===
                                                             'in_progress' ||
                                                         subtask.status === 1
@@ -1073,7 +1047,7 @@ const TaskDetails: React.FC = () => {
                         projects={projects}
                         onCreateProject={handleCreateProject}
                         showToast={false}
-                        initialSubtasks={subtasks}
+                        initialSubtasks={task.subtasks || task.Subtasks || []}
                         autoFocusSubtasks={focusSubtasks}
                     />
                 )}

@@ -140,7 +140,9 @@
       "dueDate": "Tanggal jatuh tempo",
       "none": "Tidak ada",
       "recurrenceEndDateChanged": "Tanggal akhir pengulangan telah diubah",
-      "recurrenceEndDate": "Tanggal akhir pengulangan"
+      "recurrenceEndDate": "Tanggal akhir pengulangan",
+      "recurrence_type_changed": "Tipe pengulangan berubah",
+      "recurrence_interval_changed": "Interval pengulangan berubah"
     },
     "justNow": "Baru saja",
     "minutesAgo": "{{minutes}}m yang lalu",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "berhasil dihapus!",
     "suggestions": {
       "short": "Cobalah untuk lebih spesifik tentang apa yang perlu dilakukan",
-      "noVerb": "Apa tindakan spesifik yang perlu Anda ambil? Cobalah mulai dengan kata kerja."
+      "noVerb": "Apa tindakan spesifik yang perlu Anda ambil? Cobalah mulai dengan kata kerja.",
+      "vague": "Cobalah mulai dengan kata kerja aksi seperti \"Panggil\", \"Tulis\", \"Jadwalkan\", atau \"Riset\""
     },
     "nameHelper": {
       "title": "Buat lebih deskriptif!",

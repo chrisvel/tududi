@@ -140,7 +140,9 @@
       "dueDate": "截止日期",
       "none": "无",
       "recurrenceEndDateChanged": "重复结束日期已更改",
-      "recurrenceEndDate": "重复结束日期"
+      "recurrenceEndDate": "重复结束日期",
+      "recurrence_type_changed": "重复类型已更改",
+      "recurrence_interval_changed": "重复间隔已更改"
     },
     "justNow": "刚刚",
     "minutesAgo": "{{minutes}}分钟前",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "成功删除！",
     "suggestions": {
       "short": "尽量更具体地说明需要完成的任务",
-      "noVerb": "您需要采取什么具体行动？尝试以动词开头。"
+      "noVerb": "您需要采取什么具体行动？尝试以动词开头。",
+      "vague": "尝试以动词开头，例如 \"拨打电话\"、\"写作\"、\"安排\" 或 \"研究\""
     },
     "nameHelper": {
       "title": "让它更具描述性！",

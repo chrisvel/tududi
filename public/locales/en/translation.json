@@ -136,6 +136,8 @@
       "priorityChanged": "Priority changed",
       "dueDateChanged": "Due date changed",
       "recurrenceEndDateChanged": "Recurrence end date changed",
+      "recurrence_type_changed": "Recurrence type changed",
+      "recurrence_interval_changed": "Recurrence interval changed",
       "nameUpdated": "Name updated",
       "descriptionUpdated": "Description updated",
       "noteUpdated": "Note updated",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "deleted successfully!",
     "suggestions": {
       "short": "Try to be more specific about what needs to be done",
-      "noVerb": "What specific action do you need to take? Try starting with a verb."
+      "noVerb": "What specific action do you need to take? Try starting with a verb.",
+      "vague": "Try starting with an action verb like \"Call\", \"Write\", \"Schedule\", or \"Research\""
     },
     "nameHelper": {
       "title": "Make it more descriptive!",

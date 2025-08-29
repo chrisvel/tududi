@@ -86,6 +86,13 @@ interface InboxStore {
     setError: (isError: boolean) => void;
 }
 
+interface ModalStore {
+    openTaskModalId: number | null;
+    openTaskModal: (taskId: number) => void;
+    closeTaskModal: () => void;
+    isTaskModalOpen: (taskId: number) => boolean;
+}
+
 interface StoreState {
     notesStore: NotesStore;
     areasStore: AreasStore;
@@ -93,6 +100,7 @@ interface StoreState {
     tagsStore: TagsStore;
     tasksStore: TasksStore;
     inboxStore: InboxStore;
+    modalStore: ModalStore;
 }
 
 export const useStore = create<StoreState>((set: any) => ({
@@ -607,5 +615,20 @@ export const useStore = create<StoreState>((set: any) => ({
             set((state) => ({
                 inboxStore: { ...state.inboxStore, isError },
             })),
+    },
+    modalStore: {
+        openTaskModalId: null,
+        openTaskModal: (taskId: number) =>
+            set((state) => ({
+                modalStore: { ...state.modalStore, openTaskModalId: taskId },
+            })),
+        closeTaskModal: () =>
+            set((state) => ({
+                modalStore: { ...state.modalStore, openTaskModalId: null },
+            })),
+        isTaskModalOpen: (taskId: number) => {
+            const state = useStore.getState();
+            return state.modalStore.openTaskModalId === taskId;
+        },
     },
 }));

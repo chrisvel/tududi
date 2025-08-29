@@ -42,24 +42,30 @@ RUN npm cache clean --force && \
 ####################
 # Production stage #
 ####################
-FROM node:22-alpine AS production
+FROM ubuntu:22.04 AS production
 
 ENV APP_UID=1001
 ENV APP_GID=1001
 
-RUN addgroup -g ${APP_GID} -S app && \
-    adduser -S app -u ${APP_UID} -G app
-
-RUN apk add --no-cache --virtual .runtime-deps \
-    sqlite \
-    openssl \
+# Install Node.js 22 and runtime dependencies
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     curl \
-    procps-ng \
+    ca-certificates \
+    sqlite3 \
+    openssl \
+    procps \
     dumb-init \
     bash \
-    su-exec && \
-    rm -rf /var/cache/apk/* /tmp/* && \
+    gosu && \
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     rm -rf /usr/share/man /usr/share/doc /usr/share/info
+
+# Create app user and group
+RUN groupadd -g ${APP_GID} app && \
+    useradd -m -u ${APP_UID} -g app app
 
 # Set working directory
 WORKDIR /app
@@ -82,10 +88,8 @@ COPY --from=builder --chown=app:app /app/package.json /app/
 RUN mkdir -p /app/backend/db /app/backend/certs /app/backend/uploads
 
 # Cleanup
-RUN apk del --no-cache .runtime-deps sqlite openssl curl && \
-    apk add --no-cache sqlite-libs openssl curl dumb-init su-exec && \
-    rm -rf /usr/local/lib/node_modules/npm/docs /usr/local/lib/node_modules/npm/man && \
-    rm -rf /root/.npm /tmp/* /var/tmp/* /var/cache/apk/*
+RUN rm -rf /usr/local/lib/node_modules/npm/docs /usr/local/lib/node_modules/npm/man && \
+    rm -rf /root/.npm /tmp/* /var/tmp/*
 
 VOLUME ["/app/backend/db"]
 VOLUME ["/app/backend/uploads"]

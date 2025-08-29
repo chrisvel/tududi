@@ -140,7 +140,9 @@
       "dueDate": "Termin",
       "none": "Brak",
       "recurrenceEndDateChanged": "Data zakończenia powtarzania została zmieniona",
-      "recurrenceEndDate": "Data zakończenia powtarzania"
+      "recurrenceEndDate": "Data zakończenia powtarzania",
+      "recurrence_type_changed": "Typ powtarzania zmieniony",
+      "recurrence_interval_changed": "Interwał powtarzania zmieniony"
     },
     "justNow": "Właśnie teraz",
     "minutesAgo": "{{minutes}}m temu",
@@ -614,7 +616,8 @@
     "deletedSuccessfully": "usunięte pomyślnie!",
     "suggestions": {
       "short": "Spróbuj być bardziej szczegółowy w tym, co należy zrobić",
-      "noVerb": "Jaką konkretną akcję musisz podjąć? Spróbuj zacząć od czasownika."
+      "noVerb": "Jaką konkretną akcję musisz podjąć? Spróbuj zacząć od czasownika.",
+      "vague": "Spróbuj zacząć od czasownika akcji, takiego jak \"Zadzwoń\", \"Napisz\", \"Zaplanuj\" lub \"Zbadaj\""
     },
     "nameHelper": {
       "title": "Uczyń to bardziej opisowym!",
