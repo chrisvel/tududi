@@ -1,0 +1,42 @@
+{
+    "id": "deadline_with_date",
+    "name": "Deadline Detection → Task with Due Date",
+    "description": "When text mentions specific deadlines, extract due date",
+    "priority": 250,
+    "examples": [
+        "Submit report by Friday +Work",
+        "Send proposal by tomorrow +Sales",
+        "Complete project by next Monday +Development"
+    ],
+    "conditions": {
+        "and": [
+            { "type": "has_project", "value": true },
+            {
+                "type": "contains_keywords",
+                "value": ["by", "deadline", "due"]
+            },
+            {
+                "type": "contains_keywords",
+                "value": [
+                    "friday",
+                    "monday",
+                    "tuesday",
+                    "wednesday",
+                    "thursday",
+                    "saturday",
+                    "sunday",
+                    "tomorrow",
+                    "today"
+                ]
+            }
+        ]
+    },
+    "action": {
+        "suggested_type": "task",
+        "suggested_reason": "deadline_detected",
+        "suggested_priority": "medium",
+        "suggested_due_date": {
+            "type": "extracted"
+        }
+    }
+}

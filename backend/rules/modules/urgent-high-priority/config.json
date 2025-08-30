@@ -1,0 +1,35 @@
+{
+    "id": "urgent_high_priority",
+    "name": "Urgent Items → High Priority Task",
+    "description": "When text contains urgent keywords, create high priority task",
+    "priority": 300,
+    "examples": [
+        "URGENT: Call client about contract +Sales",
+        "Critical bug in production +DevOps",
+        "ASAP meeting with stakeholders +Management"
+    ],
+    "conditions": {
+        "and": [
+            {
+                "type": "contains_keywords",
+                "value": [
+                    "urgent",
+                    "critical",
+                    "asap",
+                    "emergency",
+                    "immediately"
+                ]
+            }
+        ]
+    },
+    "action": {
+        "suggested_type": "task",
+        "suggested_reason": "urgent_priority",
+        "suggested_priority": "high",
+        "suggested_tags": ["urgent"],
+        "suggested_due_date": {
+            "type": "relative",
+            "value": "today"
+        }
+    }
+}
