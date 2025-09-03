@@ -453,36 +453,10 @@ async function undoneAllSubtasks(parentTaskId, userId) {
 
 // Filter tasks by parameters
 async function filterTasksByParams(params, userId, userTimezone) {
-    const safeTimezone = getSafeTimezone(userTimezone);
-    const now = moment.tz(safeTimezone);
-    const yesterday = now.clone().subtract(1, 'day').endOf('day').toDate();
-
     let whereClause = {
         user_id: userId,
         parent_task_id: null, // Exclude subtasks from main task lists
         recurring_parent_id: null, // Exclude recurring task instances, only show templates
-        [Op.or]: [
-            // Include non-recurring tasks (even if overdue)
-            {
-                [Op.or]: [
-                    { recurrence_type: 'none' },
-                    { recurrence_type: null },
-                ],
-            },
-            // Include recurring templates that are not overdue
-            {
-                [Op.and]: [
-                    { recurrence_type: { [Op.ne]: 'none' } },
-                    { recurrence_type: { [Op.ne]: null } },
-                    {
-                        [Op.or]: [
-                            { due_date: null }, // No due date
-                            { due_date: { [Op.gte]: yesterday } }, // Due date is not in the past
-                        ],
-                    },
-                ],
-            },
-        ],
     };
     let includeClause = [
         {
@@ -526,11 +500,37 @@ async function filterTasksByParams(params, userId, userTimezone) {
             const safeTimezone = getSafeTimezone(userTimezone);
             const upcomingRange = getUpcomingRangeInUTC(safeTimezone, 7);
 
-            whereClause.due_date = {
-                [Op.between]: [upcomingRange.start, upcomingRange.end],
+            // For upcoming view, we want to show recurring instances (children) with due dates
+            // Override the default whereClause to include recurring instances
+            whereClause = {
+                user_id: userId,
+                parent_task_id: null, // Exclude subtasks from main task lists
+                due_date: {
+                    [Op.between]: [upcomingRange.start, upcomingRange.end],
+                },
+                status: { [Op.notIn]: [Task.STATUS.DONE, 'done'] },
+                [Op.or]: [
+                    // Include non-recurring tasks
+                    {
+                        [Op.and]: [
+                            { recurring_parent_id: null },
+                            {
+                                [Op.or]: [
+                                    { recurrence_type: 'none' },
+                                    { recurrence_type: null },
+                                ],
+                            },
+                        ],
+                    },
+                    // Include recurring task instances (children) - this is the key change!
+                    {
+                        [Op.and]: [
+                            { recurring_parent_id: { [Op.ne]: null } }, // Has a parent (is an instance)
+                            { recurrence_type: 'none' }, // Instances have recurrence_type: 'none'
+                        ],
+                    },
+                ],
             };
-            whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
-            // Now showing only recurring templates (not instances) consistently with other views
             break;
         }
         case 'next':
@@ -1080,12 +1080,21 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
 // GET /api/tasks
 router.get('/tasks', async (req, res) => {
     try {
-        // Generate recurring tasks for upcoming view to ensure future instances are available
+        // Generate recurring tasks for upcoming view, but prevent concurrent execution
         if (req.query.type === 'upcoming') {
-            console.log(
-                '🔄 GENERATING recurring tasks for upcoming view (7 days)'
-            );
-            await generateRecurringTasks(req.currentUser.id, 7);
+            // Use a simple lock to prevent concurrent generation per user
+            const lockKey = `generating_recurring_${req.currentUser.id}`;
+            if (!global[lockKey]) {
+                global[lockKey] = true;
+                try {
+                    console.log(
+                        '🔄 GENERATING recurring tasks for upcoming view (7 days)'
+                    );
+                    await generateRecurringTasks(req.currentUser.id, 7);
+                } finally {
+                    delete global[lockKey];
+                }
+            }
         }
 
         const tasks = await filterTasksByParams(
