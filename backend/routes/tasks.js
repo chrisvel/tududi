@@ -190,8 +190,38 @@ async function serializeTask(task, userTimezone = 'UTC') {
     // Include subtasks if they exist
     const { Subtasks, ...taskWithoutSubtasks } = taskJson;
 
+    // For recurring task templates, show recurrence type instead of original name
+    let displayName = taskJson.name;
+    if (
+        taskJson.recurrence_type &&
+        taskJson.recurrence_type !== 'none' &&
+        !taskJson.recurring_parent_id
+    ) {
+        // This is a recurring template - format the display name based on recurrence type
+        switch (taskJson.recurrence_type) {
+            case 'daily':
+                displayName = 'Daily';
+                break;
+            case 'weekly':
+                displayName = 'Weekly';
+                break;
+            case 'monthly':
+                displayName = 'Monthly';
+                break;
+            case 'yearly':
+                displayName = 'Yearly';
+                break;
+            default:
+                displayName =
+                    taskJson.recurrence_type.charAt(0).toUpperCase() +
+                    taskJson.recurrence_type.slice(1);
+        }
+    }
+
     return {
         ...taskWithoutSubtasks,
+        name: displayName,
+        original_name: taskJson.name,
         uid: task.uid, // Explicitly include uid
         due_date: processDueDateForResponse(taskJson.due_date, safeTimezone),
         tags: taskJson.Tags || [],
@@ -423,9 +453,36 @@ async function undoneAllSubtasks(parentTaskId, userId) {
 
 // Filter tasks by parameters
 async function filterTasksByParams(params, userId, userTimezone) {
+    const safeTimezone = getSafeTimezone(userTimezone);
+    const now = moment.tz(safeTimezone);
+    const yesterday = now.clone().subtract(1, 'day').endOf('day').toDate();
+
     let whereClause = {
         user_id: userId,
         parent_task_id: null, // Exclude subtasks from main task lists
+        recurring_parent_id: null, // Exclude recurring task instances, only show templates
+        [Op.or]: [
+            // Include non-recurring tasks (even if overdue)
+            {
+                [Op.or]: [
+                    { recurrence_type: 'none' },
+                    { recurrence_type: null },
+                ],
+            },
+            // Include recurring templates that are not overdue
+            {
+                [Op.and]: [
+                    { recurrence_type: { [Op.ne]: 'none' } },
+                    { recurrence_type: { [Op.ne]: null } },
+                    {
+                        [Op.or]: [
+                            { due_date: null }, // No due date
+                            { due_date: { [Op.gte]: yesterday } }, // Due date is not in the past
+                        ],
+                    },
+                ],
+            },
+        ],
     };
     let includeClause = [
         {
@@ -473,16 +530,7 @@ async function filterTasksByParams(params, userId, userTimezone) {
                 [Op.between]: [upcomingRange.start, upcomingRange.end],
             };
             whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
-            // Exclude recurring templates from upcoming view - we only want the instances
-            // Templates have recurrence_type set but no recurring_parent_id
-            // Instances have recurring_parent_id set but recurrence_type 'none'
-            whereClause[Op.not] = {
-                [Op.and]: [
-                    { recurrence_type: { [Op.ne]: 'none' } },
-                    { recurrence_type: { [Op.not]: null } },
-                    { recurring_parent_id: null },
-                ],
-            };
+            // Now showing only recurring templates (not instances) consistently with other views
             break;
         }
         case 'next':
@@ -580,7 +628,12 @@ async function filterTasksByParams(params, userId, userTimezone) {
 // Compute task metrics
 async function computeTaskMetrics(userId, userTimezone = 'UTC') {
     const totalOpenTasks = await Task.count({
-        where: { user_id: userId, status: { [Op.ne]: Task.STATUS.DONE } },
+        where: {
+            user_id: userId,
+            status: { [Op.ne]: Task.STATUS.DONE },
+            parent_task_id: null, // Exclude subtasks
+            recurring_parent_id: null, // Exclude recurring instances
+        },
     });
 
     const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -589,6 +642,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             user_id: userId,
             status: { [Op.ne]: Task.STATUS.DONE },
             created_at: { [Op.lt]: oneMonthAgo },
+            parent_task_id: null, // Exclude subtasks
+            recurring_parent_id: null, // Exclude recurring instances
         },
     });
 
@@ -596,6 +651,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         where: {
             user_id: userId,
             status: { [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'] },
+            parent_task_id: null, // Exclude subtasks
+            recurring_parent_id: null, // Exclude recurring instances
         },
         include: [
             {
@@ -639,6 +696,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                     'archived',
                 ],
             },
+            parent_task_id: null, // Exclude subtasks
+            recurring_parent_id: null, // Exclude recurring instances
         },
         include: [
             {
@@ -687,6 +746,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                     'archived',
                 ],
             },
+            parent_task_id: null, // Exclude subtasks
+            recurring_parent_id: null, // Exclude recurring instances
             [Op.or]: [
                 { due_date: { [Op.lte]: todayBounds.end } },
                 sequelize.literal(`EXISTS (
@@ -762,6 +823,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 },
                 id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
                 [Op.or]: [{ project_id: null }, { project_id: '' }],
+                parent_task_id: null, // Exclude subtasks
+                recurring_parent_id: null, // Exclude recurring instances
             },
             include: [
                 {
@@ -805,6 +868,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 },
                 id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
                 project_id: { [Op.not]: null, [Op.ne]: '' },
+                parent_task_id: null, // Exclude subtasks
+                recurring_parent_id: null, // Exclude recurring instances
             },
             include: [
                 {
@@ -859,6 +924,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                         [Op.notIn]: usedTaskIds,
                         [Op.in]: somedayTaskIds,
                     },
+                    parent_task_id: null, // Exclude subtasks
+                    recurring_parent_id: null, // Exclude recurring instances
                 },
                 include: [
                     {
@@ -908,7 +975,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         where: {
             user_id: userId,
             status: Task.STATUS.DONE,
-            parent_task_id: null,
+            parent_task_id: null, // Exclude subtasks
+            recurring_parent_id: null, // Exclude recurring instances
             completed_at: {
                 [Op.between]: [todayStart, todayEnd],
             },
