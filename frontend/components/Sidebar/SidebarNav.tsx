@@ -44,10 +44,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             query: 'type=today',
         },
         {
-            path: '/tasks?type=upcoming',
+            path: '/upcoming',
             title: t('sidebar.upcoming', 'Upcoming'),
             icon: <ClockIcon className="h-5 w-5" />,
-            query: 'type=upcoming',
         },
         {
             path: '/tasks',
@@ -58,7 +57,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 
     const isActive = (path: string, query?: string) => {
         // Handle special case for paths without query parameters
-        if (path === '/inbox' || path === '/today') {
+        if (path === '/inbox' || path === '/today' || path === '/upcoming') {
             const isPathMatch = location.pathname === path;
             return isPathMatch
                 ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'

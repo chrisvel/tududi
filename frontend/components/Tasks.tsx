@@ -97,10 +97,17 @@ const Tasks: React.FC = () => {
 
         return filteredTasks;
     }, [tasks, showCompleted, taskSearchQuery]);
+    // Handle the /upcoming route by setting type=upcoming in query params
     const query = new URLSearchParams(location.search);
+    if (location.pathname === '/upcoming' && !query.get('type')) {
+        query.set('type', 'upcoming');
+    }
+
     const { title: stateTitle } = location.state || {};
 
-    const title = stateTitle || getTitleAndIcon(query, projects, t).title;
+    const title =
+        stateTitle ||
+        getTitleAndIcon(query, projects, t, location.pathname).title;
 
     const tag = query.get('tag');
     const status = query.get('status');
@@ -391,7 +398,7 @@ const Tasks: React.FC = () => {
         { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
     ];
 
-    const description = getDescription(query, projects, t);
+    const description = getDescription(query, projects, t, location.pathname);
 
     const isNewTaskAllowed = () => {
         const type = query.get('type');

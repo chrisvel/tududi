@@ -1,4 +1,4 @@
-const { Task } = require('../models');
+const { Task, sequelize } = require('../models');
 const { Op } = require('sequelize');
 
 // Helper function for pure calculations
@@ -142,13 +142,24 @@ const processRecurringTask = async (task, now, lookAheadDate = null) => {
             whereClause.project_id = null;
         }
 
-        const existingTask = await Task.findOne({
-            where: whereClause,
+        // Use a transaction to ensure atomic check-and-create
+        const result = await sequelize.transaction(async (transaction) => {
+            // Check if task exists within transaction
+            const existingTask = await Task.findOne({
+                where: whereClause,
+                transaction,
+            });
+
+            if (existingTask) {
+                return null; // Task already exists
+            }
+
+            // Create the task within the same transaction
+            return await createTaskInstance(task, nextDueDate, transaction);
         });
 
-        if (!existingTask) {
-            const newTask = await createTaskInstance(task, nextDueDate);
-            newTasks.push(newTask);
+        if (result) {
+            newTasks.push(result);
         }
 
         // Update last generated date only for tasks that are due today or in the past
@@ -178,7 +189,7 @@ const processRecurringTask = async (task, now, lookAheadDate = null) => {
  * @param {Date} dueDate - Due date for the new task instance
  * @returns {Promise<Object>} The newly created task
  */
-const createTaskInstance = async (template, dueDate) => {
+const createTaskInstance = async (template, dueDate, transaction = null) => {
     const taskData = {
         name: template.name,
         description: template.description,
@@ -193,7 +204,12 @@ const createTaskInstance = async (template, dueDate) => {
         recurring_parent_id: template.id, // Link to the original recurring task
     };
 
-    return await Task.create(taskData);
+    const options = {};
+    if (transaction) {
+        options.transaction = transaction;
+    }
+
+    return await Task.create(taskData, options);
 };
 
 /**

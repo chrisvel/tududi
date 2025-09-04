@@ -266,6 +266,7 @@ router.get('/project/:uidSlug', async (req, res) => {
                     required: false,
                     where: {
                         parent_task_id: null,
+                        recurring_parent_id: null, // Exclude recurring task instances, only show templates
                         // Include ALL tasks regardless of status for client-side filtering
                     },
                     include: [
