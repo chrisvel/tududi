@@ -13,7 +13,8 @@ import {
 export const getTitleAndIcon = (
     query: URLSearchParams,
     projects: Project[],
-    t: (key: string, options?: any) => string
+    t: (key: string, options?: any) => string,
+    pathname?: string
 ) => {
     try {
         // Default titles as fallbacks in case translation function fails
@@ -39,6 +40,11 @@ export const getTitleAndIcon = (
         }
 
         try {
+            // Check pathname-based routes first
+            if (pathname === '/upcoming') {
+                return { title: t('sidebar.upcoming'), icon: ClockIcon };
+            }
+
             if (query.get('type') === 'today') {
                 return { title: t('tasks.today'), icon: CalendarIcon };
             }
