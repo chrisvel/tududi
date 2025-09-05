@@ -429,19 +429,22 @@ describe('RecurringTaskService', () => {
                     dueDate
                 );
 
-                expect(mockCreate).toHaveBeenCalledWith({
-                    name: template.name,
-                    description: template.description,
-                    due_date: dueDate,
-                    today: false,
-                    priority: template.priority,
-                    status: 0, // Task.STATUS.NOT_STARTED
-                    note: template.note,
-                    user_id: template.user_id,
-                    project_id: template.project_id,
-                    recurrence_type: 'none',
-                    recurring_parent_id: template.id,
-                });
+                expect(mockCreate).toHaveBeenCalledWith(
+                    {
+                        name: template.name,
+                        description: template.description,
+                        due_date: dueDate,
+                        today: false,
+                        priority: template.priority,
+                        status: 0, // Task.STATUS.NOT_STARTED
+                        note: template.note,
+                        user_id: template.user_id,
+                        project_id: template.project_id,
+                        recurrence_type: 'none',
+                        recurring_parent_id: template.id,
+                    },
+                    {}
+                );
 
                 expect(result.recurring_parent_id).toBe(template.id);
                 expect(result.recurrence_type).toBe('none');

@@ -179,7 +179,7 @@ async function groupTasksByDay(
 }
 
 // Helper function to serialize task with today move count
-async function serializeTask(task, userTimezone = 'UTC') {
+async function serializeTask(task, userTimezone = 'UTC', options = {}) {
     if (!task) {
         throw new Error('Task is null or undefined');
     }
@@ -191,8 +191,10 @@ async function serializeTask(task, userTimezone = 'UTC') {
     const { Subtasks, ...taskWithoutSubtasks } = taskJson;
 
     // For recurring task templates, show recurrence type instead of original name
+    // unless skipDisplayNameTransform option is true
     let displayName = taskJson.name;
     if (
+        !options.skipDisplayNameTransform &&
         taskJson.recurrence_type &&
         taskJson.recurrence_type !== 'none' &&
         !taskJson.recurring_parent_id
@@ -456,8 +458,52 @@ async function filterTasksByParams(params, userId, userTimezone) {
     let whereClause = {
         user_id: userId,
         parent_task_id: null, // Exclude subtasks from main task lists
-        recurring_parent_id: null, // Exclude recurring task instances, only show templates
+        // Don't add recurring_parent_id filter here - we'll handle it with more nuanced logic
     };
+
+    // Complex filtering for recurring tasks vs instances and past due dates
+    whereClause[Op.and] = [
+        // Either include all non-templates (instances + regular tasks)
+        // OR include templates that are not past due recurring templates
+        {
+            [Op.or]: [
+                // Include all recurring task instances (children)
+                {
+                    recurring_parent_id: { [Op.ne]: null }, // Has a parent (is an instance)
+                },
+                // Include regular non-recurring tasks (templates with no recurrence)
+                {
+                    [Op.and]: [
+                        { recurring_parent_id: null }, // Is a template
+                        {
+                            [Op.or]: [
+                                { recurrence_type: 'none' },
+                                { recurrence_type: null },
+                            ],
+                        },
+                    ],
+                },
+                // Include recurring templates that are not in the past
+                {
+                    [Op.and]: [
+                        { recurring_parent_id: null }, // Is a template
+                        { recurrence_type: { [Op.ne]: 'none' } },
+                        { recurrence_type: { [Op.ne]: null } },
+                        {
+                            [Op.or]: [
+                                { due_date: null }, // No due date - always show
+                                { 
+                                    due_date: { 
+                                        [Op.gte]: new Date(new Date().setHours(0, 0, 0, 0)) 
+                                    } 
+                                }, // Today or future (start of today)
+                            ],
+                        },
+                    ],
+                },
+            ],
+        },
+    ];
     let includeClause = [
         {
             model: Tag,
@@ -1296,7 +1342,8 @@ router.get('/task/:id', async (req, res) => {
 
         const serializedTask = await serializeTask(
             task,
-            req.currentUser.timezone
+            req.currentUser.timezone,
+            { skipDisplayNameTransform: true }
         );
 
         res.json(serializedTask);
@@ -1518,7 +1565,8 @@ router.post('/task', async (req, res) => {
 
         const serializedTask = await serializeTask(
             taskWithAssociations,
-            req.currentUser.timezone
+            req.currentUser.timezone,
+            { skipDisplayNameTransform: true }
         );
 
         // Add cache-busting headers to prevent HTTP caching
