@@ -492,10 +492,12 @@ async function filterTasksByParams(params, userId, userTimezone) {
                         {
                             [Op.or]: [
                                 { due_date: null }, // No due date - always show
-                                { 
-                                    due_date: { 
-                                        [Op.gte]: new Date(new Date().setHours(0, 0, 0, 0)) 
-                                    } 
+                                {
+                                    due_date: {
+                                        [Op.gte]: new Date(
+                                            new Date().setHours(0, 0, 0, 0)
+                                        ),
+                                    },
                                 }, // Today or future (start of today)
                             ],
                         },
