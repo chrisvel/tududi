@@ -409,14 +409,23 @@ describe('Recurring Tasks API', () => {
 
     describe('POST /api/tasks/generate-recurring', () => {
         beforeEach(async () => {
+            const baseDate = new Date();
+            baseDate.setDate(baseDate.getDate() - 30); // 30 days ago to ensure generation
+
+            // Find next Monday for weekly task
+            const mondayDate = new Date(baseDate);
+            while (mondayDate.getDay() !== 1) {
+                mondayDate.setDate(mondayDate.getDate() + 1);
+            }
+
             // Create some recurring tasks for testing
             await Task.create({
                 name: 'Daily Task',
                 recurrence_type: 'daily',
                 recurrence_interval: 1,
                 user_id: user.id,
-                due_date: new Date('2025-01-01'),
-                last_generated_date: new Date('2025-01-01'),
+                due_date: baseDate,
+                last_generated_date: baseDate,
             });
 
             await Task.create({
@@ -425,8 +434,8 @@ describe('Recurring Tasks API', () => {
                 recurrence_interval: 1,
                 recurrence_weekday: 1,
                 user_id: user.id,
-                due_date: new Date('2025-01-06'), // Monday
-                last_generated_date: new Date('2025-01-06'),
+                due_date: mondayDate, // Monday
+                last_generated_date: mondayDate,
             });
         });
 
@@ -499,25 +508,25 @@ describe('Recurring Tasks API', () => {
             });
         });
 
-        it('should return all tasks including recurring ones', async () => {
+        it('should return tasks excluding recurring instances', async () => {
             const response = await agent.get('/api/tasks');
 
             expect(response.status).toBe(200);
             expect(response.body.tasks).toBeDefined();
-            expect(response.body.tasks.length).toBe(3);
+            expect(response.body.tasks.length).toBe(2);
 
             const taskNames = response.body.tasks.map((t) => t.name);
             expect(taskNames).toContain('Regular Task');
-            expect(taskNames).toContain('Recurring Parent');
-            expect(taskNames).toContain('Recurring Child');
+            expect(taskNames).toContain('Daily'); // Recurring parent shows as "Daily"
+            expect(taskNames).not.toContain('Recurring Child'); // Instance should be filtered out
         });
 
-        it('should return task metrics including recurring tasks', async () => {
+        it('should return task metrics excluding recurring instances', async () => {
             const response = await agent.get('/api/tasks');
 
             expect(response.status).toBe(200);
             expect(response.body.metrics).toBeDefined();
-            expect(response.body.metrics.total_open_tasks).toBe(3);
+            expect(response.body.metrics.total_open_tasks).toBe(2);
         });
     });
 
