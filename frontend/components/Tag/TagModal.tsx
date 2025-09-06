@@ -182,6 +182,7 @@ const TagModal: React.FC<TagModalProps> = ({
                                                 'forms.tagNamePlaceholder',
                                                 'Enter tag name'
                                             )}
+                                            data-testid="tag-name-input"
                                         />
                                     </div>
                                 </fieldset>
@@ -221,6 +222,7 @@ const TagModal: React.FC<TagModalProps> = ({
                                         ? 'opacity-50 cursor-not-allowed'
                                         : ''
                                 }`}
+                                data-testid="tag-save-button"
                             >
                                 {isSubmitting
                                     ? t('modals.submitting', 'Submitting...')

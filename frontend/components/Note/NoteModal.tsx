@@ -411,6 +411,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             'forms.noteTitlePlaceholder'
                                                         )}
                                                         autoComplete="off"
+                                                        data-testid="note-title-input"
                                                     />
                                                 </div>
 
@@ -482,6 +483,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             className="block w-full h-full min-h-0 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
                                                             placeholder="Write your content using Markdown formatting...&#10;&#10;Examples:&#10;# Heading&#10;**Bold text**&#10;*Italic text*&#10;- List item&#10;```code```"
                                                             autoComplete="off"
+                                                            data-testid="note-content-textarea"
                                                         />
                                                     ) : (
                                                         <div className="block w-full h-full min-h-0 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-gray-50 dark:bg-gray-800 overflow-y-auto">
@@ -660,6 +662,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                 ? 'opacity-50 cursor-not-allowed'
                                                 : ''
                                         }`}
+                                        data-testid="note-save-button"
                                     >
                                         {isSubmitting
                                             ? t('modals.submitting')

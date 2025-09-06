@@ -27,20 +27,9 @@ async function loginAndNavigateToTasks(page, baseURL) {
 
 // Shared function to create a task via the inline input field
 async function createTask(page, taskName) {
-  // Find task input - try multiple selectors to be more robust
-  let taskInput;
-  
-  // Find the NewTask input field more specifically to avoid the search field
-  // Look for input with the exact placeholder text from NewTask component
-  try {
-    taskInput = page.locator('input[placeholder="Προσθήκη Νέας Εργασίας"]').first();
-    await expect(taskInput).toBeVisible({ timeout: 5000 });
-  } catch {
-    // Fallback: look for input within the NewTask component structure
-    // NewTask has a container with rounded-lg shadow-sm and a PlusCircleIcon
-    taskInput = page.locator('.rounded-lg.shadow-sm').filter({ has: page.locator('svg') }).locator('input[type="text"]').first();
-    await expect(taskInput).toBeVisible({ timeout: 5000 });
-  }
+  // Find the NewTask input using test ID
+  const taskInput = page.locator('[data-testid="new-task-input"]');
+  await expect(taskInput).toBeVisible({ timeout: 5000 });
   
   // Clear and fill in the task name
   await taskInput.clear();
@@ -74,15 +63,19 @@ test('user can update an existing task', async ({ page, baseURL }) => {
   const originalTaskName = `Test task to edit ${timestamp}`;
   await createTask(page, originalTaskName);
 
-  // Find the task and click on it to open the edit modal
-  const taskContainer = page.locator('.task-item-wrapper').filter({ hasText: originalTaskName });
-  await taskContainer.click();
+  // Find the task and hover to show edit button, then click edit
+  const taskContainer = page.locator('[data-testid*="task-item"]').filter({ hasText: originalTaskName });
+  await taskContainer.hover();
+  
+  // Wait for the edit button to become visible and click it
+  await taskContainer.locator(`[data-testid*="task-edit"]`).waitFor({ state: 'visible' });
+  await taskContainer.locator(`[data-testid*="task-edit"]`).click();
 
   // Wait for the Task Modal to appear with the task data
-  await expect(page.locator('input[name="name"], input[placeholder*="task" i], input[placeholder*="name" i]')).toBeVisible();
+  await expect(page.locator('[data-testid="task-name-input"]')).toBeVisible();
 
   // Verify the task name field is pre-filled
-  const taskNameInput = page.locator('input[name="name"], input[placeholder*="task" i], input[placeholder*="name" i]').first();
+  const taskNameInput = page.locator('[data-testid="task-name-input"]');
   await expect(taskNameInput).toHaveValue(originalTaskName);
 
   // Edit the task name
@@ -91,16 +84,16 @@ test('user can update an existing task', async ({ page, baseURL }) => {
   await taskNameInput.fill(editedTaskName);
 
   // Save the changes
-  await page.locator('.bg-blue-600.text-white').filter({ hasText: 'Save' }).click();
+  await page.locator('[data-testid="task-save-button"]').click();
 
   // Wait for the modal to close
-  await expect(page.locator('input[name="name"], input[placeholder*="task" i], input[placeholder*="name" i]')).not.toBeVisible();
+  await expect(page.locator('[data-testid="task-name-input"]')).not.toBeVisible();
 
   // Verify the edited task appears in the task list
-  await expect(page.locator('.task-item-wrapper').filter({ hasText: editedTaskName })).toBeVisible();
+  await expect(page.locator('[data-testid*="task-item"]').filter({ hasText: editedTaskName })).toBeVisible();
 
   // Verify the original task name is no longer visible
-  await expect(page.locator('.task-item-wrapper').filter({ hasText: originalTaskName })).not.toBeVisible();
+  await expect(page.locator('[data-testid*="task-item"]').filter({ hasText: originalTaskName })).not.toBeVisible();
 });
 
 test('user can delete an existing task', async ({ page, baseURL }) => {
@@ -112,19 +105,19 @@ test('user can delete an existing task', async ({ page, baseURL }) => {
   await createTask(page, taskName);
 
   // Find the task container and hover to show action buttons
-  const taskContainer = page.locator('.task-item-wrapper').filter({ hasText: taskName });
+  const taskContainer = page.locator('[data-testid*="task-item"]').filter({ hasText: taskName });
   await taskContainer.hover();
 
-  // Click the delete button (trash icon)
-  await taskContainer.locator('button[title="Delete"], button').filter({ hasText: '' }).last().click();
+  // Click the delete button using test ID
+  await taskContainer.locator(`[data-testid*="task-delete"]`).click();
 
   // Wait for and handle the confirmation dialog
   await expect(page.locator('text=Delete Task')).toBeVisible();
   // Click the red "Delete" button in the confirmation dialog
-  await page.locator('.bg-red-500.text-white').click();
+  await page.locator('[data-testid="confirm-dialog-confirm"]').click();
 
   // Verify the task is no longer visible in the task list
-  await expect(page.locator('.task-item-wrapper').filter({ hasText: taskName })).not.toBeVisible();
+  await expect(page.locator('[data-testid*="task-item"]').filter({ hasText: taskName })).not.toBeVisible();
 });
 
 test('user can mark a task as complete', async ({ page, baseURL }) => {
@@ -136,8 +129,8 @@ test('user can mark a task as complete', async ({ page, baseURL }) => {
   await createTask(page, taskName);
 
   // Find the task container and click the checkbox to mark it as complete
-  const taskContainer = page.locator('.task-item-wrapper').filter({ hasText: taskName });
-  await taskContainer.locator('input[type="checkbox"], button[role="checkbox"]').click();
+  const taskContainer = page.locator('[data-testid*="task-item"]').filter({ hasText: taskName });
+  await taskContainer.locator('[data-testid="task-completion-checkbox"]').click();
 
   // Verify the task is marked as completed (usually with strikethrough or different styling)
   await expect(taskContainer.locator('.line-through, .completed, .opacity-50')).toBeVisible();

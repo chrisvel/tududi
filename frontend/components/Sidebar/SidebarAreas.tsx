@@ -52,6 +52,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                         className="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white focus:outline-none"
                         aria-label={t('sidebar.addAreaAriaLabel')}
                         title={t('sidebar.addAreaTitle')}
+                        data-testid="add-area-button"
                     >
                         <PlusCircleIcon className="h-5 w-5" />
                     </button>

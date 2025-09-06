@@ -5,12 +5,14 @@ interface TaskPriorityIconProps {
     priority: string | number | undefined;
     status: string | number;
     onToggleCompletion?: () => void;
+    testIdSuffix?: string;
 }
 
 const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
     priority,
     status,
     onToggleCompletion,
+    testIdSuffix = '',
 }) => {
     const getPriorityText = () => {
         // Handle both string and numeric priority values
@@ -85,6 +87,9 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
                 style={{ width: '16px', height: '16px' }}
                 onClick={handleClick}
                 title={getPriorityText()}
+                role="checkbox"
+                aria-checked="true"
+                data-testid={`task-completion-checkbox${testIdSuffix}`}
             />
         );
     } else {
@@ -94,6 +99,9 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
                 style={{ width: '16px', height: '16px' }}
                 onClick={handleClick}
                 title={getPriorityText()}
+                role="checkbox"
+                aria-checked="false"
+                data-testid={`task-completion-checkbox${testIdSuffix}`}
             />
         );
     }

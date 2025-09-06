@@ -28,7 +28,7 @@ async function loginAndNavigateToNotes(page, baseURL) {
 // Shared function to create a note via the sidebar button
 async function createNote(page, noteTitle, noteContent = '') {
   // Find the "Add Note" button in the sidebar
-  const addNoteButton = page.locator('button[aria-label="Add Note"]');
+  const addNoteButton = page.locator('[data-testid="add-note-button"]');
   await expect(addNoteButton).toBeVisible();
   
   // Click the Add Note button
@@ -78,17 +78,23 @@ test('user can update an existing note', async ({ page, baseURL }) => {
   await createNote(page, originalNoteTitle, originalNoteContent);
 
   // Find and click the note to edit it
-  const noteContainer = page.getByText(originalNoteTitle).locator('..');
+  const noteContainer = page.getByText(originalNoteTitle).locator('../..');
   await noteContainer.hover();
 
-  // Click the edit button (pencil icon)
-  await noteContainer.locator('button[title="Edit"], button').filter({ hasText: '' }).first().click();
+  // Wait for the dropdown button to become visible (opacity transition)
+  await noteContainer.locator(`[data-testid*="note-dropdown"]`).waitFor({ state: 'visible' });
+
+  // Click the three dots dropdown using test ID within the note container
+  await noteContainer.locator(`[data-testid*="note-dropdown"]`).click();
+
+  // Click Edit in the dropdown using test ID
+  await noteContainer.locator(`[data-testid*="note-edit"]`).click();
 
   // Wait for the Note Modal to appear with the note data
-  await expect(page.locator('input[name="title"]')).toBeVisible();
+  await expect(page.locator('[data-testid="note-title-input"]')).toBeVisible();
 
   // Verify the note title field is pre-filled
-  const noteTitleInput = page.locator('input[name="title"]').first();
+  const noteTitleInput = page.locator('[data-testid="note-title-input"]');
   await expect(noteTitleInput).toHaveValue(originalNoteTitle);
 
   // Edit the note title and content
@@ -97,15 +103,15 @@ test('user can update an existing note', async ({ page, baseURL }) => {
   await noteTitleInput.clear();
   await noteTitleInput.fill(editedNoteTitle);
   
-  const noteContentTextarea = page.locator('textarea[name="content"]').first();
+  const noteContentTextarea = page.locator('[data-testid="note-content-textarea"]');
   await noteContentTextarea.clear();
   await noteContentTextarea.fill(editedNoteContent);
 
   // Save the changes
-  await page.getByRole('button', { name: /save/i }).click();
+  await page.locator('[data-testid="note-save-button"]').click();
 
   // Wait for the modal to close
-  await expect(page.locator('input[name="title"]')).not.toBeVisible();
+  await expect(page.locator('[data-testid="note-title-input"]')).not.toBeVisible();
 
   // Verify the edited note appears in the notes list
   await expect(page.getByText(editedNoteTitle)).toBeVisible();
@@ -124,17 +130,23 @@ test('user can delete an existing note', async ({ page, baseURL }) => {
   await createNote(page, noteTitle, noteContent);
 
   // Find the note container and hover to show action buttons
-  const noteContainer = page.getByText(noteTitle).locator('..');
+  const noteContainer = page.getByText(noteTitle).locator('../..');
   await noteContainer.hover();
 
-  // Click the delete button (trash icon)
-  await noteContainer.locator('button[title="Delete"], button').filter({ hasText: '' }).last().click();
+  // Wait for the dropdown button to become visible (opacity transition)
+  await noteContainer.locator(`[data-testid*="note-dropdown"]`).waitFor({ state: 'visible' });
+
+  // Click the three dots dropdown using test ID within the note container
+  await noteContainer.locator(`[data-testid*="note-dropdown"]`).click();
+
+  // Click Delete in the dropdown using test ID
+  await noteContainer.locator(`[data-testid*="note-delete"]`).click();
 
   // Wait for and handle the confirmation dialog
   await expect(page.locator('text=Delete Note')).toBeVisible();
   // Click the red "Delete" button in the confirmation dialog
-  await page.locator('.bg-red-500.text-white').click();
+  await page.locator('[data-testid="confirm-dialog-confirm"]').click();
 
-  // Verify the note is no longer visible in the notes list
-  await expect(page.getByText(noteTitle)).not.toBeVisible();
+  // Verify the note is no longer visible in the notes list (use specific role selector)
+  await expect(page.getByRole('link', { name: new RegExp(noteTitle) })).not.toBeVisible();
 });

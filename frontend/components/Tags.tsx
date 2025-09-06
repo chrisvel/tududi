@@ -372,6 +372,7 @@ const Tags: React.FC = () => {
                                                             className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredTagId === tag.id ? 'opacity-100' : 'opacity-0'}`}
                                                             aria-label={`Edit ${tag.name}`}
                                                             title={`Edit ${tag.name}`}
+                                                            data-testid={`tag-edit-${tag.id}`}
                                                         >
                                                             <PencilSquareIcon className="h-4 w-4" />
                                                         </button>
@@ -384,6 +385,7 @@ const Tags: React.FC = () => {
                                                             className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredTagId === tag.id ? 'opacity-100' : 'opacity-0'}`}
                                                             aria-label={`Delete ${tag.name}`}
                                                             title={`Delete ${tag.name}`}
+                                                            data-testid={`tag-delete-${tag.id}`}
                                                         >
                                                             <TrashIcon className="h-4 w-4" />
                                                         </button>

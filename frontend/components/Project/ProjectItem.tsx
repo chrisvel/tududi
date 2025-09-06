@@ -159,6 +159,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     }
                                 }}
                                 aria-label={t('projectItem.toggleDropdownMenu')}
+                                data-testid={`project-dropdown-${project.id}`}
                             >
                                 <EllipsisVerticalIcon className="h-5 w-5" />
                             </button>
@@ -174,6 +175,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                                 setActiveDropdown(null);
                                             }}
                                             className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                            data-testid={`project-edit-${project.id}`}
                                         >
                                             {t('projectItem.edit')}
                                         </button>
@@ -196,6 +198,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                                 setActiveDropdown(null);
                                             }}
                                             className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                            data-testid={`project-delete-${project.id}`}
                                         >
                                             {t('projectItem.delete')}
                                         </button>
@@ -211,6 +214,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     handleEditProject(project);
                                 }}
                                 className="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                                data-testid={`project-edit-list-${project.id}`}
                             >
                                 <PencilSquareIcon className="h-5 w-5" />
                             </button>
@@ -232,6 +236,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                     setIsConfirmDialogOpen(true);
                                 }}
                                 className="text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
+                                data-testid={`project-delete-list-${project.id}`}
                             >
                                 <TrashIcon className="h-5 w-5" />
                             </button>

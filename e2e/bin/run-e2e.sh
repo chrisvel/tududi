@@ -40,7 +40,8 @@ cd "$ROOT_DIR"
 yellow "Starting backend..."
 TUDUDI_USER_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
 TUDUDI_USER_PASSWORD="${E2E_PASSWORD:-password123}" \
-npm run backend:start &
+SEQUELIZE_LOGGING=false \
+npm run backend:start >/dev/null 2>&1 &
 BACKEND_PID=$!
 
 cleanup() {
@@ -78,7 +79,7 @@ for i in {1..60}; do
 done
 
 yellow "Starting frontend dev server..."
-npm run frontend:dev &
+npm run frontend:dev >/dev/null 2>&1 &
 FRONTEND_PID=$!
 
 # Wait for frontend

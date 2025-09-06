@@ -38,13 +38,13 @@ async function createProject(page, projectName) {
   await expect(page.locator('input[name="name"]')).toBeVisible({ timeout: 10000 });
 
   // Fill in the project name
-  await page.locator('input[name="name"]').fill(projectName);
+  await page.locator('[data-testid="project-name-input"]').fill(projectName);
 
   // Save the project
-  await page.getByRole('button', { name: /create.*project|save/i }).click();
+  await page.locator('[data-testid="project-save-button"]').click();
 
   // Wait for the modal to close
-  await expect(page.locator('input[name="name"]')).not.toBeVisible({ timeout: 10000 });
+  await expect(page.locator('[data-testid="project-name-input"]')).not.toBeVisible({ timeout: 10000 });
 
   // Wait for project creation to complete
   await page.waitForTimeout(2000);
@@ -72,17 +72,23 @@ test('user can update an existing project', async ({ page, baseURL }) => {
 
   // Find and click the project to open its details or edit it
   // Look for the project card/item and find its edit button
-  const projectContainer = page.getByText(originalProjectName).locator('..');
+  const projectContainer = page.getByText(originalProjectName).locator('../..');
   await projectContainer.hover();
 
-  // Click the edit button (pencil icon)
-  await projectContainer.locator('button[title="Edit"], button').filter({ hasText: '' }).first().click();
+  // Wait for the dropdown button to become visible (opacity transition)
+  await projectContainer.locator(`[data-testid*="project-dropdown"]`).waitFor({ state: 'visible' });
+
+  // Click the three dots dropdown using test ID
+  await projectContainer.locator(`[data-testid*="project-dropdown"]`).click();
+
+  // Click Edit in the dropdown using test ID
+  await projectContainer.locator(`[data-testid*="project-edit"]`).click();
 
   // Wait for the Project Modal to appear with the project data
-  await expect(page.locator('input[name="name"]')).toBeVisible();
+  await expect(page.locator('[data-testid="project-name-input"]')).toBeVisible();
 
   // Verify the project name field is pre-filled
-  const projectNameInput = page.locator('input[name="name"]').first();
+  const projectNameInput = page.locator('[data-testid="project-name-input"]');
   await expect(projectNameInput).toHaveValue(originalProjectName);
 
   // Edit the project name
@@ -91,10 +97,10 @@ test('user can update an existing project', async ({ page, baseURL }) => {
   await projectNameInput.fill(editedProjectName);
 
   // Save the changes
-  await page.getByRole('button', { name: /save/i }).click();
+  await page.locator('[data-testid="project-save-button"]').click();
 
   // Wait for the modal to close
-  await expect(page.locator('input[name="name"]')).not.toBeVisible();
+  await expect(page.locator('[data-testid="project-name-input"]')).not.toBeVisible();
 
   // Verify the edited project appears in the projects list
   await expect(page.getByText(editedProjectName)).toBeVisible();
@@ -112,16 +118,22 @@ test('user can delete an existing project', async ({ page, baseURL }) => {
   await createProject(page, projectName);
 
   // Find the project container and hover to show action buttons
-  const projectContainer = page.getByText(projectName).locator('..');
+  const projectContainer = page.getByText(projectName).locator('../..');
   await projectContainer.hover();
 
-  // Click the delete button (trash icon)
-  await projectContainer.locator('button[title="Delete"], button').filter({ hasText: '' }).last().click();
+  // Wait for the dropdown button to become visible (opacity transition)
+  await projectContainer.locator(`[data-testid*="project-dropdown"]`).waitFor({ state: 'visible' });
+
+  // Click the three dots dropdown using test ID
+  await projectContainer.locator(`[data-testid*="project-dropdown"]`).click();
+
+  // Click Delete in the dropdown using test ID
+  await projectContainer.locator(`[data-testid*="project-delete"]`).click();
 
   // Wait for and handle the confirmation dialog
   await expect(page.locator('text=Delete Project')).toBeVisible();
   // Click the red "Delete" button in the confirmation dialog
-  await page.locator('.bg-red-500.text-white').click();
+  await page.locator('[data-testid="confirm-dialog-confirm"]').click();
 
   // Verify the project is no longer visible in the projects list
   await expect(page.getByText(projectName)).not.toBeVisible();
@@ -142,7 +154,7 @@ test('user can add a task to a project via ProjectDetails view', async ({ page, 
   await expect(page).toHaveURL(/\/project\//);
 
   // Find the task creation input field within the project details
-  const taskInput = page.locator('input[placeholder="Προσθήκη Νέας Εργασίας"]').first();
+  const taskInput = page.locator('[data-testid="new-task-input"]');
   
   // Wait for the input to be visible
   await expect(taskInput).toBeVisible({ timeout: 5000 });
@@ -158,9 +170,8 @@ test('user can add a task to a project via ProjectDetails view', async ({ page, 
   // Wait for the task to be created and appear in the project's task list
   await page.waitForTimeout(2000);
 
-  // Verify the task appears in the project's task list
-  // Use a more general approach since the exact structure might vary
-  await expect(page.getByText(taskName)).toBeVisible({ timeout: 10000 });
+  // Verify the task appears in the project's task list (use first link to avoid strict mode)
+  await expect(page.getByRole('link', { name: new RegExp(taskName) }).first()).toBeVisible({ timeout: 10000 });
 });
 
 test('user can delete a project with tasks - tasks should survive', async ({ page, baseURL }) => {
@@ -178,7 +189,7 @@ test('user can delete a project with tasks - tasks should survive', async ({ pag
   await expect(page).toHaveURL(/\/project\//);
 
   // Add a task to this project
-  const taskInput = page.locator('input[placeholder="Προσθήκη Νέας Εργασίας"]').first();
+  const taskInput = page.locator('[data-testid="new-task-input"]');
   await expect(taskInput).toBeVisible({ timeout: 5000 });
   
   const taskName = `Task that should survive project deletion ${timestamp}`;
@@ -192,13 +203,21 @@ test('user can delete a project with tasks - tasks should survive', async ({ pag
   await expect(page).toHaveURL(/\/projects/);
 
   // Delete the project
-  const projectContainer = page.getByText(projectName).locator('..');
+  const projectContainer = page.getByText(projectName).locator('../..');
   await projectContainer.hover();
-  await projectContainer.locator('button[title="Delete"], button').filter({ hasText: '' }).last().click();
+
+  // Wait for the dropdown button to become visible (opacity transition)
+  await projectContainer.locator(`[data-testid*="project-dropdown"]`).waitFor({ state: 'visible' });
+
+  // Click the three dots dropdown using test ID
+  await projectContainer.locator(`[data-testid*="project-dropdown"]`).click();
+
+  // Click Delete in the dropdown using test ID
+  await projectContainer.locator(`[data-testid*="project-delete"]`).click();
 
   // Handle the confirmation dialog
   await expect(page.locator('text=Delete Project')).toBeVisible();
-  await page.locator('.bg-red-500.text-white').click();
+  await page.locator('[data-testid="confirm-dialog-confirm"]').click();
 
   // Verify the project is deleted
   await expect(page.getByText(projectName)).not.toBeVisible();
@@ -214,5 +233,5 @@ test('user can delete a project with tasks - tasks should survive', async ({ pag
   // This is the expected behavior based on backend implementation:
   // - project.destroy() doesn't cascade to tasks
   // - tasks have project_id set to NULL when project is deleted
-  await expect(page.getByText(taskName)).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole('link', { name: new RegExp(taskName) }).first()).toBeVisible({ timeout: 10000 });
 });
