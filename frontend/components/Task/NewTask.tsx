@@ -96,6 +96,7 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
                         'tasks.addNewTask',
                         'Προσθήκη Νέας Εργασίας'
                     )}
+                    data-testid="new-task-input"
                 />
             </div>
             {showNameLengthHelper && taskIntelligenceEnabled && (

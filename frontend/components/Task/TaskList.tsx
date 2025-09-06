@@ -44,6 +44,7 @@ const TaskList: React.FC<TaskListProps> = ({
                     <div
                         key={task.id}
                         className="task-item-wrapper transition-all duration-200 ease-in-out overflow-visible"
+                        data-testid={`task-item-${task.id}`}
                     >
                         <TaskItem
                             task={task}

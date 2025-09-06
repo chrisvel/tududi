@@ -28,7 +28,7 @@ async function loginAndNavigateToAreas(page, baseURL) {
 // Shared function to create an area via the sidebar button
 async function createArea(page, areaName, areaDescription = '') {
   // Find the "Add Area" button in the sidebar
-  const addAreaButton = page.locator('button[aria-label*="Area"]');
+  const addAreaButton = page.locator('[data-testid="add-area-button"]');
   await expect(addAreaButton).toBeVisible();
   
   // Click the Add Area button
@@ -78,20 +78,23 @@ test('user can update an existing area', async ({ page, baseURL }) => {
   await createArea(page, originalAreaName, originalAreaDescription);
 
   // Find the area container and hover to show dropdown
-  const areaContainer = page.getByText(originalAreaName).locator('..');
+  const areaContainer = page.getByText(originalAreaName).locator('../..');
   await areaContainer.hover();
 
-  // Click the three dots menu
-  await areaContainer.locator('button[aria-label*="dropdown"]').click();
+  // Wait for the dropdown button to become visible (opacity transition)
+  await areaContainer.locator(`[data-testid*="area-dropdown"]`).waitFor({ state: 'visible' });
 
-  // Click Edit in the dropdown
-  await page.getByText('Edit').click();
+  // Click the three dots menu using test ID within the area container
+  await areaContainer.locator(`[data-testid*="area-dropdown"]`).click();
+
+  // Click Edit in the dropdown using test ID
+  await areaContainer.locator(`[data-testid*="area-edit"]`).click();
 
   // Wait for the Area Modal to appear with the area data
-  await expect(page.locator('input[name="name"]')).toBeVisible();
+  await expect(page.locator('[data-testid="area-name-input"]')).toBeVisible();
 
   // Verify the area name field is pre-filled
-  const areaNameInput = page.locator('input[name="name"]').first();
+  const areaNameInput = page.locator('[data-testid="area-name-input"]');
   await expect(areaNameInput).toHaveValue(originalAreaName);
 
   // Edit the area name and description
@@ -105,10 +108,10 @@ test('user can update an existing area', async ({ page, baseURL }) => {
   await areaDescriptionTextarea.fill(editedAreaDescription);
 
   // Save the changes
-  await page.getByRole('button', { name: /save|update/i }).click();
+  await page.locator('[data-testid="area-save-button"]').click();
 
   // Wait for the modal to close
-  await expect(page.locator('input[name="name"]')).not.toBeVisible();
+  await expect(page.locator('[data-testid="area-name-input"]')).not.toBeVisible();
 
   // Verify the edited area appears in the areas list
   await expect(page.getByText(editedAreaName)).toBeVisible();
@@ -127,19 +130,22 @@ test('user can delete an existing area', async ({ page, baseURL }) => {
   await createArea(page, areaName, areaDescription);
 
   // Find the area container and hover to show dropdown
-  const areaContainer = page.getByText(areaName).locator('..');
+  const areaContainer = page.getByText(areaName).locator('../..');
   await areaContainer.hover();
 
-  // Click the three dots menu
-  await areaContainer.locator('button[aria-label*="dropdown"]').click();
+  // Wait for the dropdown button to become visible (opacity transition)
+  await areaContainer.locator(`[data-testid*="area-dropdown"]`).waitFor({ state: 'visible' });
 
-  // Click Delete in the dropdown
-  await page.getByText('Delete').click();
+  // Click the three dots menu using test ID within the area container
+  await areaContainer.locator(`[data-testid*="area-dropdown"]`).click();
+
+  // Click Delete in the dropdown using test ID
+  await areaContainer.locator(`[data-testid*="area-delete"]`).click();
 
   // Wait for and handle the confirmation dialog
   await expect(page.locator('text=Delete Area')).toBeVisible();
   // Click the confirm button in the confirmation dialog
-  await page.getByRole('button', { name: /confirm|delete/i }).click();
+  await page.locator('[data-testid="confirm-dialog-confirm"]').click();
 
   // Verify the area is no longer visible in the areas list
   await expect(page.getByText(areaName)).not.toBeVisible();
