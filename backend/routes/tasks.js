@@ -458,49 +458,30 @@ async function filterTasksByParams(params, userId, userTimezone) {
     let whereClause = {
         user_id: userId,
         parent_task_id: null, // Exclude subtasks from main task lists
-        // Don't add recurring_parent_id filter here - we'll handle it with more nuanced logic
+        recurring_parent_id: null, // Exclude recurring task instances, only show templates
     };
 
-    // Complex filtering for recurring tasks vs instances and past due dates
-    whereClause[Op.and] = [
-        // Either include all non-templates (instances + regular tasks)
-        // OR include templates that are not past due recurring templates
+    // Filter out past recurring templates (but keep non-recurring tasks)
+    whereClause[Op.or] = [
+        // Include all non-recurring tasks
         {
-            [Op.or]: [
-                // Include all recurring task instances (children)
+            [Op.or]: [{ recurrence_type: 'none' }, { recurrence_type: null }],
+        },
+        // Include recurring templates that are not in the past
+        {
+            [Op.and]: [
+                { recurrence_type: { [Op.ne]: 'none' } },
+                { recurrence_type: { [Op.ne]: null } },
                 {
-                    recurring_parent_id: { [Op.ne]: null }, // Has a parent (is an instance)
-                },
-                // Include regular non-recurring tasks (templates with no recurrence)
-                {
-                    [Op.and]: [
-                        { recurring_parent_id: null }, // Is a template
+                    [Op.or]: [
+                        { due_date: null }, // No due date - always show
                         {
-                            [Op.or]: [
-                                { recurrence_type: 'none' },
-                                { recurrence_type: null },
-                            ],
-                        },
-                    ],
-                },
-                // Include recurring templates that are not in the past
-                {
-                    [Op.and]: [
-                        { recurring_parent_id: null }, // Is a template
-                        { recurrence_type: { [Op.ne]: 'none' } },
-                        { recurrence_type: { [Op.ne]: null } },
-                        {
-                            [Op.or]: [
-                                { due_date: null }, // No due date - always show
-                                {
-                                    due_date: {
-                                        [Op.gte]: new Date(
-                                            new Date().setHours(0, 0, 0, 0)
-                                        ),
-                                    },
-                                }, // Today or future (start of today)
-                            ],
-                        },
+                            due_date: {
+                                [Op.gte]: new Date(
+                                    new Date().setHours(0, 0, 0, 0)
+                                ),
+                            },
+                        }, // Today or future (start of today)
                     ],
                 },
             ],

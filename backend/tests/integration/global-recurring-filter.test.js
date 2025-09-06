@@ -28,6 +28,17 @@ describe('Global Recurring Task Instance Filtering', () => {
         let recurringTemplate, instance1, instance2, regularTask;
 
         beforeEach(async () => {
+            const today = new Date();
+            const futureDate = new Date(
+                today.getTime() + 3 * 24 * 60 * 60 * 1000
+            ); // 3 days from now
+            const pastDate1 = new Date(
+                today.getTime() - 2 * 24 * 60 * 60 * 1000
+            ); // 2 days ago
+            const pastDate2 = new Date(
+                today.getTime() - 1 * 24 * 60 * 60 * 1000
+            ); // 1 day ago
+
             // Create a recurring parent task (template)
             recurringTemplate = await Task.create({
                 name: 'Daily Workout Template',
@@ -38,7 +49,7 @@ describe('Global Recurring Task Instance Filtering', () => {
                 recurring_parent_id: null, // This is the template
                 status: Task.STATUS.NOT_STARTED,
                 priority: Task.PRIORITY.MEDIUM,
-                due_date: new Date('2025-08-25'), // Future date
+                due_date: futureDate, // Future date
             });
 
             // Create generated recurring task instances
@@ -50,7 +61,7 @@ describe('Global Recurring Task Instance Filtering', () => {
                 recurring_parent_id: recurringTemplate.id, // This is an instance
                 status: Task.STATUS.NOT_STARTED,
                 priority: Task.PRIORITY.MEDIUM,
-                due_date: new Date('2025-08-23'),
+                due_date: pastDate1,
             });
 
             instance2 = await Task.create({
@@ -61,7 +72,7 @@ describe('Global Recurring Task Instance Filtering', () => {
                 recurring_parent_id: recurringTemplate.id, // This is an instance
                 status: Task.STATUS.DONE,
                 priority: Task.PRIORITY.MEDIUM,
-                due_date: new Date('2025-08-24'),
+                due_date: pastDate2,
                 completed_at: new Date(),
             });
 
