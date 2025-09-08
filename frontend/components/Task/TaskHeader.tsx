@@ -212,6 +212,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         priority={task.priority}
                         status={task.status}
                         onToggleCompletion={onToggleCompletion}
+                        testIdSuffix="-desktop"
                     />
                     <div className="flex flex-col">
                         {isUpcomingView ? (
@@ -607,6 +608,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             priority={task.priority}
                             status={task.status}
                             onToggleCompletion={onToggleCompletion}
+                            testIdSuffix="-mobile"
                         />
                     </div>
 

@@ -81,11 +81,11 @@ test('user can edit an inbox item', async ({ page, baseURL }) => {
   // Wait for the modal to close
   await expect(page.locator('input[name="text"]')).not.toBeVisible();
 
-  // Verify the edited content appears
-  await expect(page.locator('text=' + editedContent)).toBeVisible();
+  // Verify the edited content appears in the inbox item
+  await expect(page.locator('.rounded-lg.shadow-sm').filter({ hasText: editedContent })).toBeVisible();
   
-  // Verify the original content is no longer visible
-  await expect(page.locator('text=' + originalContent)).not.toBeVisible();
+  // Verify the original content is no longer visible in inbox items
+  await expect(page.locator('.rounded-lg.shadow-sm').filter({ hasText: originalContent })).not.toBeVisible();
 });
 
 test('user can delete an inbox item', async ({ page, baseURL }) => {

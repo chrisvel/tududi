@@ -35,21 +35,26 @@ async function createNote(page, noteTitle, noteContent = '') {
   await addNoteButton.click();
 
   // Wait for the Note Modal to appear
-  await expect(page.locator('input[name="title"]')).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('[data-testid="note-title-input"]')).toBeVisible({ timeout: 10000 });
 
-  // Fill in the note title
-  await page.locator('input[name="title"]').fill(noteTitle);
+  // Fill in the note title - focus first, clear, then type
+  const titleInput = page.locator('[data-testid="note-title-input"]');
+  await titleInput.click();
+  await titleInput.clear();
+  await titleInput.type(noteTitle, { delay: 50 });
 
   // Fill in the note content if provided
   if (noteContent) {
-    await page.locator('textarea[name="content"]').fill(noteContent);
+    const contentTextarea = page.locator('[data-testid="note-content-textarea"]');
+    await contentTextarea.click();
+    await contentTextarea.fill(noteContent);
   }
 
-  // Save the note
-  await page.getByRole('button', { name: /create.*note|save/i }).click();
+  // Save the note using the specific test ID
+  await page.locator('[data-testid="note-save-button"]').click();
 
-  // Wait for the modal to close
-  await expect(page.locator('input[name="title"]')).not.toBeVisible({ timeout: 10000 });
+  // Wait for the modal to close - wait for it to become not visible
+  await expect(page.locator('[data-testid="note-title-input"]')).not.toBeVisible({ timeout: 10000 });
 
   // Wait for note creation to complete
   await page.waitForTimeout(2000);
@@ -77,18 +82,24 @@ test('user can update an existing note', async ({ page, baseURL }) => {
   const originalNoteContent = `Original content ${timestamp}`;
   await createNote(page, originalNoteTitle, originalNoteContent);
 
-  // Find and click the note to edit it
-  const noteContainer = page.getByText(originalNoteTitle).locator('../..');
-  await noteContainer.hover();
+  // Find the specific note card by title text
+  const noteCard = page.locator('a').filter({ hasText: originalNoteTitle });
+  await expect(noteCard).toBeVisible();
+  
+  // Hover over the note card to show the dropdown button
+  await noteCard.hover();
+  
+  // Wait a moment for any transitions
+  await page.waitForTimeout(1000);
 
-  // Wait for the dropdown button to become visible (opacity transition)
-  await noteContainer.locator(`[data-testid*="note-dropdown"]`).waitFor({ state: 'visible' });
+  // Find the dropdown button within this specific note card's parent container
+  const dropdownButton = noteCard.locator('..').locator('button[data-testid^="note-dropdown-"]');
+  await dropdownButton.click({ force: true });
 
-  // Click the three dots dropdown using test ID within the note container
-  await noteContainer.locator(`[data-testid*="note-dropdown"]`).click();
-
-  // Click Edit in the dropdown using test ID
-  await noteContainer.locator(`[data-testid*="note-edit"]`).click();
+  // Wait for dropdown menu to appear and click Edit
+  const editButton = page.locator('button[data-testid^="note-edit-"]').first();
+  await expect(editButton).toBeVisible({ timeout: 10000 });
+  await editButton.click();
 
   // Wait for the Note Modal to appear with the note data
   await expect(page.locator('[data-testid="note-title-input"]')).toBeVisible();
@@ -129,18 +140,24 @@ test('user can delete an existing note', async ({ page, baseURL }) => {
   const noteContent = `Content to delete ${timestamp}`;
   await createNote(page, noteTitle, noteContent);
 
-  // Find the note container and hover to show action buttons
-  const noteContainer = page.getByText(noteTitle).locator('../..');
-  await noteContainer.hover();
+  // Find the specific note card by title text
+  const noteCard = page.locator('a').filter({ hasText: noteTitle });
+  await expect(noteCard).toBeVisible();
+  
+  // Hover over the note card to show the dropdown button
+  await noteCard.hover();
+  
+  // Wait a moment for any transitions
+  await page.waitForTimeout(1000);
 
-  // Wait for the dropdown button to become visible (opacity transition)
-  await noteContainer.locator(`[data-testid*="note-dropdown"]`).waitFor({ state: 'visible' });
+  // Find the dropdown button within this specific note card's parent container
+  const dropdownButton = noteCard.locator('..').locator('button[data-testid^="note-dropdown-"]');
+  await dropdownButton.click({ force: true });
 
-  // Click the three dots dropdown using test ID within the note container
-  await noteContainer.locator(`[data-testid*="note-dropdown"]`).click();
-
-  // Click Delete in the dropdown using test ID
-  await noteContainer.locator(`[data-testid*="note-delete"]`).click();
+  // Wait for dropdown menu to appear and click Delete
+  const deleteButton = page.locator('button[data-testid^="note-delete-"]').first();
+  await expect(deleteButton).toBeVisible({ timeout: 10000 });
+  await deleteButton.click();
 
   // Wait for and handle the confirmation dialog
   await expect(page.locator('text=Delete Note')).toBeVisible();

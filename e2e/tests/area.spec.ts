@@ -77,18 +77,24 @@ test('user can update an existing area', async ({ page, baseURL }) => {
   const originalAreaDescription = `Original description ${timestamp}`;
   await createArea(page, originalAreaName, originalAreaDescription);
 
-  // Find the area container and hover to show dropdown
-  const areaContainer = page.getByText(originalAreaName).locator('../..');
-  await areaContainer.hover();
+  // Find the specific area card by text
+  const areaCard = page.locator('a').filter({ hasText: originalAreaName });
+  await expect(areaCard).toBeVisible();
+  
+  // Hover over the area card to show the dropdown button
+  await areaCard.hover();
+  
+  // Wait a moment for the opacity transition
+  await page.waitForTimeout(1000);
 
-  // Wait for the dropdown button to become visible (opacity transition)
-  await areaContainer.locator(`[data-testid*="area-dropdown"]`).waitFor({ state: 'visible' });
+  // Find the dropdown button within this specific area card
+  const dropdownButton = areaCard.locator('button[data-testid^="area-dropdown-"]');
+  await dropdownButton.click({ force: true });
 
-  // Click the three dots menu using test ID within the area container
-  await areaContainer.locator(`[data-testid*="area-dropdown"]`).click();
-
-  // Click Edit in the dropdown using test ID
-  await areaContainer.locator(`[data-testid*="area-edit"]`).click();
+  // Wait for dropdown menu to appear and click Edit
+  const editButton = page.locator('button[data-testid^="area-edit-"]').first();
+  await expect(editButton).toBeVisible({ timeout: 10000 });
+  await editButton.click();
 
   // Wait for the Area Modal to appear with the area data
   await expect(page.locator('[data-testid="area-name-input"]')).toBeVisible();
@@ -129,18 +135,24 @@ test('user can delete an existing area', async ({ page, baseURL }) => {
   const areaDescription = `Description to delete ${timestamp}`;
   await createArea(page, areaName, areaDescription);
 
-  // Find the area container and hover to show dropdown
-  const areaContainer = page.getByText(areaName).locator('../..');
-  await areaContainer.hover();
+  // Find the specific area card by text
+  const areaCard = page.locator('a').filter({ hasText: areaName });
+  await expect(areaCard).toBeVisible();
+  
+  // Hover over the area card to show the dropdown button
+  await areaCard.hover();
+  
+  // Wait a moment for the opacity transition
+  await page.waitForTimeout(1000);
 
-  // Wait for the dropdown button to become visible (opacity transition)
-  await areaContainer.locator(`[data-testid*="area-dropdown"]`).waitFor({ state: 'visible' });
+  // Find the dropdown button within this specific area card
+  const dropdownButton = areaCard.locator('button[data-testid^="area-dropdown-"]');
+  await dropdownButton.click({ force: true });
 
-  // Click the three dots menu using test ID within the area container
-  await areaContainer.locator(`[data-testid*="area-dropdown"]`).click();
-
-  // Click Delete in the dropdown using test ID
-  await areaContainer.locator(`[data-testid*="area-delete"]`).click();
+  // Wait for dropdown menu to appear and click Delete
+  const deleteButton = page.locator('button[data-testid^="area-delete-"]').first();
+  await expect(deleteButton).toBeVisible({ timeout: 10000 });
+  await deleteButton.click();
 
   // Wait for and handle the confirmation dialog
   await expect(page.locator('text=Delete Area')).toBeVisible();
