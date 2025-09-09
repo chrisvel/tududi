@@ -616,7 +616,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     <div className="ml-2 flex-1 min-w-0">
                         {/* Task Title */}
                         <div className="font-light text-md text-gray-900 dark:text-gray-300 dark:font-extralight">
-                            <span className="break-words">{task.original_name || task.name}</span>
+                            <span className="break-words">
+                                {task.original_name || task.name}
+                            </span>
                         </div>
 
                         {/* Project, tags, due date, and recurrence */}
