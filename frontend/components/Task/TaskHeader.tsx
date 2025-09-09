@@ -220,7 +220,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 {/* Full width title that wraps */}
                                 <div className="w-full mb-0.5">
                                     <span className="text-sm font-normal text-gray-900 dark:text-gray-300 dark:font-light break-words tracking-tight">
-                                        {task.name}
+                                        {task.original_name || task.name}
                                     </span>
                                 </div>
                                 {/* Show project and tags info in upcoming view */}
@@ -315,7 +315,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         ) : (
                             <div className="flex items-center">
                                 <span className="text-md font-normal text-gray-900 dark:text-gray-300 dark:font-light">
-                                    {task.name}
+                                    {task.original_name || task.name}
                                 </span>
                             </div>
                         )}
@@ -616,7 +616,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     <div className="ml-2 flex-1 min-w-0">
                         {/* Task Title */}
                         <div className="font-light text-md text-gray-900 dark:text-gray-300 dark:font-extralight">
-                            <span className="break-words">{task.name}</span>
+                            <span className="break-words">{task.original_name || task.name}</span>
                         </div>
 
                         {/* Project, tags, due date, and recurrence */}
@@ -959,7 +959,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                                 : 'text-gray-900 dark:text-gray-100'
                                         }`}
                                     >
-                                        {subtask.name}
+                                        {subtask.original_name || subtask.name}
                                     </span>
                                 </div>
 

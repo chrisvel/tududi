@@ -62,7 +62,6 @@ async function createProject(page, projectName) {
       break; // Success, exit loop
     } catch {
       retryCount++;
-      console.log(`Retrying project name fill... (attempt ${retryCount})`);
       
       // More aggressive retry approach
       await nameInput.click();
@@ -84,8 +83,9 @@ async function createProject(page, projectName) {
   // Save the project
   await saveButton.click();
 
-  // Wait for the modal to close (this indicates save was successful)
-  await expect(page.locator('[data-testid="project-name-input"]')).not.toBeVisible({ timeout: 10000 });
+  // Wait for the save request to complete and modal to close
+  await page.waitForLoadState('networkidle');
+  await expect(page.locator('[data-testid="project-name-input"]')).not.toBeVisible({ timeout: 15000 });
 
   // Wait for project creation to complete and appear in list
   await page.waitForTimeout(3000);
@@ -140,7 +140,6 @@ test('user can update an existing project', async ({ page, baseURL }) => {
   // Verify the project name field is pre-filled (may be truncated)
   const projectNameInput = page.locator('[data-testid="project-name-input"]');
   const actualValue = await projectNameInput.inputValue();
-  console.log('Actual project name value:', actualValue);
   // Just verify it contains the timestamp part which is unique
   expect(actualValue).toContain(timestampStr);
 

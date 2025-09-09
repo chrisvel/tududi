@@ -198,7 +198,6 @@ test('user can create project from inbox item', async ({ page, baseURL }) => {
   if (!projectExists) {
     // If exact match fails, just verify we're on projects page and there are projects
     await expect(page.locator('h1, h2, h3').filter({ hasText: /projects/i }).first()).toBeVisible();
-    console.log('Project may have been created but not found with exact name match');
   } else {
     await expect(page.locator('*').filter({ hasText: testContent })).toBeVisible();
   }
@@ -248,7 +247,6 @@ test('user can create note from inbox item', async ({ page, baseURL }) => {
   if (!noteExists) {
     // If exact match fails, just verify we're on notes page
     await expect(page.locator('h1, h2, h3').filter({ hasText: /notes/i }).first()).toBeVisible();
-    console.log('Note may have been created but not found with exact name match');
   } else {
     await expect(page.locator('*').filter({ hasText: testContent })).toBeVisible();
   }

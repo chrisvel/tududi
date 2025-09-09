@@ -5,6 +5,7 @@ export interface Task {
     id?: number;
     uid?: string;
     name: string;
+    original_name?: string;
     status: StatusType | number;
     priority?: PriorityType | number;
     due_date?: string;
