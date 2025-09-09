@@ -212,6 +212,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         priority={task.priority}
                         status={task.status}
                         onToggleCompletion={onToggleCompletion}
+                        testIdSuffix="-desktop"
                     />
                     <div className="flex flex-col">
                         {isUpcomingView ? (
@@ -219,7 +220,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                 {/* Full width title that wraps */}
                                 <div className="w-full mb-0.5">
                                     <span className="text-sm font-normal text-gray-900 dark:text-gray-300 dark:font-light break-words tracking-tight">
-                                        {task.name}
+                                        {task.original_name || task.name}
                                     </span>
                                 </div>
                                 {/* Show project and tags info in upcoming view */}
@@ -314,7 +315,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         ) : (
                             <div className="flex items-center">
                                 <span className="text-md font-normal text-gray-900 dark:text-gray-300 dark:font-light">
-                                    {task.name}
+                                    {task.original_name || task.name}
                                 </span>
                             </div>
                         )}
@@ -575,6 +576,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     onClick={onEdit}
                                     className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-blue-100 dark:hover:bg-blue-800 hover:text-blue-600 dark:hover:text-blue-400"
                                     title={t('tasks.edit', 'Edit task')}
+                                    data-testid={`task-edit-${task.id}`}
                                 >
                                     <PencilIcon className="h-3 w-3" />
                                 </button>
@@ -587,6 +589,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                     onClick={onDelete}
                                     className="flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-red-800 hover:text-red-600 dark:hover:text-red-400"
                                     title={t('tasks.delete', 'Delete task')}
+                                    data-testid={`task-delete-${task.id}`}
                                 >
                                     <TrashIcon className="h-3 w-3" />
                                 </button>
@@ -605,6 +608,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                             priority={task.priority}
                             status={task.status}
                             onToggleCompletion={onToggleCompletion}
+                            testIdSuffix="-mobile"
                         />
                     </div>
 
@@ -612,7 +616,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                     <div className="ml-2 flex-1 min-w-0">
                         {/* Task Title */}
                         <div className="font-light text-md text-gray-900 dark:text-gray-300 dark:font-extralight">
-                            <span className="break-words">{task.name}</span>
+                            <span className="break-words">
+                                {task.original_name || task.name}
+                            </span>
                         </div>
 
                         {/* Project, tags, due date, and recurrence */}
@@ -868,6 +874,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 setIsDropdownOpen(false);
                                             }}
                                             className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            data-testid={`task-edit-mobile-${task.id}`}
                                         >
                                             {t('tasks.edit', 'Edit task')}
                                         </button>
@@ -883,6 +890,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                                 setIsDropdownOpen(false);
                                             }}
                                             className="w-full px-4 py-2 text-sm text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                            data-testid={`task-delete-mobile-${task.id}`}
                                         >
                                             {t('tasks.delete', 'Delete task')}
                                         </button>
@@ -953,7 +961,7 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                                 : 'text-gray-900 dark:text-gray-100'
                                         }`}
                                     >
-                                        {subtask.name}
+                                        {subtask.original_name || subtask.name}
                                     </span>
                                 </div>
 
