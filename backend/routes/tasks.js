@@ -192,9 +192,11 @@ async function serializeTask(task, userTimezone = 'UTC', options = {}) {
 
     // For recurring task templates, show recurrence type instead of original name
     // unless skipDisplayNameTransform option is true
+    // Skip this transformation for 'today' type queries to show actual task names
     let displayName = taskJson.name;
     if (
         !options.skipDisplayNameTransform &&
+        !options.preserveOriginalName &&
         taskJson.recurrence_type &&
         taskJson.recurrence_type !== 'none' &&
         !taskJson.recurring_parent_id
@@ -516,6 +518,8 @@ async function filterTasksByParams(params, userId, userTimezone) {
     // Filter by type
     switch (params.type) {
         case 'today':
+            // Ensure we exclude recurring task instances for today view
+            whereClause.recurring_parent_id = null;
             whereClause.status = {
                 [Op.notIn]: [
                     Task.STATUS.DONE,
@@ -1162,10 +1166,14 @@ router.get('/tasks', async (req, res) => {
             req.currentUser.timezone
         );
 
+        // Preserve original names for recurring tasks in 'today' view for productivity assistant
+        const serializationOptions = req.query.type === 'today' ? 
+            { preserveOriginalName: true } : {};
+
         const response = {
             tasks: await Promise.all(
                 tasks.map((task) =>
-                    serializeTask(task, req.currentUser.timezone)
+                    serializeTask(task, req.currentUser.timezone, serializationOptions)
                 )
             ),
             metrics: {
@@ -1174,29 +1182,30 @@ router.get('/tasks', async (req, res) => {
                 tasks_in_progress_count: metrics.tasks_in_progress_count,
                 tasks_in_progress: await Promise.all(
                     metrics.tasks_in_progress.map((task) =>
-                        serializeTask(task, req.currentUser.timezone)
+                        serializeTask(task, req.currentUser.timezone, serializationOptions)
                     )
                 ),
                 tasks_due_today: await Promise.all(
                     metrics.tasks_due_today.map((task) =>
-                        serializeTask(task, req.currentUser.timezone)
+                        serializeTask(task, req.currentUser.timezone, serializationOptions)
                     )
                 ),
                 today_plan_tasks: await Promise.all(
                     metrics.today_plan_tasks.map((task) =>
-                        serializeTask(task, req.currentUser.timezone)
+                        serializeTask(task, req.currentUser.timezone, serializationOptions)
                     )
                 ),
                 suggested_tasks: await Promise.all(
                     metrics.suggested_tasks.map((task) =>
-                        serializeTask(task, req.currentUser.timezone)
+                        serializeTask(task, req.currentUser.timezone, serializationOptions)
                     )
                 ),
                 tasks_completed_today: await Promise.all(
                     metrics.tasks_completed_today.map(async (task) => {
                         const serialized = await serializeTask(
                             task,
-                            req.currentUser.timezone
+                            req.currentUser.timezone,
+                            serializationOptions
                         );
                         return {
                             ...serialized,
