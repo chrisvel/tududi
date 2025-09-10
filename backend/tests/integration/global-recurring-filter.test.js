@@ -124,7 +124,7 @@ describe('Global Recurring Task Instance Filtering', () => {
             expect(response.body.tasks).toBeDefined();
 
             const taskNames = response.body.tasks.map((t) => t.name);
-            expect(taskNames).toContain('Daily');
+            expect(taskNames).toContain('Daily Workout Template'); // Now preserves original name for type=today
             expect(taskNames).toContain('Regular Task');
             expect(taskNames).not.toContain('Daily Workout - Aug 23');
             expect(taskNames).not.toContain('Daily Workout - Aug 24');
