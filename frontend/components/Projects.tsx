@@ -60,7 +60,26 @@ const Projects: React.FC = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const activeFilter = searchParams.get('active') || 'all';
-    const areaFilter = searchParams.get('area_id') || '';
+    
+    // Handle both 'area_id' and 'area' parameters from URL
+    const getAreaIdFromParams = () => {
+        const areaId = searchParams.get('area_id');
+        const areaParam = searchParams.get('area');
+        
+        if (areaId) {
+            return areaId;
+        }
+        
+        if (areaParam) {
+            // Extract area UID from the area parameter (format: uid-name-slug)
+            const areaUid = areaParam.split('-')[0];
+            // Find the area by UID and return its ID
+            const area = areas.find(area => area.uid === areaUid);
+            return area?.id?.toString() || '';
+        }
+        
+        return '';
+    };
 
     // Sort options for the filter button
     const sortOptions: SortOption[] = [
@@ -225,14 +244,21 @@ const Projects: React.FC = () => {
     const handleAreaFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
-        if (value === '') {
-            params.delete('area_id');
-        } else {
+        // Clear both area parameters
+        params.delete('area_id');
+        params.delete('area');
+        
+        if (value !== '') {
             params.set('area_id', value);
         }
 
         setSearchParams(params);
     };
+
+    // Update the area filter when areas are loaded (to handle area UID lookups)
+    const actualAreaFilter = useMemo(() => {
+        return getAreaIdFromParams();
+    }, [searchParams, areas]);
 
     // Filter, sort and search projects
     const displayProjects = useMemo(() => {
@@ -247,8 +273,8 @@ const Projects: React.FC = () => {
         }
 
         // Apply area filter
-        if (areaFilter) {
-            const areaId = parseInt(areaFilter);
+        if (actualAreaFilter) {
+            const areaId = parseInt(actualAreaFilter);
             filteredProjects = filteredProjects.filter(
                 (project) => project.area_id === areaId
             );
@@ -313,7 +339,7 @@ const Projects: React.FC = () => {
         });
 
         return filteredProjects;
-    }, [projects, activeFilter, areaFilter, searchQuery, orderBy]);
+    }, [projects, activeFilter, actualAreaFilter, searchQuery, orderBy]);
 
     if (isLoading) {
         return (
@@ -403,7 +429,7 @@ const Projects: React.FC = () => {
                         <div className="w-full md:w-auto mb-4 md:mb-0">
                             <FilterDropdown
                                 options={areaOptions}
-                                value={areaFilter}
+                                value={actualAreaFilter}
                                 onChange={handleAreaFilterChange}
                                 size="desktop"
                                 autoWidth={true}
