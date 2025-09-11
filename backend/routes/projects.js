@@ -536,7 +536,7 @@ router.delete('/project/:id', async (req, res) => {
         await sequelize.transaction(async (transaction) => {
             // Disable foreign key constraints for this operation
             await sequelize.query('PRAGMA foreign_keys = OFF', { transaction });
-            
+
             try {
                 // First, orphan all tasks associated with this project by setting project_id to NULL
                 await Task.update(
@@ -554,7 +554,9 @@ router.delete('/project/:id', async (req, res) => {
                 await project.destroy({ transaction });
             } finally {
                 // Re-enable foreign key constraints
-                await sequelize.query('PRAGMA foreign_keys = ON', { transaction });
+                await sequelize.query('PRAGMA foreign_keys = ON', {
+                    transaction,
+                });
             }
         });
 
