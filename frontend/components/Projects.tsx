@@ -60,24 +60,24 @@ const Projects: React.FC = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const activeFilter = searchParams.get('active') || 'all';
-    
+
     // Handle both 'area_id' and 'area' parameters from URL
     const getAreaIdFromParams = () => {
         const areaId = searchParams.get('area_id');
         const areaParam = searchParams.get('area');
-        
+
         if (areaId) {
             return areaId;
         }
-        
+
         if (areaParam) {
             // Extract area UID from the area parameter (format: uid-name-slug)
             const areaUid = areaParam.split('-')[0];
             // Find the area by UID and return its ID
-            const area = areas.find(area => area.uid === areaUid);
+            const area = areas.find((area) => area.uid === areaUid);
             return area?.id?.toString() || '';
         }
-        
+
         return '';
     };
 
@@ -247,7 +247,7 @@ const Projects: React.FC = () => {
         // Clear both area parameters
         params.delete('area_id');
         params.delete('area');
-        
+
         if (value !== '') {
             params.set('area_id', value);
         }
