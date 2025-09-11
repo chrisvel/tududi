@@ -156,12 +156,13 @@ const Tasks: React.FC = () => {
                 const type = query.get('type');
 
                 // Fetch all tasks (both completed and non-completed) for client-side filtering
-                const allTasksUrl = new URLSearchParams(location.search);
+                const allTasksUrl = new URLSearchParams(query.toString());
                 // Add special parameter to get ALL tasks (completed and non-completed)
                 allTasksUrl.set('client_side_filtering', 'true');
 
                 // Add groupBy=day for upcoming tasks
                 if (type === 'upcoming') {
+                    allTasksUrl.set('type', 'upcoming');
                     allTasksUrl.set('groupBy', 'day');
                     // Always show 7 days (whole week including tomorrow)
                     allTasksUrl.set('maxDays', '7');

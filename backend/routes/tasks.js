@@ -84,14 +84,11 @@ async function groupTasksByDay(
         const isToday = dateMoment.isSame(now, 'day');
         const isTomorrow = dateMoment.isSame(now.clone().add(1, 'day'), 'day');
 
-        // Skip today's tasks - we only want upcoming tasks
-        if (isToday) {
-            return; // Skip today's tasks
-        }
-
         // Create a descriptive group name
         let groupName;
-        if (isTomorrow) {
+        if (isToday) {
+            groupName = 'Today';
+        } else if (isTomorrow) {
             groupName = 'Tomorrow';
         } else {
             groupName = `${dayName}, ${dateDisplay}`;
@@ -1154,11 +1151,13 @@ router.get('/tasks', async (req, res) => {
                 ? parseInt(req.query.maxDays, 10)
                 : 7;
 
+            // For upcoming kanban view, sort tasks by due date within each day column
+            const dayGroupingOrderBy = req.query.order_by || 'due_date:asc';
             groupedTasks = await groupTasksByDay(
                 tasks,
                 req.currentUser.timezone,
                 maxDays,
-                req.query.order_by || 'created_at:desc'
+                dayGroupingOrderBy
             );
         }
         const metrics = await computeTaskMetrics(
