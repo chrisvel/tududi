@@ -64,6 +64,18 @@ describe('Tags Routes', () => {
             expect(response.body.id).toBeDefined();
         });
 
+        it('should allow hyphen (-) in tag names', async () => {
+            const tagData = {
+                name: 'project-frontend',
+            };
+
+            const response = await agent.post('/api/tag').send(tagData);
+
+            expect(response.status).toBe(201);
+            expect(response.body.name).toBe('project-frontend');
+            expect(response.body.id).toBeDefined();
+        });
+
         it('should reject tags with invalid characters', async () => {
             const tagData = {
                 name: 'invalid#tag',

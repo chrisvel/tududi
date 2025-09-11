@@ -20,6 +20,18 @@ describe('validation utils', () => {
             expect(result.name).toBe('category:project:frontend');
         });
 
+        it('should accept tag names with hyphens', () => {
+            const result = validateTagName('project-frontend');
+            expect(result.valid).toBe(true);
+            expect(result.name).toBe('project-frontend');
+        });
+
+        it('should accept tag names with multiple hyphens', () => {
+            const result = validateTagName('my-awesome-project-tag');
+            expect(result.valid).toBe(true);
+            expect(result.name).toBe('my-awesome-project-tag');
+        });
+
         it('should trim whitespace', () => {
             const result = validateTagName('  work  ');
             expect(result.valid).toBe(true);
