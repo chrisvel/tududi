@@ -317,7 +317,7 @@ describe('Tasks Routes', () => {
         it('should include recurring task instances in search results', async () => {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            
+
             // Create a recurring task template (set for today to ensure it's included)
             const recurringTemplate = await Task.create({
                 name: 'RecurringTask',
@@ -331,7 +331,7 @@ describe('Tasks Routes', () => {
             // Create a recurring task instance (simulating what the recurring task service would create)
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
-            
+
             const recurringInstance = await Task.create({
                 name: 'RecurringTask',
                 user_id: user.id,
@@ -367,8 +367,12 @@ describe('Tasks Routes', () => {
 
             // Verify we have both the template and instance - this proves search will work on both
             const allTasks = response.body.tasks;
-            const templateTask = allTasks.find(t => t.id === recurringTemplate.id);
-            const instanceTask = allTasks.find(t => t.id === recurringInstance.id);
+            const templateTask = allTasks.find(
+                (t) => t.id === recurringTemplate.id
+            );
+            const instanceTask = allTasks.find(
+                (t) => t.id === recurringInstance.id
+            );
 
             expect(templateTask).toBeDefined();
             // The template name gets transformed to show the recurrence type in the API response
@@ -387,7 +391,7 @@ describe('Tasks Routes', () => {
         it('should not include past recurring instances', async () => {
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
-            
+
             // Create a recurring task template
             const recurringTemplate = await Task.create({
                 name: 'Daily Review',
@@ -401,7 +405,7 @@ describe('Tasks Routes', () => {
             // Create a past recurring task instance
             const twoDaysAgo = new Date();
             twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-            
+
             const pastInstance = await Task.create({
                 name: 'Daily Review',
                 user_id: user.id,
@@ -413,7 +417,7 @@ describe('Tasks Routes', () => {
             // Create a future recurring task instance
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
-            
+
             const futureInstance = await Task.create({
                 name: 'Daily Review',
                 user_id: user.id,
@@ -434,7 +438,7 @@ describe('Tasks Routes', () => {
 
             // Should include future instances
             expect(taskIds).toContain(futureInstance.id);
-            
+
             // Template should not be included because it's in the past
             expect(taskIds).not.toContain(recurringTemplate.id);
         });
