@@ -130,9 +130,9 @@ describe('Global Recurring Task Instance Filtering', () => {
             expect(taskNames).not.toContain('Daily Workout - Aug 24');
         });
 
-        it('should include recurring instances (not templates) in upcoming tasks view', async () => {
+        it('should exclude recurring instances from upcoming tasks view', async () => {
             // Create recurring instances with future due dates
-            await Task.create({
+            const instance1 = await Task.create({
                 name: 'Daily Workout - Tomorrow',
                 user_id: user.id,
                 project_id: project.id,
@@ -149,12 +149,15 @@ describe('Global Recurring Task Instance Filtering', () => {
             expect(response.body.tasks).toBeDefined();
 
             const taskNames = response.body.tasks.map((t) => t.name);
+            const taskIds = response.body.tasks.map((t) => t.id);
 
-            // Should include recurring instances that are in the upcoming range
-            expect(taskNames).toContain('Daily Workout Template'); // This is the generated instance name
+            // Should include only the recurring template (not instances)
+            expect(taskNames).toContain('Daily');
+            expect(taskIds).toContain(recurringTemplate.id);
 
-            // Should NOT include the template (it stays in other views)
-            // Templates don't have specific due dates in upcoming range
+            // Should NOT include the recurring instance
+            expect(taskNames).not.toContain('Daily Workout - Tomorrow');
+            expect(taskIds).not.toContain(instance1.id);
         });
 
         it('should exclude recurring instances from someday tasks view', async () => {

@@ -452,6 +452,67 @@ async function undoneAllSubtasks(parentTaskId, userId) {
     }
 }
 
+// Helper function to filter recurring instances to show only the next one per template
+function filterToNextRecurringInstance(tasks) {
+    const now = new Date();
+    const recurringGroups = {};
+    const filteredTasks = [];
+
+    // Group tasks by their recurring parent or themselves if they're templates
+    for (const task of tasks) {
+        if (task.recurring_parent_id) {
+            // This is a recurring instance
+            const parentId = task.recurring_parent_id;
+            if (!recurringGroups[parentId]) {
+                recurringGroups[parentId] = { instances: [] };
+            }
+            recurringGroups[parentId].instances.push(task);
+        } else if (task.recurrence_type && task.recurrence_type !== 'none') {
+            // This is a recurring template
+            const templateId = task.id;
+            if (!recurringGroups[templateId]) {
+                recurringGroups[templateId] = { template: task, instances: [] };
+            } else {
+                recurringGroups[templateId].template = task;
+            }
+        } else {
+            // Regular non-recurring task - include it
+            filteredTasks.push(task);
+        }
+    }
+
+    // For each recurring group, include only the next instance or template if no future instances
+    for (const [groupId, group] of Object.entries(recurringGroups)) {
+        if (group.instances.length > 0) {
+            // Sort instances by due_date (earliest first), null dates go to end
+            const sortedInstances = group.instances.sort((a, b) => {
+                if (!a.due_date && !b.due_date) return 0;
+                if (!a.due_date) return 1;
+                if (!b.due_date) return -1;
+                return new Date(a.due_date) - new Date(b.due_date);
+            });
+
+            // Find the next future instance or the earliest one if no future instances
+            let nextInstance = sortedInstances.find(
+                (instance) =>
+                    !instance.due_date || new Date(instance.due_date) >= now
+            );
+
+            if (!nextInstance) {
+                // No future instances, take the most recent past one
+                nextInstance = sortedInstances[sortedInstances.length - 1];
+            }
+
+            filteredTasks.push(nextInstance);
+        } else if (group.template) {
+            // No instances, include the template
+            filteredTasks.push(group.template);
+        }
+    }
+
+    return filteredTasks;
+}
+
 // Filter tasks by parameters
 async function filterTasksByParams(params, userId, userTimezone) {
     let whereClause = {
@@ -556,36 +617,15 @@ async function filterTasksByParams(params, userId, userTimezone) {
             const safeTimezone = getSafeTimezone(userTimezone);
             const upcomingRange = getUpcomingRangeInUTC(safeTimezone, 7);
 
-            // For upcoming view, we want to show recurring instances (children) with due dates
-            // Override the default whereClause to include recurring instances
+            // Override the default whereClause - exclude recurring instances for upcoming view
             whereClause = {
                 user_id: userId,
                 parent_task_id: null, // Exclude subtasks from main task lists
+                recurring_parent_id: null, // Exclude recurring task instances
                 due_date: {
                     [Op.between]: [upcomingRange.start, upcomingRange.end],
                 },
                 status: { [Op.notIn]: [Task.STATUS.DONE, 'done'] },
-                [Op.or]: [
-                    // Include non-recurring tasks
-                    {
-                        [Op.and]: [
-                            { recurring_parent_id: null },
-                            {
-                                [Op.or]: [
-                                    { recurrence_type: 'none' },
-                                    { recurrence_type: null },
-                                ],
-                            },
-                        ],
-                    },
-                    // Include recurring task instances (children) - this is the key change!
-                    {
-                        [Op.and]: [
-                            { recurring_parent_id: { [Op.ne]: null } }, // Has a parent (is an instance)
-                            { recurrence_type: 'none' }, // Instances have recurrence_type: 'none'
-                        ],
-                    },
-                ],
             };
             break;
         }
@@ -608,8 +648,10 @@ async function filterTasksByParams(params, userId, userTimezone) {
             whereClause.status = Task.STATUS.WAITING;
             break;
         case 'all':
-            // Exclude recurring task instances from all view
-            whereClause.recurring_parent_id = null;
+            // For 'all' view, include recurring instances when client_side_filtering is enabled (e.g., for search)
+            if (!params.client_side_filtering && !params.include_instances) {
+                whereClause.recurring_parent_id = null;
+            }
             if (params.status === 'done') {
                 whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
             } else if (!params.client_side_filtering) {
@@ -618,8 +660,8 @@ async function filterTasksByParams(params, userId, userTimezone) {
             }
             break;
         default:
-            // Exclude recurring task instances from default view unless include_instances is specified
-            if (!params.include_instances) {
+            // For 'default' view, include recurring instances when client_side_filtering is enabled (e.g., for search)
+            if (!params.client_side_filtering && !params.include_instances) {
                 whereClause.recurring_parent_id = null;
             }
             if (params.status === 'done') {
@@ -681,12 +723,22 @@ async function filterTasksByParams(params, userId, userTimezone) {
         }
     }
 
-    return await Task.findAll({
+    const tasks = await Task.findAll({
         where: whereClause,
         include: includeClause,
         order: orderClause,
         distinct: true,
     });
+
+    // If client_side_filtering or include_instances is enabled (for search), filter recurring instances to show only the next one per template
+    if (
+        (params.client_side_filtering || params.include_instances) &&
+        (params.type === 'all' || !params.type)
+    ) {
+        return filterToNextRecurringInstance(tasks);
+    }
+
+    return tasks;
 }
 
 // Compute task metrics
