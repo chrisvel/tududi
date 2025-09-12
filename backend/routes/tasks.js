@@ -457,20 +457,28 @@ async function filterTasksByParams(params, userId, userTimezone) {
     let whereClause = {
         user_id: userId,
         parent_task_id: null, // Exclude subtasks from main task lists
-        recurring_parent_id: null, // Exclude recurring task instances, only show templates
     };
 
-    // Filter out past recurring templates (but keep non-recurring tasks)
+    // Include both recurring templates and instances, but handle them appropriately
     whereClause[Op.or] = [
         // Include all non-recurring tasks
         {
-            [Op.or]: [{ recurrence_type: 'none' }, { recurrence_type: null }],
+            [Op.and]: [
+                {
+                    [Op.or]: [
+                        { recurrence_type: 'none' },
+                        { recurrence_type: null },
+                    ],
+                },
+                { recurring_parent_id: null }, // Non-recurring tasks have no parent
+            ],
         },
         // Include recurring templates that are not in the past
         {
             [Op.and]: [
                 { recurrence_type: { [Op.ne]: 'none' } },
                 { recurrence_type: { [Op.ne]: null } },
+                { recurring_parent_id: null }, // Templates have no parent
                 {
                     [Op.or]: [
                         { due_date: null }, // No due date - always show
@@ -481,6 +489,24 @@ async function filterTasksByParams(params, userId, userTimezone) {
                                 ),
                             },
                         }, // Today or future (start of today)
+                    ],
+                },
+            ],
+        },
+        // Include recurring task instances (but only future ones)
+        {
+            [Op.and]: [
+                { recurring_parent_id: { [Op.ne]: null } }, // Has a recurring parent
+                {
+                    [Op.or]: [
+                        { due_date: null }, // No due date - always show
+                        {
+                            due_date: {
+                                [Op.gte]: new Date(
+                                    new Date().setHours(0, 0, 0, 0)
+                                ),
+                            },
+                        }, // Today or future instances only
                     ],
                 },
             ],
