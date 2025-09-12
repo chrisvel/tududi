@@ -36,6 +36,7 @@ module.exports = (sequelize) => {
                             'priority_changed',
                             'due_date_changed',
                             'project_changed',
+                            'project_id_changed',
                             'name_changed',
                             'description_changed',
                             'note_changed',
