@@ -372,7 +372,7 @@ describe('Tasks Routes', () => {
                 status: 0,
             });
 
-            const response = await agent.get('/api/tasks');
+            const response = await agent.get('/api/tasks?include_instances=true');
 
             expect(response.status).toBe(200);
             expect(response.body.tasks).toBeDefined();
@@ -451,7 +451,7 @@ describe('Tasks Routes', () => {
                 status: 0,
             });
 
-            const response = await agent.get('/api/tasks');
+            const response = await agent.get('/api/tasks?include_instances=true');
 
             expect(response.status).toBe(200);
             expect(response.body.tasks).toBeDefined();

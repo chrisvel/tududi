@@ -541,7 +541,7 @@ async function filterTasksByParams(params, userId, userTimezone) {
     // Filter by type
     switch (params.type) {
         case 'today':
-            // Ensure we exclude recurring task instances for today view
+            // Exclude recurring task instances for today view
             whereClause.recurring_parent_id = null;
             whereClause.status = {
                 [Op.notIn]: [
@@ -599,6 +599,8 @@ async function filterTasksByParams(params, userId, userTimezone) {
             whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             break;
         case 'someday':
+            // Exclude recurring task instances for someday view
+            whereClause.recurring_parent_id = null;
             whereClause.due_date = null;
             whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             break;
@@ -606,6 +608,8 @@ async function filterTasksByParams(params, userId, userTimezone) {
             whereClause.status = Task.STATUS.WAITING;
             break;
         case 'all':
+            // Exclude recurring task instances from all view
+            whereClause.recurring_parent_id = null;
             if (params.status === 'done') {
                 whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
             } else if (!params.client_side_filtering) {
@@ -614,6 +618,10 @@ async function filterTasksByParams(params, userId, userTimezone) {
             }
             break;
         default:
+            // Exclude recurring task instances from default view unless include_instances is specified
+            if (!params.include_instances) {
+                whereClause.recurring_parent_id = null;
+            }
             if (params.status === 'done') {
                 whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
             } else if (!params.client_side_filtering) {
