@@ -84,14 +84,11 @@ async function groupTasksByDay(
         const isToday = dateMoment.isSame(now, 'day');
         const isTomorrow = dateMoment.isSame(now.clone().add(1, 'day'), 'day');
 
-        // Skip today's tasks - we only want upcoming tasks
-        if (isToday) {
-            return; // Skip today's tasks
-        }
-
         // Create a descriptive group name
         let groupName;
-        if (isTomorrow) {
+        if (isToday) {
+            groupName = 'Today';
+        } else if (isTomorrow) {
             groupName = 'Tomorrow';
         } else {
             groupName = `${dayName}, ${dateDisplay}`;
@@ -460,20 +457,28 @@ async function filterTasksByParams(params, userId, userTimezone) {
     let whereClause = {
         user_id: userId,
         parent_task_id: null, // Exclude subtasks from main task lists
-        recurring_parent_id: null, // Exclude recurring task instances, only show templates
     };
 
-    // Filter out past recurring templates (but keep non-recurring tasks)
+    // Include both recurring templates and instances, but handle them appropriately
     whereClause[Op.or] = [
         // Include all non-recurring tasks
         {
-            [Op.or]: [{ recurrence_type: 'none' }, { recurrence_type: null }],
+            [Op.and]: [
+                {
+                    [Op.or]: [
+                        { recurrence_type: 'none' },
+                        { recurrence_type: null },
+                    ],
+                },
+                { recurring_parent_id: null }, // Non-recurring tasks have no parent
+            ],
         },
         // Include recurring templates that are not in the past
         {
             [Op.and]: [
                 { recurrence_type: { [Op.ne]: 'none' } },
                 { recurrence_type: { [Op.ne]: null } },
+                { recurring_parent_id: null }, // Templates have no parent
                 {
                     [Op.or]: [
                         { due_date: null }, // No due date - always show
@@ -484,6 +489,24 @@ async function filterTasksByParams(params, userId, userTimezone) {
                                 ),
                             },
                         }, // Today or future (start of today)
+                    ],
+                },
+            ],
+        },
+        // Include recurring task instances (but only future ones)
+        {
+            [Op.and]: [
+                { recurring_parent_id: { [Op.ne]: null } }, // Has a recurring parent
+                {
+                    [Op.or]: [
+                        { due_date: null }, // No due date - always show
+                        {
+                            due_date: {
+                                [Op.gte]: new Date(
+                                    new Date().setHours(0, 0, 0, 0)
+                                ),
+                            },
+                        }, // Today or future instances only
                     ],
                 },
             ],
@@ -1154,11 +1177,13 @@ router.get('/tasks', async (req, res) => {
                 ? parseInt(req.query.maxDays, 10)
                 : 7;
 
+            // For upcoming kanban view, sort tasks by due date within each day column
+            const dayGroupingOrderBy = req.query.order_by || 'due_date:asc';
             groupedTasks = await groupTasksByDay(
                 tasks,
                 req.currentUser.timezone,
                 maxDays,
-                req.query.order_by || 'created_at:desc'
+                dayGroupingOrderBy
             );
         }
         const metrics = await computeTaskMetrics(
@@ -2179,7 +2204,8 @@ router.patch('/task/:id', async (req, res) => {
         // Use serializeTask to include subtasks data
         const serializedTask = await serializeTask(
             taskWithAssociations,
-            req.currentUser.timezone
+            req.currentUser.timezone,
+            { skipDisplayNameTransform: true }
         );
 
         res.json(serializedTask);

@@ -6,11 +6,11 @@ function validateTagName(name) {
     const trimmedName = name.trim();
 
     // Check for invalid characters that can break URLs or cause issues
-    const invalidChars = /[#%&{}\\<>*?/$!'":@+`|=]/;
+    const invalidChars = /[#%&{}\\<>*?/$!'"@+`|=]/;
     if (invalidChars.test(trimmedName)) {
         return {
             valid: false,
-            error: 'Tag name contains invalid characters. Please avoid: # % & { } \\ < > * ? / $ ! \' " : @ + ` | =',
+            error: 'Tag name contains invalid characters. Please avoid: # % & { } \\ < > * ? / $ ! \' " @ + ` | =',
         };
     }
 
