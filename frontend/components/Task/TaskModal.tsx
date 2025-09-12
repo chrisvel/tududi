@@ -325,43 +325,48 @@ const TaskModal: React.FC<TaskModalProps> = ({
         }
     };
 
-    const handleSubmit = () => {
-        // Add new tags to the global store
-        const existingTagNames = availableTags.map((tag: any) => tag.name);
-        const newTagNames = tags.filter(
-            (tag) => !existingTagNames.includes(tag)
-        );
-        if (newTagNames.length > 0) {
-            addNewTags(newTagNames);
-        }
-
-        // If project name is empty, clear the project_id
-        const finalFormData = {
-            ...formData,
-            project_id:
-                newProjectName.trim() === '' ? null : formData.project_id,
-            tags: tags.map((tag) => ({ name: tag })),
-            subtasks: subtasks,
-        };
-
-        onSave(finalFormData as any);
-
-        if (showToast) {
-            const taskLink = (
-                <span>
-                    {t('task.updated', 'Task')}{' '}
-                    <a
-                        href={`/task/${formData.uid}`}
-                        className="text-green-200 underline hover:text-green-100"
-                    >
-                        {formData.name}
-                    </a>{' '}
-                    {t('task.updatedSuccessfully', 'updated successfully!')}
-                </span>
+    const handleSubmit = async () => {
+        try {
+            // Add new tags to the global store
+            const existingTagNames = availableTags.map((tag: any) => tag.name);
+            const newTagNames = tags.filter(
+                (tag) => !existingTagNames.includes(tag)
             );
-            showSuccessToast(taskLink);
+            if (newTagNames.length > 0) {
+                addNewTags(newTagNames);
+            }
+
+            // If project name is empty, clear the project_id
+            const finalFormData = {
+                ...formData,
+                project_id:
+                    newProjectName.trim() === '' ? null : formData.project_id,
+                tags: tags.map((tag) => ({ name: tag })),
+                subtasks: subtasks,
+            };
+
+            await onSave(finalFormData as any);
+
+            if (showToast) {
+                const taskLink = (
+                    <span>
+                        {t('task.updated', 'Task')}{' '}
+                        <a
+                            href={`/task/${formData.uid}`}
+                            className="text-green-200 underline hover:text-green-100"
+                        >
+                            {formData.name}
+                        </a>{' '}
+                        {t('task.updatedSuccessfully', 'updated successfully!')}
+                    </span>
+                );
+                showSuccessToast(taskLink);
+            }
+            handleClose();
+        } catch (error) {
+            console.error('Error saving task:', error);
+            // Don't close modal on error so user can retry
         }
-        handleClose();
     };
 
     const handleDeleteClick = () => {

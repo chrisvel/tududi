@@ -2204,7 +2204,8 @@ router.patch('/task/:id', async (req, res) => {
         // Use serializeTask to include subtasks data
         const serializedTask = await serializeTask(
             taskWithAssociations,
-            req.currentUser.timezone
+            req.currentUser.timezone,
+            { skipDisplayNameTransform: true }
         );
 
         res.json(serializedTask);

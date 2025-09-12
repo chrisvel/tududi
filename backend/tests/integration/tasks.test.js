@@ -151,6 +151,31 @@ describe('Tasks Routes', () => {
             expect(response.body.status).toBe(updateData.status);
         });
 
+        it('should update recurring task name without transformation', async () => {
+            // Create a recurring task
+            const recurringTask = await Task.create({
+                name: 'My Daily Task',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                user_id: user.id,
+                status: 0,
+            });
+
+            const updateData = {
+                name: 'Updated Daily Task Name',
+            };
+
+            const response = await agent
+                .patch(`/api/task/${recurringTask.id}`)
+                .send(updateData);
+
+            expect(response.status).toBe(200);
+            expect(response.body.id).toBeDefined();
+            // The response should contain the actual updated name, not a transformed name like "Daily"
+            expect(response.body.name).toBe(updateData.name);
+            expect(response.body.original_name).toBe(updateData.name);
+        });
+
         it('should return 404 for non-existent task', async () => {
             const response = await agent
                 .patch('/api/task/999999')

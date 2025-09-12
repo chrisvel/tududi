@@ -293,22 +293,23 @@ const Tasks: React.FC = () => {
             });
 
             if (response.ok) {
+                const updatedTaskFromServer = await response.json();
                 setTasks((prevTasks) =>
                     prevTasks.map((task) =>
                         task.id === updatedTask.id
                             ? {
                                   ...task,
-                                  ...updatedTask,
+                                  ...updatedTaskFromServer,
                                   // Explicitly preserve subtasks data
                                   subtasks:
-                                      updatedTask.subtasks ||
-                                      updatedTask.Subtasks ||
+                                      updatedTaskFromServer.subtasks ||
+                                      updatedTaskFromServer.Subtasks ||
                                       task.subtasks ||
                                       task.Subtasks ||
                                       [],
                                   Subtasks:
-                                      updatedTask.subtasks ||
-                                      updatedTask.Subtasks ||
+                                      updatedTaskFromServer.subtasks ||
+                                      updatedTaskFromServer.Subtasks ||
                                       task.subtasks ||
                                       task.Subtasks ||
                                       [],
