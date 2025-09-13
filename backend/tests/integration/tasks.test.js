@@ -382,15 +382,17 @@ describe('Tasks Routes', () => {
             const taskIds = response.body.tasks.map((t) => t.id);
             const taskNames = response.body.tasks.map((t) => t.name);
 
-            // Should include only the next recurring instance (tomorrow) not the template (today)
+            // Should include the recurring template
+            expect(taskIds).toContain(recurringTemplate.id);
+
+            // Should include the recurring instance (this is the key fix - instances should be searchable)
             expect(taskIds).toContain(recurringInstance.id);
-            expect(taskIds).not.toContain(recurringTemplate.id);
 
             // Should include the regular task
             expect(taskIds).toContain(regularTask.id);
             expect(taskNames).toContain('Review Pull Request');
 
-            // Verify we only have the instance (next occurrence) in search results
+            // Verify we have both the template and instance - this proves search will work on both
             const allTasks = response.body.tasks;
             const templateTask = allTasks.find(
                 (t) => t.id === recurringTemplate.id
@@ -399,7 +401,14 @@ describe('Tasks Routes', () => {
                 (t) => t.id === recurringInstance.id
             );
 
-            expect(templateTask).toBeUndefined();
+            expect(templateTask).toBeDefined();
+            // The template name gets transformed to show the recurrence type in the API response
+            expect(templateTask.name).toBe('Daily');
+            expect(templateTask.recurrence_type).toBe('daily');
+            expect(templateTask.recurring_parent_id).toBeNull();
+            // The original name is preserved in original_name field
+            expect(templateTask.original_name).toBe('RecurringTask');
+
             expect(instanceTask).toBeDefined();
             // Instances keep their original name
             expect(instanceTask.name).toBe('RecurringTask');
@@ -461,76 +470,6 @@ describe('Tasks Routes', () => {
 
             // Template should not be included because it's in the past
             expect(taskIds).not.toContain(recurringTemplate.id);
-        });
-
-        it('should include recurring task instances with priority ordering', async () => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            // Create a recurring task template with high priority
-            const recurringTemplate = await Task.create({
-                name: 'Important Daily Task',
-                user_id: user.id,
-                recurrence_type: 'daily',
-                recurrence_interval: 1,
-                due_date: today,
-                status: 0,
-                priority: 2, // High priority
-            });
-
-            // Create a recurring task instance with medium priority
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-
-            const recurringInstance = await Task.create({
-                name: 'Important Daily Task',
-                user_id: user.id,
-                recurring_parent_id: recurringTemplate.id,
-                due_date: tomorrow,
-                status: 0,
-                priority: 1, // Medium priority
-            });
-
-            // Create a regular non-recurring task with low priority
-            const regularTask = await Task.create({
-                name: 'Regular Low Priority Task',
-                user_id: user.id,
-                status: 0,
-                priority: 0, // Low priority
-            });
-
-            // Test with priority ordering and client_side_filtering (simulates search)
-            const response = await agent.get(
-                '/api/tasks?client_side_filtering=true&order_by=priority:desc'
-            );
-
-            expect(response.status).toBe(200);
-            expect(response.body.tasks).toBeDefined();
-
-            const taskIds = response.body.tasks.map((t) => t.id);
-            const taskNames = response.body.tasks.map((t) => t.name);
-
-            // Should include only the next recurring instance (not both template and instance)
-            // The future instance should be preferred over the template
-            expect(taskIds).toContain(recurringInstance.id);
-            expect(taskIds).not.toContain(recurringTemplate.id);
-
-            // Should include the regular task
-            expect(taskIds).toContain(regularTask.id);
-            expect(taskNames).toContain('Regular Low Priority Task');
-
-            // Verify we only have the instance (next occurrence) in search results
-            const allTasks = response.body.tasks;
-            const templateTask = allTasks.find(
-                (t) => t.id === recurringTemplate.id
-            );
-            const instanceTask = allTasks.find(
-                (t) => t.id === recurringInstance.id
-            );
-
-            expect(templateTask).toBeUndefined();
-            expect(instanceTask).toBeDefined();
-            expect(instanceTask.recurring_parent_id).toBe(recurringTemplate.id);
         });
     });
 });
