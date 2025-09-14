@@ -94,6 +94,7 @@ const Tasks: React.FC = () => {
             filteredTasks = filteredTasks.filter(
                 (task) =>
                     task.name.toLowerCase().includes(query) ||
+                    task.original_name?.toLowerCase().includes(query) ||
                     task.note?.toLowerCase().includes(query)
             );
         }

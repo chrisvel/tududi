@@ -454,6 +454,13 @@ async function undoneAllSubtasks(parentTaskId, userId) {
 
 // Filter tasks by parameters
 async function filterTasksByParams(params, userId, userTimezone) {
+    // Disable search functionality for upcoming view
+    if (params.type === 'upcoming') {
+        // Remove search-related parameters to prevent search functionality
+        params = { ...params, client_side_filtering: false };
+        delete params.search;
+    }
+
     let whereClause = {
         user_id: userId,
         parent_task_id: null, // Exclude subtasks from main task lists
@@ -558,6 +565,7 @@ async function filterTasksByParams(params, userId, userTimezone) {
 
             // For upcoming view, we want to show recurring instances (children) with due dates
             // Override the default whereClause to include recurring instances
+            // NOTE: Search functionality is disabled for upcoming view - ignore client_side_filtering
             whereClause = {
                 user_id: userId,
                 parent_task_id: null, // Exclude subtasks from main task lists
@@ -608,8 +616,8 @@ async function filterTasksByParams(params, userId, userTimezone) {
             whereClause.status = Task.STATUS.WAITING;
             break;
         case 'all':
-            // Exclude recurring task instances from all view
-            whereClause.recurring_parent_id = null;
+            // For 'all' view, include both recurring templates and instances
+            // The complex OR logic above already handles this correctly
             if (params.status === 'done') {
                 whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
             } else if (!params.client_side_filtering) {
