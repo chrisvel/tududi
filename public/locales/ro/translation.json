@@ -578,7 +578,8 @@
     "nextActionAdded": "Următoarea acțiune adăugată cu succes!",
     "taskCreated": "Sarcină creată cu succes!",
     "taskUpdated": "Sarcină actualizată cu succes!",
-    "taskDeleted": "Sarcină ștearsă cu succes!"
+    "taskDeleted": "Sarcină ștearsă cu succes!",
+    "noteDeleted": "Notă ștearsă cu succes!"
   },
   "note": {
     "title": "Titlu",

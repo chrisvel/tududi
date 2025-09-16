@@ -578,7 +578,8 @@
     "nextActionAdded": "Nästa åtgärd tillagd!",
     "taskCreated": "Uppgift skapad!",
     "taskUpdated": "Uppgift uppdaterad!",
-    "taskDeleted": "Uppgift borttagen!"
+    "taskDeleted": "Uppgift borttagen!",
+    "noteDeleted": "Anteckningen har raderats framgångsrikt!"
   },
   "note": {
     "title": "Titel",

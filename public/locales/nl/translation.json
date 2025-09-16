@@ -578,7 +578,8 @@
     "nextActionAdded": "Volgende actie succesvol toegevoegd!",
     "taskCreated": "Taak succesvol aangemaakt!",
     "taskUpdated": "Taak succesvol bijgewerkt!",
-    "taskDeleted": "Taak succesvol verwijderd!"
+    "taskDeleted": "Taak succesvol verwijderd!",
+    "noteDeleted": "Notitie succesvol verwijderd!"
   },
   "note": {
     "title": "Titel",

@@ -578,7 +578,8 @@
     "nextActionAdded": "Naslednja akcija uspešno dodana!",
     "taskCreated": "Naloga uspešno ustvarjena!",
     "taskUpdated": "Naloga uspešno posodobljena!",
-    "taskDeleted": "Naloga uspešno izbrisana!"
+    "taskDeleted": "Naloga uspešno izbrisana!",
+    "noteDeleted": "Opomba je bila uspešno izbrisana!"
   },
   "note": {
     "title": "Naslov",

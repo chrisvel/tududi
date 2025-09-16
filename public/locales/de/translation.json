@@ -293,7 +293,8 @@
     "tagCreated": "Tag erfolgreich erstellt!",
     "taskCreated": "Aufgabe erfolgreich erstellt!",
     "taskUpdated": "Aufgabe erfolgreich aktualisiert!",
-    "taskDeleted": "Aufgabe erfolgreich gelöscht!"
+    "taskDeleted": "Aufgabe erfolgreich gelöscht!",
+    "noteDeleted": "Notiz erfolgreich gelöscht!"
   },
   "notes": {
     "title": "Notizen",
