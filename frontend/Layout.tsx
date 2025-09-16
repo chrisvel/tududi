@@ -526,10 +526,15 @@ const Layout: React.FC<LayoutProps> = ({
                                 );
                                 await deleteNote(noteId);
                                 // Remove note from global store
-                                const currentNotes = useStore.getState().notesStore.notes;
-                                useStore.getState().notesStore.setNotes(
-                                    currentNotes.filter((note) => note.id !== noteId)
-                                );
+                                const currentNotes =
+                                    useStore.getState().notesStore.notes;
+                                useStore
+                                    .getState()
+                                    .notesStore.setNotes(
+                                        currentNotes.filter(
+                                            (note) => note.id !== noteId
+                                        )
+                                    );
                                 closeNoteModal();
                             } catch (error) {
                                 console.error('Error deleting note:', error);
