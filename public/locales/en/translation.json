@@ -569,6 +569,7 @@
   "success": {
     "noteUpdated": "Note updated successfully!",
     "noteCreated": "Note created successfully!",
+    "noteDeleted": "Note deleted successfully!",
     "areaUpdated": "Area updated successfully!",
     "areaCreated": "Area created successfully!",
     "tagUpdated": "Tag updated successfully!",
