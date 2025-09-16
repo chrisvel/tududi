@@ -521,10 +521,13 @@ const Layout: React.FC<LayoutProps> = ({
                         onSave={handleSaveNote}
                         onDelete={async (noteId) => {
                             try {
-                                const { deleteNote } = await import(
-                                    './utils/notesService'
+                                const { deleteNoteWithStoreUpdate } =
+                                    await import('./utils/noteDeleteUtils');
+                                await deleteNoteWithStoreUpdate(
+                                    noteId,
+                                    showSuccessToast,
+                                    t
                                 );
-                                await deleteNote(noteId);
                                 closeNoteModal();
                             } catch (error) {
                                 console.error('Error deleting note:', error);

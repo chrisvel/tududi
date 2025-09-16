@@ -578,7 +578,8 @@
     "nextActionAdded": "다음 작업이 성공적으로 추가되었습니다!",
     "taskCreated": "작업이 성공적으로 생성되었습니다!",
     "taskUpdated": "작업이 성공적으로 업데이트되었습니다!",
-    "taskDeleted": "작업이 성공적으로 삭제되었습니다!"
+    "taskDeleted": "작업이 성공적으로 삭제되었습니다!",
+    "noteDeleted": "메모가 성공적으로 삭제되었습니다!"
   },
   "note": {
     "title": "제목",

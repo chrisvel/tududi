@@ -480,7 +480,8 @@
     "projectCreated": "プロジェクトが正常に作成されました！",
     "taskCreated": "タスクが正常に作成されました！",
     "taskUpdated": "タスクが正常に更新されました！",
-    "taskDeleted": "タスクが正常に削除されました！"
+    "taskDeleted": "タスクが正常に削除されました！",
+    "noteDeleted": "ノートが正常に削除されました！"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

@@ -578,7 +578,8 @@
     "nextActionAdded": "Seuraava toiminto lisätty onnistuneesti!",
     "taskCreated": "Tehtävä luotu onnistuneesti!",
     "taskUpdated": "Tehtävä päivitetty onnistuneesti!",
-    "taskDeleted": "Tehtävä poistettu onnistuneesti!"
+    "taskDeleted": "Tehtävä poistettu onnistuneesti!",
+    "noteDeleted": "Muistiinpano poistettiin onnistuneesti!"
   },
   "note": {
     "title": "Otsikko",

@@ -578,7 +578,8 @@
     "nextActionAdded": "Hành động tiếp theo đã được thêm thành công!",
     "taskCreated": "Nhiệm vụ đã được tạo thành công!",
     "taskUpdated": "Nhiệm vụ đã được cập nhật thành công!",
-    "taskDeleted": "Nhiệm vụ đã được xóa thành công!"
+    "taskDeleted": "Nhiệm vụ đã được xóa thành công!",
+    "noteDeleted": "Ghi chú đã được xóa thành công!"
   },
   "note": {
     "title": "Tiêu đề",

@@ -578,7 +578,8 @@
     "nextActionAdded": "Próxima ação adicionada com sucesso!",
     "taskCreated": "Tarefa criada com sucesso!",
     "taskUpdated": "Tarefa atualizada com sucesso!",
-    "taskDeleted": "Tarefa excluída com sucesso!"
+    "taskDeleted": "Tarefa excluída com sucesso!",
+    "noteDeleted": "Nota deletada com sucesso!"
   },
   "note": {
     "title": "Título",
