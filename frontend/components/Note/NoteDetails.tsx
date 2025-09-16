@@ -16,6 +16,7 @@ import {
     fetchNoteBySlug,
     updateNote as apiUpdateNote,
 } from '../../utils/notesService';
+import { deleteNoteWithStoreUpdate } from '../../utils/noteDeleteUtils';
 import { createProject } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
 

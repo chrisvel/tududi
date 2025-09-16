@@ -296,6 +296,7 @@ router.get('/project/:uidSlug', async (req, res) => {
                     required: false,
                     attributes: [
                         'id',
+                        'uid',
                         'title',
                         'content',
                         'created_at',
