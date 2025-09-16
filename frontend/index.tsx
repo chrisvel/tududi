@@ -16,6 +16,35 @@ import './styles/markdown.css'; // Import markdown styles
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n'; // Import the i18n instance with its configuration
 
+// Service Worker Registration for PWA
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+                console.log('SW registered: ', registration);
+                
+                // Check for updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    if (newWorker) {
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // New version available
+                                if (confirm('New version available! Reload to update?')) {
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    }
+                });
+            })
+            .catch((registrationError) => {
+                console.warn('SW registration failed: ', registrationError);
+                // Don't show error to user, just log it
+            });
+    });
+}
+
 const storedPreference = localStorage.getItem('isDarkMode');
 const prefersDarkMode = window.matchMedia(
     '(prefers-color-scheme: dark)'
@@ -39,7 +68,12 @@ if (container) {
     root = createRoot(container);
     root.render(
         <I18nextProvider i18n={i18n}>
-            <BrowserRouter>
+            <BrowserRouter
+                future={{
+                    v7_startTransition: true,
+                    v7_relativeSplatPath: true
+                }}
+            >
                 <ToastProvider>
                     <TelegramStatusProvider>
                         <App />
@@ -58,7 +92,12 @@ if (module.hot) {
         if (root) {
             root.render(
                 <I18nextProvider i18n={i18n}>
-                    <BrowserRouter>
+                    <BrowserRouter
+                        future={{
+                            v7_startTransition: true,
+                            v7_relativeSplatPath: true
+                        }}
+                    >
                         <ToastProvider>
                             <TelegramStatusProvider>
                                 <App />
