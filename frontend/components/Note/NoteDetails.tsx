@@ -15,8 +15,7 @@ import {
     deleteNote as apiDeleteNote,
     updateNote as apiUpdateNote,
 } from '../../utils/notesService';
-import { createProject, fetchProjects } from '../../utils/projectsService';
-import { Project } from '../../entities/Project';
+import { createProject } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
 
 const NoteDetails: React.FC = () => {

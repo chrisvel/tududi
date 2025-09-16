@@ -7,7 +7,6 @@ import GroupedTaskList from './Task/GroupedTaskList';
 import NewTask from './Task/NewTask';
 import SortFilter from './Shared/SortFilter';
 import { Task } from '../entities/Task';
-import { Project } from '../entities/Project';
 import { getTitleAndIcon } from './Task/getTitleAndIcon';
 import { getDescription } from './Task/getDescription';
 import {

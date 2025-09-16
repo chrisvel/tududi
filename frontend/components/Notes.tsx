@@ -12,7 +12,7 @@ import {
     deleteNote as apiDeleteNote,
 } from '../utils/notesService';
 import { useStore } from '../store/useStore';
-import { createProject, fetchProjects } from '../utils/projectsService';
+import { createProject } from '../utils/projectsService';
 
 const Notes: React.FC = () => {
     const { t } = useTranslation();
