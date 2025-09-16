@@ -7,7 +7,6 @@ import GroupedTaskList from './Task/GroupedTaskList';
 import NewTask from './Task/NewTask';
 import SortFilter from './Shared/SortFilter';
 import { Task } from '../entities/Task';
-import { Project } from '../entities/Project';
 import { getTitleAndIcon } from './Task/getTitleAndIcon';
 import { getDescription } from './Task/getDescription';
 import {
@@ -15,6 +14,7 @@ import {
     toggleTaskToday,
     GroupedTasks,
 } from '../utils/tasksService';
+import { useStore } from '../store/useStore';
 import { useToast } from './Shared/ToastContext';
 import { SortOption } from './Shared/SortFilterButton';
 import {
@@ -44,7 +44,7 @@ const Tasks: React.FC = () => {
     const { showSuccessToast } = useToast();
     const { isSidebarOpen } = useSidebar();
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [projects, setProjects] = useState<Project[]>([]);
+    const projects = useStore((state: any) => state.projectsStore.projects);
     const [groupedTasks, setGroupedTasks] = useState<GroupedTasks | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -184,12 +184,9 @@ const Tasks: React.FC = () => {
 
                 const searchParams = allTasksUrl.toString();
 
-                const [tasksResponse, projectsResponse] = await Promise.all([
-                    fetch(
-                        `/api/tasks?${searchParams}${tagId ? `&tag=${tagId}` : ''}`
-                    ),
-                    fetch('/api/projects'),
-                ]);
+                const tasksResponse = await fetch(
+                    `/api/tasks?${searchParams}${tagId ? `&tag=${tagId}` : ''}`
+                );
 
                 if (tasksResponse.ok) {
                     const tasksData = await tasksResponse.json();
@@ -199,12 +196,7 @@ const Tasks: React.FC = () => {
                     throw new Error('Failed to fetch tasks.');
                 }
 
-                if (projectsResponse.ok) {
-                    const projectsData = await projectsResponse.json();
-                    setProjects(projectsData?.projects || []);
-                } else {
-                    throw new Error('Failed to fetch projects.');
-                }
+                // Projects are now loaded by Layout component into global store
             } catch (error) {
                 setError((error as Error).message);
             } finally {
