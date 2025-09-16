@@ -17,6 +17,7 @@ import {
 } from '../../utils/notesService';
 import { createProject, fetchProjects } from '../../utils/projectsService';
 import { Project } from '../../entities/Project';
+import { useStore } from '../../store/useStore';
 
 const NoteDetails: React.FC = () => {
     const { uidSlug } = useParams<{ uidSlug: string }>();
@@ -27,7 +28,8 @@ const NoteDetails: React.FC = () => {
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
-    const [projects, setProjects] = useState<Project[]>([]);
+    const projects = useStore((state: any) => state.projectsStore.projects);
+    const { setProjects } = useStore((state: any) => state.projectsStore);
     const navigate = useNavigate();
 
     // Dispatch global modal events
@@ -51,18 +53,7 @@ const NoteDetails: React.FC = () => {
         fetchNote();
     }, [uidSlug]);
 
-    // Load projects for the modal
-    useEffect(() => {
-        const loadProjects = async () => {
-            try {
-                const fetchedProjects = await fetchProjects('all', '');
-                setProjects(fetchedProjects);
-            } catch (error) {
-                console.error('Error loading projects:', error);
-            }
-        };
-        loadProjects();
-    }, []);
+    // Projects are now loaded by Layout component into global store
 
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
@@ -101,7 +92,7 @@ const NoteDetails: React.FC = () => {
                 name,
                 priority: 'low',
             });
-            setProjects((prev) => [...prev, newProject]);
+            setProjects([...projects, newProject]);
             return newProject;
         } catch (error) {
             console.error('Error creating project:', error);
