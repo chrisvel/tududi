@@ -97,8 +97,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
     useEffect(() => {
         if (isOpen) {
             if (note) {
-                // Initialize form data directly from note (like TaskModal)
-                setFormData(note);
+                setFormData({
+                    ...note,
+                    project_id:
+                        note?.project_id ||
+                        note?.project?.id ||
+                        note?.Project?.id,
+                });
                 const tagNames =
                     (note?.tags || note?.Tags)?.map((tag) => tag.name) || [];
                 setTags(tagNames);
@@ -113,9 +118,10 @@ const NoteModal: React.FC<NoteModalProps> = ({
                 );
                 setNewProjectName(currentProject ? currentProject.name : '');
 
-                // Auto-expand sections if they have content from existing note or always for editing
+                // Auto-expand sections if they have content from existing note, editing existing note, or creating new note with pre-filled project
                 const shouldExpandTags = tagNames.length > 0 || !!note.id; // Expand if has tags OR editing existing note
-                const shouldExpandProject = !!currentProject || !!note.id; // Expand if has project OR editing existing note
+                const shouldExpandProject =
+                    !!currentProject || !!note.id || !!projectIdToFind; // Expand if has project OR editing existing note OR has project_id
 
                 setExpandedSections({
                     tags: shouldExpandTags,
