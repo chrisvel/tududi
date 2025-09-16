@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     PencilSquareIcon,
     TrashIcon,
     TagIcon,
     FolderIcon,
 } from '@heroicons/react/24/solid';
+import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import { Note } from '../../entities/Note';
 import {
     fetchNoteBySlug,
-    deleteNote as apiDeleteNote,
     updateNote as apiUpdateNote,
 } from '../../utils/notesService';
 import { createProject } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
 
 const NoteDetails: React.FC = () => {
+    const { t } = useTranslation();
+    const { showSuccessToast } = useToast();
     const { uidSlug } = useParams<{ uidSlug: string }>();
     const [note, setNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -57,7 +60,11 @@ const NoteDetails: React.FC = () => {
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
         try {
-            await apiDeleteNote(noteToDelete.id!);
+            await deleteNoteWithStoreUpdate(
+                noteToDelete.id!,
+                showSuccessToast,
+                t
+            );
             navigate('/notes');
         } catch (err) {
             console.error('Error deleting note:', err);
@@ -231,7 +238,11 @@ const NoteDetails: React.FC = () => {
                         onSave={handleSaveNote}
                         onDelete={async (noteId) => {
                             try {
-                                await apiDeleteNote(noteId);
+                                await deleteNoteWithStoreUpdate(
+                                    noteId,
+                                    showSuccessToast,
+                                    t
+                                );
                                 navigate('/notes');
                             } catch (err) {
                                 console.error('Error deleting note:', err);

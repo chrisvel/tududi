@@ -578,7 +578,8 @@
     "nextActionAdded": "Następna akcja dodana pomyślnie!",
     "taskCreated": "Zadanie utworzone pomyślnie!",
     "taskUpdated": "Zadanie zaktualizowane pomyślnie!",
-    "taskDeleted": "Zadanie usunięte pomyślnie!"
+    "taskDeleted": "Zadanie usunięte pomyślnie!",
+    "noteDeleted": "Notatka została pomyślnie usunięta!"
   },
   "note": {
     "title": "Tytuł",

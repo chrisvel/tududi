@@ -686,7 +686,8 @@
     "taskCreated": "¡Tarea creada con éxito!",
     "taskUpdated": "¡Tarea actualizada con éxito!",
     "taskDeleted": "¡Tarea eliminada con éxito!",
-    "nextActionAdded": "¡Próxima acción agregada con éxito!"
+    "nextActionAdded": "¡Próxima acción agregada con éxito!",
+    "noteDeleted": "¡Nota eliminada con éxito!"
   },
   "recurrence": {
     "none": "Ninguna",

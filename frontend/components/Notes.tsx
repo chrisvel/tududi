@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { useToast } from './Shared/ToastContext';
 import SortFilterButton, { SortOption } from './Shared/SortFilterButton';
 import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import NoteCard from './Shared/NoteCard';
 import { Note } from '../entities/Note';
-import {
-    createNote,
-    updateNote,
-    deleteNote as apiDeleteNote,
-} from '../utils/notesService';
+import { createNote, updateNote } from '../utils/notesService';
+import { deleteNoteWithStoreUpdate } from '../utils/noteDeleteUtils';
 import { useStore } from '../store/useStore';
 import { createProject } from '../utils/projectsService';
 
 const Notes: React.FC = () => {
     const { t } = useTranslation();
+    const { showSuccessToast } = useToast();
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -52,11 +51,11 @@ const Notes: React.FC = () => {
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
         try {
-            await apiDeleteNote(noteToDelete.id!);
-            const updatedNotes = notes.filter(
-                (note) => note.id !== noteToDelete.id
+            await deleteNoteWithStoreUpdate(
+                noteToDelete.id!,
+                showSuccessToast,
+                t
             );
-            setNotes(updatedNotes);
             setIsConfirmDialogOpen(false);
             setNoteToDelete(null);
         } catch (err) {
@@ -246,11 +245,11 @@ const Notes: React.FC = () => {
                         onSave={handleSaveNote}
                         onDelete={async (noteId) => {
                             try {
-                                await apiDeleteNote(noteId);
-                                const updatedNotes = notes.filter(
-                                    (note) => note.id !== noteId
+                                await deleteNoteWithStoreUpdate(
+                                    noteId,
+                                    showSuccessToast,
+                                    t
                                 );
-                                setNotes(updatedNotes);
                                 setIsNoteModalOpen(false);
                                 setSelectedNote(null);
                             } catch (err) {

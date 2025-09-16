@@ -578,7 +578,8 @@
     "nextActionAdded": "Prochaine action ajoutée avec succès !",
     "taskCreated": "Tâche créée avec succès !",
     "taskUpdated": "Tâche mise à jour avec succès !",
-    "taskDeleted": "Tâche supprimée avec succès !"
+    "taskDeleted": "Tâche supprimée avec succès !",
+    "noteDeleted": "Note supprimée avec succès !"
   },
   "note": {
     "title": "Titre",
