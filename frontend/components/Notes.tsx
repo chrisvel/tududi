@@ -7,10 +7,7 @@ import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import NoteCard from './Shared/NoteCard';
 import { Note } from '../entities/Note';
-import {
-    createNote,
-    updateNote,
-} from '../utils/notesService';
+import { createNote, updateNote } from '../utils/notesService';
 import { deleteNoteWithStoreUpdate } from '../utils/noteDeleteUtils';
 import { useStore } from '../store/useStore';
 import { createProject } from '../utils/projectsService';
@@ -54,7 +51,11 @@ const Notes: React.FC = () => {
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
         try {
-            await deleteNoteWithStoreUpdate(noteToDelete.id!, showSuccessToast, t);
+            await deleteNoteWithStoreUpdate(
+                noteToDelete.id!,
+                showSuccessToast,
+                t
+            );
             setIsConfirmDialogOpen(false);
             setNoteToDelete(null);
         } catch (err) {
@@ -244,7 +245,11 @@ const Notes: React.FC = () => {
                         onSave={handleSaveNote}
                         onDelete={async (noteId) => {
                             try {
-                                await deleteNoteWithStoreUpdate(noteId, showSuccessToast, t);
+                                await deleteNoteWithStoreUpdate(
+                                    noteId,
+                                    showSuccessToast,
+                                    t
+                                );
                                 setIsNoteModalOpen(false);
                                 setSelectedNote(null);
                             } catch (err) {

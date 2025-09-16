@@ -18,9 +18,11 @@ export const deleteNoteWithStoreUpdate = async (
 
     // Remove note from global store
     const currentNotes = useStore.getState().notesStore.notes;
-    useStore.getState().notesStore.setNotes(
-        currentNotes.filter((note: Note) => note.id !== noteId)
-    );
+    useStore
+        .getState()
+        .notesStore.setNotes(
+            currentNotes.filter((note: Note) => note.id !== noteId)
+        );
 
     // Show success toast
     showSuccessToast(t('success.noteDeleted'));

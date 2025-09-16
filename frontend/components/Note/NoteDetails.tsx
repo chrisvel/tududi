@@ -60,7 +60,11 @@ const NoteDetails: React.FC = () => {
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
         try {
-            await deleteNoteWithStoreUpdate(noteToDelete.id!, showSuccessToast, t);
+            await deleteNoteWithStoreUpdate(
+                noteToDelete.id!,
+                showSuccessToast,
+                t
+            );
             navigate('/notes');
         } catch (err) {
             console.error('Error deleting note:', err);
@@ -234,7 +238,11 @@ const NoteDetails: React.FC = () => {
                         onSave={handleSaveNote}
                         onDelete={async (noteId) => {
                             try {
-                                await deleteNoteWithStoreUpdate(noteId, showSuccessToast, t);
+                                await deleteNoteWithStoreUpdate(
+                                    noteId,
+                                    showSuccessToast,
+                                    t
+                                );
                                 navigate('/notes');
                             } catch (err) {
                                 console.error('Error deleting note:', err);
