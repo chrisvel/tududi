@@ -12,7 +12,7 @@ import {
     deleteNote as apiDeleteNote,
 } from '../utils/notesService';
 import { useStore } from '../store/useStore';
-import { createProject, fetchProjects } from '../utils/projectsService';
+import { createProject } from '../utils/projectsService';
 
 const Notes: React.FC = () => {
     const { t } = useTranslation();
@@ -28,7 +28,6 @@ const Notes: React.FC = () => {
     const { notes, isLoading, isError, hasLoaded, loadNotes, setNotes } =
         useStore((state) => state.notesStore);
     const projects = useStore((state) => state.projectsStore.projects);
-    const { setProjects } = useStore((state) => state.projectsStore);
 
     useEffect(() => {
         if (!hasLoaded && !isLoading && !isError) {
@@ -36,20 +35,7 @@ const Notes: React.FC = () => {
         }
     }, [hasLoaded, isLoading, isError, loadNotes]);
 
-    // Load projects if not available - force load every time for debugging
-    useEffect(() => {
-        const loadProjectsIfNeeded = async () => {
-            try {
-                // Fetch all projects (active and inactive)
-                const fetchedProjects = await fetchProjects('all', '');
-                setProjects(fetchedProjects);
-            } catch (error) {
-                console.error('Error loading projects:', error);
-            }
-        };
-
-        loadProjectsIfNeeded();
-    }, []); // Remove dependencies to force it to run once
+    // Projects are now loaded by Layout component into global store
 
     // Sort options for notes
     const sortOptions: SortOption[] = [

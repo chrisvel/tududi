@@ -16,6 +16,7 @@ import TaskList from '../Task/TaskList';
 import ProjectItem from '../Project/ProjectItem';
 
 import { Tag } from '../../entities/Tag';
+import { useStore } from '../../store/useStore';
 
 const TagDetails: React.FC = () => {
     const { t } = useTranslation();
@@ -23,9 +24,18 @@ const TagDetails: React.FC = () => {
     const [tag, setTag] = useState<Tag | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
-    const [projects, setProjects] = useState<Project[]>([]);
+    const allProjects = useStore((state: any) => state.projectsStore.projects);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Filter projects by current tag
+    const projects = allProjects.filter(
+        (project: any) =>
+            project.tags &&
+            project.tags.some(
+                (projectTag: any) => projectTag.name === tag?.name
+            )
+    );
 
     // State for ProjectItem components
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
@@ -45,16 +55,10 @@ const TagDetails: React.FC = () => {
                 setTag(tagData);
 
                 // Now fetch entities that have this tag using the tag name
-                const [tasksResponse, notesResponse, projectsResponse] =
-                    await Promise.all([
-                        fetch(
-                            `/api/tasks?tag=${encodeURIComponent(tagData.name)}`
-                        ),
-                        fetch(
-                            `/api/notes?tag=${encodeURIComponent(tagData.name)}`
-                        ),
-                        fetch(`/api/projects`), // Projects API doesn't support tag filtering yet
-                    ]);
+                const [tasksResponse, notesResponse] = await Promise.all([
+                    fetch(`/api/tasks?tag=${encodeURIComponent(tagData.name)}`),
+                    fetch(`/api/notes?tag=${encodeURIComponent(tagData.name)}`),
+                ]);
 
                 if (tasksResponse.ok) {
                     const tasksData = await tasksResponse.json();
@@ -66,20 +70,7 @@ const TagDetails: React.FC = () => {
                     setNotes(notesData || []);
                 }
 
-                if (projectsResponse.ok) {
-                    const projectsData = await projectsResponse.json();
-                    // Filter projects client-side since API doesn't support tag filtering
-                    const allProjects =
-                        projectsData.projects || projectsData || [];
-                    const filteredProjects = allProjects.filter(
-                        (project: any) =>
-                            project.tags &&
-                            project.tags.some(
-                                (tag: any) => tag.name === tagData.name
-                            )
-                    );
-                    setProjects(filteredProjects);
-                }
+                // Projects are now filtered from global store
             } catch {
                 setError(t('tags.error'));
             } finally {

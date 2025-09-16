@@ -118,19 +118,7 @@ const Projects: React.FC = () => {
         loadAreas();
     }, []);
 
-    useEffect(() => {
-        const loadProjects = async () => {
-            try {
-                const projectsData = await fetchProjects();
-                setProjects(projectsData);
-            } catch (error) {
-                console.error('Failed to fetch projects:', error);
-                setProjectsError(true);
-            }
-        };
-
-        loadProjects();
-    }, []);
+    // Projects are now loaded by Layout component into global store
 
     // Modal state tracking removed after fixing the issue
 
