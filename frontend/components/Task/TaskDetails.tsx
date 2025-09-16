@@ -344,9 +344,6 @@ const TaskDetails: React.FC = () => {
                         tasksStore.setTasks(updatedTasks);
                     }
                 }
-                showSuccessToast(
-                    t('task.updateSuccess', 'Task updated successfully')
-                );
 
                 // Subtasks will be automatically updated when the task is reloaded from the global store
 

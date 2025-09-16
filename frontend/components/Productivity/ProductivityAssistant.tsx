@@ -318,9 +318,6 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
                 await updateTask(updatedTask.id, updatedTask);
                 setIsTaskModalOpen(false);
                 setSelectedTask(null);
-                showSuccessToast(
-                    t('task.updateSuccess', 'Task updated successfully')
-                );
                 // Optionally refresh the parent component data
             }
         } catch (error) {
