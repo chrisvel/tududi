@@ -363,7 +363,11 @@
     "unprocessedItems": "Sie haben {{count}} Element(e) in Ihrem Posteingang",
     "processNow": "Jetzt verarbeiten",
     "deleteConfirmTitle": "Element löschen",
-    "deleteConfirmMessage": "Sind Sie sicher, dass Sie dieses Element aus Ihrem Posteingang löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+    "deleteConfirmMessage": "Sind Sie sicher, dass Sie dieses Element aus Ihrem Posteingang löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "loadMoreError": "Fehler beim Laden weiterer Elemente",
+    "loading": "Wird geladen...",
+    "loadMore": "Weitere Posteingangsartikel laden",
+    "showingItems": "Zeige {{current}} von {{total}} Elementen"
   },
   "project": {
     "projectImage": "Projektbild",

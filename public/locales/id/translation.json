@@ -538,7 +538,11 @@
     "unprocessedItems": "Anda memiliki {{count}} item di kotak masuk Anda",
     "processNow": "Proses sekarang",
     "deleteConfirmTitle": "Hapus Item",
-    "deleteConfirmMessage": "Apakah Anda yakin ingin menghapus item ini dari kotak masuk Anda? Tindakan ini tidak dapat dibatalkan."
+    "deleteConfirmMessage": "Apakah Anda yakin ingin menghapus item ini dari kotak masuk Anda? Tindakan ini tidak dapat dibatalkan.",
+    "loadMoreError": "Gagal memuat lebih banyak item",
+    "loading": "Memuat...",
+    "loadMore": "Muat lebih banyak item kotak masuk",
+    "showingItems": "Menampilkan {{current}} dari {{total}} item"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

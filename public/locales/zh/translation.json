@@ -538,7 +538,11 @@
     "unprocessedItems": "您有 {{count}} 个项目在收件箱中",
     "processNow": "立即处理",
     "deleteConfirmTitle": "删除项目",
-    "deleteConfirmMessage": "您确定要从收件箱中删除此项目吗？此操作无法撤销。"
+    "deleteConfirmMessage": "您确定要从收件箱中删除此项目吗？此操作无法撤销。",
+    "loadMoreError": "加载更多项目失败",
+    "loading": "加载中...",
+    "loadMore": "加载更多收件箱项目",
+    "showingItems": "显示 {{current}} / {{total}} 项"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

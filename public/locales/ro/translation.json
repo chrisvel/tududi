@@ -538,7 +538,11 @@
     "unprocessedItems": "Ai {{count}} element(e) în inbox",
     "processNow": "Procesează acum",
     "deleteConfirmTitle": "Șterge elementul",
-    "deleteConfirmMessage": "Ești sigur că vrei să ștergi acest element din inbox? Această acțiune nu poate fi anulată."
+    "deleteConfirmMessage": "Ești sigur că vrei să ștergi acest element din inbox? Această acțiune nu poate fi anulată.",
+    "loadMoreError": "Eșec la încărcarea mai multor elemente",
+    "loading": "Se încarcă...",
+    "loadMore": "Încărcați mai multe elemente din inbox",
+    "showingItems": "Afișare {{current}} din {{total}} elemente"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

@@ -538,7 +538,11 @@
     "unprocessedItems": "Masz {{count}} element(ów) w swojej skrzynce odbiorczej",
     "processNow": "Przetwórz teraz",
     "deleteConfirmTitle": "Usuń element",
-    "deleteConfirmMessage": "Czy na pewno chcesz usunąć ten element ze swojej skrzynki odbiorczej? Ta akcja nie może być cofnięta."
+    "deleteConfirmMessage": "Czy na pewno chcesz usunąć ten element ze swojej skrzynki odbiorczej? Ta akcja nie może być cofnięta.",
+    "loadMoreError": "Nie udało się załadować więcej elementów",
+    "loading": "Ładowanie...",
+    "loadMore": "Załaduj więcej elementów skrzynki odbiorczej",
+    "showingItems": "Wyświetlanie {{current}} z {{total}} elementów"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",

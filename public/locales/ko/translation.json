@@ -538,7 +538,11 @@
     "unprocessedItems": "받은 편지함에 {{count}}개의 항목이 있습니다",
     "processNow": "지금 처리하기",
     "deleteConfirmTitle": "항목 삭제",
-    "deleteConfirmMessage": "이 항목을 받은 편지함에서 삭제하시겠습니까? 이 작업은 취소할 수 없습니다."
+    "deleteConfirmMessage": "이 항목을 받은 편지함에서 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
+    "loadMoreError": "더 많은 항목을 불러오지 못했습니다",
+    "loading": "로딩 중...",
+    "loadMore": "더 많은 받은 편지함 항목 불러오기",
+    "showingItems": "{{current}} / {{total}} 항목 표시 중"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

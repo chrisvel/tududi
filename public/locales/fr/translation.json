@@ -538,7 +538,11 @@
     "unprocessedItems": "Vous avez {{count}} élément(s) dans votre boîte de réception",
     "processNow": "Traiter maintenant",
     "deleteConfirmTitle": "Supprimer l'élément",
-    "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cet élément de votre boîte de réception ? Cette action ne peut pas être annulée."
+    "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cet élément de votre boîte de réception ? Cette action ne peut pas être annulée.",
+    "loadMoreError": "Échec du chargement de plus d'éléments",
+    "loading": "Chargement...",
+    "loadMore": "Charger plus d'éléments dans la boîte de réception",
+    "showingItems": "Affichage de {{current}} sur {{total}} éléments"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",

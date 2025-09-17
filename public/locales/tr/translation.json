@@ -538,7 +538,11 @@
     "unprocessedItems": "Gelen kutunuzda {{count}} öğe var",
     "processNow": "Şimdi işle",
     "deleteConfirmTitle": "Ögeyi Sil",
-    "deleteConfirmMessage": "Bu öğeyi gelen kutunuzdan silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+    "deleteConfirmMessage": "Bu öğeyi gelen kutunuzdan silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "loadMoreError": "Daha fazla öğe yüklenemedi",
+    "loading": "Yükleniyor...",
+    "loadMore": "Daha fazla gelen kutusu öğesi yükle",
+    "showingItems": "{{current}} / {{total}} öğe gösteriliyor"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

@@ -538,7 +538,11 @@
     "unprocessedItems": "Je hebt {{count}} item(s) in je inbox",
     "processNow": "Nu verwerken",
     "deleteConfirmTitle": "Item verwijderen",
-    "deleteConfirmMessage": "Weet je zeker dat je dit item uit je inbox wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt."
+    "deleteConfirmMessage": "Weet je zeker dat je dit item uit je inbox wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+    "loadMoreError": "Kon meer items niet laden",
+    "loading": "Laden...",
+    "loadMore": "Laad meer inboxitems",
+    "showingItems": "Toont {{current}} van {{total}} items"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

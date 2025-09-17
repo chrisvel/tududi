@@ -538,7 +538,11 @@
     "unprocessedItems": "Você tem {{count}} item(ns) na sua caixa de entrada",
     "processNow": "Processar agora",
     "deleteConfirmTitle": "Excluir Item",
-    "deleteConfirmMessage": "Você tem certeza de que deseja excluir este item da sua caixa de entrada? Esta ação não pode ser desfeita."
+    "deleteConfirmMessage": "Você tem certeza de que deseja excluir este item da sua caixa de entrada? Esta ação não pode ser desfeita.",
+    "loadMoreError": "Falha ao carregar mais itens",
+    "loading": "Carregando...",
+    "loadMore": "Carregar mais itens da caixa de entrada",
+    "showingItems": "Mostrando {{current}} de {{total}} itens"
   },
   "dateFormats": {
     "long": "EEEE, d 'de' MMMM 'de' yyyy",
