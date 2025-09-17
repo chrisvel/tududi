@@ -49,6 +49,15 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: 'UTC',
             },
+            first_day_of_week: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 1, // Monday by default
+                validate: {
+                    min: 0, // Sunday
+                    max: 6, // Saturday
+                },
+            },
             avatar_image: {
                 type: DataTypes.STRING,
                 allowNull: true,

@@ -515,7 +515,8 @@
     "norwegian": "Norwegisch",
     "polish": "Polnisch",
     "slovenian": "Slowenisch",
-    "swedish": "Schwedisch"
+    "swedish": "Schwedisch",
+    "firstDayOfWeek": "Erster Tag der Woche"
   },
   "nextTask": {
     "suggestion": "Da nichts in Bearbeitung ist, wie wäre es, mit diesem zu beginnen",
@@ -910,5 +911,14 @@
     "viewOnGitHub": "Auf GitHub ansehen",
     "license": "Lizenz für die persönliche Nutzung",
     "builtBy": "Hergestellt von"
+  },
+  "weekdaysFull": {
+    "sunday": "Sonntag",
+    "monday": "Montag",
+    "tuesday": "Dienstag",
+    "wednesday": "Mittwoch",
+    "thursday": "Donnerstag",
+    "friday": "Freitag",
+    "saturday": "Samstag"
   }
 }

@@ -293,7 +293,8 @@
     "aiProductivityFeatures": "AI in funkcije produktivnosti",
     "botSetup": "Nastavitev bota",
     "passwordChangeNote": "Spremembe gesla bodo shranjene, ko kliknete \"Shrani spremembe\" na dnu obrazca.",
-    "passwordChangeOptional": "Pustite polja za geslo prazna, da posodobite druge nastavitve brez spreminjanja gesla."
+    "passwordChangeOptional": "Pustite polja za geslo prazna, da posodobite druge nastavitve brez spreminjanja gesla.",
+    "firstDayOfWeek": "Prvi dan v tednu"
   },
   "productivity": {
     "stalledProjects": "Zastali projekti",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "Poglej na GitHubu",
     "license": "Licencirano za osebno uporabo",
     "builtBy": "Zgrajeno od"
+  },
+  "weekdaysFull": {
+    "sunday": "Nedelja",
+    "monday": "Ponedeljek",
+    "tuesday": "Torek",
+    "wednesday": "Sreda",
+    "thursday": "Četrtek",
+    "friday": "Petek",
+    "saturday": "Sobota"
   }
 }

@@ -293,7 +293,8 @@
     "norwegian": "Noors",
     "polish": "Pools",
     "slovenian": "Sloveens",
-    "swedish": "Zweeds"
+    "swedish": "Zweeds",
+    "firstDayOfWeek": "Eerste dag van de week"
   },
   "productivity": {
     "stalledProjects": "Stagnerende Projecten",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "Bekijk op GitHub",
     "license": "Gelicenseerd voor persoonlijk gebruik",
     "builtBy": "Gebouwd door"
+  },
+  "weekdaysFull": {
+    "sunday": "Zondag",
+    "monday": "Maandag",
+    "tuesday": "Dinsdag",
+    "wednesday": "Woensdag",
+    "thursday": "Donderdag",
+    "friday": "Vrijdag",
+    "saturday": "Zaterdag"
   }
 }

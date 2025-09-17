@@ -189,6 +189,7 @@
     "light": "Light",
     "dark": "Dark",
     "timezone": "Timezone",
+    "firstDayOfWeek": "First day of week",
     "saveChanges": "Save Changes",
     "successMessage": "Profile updated successfully!",
     "languageChangedNote": "Language changes are applied immediately",
@@ -726,6 +727,15 @@
     "parentEditWarning": "⚠️ You are editing the parent task's recurrence settings. Changes will affect all future instances of this recurring task."
   },
   "weekdays": {
+    "sunday": "Sun",
+    "monday": "Mon",
+    "tuesday": "Tue",
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat"
+  },
+  "weekdaysFull": {
     "sunday": "Sunday",
     "monday": "Monday",
     "tuesday": "Tuesday",

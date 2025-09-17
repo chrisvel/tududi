@@ -247,7 +247,8 @@
     "norwegian": "Νορβηγικά",
     "polish": "Πολωνικά",
     "slovenian": "Σλοβενικά",
-    "swedish": "Σουηδικά"
+    "swedish": "Σουηδικά",
+    "firstDayOfWeek": "Πρώτη ημέρα της εβδομάδας"
   },
   "errors": {
     "required": "Αυτό το πεδίο είναι υποχρεωτικό",
@@ -905,5 +906,14 @@
     "viewOnGitHub": "Δείτε στο GitHub",
     "license": "Αδειοδοτημένο για προσωπική χρήση",
     "builtBy": "Δημιουργήθηκε από"
+  },
+  "weekdaysFull": {
+    "sunday": "Κυριακή",
+    "monday": "Δευτέρα",
+    "tuesday": "Τρίτη",
+    "wednesday": "Τετάρτη",
+    "thursday": "Πέμπτη",
+    "friday": "Παρασκευή",
+    "saturday": "Σάββατο"
   }
 }

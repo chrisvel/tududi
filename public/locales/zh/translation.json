@@ -293,7 +293,8 @@
     "norwegian": "挪威语",
     "polish": "波兰语",
     "slovenian": "斯洛文尼亚语",
-    "swedish": "瑞典语"
+    "swedish": "瑞典语",
+    "firstDayOfWeek": "一周的第一天"
   },
   "productivity": {
     "stalledProjects": "停滞项目",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "在GitHub上查看",
     "license": "个人使用许可证",
     "builtBy": "构建者"
+  },
+  "weekdaysFull": {
+    "sunday": "星期日",
+    "monday": "星期一",
+    "tuesday": "星期二",
+    "wednesday": "星期三",
+    "thursday": "星期四",
+    "friday": "星期五",
+    "saturday": "星期六"
   }
 }

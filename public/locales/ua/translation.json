@@ -551,7 +551,8 @@
     "norwegian": "Норвезька",
     "polish": "Польська",
     "slovenian": "Словенська",
-    "swedish": "Шведська"
+    "swedish": "Шведська",
+    "firstDayOfWeek": "Перший день тижня"
   },
   "task": {
     "suggestions": {
@@ -901,5 +902,14 @@
     "viewOnGitHub": "Переглянути на GitHub",
     "license": "Ліцензовано для особистого використання",
     "builtBy": "Створено"
+  },
+  "weekdaysFull": {
+    "sunday": "Неділя",
+    "monday": "Понеділок",
+    "tuesday": "Вівторок",
+    "wednesday": "Середа",
+    "thursday": "Четвер",
+    "friday": "П'ятниця",
+    "saturday": "Субота"
   }
 }

@@ -293,7 +293,8 @@
     "norwegian": "노르웨이어",
     "polish": "폴란드어",
     "slovenian": "슬로베니아어",
-    "swedish": "스웨덴어"
+    "swedish": "스웨덴어",
+    "firstDayOfWeek": "주간의 첫 번째 날"
   },
   "productivity": {
     "stalledProjects": "정체된 프로젝트",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "GitHub에서 보기",
     "license": "개인 사용을 위한 라이센스",
     "builtBy": "제작자"
+  },
+  "weekdaysFull": {
+    "sunday": "일요일",
+    "monday": "월요일",
+    "tuesday": "화요일",
+    "wednesday": "수요일",
+    "thursday": "목요일",
+    "friday": "금요일",
+    "saturday": "토요일"
   }
 }

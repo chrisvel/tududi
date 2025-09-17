@@ -293,7 +293,8 @@
     "norwegian": "ノルウェー語",
     "polish": "ポーランド語",
     "slovenian": "スロベニア語",
-    "swedish": "スウェーデン語"
+    "swedish": "スウェーデン語",
+    "firstDayOfWeek": "週の最初の日"
   },
   "nextTask": {
     "suggestion": "進行中のものがないので、こちらから始めてみませんか",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "GitHubで見る",
     "license": "個人使用のためのライセンス",
     "builtBy": "作成者"
+  },
+  "weekdaysFull": {
+    "sunday": "日曜日",
+    "monday": "月曜日",
+    "tuesday": "火曜日",
+    "wednesday": "水曜日",
+    "thursday": "木曜日",
+    "friday": "金曜日",
+    "saturday": "土曜日"
   }
 }
