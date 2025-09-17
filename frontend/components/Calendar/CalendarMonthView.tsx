@@ -46,7 +46,7 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
             try {
                 const firstDay = await getFirstDayOfWeek();
                 setFirstDayOfWeek(firstDay);
-            } catch (error) {
+            } catch {
                 const fallbackFirstDay = getLocaleFirstDayOfWeek(
                     navigator.language
                 );

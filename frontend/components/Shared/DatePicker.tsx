@@ -238,7 +238,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
             try {
                 const firstDay = await getFirstDayOfWeek();
                 setFirstDayOfWeek(firstDay);
-            } catch (error) {
+            } catch {
                 // Fallback to locale-based default
                 const fallbackFirstDay = getLocaleFirstDayOfWeek(
                     navigator.language
