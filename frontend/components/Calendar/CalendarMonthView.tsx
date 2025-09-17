@@ -10,7 +10,10 @@ import {
     endOfWeek,
 } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { getFirstDayOfWeek, getLocaleFirstDayOfWeek } from '../../utils/profileService';
+import {
+    getFirstDayOfWeek,
+    getLocaleFirstDayOfWeek,
+} from '../../utils/profileService';
 
 interface CalendarEvent {
     id: string;
@@ -44,7 +47,9 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
                 const firstDay = await getFirstDayOfWeek();
                 setFirstDayOfWeek(firstDay);
             } catch (error) {
-                const fallbackFirstDay = getLocaleFirstDayOfWeek(navigator.language);
+                const fallbackFirstDay = getLocaleFirstDayOfWeek(
+                    navigator.language
+                );
                 setFirstDayOfWeek(fallbackFirstDay);
             }
         };
@@ -53,8 +58,12 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
 
     const monthStart = startOfMonth(currentDate);
     const monthEnd = endOfMonth(currentDate);
-    const calendarStart = startOfWeek(monthStart, { weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6 });
-    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6 });
+    const calendarStart = startOfWeek(monthStart, {
+        weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+    });
+    const calendarEnd = endOfWeek(monthEnd, {
+        weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+    });
 
     const days = eachDayOfInterval({
         start: calendarStart,
@@ -74,7 +83,10 @@ const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
 
     const getWeekDays = () => {
         const allDays = getAllWeekDays();
-        return [...allDays.slice(firstDayOfWeek), ...allDays.slice(0, firstDayOfWeek)];
+        return [
+            ...allDays.slice(firstDayOfWeek),
+            ...allDays.slice(0, firstDayOfWeek),
+        ];
     };
 
     const weekDays = getWeekDays();

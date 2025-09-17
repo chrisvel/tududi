@@ -5,7 +5,10 @@ import {
     ChevronRightIcon,
     CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
-import { getFirstDayOfWeek, getLocaleFirstDayOfWeek } from '../../utils/profileService';
+import {
+    getFirstDayOfWeek,
+    getLocaleFirstDayOfWeek,
+} from '../../utils/profileService';
 
 interface DatePickerProps {
     value: string;
@@ -53,7 +56,10 @@ const DatePicker: React.FC<DatePickerProps> = ({
     const getAllDays = () => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const getDaysOfWeek = () => {
         const allDays = getAllDays();
-        return [...allDays.slice(firstDayOfWeek), ...allDays.slice(0, firstDayOfWeek)];
+        return [
+            ...allDays.slice(firstDayOfWeek),
+            ...allDays.slice(0, firstDayOfWeek),
+        ];
     };
 
     const formatDate = (date: Date) => {
@@ -195,7 +201,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
         const startingDayOfWeek = firstDay.getDay();
 
         // Adjust starting day based on first day of week setting
-        const adjustedStartingDay = (startingDayOfWeek - firstDayOfWeek + 7) % 7;
+        const adjustedStartingDay =
+            (startingDayOfWeek - firstDayOfWeek + 7) % 7;
 
         const days = [];
 
@@ -233,7 +240,9 @@ const DatePicker: React.FC<DatePickerProps> = ({
                 setFirstDayOfWeek(firstDay);
             } catch (error) {
                 // Fallback to locale-based default
-                const fallbackFirstDay = getLocaleFirstDayOfWeek(navigator.language);
+                const fallbackFirstDay = getLocaleFirstDayOfWeek(
+                    navigator.language
+                );
                 setFirstDayOfWeek(fallbackFirstDay);
             }
         };

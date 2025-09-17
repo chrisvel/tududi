@@ -247,7 +247,8 @@
     "norwegian": "Noruego",
     "polish": "Polaco",
     "slovenian": "Esloveno",
-    "swedish": "Sueco"
+    "swedish": "Sueco",
+    "firstDayOfWeek": "Primer día de la semana"
   },
   "errors": {
     "required": "Este campo es obligatorio",
@@ -902,5 +903,14 @@
     "viewOnGitHub": "Ver en GitHub",
     "license": "Licenciado para uso personal",
     "builtBy": "Construido por"
+  },
+  "weekdaysFull": {
+    "sunday": "Domingo",
+    "monday": "Lunes",
+    "tuesday": "Martes",
+    "wednesday": "Miércoles",
+    "thursday": "Jueves",
+    "friday": "Viernes",
+    "saturday": "Sábado"
   }
 }

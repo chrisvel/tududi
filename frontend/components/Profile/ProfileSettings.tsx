@@ -28,6 +28,8 @@ import TelegramIcon from '../Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
 import { dispatchTelegramStatusChange } from '../../contexts/TelegramStatusContext';
 import LanguageDropdown from '../Shared/LanguageDropdown';
+import FirstDayOfWeekDropdown from '../Shared/FirstDayOfWeekDropdown';
+import { getLocaleFirstDayOfWeek } from '../../utils/profileService';
 
 interface ProfileSettingsProps {
     currentUser: { id: number; email: string };
@@ -103,6 +105,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         appearance: isDarkMode ? 'dark' : 'light',
         language: 'en',
         timezone: 'UTC',
+        first_day_of_week: 1, // Monday by default
         avatar_image: '',
         telegram_bot_token: '',
         telegram_allowed_users: '',
@@ -260,6 +263,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         data.appearance || (isDarkMode ? 'dark' : 'light'),
                     language: data.language || 'en',
                     timezone: data.timezone || 'UTC',
+                    first_day_of_week:
+                        data.first_day_of_week !== undefined
+                            ? data.first_day_of_week
+                            : 1,
                     avatar_image: data.avatar_image || '',
                     telegram_bot_token: data.telegram_bot_token || '',
                     telegram_allowed_users: data.telegram_allowed_users || '',
@@ -889,9 +896,15 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <LanguageDropdown
                                     value={formData.language || 'en'}
                                     onChange={(languageCode) => {
+                                        // Auto-set first day of week based on language/locale
+                                        const localeFirstDay =
+                                            getLocaleFirstDayOfWeek(
+                                                languageCode
+                                            );
                                         setFormData((prev) => ({
                                             ...prev,
                                             language: languageCode,
+                                            first_day_of_week: localeFirstDay,
                                         }));
                                     }}
                                 />
@@ -1153,6 +1166,24 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                         </option>
                                     </optgroup>
                                 </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    {t(
+                                        'profile.firstDayOfWeek',
+                                        'First day of week'
+                                    )}
+                                </label>
+                                <FirstDayOfWeekDropdown
+                                    value={formData.first_day_of_week || 1}
+                                    onChange={(value) => {
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            first_day_of_week: value,
+                                        }));
+                                    }}
+                                />
                             </div>
                         </div>
                     </div>

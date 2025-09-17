@@ -293,7 +293,8 @@
     "norwegian": "Norveççe",
     "polish": "Lehçe",
     "slovenian": "Slovence",
-    "swedish": "İsveççe"
+    "swedish": "İsveççe",
+    "firstDayOfWeek": "Haftanın ilk günü"
   },
   "productivity": {
     "stalledProjects": "Duraklayan Projeler",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "GitHub'da Görüntüle",
     "license": "Kişisel kullanım için lisanslı",
     "builtBy": "Yapan"
+  },
+  "weekdaysFull": {
+    "sunday": "Pazar",
+    "monday": "Pazartesi",
+    "tuesday": "Salı",
+    "wednesday": "Çarşamba",
+    "thursday": "Perşembe",
+    "friday": "Cuma",
+    "saturday": "Cumartesi"
   }
 }

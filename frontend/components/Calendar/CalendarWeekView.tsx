@@ -7,7 +7,10 @@ import {
     isToday,
     addHours,
 } from 'date-fns';
-import { getFirstDayOfWeek, getLocaleFirstDayOfWeek } from '../../utils/profileService';
+import {
+    getFirstDayOfWeek,
+    getLocaleFirstDayOfWeek,
+} from '../../utils/profileService';
 
 interface CalendarEvent {
     id: string;
@@ -41,15 +44,21 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
                 const firstDay = await getFirstDayOfWeek();
                 setFirstDayOfWeek(firstDay);
             } catch (error) {
-                const fallbackFirstDay = getLocaleFirstDayOfWeek(navigator.language);
+                const fallbackFirstDay = getLocaleFirstDayOfWeek(
+                    navigator.language
+                );
                 setFirstDayOfWeek(fallbackFirstDay);
             }
         };
         loadFirstDayOfWeek();
     }, []);
 
-    const weekStart = startOfWeek(currentDate, { weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6 });
-    const weekEnd = endOfWeek(currentDate, { weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6 });
+    const weekStart = startOfWeek(currentDate, {
+        weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+    });
+    const weekEnd = endOfWeek(currentDate, {
+        weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+    });
     const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
     const hours = Array.from({ length: 24 }, (_, i) => i);

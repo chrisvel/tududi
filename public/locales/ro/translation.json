@@ -293,7 +293,8 @@
     "norwegian": "Norvegiană",
     "polish": "Poloneză",
     "slovenian": "Slovenă",
-    "swedish": "Suedeză"
+    "swedish": "Suedeză",
+    "firstDayOfWeek": "Prima zi a săptămânii"
   },
   "productivity": {
     "stalledProjects": "Proiecte Blocate",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "Vezi pe GitHub",
     "license": "Licențiat pentru uz personal",
     "builtBy": "Construit de"
+  },
+  "weekdaysFull": {
+    "sunday": "Duminică",
+    "monday": "Luni",
+    "tuesday": "Marți",
+    "wednesday": "Miercuri",
+    "thursday": "Joi",
+    "friday": "Vineri",
+    "saturday": "Sâmbătă"
   }
 }
