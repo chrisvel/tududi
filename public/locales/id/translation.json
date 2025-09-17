@@ -578,7 +578,8 @@
     "nextActionAdded": "Tindakan berikutnya berhasil ditambahkan!",
     "taskCreated": "Tugas berhasil dibuat!",
     "taskUpdated": "Tugas berhasil diperbarui!",
-    "taskDeleted": "Tugas berhasil dihapus!"
+    "taskDeleted": "Tugas berhasil dihapus!",
+    "noteDeleted": "Catatan berhasil dihapus!"
   },
   "note": {
     "title": "Judul",

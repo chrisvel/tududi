@@ -180,6 +180,23 @@ const App: React.FC = () => {
                                 element={<TaskDetails />}
                             />
                             <Route
+                                path="/upcoming"
+                                element={
+                                    <Suspense
+                                        fallback={
+                                            <div className="p-4">
+                                                {i18n.t(
+                                                    'common.loading',
+                                                    'Loading...'
+                                                )}
+                                            </div>
+                                        }
+                                    >
+                                        <Tasks />
+                                    </Suspense>
+                                }
+                            />
+                            <Route
                                 path="/tasks"
                                 element={
                                     <Suspense

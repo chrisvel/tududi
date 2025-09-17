@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     PencilSquareIcon,
     TrashIcon,
     TagIcon,
     FolderIcon,
 } from '@heroicons/react/24/solid';
+import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from './NoteModal';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import { Note } from '../../entities/Note';
 import {
     fetchNoteBySlug,
-    deleteNote as apiDeleteNote,
     updateNote as apiUpdateNote,
 } from '../../utils/notesService';
-import { createProject, fetchProjects } from '../../utils/projectsService';
-import { Project } from '../../entities/Project';
+import { deleteNoteWithStoreUpdate } from '../../utils/noteDeleteUtils';
+import { createProject } from '../../utils/projectsService';
+import { useStore } from '../../store/useStore';
 
 const NoteDetails: React.FC = () => {
+    const { t } = useTranslation();
+    const { showSuccessToast } = useToast();
     const { uidSlug } = useParams<{ uidSlug: string }>();
     const [note, setNote] = useState<Note | null>(null);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -27,7 +31,8 @@ const NoteDetails: React.FC = () => {
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
-    const [projects, setProjects] = useState<Project[]>([]);
+    const projects = useStore((state: any) => state.projectsStore.projects);
+    const { setProjects } = useStore((state: any) => state.projectsStore);
     const navigate = useNavigate();
 
     // Dispatch global modal events
@@ -51,23 +56,16 @@ const NoteDetails: React.FC = () => {
         fetchNote();
     }, [uidSlug]);
 
-    // Load projects for the modal
-    useEffect(() => {
-        const loadProjects = async () => {
-            try {
-                const fetchedProjects = await fetchProjects('all', '');
-                setProjects(fetchedProjects);
-            } catch (error) {
-                console.error('Error loading projects:', error);
-            }
-        };
-        loadProjects();
-    }, []);
+    // Projects are now loaded by Layout component into global store
 
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
         try {
-            await apiDeleteNote(noteToDelete.id!);
+            await deleteNoteWithStoreUpdate(
+                noteToDelete.id!,
+                showSuccessToast,
+                t
+            );
             navigate('/notes');
         } catch (err) {
             console.error('Error deleting note:', err);
@@ -101,7 +99,7 @@ const NoteDetails: React.FC = () => {
                 name,
                 priority: 'low',
             });
-            setProjects((prev) => [...prev, newProject]);
+            setProjects([...projects, newProject]);
             return newProject;
         } catch (error) {
             console.error('Error creating project:', error);
@@ -241,7 +239,11 @@ const NoteDetails: React.FC = () => {
                         onSave={handleSaveNote}
                         onDelete={async (noteId) => {
                             try {
-                                await apiDeleteNote(noteId);
+                                await deleteNoteWithStoreUpdate(
+                                    noteId,
+                                    showSuccessToast,
+                                    t
+                                );
                                 navigate('/notes');
                             } catch (err) {
                                 console.error('Error deleting note:', err);

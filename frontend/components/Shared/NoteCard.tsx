@@ -211,6 +211,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                         className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none transition-opacity duration-300 p-1"
                         aria-label={t('notes.toggleDropdownMenu')}
                         type="button"
+                        data-testid={`note-dropdown-${note.id}`}
                     >
                         <EllipsisVerticalIcon className="h-4 w-4" />
                     </button>
@@ -226,6 +227,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                         setDropdownOpen(false);
                                     }}
                                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                    data-testid={`note-edit-${note.id}`}
                                 >
                                     {t('notes.edit', 'Edit')}
                                 </button>
@@ -239,6 +241,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                         setDropdownOpen(false);
                                     }}
                                     className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                    data-testid={`note-delete-${note.id}`}
                                 >
                                     {t('notes.delete', 'Delete')}
                                 </button>

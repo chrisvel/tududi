@@ -409,14 +409,23 @@ describe('Recurring Tasks API', () => {
 
     describe('POST /api/tasks/generate-recurring', () => {
         beforeEach(async () => {
+            const baseDate = new Date();
+            baseDate.setDate(baseDate.getDate() - 30); // 30 days ago to ensure generation
+
+            // Find next Monday for weekly task
+            const mondayDate = new Date(baseDate);
+            while (mondayDate.getDay() !== 1) {
+                mondayDate.setDate(mondayDate.getDate() + 1);
+            }
+
             // Create some recurring tasks for testing
             await Task.create({
                 name: 'Daily Task',
                 recurrence_type: 'daily',
                 recurrence_interval: 1,
                 user_id: user.id,
-                due_date: new Date('2025-01-01'),
-                last_generated_date: new Date('2025-01-01'),
+                due_date: baseDate,
+                last_generated_date: baseDate,
             });
 
             await Task.create({
@@ -425,8 +434,8 @@ describe('Recurring Tasks API', () => {
                 recurrence_interval: 1,
                 recurrence_weekday: 1,
                 user_id: user.id,
-                due_date: new Date('2025-01-06'), // Monday
-                last_generated_date: new Date('2025-01-06'),
+                due_date: mondayDate, // Monday
+                last_generated_date: mondayDate,
             });
         });
 
@@ -499,25 +508,25 @@ describe('Recurring Tasks API', () => {
             });
         });
 
-        it('should return all tasks including recurring ones', async () => {
+        it('should return tasks excluding recurring instances', async () => {
             const response = await agent.get('/api/tasks');
 
             expect(response.status).toBe(200);
             expect(response.body.tasks).toBeDefined();
-            expect(response.body.tasks.length).toBe(3);
+            expect(response.body.tasks.length).toBe(2);
 
             const taskNames = response.body.tasks.map((t) => t.name);
             expect(taskNames).toContain('Regular Task');
-            expect(taskNames).toContain('Recurring Parent');
-            expect(taskNames).toContain('Recurring Child');
+            expect(taskNames).toContain('Daily'); // Recurring parent shows as "Daily"
+            expect(taskNames).not.toContain('Recurring Child'); // Instance should be filtered out
         });
 
-        it('should return task metrics including recurring tasks', async () => {
+        it('should return task metrics excluding recurring instances', async () => {
             const response = await agent.get('/api/tasks');
 
             expect(response.status).toBe(200);
             expect(response.body.metrics).toBeDefined();
-            expect(response.body.metrics.total_open_tasks).toBe(3);
+            expect(response.body.metrics.total_open_tasks).toBe(2);
         });
     });
 
@@ -594,6 +603,92 @@ describe('Recurring Tasks API', () => {
             // Verify parent still exists
             const parentStillExists = await Task.findByPk(parentTask.id);
             expect(parentStillExists).not.toBeNull();
+        });
+    });
+
+    describe('GET /api/tasks?type=today - Today view filtering and naming', () => {
+        let parentTask, childTask, regularTask;
+
+        beforeEach(async () => {
+            // Create a regular non-recurring task
+            regularTask = await Task.create({
+                name: 'Regular Task',
+                recurrence_type: 'none',
+                user_id: user.id,
+                status: 0,
+                today: true,
+            });
+
+            // Create a recurring parent task (template)
+            parentTask = await Task.create({
+                name: 'Take vitamins',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                user_id: user.id,
+                status: 0,
+                today: true,
+            });
+
+            // Create a recurring child task (instance)
+            childTask = await Task.create({
+                name: 'Take vitamins',
+                recurrence_type: 'none',
+                recurring_parent_id: parentTask.id,
+                user_id: user.id,
+                status: 0,
+                today: true,
+                due_date: new Date(),
+            });
+        });
+
+        it('should exclude recurring task instances from type=today API response', async () => {
+            const response = await agent.get('/api/tasks?type=today');
+
+            expect(response.status).toBe(200);
+            expect(response.body.tasks).toBeDefined();
+
+            // Should only return regular task + recurring template, not the instance
+            expect(response.body.tasks.length).toBe(2);
+
+            const taskIds = response.body.tasks.map((t) => t.id);
+            expect(taskIds).toContain(regularTask.id);
+            expect(taskIds).toContain(parentTask.id);
+            expect(taskIds).not.toContain(childTask.id); // Instance should be filtered out
+        });
+
+        it('should preserve original names for recurring tasks in type=today API response', async () => {
+            const response = await agent.get('/api/tasks?type=today');
+
+            expect(response.status).toBe(200);
+            expect(response.body.tasks).toBeDefined();
+
+            // Find the recurring task in the response
+            const recurringTask = response.body.tasks.find(
+                (t) => t.id === parentTask.id
+            );
+            expect(recurringTask).toBeDefined();
+
+            // Should show original name, not "Daily"
+            expect(recurringTask.name).toBe('Take vitamins');
+            expect(recurringTask.original_name).toBe('Take vitamins');
+            expect(recurringTask.name).not.toBe('Daily');
+        });
+
+        it('should show generic names for non-today API calls (backward compatibility)', async () => {
+            const response = await agent.get('/api/tasks'); // No type=today
+
+            expect(response.status).toBe(200);
+            expect(response.body.tasks).toBeDefined();
+
+            // Find the recurring task in the response
+            const recurringTask = response.body.tasks.find(
+                (t) => t.id === parentTask.id
+            );
+            expect(recurringTask).toBeDefined();
+
+            // Should show generic recurrence name for backward compatibility
+            expect(recurringTask.name).toBe('Daily');
+            expect(recurringTask.original_name).toBe('Take vitamins');
         });
     });
 });

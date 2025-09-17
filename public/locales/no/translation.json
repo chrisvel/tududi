@@ -578,7 +578,8 @@
     "nextActionAdded": "Neste handling lagt til!",
     "taskCreated": "Oppgave opprettet!",
     "taskUpdated": "Oppgave oppdatert!",
-    "taskDeleted": "Oppgave slettet!"
+    "taskDeleted": "Oppgave slettet!",
+    "noteDeleted": "Notatet ble slettet med suksess!"
   },
   "note": {
     "title": "Tittel",

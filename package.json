@@ -1,6 +1,6 @@
 {
   "name": "tududi",
-  "version": "v0.81-rc1",
+  "version": "v0.82",
   "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration.",
   "directories": {
     "test": "test"
@@ -9,8 +9,10 @@
     "start": "bash scripts/start-all-dev.sh",
     "dev": "npm run frontend:dev",
     "build": "npm run frontend:build",
+    "pre-push": "npm run lint:fix && npm run format:fix",
+    "pre-release": "npm run lint:fix && npm run format:fix && npm run test && npm run test:ui",
     "test": "npm run backend:test",
-    "test:ui": "bash e2e/bin/run-e2e.sh",
+    "test:ui": "bash e2e/bin/run-e2e.sh && echo \"Success!\"",
     "test:ui:headed": "cross-env E2E_MODE=headed E2E_SLOWMO=500 bash e2e/bin/run-e2e.sh",
     "test:watch": "npm run frontend:test:watch",
     "test:coverage": "npm run frontend:test:coverage && npm run backend:test:coverage",
@@ -21,7 +23,7 @@
     "frontend:test:watch": "jest --watch",
     "frontend:test:coverage": "jest --coverage",
     "frontend:lint": "eslint 'frontend/**/*.{js,jsx,ts,tsx}'",
-    "frontend:lint-fix": "eslint --fix 'frontend/**/*.{js,jsx,ts,tsx}'",
+    "frontend:lint:fix": "eslint --fix 'frontend/**/*.{js,jsx,ts,tsx}'",
     "frontend:format": "prettier -c 'frontend/**/*.{js,jsx,ts,tsx}'",
     "frontend:format:fix": "prettier --write 'frontend/**/*.{js,jsx,ts,tsx}'",
     "backend:start": "cd backend && ./cmd/start-dev.sh",
@@ -32,7 +34,7 @@
     "backend:test:unit": "cd backend && cross-env NODE_ENV=test jest tests/unit",
     "backend:test:integration": "cd backend && cross-env NODE_ENV=test jest tests/integration",
     "backend:lint": "cd backend && eslint .",
-    "backend:lint-fix": "cd backend && eslint . --fix",
+    "backend:lint:fix": "cd backend && eslint . --fix",
     "backend:format": "cd backend && prettier -c .",
     "backend:format:fix": "cd backend && prettier --write .",
     "db:init": "cd backend && node scripts/db-init.js",
@@ -54,7 +56,7 @@
     "translations:export": "cd scripts && ./sync-translations.js --all --dry-run --output missing-translations.json",
     "clean": "rimraf dist",
     "lint": "npm run frontend:lint && npm run backend:lint",
-    "lint-fix": "npm run frontend:lint-fix && npm run backend:lint-fix",
+    "lint:fix": "npm run frontend:lint:fix && npm run backend:lint:fix",
     "format": "npm run frontend:format && npm run backend:format",
     "format:fix": "npm run frontend:format:fix && npm run backend:format:fix",
     "docker:test-build": "bash scripts/test-docker-build.sh"

@@ -228,6 +228,7 @@ const Areas: React.FC = () => {
                                         aria-label={t(
                                             'areas.toggleDropdownMenu'
                                         )}
+                                        data-testid={`area-dropdown-${area.id}`}
                                     >
                                         <EllipsisVerticalIcon className="h-5 w-5" />
                                     </button>
@@ -242,6 +243,7 @@ const Areas: React.FC = () => {
                                                     setDropdownOpen(null);
                                                 }}
                                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                                data-testid={`area-edit-${area.id}`}
                                             >
                                                 {t('areas.edit', 'Edit')}
                                             </button>
@@ -253,6 +255,7 @@ const Areas: React.FC = () => {
                                                     setDropdownOpen(null);
                                                 }}
                                                 className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                                data-testid={`area-delete-${area.id}`}
                                             >
                                                 {t('areas.delete', 'Delete')}
                                             </button>

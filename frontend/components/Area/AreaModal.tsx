@@ -189,6 +189,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
                                                     placeholder={t(
                                                         'forms.areaNamePlaceholder'
                                                     )}
+                                                    data-testid="area-name-input"
                                                 />
                                             </div>
 
@@ -259,6 +260,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
                                             ? 'opacity-50 cursor-not-allowed'
                                             : ''
                                     }`}
+                                    data-testid="area-save-button"
                                 >
                                     {isSubmitting
                                         ? t('modals.submitting')

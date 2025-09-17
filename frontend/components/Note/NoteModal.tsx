@@ -97,8 +97,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
     useEffect(() => {
         if (isOpen) {
             if (note) {
-                // Initialize form data directly from note (like TaskModal)
-                setFormData(note);
+                setFormData({
+                    ...note,
+                    project_id:
+                        note?.project_id ||
+                        note?.project?.id ||
+                        note?.Project?.id,
+                });
                 const tagNames =
                     (note?.tags || note?.Tags)?.map((tag) => tag.name) || [];
                 setTags(tagNames);
@@ -113,9 +118,10 @@ const NoteModal: React.FC<NoteModalProps> = ({
                 );
                 setNewProjectName(currentProject ? currentProject.name : '');
 
-                // Auto-expand sections if they have content from existing note or always for editing
+                // Auto-expand sections if they have content from existing note, editing existing note, or creating new note with pre-filled project
                 const shouldExpandTags = tagNames.length > 0 || !!note.id; // Expand if has tags OR editing existing note
-                const shouldExpandProject = !!currentProject || !!note.id; // Expand if has project OR editing existing note
+                const shouldExpandProject =
+                    !!currentProject || !!note.id || !!projectIdToFind; // Expand if has project OR editing existing note OR has project_id
 
                 setExpandedSections({
                     tags: shouldExpandTags,
@@ -411,6 +417,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             'forms.noteTitlePlaceholder'
                                                         )}
                                                         autoComplete="off"
+                                                        data-testid="note-title-input"
                                                     />
                                                 </div>
 
@@ -482,6 +489,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             className="block w-full h-full min-h-0 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
                                                             placeholder="Write your content using Markdown formatting...&#10;&#10;Examples:&#10;# Heading&#10;**Bold text**&#10;*Italic text*&#10;- List item&#10;```code```"
                                                             autoComplete="off"
+                                                            data-testid="note-content-textarea"
                                                         />
                                                     ) : (
                                                         <div className="block w-full h-full min-h-0 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-gray-50 dark:bg-gray-800 overflow-y-auto">
@@ -660,6 +668,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                 ? 'opacity-50 cursor-not-allowed'
                                                 : ''
                                         }`}
+                                        data-testid="note-save-button"
                                     >
                                         {isSubmitting
                                             ? t('modals.submitting')

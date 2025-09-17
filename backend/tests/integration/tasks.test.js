@@ -151,6 +151,31 @@ describe('Tasks Routes', () => {
             expect(response.body.status).toBe(updateData.status);
         });
 
+        it('should update recurring task name without transformation', async () => {
+            // Create a recurring task
+            const recurringTask = await Task.create({
+                name: 'My Daily Task',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                user_id: user.id,
+                status: 0,
+            });
+
+            const updateData = {
+                name: 'Updated Daily Task Name',
+            };
+
+            const response = await agent
+                .patch(`/api/task/${recurringTask.id}`)
+                .send(updateData);
+
+            expect(response.status).toBe(200);
+            expect(response.body.id).toBeDefined();
+            // The response should contain the actual updated name, not a transformed name like "Daily"
+            expect(response.body.name).toBe(updateData.name);
+            expect(response.body.original_name).toBe(updateData.name);
+        });
+
         it('should return 404 for non-existent task', async () => {
             const response = await agent
                 .patch('/api/task/999999')
@@ -310,6 +335,141 @@ describe('Tasks Routes', () => {
             expect(taskNames).toContain('Regular Task');
             expect(taskNames).not.toContain('Subtask 1');
             expect(taskNames).not.toContain('Subtask 2');
+        });
+    });
+
+    describe('Recurring task search functionality', () => {
+        it('should include recurring task instances in search results', async () => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Create a recurring task template (set for today to ensure it's included)
+            const recurringTemplate = await Task.create({
+                name: 'RecurringTask',
+                user_id: user.id,
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_date: today,
+                status: 0,
+            });
+
+            // Create a recurring task instance (simulating what the recurring task service would create)
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            const recurringInstance = await Task.create({
+                name: 'RecurringTask',
+                user_id: user.id,
+                recurring_parent_id: recurringTemplate.id,
+                due_date: tomorrow,
+                status: 0,
+            });
+
+            // Create a regular non-recurring task for comparison
+            const regularTask = await Task.create({
+                name: 'Review Pull Request',
+                user_id: user.id,
+                status: 0,
+            });
+
+            const response = await agent.get(
+                '/api/tasks?include_instances=true'
+            );
+
+            expect(response.status).toBe(200);
+            expect(response.body.tasks).toBeDefined();
+
+            const taskIds = response.body.tasks.map((t) => t.id);
+            const taskNames = response.body.tasks.map((t) => t.name);
+
+            // Should include the recurring template
+            expect(taskIds).toContain(recurringTemplate.id);
+
+            // Should include the recurring instance (this is the key fix - instances should be searchable)
+            expect(taskIds).toContain(recurringInstance.id);
+
+            // Should include the regular task
+            expect(taskIds).toContain(regularTask.id);
+            expect(taskNames).toContain('Review Pull Request');
+
+            // Verify we have both the template and instance - this proves search will work on both
+            const allTasks = response.body.tasks;
+            const templateTask = allTasks.find(
+                (t) => t.id === recurringTemplate.id
+            );
+            const instanceTask = allTasks.find(
+                (t) => t.id === recurringInstance.id
+            );
+
+            expect(templateTask).toBeDefined();
+            // The template name gets transformed to show the recurrence type in the API response
+            expect(templateTask.name).toBe('Daily');
+            expect(templateTask.recurrence_type).toBe('daily');
+            expect(templateTask.recurring_parent_id).toBeNull();
+            // The original name is preserved in original_name field
+            expect(templateTask.original_name).toBe('RecurringTask');
+
+            expect(instanceTask).toBeDefined();
+            // Instances keep their original name
+            expect(instanceTask.name).toBe('RecurringTask');
+            expect(instanceTask.recurring_parent_id).toBe(recurringTemplate.id);
+        });
+
+        it('should not include past recurring instances', async () => {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            // Create a recurring task template
+            const recurringTemplate = await Task.create({
+                name: 'Daily Review',
+                user_id: user.id,
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_date: yesterday, // Template is in the past but should still be included if it's recurring
+                status: 0,
+            });
+
+            // Create a past recurring task instance
+            const twoDaysAgo = new Date();
+            twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+            const pastInstance = await Task.create({
+                name: 'Daily Review',
+                user_id: user.id,
+                recurring_parent_id: recurringTemplate.id,
+                due_date: twoDaysAgo,
+                status: 0,
+            });
+
+            // Create a future recurring task instance
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            const futureInstance = await Task.create({
+                name: 'Daily Review',
+                user_id: user.id,
+                recurring_parent_id: recurringTemplate.id,
+                due_date: tomorrow,
+                status: 0,
+            });
+
+            const response = await agent.get(
+                '/api/tasks?include_instances=true'
+            );
+
+            expect(response.status).toBe(200);
+            expect(response.body.tasks).toBeDefined();
+
+            const taskIds = response.body.tasks.map((t) => t.id);
+
+            // Should not include past instances
+            expect(taskIds).not.toContain(pastInstance.id);
+
+            // Should include future instances
+            expect(taskIds).toContain(futureInstance.id);
+
+            // Template should not be included because it's in the past
+            expect(taskIds).not.toContain(recurringTemplate.id);
         });
     });
 });

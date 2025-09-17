@@ -89,8 +89,20 @@ const Layout: React.FC<LayoutProps> = ({
     }, []);
 
     useEffect(() => {
-        // Layout no longer loads global data
-    }, []);
+        // Load projects into global store if not already loaded
+        const loadProjects = async () => {
+            if (projects.length === 0 && !isProjectsLoading) {
+                try {
+                    const projectsData = await fetchProjects();
+                    setProjects(projectsData);
+                } catch (error) {
+                    console.error('Failed to load projects in Layout:', error);
+                }
+            }
+        };
+
+        loadProjects();
+    }, [projects.length, isProjectsLoading, setProjects]);
 
     const openNoteModal = (note: Note | null = null) => {
         setSelectedNote(note);
@@ -509,10 +521,13 @@ const Layout: React.FC<LayoutProps> = ({
                         onSave={handleSaveNote}
                         onDelete={async (noteId) => {
                             try {
-                                const { deleteNote } = await import(
-                                    './utils/notesService'
+                                const { deleteNoteWithStoreUpdate } =
+                                    await import('./utils/noteDeleteUtils');
+                                await deleteNoteWithStoreUpdate(
+                                    noteId,
+                                    showSuccessToast,
+                                    t
                                 );
-                                await deleteNote(noteId);
                                 closeNoteModal();
                             } catch (error) {
                                 console.error('Error deleting note:', error);

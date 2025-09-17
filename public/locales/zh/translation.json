@@ -578,7 +578,8 @@
     "nextActionAdded": "下一个行动添加成功！",
     "taskCreated": "任务创建成功！",
     "taskUpdated": "任务更新成功！",
-    "taskDeleted": "任务删除成功！"
+    "taskDeleted": "任务删除成功！",
+    "noteDeleted": "笔记删除成功！"
   },
   "note": {
     "title": "标题",

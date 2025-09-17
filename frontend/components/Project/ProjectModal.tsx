@@ -501,6 +501,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         'project.name',
                                                         'Enter project name'
                                                     )}
+                                                    data-testid="project-name-input"
                                                 />
                                                 {error && (
                                                     <div className="mt-2 text-red-500 text-sm font-medium">
@@ -903,6 +904,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             ? 'opacity-50 cursor-not-allowed'
                                             : ''
                                     }`}
+                                    data-testid="project-save-button"
                                 >
                                     {isUploading
                                         ? 'Uploading...'

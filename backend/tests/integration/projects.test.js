@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Project, User, Area } = require('../../models');
+const { Project, User, Area, Task } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Projects Routes', () => {
@@ -312,6 +312,128 @@ describe('Projects Routes', () => {
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');
+        });
+
+        it('should delete project with associated tasks (orphan tasks)', async () => {
+            // Create tasks associated with the project
+            const task1 = await Task.create({
+                name: 'Task 1',
+                user_id: user.id,
+                project_id: project.id,
+                status: 0, // not_started
+            });
+
+            const task2 = await Task.create({
+                name: 'Task 2',
+                user_id: user.id,
+                project_id: project.id,
+                status: 2, // done/completed
+            });
+
+            // Delete the project
+            const response = await agent.delete(`/api/project/${project.id}`);
+
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe('Project successfully deleted');
+
+            // Verify project is deleted
+            const deletedProject = await Project.findByPk(project.id);
+            expect(deletedProject).toBeNull();
+
+            // Verify tasks are orphaned (project_id set to null) but still exist
+            const orphanedTask1 = await Task.findByPk(task1.id);
+            const orphanedTask2 = await Task.findByPk(task2.id);
+
+            expect(orphanedTask1).not.toBeNull();
+            expect(orphanedTask1.project_id).toBeNull();
+            expect(orphanedTask1.name).toBe('Task 1');
+
+            expect(orphanedTask2).not.toBeNull();
+            expect(orphanedTask2.project_id).toBeNull();
+            expect(orphanedTask2.name).toBe('Task 2');
+        });
+
+        it('should delete project with completed tasks only', async () => {
+            // Create only completed tasks associated with the project
+            const completedTask = await Task.create({
+                name: 'Completed Task',
+                user_id: user.id,
+                project_id: project.id,
+                status: 2, // done/completed
+            });
+
+            // Delete the project
+            const response = await agent.delete(`/api/project/${project.id}`);
+
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe('Project successfully deleted');
+
+            // Verify project is deleted
+            const deletedProject = await Project.findByPk(project.id);
+            expect(deletedProject).toBeNull();
+
+            // Verify completed task is orphaned but still exists
+            const orphanedTask = await Task.findByPk(completedTask.id);
+            expect(orphanedTask).not.toBeNull();
+            expect(orphanedTask.project_id).toBeNull();
+            expect(orphanedTask.status).toBe(2); // Still completed
+        });
+
+        it('should delete project with mixed status tasks', async () => {
+            // Create tasks with different statuses
+            const notStartedTask = await Task.create({
+                name: 'Not Started Task',
+                user_id: user.id,
+                project_id: project.id,
+                status: 0, // not_started
+            });
+
+            const inProgressTask = await Task.create({
+                name: 'In Progress Task',
+                user_id: user.id,
+                project_id: project.id,
+                status: 1, // in_progress
+            });
+
+            const completedTask = await Task.create({
+                name: 'Completed Task',
+                user_id: user.id,
+                project_id: project.id,
+                status: 2, // done/completed
+            });
+
+            // Delete the project
+            const response = await agent.delete(`/api/project/${project.id}`);
+
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe('Project successfully deleted');
+
+            // Verify project is deleted
+            const deletedProject = await Project.findByPk(project.id);
+            expect(deletedProject).toBeNull();
+
+            // Verify all tasks are orphaned but still exist with their original statuses
+            const tasks = await Task.findAll({
+                where: {
+                    id: [
+                        notStartedTask.id,
+                        inProgressTask.id,
+                        completedTask.id,
+                    ],
+                },
+            });
+
+            expect(tasks).toHaveLength(3);
+
+            const taskById = {};
+            tasks.forEach((task) => {
+                taskById[task.id] = task;
+                expect(task.project_id).toBeNull(); // All should be orphaned
+            });
+
+            expect(taskById[notStartedTask.id].status).toBe(0);
+            expect(taskById[inProgressTask.id].status).toBe(1);
+            expect(taskById[completedTask.id].status).toBe(2);
         });
     });
 });

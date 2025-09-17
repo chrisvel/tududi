@@ -3,7 +3,8 @@ import { Project } from '../../entities/Project';
 export const getDescription = (
     query: URLSearchParams,
     projects: Project[],
-    t: (key: string, options?: any) => string
+    t: (key: string, options?: any) => string,
+    pathname?: string
 ): string => {
     try {
         // Default descriptions as fallbacks in case translation function fails
@@ -46,6 +47,11 @@ export const getDescription = (
 
         // Then check for type and status parameters
         try {
+            // Check pathname-based routes first
+            if (pathname === '/upcoming') {
+                return t('taskViews.upcoming');
+            }
+
             if (query.get('type') === 'today') {
                 return t('taskViews.today');
             }

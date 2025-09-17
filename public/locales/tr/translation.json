@@ -578,7 +578,8 @@
     "nextActionAdded": "Sonraki eylem başarıyla eklendi!",
     "taskCreated": "Görev başarıyla oluşturuldu!",
     "taskUpdated": "Görev başarıyla güncellendi!",
-    "taskDeleted": "Görev başarıyla silindi!"
+    "taskDeleted": "Görev başarıyla silindi!",
+    "noteDeleted": "Not başarıyla silindi!"
   },
   "note": {
     "title": "Başlık",

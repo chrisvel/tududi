@@ -49,6 +49,7 @@ const TaskTitleSection: React.FC<TaskTitleSectionProps> = ({
                 required
                 className="block w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white border-none focus:outline-none focus:border-none focus:ring-0 py-2"
                 placeholder={t('forms.task.namePlaceholder', 'Add Task Name')}
+                data-testid="task-name-input"
             />
             {taskAnalysis &&
                 taskAnalysis.isVague &&

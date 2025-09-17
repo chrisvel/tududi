@@ -38,3 +38,7 @@ public/assets/
 
 # Webpack cache
 .webpack/
+
+# Playwright test results
+test-results/
+.last-run.json
