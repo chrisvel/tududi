@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     format,
     startOfWeek,
@@ -7,6 +7,7 @@ import {
     isToday,
     addHours,
 } from 'date-fns';
+import { getFirstDayOfWeek, getLocaleFirstDayOfWeek } from '../../utils/profileService';
 
 interface CalendarEvent {
     id: string;
@@ -31,8 +32,24 @@ const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
     onEventClick,
     onTimeSlotClick,
 }) => {
-    const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
-    const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
+    const [firstDayOfWeek, setFirstDayOfWeek] = useState(1); // Default to Monday
+
+    // Load first day of week setting
+    useEffect(() => {
+        const loadFirstDayOfWeek = async () => {
+            try {
+                const firstDay = await getFirstDayOfWeek();
+                setFirstDayOfWeek(firstDay);
+            } catch (error) {
+                const fallbackFirstDay = getLocaleFirstDayOfWeek(navigator.language);
+                setFirstDayOfWeek(fallbackFirstDay);
+            }
+        };
+        loadFirstDayOfWeek();
+    }, []);
+
+    const weekStart = startOfWeek(currentDate, { weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6 });
+    const weekEnd = endOfWeek(currentDate, { weekStartsOn: firstDayOfWeek as 0 | 1 | 2 | 3 | 4 | 5 | 6 });
     const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
     const hours = Array.from({ length: 24 }, (_, i) => i);

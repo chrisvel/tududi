@@ -5,6 +5,7 @@ import {
     ChevronRightIcon,
     CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
+import { getFirstDayOfWeek, getLocaleFirstDayOfWeek } from '../../utils/profileService';
 
 interface DatePickerProps {
     value: string;
@@ -29,6 +30,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         openUpward: false,
     });
     const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [firstDayOfWeek, setFirstDayOfWeek] = useState(0); // 0 = Sunday, 1 = Monday, etc.
     const dropdownRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -47,7 +49,12 @@ const DatePicker: React.FC<DatePickerProps> = ({
         'December',
     ];
 
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    // Generate days array based on first day of week setting
+    const getAllDays = () => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const getDaysOfWeek = () => {
+        const allDays = getAllDays();
+        return [...allDays.slice(firstDayOfWeek), ...allDays.slice(0, firstDayOfWeek)];
+    };
 
     const formatDate = (date: Date) => {
         const year = date.getFullYear();
@@ -187,10 +194,13 @@ const DatePicker: React.FC<DatePickerProps> = ({
         const daysInMonth = lastDay.getDate();
         const startingDayOfWeek = firstDay.getDay();
 
+        // Adjust starting day based on first day of week setting
+        const adjustedStartingDay = (startingDayOfWeek - firstDayOfWeek + 7) % 7;
+
         const days = [];
 
         // Add empty cells for days before the first day of the month
-        for (let i = 0; i < startingDayOfWeek; i++) {
+        for (let i = 0; i < adjustedStartingDay; i++) {
             days.push(null);
         }
 
@@ -214,6 +224,21 @@ const DatePicker: React.FC<DatePickerProps> = ({
             selectedDate && date.toDateString() === selectedDate.toDateString()
         );
     };
+
+    // Load first day of week setting on mount
+    useEffect(() => {
+        const loadFirstDayOfWeek = async () => {
+            try {
+                const firstDay = await getFirstDayOfWeek();
+                setFirstDayOfWeek(firstDay);
+            } catch (error) {
+                // Fallback to locale-based default
+                const fallbackFirstDay = getLocaleFirstDayOfWeek(navigator.language);
+                setFirstDayOfWeek(fallbackFirstDay);
+            }
+        };
+        loadFirstDayOfWeek();
+    }, []);
 
     useEffect(() => {
         if (isOpen) {
@@ -305,7 +330,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                         <div className="p-3">
                             {/* Day Headers */}
                             <div className="grid grid-cols-7 gap-1 mb-2">
-                                {days.map((day) => (
+                                {getDaysOfWeek().map((day) => (
                                     <div
                                         key={day}
                                         className="text-xs font-medium text-gray-500 dark:text-gray-400 text-center py-1"

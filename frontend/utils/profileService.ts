@@ -6,6 +6,7 @@ interface Profile {
     appearance: 'light' | 'dark';
     language: string;
     timezone: string;
+    first_day_of_week: number; // 0 = Sunday, 1 = Monday, etc.
     avatar_image: string | null;
     telegram_bot_token: string | null;
     telegram_chat_id: string | null;
@@ -239,5 +240,52 @@ export const getNextTaskSuggestionEnabled = async (): Promise<boolean> => {
     } catch (error) {
         console.error('Error fetching next task suggestion setting:', error);
         return true; // Default to enabled if we can't fetch the setting
+    }
+};
+
+/**
+ * Gets the first day of the week (0 = Sunday, 1 = Monday, etc.)
+ * Falls back to locale-based defaults if not set in profile
+ */
+export const getFirstDayOfWeek = async (): Promise<number> => {
+    try {
+        const profile = await fetchProfile();
+        if (profile.first_day_of_week !== undefined) {
+            return profile.first_day_of_week;
+        }
+
+        // Fallback to locale-based default
+        return getLocaleFirstDayOfWeek(profile.language);
+    } catch (error) {
+        console.error('Error fetching first day of week setting:', error);
+        // Default fallback based on browser locale
+        return getLocaleFirstDayOfWeek(navigator.language);
+    }
+};
+
+/**
+ * Returns the first day of week based on locale/language
+ * 0 = Sunday, 1 = Monday, etc.
+ */
+export const getLocaleFirstDayOfWeek = (locale: string): number => {
+    // Countries that typically start with Monday (1)
+    const mondayCountries = [
+        'de', 'fr', 'es', 'it', 'nl', 'pt', 'ru', 'pl', 'no', 'da', 'sv', 'fi',
+        'el', 'tr', 'bg', 'ro', 'hu', 'cs', 'sk', 'hr', 'sl', 'et', 'lv', 'lt',
+        'uk', 'be', 'at', 'ch', 'lu', 'is', 'ie', 'gb', 'eu', 'zh', 'ja', 'ko'
+    ];
+
+    // Countries that typically start with Saturday (6)
+    const saturdayCountries = ['ar', 'he', 'fa'];
+
+    // Extract language code (e.g., 'en-US' -> 'en', 'zh-CN' -> 'zh')
+    const langCode = locale.toLowerCase().split('-')[0];
+
+    if (saturdayCountries.includes(langCode)) {
+        return 6; // Saturday
+    } else if (mondayCountries.includes(langCode)) {
+        return 1; // Monday
+    } else {
+        return 0; // Sunday (default for US, CA, JP, etc.)
     }
 };
