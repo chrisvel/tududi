@@ -114,7 +114,7 @@ export const deleteInboxItem = async (itemId: number): Promise<void> => {
 
 // Track last check time to detect new items
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-let lastCheckTimestamp = Date.now();
+const lastCheckTimestamp = Date.now();
 
 // Store-aware functions
 export const loadInboxItemsToStore = async (
