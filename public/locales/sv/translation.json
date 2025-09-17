@@ -579,7 +579,7 @@
     "taskCreated": "Uppgift skapad!",
     "taskUpdated": "Uppgift uppdaterad!",
     "taskDeleted": "Uppgift borttagen!",
-    "noteDeleted": "Anteckningen har raderats framgångsrikt!"
+    "noteDeleted": "Anteckning borttagen!"
   },
   "note": {
     "title": "Titel",
