@@ -293,7 +293,8 @@
     "norwegian": "Norwegia",
     "polish": "Polandia",
     "slovenian": "Slovenia",
-    "swedish": "Swedia"
+    "swedish": "Swedia",
+    "firstDayOfWeek": "Hari pertama dalam minggu"
   },
   "productivity": {
     "stalledProjects": "Proyek Terhenti",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "Lihat di GitHub",
     "license": "Lisensi untuk penggunaan pribadi",
     "builtBy": "Dibangun oleh"
+  },
+  "weekdaysFull": {
+    "sunday": "Minggu",
+    "monday": "Senin",
+    "tuesday": "Selasa",
+    "wednesday": "Rabu",
+    "thursday": "Kamis",
+    "friday": "Jumat",
+    "saturday": "Sabtu"
   }
 }

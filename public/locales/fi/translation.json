@@ -293,7 +293,8 @@
     "aiProductivityFeatures": "AI & Tuottavuusominaisuudet",
     "botSetup": "Botti-asetukset",
     "passwordChangeNote": "Salasanan muutokset tallennetaan, kun napsautat \"Tallenna muutokset\" lomakkeen alareunassa.",
-    "passwordChangeOptional": "Jätä salasanakentät tyhjiksi päivittääksesi muita asetuksia ilman salasanan vaihtamista."
+    "passwordChangeOptional": "Jätä salasanakentät tyhjiksi päivittääksesi muita asetuksia ilman salasanan vaihtamista.",
+    "firstDayOfWeek": "Viikon ensimmäinen päivä"
   },
   "productivity": {
     "stalledProjects": "Jumiutuneet projektit",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "Näytä GitHubissa",
     "license": "Lisensoitu henkilökohtaiseen käyttöön",
     "builtBy": "Rakentanut"
+  },
+  "weekdaysFull": {
+    "sunday": "Sunnuntai",
+    "monday": "Maanantai",
+    "tuesday": "Tiistai",
+    "wednesday": "Keskiviikko",
+    "thursday": "Torstai",
+    "friday": "Perjantai",
+    "saturday": "Lauantai"
   }
 }

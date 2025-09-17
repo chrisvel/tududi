@@ -293,7 +293,8 @@
     "aiProductivityFeatures": "AI & Produktivitetsfunksjoner",
     "botSetup": "Botoppsett",
     "passwordChangeNote": "Endringer i passordet vil bli lagret når du klikker på \"Lagre endringer\" nederst i skjemaet.",
-    "passwordChangeOptional": "La passordfeltene stå tomme for å oppdatere andre innstillinger uten å endre passordet ditt."
+    "passwordChangeOptional": "La passordfeltene stå tomme for å oppdatere andre innstillinger uten å endre passordet ditt.",
+    "firstDayOfWeek": "Første dag i uken"
   },
   "productivity": {
     "stalledProjects": "Stagnerte prosjekter",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "Se på GitHub",
     "license": "Lisensiert for personlig bruk",
     "builtBy": "Bygget av"
+  },
+  "weekdaysFull": {
+    "sunday": "Søndag",
+    "monday": "Mandag",
+    "tuesday": "Tirsdag",
+    "wednesday": "Onsdag",
+    "thursday": "Torsdag",
+    "friday": "Fredag",
+    "saturday": "Lørdag"
   }
 }

@@ -293,7 +293,8 @@
     "aiProductivityFeatures": "Funkcje AI i produktywności",
     "botSetup": "Konfiguracja bota",
     "passwordChangeNote": "Zmiany hasła zostaną zapisane po kliknięciu \"Zapisz zmiany\" na dole formularza.",
-    "passwordChangeOptional": "Pozostaw puste pola hasła, aby zaktualizować inne ustawienia bez zmiany hasła."
+    "passwordChangeOptional": "Pozostaw puste pola hasła, aby zaktualizować inne ustawienia bez zmiany hasła.",
+    "firstDayOfWeek": "Pierwszy dzień tygodnia"
   },
   "productivity": {
     "stalledProjects": "Zatrzymane projekty",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "Zobacz na GitHubie",
     "license": "Licencjonowane do użytku osobistego",
     "builtBy": "Stworzone przez"
+  },
+  "weekdaysFull": {
+    "sunday": "Niedziela",
+    "monday": "Poniedziałek",
+    "tuesday": "Wtorek",
+    "wednesday": "Środa",
+    "thursday": "Czwartek",
+    "friday": "Piątek",
+    "saturday": "Sobota"
   }
 }
