@@ -293,7 +293,8 @@
     "aiProductivityFeatures": "AI & Produktivitetsfunktioner",
     "botSetup": "Bot Opsætning",
     "passwordChangeNote": "Ændringer af adgangskode gemmes, når du klikker på \"Gem ændringer\" nederst i formularen.",
-    "passwordChangeOptional": "Lad adgangskodefelterne stå tomme for at opdatere andre indstillinger uden at ændre din adgangskode."
+    "passwordChangeOptional": "Lad adgangskodefelterne stå tomme for at opdatere andre indstillinger uden at ændre din adgangskode.",
+    "firstDayOfWeek": "Første dag i ugen"
   },
   "productivity": {
     "stalledProjects": "Stagnerede Projekter",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "Se på GitHub",
     "license": "Licenseret til personlig brug",
     "builtBy": "Bygget af"
+  },
+  "weekdaysFull": {
+    "sunday": "Søndag",
+    "monday": "Mandag",
+    "tuesday": "Tirsdag",
+    "wednesday": "Onsdag",
+    "thursday": "Torsdag",
+    "friday": "Fredag",
+    "saturday": "Lørdag"
   }
 }

@@ -28,6 +28,7 @@ router.get('/profile', async (req, res) => {
                 'appearance',
                 'language',
                 'timezone',
+                'first_day_of_week',
                 'avatar_image',
                 'telegram_bot_token',
                 'telegram_chat_id',
@@ -80,6 +81,7 @@ router.patch('/profile', async (req, res) => {
             appearance,
             language,
             timezone,
+            first_day_of_week,
             avatar_image,
             telegram_bot_token,
             telegram_allowed_users,
@@ -98,6 +100,8 @@ router.patch('/profile', async (req, res) => {
         if (appearance !== undefined) allowedUpdates.appearance = appearance;
         if (language !== undefined) allowedUpdates.language = language;
         if (timezone !== undefined) allowedUpdates.timezone = timezone;
+        if (first_day_of_week !== undefined)
+            allowedUpdates.first_day_of_week = first_day_of_week;
         if (avatar_image !== undefined)
             allowedUpdates.avatar_image = avatar_image;
         if (telegram_bot_token !== undefined)
@@ -122,6 +126,20 @@ router.patch('/profile', async (req, res) => {
                 next_task_suggestion_enabled;
         if (pomodoro_enabled !== undefined)
             allowedUpdates.pomodoro_enabled = pomodoro_enabled;
+
+        // Validate first_day_of_week if provided
+        if (first_day_of_week !== undefined) {
+            if (
+                typeof first_day_of_week !== 'number' ||
+                first_day_of_week < 0 ||
+                first_day_of_week > 6
+            ) {
+                return res.status(400).json({
+                    field: 'first_day_of_week',
+                    error: 'First day of week must be a number between 0 (Sunday) and 6 (Saturday)',
+                });
+            }
+        }
 
         // Handle password change if provided
         if (currentPassword && newPassword) {

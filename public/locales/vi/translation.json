@@ -293,7 +293,8 @@
     "norwegian": "Tiếng Na Uy",
     "polish": "Tiếng Ba Lan",
     "slovenian": "Tiếng Slovenia",
-    "swedish": "Thụy Điển"
+    "swedish": "Thụy Điển",
+    "firstDayOfWeek": "Ngày đầu tiên của tuần"
   },
   "productivity": {
     "stalledProjects": "Dự án Đang Tạm Dừng",
@@ -901,5 +902,14 @@
     "viewOnGitHub": "Xem trên GitHub",
     "license": "Cấp phép cho sử dụng cá nhân",
     "builtBy": "Được xây dựng bởi"
+  },
+  "weekdaysFull": {
+    "sunday": "Chủ nhật",
+    "monday": "Thứ hai",
+    "tuesday": "Thứ ba",
+    "wednesday": "Thứ tư",
+    "thursday": "Thứ năm",
+    "friday": "Thứ sáu",
+    "saturday": "Thứ bảy"
   }
 }
