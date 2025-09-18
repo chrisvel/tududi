@@ -198,19 +198,6 @@ const Layout: React.FC<LayoutProps> = ({
                 showSuccessToast(taskLink);
             } else {
                 const createdTask = await createTask(taskData);
-                const taskLink = (
-                    <span>
-                        {t('task.created', 'Task')}{' '}
-                        <a
-                            href="/tasks"
-                            className="text-green-200 underline hover:text-green-100"
-                        >
-                            {createdTask.name}
-                        </a>{' '}
-                        {t('task.createdSuccessfully', 'created successfully!')}
-                    </span>
-                );
-                showSuccessToast(taskLink);
 
                 // Notify Tasks component that a task was created
                 window.dispatchEvent(
