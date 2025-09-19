@@ -538,7 +538,11 @@
     "unprocessedItems": "Sinulla on {{count}} kohde(tta) saapuneet-kansiossasi",
     "processNow": "Käsittele nyt",
     "deleteConfirmTitle": "Poista kohde",
-    "deleteConfirmMessage": "Oletko varma, että haluat poistaa tämän kohteen saapuneet-kansiostasi? Tätä toimintoa ei voi peruuttaa."
+    "deleteConfirmMessage": "Oletko varma, että haluat poistaa tämän kohteen saapuneet-kansiostasi? Tätä toimintoa ei voi peruuttaa.",
+    "loadMoreError": "Lisätietojen lataaminen epäonnistui",
+    "loading": "Ladataan...",
+    "loadMore": "Lataa lisää saapuneita kohteita",
+    "showingItems": "Näytetään {{current}} / {{total}} kohteista"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

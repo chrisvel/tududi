@@ -619,7 +619,11 @@
     "unprocessedItems": "Tiene {{count}} elemento(s) en su bandeja de entrada",
     "processNow": "Procesar ahora",
     "deleteConfirmTitle": "Eliminar Elemento",
-    "deleteConfirmMessage": "¿Está seguro de que desea eliminar este elemento de la bandeja de entrada? Esta acción no se puede deshacer."
+    "deleteConfirmMessage": "¿Está seguro de que desea eliminar este elemento de la bandeja de entrada? Esta acción no se puede deshacer.",
+    "loadMoreError": "Error al cargar más elementos",
+    "loading": "Cargando...",
+    "loadMore": "Cargar más elementos de la bandeja de entrada",
+    "showingItems": "Mostrando {{current}} de {{total}} elementos"
   },
   "areas": {
     "title": "Áreas",

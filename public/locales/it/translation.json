@@ -538,7 +538,11 @@
     "unprocessedItems": "Hai {{count}} elemento(i) nella tua inbox",
     "processNow": "Elabora ora",
     "deleteConfirmTitle": "Elimina Elemento",
-    "deleteConfirmMessage": "Sei sicuro di voler eliminare questo elemento dalla tua inbox? Questa azione non può essere annullata."
+    "deleteConfirmMessage": "Sei sicuro di voler eliminare questo elemento dalla tua inbox? Questa azione non può essere annullata.",
+    "loadMoreError": "Impossibile caricare ulteriori elementi",
+    "loading": "Caricamento...",
+    "loadMore": "Carica ulteriori elementi della posta in arrivo",
+    "showingItems": "Mostrando {{current}} di {{total}} elementi"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",

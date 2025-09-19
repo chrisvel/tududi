@@ -10,15 +10,37 @@ router.get('/inbox', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
+        // Parse pagination parameters
+        const limit = parseInt(req.query.limit) || 20; // Default to 20 items
+        const offset = parseInt(req.query.offset) || 0;
+
+        // Get total count for pagination info
+        const totalCount = await InboxItem.count({
+            where: {
+                user_id: req.session.userId,
+                status: 'added',
+            },
+        });
+
         const items = await InboxItem.findAll({
             where: {
                 user_id: req.session.userId,
                 status: 'added',
             },
             order: [['created_at', 'DESC']],
+            limit: limit,
+            offset: offset,
         });
 
-        res.json(items);
+        res.json({
+            items: items,
+            pagination: {
+                total: totalCount,
+                limit: limit,
+                offset: offset,
+                hasMore: offset + items.length < totalCount,
+            },
+        });
     } catch (error) {
         console.error('Error fetching inbox items:', error);
         res.status(500).json({ error: 'Internal server error' });

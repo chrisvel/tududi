@@ -538,7 +538,11 @@
     "unprocessedItems": "Imate {{count}} element(e) v prejetih",
     "processNow": "Obdelaj zdaj",
     "deleteConfirmTitle": "Izbriši element",
-    "deleteConfirmMessage": "Ali ste prepričani, da želite izbrisati ta element iz svoje prejete pošte? Te akcije ni mogoče razveljaviti."
+    "deleteConfirmMessage": "Ali ste prepričani, da želite izbrisati ta element iz svoje prejete pošte? Te akcije ni mogoče razveljaviti.",
+    "loadMoreError": "Nalaganje dodatnih predmetov ni uspelo",
+    "loading": "Nalaganje...",
+    "loadMore": "Naloži več predmetov v prejeto",
+    "showingItems": "Prikazujem {{current}} od {{total}} predmetov"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

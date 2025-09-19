@@ -4,6 +4,7 @@ import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
 import {
     loadInboxItemsToStore,
+    loadMoreInboxItemsToStore,
     processInboxItemWithStore,
     deleteInboxItemWithStore,
     updateInboxItemWithStore,
@@ -30,7 +31,9 @@ const InboxItems: React.FC = () => {
     const { showSuccessToast, showErrorToast } = useToast();
 
     // Access store data
-    const { inboxItems, isLoading } = useStore((state) => state.inboxStore);
+    const { inboxItems, isLoading, pagination } = useStore(
+        (state) => state.inboxStore
+    );
     const {
         areas,
         setAreas,
@@ -399,7 +402,18 @@ const InboxItems: React.FC = () => {
         }
     };
 
-    if (isLoading) {
+    const handleLoadMore = async () => {
+        try {
+            await loadMoreInboxItemsToStore();
+        } catch (error) {
+            console.error('Failed to load more inbox items:', error);
+            showErrorToast(
+                t('inbox.loadMoreError', 'Failed to load more items')
+            );
+        }
+    };
+
+    if (isLoading && inboxItems.length === 0) {
         return <LoadingScreen />;
     }
 
@@ -492,20 +506,81 @@ const InboxItems: React.FC = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="space-y-2">
-                        {inboxItems.map((item) => (
-                            <InboxItemDetail
-                                key={item.id}
-                                item={item}
-                                onProcess={handleProcessItem}
-                                onDelete={handleDeleteItem}
-                                onUpdate={handleUpdateItem}
-                                openTaskModal={handleOpenTaskModal}
-                                openProjectModal={handleOpenProjectModal}
-                                openNoteModal={handleOpenNoteModal}
-                                projects={projects}
-                            />
-                        ))}
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            {inboxItems.map((item) => (
+                                <InboxItemDetail
+                                    key={item.id}
+                                    item={item}
+                                    onProcess={handleProcessItem}
+                                    onDelete={handleDeleteItem}
+                                    onUpdate={handleUpdateItem}
+                                    openTaskModal={handleOpenTaskModal}
+                                    openProjectModal={handleOpenProjectModal}
+                                    openNoteModal={handleOpenNoteModal}
+                                    projects={projects}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Load more button */}
+                        {pagination.hasMore && (
+                            <div className="flex justify-center pt-4">
+                                <button
+                                    onClick={handleLoadMore}
+                                    disabled={isLoading}
+                                    className="inline-flex items-center px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <svg
+                                                className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <circle
+                                                    className="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                ></circle>
+                                                <path
+                                                    className="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                ></path>
+                                            </svg>
+                                            {t('inbox.loading', 'Loading...')}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <InboxIcon className="h-4 w-4 mr-2" />
+                                            {t(
+                                                'inbox.loadMore',
+                                                'Load more inbox items'
+                                            )}
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Pagination info */}
+                        {inboxItems.length > 0 && (
+                            <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2">
+                                {t(
+                                    'inbox.showingItems',
+                                    'Showing {{current}} of {{total}} items',
+                                    {
+                                        current: inboxItems.length,
+                                        total: pagination.total,
+                                    }
+                                )}
+                            </div>
+                        )}
                     </div>
                 )}
 

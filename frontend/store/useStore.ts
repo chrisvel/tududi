@@ -78,12 +78,26 @@ interface InboxStore {
     inboxItems: InboxItem[];
     isLoading: boolean;
     isError: boolean;
+    pagination: {
+        total: number;
+        limit: number;
+        offset: number;
+        hasMore: boolean;
+    };
     setInboxItems: (inboxItems: InboxItem[]) => void;
+    appendInboxItems: (inboxItems: InboxItem[]) => void;
+    setPagination: (pagination: {
+        total: number;
+        limit: number;
+        offset: number;
+        hasMore: boolean;
+    }) => void;
     addInboxItem: (inboxItem: InboxItem) => void;
     updateInboxItem: (inboxItem: InboxItem) => void;
     removeInboxItem: (id: number) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
+    resetPagination: () => void;
 }
 
 interface ModalStore {
@@ -578,15 +592,36 @@ export const useStore = create<StoreState>((set: any) => ({
         inboxItems: [],
         isLoading: false,
         isError: false,
+        pagination: {
+            total: 0,
+            limit: 20,
+            offset: 0,
+            hasMore: false,
+        },
         setInboxItems: (inboxItems) =>
             set((state) => ({
                 inboxStore: { ...state.inboxStore, inboxItems },
+            })),
+        appendInboxItems: (inboxItems) =>
+            set((state) => ({
+                inboxStore: {
+                    ...state.inboxStore,
+                    inboxItems: [...state.inboxStore.inboxItems, ...inboxItems],
+                },
+            })),
+        setPagination: (pagination) =>
+            set((state) => ({
+                inboxStore: { ...state.inboxStore, pagination },
             })),
         addInboxItem: (inboxItem) =>
             set((state) => ({
                 inboxStore: {
                     ...state.inboxStore,
                     inboxItems: [inboxItem, ...state.inboxStore.inboxItems],
+                    pagination: {
+                        ...state.inboxStore.pagination,
+                        total: state.inboxStore.pagination.total + 1,
+                    },
                 },
             })),
         updateInboxItem: (inboxItem) =>
@@ -605,6 +640,13 @@ export const useStore = create<StoreState>((set: any) => ({
                     inboxItems: state.inboxStore.inboxItems.filter(
                         (item) => item.id !== id
                     ),
+                    pagination: {
+                        ...state.inboxStore.pagination,
+                        total: Math.max(
+                            0,
+                            state.inboxStore.pagination.total - 1
+                        ),
+                    },
                 },
             })),
         setLoading: (isLoading) =>
@@ -614,6 +656,18 @@ export const useStore = create<StoreState>((set: any) => ({
         setError: (isError) =>
             set((state) => ({
                 inboxStore: { ...state.inboxStore, isError },
+            })),
+        resetPagination: () =>
+            set((state) => ({
+                inboxStore: {
+                    ...state.inboxStore,
+                    pagination: {
+                        total: 0,
+                        limit: 20,
+                        offset: 0,
+                        hasMore: false,
+                    },
+                },
             })),
     },
     modalStore: {
