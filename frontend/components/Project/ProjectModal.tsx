@@ -10,8 +10,6 @@ import AreaDropdown from '../Shared/AreaDropdown';
 import DatePicker from '../Shared/DatePicker';
 import ProjectStateDropdown from '../Shared/ProjectStateDropdown';
 import { PriorityType } from '../../entities/Task';
-import { ProjectState } from '../../entities/Project';
-import Switch from '../Shared/Switch';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
 import {
@@ -533,12 +531,21 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         )}
                                                     </h3>
                                                     <ProjectStateDropdown
-                                                        value={formData.state || 'idea'}
-                                                        onChange={(state) => setFormData(prev => ({ ...prev, state }))}
+                                                        value={
+                                                            formData.state ||
+                                                            'idea'
+                                                        }
+                                                        onChange={(state) =>
+                                                            setFormData(
+                                                                (prev) => ({
+                                                                    ...prev,
+                                                                    state,
+                                                                })
+                                                            )
+                                                        }
                                                     />
                                                 </div>
                                             )}
-
 
                                             {expandedSections.tags && (
                                                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
@@ -738,11 +745,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             )}
                                         >
                                             <PlayIcon className="h-5 w-5" />
-                                            {formData.state && formData.state !== 'idea' && (
-                                                <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full"></span>
-                                            )}
+                                            {formData.state &&
+                                                formData.state !== 'idea' && (
+                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full"></span>
+                                                )}
                                         </button>
-
 
                                         {/* Tags Toggle */}
                                         <button
