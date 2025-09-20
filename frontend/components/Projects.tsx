@@ -94,9 +94,15 @@ const Projects: React.FC = () => {
         { value: 'all', label: t('projects.filters.all') },
         { value: 'idea', label: t('projects.states.idea', 'Idea') },
         { value: 'planned', label: t('projects.states.planned', 'Planned') },
-        { value: 'in_progress', label: t('projects.states.in_progress', 'In Progress') },
+        {
+            value: 'in_progress',
+            label: t('projects.states.in_progress', 'In Progress'),
+        },
         { value: 'blocked', label: t('projects.states.blocked', 'Blocked') },
-        { value: 'completed', label: t('projects.states.completed', 'Completed') },
+        {
+            value: 'completed',
+            label: t('projects.states.completed', 'Completed'),
+        },
     ];
 
     const areaOptions: FilterOption[] = [

@@ -913,7 +913,13 @@ const TasksToday: React.FC = () => {
                                     <p className="text-sm font-semibold">
                                         {Array.isArray(localProjects)
                                             ? localProjects.filter(
-                                                  (project) => project.state && ['planned', 'in_progress', 'blocked'].includes(project.state)
+                                                  (project) =>
+                                                      project.state &&
+                                                      [
+                                                          'planned',
+                                                          'in_progress',
+                                                          'blocked',
+                                                      ].includes(project.state)
                                               ).length
                                             : 0}
                                     </p>

@@ -15,22 +15,29 @@ interface ProjectStateDropdownProps {
     onChange: (value: ProjectState) => void;
 }
 
-const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({ value, onChange }) => {
+const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({
+    value,
+    onChange,
+}) => {
     const { t } = useTranslation();
 
     const states = [
         {
             value: 'idea' as ProjectState,
             label: t('projects.states.idea', 'Idea'),
-            description: t('projects.states.idea_desc', 'captured but not planned yet'),
-            icon: (
-                <LightBulbIcon className="w-5 h-5 text-yellow-500" />
+            description: t(
+                'projects.states.idea_desc',
+                'captured but not planned yet'
             ),
+            icon: <LightBulbIcon className="w-5 h-5 text-yellow-500" />,
         },
         {
             value: 'planned' as ProjectState,
             label: t('projects.states.planned', 'Planned'),
-            description: t('projects.states.planned_desc', 'scoped and ready to start'),
+            description: t(
+                'projects.states.planned_desc',
+                'scoped and ready to start'
+            ),
             icon: (
                 <ClipboardDocumentListIcon className="w-5 h-5 text-blue-500" />
             ),
@@ -38,26 +45,29 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({ value, onCh
         {
             value: 'in_progress' as ProjectState,
             label: t('projects.states.in_progress', 'In Progress'),
-            description: t('projects.states.in_progress_desc', 'active work happening'),
-            icon: (
-                <PlayIcon className="w-5 h-5 text-green-500" />
+            description: t(
+                'projects.states.in_progress_desc',
+                'active work happening'
             ),
+            icon: <PlayIcon className="w-5 h-5 text-green-500" />,
         },
         {
             value: 'blocked' as ProjectState,
             label: t('projects.states.blocked', 'Blocked'),
-            description: t('projects.states.blocked_desc', 'temporarily paused or stuck'),
-            icon: (
-                <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />
+            description: t(
+                'projects.states.blocked_desc',
+                'temporarily paused or stuck'
             ),
+            icon: <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />,
         },
         {
             value: 'completed' as ProjectState,
             label: t('projects.states.completed', 'Completed'),
-            description: t('projects.states.completed_desc', 'finished and done'),
-            icon: (
-                <CheckCircleIcon className="w-5 h-5 text-gray-500" />
+            description: t(
+                'projects.states.completed_desc',
+                'finished and done'
             ),
+            icon: <CheckCircleIcon className="w-5 h-5 text-gray-500" />,
         },
     ];
 
@@ -71,19 +81,20 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({ value, onCh
         if (!isOpen && dropdownRef.current) {
             setTimeout(() => {
                 // Find the dropdown options container
-                const dropdownOptions = dropdownRef.current?.querySelector('.absolute.z-10');
+                const dropdownOptions =
+                    dropdownRef.current?.querySelector('.absolute.z-10');
                 if (dropdownOptions) {
                     dropdownOptions.scrollIntoView({
                         behavior: 'smooth',
                         block: 'nearest',
-                        inline: 'nearest'
+                        inline: 'nearest',
                     });
                 } else {
                     // Fallback to scrolling the dropdown container itself
                     dropdownRef.current?.scrollIntoView({
                         behavior: 'smooth',
                         block: 'nearest',
-                        inline: 'nearest'
+                        inline: 'nearest',
                     });
                 }
             }, 150); // Increased timeout to ensure dropdown is rendered
@@ -110,22 +121,30 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({ value, onCh
 
             // Ensure dropdown is visible after opening
             setTimeout(() => {
-                const dropdownOptions = dropdownRef.current?.querySelector('.absolute.z-10');
+                const dropdownOptions =
+                    dropdownRef.current?.querySelector('.absolute.z-10');
                 if (dropdownOptions) {
                     // Try to scroll the parent modal container to show the dropdown
-                    const modalScrollContainer = document.querySelector('.absolute.inset-0.overflow-y-auto') ||
-                                               document.querySelector('[style*="overflow-y"]') ||
-                                               document.querySelector('.overflow-y-auto');
+                    const modalScrollContainer =
+                        document.querySelector(
+                            '.absolute.inset-0.overflow-y-auto'
+                        ) ||
+                        document.querySelector('[style*="overflow-y"]') ||
+                        document.querySelector('.overflow-y-auto');
 
                     if (modalScrollContainer) {
                         const rect = dropdownOptions.getBoundingClientRect();
-                        const containerRect = modalScrollContainer.getBoundingClientRect();
+                        const containerRect =
+                            modalScrollContainer.getBoundingClientRect();
 
                         // Check if dropdown is below visible area
                         if (rect.bottom > containerRect.bottom) {
                             modalScrollContainer.scrollTo({
-                                top: modalScrollContainer.scrollTop + (rect.bottom - containerRect.bottom) + 20,
-                                behavior: 'smooth'
+                                top:
+                                    modalScrollContainer.scrollTop +
+                                    (rect.bottom - containerRect.bottom) +
+                                    20,
+                                behavior: 'smooth',
                             });
                         }
                     } else {
@@ -133,7 +152,7 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({ value, onCh
                         dropdownOptions.scrollIntoView({
                             behavior: 'smooth',
                             block: 'nearest',
-                            inline: 'nearest'
+                            inline: 'nearest',
                         });
                     }
                 }
@@ -160,7 +179,11 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({ value, onCh
                 onClick={handleToggle}
             >
                 <span className="flex items-center space-x-2">
-                    {selectedState ? selectedState.icon : <LightBulbIcon className="w-5 h-5 text-gray-400" />}
+                    {selectedState ? (
+                        selectedState.icon
+                    ) : (
+                        <LightBulbIcon className="w-5 h-5 text-gray-400" />
+                    )}
                     <span>
                         {selectedState
                             ? selectedState.label
@@ -181,7 +204,9 @@ const ProjectStateDropdown: React.FC<ProjectStateDropdownProps> = ({ value, onCh
                             <div className="flex items-center space-x-3">
                                 {state.icon}
                                 <div className="text-left">
-                                    <div className="font-medium">{state.label}</div>
+                                    <div className="font-medium">
+                                        {state.label}
+                                    </div>
                                     <div className="text-xs text-gray-500 dark:text-gray-400">
                                         {state.description}
                                     </div>

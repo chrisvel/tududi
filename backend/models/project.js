@@ -72,7 +72,13 @@ module.exports = (sequelize) => {
                 defaultValue: 'created_at:desc',
             },
             state: {
-                type: DataTypes.ENUM('idea', 'planned', 'in_progress', 'blocked', 'completed'),
+                type: DataTypes.ENUM(
+                    'idea',
+                    'planned',
+                    'in_progress',
+                    'blocked',
+                    'completed'
+                ),
                 allowNull: false,
                 defaultValue: 'idea',
             },

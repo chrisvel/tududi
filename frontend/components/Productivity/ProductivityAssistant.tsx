@@ -87,7 +87,8 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
             // 1. Stalled Projects (no tasks/actions)
             const stalledProjects = projects.filter(
                 (project) =>
-                    (project.state === 'planned' || project.state === 'in_progress') &&
+                    (project.state === 'planned' ||
+                        project.state === 'in_progress') &&
                     !activeTasks.some((task) => task.project_id === project.id)
             );
 
@@ -123,7 +124,12 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
                         (task.status === 'not_started' ||
                             task.status === 'in_progress')
                 );
-                return (project.state === 'planned' || project.state === 'in_progress') && hasCompletedTasks && !hasNextAction;
+                return (
+                    (project.state === 'planned' ||
+                        project.state === 'in_progress') &&
+                    hasCompletedTasks &&
+                    !hasNextAction
+                );
             });
 
             if (projectsNeedingNextAction.length > 0) {
@@ -221,7 +227,13 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
 
             // 6. Stuck projects (not updated in a month)
             const stuckProjects = projects.filter((project) => {
-                if (!(project.state === 'planned' || project.state === 'in_progress')) return false;
+                if (
+                    !(
+                        project.state === 'planned' ||
+                        project.state === 'in_progress'
+                    )
+                )
+                    return false;
 
                 // Projects don't have date fields in the interface, so we'll check if they have recent tasks
                 const projectTasks = activeTasks.filter(
