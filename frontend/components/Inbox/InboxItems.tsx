@@ -392,7 +392,7 @@ const InboxItems: React.FC = () => {
 
     const handleCreateProject = async (name: string): Promise<Project> => {
         try {
-            const project = await createProject({ name, active: true });
+            const project = await createProject({ name, state: 'planned' });
             showSuccessToast(t('project.createSuccess'));
             return project;
         } catch (error) {

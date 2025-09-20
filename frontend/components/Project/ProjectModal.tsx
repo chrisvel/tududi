@@ -8,7 +8,9 @@ import TagInput from '../Tag/TagInput';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import AreaDropdown from '../Shared/AreaDropdown';
 import DatePicker from '../Shared/DatePicker';
+import ProjectStateDropdown from '../Shared/ProjectStateDropdown';
 import { PriorityType } from '../../entities/Task';
+import { ProjectState } from '../../entities/Project';
 import Switch from '../Shared/Switch';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +21,7 @@ import {
     CameraIcon,
     CalendarIcon,
     ExclamationTriangleIcon,
-    PowerIcon,
+    PlayIcon,
 } from '@heroicons/react/24/outline';
 
 interface ProjectModalProps {
@@ -45,7 +47,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             name: '',
             description: '',
             area_id: null,
-            active: true,
+            state: 'idea',
             tags: [],
             priority: 'low',
             due_date_at: null,
@@ -76,12 +78,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     // Collapsible sections state
     const [expandedSections, setExpandedSections] = useState({
+        state: false,
         tags: false,
         area: false,
         image: false,
         priority: false,
         dueDate: false,
-        active: false,
     });
 
     const { showSuccessToast, showErrorToast } = useToast();
@@ -139,7 +141,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 name: '',
                 description: '',
                 area_id: null,
-                active: true,
+                state: 'idea',
                 tags: [],
                 priority: 'low',
                 due_date_at: null,
@@ -390,13 +392,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         }, 300);
     };
 
-    const handleToggleActive = () => {
-        setFormData((prev) => ({
-            ...prev,
-            active: !prev.active,
-        }));
-    };
-
     const toggleSection = useCallback(
         (section: keyof typeof expandedSections) => {
             setExpandedSections((prev) => {
@@ -445,7 +440,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     return createPortal(
         <>
-            ,
             <div
                 className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
                     isClosing ? 'opacity-0' : 'opacity-100'
@@ -529,36 +523,22 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             </div>
 
                                             {/* Expandable Sections - Only show when expanded */}
-                                            {/* Active Status Section - First */}
-                                            {expandedSections.active && (
+                                            {/* State Section - First */}
+                                            {expandedSections.state && (
                                                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
                                                     <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                                         {t(
-                                                            'projects.active',
-                                                            'Status'
+                                                            'projects.state',
+                                                            'Project State'
                                                         )}
                                                     </h3>
-                                                    <div className="flex items-center">
-                                                        <Switch
-                                                            isChecked={
-                                                                formData.active
-                                                            }
-                                                            onToggle={
-                                                                handleToggleActive
-                                                            }
-                                                        />
-                                                        <label
-                                                            htmlFor="active"
-                                                            className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                                                        >
-                                                            {t(
-                                                                'projects.active',
-                                                                'Active'
-                                                            )}
-                                                        </label>
-                                                    </div>
+                                                    <ProjectStateDropdown
+                                                        value={formData.state || 'idea'}
+                                                        onChange={(state) => setFormData(prev => ({ ...prev, state }))}
+                                                    />
                                                 </div>
                                             )}
+
 
                                             {expandedSections.tags && (
                                                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
@@ -741,27 +721,28 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                 <div className="flex items-center justify-between">
                                     {/* Left side: Section icons */}
                                     <div className="flex items-center space-x-1">
-                                        {/* Active Status Toggle - First */}
+                                        {/* State Toggle - First */}
                                         <button
                                             type="button"
                                             onClick={() =>
-                                                toggleSection('active')
+                                                toggleSection('state')
                                             }
                                             className={`relative p-2 rounded-full transition-colors ${
-                                                expandedSections.active
+                                                expandedSections.state
                                                     ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
                                                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                                             }`}
                                             title={t(
-                                                'projects.active',
-                                                'Status'
+                                                'projects.state',
+                                                'Project State'
                                             )}
                                         >
-                                            <PowerIcon className="h-5 w-5" />
-                                            {!formData.active && (
-                                                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                                            <PlayIcon className="h-5 w-5" />
+                                            {formData.state && formData.state !== 'idea' && (
+                                                <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full"></span>
                                             )}
                                         </button>
+
 
                                         {/* Tags Toggle */}
                                         <button
