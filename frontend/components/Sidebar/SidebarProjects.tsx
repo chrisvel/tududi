@@ -31,7 +31,7 @@ const SidebarProjects: React.FC<SidebarProjectsProps> = ({
                     )}`}
                     onClick={() =>
                         handleNavClick(
-                            '/projects?active=true',
+                            '/projects',
                             'Projects',
                             <FolderIcon className="h-5 w-5 mr-2" />
                         )

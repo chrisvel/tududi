@@ -2,13 +2,13 @@ import { Project } from '../entities/Project';
 import { handleAuthResponse } from './authUtils';
 
 export const fetchProjects = async (
-    activeFilter = 'all',
+    stateFilter = 'all',
     areaFilter = ''
 ): Promise<Project[]> => {
     let url = `/api/projects`;
     const params = new URLSearchParams();
 
-    if (activeFilter !== 'all') params.append('active', activeFilter);
+    if (stateFilter !== 'all') params.append('state', stateFilter);
     if (areaFilter) params.append('area_id', areaFilter);
     if (params.toString()) url += `?${params.toString()}`;
 
@@ -24,14 +24,14 @@ export const fetchProjects = async (
 };
 
 export const fetchGroupedProjects = async (
-    activeFilter = 'all',
+    stateFilter = 'all',
     areaFilter = ''
 ): Promise<Record<string, Project[]>> => {
     let url = `/api/projects`;
     const params = new URLSearchParams();
 
     params.append('grouped', 'true');
-    if (activeFilter !== 'all') params.append('active', activeFilter);
+    if (stateFilter !== 'all') params.append('state', stateFilter);
     if (areaFilter) params.append('area_id', areaFilter);
     if (params.toString()) url += `?${params.toString()}`;
 

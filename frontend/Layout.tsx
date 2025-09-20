@@ -223,7 +223,7 @@ const Layout: React.FC<LayoutProps> = ({
         try {
             const newProject = await createProject({
                 name,
-                active: true,
+                state: 'planned',
             });
             return newProject;
         } catch (error) {
