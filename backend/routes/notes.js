@@ -160,6 +160,10 @@ router.post('/note', async (req, res) => {
 
         const { title, content, project_id, tags } = req.body;
 
+        if (!title || !title.trim()) {
+            return res.status(400).json({ error: 'Title is required' });
+        }
+
         const noteAttributes = {
             title,
             content,
