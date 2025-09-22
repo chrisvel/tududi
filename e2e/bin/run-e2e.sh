@@ -107,8 +107,8 @@ bash -c '
   if [ "${E2E_MODE:-}" = "ui" ]; then
     npm run test:ui
   elif [ "${E2E_MODE:-}" = "headed" ]; then
-    # Respect E2E_SLOWMO and run only Firefox
-    npx playwright test --headed --project=Firefox
+    # Respect E2E_SLOWMO and run only Firefox sequentially
+    npx playwright test --headed --project=Firefox --workers=1
   else
     npm test
   fi
