@@ -10,37 +10,54 @@ router.get('/inbox', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        // Parse pagination parameters
-        const limit = parseInt(req.query.limit) || 20; // Default to 20 items
-        const offset = parseInt(req.query.offset) || 0;
+        // Check if pagination parameters are provided
+        const hasPagination =
+            req.query.limit !== undefined || req.query.offset !== undefined;
 
-        // Get total count for pagination info
-        const totalCount = await InboxItem.count({
-            where: {
-                user_id: req.session.userId,
-                status: 'added',
-            },
-        });
+        if (hasPagination) {
+            // Parse pagination parameters
+            const limit = parseInt(req.query.limit) || 20; // Default to 20 items
+            const offset = parseInt(req.query.offset) || 0;
 
-        const items = await InboxItem.findAll({
-            where: {
-                user_id: req.session.userId,
-                status: 'added',
-            },
-            order: [['created_at', 'DESC']],
-            limit: limit,
-            offset: offset,
-        });
+            // Get total count for pagination info
+            const totalCount = await InboxItem.count({
+                where: {
+                    user_id: req.session.userId,
+                    status: 'added',
+                },
+            });
 
-        res.json({
-            items: items,
-            pagination: {
-                total: totalCount,
+            const items = await InboxItem.findAll({
+                where: {
+                    user_id: req.session.userId,
+                    status: 'added',
+                },
+                order: [['created_at', 'DESC']],
                 limit: limit,
                 offset: offset,
-                hasMore: offset + items.length < totalCount,
-            },
-        });
+            });
+
+            res.json({
+                items: items,
+                pagination: {
+                    total: totalCount,
+                    limit: limit,
+                    offset: offset,
+                    hasMore: offset + items.length < totalCount,
+                },
+            });
+        } else {
+            // Return simple array for backward compatibility (used by tests)
+            const items = await InboxItem.findAll({
+                where: {
+                    user_id: req.session.userId,
+                    status: 'added',
+                },
+                order: [['created_at', 'DESC']],
+            });
+
+            res.json(items);
+        }
     } catch (error) {
         console.error('Error fetching inbox items:', error);
         res.status(500).json({ error: 'Internal server error' });
