@@ -27,7 +27,7 @@ const logEvent = async ({
     try {
         const finalMetadata = {
             source: 'web',
-            ...metadata,
+            ...metadata
         };
 
         const event = await TaskEvent.create({
