@@ -2,7 +2,7 @@ const express = require('express');
 const { Note, Tag, Project, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const { extractUidFromSlug } = require('../utils/slug-utils');
-const { validateTagName } = require('../utils/validation');
+const { validateTagName } = require('../services/tagsService');
 const router = express.Router();
 
 // Helper function to update note tags

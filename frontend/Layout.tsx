@@ -288,15 +288,15 @@ const Layout: React.FC<LayoutProps> = ({
     const handleSaveTag = async (tagData: Tag) => {
         try {
             let result: Tag;
-            if (tagData.id) {
-                result = await updateTag(tagData.id, tagData);
+            if (tagData.uid) {
+                result = await updateTag(tagData.uid, tagData);
                 // Update existing tag in global store
                 const currentTags = useStore.getState().tagsStore.tags;
                 useStore
                     .getState()
                     .tagsStore.setTags(
                         currentTags.map((tag) =>
-                            tag.id === result.id ? result : tag
+                            tag.uid === result.uid ? result : tag
                         )
                     );
             } else {

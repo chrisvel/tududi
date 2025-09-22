@@ -18,7 +18,7 @@ const {
     logTaskUpdate,
     getTaskTodayMoveCount,
 } = require('../services/taskEventService');
-const { validateTagName } = require('../utils/validation');
+const { validateTagName } = require('../services/tagsService');
 const {
     getSafeTimezone,
     getUpcomingRangeInUTC,

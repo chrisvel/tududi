@@ -5,7 +5,7 @@ import { TagIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 interface TaskTagsProps {
     tags: Tag[];
-    onTagRemove?: (tagId: string | number | undefined) => void;
+    onTagRemove?: (tagUid: string | undefined) => void;
     className?: string;
 }
 
@@ -38,7 +38,7 @@ const TaskTags: React.FC<TaskTagsProps> = ({
         <div className={`flex flex-wrap gap-2 ${className}`}>
             {tags.map((tag, index) => (
                 <div
-                    key={tag.id || index}
+                    key={tag.uid || tag.id || index}
                     className="flex items-center bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1.5 rounded-md dark:bg-gray-700 dark:text-gray-200 cursor-pointer"
                 >
                     <button
@@ -54,7 +54,7 @@ const TaskTags: React.FC<TaskTagsProps> = ({
                     {onTagRemove && (
                         <button
                             type="button"
-                            onClick={() => onTagRemove(tag.id)}
+                            onClick={() => onTagRemove(tag.uid)}
                             className="ml-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-400 focus:outline-none"
                             aria-label={`Remove tag ${tag.name}`}
                         >

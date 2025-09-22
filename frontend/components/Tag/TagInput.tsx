@@ -248,7 +248,7 @@ const TagInput: React.FC<TagInputProps> = ({
                 >
                     {filteredTags.map((tag, index) => (
                         <button
-                            key={tag.id}
+                            key={tag.uid || tag.id}
                             type="button"
                             onClick={() => selectTag(tag.name)}
                             className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 ${

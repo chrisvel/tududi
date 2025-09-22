@@ -29,7 +29,7 @@ describe('Tags Routes', () => {
 
             expect(response.status).toBe(201);
             expect(response.body.name).toBe(tagData.name);
-            expect(response.body.id).toBeDefined();
+            expect(response.body.uid).toBeDefined();
         });
 
         it('should require authentication', async () => {
@@ -61,7 +61,7 @@ describe('Tags Routes', () => {
 
             expect(response.status).toBe(201);
             expect(response.body.name).toBe('project:frontend');
-            expect(response.body.id).toBeDefined();
+            expect(response.body.uid).toBeDefined();
         });
 
         it('should allow hyphen (-) in tag names', async () => {
@@ -73,7 +73,7 @@ describe('Tags Routes', () => {
 
             expect(response.status).toBe(201);
             expect(response.body.name).toBe('project-frontend');
-            expect(response.body.id).toBeDefined();
+            expect(response.body.uid).toBeDefined();
         });
 
         it('should reject tags with invalid characters', async () => {
@@ -108,8 +108,8 @@ describe('Tags Routes', () => {
 
             expect(response.status).toBe(200);
             expect(response.body).toHaveLength(2);
-            expect(response.body.map((t) => t.id)).toContain(tag1.id);
-            expect(response.body.map((t) => t.id)).toContain(tag2.id);
+            expect(response.body.map((t) => t.uid)).toContain(tag1.uid);
+            expect(response.body.map((t) => t.uid)).toContain(tag2.uid);
         });
 
         it('should order tags by name', async () => {
@@ -138,15 +138,15 @@ describe('Tags Routes', () => {
             });
         });
 
-        it('should get tag by id', async () => {
-            const response = await agent.get(`/api/tag?id=${tag.id}`);
+        it('should get tag by uid', async () => {
+            const response = await agent.get(`/api/tag?uid=${tag.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.name).toBe(tag.name);
         });
 
         it('should return 404 for non-existent tag', async () => {
-            const response = await agent.get('/api/tag?id=999999');
+            const response = await agent.get('/api/tag?uid=non-existent-uid');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Tag not found');
@@ -164,14 +164,14 @@ describe('Tags Routes', () => {
                 user_id: otherUser.id,
             });
 
-            const response = await agent.get(`/api/tag?id=${otherTag.id}`);
+            const response = await agent.get(`/api/tag?uid=${otherTag.uid}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Tag not found');
         });
 
         it('should require authentication', async () => {
-            const response = await request(app).get(`/api/tag?id=${tag.id}`);
+            const response = await request(app).get(`/api/tag?uid=${tag.uid}`);
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');
@@ -194,7 +194,7 @@ describe('Tags Routes', () => {
             };
 
             const response = await agent
-                .patch(`/api/tag/${tag.id}`)
+                .patch(`/api/tag/${tag.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -203,7 +203,7 @@ describe('Tags Routes', () => {
 
         it('should return 404 for non-existent tag', async () => {
             const response = await agent
-                .patch('/api/tag/999999')
+                .patch('/api/tag/non-existent-uid')
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -223,7 +223,7 @@ describe('Tags Routes', () => {
             });
 
             const response = await agent
-                .patch(`/api/tag/${otherTag.id}`)
+                .patch(`/api/tag/${otherTag.uid}`)
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -232,7 +232,7 @@ describe('Tags Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app)
-                .patch(`/api/tag/${tag.id}`)
+                .patch(`/api/tag/${tag.uid}`)
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(401);
@@ -251,7 +251,7 @@ describe('Tags Routes', () => {
         });
 
         it('should delete tag', async () => {
-            const response = await agent.delete(`/api/tag/${tag.id}`);
+            const response = await agent.delete(`/api/tag/${tag.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.message).toBe('Tag successfully deleted');
@@ -262,7 +262,7 @@ describe('Tags Routes', () => {
         });
 
         it('should return 404 for non-existent tag', async () => {
-            const response = await agent.delete('/api/tag/999999');
+            const response = await agent.delete('/api/tag/non-existent-uid');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Tag not found');
@@ -280,14 +280,14 @@ describe('Tags Routes', () => {
                 user_id: otherUser.id,
             });
 
-            const response = await agent.delete(`/api/tag/${otherTag.id}`);
+            const response = await agent.delete(`/api/tag/${otherTag.uid}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Tag not found');
         });
 
         it('should require authentication', async () => {
-            const response = await request(app).delete(`/api/tag/${tag.id}`);
+            const response = await request(app).delete(`/api/tag/${tag.uid}`);
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');

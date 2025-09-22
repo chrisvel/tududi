@@ -484,6 +484,7 @@ const TaskDetails: React.FC = () => {
                                                     ) => (
                                                         <React.Fragment
                                                             key={
+                                                                tag.uid ||
                                                                 tag.id ||
                                                                 tag.name
                                                             }
