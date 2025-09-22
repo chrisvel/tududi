@@ -1644,7 +1644,11 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                         >
                                             {filteredTags.map((tag, index) => (
                                                 <button
-                                                    key={tag.id || index}
+                                                    key={
+                                                        tag.uid ||
+                                                        tag.id ||
+                                                        index
+                                                    }
                                                     onClick={() =>
                                                         handleTagSelect(
                                                             tag.name

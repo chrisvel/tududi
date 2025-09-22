@@ -694,7 +694,7 @@ const ProjectDetails: React.FC = () => {
                                 <TagIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
                                 <div className="flex items-center space-x-1">
                                     {project.tags.map((tag, index) => (
-                                        <span key={tag.id || index}>
+                                        <span key={tag.uid || tag.id || index}>
                                             <button
                                                 onClick={() => {
                                                     // Navigate to tag details page

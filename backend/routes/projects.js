@@ -7,7 +7,7 @@ const fs = require('fs');
 const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const { extractUidFromSlug } = require('../utils/slug-utils');
-const { validateTagName } = require('../utils/validation');
+const { validateTagName } = require('../services/tagsService');
 const { uid } = require('../utils/uid');
 const router = express.Router();
 
