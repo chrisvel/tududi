@@ -92,7 +92,7 @@ router.patch('/tag/:identifier', async (req, res) => {
         if (/^\d+$/.test(identifier)) {
             // It's a numeric ID
             whereClause = {
-                id: parseInt(identifier),
+                id: parseInt(identifier, 10),
                 user_id: req.currentUser.id,
             };
         } else {

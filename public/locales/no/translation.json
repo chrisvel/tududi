@@ -538,7 +538,11 @@
     "unprocessedItems": "Du har {{count}} element(er) i innboksen din",
     "processNow": "Behandle nå",
     "deleteConfirmTitle": "Slett element",
-    "deleteConfirmMessage": "Er du sikker på at du vil slette dette elementet fra innboksen din? Denne handlingen kan ikke angres."
+    "deleteConfirmMessage": "Er du sikker på at du vil slette dette elementet fra innboksen din? Denne handlingen kan ikke angres.",
+    "loadMoreError": "Kunne ikke laste flere elementer",
+    "loading": "Laster...",
+    "loadMore": "Last flere innboks-elementer",
+    "showingItems": "Viser {{current}} av {{total}} elementer"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

@@ -633,7 +633,11 @@
     "unprocessedItems": "受信トレイには{{count}}個のアイテムがあります",
     "processNow": "今すぐ処理する",
     "deleteConfirmTitle": "アイテムを削除",
-    "deleteConfirmMessage": "このアイテムを受信トレイから削除してもよろしいですか？この操作は元に戻すことはできません。"
+    "deleteConfirmMessage": "このアイテムを受信トレイから削除してもよろしいですか？この操作は元に戻すことはできません。",
+    "loadMoreError": "アイテムの読み込みに失敗しました",
+    "loading": "読み込み中...",
+    "loadMore": "さらにインボックスアイテムを読み込む",
+    "showingItems": "{{total}}アイテム中{{current}}を表示しています"
   },
   "project": {
     "projectImage": "プロジェクト画像",

@@ -538,7 +538,11 @@
     "unprocessedItems": "Bạn có {{count}} mục trong hộp thư đến",
     "processNow": "Xử lý ngay",
     "deleteConfirmTitle": "Xóa Mục",
-    "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa mục này khỏi hộp thư đến của bạn không? Hành động này không thể hoàn tác."
+    "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa mục này khỏi hộp thư đến của bạn không? Hành động này không thể hoàn tác.",
+    "loadMoreError": "Không thể tải thêm mục",
+    "loading": "Đang tải...",
+    "loadMore": "Tải thêm mục trong hộp thư đến",
+    "showingItems": "Đang hiển thị {{current}} trong tổng số {{total}} mục"
   },
   "dateFormats": {
     "long": "EEEE, d tháng MMMM, yyyy",

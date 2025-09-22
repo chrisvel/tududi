@@ -538,7 +538,11 @@
     "unprocessedItems": "Du har {{count}} element(er) i din indbakke",
     "processNow": "Behandl nu",
     "deleteConfirmTitle": "Slet element",
-    "deleteConfirmMessage": "Er du sikker på, at du vil slette dette element fra din indbakke? Denne handling kan ikke fortrydes."
+    "deleteConfirmMessage": "Er du sikker på, at du vil slette dette element fra din indbakke? Denne handling kan ikke fortrydes.",
+    "loadMoreError": "Kunne ikke indlæse flere elementer",
+    "loading": "Indlæser...",
+    "loadMore": "Indlæs flere indbakkeelementer",
+    "showingItems": "Viser {{current}} af {{total}} elementer"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",

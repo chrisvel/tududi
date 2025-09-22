@@ -538,7 +538,11 @@
     "unprocessedItems": "Du har {{count}} objekt i din inkorg",
     "processNow": "Bearbeta nu",
     "deleteConfirmTitle": "Ta bort objekt",
-    "deleteConfirmMessage": "Är du säker på att du vill ta bort objektet från din inkorg? Åtgärden kan inte ångras."
+    "deleteConfirmMessage": "Är du säker på att du vill ta bort objektet från din inkorg? Åtgärden kan inte ångras.",
+    "loadMoreError": "Misslyckades med att ladda fler objekt",
+    "loading": "Laddar...",
+    "loadMore": "Ladda fler inkorgsobjekt",
+    "showingItems": "Visar {{current}} av {{total}} objekt"
   },
   "dateFormats": {
     "long": "EEEE, MMMM d, yyyy",
