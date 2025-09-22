@@ -1,11 +1,5 @@
 const { TaskEvent } = require('../models');
 
-// Helper function to add default source to metadata
-const addDefaultSource = (metadata) => ({
-    source: 'web',
-    ...metadata,
-});
-
 // Helper function to create value object
 const createValueObject = (fieldName, value) =>
     value ? { [fieldName || 'value']: value } : null;
@@ -31,7 +25,10 @@ const logEvent = async ({
     metadata = {},
 }) => {
     try {
-        const finalMetadata = addDefaultSource(metadata);
+        const finalMetadata = {
+            source: 'web',
+            ...metadata
+        };
 
         const event = await TaskEvent.create({
             task_id: taskId,
