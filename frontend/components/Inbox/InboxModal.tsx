@@ -979,7 +979,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                 projectName.toLowerCase()
                         );
                         if (matchingProject) {
-                            projectId = matchingProject.id;
+                            projectId = matchingProject.uid;
                         }
                     }
 
@@ -988,7 +988,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                         status: 'not_started',
                         priority: 'low',
                         tags: taskTags,
-                        project_id: projectId,
+                        project_uid: projectId,
                         completed_at: null,
                     };
 
@@ -1060,7 +1060,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                 projectName.toLowerCase()
                         );
                         if (matchingProject) {
-                            projectId = matchingProject.id;
+                            projectId = matchingProject.uid;
                         }
                     }
 
@@ -1068,7 +1068,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                         title: cleanedText || inputText.trim(),
                         content: inputText.trim(),
                         tags: taskTags,
-                        project_id: projectId,
+                        project_uid: projectId,
                     };
 
                     try {
