@@ -176,13 +176,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             handleClose();
         };
 
-        if (isOpen) {
+        if (isOpen && !modalJustOpened) {
             document.addEventListener('mousedown', handleClickOutside);
         }
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isOpen]);
+    }, [isOpen, modalJustOpened]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {

@@ -39,6 +39,7 @@ import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
 import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
 import LoadingSpinner from '../Shared/LoadingSpinner';
+import { usePersistedModal } from '../../hooks/usePersistedModal';
 
 const ProjectDetails: React.FC = () => {
     const { uidSlug } = useParams<{ uidSlug: string }>();
@@ -64,7 +65,9 @@ const ProjectDetails: React.FC = () => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    // Use persisted modal state that survives component remounts
+    const { isOpen: isModalOpen, openModal, closeModal } = usePersistedModal(project?.id);
+
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [showCompleted, setShowCompleted] = useState(false);
     const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
@@ -377,7 +380,7 @@ const ProjectDetails: React.FC = () => {
     };
 
     const handleEditProject = () => {
-        setIsModalOpen(true);
+        openModal();
     };
 
     const handleSaveProject = async (updatedProject: Project) => {
@@ -391,7 +394,7 @@ const ProjectDetails: React.FC = () => {
                 updatedProject
             );
             setProject(savedProject);
-            setIsModalOpen(false);
+            closeModal();
         } catch {
             // Error saving project - silently handled
         }
@@ -739,6 +742,7 @@ const ProjectDetails: React.FC = () => {
                     {/* Edit/Delete Buttons - Bottom Right */}
                     <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button
+                            type="button"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -749,6 +753,7 @@ const ProjectDetails: React.FC = () => {
                             <PencilSquareIcon className="h-5 w-5" />
                         </button>
                         <button
+                            type="button"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -1059,7 +1064,7 @@ const ProjectDetails: React.FC = () => {
 
                 <ProjectModal
                     isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
+                    onClose={closeModal}
                     onSave={handleSaveProject}
                     project={project}
                     areas={areas}
