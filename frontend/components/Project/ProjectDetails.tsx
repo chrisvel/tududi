@@ -66,7 +66,11 @@ const ProjectDetails: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     // Use persisted modal state that survives component remounts
-    const { isOpen: isModalOpen, openModal, closeModal } = usePersistedModal(project?.id);
+    const {
+        isOpen: isModalOpen,
+        openModal,
+        closeModal,
+    } = usePersistedModal(project?.id);
     const editButtonRef = useRef<HTMLButtonElement>(null);
 
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);

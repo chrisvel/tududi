@@ -22,10 +22,12 @@ export const usePersistedModal = (projectId?: number) => {
                 const now = Date.now();
 
                 // Check if state is recent and for the same project
-                if (state.timestamp &&
-                    (now - state.timestamp) < MODAL_TIMEOUT &&
+                if (
+                    state.timestamp &&
+                    now - state.timestamp < MODAL_TIMEOUT &&
                     state.projectId === projectId &&
-                    state.isOpen) {
+                    state.isOpen
+                ) {
                     setIsOpen(true);
                 }
             } catch (error) {
@@ -47,7 +49,7 @@ export const usePersistedModal = (projectId?: number) => {
         const state: PersistedModalState = {
             isOpen: true,
             projectId,
-            timestamp: Date.now()
+            timestamp: Date.now(),
         };
 
         sessionStorage.setItem(MODAL_STATE_KEY, JSON.stringify(state));
@@ -71,6 +73,6 @@ export const usePersistedModal = (projectId?: number) => {
     return {
         isOpen,
         openModal,
-        closeModal
+        closeModal,
     };
 };
