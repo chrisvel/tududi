@@ -418,11 +418,11 @@ const ProjectDetails: React.FC = () => {
                 updatedProject
             );
             // Merge the saved project with existing project to preserve area data
-            setProject(prevProject => ({
+            setProject((prevProject) => ({
                 ...savedProject,
                 // Preserve area info if it's missing from the response
                 area: savedProject.area || prevProject?.area,
-                Area: (savedProject as any).Area || (prevProject as any)?.Area
+                Area: (savedProject as any).Area || (prevProject as any)?.Area,
             }));
             closeModal();
         } catch {
@@ -672,17 +672,29 @@ const ProjectDetails: React.FC = () => {
     const getStateIcon = (state: string) => {
         switch (state) {
             case 'idea':
-                return <LightBulbIcon className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />;
+                return (
+                    <LightBulbIcon className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
+                );
             case 'planned':
-                return <ClipboardDocumentListIcon className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />;
+                return (
+                    <ClipboardDocumentListIcon className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />
+                );
             case 'in_progress':
-                return <PlayIcon className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />;
+                return (
+                    <PlayIcon className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
+                );
             case 'blocked':
-                return <ExclamationTriangleIcon className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />;
+                return (
+                    <ExclamationTriangleIcon className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />
+                );
             case 'completed':
-                return <CheckCircleIcon className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />;
+                return (
+                    <CheckCircleIcon className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />
+                );
             default:
-                return <PlayIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />;
+                return (
+                    <PlayIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
+                );
         }
     };
 
@@ -747,7 +759,9 @@ const ProjectDetails: React.FC = () => {
                                 <div className="flex items-center space-x-1">
                                     <span>
                                         <span className="text-xs text-white/90 font-medium">
-                                            {t(`projects.states.${project.state}`)}
+                                            {t(
+                                                `projects.states.${project.state}`
+                                            )}
                                         </span>
                                     </span>
                                 </div>
@@ -808,29 +822,48 @@ const ProjectDetails: React.FC = () => {
                                 <div className="flex items-center space-x-1">
                                     <span>
                                         <button
-                                    onClick={() => {
-                                        // Use the correct area property (Area or area)
-                                        const projectArea = project.area || (project as any).Area;
+                                            onClick={() => {
+                                                // Use the correct area property (Area or area)
+                                                const projectArea =
+                                                    project.area ||
+                                                    (project as any).Area;
 
-                                        // Find the area in the areas store to get the uid
-                                        const area = areas.find(a => a.id === projectArea.id);
-                                        const areaUid = area?.uid;
+                                                // Find the area in the areas store to get the uid
+                                                const area = areas.find(
+                                                    (a) =>
+                                                        a.id === projectArea.id
+                                                );
+                                                const areaUid = area?.uid;
 
-                                        if (!areaUid) {
-                                            console.warn('Area uid not found for area id:', projectArea.id);
-                                            return;
-                                        }
+                                                if (!areaUid) {
+                                                    console.warn(
+                                                        'Area uid not found for area id:',
+                                                        projectArea.id
+                                                    );
+                                                    return;
+                                                }
 
-                                        // Navigate to projects filtered by this area (same as Areas page)
-                                        const areaSlug = projectArea.name
-                                            .toLowerCase()
-                                            .replace(/[^a-z0-9]+/g, '-')
-                                            .replace(/^-|-$/g, '');
-                                        navigate(`/projects?area=${areaUid}-${areaSlug}`);
-                                    }}
-                                    className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
+                                                // Navigate to projects filtered by this area (same as Areas page)
+                                                const areaSlug =
+                                                    projectArea.name
+                                                        .toLowerCase()
+                                                        .replace(
+                                                            /[^a-z0-9]+/g,
+                                                            '-'
+                                                        )
+                                                        .replace(/^-|-$/g, '');
+                                                navigate(
+                                                    `/projects?area=${areaUid}-${areaSlug}`
+                                                );
+                                            }}
+                                            className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
                                         >
-                                            {(project.area || (project as any).Area)?.name}
+                                            {
+                                                (
+                                                    project.area ||
+                                                    (project as any).Area
+                                                )?.name
+                                            }
                                         </button>
                                     </span>
                                 </div>
