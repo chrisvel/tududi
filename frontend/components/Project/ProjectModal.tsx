@@ -96,22 +96,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         }
     }, [isOpen]);
 
-    // Load tags only when tags section is expanded to avoid triggering app refresh
-    useEffect(() => {
-        if (
-            isOpen &&
-            expandedSections.tags &&
-            !tagsStore.hasLoaded &&
-            !tagsStore.isLoading
-        ) {
+    // Load tags only when user actually interacts with tag input to prevent refresh
+    const handleTagInputFocus = () => {
+        if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
             tagsStore.loadTags();
         }
-    }, [
-        isOpen,
-        expandedSections.tags,
-        tagsStore.hasLoaded,
-        tagsStore.isLoading,
-    ]);
+    };
 
     // Manage body scroll when modal is open
     useEffect(() => {
@@ -570,6 +560,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         availableTags={
                                                             availableTags
                                                         }
+                                                        onFocus={handleTagInputFocus}
                                                     />
                                                 </div>
                                             )}
