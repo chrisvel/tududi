@@ -747,7 +747,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             <PlayIcon className="h-5 w-5" />
                                             {formData.state &&
                                                 formData.state !== 'idea' && (
-                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full"></span>
+                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                 )}
                                         </button>
 
