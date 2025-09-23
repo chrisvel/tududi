@@ -67,6 +67,7 @@ const ProjectDetails: React.FC = () => {
     const [error, setError] = useState(false);
     // Use persisted modal state that survives component remounts
     const { isOpen: isModalOpen, openModal, closeModal } = usePersistedModal(project?.id);
+    const editButtonRef = useRef<HTMLButtonElement>(null);
 
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [showCompleted, setShowCompleted] = useState(false);
@@ -379,9 +380,22 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
-    const handleEditProject = () => {
-        openModal();
-    };
+    // Setup native event listener for edit button to avoid React event system conflicts
+    useEffect(() => {
+        const button = editButtonRef.current;
+        if (button) {
+            const handleClick = (e: Event) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openModal();
+            };
+
+            button.addEventListener('click', handleClick);
+            return () => {
+                button.removeEventListener('click', handleClick);
+            };
+        }
+    }, [openModal]);
 
     const handleSaveProject = async (updatedProject: Project) => {
         if (!updatedProject.id) {
@@ -742,12 +756,8 @@ const ProjectDetails: React.FC = () => {
                     {/* Edit/Delete Buttons - Bottom Right */}
                     <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button
+                            ref={editButtonRef}
                             type="button"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleEditProject();
-                            }}
                             className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
                         >
                             <PencilSquareIcon className="h-5 w-5" />

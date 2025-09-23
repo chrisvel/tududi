@@ -87,24 +87,21 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const { showSuccessToast, showErrorToast } = useToast();
     const { t } = useTranslation();
 
-    // Load tags when modal opens and auto-focus on the name input
+    // Auto-focus on the name input when modal opens
     useEffect(() => {
         if (isOpen) {
-            // Load tags with a delay to avoid conflicts with modal state
-            if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
-                // Delay tag loading to avoid immediate state conflicts
-                setTimeout(() => {
-                    if (isOpen) {
-                        // Only load if modal is still open
-                        tagsStore.loadTags();
-                    }
-                }, 300);
-            }
             setTimeout(() => {
                 nameInputRef.current?.focus();
             }, 200);
         }
-    }, [isOpen, tagsStore]);
+    }, [isOpen]);
+
+    // Load tags only when tags section is expanded to avoid triggering app refresh
+    useEffect(() => {
+        if (isOpen && expandedSections.tags && !tagsStore.hasLoaded && !tagsStore.isLoading) {
+            tagsStore.loadTags();
+        }
+    }, [isOpen, expandedSections.tags, tagsStore.hasLoaded, tagsStore.isLoading]);
 
     // Manage body scroll when modal is open
     useEffect(() => {
