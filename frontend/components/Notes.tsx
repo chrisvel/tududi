@@ -51,11 +51,7 @@ const Notes: React.FC = () => {
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
         try {
-            await deleteNoteWithStoreUpdate(
-                noteToDelete.id!,
-                showSuccessToast,
-                t
-            );
+            await deleteNoteWithStoreUpdate(noteToDelete, showSuccessToast, t);
             setIsConfirmDialogOpen(false);
             setNoteToDelete(null);
         } catch (err) {
@@ -70,10 +66,10 @@ const Notes: React.FC = () => {
 
     const handleSaveNote = async (noteData: Note) => {
         try {
-            if (noteData.id) {
-                const savedNote = await updateNote(noteData.id, noteData);
+            if (noteData.uid) {
+                const savedNote = await updateNote(noteData.uid, noteData);
                 const updatedNotes = notes.map((note) =>
-                    note.id === noteData.id ? savedNote : note
+                    note.uid === noteData.uid ? savedNote : note
                 );
                 setNotes(updatedNotes);
             } else {
@@ -221,7 +217,7 @@ const Notes: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {sortedNotes.map((note) => (
                             <NoteCard
-                                key={note.id}
+                                key={note.uid}
                                 note={note}
                                 onEdit={handleEditNote}
                                 onDelete={(note) => {
@@ -243,10 +239,10 @@ const Notes: React.FC = () => {
                             setIsNoteModalOpen(false);
                         }}
                         onSave={handleSaveNote}
-                        onDelete={async (noteId) => {
+                        onDelete={async (noteUid) => {
                             try {
                                 await deleteNoteWithStoreUpdate(
-                                    noteId,
+                                    noteUid,
                                     showSuccessToast,
                                     t
                                 );

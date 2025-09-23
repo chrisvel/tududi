@@ -284,7 +284,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                         project.name.toLowerCase() === projectName.toLowerCase()
                 );
                 if (matchingProject) {
-                    projectId = matchingProject.id;
+                    projectId = matchingProject.uid;
                 }
             }
 
@@ -293,7 +293,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 status: 'not_started',
                 priority: 'low',
                 tags: taskTags,
-                project_id: projectId,
+                project_uid: projectId,
                 completed_at: null,
             };
 
@@ -419,7 +419,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             title: finalTitle,
             content: finalContent,
             tags: tagObjects,
-            project_id: projectId,
+            project_uid: projectId,
         };
 
         if (item.id !== undefined) {

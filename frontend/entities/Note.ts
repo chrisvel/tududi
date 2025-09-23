@@ -7,7 +7,8 @@ export interface Note {
     content: string;
     created_at?: string;
     updated_at?: string;
-    project_id?: number; // Foreign key for project
+    project_id?: number; // Foreign key for project (deprecated, use project_uid)
+    project_uid?: string; // Foreign key for project by uid
     tags?: Tag[];
     Tags?: Tag[]; // Sequelize association naming (capitalized)
     project?: {

@@ -39,7 +39,7 @@ const TagDetails: React.FC = () => {
 
     // State for ProjectItem components
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
-    const [hoveredNoteId, setHoveredNoteId] = useState<number | null>(null);
+    const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
     const [, setProjectToDelete] = useState<Project | null>(null);
     const [, setIsConfirmDialogOpen] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -260,10 +260,10 @@ const TagDetails: React.FC = () => {
                         <ul className="space-y-1">
                             {notes.map((note) => (
                                 <li
-                                    key={note.id}
+                                    key={note.uid}
                                     className="bg-white dark:bg-gray-900 shadow rounded-lg px-4 py-3 flex justify-between items-center"
                                     onMouseEnter={() =>
-                                        setHoveredNoteId(note.id || null)
+                                        setHoveredNoteId(note.uid || null)
                                     }
                                     onMouseLeave={() => setHoveredNoteId(null)}
                                 >
@@ -282,7 +282,9 @@ const TagDetails: React.FC = () => {
                                                                   /^-|-$/g,
                                                                   ''
                                                               )}`
-                                                        : `/note/${note.id}`
+                                                        : note.uid
+                                                          ? `/note/${note.uid}`
+                                                          : '#'
                                                 }
                                                 className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
                                             >
@@ -324,7 +326,7 @@ const TagDetails: React.FC = () => {
                                             onClick={
                                                 () => {} // Edit functionality not implemented yet
                                             }
-                                            className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
+                                            className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredNoteId === note.uid ? 'opacity-100' : 'opacity-0'}`}
                                             aria-label={`Edit ${note.title}`}
                                             title={`Edit ${note.title}`}
                                         >
@@ -334,7 +336,7 @@ const TagDetails: React.FC = () => {
                                             onClick={
                                                 () => {} // Delete functionality not implemented yet
                                             }
-                                            className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredNoteId === note.id ? 'opacity-100' : 'opacity-0'}`}
+                                            className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredNoteId === note.uid ? 'opacity-100' : 'opacity-0'}`}
                                             aria-label={`Delete ${note.title}`}
                                             title={`Delete ${note.title}`}
                                         >

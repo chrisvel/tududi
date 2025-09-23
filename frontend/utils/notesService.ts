@@ -28,22 +28,39 @@ export const createNote = async (noteData: Note): Promise<Note> => {
 };
 
 export const updateNote = async (
-    noteId: number,
+    noteUid: string,
     noteData: Note
 ): Promise<Note> => {
-    const response = await fetch(`/api/note/${noteId}`, {
+    // Transform project_id to project_uid if needed
+    const requestData = { ...noteData };
+    if (noteData.project && noteData.project.uid) {
+        requestData.project_uid = noteData.project.uid;
+    } else if (noteData.project_uid) {
+        // project_uid is already set, use it as-is
+    } else if (noteData.project_id && !noteData.project_uid) {
+        // Legacy: if only project_id is provided, we can't convert it to uid here
+        // This should not happen with the new implementation, but keeping for safety
+        console.warn(
+            'Note update with project_id but no project_uid - this may fail'
+        );
+    }
+
+    // Use the provided noteUid
+    const noteIdentifier = noteUid;
+
+    const response = await fetch(`/api/note/${noteIdentifier}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: getPostHeaders(),
-        body: JSON.stringify(noteData),
+        body: JSON.stringify(requestData),
     });
 
     await handleAuthResponse(response, 'Failed to update note.');
     return await response.json();
 };
 
-export const deleteNote = async (noteId: number): Promise<void> => {
-    const response = await fetch(`/api/note/${noteId}`, {
+export const deleteNote = async (noteUid: string): Promise<void> => {
+    const response = await fetch(`/api/note/${noteUid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: getDefaultHeaders(),

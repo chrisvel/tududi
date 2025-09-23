@@ -493,7 +493,7 @@ const ProjectDetails: React.FC = () => {
     const handleEditNote = async (note: Note) => {
         try {
             // Fetch the complete note data including tags
-            const response = await fetch(`/api/note/${note.id}`, {
+            const response = await fetch(`/api/note/${note.uid}`, {
                 credentials: 'include',
                 headers: { Accept: 'application/json' },
             });
@@ -544,7 +544,7 @@ const ProjectDetails: React.FC = () => {
                 setNotes(notes.filter((n) => n.id !== savedNote.id));
             } else if (noteData.id) {
                 setNotes(
-                    notes.map((n) => (n.id === savedNote.id ? savedNote : n))
+                    notes.map((n) => (n.uid === savedNote.uid ? savedNote : n))
                 );
             } else {
                 setNotes([savedNote, ...notes]);
@@ -1010,7 +1010,7 @@ const ProjectDetails: React.FC = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {notes.map((note) => (
                                     <NoteCard
-                                        key={note.id}
+                                        key={note.uid}
                                         note={note}
                                         onEdit={handleEditNote}
                                         onDelete={(note) => {
@@ -1043,8 +1043,9 @@ const ProjectDetails: React.FC = () => {
                                             project: {
                                                 id: project.id,
                                                 name: project.name,
+                                                uid: project.uid,
                                             },
-                                            project_id: project.id,
+                                            project_uid: project.uid,
                                         });
                                         setIsNoteModalOpen(true);
                                     }}

@@ -149,15 +149,15 @@ const Layout: React.FC<LayoutProps> = ({
     const handleSaveNote = async (noteData: Note) => {
         try {
             let result: Note;
-            if (noteData.id) {
-                result = await updateNote(noteData.id, noteData);
+            if (noteData.uid) {
+                result = await updateNote(noteData.uid, noteData);
                 // Update existing note in global store
                 const currentNotes = useStore.getState().notesStore.notes;
                 useStore
                     .getState()
                     .notesStore.setNotes(
                         currentNotes.map((note) =>
-                            note.id === result.id ? result : note
+                            note.uid === result.uid ? result : note
                         )
                     );
             } else {

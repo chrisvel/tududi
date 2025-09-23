@@ -10,8 +10,7 @@ import MarkdownRenderer from './MarkdownRenderer';
 
 interface NoteCardProps {
     note: {
-        id?: string | number;
-        uid?: string;
+        uid: string;
         title: string;
         content?: string;
         tags?: { name: string; uid?: string }[];
@@ -62,14 +61,10 @@ const NoteCard: React.FC<NoteCardProps> = ({
     return (
         <div className="relative group">
             <Link
-                to={
-                    note.uid
-                        ? `/note/${note.uid}-${note.title
-                              .toLowerCase()
-                              .replace(/[^a-z0-9]+/g, '-')
-                              .replace(/^-|-$/g, '')}`
-                        : `/note/${note.id}`
-                }
+                to={`/note/${note.uid}-${note.title
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-|-$/g, '')}`}
                 className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col hover:opacity-80 transition-opacity duration-300 ease-in-out cursor-pointer"
                 style={{
                     minHeight: '280px',
@@ -211,7 +206,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                         className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none transition-opacity duration-300 p-1"
                         aria-label={t('notes.toggleDropdownMenu')}
                         type="button"
-                        data-testid={`note-dropdown-${note.id}`}
+                        data-testid={`note-dropdown-${note.uid}`}
                     >
                         <EllipsisVerticalIcon className="h-4 w-4" />
                     </button>
@@ -227,7 +222,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                         setDropdownOpen(false);
                                     }}
                                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
-                                    data-testid={`note-edit-${note.id}`}
+                                    data-testid={`note-edit-${note.uid}`}
                                 >
                                     {t('notes.edit', 'Edit')}
                                 </button>
@@ -241,7 +236,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                         setDropdownOpen(false);
                                     }}
                                     className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
-                                    data-testid={`note-delete-${note.id}`}
+                                    data-testid={`note-delete-${note.uid}`}
                                 >
                                     {t('notes.delete', 'Delete')}
                                 </button>
