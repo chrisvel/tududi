@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { InboxItem } from '../../entities/InboxItem';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import {
     FolderIcon,
     ClipboardDocumentListIcon,
     TagIcon,
+    EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
@@ -44,6 +45,52 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const dropdownId = useRef(
+        `dropdown-${Math.random().toString(36).substr(2, 9)}`
+    ).current;
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (isDropdownOpen && buttonRef.current) {
+                const target = event.target as Node;
+                const isOutsideButton = !buttonRef.current.contains(target);
+                const currentDropdown = document.querySelector(
+                    `[data-dropdown-id="${dropdownId}"]`
+                );
+                const isOutsideDropdown = !currentDropdown?.contains(target);
+
+                if (isOutsideButton && isOutsideDropdown) {
+                    setIsDropdownOpen(false);
+                }
+            }
+        };
+
+        // Listen for custom event to close this dropdown when another opens
+        const handleCloseOtherDropdowns = (event: CustomEvent) => {
+            if (event.detail.dropdownId !== dropdownId && isDropdownOpen) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        if (isDropdownOpen) {
+            document.addEventListener('click', handleClickOutside);
+            document.addEventListener(
+                'closeOtherDropdowns',
+                handleCloseOtherDropdowns as EventListener
+            );
+        }
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+            document.removeEventListener(
+                'closeOtherDropdowns',
+                handleCloseOtherDropdowns as EventListener
+            );
+        };
+    }, [isDropdownOpen, dropdownId]);
 
     // Helper function to parse hashtags from text (consecutive groups anywhere)
     const parseHashtags = (text: string): string[] => {
@@ -399,8 +446,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-2 gap-2">
-                <div className="flex-1">
+            <div className="flex items-center px-4 py-2 gap-2">
+                <div className="flex-1 w-4/5">
                     <button
                         onClick={() => {
                             if (onUpdate && item.id !== undefined) {
@@ -511,7 +558,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     )}
                 </div>
 
-                <div className="flex items-center justify-start space-x-1 shrink-0">
+                {/* Desktop view (md and larger) */}
+                <div className="hidden md:flex items-center justify-end w-1/5 space-x-1">
                     {loading && <div className="spinner" />}
 
                     {/* Edit Button */}
@@ -562,6 +610,123 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     >
                         <TrashIcon className="h-4 w-4" />
                     </button>
+                </div>
+
+                {/* Mobile 3-dot dropdown menu */}
+                <div className="flex md:hidden items-center justify-end w-1/5 relative">
+                    {loading && <div className="spinner mr-2" />}
+                    <button
+                        ref={buttonRef}
+                        type="button"
+                        data-dropdown-button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            const newOpenState = !isDropdownOpen;
+
+                            // Close other dropdowns when opening this one
+                            if (newOpenState) {
+                                document.dispatchEvent(
+                                    new CustomEvent('closeOtherDropdowns', {
+                                        detail: { dropdownId },
+                                    })
+                                );
+                            }
+
+                            setIsDropdownOpen(newOpenState);
+                        }}
+                        className="flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                        <EllipsisVerticalIcon className="h-5 w-5" />
+                    </button>
+
+                    {/* Dropdown Menu - Positioned Relatively */}
+                    {isDropdownOpen && (
+                        <div
+                            data-dropdown-id={dropdownId}
+                            className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] transform-gpu"
+                            style={{
+                                // Prevent dropdown from being cut off at the bottom of viewport
+                                transform:
+                                    buttonRef.current &&
+                                    buttonRef.current.getBoundingClientRect()
+                                        .bottom +
+                                        240 >
+                                        window.innerHeight
+                                        ? 'translateY(-100%) translateY(-8px)'
+                                        : 'none',
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="py-1">
+                                {/* Edit Button */}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (onUpdate && item.id !== undefined) {
+                                            onUpdate(item.id);
+                                        }
+                                        setIsDropdownOpen(false);
+                                    }}
+                                    className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
+                                    {t('common.edit', 'Edit')}
+                                </button>
+
+                                {/* Convert to Task Button */}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleConvertToTask();
+                                        setIsDropdownOpen(false);
+                                    }}
+                                    className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
+                                    {t('inbox.createTask', 'Create Task')}
+                                </button>
+
+                                {/* Convert to Project Button */}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleConvertToProject();
+                                        setIsDropdownOpen(false);
+                                    }}
+                                    className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
+                                    {t('inbox.createProject', 'Create Project')}
+                                </button>
+
+                                {/* Convert to Note Button */}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleConvertToNote();
+                                        setIsDropdownOpen(false);
+                                    }}
+                                    className="w-full px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
+                                    {t('inbox.createNote', 'Create Note')}
+                                </button>
+
+                                {/* Delete Button */}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete();
+                                        setIsDropdownOpen(false);
+                                    }}
+                                    className="w-full px-4 py-2 text-sm text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                >
+                                    {t('common.delete', 'Delete')}
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
             {showConfirmDialog && (
