@@ -12,6 +12,7 @@ export interface Project {
     pin_to_sidebar?: boolean;
     area?: Area;
     area_id?: number | null;
+    area_uid?: string | null;
     tags?: Tag[];
     priority?: PriorityType;
     tasks?: Task[];

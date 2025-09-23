@@ -123,8 +123,8 @@ const AreaDropdown: React.FC<AreaDropdownProps> = ({
                         {/* Area options */}
                         {areas.map((area) => (
                             <button
-                                key={area.id}
-                                onClick={() => handleSelect(area.id!)}
+                                key={area.uid}
+                                onClick={() => handleSelect(null)} // Temporarily disabled
                                 className="flex items-center px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 w-full last:rounded-b-md"
                             >
                                 <span className="flex items-center space-x-2">
