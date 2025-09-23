@@ -560,7 +560,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         availableTags={
                                                             availableTags
                                                         }
-                                                        onFocus={handleTagInputFocus}
+                                                        onFocus={
+                                                            handleTagInputFocus
+                                                        }
                                                     />
                                                 </div>
                                             )}
