@@ -1,7 +1,7 @@
 const express = require('express');
 const { Note, Tag, Project, sequelize } = require('../models');
 const { Op } = require('sequelize');
-const { extractUidFromSlug } = require('../utils/slug-utils');
+const { extractUidFromSlug, isValidUid } = require('../utils/slug-utils');
 const { validateTagName } = require('../services/tagsService');
 const router = express.Router();
 const _ = require('lodash');
@@ -93,7 +93,7 @@ router.get('/notes', async (req, res) => {
     }
 });
 
-// GET /api/note/:uidSlug (supports both numeric ID and uid-slug)
+// GET /api/note/:uidSlug
 router.get('/note/:uidSlug', async (req, res) => {
     try {
         const uid = extractUidFromSlug(req.params.uidSlug);
@@ -202,6 +202,9 @@ router.post('/note', async (req, res) => {
 // PATCH /api/note/:uid
 router.patch('/note/:uid', async (req, res) => {
     try {
+        if (!isValidUid(req.params.uid))
+            return res.status(400).json({ error: 'Invalid UID' });
+
         const note = await Note.findOne({
             where: { uid: req.params.uid, user_id: req.session.userId },
         });
@@ -278,6 +281,9 @@ router.patch('/note/:uid', async (req, res) => {
 // DELETE /api/note/:uid
 router.delete('/note/:uid', async (req, res) => {
     try {
+        if (!isValidUid(req.params.uid))
+            return res.status(400).json({ error: 'Invalid UID' });
+
         const note = await Note.findOne({
             where: { uid: req.params.uid, user_id: req.session.userId },
         });
