@@ -1,0 +1,7 @@
+# Chart.yaml
+apiVersion: v2
+name: tududi
+description: A Helm chart for Tududi - Self-hosted task management tool
+type: application
+version: 0.1.0
+appVersion: "v0.65"
