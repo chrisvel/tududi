@@ -52,15 +52,16 @@ describe('Inbox Routes - No Tags Scenario', () => {
             expect(response.status).toBe(200);
             expect(Array.isArray(response.body)).toBe(true);
             expect(response.body.length).toBe(2);
-            expect(response.body.map((item) => item.id)).toContain(
-                inboxItem1.id
+            expect(response.body.map((item) => item.uid)).toContain(
+                inboxItem1.uid
             );
-            expect(response.body.map((item) => item.id)).toContain(
-                inboxItem2.id
+            expect(response.body.map((item) => item.uid)).toContain(
+                inboxItem2.uid
             );
             expect(response.body[0].content).toBeDefined();
             expect(response.body[0].status).toBe('added');
-            expect(response.body[0].user_id).toBe(user.id);
+            expect(response.body[0].uid).toBeDefined();
+            expect(typeof response.body[0].uid).toBe('string');
         });
 
         it('should handle mixed inbox items when no tags exist', async () => {
@@ -90,7 +91,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
 
             expect(response.status).toBe(200);
             expect(response.body.length).toBe(1); // Only 'added' items should be returned
-            expect(response.body[0].id).toBe(addedItem.id);
+            expect(response.body[0].uid).toBe(addedItem.uid);
             expect(response.body[0].status).toBe('added');
         });
     });
@@ -139,7 +140,8 @@ describe('Inbox Routes - No Tags Scenario', () => {
             expect(response.body.content).toBe(inboxData.content);
             expect(response.body.source).toBe(inboxData.source);
             expect(response.body.status).toBe('added');
-            expect(response.body.user_id).toBe(user.id);
+            expect(response.body.uid).toBeDefined();
+            expect(typeof response.body.uid).toBe('string');
         });
 
         it('should handle multiple inbox items creation when no tags exist', async () => {
@@ -164,7 +166,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
         });
     });
 
-    describe('PATCH /api/inbox/:id - No Tags Scenario', () => {
+    describe('PATCH /api/inbox/:uid - No Tags Scenario', () => {
         let inboxItem;
 
         beforeEach(async () => {
@@ -183,7 +185,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
             };
 
             const response = await agent
-                .patch(`/api/inbox/${inboxItem.id}`)
+                .patch(`/api/inbox/${inboxItem.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -192,7 +194,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
         });
     });
 
-    describe('PATCH /api/inbox/:id/process - No Tags Scenario', () => {
+    describe('PATCH /api/inbox/:uid/process - No Tags Scenario', () => {
         let inboxItem;
 
         beforeEach(async () => {
@@ -206,7 +208,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
 
         it('should process inbox items when no tags exist', async () => {
             const response = await agent.patch(
-                `/api/inbox/${inboxItem.id}/process`
+                `/api/inbox/${inboxItem.uid}/process`
             );
 
             expect(response.status).toBe(200);
@@ -214,7 +216,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
         });
     });
 
-    describe('DELETE /api/inbox/:id - No Tags Scenario', () => {
+    describe('DELETE /api/inbox/:uid - No Tags Scenario', () => {
         let inboxItem;
 
         beforeEach(async () => {
@@ -227,7 +229,7 @@ describe('Inbox Routes - No Tags Scenario', () => {
         });
 
         it('should delete inbox items when no tags exist', async () => {
-            const response = await agent.delete(`/api/inbox/${inboxItem.id}`);
+            const response = await agent.delete(`/api/inbox/${inboxItem.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.message).toBe(
@@ -235,7 +237,9 @@ describe('Inbox Routes - No Tags Scenario', () => {
             );
 
             // Verify item status is updated to deleted
-            const deletedItem = await InboxItem.findByPk(inboxItem.id);
+            const deletedItem = await InboxItem.findOne({
+                where: { uid: inboxItem.uid },
+            });
             expect(deletedItem).not.toBeNull();
             expect(deletedItem.status).toBe('deleted');
         });
@@ -253,24 +257,24 @@ describe('Inbox Routes - No Tags Scenario', () => {
                 .post('/api/inbox')
                 .send({ content: 'Complete workflow test', source: 'web' });
             expect(createResponse.status).toBe(201);
-            const itemId = createResponse.body.id;
+            const itemUid = createResponse.body.uid;
 
             // Step 3: Retrieve inbox items
             const getResponse = await agent.get('/api/inbox');
             expect(getResponse.status).toBe(200);
             expect(getResponse.body.length).toBe(1);
-            expect(getResponse.body[0].id).toBe(itemId);
+            expect(getResponse.body[0].uid).toBe(itemUid);
 
             // Step 4: Update inbox item
             const updateResponse = await agent
-                .patch(`/api/inbox/${itemId}`)
+                .patch(`/api/inbox/${itemUid}`)
                 .send({ content: 'Updated workflow test' });
             expect(updateResponse.status).toBe(200);
             expect(updateResponse.body.content).toBe('Updated workflow test');
 
             // Step 5: Process inbox item
             const processResponse = await agent.patch(
-                `/api/inbox/${itemId}/process`
+                `/api/inbox/${itemUid}/process`
             );
             expect(processResponse.status).toBe(200);
             expect(processResponse.body.status).toBe('processed');
@@ -303,9 +307,11 @@ describe('Inbox Routes - No Tags Scenario', () => {
             expect(getResponse.body.length).toBe(5);
 
             // Process all items concurrently
-            const itemIds = createResponses.map((response) => response.body.id);
-            const processPromises = itemIds.map((id) =>
-                agent.patch(`/api/inbox/${id}/process`)
+            const itemUids = createResponses.map(
+                (response) => response.body.uid
+            );
+            const processPromises = itemUids.map((uid) =>
+                agent.patch(`/api/inbox/${uid}/process`)
             );
 
             const processResponses = await Promise.all(processPromises);
@@ -326,26 +332,28 @@ describe('Inbox Routes - No Tags Scenario', () => {
     describe('Error Handling - No Tags Scenario', () => {
         it('should handle invalid inbox item operations gracefully when no tags exist', async () => {
             // Try to get non-existent item
-            const getResponse = await agent.get('/api/inbox/999999');
-            expect(getResponse.status).toBe(404);
-            expect(getResponse.body.error).toBe('Inbox item not found.');
+            const getResponse = await agent.get('/api/inbox/invalid-uid');
+            expect(getResponse.status).toBe(400);
+            expect(getResponse.body.error).toBe('Invalid UID');
 
             // Try to update non-existent item
             const updateResponse = await agent
-                .patch('/api/inbox/999999')
+                .patch('/api/inbox/abcd1234efghijk')
                 .send({ content: 'Updated' });
             expect(updateResponse.status).toBe(404);
             expect(updateResponse.body.error).toBe('Inbox item not found.');
 
             // Try to process non-existent item
             const processResponse = await agent.patch(
-                '/api/inbox/999999/process'
+                '/api/inbox/abcd1234efghijk/process'
             );
             expect(processResponse.status).toBe(404);
             expect(processResponse.body.error).toBe('Inbox item not found.');
 
             // Try to delete non-existent item
-            const deleteResponse = await agent.delete('/api/inbox/999999');
+            const deleteResponse = await agent.delete(
+                '/api/inbox/abcd1234efghijk'
+            );
             expect(deleteResponse.status).toBe(404);
             expect(deleteResponse.body.error).toBe('Inbox item not found.');
         });
