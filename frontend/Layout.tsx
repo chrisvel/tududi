@@ -11,6 +11,7 @@ import AreaModal from './components/Area/AreaModal';
 import TagModal from './components/Tag/TagModal';
 import InboxModal from './components/Inbox/InboxModal';
 import TaskModal from './components/Task/TaskModal';
+import { OfflineIndicator } from './components/Shared';
 import { Note } from './entities/Note';
 import { Area } from './entities/Area';
 import { Tag } from './entities/Tag';
@@ -410,6 +411,7 @@ const Layout: React.FC<LayoutProps> = ({
     return (
         <SidebarProvider isSidebarOpen={isSidebarOpen}>
             <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
+                <OfflineIndicator />
                 <Navbar
                     isDarkMode={isDarkMode}
                     toggleDarkMode={toggleDarkMode}
