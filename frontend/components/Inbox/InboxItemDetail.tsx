@@ -19,12 +19,12 @@ import { useStore } from '../../store/useStore';
 
 interface InboxItemDetailProps {
     item: InboxItem;
-    onProcess: (id: number) => void;
-    onDelete: (id: number) => void;
-    onUpdate?: (id: number) => Promise<void>;
-    openTaskModal: (task: Task, inboxItemId?: number) => void;
-    openProjectModal: (project: Project | null, inboxItemId?: number) => void;
-    openNoteModal: (note: Note | null, inboxItemId?: number) => void;
+    onProcess: (uid: string) => void;
+    onDelete: (uid: string) => void;
+    onUpdate?: (uid: string) => Promise<void>;
+    openTaskModal: (task: Task, inboxItemUid?: string) => void;
+    openProjectModal: (project: Project | null, inboxItemUid?: string) => void;
+    openNoteModal: (note: Note | null, inboxItemUid?: string) => void;
     projects: Project[];
 }
 
@@ -284,7 +284,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                         project.name.toLowerCase() === projectName.toLowerCase()
                 );
                 if (matchingProject) {
-                    projectId = matchingProject.uid;
+                    projectId = matchingProject.id;
                 }
             }
 
@@ -293,12 +293,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 status: 'not_started',
                 priority: 'low',
                 tags: taskTags,
-                project_uid: projectId,
+                project_id: projectId,
                 completed_at: null,
             };
 
-            if (item.id !== undefined) {
-                openTaskModal(newTask, item.id);
+            if (item.uid !== undefined) {
+                openTaskModal(newTask, item.uid);
             } else {
                 openTaskModal(newTask);
             }
@@ -326,8 +326,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 tags: projectTags,
             };
 
-            if (item.id !== undefined) {
-                openProjectModal(newProject, item.id);
+            if (item.uid !== undefined) {
+                openProjectModal(newProject, item.uid);
             } else {
                 openProjectModal(newProject);
             }
@@ -422,8 +422,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             project_uid: projectId,
         };
 
-        if (item.id !== undefined) {
-            openNoteModal(newNote, item.id);
+        if (item.uid !== undefined) {
+            openNoteModal(newNote, item.uid);
         } else {
             openNoteModal(newNote);
         }
@@ -434,8 +434,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     };
 
     const confirmDelete = () => {
-        if (item.id !== undefined) {
-            onDelete(item.id);
+        if (item.uid !== undefined) {
+            onDelete(item.uid);
         }
         setShowConfirmDialog(false);
     };
@@ -450,8 +450,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 <div className="flex-1 w-4/5">
                     <button
                         onClick={() => {
-                            if (onUpdate && item.id !== undefined) {
-                                onUpdate(item.id);
+                            if (onUpdate && item.uid !== undefined) {
+                                onUpdate(item.uid);
                             }
                         }}
                         className="text-base font-medium text-gray-900 dark:text-gray-300 break-words text-left cursor-pointer w-full"
@@ -565,8 +565,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     {/* Edit Button */}
                     <button
                         onClick={() => {
-                            if (onUpdate && item.id !== undefined) {
-                                onUpdate(item.id);
+                            if (onUpdate && item.uid !== undefined) {
+                                onUpdate(item.uid);
                             }
                         }}
                         className={`p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}

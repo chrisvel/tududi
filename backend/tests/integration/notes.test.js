@@ -149,7 +149,7 @@ describe('Notes Routes', () => {
         });
 
         it('should return 404 for non-existent note', async () => {
-            const response = await agent.get('/api/note/999999');
+            const response = await agent.get('/api/note/abcd1234efghijk');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Note not found.');
@@ -211,7 +211,7 @@ describe('Notes Routes', () => {
 
         it('should return 404 for non-existent note', async () => {
             const response = await agent
-                .patch('/api/note/999999')
+                .patch('/api/note/abcd1234efghijk')
                 .send({ title: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -270,7 +270,7 @@ describe('Notes Routes', () => {
         });
 
         it('should return 404 for non-existent note', async () => {
-            const response = await agent.delete('/api/note/999999');
+            const response = await agent.delete('/api/note/abcd1234efghijk');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Note not found.');
