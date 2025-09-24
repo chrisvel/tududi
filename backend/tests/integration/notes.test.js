@@ -29,7 +29,7 @@ describe('Notes Routes', () => {
             const noteData = {
                 title: 'Test Note',
                 content: 'This is a test note content',
-                project_id: project.id,
+                project_uid: project.uid,
             };
 
             const response = await agent.post('/api/note').send(noteData);
@@ -140,7 +140,7 @@ describe('Notes Routes', () => {
         });
 
         it('should get note by id', async () => {
-            const response = await agent.get(`/api/note/${note.id}`);
+            const response = await agent.get(`/api/note/${note.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.id).toBe(note.id);
@@ -149,7 +149,7 @@ describe('Notes Routes', () => {
         });
 
         it('should return 404 for non-existent note', async () => {
-            const response = await agent.get('/api/note/999999');
+            const response = await agent.get('/api/note/abcd1234efghijk');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Note not found.');
@@ -167,14 +167,14 @@ describe('Notes Routes', () => {
                 user_id: otherUser.id,
             });
 
-            const response = await agent.get(`/api/note/${otherNote.id}`);
+            const response = await agent.get(`/api/note/${otherNote.uid}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Note not found.');
         });
 
         it('should require authentication', async () => {
-            const response = await request(app).get(`/api/note/${note.id}`);
+            const response = await request(app).get(`/api/note/${note.uid}`);
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');
@@ -196,11 +196,11 @@ describe('Notes Routes', () => {
             const updateData = {
                 title: 'Updated Note',
                 content: 'Updated content',
-                project_id: project.id,
+                project_uid: project.uid,
             };
 
             const response = await agent
-                .patch(`/api/note/${note.id}`)
+                .patch(`/api/note/${note.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -211,7 +211,7 @@ describe('Notes Routes', () => {
 
         it('should return 404 for non-existent note', async () => {
             const response = await agent
-                .patch('/api/note/999999')
+                .patch('/api/note/abcd1234efghijk')
                 .send({ title: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -231,7 +231,7 @@ describe('Notes Routes', () => {
             });
 
             const response = await agent
-                .patch(`/api/note/${otherNote.id}`)
+                .patch(`/api/note/${otherNote.uid}`)
                 .send({ title: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -240,7 +240,7 @@ describe('Notes Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app)
-                .patch(`/api/note/${note.id}`)
+                .patch(`/api/note/${note.uid}`)
                 .send({ title: 'Updated' });
 
             expect(response.status).toBe(401);
@@ -259,7 +259,7 @@ describe('Notes Routes', () => {
         });
 
         it('should delete note', async () => {
-            const response = await agent.delete(`/api/note/${note.id}`);
+            const response = await agent.delete(`/api/note/${note.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.message).toBe('Note deleted successfully.');
@@ -270,7 +270,7 @@ describe('Notes Routes', () => {
         });
 
         it('should return 404 for non-existent note', async () => {
-            const response = await agent.delete('/api/note/999999');
+            const response = await agent.delete('/api/note/abcd1234efghijk');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Note not found.');
@@ -288,14 +288,14 @@ describe('Notes Routes', () => {
                 user_id: otherUser.id,
             });
 
-            const response = await agent.delete(`/api/note/${otherNote.id}`);
+            const response = await agent.delete(`/api/note/${otherNote.uid}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Note not found.');
         });
 
         it('should require authentication', async () => {
-            const response = await request(app).delete(`/api/note/${note.id}`);
+            const response = await request(app).delete(`/api/note/${note.uid}`);
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');

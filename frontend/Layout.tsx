@@ -149,15 +149,15 @@ const Layout: React.FC<LayoutProps> = ({
     const handleSaveNote = async (noteData: Note) => {
         try {
             let result: Note;
-            if (noteData.id) {
-                result = await updateNote(noteData.id, noteData);
+            if (noteData.uid) {
+                result = await updateNote(noteData.uid, noteData);
                 // Update existing note in global store
                 const currentNotes = useStore.getState().notesStore.notes;
                 useStore
                     .getState()
                     .notesStore.setNotes(
                         currentNotes.map((note) =>
-                            note.id === result.id ? result : note
+                            note.uid === result.uid ? result : note
                         )
                     );
             } else {
@@ -255,15 +255,15 @@ const Layout: React.FC<LayoutProps> = ({
     const handleSaveArea = async (areaData: Partial<Area>) => {
         try {
             let result: Area;
-            if (areaData.id) {
-                result = await updateArea(areaData.id, areaData);
+            if (areaData.uid) {
+                result = await updateArea(areaData.uid, areaData);
                 // Update existing area in global store
                 const currentAreas = useStore.getState().areasStore.areas;
                 useStore
                     .getState()
                     .areasStore.setAreas(
                         currentAreas.map((area) =>
-                            area.id === result.id ? result : area
+                            area.uid === result.uid ? result : area
                         )
                     );
             } else {

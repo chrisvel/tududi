@@ -1,13 +1,15 @@
 const express = require('express');
 const { Note, Tag, Project, sequelize } = require('../models');
 const { Op } = require('sequelize');
-const { extractUidFromSlug } = require('../utils/slug-utils');
+const { extractUidFromSlug, isValidUid } = require('../utils/slug-utils');
 const { validateTagName } = require('../services/tagsService');
 const router = express.Router();
+const _ = require('lodash');
+const { logError } = require('../services/logService');
 
 // Helper function to update note tags
 async function updateNoteTags(note, tagsArray, userId) {
-    if (!tagsArray || tagsArray.length === 0) {
+    if (_.isEmpty(tagsArray)) {
         await note.setTags([]);
         return;
     }
@@ -29,7 +31,6 @@ async function updateNoteTags(note, tagsArray, userId) {
             }
         }
 
-        // If there are invalid tags, throw an error
         if (invalidTags.length > 0) {
             throw new Error(
                 `Invalid tag names: ${invalidTags.map((t) => `"${t.name}" (${t.error})`).join(', ')}`
@@ -47,7 +48,7 @@ async function updateNoteTags(note, tagsArray, userId) {
         );
         await note.setTags(tags);
     } catch (error) {
-        console.error('Failed to update tags:', error.message);
+        logError('Failed to update tags:', error.message);
         throw error; // Re-throw to handle at route level
     }
 }
@@ -55,10 +56,6 @@ async function updateNoteTags(note, tagsArray, userId) {
 // GET /api/notes
 router.get('/notes', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const orderBy = req.query.order_by || 'title:asc';
         const [orderColumn, orderDirection] = orderBy.split(':');
 
@@ -66,13 +63,13 @@ router.get('/notes', async (req, res) => {
         let includeClause = [
             {
                 model: Tag,
-                attributes: ['id', 'name', 'uid'],
+                attributes: ['name', 'uid'],
                 through: { attributes: [] },
             },
             {
                 model: Project,
                 required: false,
-                attributes: ['id', 'name', 'uid'],
+                attributes: ['name', 'uid'],
             },
         ];
 
@@ -91,62 +88,42 @@ router.get('/notes', async (req, res) => {
 
         res.json(notes);
     } catch (error) {
-        console.error('Error fetching notes:', error);
+        logError('Error fetching notes:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// GET /api/note/:id (supports both numeric ID and uid-slug)
-router.get('/note/:id', async (req, res) => {
+// GET /api/note/:uidSlug
+router.get('/note/:uidSlug', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
-        const identifier = req.params.id;
-        let whereClause;
-
-        // Check if identifier is numeric (regular ID) or uid-slug
-        if (/^\d+$/.test(identifier)) {
-            // It's a numeric ID
-            whereClause = {
-                id: parseInt(identifier),
-                user_id: req.session.userId,
-            };
-        } else {
-            // It's a uid-slug, extract the uid
-            const uid = extractUidFromSlug(identifier);
-            if (!uid) {
-                return res
-                    .status(400)
-                    .json({ error: 'Invalid note identifier' });
-            }
-            whereClause = { uid: uid, user_id: req.session.userId };
+        const uid = extractUidFromSlug(req.params.uidSlug);
+        if (_.isEmpty(uid)) {
+            return res.status(400).json({ error: 'Invalid note identifier' });
         }
 
         const note = await Note.findOne({
-            where: whereClause,
+            where: { uid, user_id: req.session.userId },
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'uid'],
+                    attributes: ['name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
                     required: false,
-                    attributes: ['id', 'name', 'uid'],
+                    attributes: ['name', 'uid'],
                 },
             ],
         });
 
-        if (!note) {
+        if (_.isEmpty(note)) {
             return res.status(404).json({ error: 'Note not found.' });
         }
 
         res.json(note);
     } catch (error) {
-        console.error('Error fetching note:', error);
+        logError('Error fetching note:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -154,11 +131,7 @@ router.get('/note/:id', async (req, res) => {
 // POST /api/note
 router.post('/note', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
-        const { title, content, project_id, tags } = req.body;
+        const { title, content, project_uid, tags } = req.body;
 
         const noteAttributes = {
             title,
@@ -167,19 +140,23 @@ router.post('/note', async (req, res) => {
         };
 
         // Handle project assignment
-        if (project_id && project_id.toString().trim()) {
-            const project = await Project.findOne({
-                where: { id: project_id, user_id: req.session.userId },
-            });
-            if (!project) {
-                return res.status(400).json({ error: 'Invalid project.' });
+        if (project_uid !== undefined) {
+            const projectUid = project_uid.toString().trim();
+            if (!_.isEmpty(projectUid)) {
+                const project = await Project.findOne({
+                    where: { uid: projectUid, user_id: req.session.userId },
+                });
+                if (_.isEmpty(project)) {
+                    return res.status(400).json({ error: 'Invalid project.' });
+                }
+                noteAttributes.project_id = project.id;
             }
-            noteAttributes.project_id = project_id;
         }
 
         const note = await Note.create(noteAttributes);
 
-        // Handle tags - can be array of strings or array of objects with name property
+        // Handle tags - can be an array of strings
+        // or array of objects with name property
         let tagNames = [];
         if (Array.isArray(tags)) {
             if (tags.every((t) => typeof t === 'string')) {
@@ -196,23 +173,23 @@ router.post('/note', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'uid'],
+                    attributes: ['name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
                     required: false,
-                    attributes: ['id', 'name', 'uid'],
+                    attributes: ['name', 'uid'],
                 },
             ],
         });
 
         res.status(201).json({
             ...noteWithAssociations.toJSON(),
-            uid: noteWithAssociations.uid, // Explicitly include uid
+            uid: noteWithAssociations.uid,
         });
     } catch (error) {
-        console.error('Error creating note:', error);
+        logError('Error creating note:', error);
         res.status(400).json({
             error: 'There was a problem creating the note.',
             details: error.errors
@@ -222,37 +199,37 @@ router.post('/note', async (req, res) => {
     }
 });
 
-// PATCH /api/note/:id
-router.patch('/note/:id', async (req, res) => {
+// PATCH /api/note/:uid
+router.patch('/note/:uid', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
+        if (!isValidUid(req.params.uid))
+            return res.status(400).json({ error: 'Invalid UID' });
 
         const note = await Note.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: req.session.userId },
         });
 
         if (!note) {
             return res.status(404).json({ error: 'Note not found.' });
         }
 
-        const { title, content, project_id, tags } = req.body;
+        const { title, content, project_uid, tags } = req.body;
 
         const updateData = {};
         if (title !== undefined) updateData.title = title;
         if (content !== undefined) updateData.content = content;
 
         // Handle project assignment
-        if (project_id !== undefined) {
-            if (project_id && project_id.toString().trim()) {
+        if (project_uid !== undefined) {
+            const projectUid = project_uid.toString().trim();
+            if (!_.isEmpty(projectUid)) {
                 const project = await Project.findOne({
-                    where: { id: project_id, user_id: req.session.userId },
+                    where: { uid: projectUid, user_id: req.session.userId },
                 });
                 if (!project) {
                     return res.status(400).json({ error: 'Invalid project.' });
                 }
-                updateData.project_id = project_id;
+                updateData.project_id = project.id;
             } else {
                 updateData.project_id = null;
             }
@@ -278,20 +255,20 @@ router.patch('/note/:id', async (req, res) => {
             include: [
                 {
                     model: Tag,
-                    attributes: ['id', 'name', 'uid'],
+                    attributes: ['name', 'uid'],
                     through: { attributes: [] },
                 },
                 {
                     model: Project,
                     required: false,
-                    attributes: ['id', 'name', 'uid'],
+                    attributes: ['name', 'uid'],
                 },
             ],
         });
 
         res.json(noteWithAssociations);
     } catch (error) {
-        console.error('Error updating note:', error);
+        logError('Error updating note:', error);
         res.status(400).json({
             error: 'There was a problem updating the note.',
             details: error.errors
@@ -301,15 +278,14 @@ router.patch('/note/:id', async (req, res) => {
     }
 });
 
-// DELETE /api/note/:id
-router.delete('/note/:id', async (req, res) => {
+// DELETE /api/note/:uid
+router.delete('/note/:uid', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
+        if (!isValidUid(req.params.uid))
+            return res.status(400).json({ error: 'Invalid UID' });
 
         const note = await Note.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: req.session.userId },
         });
 
         if (!note) {
@@ -319,10 +295,8 @@ router.delete('/note/:id', async (req, res) => {
         await note.destroy();
         res.json({ message: 'Note deleted successfully.' });
     } catch (error) {
-        console.error('Error deleting note:', error);
-        res.status(400).json({
-            error: 'There was a problem deleting the note.',
-        });
+        logError('Error deleting note:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
