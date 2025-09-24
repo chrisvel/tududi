@@ -522,7 +522,21 @@
     },
     "active": "アクティブ",
     "inactive": "非アクティブ",
-    "metrics": "プロジェクト"
+    "metrics": "プロジェクト",
+    "selectState": "状態を選択",
+    "state": "プロジェクトの状態",
+    "states": {
+      "idea": "アイデア",
+      "planned": "計画中",
+      "in_progress": "進行中",
+      "blocked": "ブロック中",
+      "completed": "完了",
+      "idea_desc": "キャプチャされたがまだ計画されていない",
+      "planned_desc": "スコープが決まり、開始準備が整った",
+      "in_progress_desc": "アクティブな作業が行われている",
+      "blocked_desc": "一時的に停止または行き詰まっている",
+      "completed_desc": "完了し、終了した"
+    }
   },
   "projectItem": {
     "edit": "編集",

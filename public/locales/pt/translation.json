@@ -655,6 +655,20 @@
       "inactive": "Inativo",
       "all": "Todos",
       "allAreas": "Todas as Áreas"
+    },
+    "selectState": "Selecionar Estado",
+    "state": "Estado do Projeto",
+    "states": {
+      "idea": "Ideia",
+      "planned": "Planejado",
+      "in_progress": "Em Progresso",
+      "blocked": "Bloqueado",
+      "completed": "Concluído",
+      "idea_desc": "Capturado, mas ainda não planejado",
+      "planned_desc": "Escopado e pronto para começar",
+      "in_progress_desc": "Trabalho ativo em andamento",
+      "blocked_desc": "Pausado temporariamente ou preso",
+      "completed_desc": "Finalizado e concluído"
     }
   },
   "projectItem": {

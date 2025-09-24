@@ -55,8 +55,25 @@ async function safeAddIndex(queryInterface, tableName, fields, options = {}) {
     }
 }
 
+async function safeRemoveColumn(queryInterface, tableName, columnName) {
+    try {
+        const tableInfo = await queryInterface.describeTable(tableName);
+
+        if (columnName in tableInfo) {
+            await queryInterface.removeColumn(tableName, columnName);
+        }
+    } catch (error) {
+        console.log(
+            `Migration error removing column ${columnName} from ${tableName}:`,
+            error.message
+        );
+        throw error;
+    }
+}
+
 module.exports = {
     safeAddColumns,
     safeCreateTable,
     safeAddIndex,
+    safeRemoveColumn,
 };

@@ -655,6 +655,20 @@
       "inactive": "Neaktivno",
       "all": "Vse",
       "allAreas": "Vse področja"
+    },
+    "selectState": "Izberite stanje",
+    "state": "Stanje projekta",
+    "states": {
+      "idea": "Ideja",
+      "planned": "Načrtovano",
+      "in_progress": "V teku",
+      "blocked": "Zasblocked",
+      "completed": "Dokončano",
+      "idea_desc": "Zajeto, a še ni načrtovano",
+      "planned_desc": "Določeno in pripravljeno za začetek",
+      "in_progress_desc": "Aktivno delo poteka",
+      "blocked_desc": "Začasno ustavljeno ali zastojev",
+      "completed_desc": "Dokončano in opravljeno"
     }
   },
   "projectItem": {

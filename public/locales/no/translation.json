@@ -655,6 +655,20 @@
       "inactive": "Inaktiv",
       "all": "Alle",
       "allAreas": "Alle områder"
+    },
+    "selectState": "Velg tilstand",
+    "state": "Prosjektstatus",
+    "states": {
+      "idea": "Ide",
+      "planned": "Planlagt",
+      "in_progress": "Under arbeid",
+      "blocked": "Blokkert",
+      "completed": "Fullført",
+      "idea_desc": "Fanget, men ikke planlagt ennå",
+      "planned_desc": "Avgrenset og klar til å starte",
+      "in_progress_desc": "Aktivt arbeid pågår",
+      "blocked_desc": "Midlertidig pauset eller fastlåst",
+      "completed_desc": "Ferdig og gjort"
     }
   },
   "projectItem": {

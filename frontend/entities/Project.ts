@@ -3,12 +3,18 @@ import { Tag } from './Tag';
 import { PriorityType, Task } from './Task';
 import { Note } from './Note';
 
+export type ProjectState =
+    | 'idea'
+    | 'planned'
+    | 'in_progress'
+    | 'blocked'
+    | 'completed';
+
 export interface Project {
     id?: number;
     uid?: string;
     name: string;
     description?: string;
-    active: boolean;
     pin_to_sidebar?: boolean;
     area?: Area;
     area_id?: number | null;
@@ -22,6 +28,7 @@ export interface Project {
     image_url?: string;
     task_show_completed?: boolean;
     task_sort_order?: string;
+    state?: ProjectState;
     created_at?: string;
     updated_at?: string;
 }

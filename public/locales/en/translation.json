@@ -650,11 +650,25 @@
     "active": "Active",
     "inactive": "Inactive",
     "metrics": "Projects",
+    "selectState": "Select State",
+    "state": "Project State",
     "filters": {
       "active": "Active",
       "inactive": "Inactive",
       "all": "All",
       "allAreas": "All Areas"
+    },
+    "states": {
+      "idea": "Idea",
+      "planned": "Planned",
+      "in_progress": "In Progress",
+      "blocked": "Blocked",
+      "completed": "Completed",
+      "idea_desc": "Captured but not planned yet",
+      "planned_desc": "Scoped and ready to start",
+      "in_progress_desc": "Active work happening",
+      "blocked_desc": "Temporarily paused or stuck",
+      "completed_desc": "Finished and done"
     }
   },
   "projectItem": {

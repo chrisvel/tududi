@@ -655,6 +655,20 @@
       "inactive": "Không hoạt động",
       "all": "Tất cả",
       "allAreas": "Tất cả các khu vực"
+    },
+    "selectState": "Chọn Trạng Thái",
+    "state": "Trạng Thái Dự Án",
+    "states": {
+      "idea": "Ý Tưởng",
+      "planned": "Đã Lên Kế Hoạch",
+      "in_progress": "Đang Tiến Hành",
+      "blocked": "Bị Chặn",
+      "completed": "Đã Hoàn Thành",
+      "idea_desc": "Đã ghi lại nhưng chưa lên kế hoạch",
+      "planned_desc": "Đã xác định và sẵn sàng bắt đầu",
+      "in_progress_desc": "Công việc đang diễn ra",
+      "blocked_desc": "Tạm dừng hoặc bị mắc kẹt",
+      "completed_desc": "Đã hoàn tất và xong"
     }
   },
   "projectItem": {

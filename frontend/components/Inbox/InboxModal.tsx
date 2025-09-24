@@ -926,7 +926,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
             try {
                 await createProject({
                     name: projectName,
-                    active: true,
+                    state: 'planned',
                 });
                 // Projects are managed by the parent component through props
                 // No need to update local state

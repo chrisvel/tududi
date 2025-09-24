@@ -655,6 +655,20 @@
       "inactive": "Inaktiva",
       "all": "Alla",
       "allAreas": "Alla områden"
+    },
+    "selectState": "Välj status",
+    "state": "Projektstatus",
+    "states": {
+      "idea": "Idé",
+      "planned": "Planerad",
+      "in_progress": "Pågående",
+      "blocked": "Blockerad",
+      "completed": "Avslutad",
+      "idea_desc": "Fångad men inte planerad än",
+      "planned_desc": "Avgränsad och redo att starta",
+      "in_progress_desc": "Aktivt arbete pågår",
+      "blocked_desc": "Tillfälligt pausad eller fast",
+      "completed_desc": "Avslutad och klar"
     }
   },
   "projectItem": {
