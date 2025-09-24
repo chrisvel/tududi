@@ -8,7 +8,7 @@ import {
     DocumentTextIcon,
     PlayIcon,
     StopIcon,
-    CheckCircleIcon
+    CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Project, ProjectState } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
@@ -132,8 +132,12 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             title={getStateLabel(project.state, t)}
                         >
                             {(() => {
-                                const { icon: StateIcon } = getStateIcon(project.state);
-                                return <StateIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 opacity-70 drop-shadow-sm" />;
+                                const { icon: StateIcon } = getStateIcon(
+                                    project.state
+                                );
+                                return (
+                                    <StateIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 opacity-70 drop-shadow-sm" />
+                                );
                             })()}
                         </div>
                     </div>
