@@ -1,34 +1,53 @@
 const express = require('express');
-const { TaskEvent } = require('../models');
+const { Task, TaskEvent } = require('../models');
+const { isValidUid } = require('../utils/slug-utils');
 const {
     getTaskTimeline,
     getTaskCompletionTime,
     getUserProductivityMetrics,
     getTaskActivitySummary,
 } = require('../services/taskEventService');
+const { logError } = require('../services/logService');
 const router = express.Router();
 
-// GET /api/task/:id/timeline - Get task event timeline
-router.get('/task/:id/timeline', async (req, res) => {
+// GET /api/task/:uid/timeline - Get task event timeline
+router.get('/task/:uid/timeline', async (req, res) => {
     try {
-        const timeline = await getTaskTimeline(req.params.id);
+        if (!isValidUid(req.params.uid))
+            return res.status(400).json({ error: 'Invalid UID' });
 
-        // Filter to only show events for tasks owned by the current user
-        const userTimeline = timeline.filter(
-            (event) => event.user_id === req.currentUser.id
-        );
+        const task = await Task.findOne({
+            where: { uid: req.params.uid, user_id: req.currentUser.id },
+        });
 
-        res.json(userTimeline);
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        const timeline = await getTaskTimeline(task.id);
+
+        res.json(timeline);
     } catch (error) {
-        console.error('Error fetching task timeline:', error);
+        logError('Error fetching task timeline:', error);
         res.status(500).json({ error: 'Failed to fetch task timeline' });
     }
 });
 
-// GET /api/task/:id/completion-time - Get task completion analytics
-router.get('/task/:id/completion-time', async (req, res) => {
+// GET /api/task/:uid/completion-time - Get task completion analytics
+router.get('/task/:uid/completion-time', async (req, res) => {
     try {
-        const completionTime = await getTaskCompletionTime(req.params.id);
+        if (!isValidUid(req.params.uid))
+            return res.status(400).json({ error: 'Invalid UID' });
+
+        const task = await Task.findOne({
+            where: { uid: req.params.uid, user_id: req.currentUser.id },
+        });
+
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        const completionTime = await getTaskCompletionTime(task.id);
 
         if (!completionTime) {
             return res
@@ -38,7 +57,7 @@ router.get('/task/:id/completion-time', async (req, res) => {
 
         res.json(completionTime);
     } catch (error) {
-        console.error('Error fetching task completion time:', error);
+        logError('Error fetching task completion time:', error);
         res.status(500).json({ error: 'Failed to fetch task completion time' });
     }
 });
@@ -56,7 +75,7 @@ router.get('/user/productivity-metrics', async (req, res) => {
 
         res.json(metrics);
     } catch (error) {
-        console.error('Error fetching productivity metrics:', error);
+        logError('Error fetching productivity metrics:', error);
         res.status(500).json({ error: 'Failed to fetch productivity metrics' });
     }
 });
@@ -80,7 +99,7 @@ router.get('/user/activity-summary', async (req, res) => {
 
         res.json(activitySummary);
     } catch (error) {
-        console.error('Error fetching activity summary:', error);
+        logError('Error fetching activity summary:', error);
         res.status(500).json({ error: 'Failed to fetch activity summary' });
     }
 });
@@ -88,7 +107,7 @@ router.get('/user/activity-summary', async (req, res) => {
 // GET /api/tasks/completion-analytics - Get completion time analytics for multiple tasks
 router.get('/tasks/completion-analytics', async (req, res) => {
     try {
-        const { limit = 50, offset = 0, projectId } = req.query;
+        const { limit = 50, offset = 0, projectUid } = req.query;
 
         // Get completed tasks for the user
         const { Task, Project } = require('../models');
@@ -99,8 +118,21 @@ router.get('/tasks/completion-analytics', async (req, res) => {
             status: 2, // completed
         };
 
-        if (projectId) {
-            whereClause.project_id = projectId;
+        // If projectUid is provided, find the project and filter by its ID
+        if (projectUid) {
+            if (!isValidUid(projectUid)) {
+                return res.status(400).json({ error: 'Invalid project UID' });
+            }
+
+            const project = await Project.findOne({
+                where: { uid: projectUid, user_id: req.currentUser.id },
+            });
+
+            if (!project) {
+                return res.status(404).json({ error: 'Project not found' });
+            }
+
+            whereClause.project_id = project.id;
         }
 
         const completedTasks = await Task.findAll({
@@ -163,7 +195,7 @@ router.get('/tasks/completion-analytics', async (req, res) => {
             summary,
         });
     } catch (error) {
-        console.error('Error fetching completion analytics:', error);
+        logError('Error fetching completion analytics:', error);
         res.status(500).json({ error: 'Failed to fetch completion analytics' });
     }
 });

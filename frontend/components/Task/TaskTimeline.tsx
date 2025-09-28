@@ -13,11 +13,11 @@ import {
 } from '@heroicons/react/24/outline';
 
 interface TaskTimelineProps {
-    taskId: number | undefined;
+    taskUid: string | undefined;
     refreshKey?: number;
 }
 
-const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId, refreshKey }) => {
+const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskUid, refreshKey }) => {
     const { t } = useTranslation();
     const [events, setEvents] = useState<TaskEvent[]>([]);
     const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId, refreshKey }) => {
 
     useEffect(() => {
         const fetchTimeline = async () => {
-            if (!taskId || taskId === undefined) {
+            if (!taskUid || taskUid === undefined) {
                 setLoading(false);
                 setEvents([]);
                 return;
@@ -35,7 +35,7 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId, refreshKey }) => {
             setError(null);
 
             try {
-                const timeline = await getTaskTimeline(taskId);
+                const timeline = await getTaskTimeline(taskUid);
                 // Sort events by created_at in descending order (most recent first)
                 const sortedTimeline = timeline.sort(
                     (a, b) =>
@@ -53,7 +53,7 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId, refreshKey }) => {
         };
 
         fetchTimeline();
-    }, [taskId, refreshKey]);
+    }, [taskUid, refreshKey]);
 
     const getTranslatedStatusLabel = (status: number | string): string => {
         // Handle both numeric and string status values
@@ -196,7 +196,7 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskId, refreshKey }) => {
         );
     }
 
-    if (!taskId) {
+    if (!taskUid) {
         return (
             <div className="flex flex-col items-center justify-center h-32 text-gray-500 dark:text-gray-400">
                 <SparklesIcon className="h-6 w-6 mb-2" />
