@@ -322,7 +322,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             const newProject: Project = {
                 name: cleanedContent || item.content,
                 description: '',
-                active: true,
+                state: 'planned',
                 tags: projectTags,
             };
 

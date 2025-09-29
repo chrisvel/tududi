@@ -137,15 +137,26 @@ router.get('/projects', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const { active, pin_to_sidebar, area_id, area } = req.query;
+        const { state, active, pin_to_sidebar, area_id, area } = req.query;
 
         let whereClause = { user_id: req.session.userId };
 
-        // Filter by active status
+        // Filter by state (new primary filter)
+        if (state && state !== 'all') {
+            if (Array.isArray(state)) {
+                whereClause.state = { [Op.in]: state };
+            } else {
+                whereClause.state = state;
+            }
+        }
+
+        // Legacy support for active filter - map to states
         if (active === 'true') {
-            whereClause.active = true;
+            whereClause.state = {
+                [Op.in]: ['planned', 'in_progress', 'blocked'],
+            };
         } else if (active === 'false') {
-            whereClause.active = false;
+            whereClause.state = { [Op.in]: ['idea', 'completed'] };
         }
 
         // Filter by pinned status
@@ -384,10 +395,10 @@ router.post('/project', async (req, res) => {
             name,
             description,
             area_id,
-            active,
             priority,
             due_date_at,
             image_url,
+            state,
             tags,
             Tags,
         } = req.body;
@@ -407,11 +418,11 @@ router.post('/project', async (req, res) => {
             name: name.trim(),
             description: description || '',
             area_id: area_id || null,
-            active: active !== undefined ? active : true,
             pin_to_sidebar: false,
             priority: priority || null,
             due_date_at: due_date_at || null,
             image_url: image_url || null,
+            state: state || 'idea',
             user_id: req.session.userId,
         };
 
@@ -463,11 +474,11 @@ router.patch('/project/:id', async (req, res) => {
             name,
             description,
             area_id,
-            active,
             pin_to_sidebar,
             priority,
             due_date_at,
             image_url,
+            state,
             tags,
             Tags,
         } = req.body;
@@ -479,12 +490,12 @@ router.patch('/project/:id', async (req, res) => {
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
         if (area_id !== undefined) updateData.area_id = area_id;
-        if (active !== undefined) updateData.active = active;
         if (pin_to_sidebar !== undefined)
             updateData.pin_to_sidebar = pin_to_sidebar;
         if (priority !== undefined) updateData.priority = priority;
         if (due_date_at !== undefined) updateData.due_date_at = due_date_at;
         if (image_url !== undefined) updateData.image_url = image_url;
+        if (state !== undefined) updateData.state = state;
 
         await project.update(updateData);
         await updateProjectTags(project, tagsData, req.session.userId);

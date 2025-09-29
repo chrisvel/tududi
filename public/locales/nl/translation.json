@@ -655,6 +655,20 @@
       "inactive": "Inactief",
       "all": "Alle",
       "allAreas": "Alle gebieden"
+    },
+    "selectState": "Selecteer Staat",
+    "state": "Projectstaat",
+    "states": {
+      "idea": "Idee",
+      "planned": "Gepland",
+      "in_progress": "In Uitvoering",
+      "blocked": "Geblokkeerd",
+      "completed": "Voltooid",
+      "idea_desc": "Vastgelegd maar nog niet gepland",
+      "planned_desc": "Afgebakend en klaar om te starten",
+      "in_progress_desc": "Actief werk aan de gang",
+      "blocked_desc": "Tijdelijk gepauzeerd of vastgelopen",
+      "completed_desc": "Afgerond en gedaan"
     }
   },
   "projectItem": {

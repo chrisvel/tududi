@@ -655,6 +655,20 @@
       "inactive": "非活动",
       "all": "所有",
       "allAreas": "所有区域"
+    },
+    "selectState": "选择状态",
+    "state": "项目状态",
+    "states": {
+      "idea": "想法",
+      "planned": "已规划",
+      "in_progress": "进行中",
+      "blocked": "被阻塞",
+      "completed": "已完成",
+      "idea_desc": "已捕获但尚未规划",
+      "planned_desc": "已确定范围并准备开始",
+      "in_progress_desc": "正在进行的工作",
+      "blocked_desc": "暂时暂停或卡住",
+      "completed_desc": "已完成并结束"
     }
   },
   "projectItem": {

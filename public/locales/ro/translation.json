@@ -655,6 +655,20 @@
       "inactive": "Inactiv",
       "all": "Toate",
       "allAreas": "Toate zonele"
+    },
+    "selectState": "Selectați Starea",
+    "state": "Starea Proiectului",
+    "states": {
+      "idea": "Idee",
+      "planned": "Planificat",
+      "in_progress": "În Progres",
+      "blocked": "Blocat",
+      "completed": "Finalizat",
+      "idea_desc": "Capturat, dar încă neplanificat",
+      "planned_desc": "Definit și gata de început",
+      "in_progress_desc": "Lucru activ în desfășurare",
+      "blocked_desc": "Pauză temporară sau blocat",
+      "completed_desc": "Finalizat și terminat"
     }
   },
   "projectItem": {

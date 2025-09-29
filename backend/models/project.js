@@ -24,11 +24,6 @@ module.exports = (sequelize) => {
                 type: DataTypes.TEXT,
                 allowNull: true,
             },
-            active: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: true,
-            },
             pin_to_sidebar: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
@@ -75,6 +70,17 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
                 defaultValue: 'created_at:desc',
+            },
+            state: {
+                type: DataTypes.ENUM(
+                    'idea',
+                    'planned',
+                    'in_progress',
+                    'blocked',
+                    'completed'
+                ),
+                allowNull: false,
+                defaultValue: 'idea',
             },
         },
         {

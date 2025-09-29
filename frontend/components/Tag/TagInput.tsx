@@ -6,12 +6,14 @@ interface TagInputProps {
     initialTags: string[];
     onTagsChange: (tags: string[]) => void;
     availableTags: Tag[];
+    onFocus?: () => void;
 }
 
 const TagInput: React.FC<TagInputProps> = ({
     initialTags,
     onTagsChange,
     availableTags,
+    onFocus,
 }) => {
     const { t } = useTranslation();
     const [inputValue, setInputValue] = useState('');
@@ -229,6 +231,7 @@ const TagInput: React.FC<TagInputProps> = ({
                     placeholder={t('tags.typeToAdd')}
                     className="flex-grow bg-transparent border-none outline-none text-sm text-gray-900 dark:text-gray-100"
                     onFocus={() => {
+                        onFocus?.();
                         if (filteredTags.length > 0) setIsDropdownOpen(true);
                     }}
                     style={{ minWidth: '150px' }}
@@ -248,7 +251,7 @@ const TagInput: React.FC<TagInputProps> = ({
                 >
                     {filteredTags.map((tag, index) => (
                         <button
-                            key={tag.uid || tag.id}
+                            key={tag.uid}
                             type="button"
                             onClick={() => selectTag(tag.name)}
                             className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700 ${

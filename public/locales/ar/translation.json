@@ -655,6 +655,20 @@
       "inactive": "غير نشط",
       "all": "الكل",
       "allAreas": "جميع المناطق"
+    },
+    "selectState": "اختر الحالة",
+    "state": "حالة المشروع",
+    "states": {
+      "idea": "فكرة",
+      "planned": "مخطط",
+      "in_progress": "قيد التنفيذ",
+      "blocked": "محجوز",
+      "completed": "مكتمل",
+      "idea_desc": "تم التقاطها ولكن لم يتم التخطيط لها بعد",
+      "planned_desc": "تم تحديد نطاقها وجاهزة للبدء",
+      "in_progress_desc": "يتم العمل النشط",
+      "blocked_desc": "مؤقتًا متوقف أو عالق",
+      "completed_desc": "تم الانتهاء منها"
     }
   },
   "projectItem": {

@@ -655,6 +655,20 @@
       "inactive": "Tidak Aktif",
       "all": "Semua",
       "allAreas": "Semua Area"
+    },
+    "selectState": "Pilih Status",
+    "state": "Status Proyek",
+    "states": {
+      "idea": "Ide",
+      "planned": "Direncanakan",
+      "in_progress": "Sedang Berlangsung",
+      "blocked": "Terblokir",
+      "completed": "Selesai",
+      "idea_desc": "Tercatat tetapi belum direncanakan",
+      "planned_desc": "Sudah ditentukan dan siap untuk dimulai",
+      "in_progress_desc": "Pekerjaan aktif sedang berlangsung",
+      "blocked_desc": "Sementara terhenti atau terjebak",
+      "completed_desc": "Selesai dan selesai"
     }
   },
   "projectItem": {

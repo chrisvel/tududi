@@ -87,7 +87,8 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
             // 1. Stalled Projects (no tasks/actions)
             const stalledProjects = projects.filter(
                 (project) =>
-                    project.active &&
+                    (project.state === 'planned' ||
+                        project.state === 'in_progress') &&
                     !activeTasks.some((task) => task.project_id === project.id)
             );
 
@@ -123,7 +124,12 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
                         (task.status === 'not_started' ||
                             task.status === 'in_progress')
                 );
-                return project.active && hasCompletedTasks && !hasNextAction;
+                return (
+                    (project.state === 'planned' ||
+                        project.state === 'in_progress') &&
+                    hasCompletedTasks &&
+                    !hasNextAction
+                );
             });
 
             if (projectsNeedingNextAction.length > 0) {
@@ -221,7 +227,13 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
 
             // 6. Stuck projects (not updated in a month)
             const stuckProjects = projects.filter((project) => {
-                if (!project.active) return false;
+                if (
+                    !(
+                        project.state === 'planned' ||
+                        project.state === 'in_progress'
+                    )
+                )
+                    return false;
 
                 // Projects don't have date fields in the interface, so we'll check if they have recent tasks
                 const projectTasks = activeTasks.filter(
@@ -345,7 +357,7 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
 
     const handleCreateProject = async (name: string): Promise<Project> => {
         try {
-            const project = await createProject({ name, active: true });
+            const project = await createProject({ name, state: 'planned' });
             setAllProjects((prev) => [...prev, project]);
             return project;
         } catch (error) {

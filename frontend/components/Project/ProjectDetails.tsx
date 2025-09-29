@@ -7,6 +7,12 @@ import {
     TrashIcon,
     TagIcon,
     PlusCircleIcon,
+    Squares2X2Icon,
+    PlayIcon,
+    LightBulbIcon,
+    ClipboardDocumentListIcon,
+    ExclamationTriangleIcon,
+    CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
@@ -39,6 +45,7 @@ import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
 import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
 import LoadingSpinner from '../Shared/LoadingSpinner';
+import { usePersistedModal } from '../../hooks/usePersistedModal';
 
 const ProjectDetails: React.FC = () => {
     const { uidSlug } = useParams<{ uidSlug: string }>();
@@ -64,7 +71,14 @@ const ProjectDetails: React.FC = () => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    // Use persisted modal state that survives component remounts
+    const {
+        isOpen: isModalOpen,
+        openModal,
+        closeModal,
+    } = usePersistedModal(project?.id);
+    const editButtonRef = useRef<HTMLButtonElement>(null);
+
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [showCompleted, setShowCompleted] = useState(false);
     const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
@@ -376,9 +390,22 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
-    const handleEditProject = () => {
-        setIsModalOpen(true);
-    };
+    // Setup native event listener for edit button to avoid React event system conflicts
+    useEffect(() => {
+        const button = editButtonRef.current;
+        if (button) {
+            const handleClick = (e: Event) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openModal();
+            };
+
+            button.addEventListener('click', handleClick);
+            return () => {
+                button.removeEventListener('click', handleClick);
+            };
+        }
+    }, [openModal]);
 
     const handleSaveProject = async (updatedProject: Project) => {
         if (!updatedProject.id) {
@@ -390,8 +417,14 @@ const ProjectDetails: React.FC = () => {
                 updatedProject.id,
                 updatedProject
             );
-            setProject(savedProject);
-            setIsModalOpen(false);
+            // Merge the saved project with existing project to preserve area data
+            setProject((prevProject) => ({
+                ...savedProject,
+                // Preserve area info if it's missing from the response
+                area: savedProject.area || prevProject?.area,
+                Area: (savedProject as any).Area || (prevProject as any)?.Area,
+            }));
+            closeModal();
         } catch {
             // Error saving project - silently handled
         }
@@ -635,6 +668,36 @@ const ProjectDetails: React.FC = () => {
         return sortedTasks;
     }, [tasks, showCompleted, orderBy]);
 
+    // Function to get the appropriate icon for project state
+    const getStateIcon = (state: string) => {
+        switch (state) {
+            case 'idea':
+                return (
+                    <LightBulbIcon className="h-3 w-3 text-yellow-500 flex-shrink-0 mt-0.5" />
+                );
+            case 'planned':
+                return (
+                    <ClipboardDocumentListIcon className="h-3 w-3 text-blue-500 flex-shrink-0 mt-0.5" />
+                );
+            case 'in_progress':
+                return (
+                    <PlayIcon className="h-3 w-3 text-green-500 flex-shrink-0 mt-0.5" />
+                );
+            case 'blocked':
+                return (
+                    <ExclamationTriangleIcon className="h-3 w-3 text-red-500 flex-shrink-0 mt-0.5" />
+                );
+            case 'completed':
+                return (
+                    <CheckCircleIcon className="h-3 w-3 text-gray-500 flex-shrink-0 mt-0.5" />
+                );
+            default:
+                return (
+                    <PlayIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
+                );
+        }
+    };
+
     if (loading) {
         return <LoadingSpinner message="Loading project details..." />;
     }
@@ -687,9 +750,26 @@ const ProjectDetails: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Tags Display - Bottom Left */}
-                    {project.tags && project.tags.length > 0 && (
-                        <div className="absolute bottom-2 left-2 flex items-center space-x-1">
+                    {/* State, Tags and Area Display - Bottom Left */}
+                    <div className="absolute bottom-2 left-2 flex items-center space-x-2">
+                        {/* Project State Display */}
+                        {project.state && (
+                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
+                                {getStateIcon(project.state)}
+                                <div className="flex items-center space-x-1">
+                                    <span>
+                                        <span className="text-xs text-white/90 font-medium">
+                                            {t(
+                                                `projects.states.${project.state}`
+                                            )}
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tags Display */}
+                        {project.tags && project.tags.length > 0 && (
                             <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
                                 <TagIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
                                 <div className="flex items-center space-x-1">
@@ -733,22 +813,75 @@ const ProjectDetails: React.FC = () => {
                                     ))}
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+
+                        {/* Area Display */}
+                        {(project.area || (project as any).Area) && (
+                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
+                                <Squares2X2Icon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
+                                <div className="flex items-center space-x-1">
+                                    <span>
+                                        <button
+                                            onClick={() => {
+                                                // Use the correct area property (Area or area)
+                                                const projectArea =
+                                                    project.area ||
+                                                    (project as any).Area;
+
+                                                // Find the area in the areas store to get the uid
+                                                const area = areas.find(
+                                                    (a) =>
+                                                        a.id === projectArea.id
+                                                );
+                                                const areaUid = area?.uid;
+
+                                                if (!areaUid) {
+                                                    console.warn(
+                                                        'Area uid not found for area id:',
+                                                        projectArea.id
+                                                    );
+                                                    return;
+                                                }
+
+                                                // Navigate to projects filtered by this area (same as Areas page)
+                                                const areaSlug =
+                                                    projectArea.name
+                                                        .toLowerCase()
+                                                        .replace(
+                                                            /[^a-z0-9]+/g,
+                                                            '-'
+                                                        )
+                                                        .replace(/^-|-$/g, '');
+                                                navigate(
+                                                    `/projects?area=${areaUid}-${areaSlug}`
+                                                );
+                                            }}
+                                            className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
+                                        >
+                                            {
+                                                (
+                                                    project.area ||
+                                                    (project as any).Area
+                                                )?.name
+                                            }
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Edit/Delete Buttons - Bottom Right */}
                     <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleEditProject();
-                            }}
+                            ref={editButtonRef}
+                            type="button"
                             className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
                         >
                             <PencilSquareIcon className="h-5 w-5" />
                         </button>
                         <button
+                            type="button"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -1060,7 +1193,7 @@ const ProjectDetails: React.FC = () => {
 
                 <ProjectModal
                     isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
+                    onClose={closeModal}
                     onSave={handleSaveProject}
                     project={project}
                     areas={areas}
