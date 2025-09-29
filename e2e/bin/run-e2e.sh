@@ -110,6 +110,6 @@ bash -c '
     # Respect E2E_SLOWMO and run only Firefox sequentially
     npx playwright test --headed --project=Firefox --workers=1
   else
-    npm test
+    npx playwright test --workers=10
   fi
 '

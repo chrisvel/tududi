@@ -1,17 +1,15 @@
 const express = require('express');
 const { Area } = require('../models');
+const { isValidUid } = require('../utils/slug-utils');
+const _ = require('lodash');
 const router = express.Router();
 
 // GET /api/areas
 router.get('/areas', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const areas = await Area.findAll({
             where: { user_id: req.session.userId },
-            attributes: ['id', 'uid', 'name', 'description'],
+            attributes: ['uid', 'name', 'description'],
             order: [['name', 'ASC']],
         });
 
@@ -22,18 +20,17 @@ router.get('/areas', async (req, res) => {
     }
 });
 
-// GET /api/areas/:id
-router.get('/areas/:id', async (req, res) => {
+// GET /api/areas/:uid
+router.get('/areas/:uid', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
+        if (!isValidUid(req.params.uid))
+            return res.status(400).json({ error: 'Invalid UID' });
         const area = await Area.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: req.session.userId },
+            attributes: ['uid', 'name', 'description'],
         });
 
-        if (!area) {
+        if (_.isEmpty(area)) {
             return res.status(404).json({
                 error: "Area not found or doesn't belong to the current user.",
             });
@@ -49,13 +46,9 @@ router.get('/areas/:id', async (req, res) => {
 // POST /api/areas
 router.post('/areas', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const { name, description } = req.body;
 
-        if (!name || !name.trim()) {
+        if (!name || _.isEmpty(name.trim())) {
             return res.status(400).json({ error: 'Area name is required.' });
         }
 
@@ -65,10 +58,7 @@ router.post('/areas', async (req, res) => {
             user_id: req.session.userId,
         });
 
-        res.status(201).json({
-            ...area.toJSON(),
-            uid: area.uid, // Explicitly include uid
-        });
+        res.status(201).json(_.pick(area, ['uid', 'name', 'description']));
     } catch (error) {
         console.error('Error creating area:', error);
         res.status(400).json({
@@ -80,15 +70,13 @@ router.post('/areas', async (req, res) => {
     }
 });
 
-// PATCH /api/areas/:id
-router.patch('/areas/:id', async (req, res) => {
+// PATCH /api/areas/:uid
+router.patch('/areas/:uid', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
+        if (!isValidUid(req.params.uid))
+            return res.status(400).json({ error: 'Invalid UID' });
         const area = await Area.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: req.session.userId },
         });
 
         if (!area) {
@@ -102,7 +90,7 @@ router.patch('/areas/:id', async (req, res) => {
         if (description !== undefined) updateData.description = description;
 
         await area.update(updateData);
-        res.json(area);
+        res.json(_.pick(area, ['uid', 'name', 'description']));
     } catch (error) {
         console.error('Error updating area:', error);
         res.status(400).json({
@@ -114,15 +102,14 @@ router.patch('/areas/:id', async (req, res) => {
     }
 });
 
-// DELETE /api/areas/:id
-router.delete('/areas/:id', async (req, res) => {
+// DELETE /api/areas/:uid
+router.delete('/areas/:uid', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
+        if (!isValidUid(req.params.uid))
+            return res.status(400).json({ error: 'Invalid UID' });
 
         const area = await Area.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: req.session.userId },
         });
 
         if (!area) {
@@ -130,7 +117,7 @@ router.delete('/areas/:id', async (req, res) => {
         }
 
         await area.destroy();
-        res.status(204).send();
+        return res.status(204).send();
     } catch (error) {
         console.error('Error deleting area:', error);
         res.status(400).json({

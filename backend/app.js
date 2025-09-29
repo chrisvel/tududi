@@ -90,6 +90,7 @@ app.use('/api/uploads', express.static(config.uploadPath));
 
 // Authentication middleware
 const { requireAuth } = require('./middleware/auth');
+const { logError } = require('./services/logService');
 
 // Health check (before auth middleware) - ensure it's completely bypassed
 app.get('/api/health', (req, res) => {
@@ -134,12 +135,15 @@ app.get('*', (req, res) => {
     }
 });
 
-// Error handling
+// Error handling fallback.
+// We shouldn't be here normally!
+// Each route should properly handle
+// and log its own errors.
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    logError(err);
     res.status(500).json({
         error: 'Internal Server Error',
-        message: err.message,
+        // message: err.message,
     });
 });
 

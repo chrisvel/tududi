@@ -28,10 +28,10 @@ export const createArea = async (areaData: Partial<Area>): Promise<Area> => {
 };
 
 export const updateArea = async (
-    areaId: number,
+    areaUid: string,
     areaData: Partial<Area>
 ): Promise<Area> => {
-    const response = await fetch(`/api/areas/${areaId}`, {
+    const response = await fetch(`/api/areas/${areaUid}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -45,8 +45,8 @@ export const updateArea = async (
     return await response.json();
 };
 
-export const deleteArea = async (areaId: number): Promise<void> => {
-    const response = await fetch(`/api/areas/${areaId}`, {
+export const deleteArea = async (areaUid: string): Promise<void> => {
+    const response = await fetch(`/api/areas/${areaUid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {

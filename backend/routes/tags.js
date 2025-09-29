@@ -5,6 +5,7 @@ const { validateTagName } = require('../services/tagsService');
 const router = express.Router();
 const _ = require('lodash');
 const { Op } = require('sequelize');
+const { logError } = require('../services/logService');
 
 // GET /api/tags
 router.get('/tags', async (req, res) => {
@@ -16,7 +17,7 @@ router.get('/tags', async (req, res) => {
         });
         res.json(tags);
     } catch (error) {
-        console.error('Error fetching tags:', error);
+        logError('Error fetching tags:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -47,7 +48,7 @@ router.get('/tag', async (req, res) => {
 
         res.json(tag);
     } catch (error) {
-        console.error('Error fetching tag:', error);
+        logError('Error fetching tag:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -72,7 +73,7 @@ router.post('/tag', async (req, res) => {
             name: tag.name,
         });
     } catch (error) {
-        console.error('Error creating tag:', error);
+        logError('Error creating tag:', error);
         res.status(400).json({
             error: 'There was a problem creating the tag.',
         });
@@ -111,7 +112,7 @@ router.patch('/tag/:identifier', async (req, res) => {
             name: tag.name,
         });
     } catch (error) {
-        console.error('Error updating tag:', error);
+        logError('Error updating tag:', error);
         res.status(400).json({
             error: 'There was a problem updating the tag.',
         });
@@ -166,7 +167,7 @@ router.delete('/tag/:identifier', async (req, res) => {
         res.json({ message: 'Tag successfully deleted' });
     } catch (error) {
         await transaction.rollback();
-        console.error('Error deleting tag:', error);
+        logError('Error deleting tag:', error);
         res.status(400).json({
             error: 'There was a problem deleting the tag.',
         });

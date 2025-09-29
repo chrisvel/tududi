@@ -4,13 +4,13 @@ import TaskTimeline from './TaskTimeline';
 import { ClockIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface TimelinePanelProps {
-    taskId: number | undefined;
+    taskUid: string | undefined;
     isExpanded: boolean;
     onToggle: () => void;
 }
 
 const TimelinePanel: React.FC<TimelinePanelProps> = ({
-    taskId,
+    taskUid,
     isExpanded,
     onToggle,
 }) => {
@@ -52,7 +52,7 @@ const TimelinePanel: React.FC<TimelinePanelProps> = ({
                         </div>
                     </div>
                     <div className="p-3 lg:p-4 flex-1 overflow-hidden">
-                        <TaskTimeline taskId={taskId} />
+                        <TaskTimeline taskUid={taskUid} />
                     </div>
                 </>
             )}
