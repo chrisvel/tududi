@@ -273,7 +273,7 @@ const Areas: React.FC = () => {
                         isOpen={isAreaModalOpen}
                         onClose={() => setIsAreaModalOpen(false)}
                         onSave={handleSaveArea}
-                        onDelete={async (areaUid) => {
+                        onDelete={async (areaUid: string) => {
                             try {
                                 await deleteArea(areaUid);
                                 const updatedAreas = await fetchAreas();

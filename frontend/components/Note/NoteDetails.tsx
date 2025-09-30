@@ -70,14 +70,20 @@ const NoteDetails: React.FC = () => {
 
     const handleSaveNote = async (updatedNote: Note) => {
         try {
-            if (updatedNote.id !== undefined) {
+            const noteIdentifier =
+                updatedNote.uid ??
+                (updatedNote.id !== undefined
+                    ? String(updatedNote.id)
+                    : null);
+
+            if (noteIdentifier) {
                 const savedNote = await apiUpdateNote(
-                    updatedNote.id,
+                    noteIdentifier,
                     updatedNote
                 );
                 setNote(savedNote);
             } else {
-                console.error('Error: Note ID is undefined.');
+                console.error('Error: Note identifier is undefined.');
             }
         } catch (err) {
             console.error('Error saving note:', err);

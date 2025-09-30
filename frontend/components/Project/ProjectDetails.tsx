@@ -546,10 +546,17 @@ const ProjectDetails: React.FC = () => {
         setIsNoteModalOpen(true);
     };
 
-    const handleDeleteNote = async (noteId: number) => {
+    const handleDeleteNote = async (noteIdentifier: string) => {
         try {
-            await apiDeleteNote(noteId);
-            setNotes(notes.filter((n) => n.id !== noteId));
+            await apiDeleteNote(noteIdentifier);
+            setNotes(
+                notes.filter((n) => {
+                    const currentIdentifier =
+                        n.uid ??
+                        (n.id !== undefined ? String(n.id) : undefined);
+                    return currentIdentifier !== noteIdentifier;
+                })
+            );
             setNoteToDelete(null);
             setIsConfirmDialogOpen(false);
         } catch {
@@ -561,8 +568,17 @@ const ProjectDetails: React.FC = () => {
     const handleSaveNote = async (noteData: Note) => {
         try {
             let savedNote: Note;
-            if (noteData.id) {
-                savedNote = await updateNote(noteData.id, noteData);
+            const noteIdentifier =
+                noteData.uid ??
+                (noteData.id !== undefined
+                    ? String(noteData.id)
+                    : null);
+
+            let isUpdate = false;
+
+            if (noteIdentifier) {
+                savedNote = await updateNote(noteIdentifier, noteData);
+                isUpdate = true;
             } else {
                 savedNote = await createNote(noteData);
             }
@@ -575,9 +591,25 @@ const ProjectDetails: React.FC = () => {
             // If updated note moved to another project, remove it from this list
             if (savedNote.id && savedNote.project_id !== project?.id) {
                 setNotes(notes.filter((n) => n.id !== savedNote.id));
-            } else if (noteData.id) {
+            } else if (isUpdate) {
+                const savedIdentifier =
+                    savedNote.uid ??
+                    (savedNote.id !== undefined
+                        ? String(savedNote.id)
+                        : null);
+
                 setNotes(
-                    notes.map((n) => (n.uid === savedNote.uid ? savedNote : n))
+                    notes.map((n) => {
+                        const currentIdentifier =
+                            n.uid ??
+                            (n.id !== undefined
+                                ? String(n.id)
+                                : undefined);
+
+                        return currentIdentifier === savedIdentifier
+                            ? savedNote
+                            : n;
+                    })
                 );
             } else {
                 setNotes([savedNote, ...notes]);
@@ -1217,7 +1249,17 @@ const ProjectDetails: React.FC = () => {
                     <ConfirmDialog
                         title="Delete Note"
                         message={`Are you sure you want to delete the note "${noteToDelete.title}"?`}
-                        onConfirm={() => handleDeleteNote(noteToDelete.id!)}
+                        onConfirm={() => {
+                            const identifier =
+                                noteToDelete?.uid ??
+                                (noteToDelete?.id !== undefined
+                                    ? String(noteToDelete.id)
+                                    : null);
+
+                            if (identifier) {
+                                handleDeleteNote(identifier);
+                            }
+                        }}
                         onCancel={() => {
                             setIsConfirmDialogOpen(false);
                             setNoteToDelete(null);

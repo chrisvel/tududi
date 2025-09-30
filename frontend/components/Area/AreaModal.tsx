@@ -8,7 +8,7 @@ interface AreaModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (areaData: Partial<Area>) => Promise<void>;
-    onDelete?: (areaId: number) => Promise<void>;
+    onDelete?: (areaUid: string) => Promise<void>;
     area?: Area | null;
 }
 

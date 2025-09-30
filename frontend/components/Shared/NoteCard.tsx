@@ -7,19 +7,12 @@ import {
     EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
 import MarkdownRenderer from './MarkdownRenderer';
+import { Note } from '../../entities/Note';
 
 interface NoteCardProps {
-    note: {
-        uid: string;
-        title: string;
-        content?: string;
-        tags?: { name: string; uid?: string }[];
-        Tags?: { name: string; uid?: string }[];
-        project?: { name: string; id?: number; uid?: string };
-        Project?: { name: string; id?: number; uid?: string };
-    };
-    onEdit?: (note: any) => void;
-    onDelete?: (note: any) => void;
+    note: Note;
+    onEdit?: (note: Note) => void;
+    onDelete?: (note: Note) => void;
     showActions?: boolean;
     showProject?: boolean;
 }
@@ -38,6 +31,8 @@ const NoteCard: React.FC<NoteCardProps> = ({
 
     const tags = note.tags || note.Tags || [];
     const project = note.project || note.Project;
+    const noteIdentifier =
+        note.uid ?? (note.id !== undefined ? String(note.id) : 'note');
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -61,7 +56,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
     return (
         <div className="relative group">
             <Link
-                to={`/note/${note.uid}-${note.title
+                to={`/note/${noteIdentifier}-${note.title
                     .toLowerCase()
                     .replace(/[^a-z0-9]+/g, '-')
                     .replace(/^-|-$/g, '')}`}
@@ -206,7 +201,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                         className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 focus:outline-none transition-opacity duration-300 p-1"
                         aria-label={t('notes.toggleDropdownMenu')}
                         type="button"
-                        data-testid={`note-dropdown-${note.uid}`}
+                        data-testid={`note-dropdown-${noteIdentifier}`}
                     >
                         <EllipsisVerticalIcon className="h-4 w-4" />
                     </button>
@@ -222,7 +217,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                         setDropdownOpen(false);
                                     }}
                                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
-                                    data-testid={`note-edit-${note.uid}`}
+                                    data-testid={`note-edit-${noteIdentifier}`}
                                 >
                                     {t('notes.edit', 'Edit')}
                                 </button>
@@ -236,7 +231,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                         setDropdownOpen(false);
                                     }}
                                     className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
-                                    data-testid={`note-delete-${note.uid}`}
+                                    data-testid={`note-delete-${noteIdentifier}`}
                                 >
                                     {t('notes.delete', 'Delete')}
                                 </button>

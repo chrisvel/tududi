@@ -663,8 +663,20 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                                     type="button"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        if (onUpdate && item.id !== undefined) {
-                                            onUpdate(item.id);
+                                        if (onUpdate) {
+                                            const identifier =
+                                                item.uid ??
+                                                (item.id !== undefined
+                                                    ? String(item.id)
+                                                    : null);
+
+                                            if (identifier) {
+                                                onUpdate(identifier);
+                                            } else {
+                                                console.warn(
+                                                    'Inbox item is missing an identifier for update.'
+                                                );
+                                            }
                                         }
                                         setIsDropdownOpen(false);
                                     }}
