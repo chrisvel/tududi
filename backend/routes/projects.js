@@ -9,6 +9,7 @@ const { Op } = require('sequelize');
 const { extractUidFromSlug } = require('../utils/slug-utils');
 const { validateTagName } = require('../services/tagsService');
 const { uid } = require('../utils/uid');
+const { logError } = require("../services/logService");
 const router = express.Router();
 
 // Helper function to safely format dates
@@ -113,10 +114,6 @@ async function updateProjectTags(project, tagsData, userId) {
 // POST /api/upload/project-image
 router.post('/upload/project-image', upload.single('image'), (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         if (!req.file) {
             return res.status(400).json({ error: 'No image file provided' });
         }
@@ -125,7 +122,7 @@ router.post('/upload/project-image', upload.single('image'), (req, res) => {
         const imageUrl = `/api/uploads/projects/${req.file.filename}`;
         res.json({ imageUrl });
     } catch (error) {
-        console.error('Error uploading image:', error);
+        logError('Error uploading image:', error);
         res.status(500).json({ error: 'Failed to upload image' });
     }
 });
@@ -251,7 +248,7 @@ router.get('/projects', async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Error fetching projects:', error);
+        logError('Error fetching projects:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -259,10 +256,6 @@ router.get('/projects', async (req, res) => {
 // GET /api/project/:uidSlug (UID-slug format only)
 router.get('/project/:uidSlug', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         // Extract UID from the slug (part before first hyphen)
         const uidPart = req.params.uidSlug.split('-')[0];
 
@@ -379,7 +372,7 @@ router.get('/project/:uidSlug', async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        console.error('Error fetching project:', error);
+        logError('Error fetching project:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -387,10 +380,6 @@ router.get('/project/:uidSlug', async (req, res) => {
 // POST /api/project
 router.post('/project', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const {
             name,
             description,
@@ -445,7 +434,7 @@ router.post('/project', async (req, res) => {
             due_date_at: formatDate(project.due_date_at),
         });
     } catch (error) {
-        console.error('Error creating project:', error);
+        logError('Error creating project:', error);
         res.status(400).json({
             error: 'There was a problem creating the project.',
             details: error.errors
@@ -455,15 +444,11 @@ router.post('/project', async (req, res) => {
     }
 });
 
-// PATCH /api/project/:id
-router.patch('/project/:id', async (req, res) => {
+// PATCH /api/project/:uid
+router.patch('/project/:uid', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const project = await Project.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: req.session.userId },
         });
 
         if (!project) {
@@ -519,7 +504,7 @@ router.patch('/project/:id', async (req, res) => {
             due_date_at: formatDate(projectWithAssociations.due_date_at),
         });
     } catch (error) {
-        console.error('Error updating project:', error);
+        logError('Error updating project:', error);
         res.status(400).json({
             error: 'There was a problem updating the project.',
             details: error.errors
@@ -529,15 +514,11 @@ router.patch('/project/:id', async (req, res) => {
     }
 });
 
-// DELETE /api/project/:id
-router.delete('/project/:id', async (req, res) => {
+// DELETE /api/project/:uid
+router.delete('/project/:uid', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const project = await Project.findOne({
-            where: { id: req.params.id, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: req.session.userId },
         });
 
         if (!project) {
@@ -555,7 +536,7 @@ router.delete('/project/:id', async (req, res) => {
                     { project_id: null },
                     {
                         where: {
-                            project_id: req.params.id,
+                            project_id: project.id,
                             user_id: req.session.userId,
                         },
                         transaction,
@@ -574,7 +555,7 @@ router.delete('/project/:id', async (req, res) => {
 
         res.json({ message: 'Project successfully deleted' });
     } catch (error) {
-        console.error('Error deleting project:', error);
+        logError('Error deleting project:', error);
         res.status(400).json({
             error: 'There was a problem deleting the project.',
         });
