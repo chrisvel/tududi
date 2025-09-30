@@ -72,9 +72,7 @@ const NoteDetails: React.FC = () => {
         try {
             const noteIdentifier =
                 updatedNote.uid ??
-                (updatedNote.id !== undefined
-                    ? String(updatedNote.id)
-                    : null);
+                (updatedNote.id !== undefined ? String(updatedNote.id) : null);
 
             if (noteIdentifier) {
                 const savedNote = await apiUpdateNote(

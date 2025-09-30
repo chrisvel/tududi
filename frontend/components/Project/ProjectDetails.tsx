@@ -570,9 +570,7 @@ const ProjectDetails: React.FC = () => {
             let savedNote: Note;
             const noteIdentifier =
                 noteData.uid ??
-                (noteData.id !== undefined
-                    ? String(noteData.id)
-                    : null);
+                (noteData.id !== undefined ? String(noteData.id) : null);
 
             let isUpdate = false;
 
@@ -594,17 +592,13 @@ const ProjectDetails: React.FC = () => {
             } else if (isUpdate) {
                 const savedIdentifier =
                     savedNote.uid ??
-                    (savedNote.id !== undefined
-                        ? String(savedNote.id)
-                        : null);
+                    (savedNote.id !== undefined ? String(savedNote.id) : null);
 
                 setNotes(
                     notes.map((n) => {
                         const currentIdentifier =
                             n.uid ??
-                            (n.id !== undefined
-                                ? String(n.id)
-                                : undefined);
+                            (n.id !== undefined ? String(n.id) : undefined);
 
                         return currentIdentifier === savedIdentifier
                             ? savedNote
