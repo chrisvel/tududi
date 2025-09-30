@@ -234,8 +234,8 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveProject = async (projectData: Project) => {
         try {
-            if (projectData.id) {
-                await updateProject(projectData.id, projectData);
+            if (projectData.uid) {
+                await updateProject(projectData.uid, projectData);
             } else {
                 await createProject(projectData);
             }
@@ -474,12 +474,12 @@ const Layout: React.FC<LayoutProps> = ({
                         isOpen={isProjectModalOpen}
                         onClose={closeProjectModal}
                         onSave={handleSaveProject}
-                        onDelete={async (projectId) => {
+                        onDelete={async (projectUid) => {
                             try {
                                 const { deleteProject } = await import(
                                     './utils/projectsService'
                                 );
-                                await deleteProject(projectId);
+                                await deleteProject(projectUid);
 
                                 // Update global projects store
                                 const currentProjects =
@@ -488,7 +488,7 @@ const Layout: React.FC<LayoutProps> = ({
                                     .getState()
                                     .projectsStore.setProjects(
                                         currentProjects.filter(
-                                            (p) => p.id !== projectId
+                                            (p) => p.uid !== projectUid
                                         )
                                     );
 

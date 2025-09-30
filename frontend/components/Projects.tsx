@@ -171,8 +171,8 @@ const Projects: React.FC = () => {
     const handleSaveProject = async (project: Project) => {
         setProjectsLoading(true);
         try {
-            if (project.id) {
-                await updateProject(project.id, project);
+            if (project.uid) {
+                await updateProject(project.uid, project);
             } else {
                 await createProject(project);
             }
@@ -202,15 +202,15 @@ const Projects: React.FC = () => {
         if (!projectToDelete) return;
 
         try {
-            if (projectToDelete.id !== undefined) {
+            if (projectToDelete.uid !== undefined) {
                 setProjectsLoading(true);
-                await deleteProject(projectToDelete.id);
+                await deleteProject(projectToDelete.uid);
 
                 // Update global state
                 const projectsData = await fetchProjects();
                 setProjects(projectsData);
             } else {
-                console.error('Cannot delete project: ID is undefined.');
+                console.error('Cannot delete project: UID is undefined.');
             }
         } catch (error) {
             console.error('Error deleting project:', error);
@@ -500,13 +500,13 @@ const Projects: React.FC = () => {
                         setModalState({ isOpen: false, projectToEdit: null });
                     }}
                     onSave={handleSaveProject}
-                    onDelete={async (projectId) => {
+                    onDelete={async (projectUid) => {
                         try {
-                            await deleteProject(projectId);
+                            await deleteProject(projectUid);
 
                             // Update both local and global state
                             const updatedProjects = projects.filter(
-                                (p: Project) => p.id !== projectId
+                                (p: Project) => p.uid !== projectUid
                             );
                             setProjects(updatedProjects);
 
