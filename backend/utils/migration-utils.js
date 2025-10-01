@@ -59,7 +59,90 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
     try {
         const tableInfo = await queryInterface.describeTable(tableName);
 
-        if (columnName in tableInfo) {
+        if (!(columnName in tableInfo)) {
+            console.log(
+                `Column ${columnName} does not exist in ${tableName}, skipping removal`
+            );
+            return;
+        }
+
+        const dialect = queryInterface.sequelize.getDialect();
+
+        // SQLite doesn't support DROP COLUMN, so we need to recreate the table
+        if (dialect === 'sqlite') {
+            const transaction = await queryInterface.sequelize.transaction();
+
+            try {
+                // Get all columns except the one to remove
+                const columns = Object.keys(tableInfo).filter(
+                    (col) => col !== columnName
+                );
+
+                // Build column definitions for new table
+                const columnDefs = columns
+                    .map((col) => {
+                        const info = tableInfo[col];
+                        let def = `${col} ${info.type}`;
+
+                        if (info.primaryKey) {
+                            def += ' PRIMARY KEY';
+                        }
+                        if (info.autoIncrement) {
+                            def += ' AUTOINCREMENT';
+                        }
+                        if (!info.allowNull) {
+                            def += ' NOT NULL';
+                        }
+                        if (info.unique) {
+                            def += ' UNIQUE';
+                        }
+                        if (info.defaultValue !== undefined) {
+                            def += ` DEFAULT ${info.defaultValue}`;
+                        }
+
+                        return def;
+                    })
+                    .join(', ');
+
+                // Create new table without the column
+                await queryInterface.sequelize.query(
+                    `CREATE TABLE ${tableName}_new (${columnDefs});`,
+                    { transaction }
+                );
+
+                // Copy data
+                const columnList = columns.join(', ');
+                await queryInterface.sequelize.query(
+                    `INSERT INTO ${tableName}_new (${columnList}) SELECT ${columnList} FROM ${tableName};`,
+                    { transaction }
+                );
+
+                // Drop old table
+                await queryInterface.sequelize.query(
+                    `DROP TABLE ${tableName};`,
+                    { transaction }
+                );
+
+                // Rename new table
+                await queryInterface.sequelize.query(
+                    `ALTER TABLE ${tableName}_new RENAME TO ${tableName};`,
+                    { transaction }
+                );
+
+                await transaction.commit();
+                console.log(
+                    `Successfully removed column ${columnName} from ${tableName}`
+                );
+            } catch (error) {
+                await transaction.rollback();
+                console.log(
+                    `Migration error removing column ${columnName} from ${tableName}:`,
+                    error.message
+                );
+                throw error;
+            }
+        } else {
+            // For other databases, use standard removeColumn
             await queryInterface.removeColumn(tableName, columnName);
         }
     } catch (error) {
