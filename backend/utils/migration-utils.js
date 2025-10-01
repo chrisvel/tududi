@@ -73,6 +73,12 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
             const transaction = await queryInterface.sequelize.transaction();
 
             try {
+                // Disable foreign key checks temporarily
+                await queryInterface.sequelize.query(
+                    'PRAGMA foreign_keys = OFF;',
+                    { transaction }
+                );
+
                 // Get all columns except the one to remove
                 const columns = Object.keys(tableInfo).filter(
                     (col) => col !== columnName
@@ -137,12 +143,22 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
                     { transaction }
                 );
 
+                // Re-enable foreign key checks
+                await queryInterface.sequelize.query(
+                    'PRAGMA foreign_keys = ON;',
+                    { transaction }
+                );
+
                 await transaction.commit();
                 console.log(
                     `Successfully removed column ${columnName} from ${tableName}`
                 );
             } catch (error) {
                 await transaction.rollback();
+                // Re-enable foreign key checks even on error
+                await queryInterface.sequelize.query(
+                    'PRAGMA foreign_keys = ON;'
+                );
                 console.log(
                     `Migration error removing column ${columnName} from ${tableName}:`,
                     error.message
