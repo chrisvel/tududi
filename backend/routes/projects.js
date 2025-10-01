@@ -9,7 +9,7 @@ const { Op } = require('sequelize');
 const { extractUidFromSlug } = require('../utils/slug-utils');
 const { validateTagName } = require('../services/tagsService');
 const { uid } = require('../utils/uid');
-const { logError } = require("../services/logService");
+const { logError } = require('../services/logService');
 const router = express.Router();
 
 // Helper function to safely format dates
@@ -130,7 +130,6 @@ router.post('/upload/project-image', upload.single('image'), (req, res) => {
 // GET /api/projects
 router.get('/projects', async (req, res) => {
     try {
-
         const { state, active, pin_to_sidebar, area_id, area } = req.query;
 
         let whereClause = { user_id: req.session.userId };

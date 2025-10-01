@@ -11,7 +11,7 @@ if [ $# -lt 1 ]; then
 fi
 
 TEST_PATTERN="$1"
-BROWSER="${2:-firefox}"
+BROWSER="${2:-Chromium}"
 
 # Config
 APP_URL_DEFAULT="http://localhost:8080"
