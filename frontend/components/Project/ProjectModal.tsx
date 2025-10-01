@@ -345,8 +345,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 tags: tags.map((name) => ({ name })),
             };
 
-            // Save the project
-            onSave(projectData);
+            // Save the project and wait for it to complete
+            await onSave(projectData);
 
             showSuccessToast(
                 project
