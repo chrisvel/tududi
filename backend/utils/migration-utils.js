@@ -96,8 +96,16 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
                         if (info.unique) {
                             def += ' UNIQUE';
                         }
-                        if (info.defaultValue !== undefined) {
-                            def += ` DEFAULT ${info.defaultValue}`;
+                        if (
+                            info.defaultValue !== undefined &&
+                            info.defaultValue !== null
+                        ) {
+                            // Properly quote string defaults
+                            const defaultVal =
+                                typeof info.defaultValue === 'string'
+                                    ? `'${info.defaultValue.replace(/'/g, "''")}'`
+                                    : info.defaultValue;
+                            def += ` DEFAULT ${defaultVal}`;
                         }
 
                         return def;
