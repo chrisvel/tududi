@@ -70,15 +70,7 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
 
         // SQLite doesn't support DROP COLUMN, so we need to recreate the table
         if (dialect === 'sqlite') {
-            const transaction = await queryInterface.sequelize.transaction();
-
             try {
-                // Disable foreign key checks temporarily
-                await queryInterface.sequelize.query(
-                    'PRAGMA foreign_keys = OFF;',
-                    { transaction }
-                );
-
                 // Get all columns except the one to remove
                 const columns = Object.keys(tableInfo).filter(
                     (col) => col !== columnName
@@ -118,47 +110,45 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
                     })
                     .join(', ');
 
-                // Create new table without the column
-                await queryInterface.sequelize.query(
-                    `CREATE TABLE ${tableName}_new (${columnDefs});`,
-                    { transaction }
-                );
-
-                // Copy data
                 const columnList = columns.join(', ');
+
+                // Execute operations separately as SQLite doesn't support multiple statements
                 await queryInterface.sequelize.query(
-                    `INSERT INTO ${tableName}_new (${columnList}) SELECT ${columnList} FROM ${tableName};`,
-                    { transaction }
+                    'PRAGMA foreign_keys = OFF;'
                 );
 
-                // Drop old table
                 await queryInterface.sequelize.query(
-                    `DROP TABLE ${tableName};`,
-                    { transaction }
+                    `CREATE TABLE ${tableName}_new (${columnDefs});`
                 );
 
-                // Rename new table
                 await queryInterface.sequelize.query(
-                    `ALTER TABLE ${tableName}_new RENAME TO ${tableName};`,
-                    { transaction }
+                    `INSERT INTO ${tableName}_new (${columnList}) SELECT ${columnList} FROM ${tableName};`
                 );
 
-                // Re-enable foreign key checks
                 await queryInterface.sequelize.query(
-                    'PRAGMA foreign_keys = ON;',
-                    { transaction }
+                    `DROP TABLE ${tableName};`
                 );
 
-                await transaction.commit();
+                await queryInterface.sequelize.query(
+                    `ALTER TABLE ${tableName}_new RENAME TO ${tableName};`
+                );
+
+                await queryInterface.sequelize.query(
+                    'PRAGMA foreign_keys = ON;'
+                );
+
                 console.log(
                     `Successfully removed column ${columnName} from ${tableName}`
                 );
             } catch (error) {
-                await transaction.rollback();
-                // Re-enable foreign key checks even on error
-                await queryInterface.sequelize.query(
-                    'PRAGMA foreign_keys = ON;'
-                );
+                // Ensure foreign keys are re-enabled even on error
+                try {
+                    await queryInterface.sequelize.query(
+                        'PRAGMA foreign_keys = ON;'
+                    );
+                } catch (pragmaError) {
+                    // Ignore pragma errors during cleanup
+                }
                 console.log(
                     `Migration error removing column ${columnName} from ${tableName}:`,
                     error.message
