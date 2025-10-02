@@ -24,7 +24,8 @@ describe('Users Routes', () => {
             const response = await agent.get('/api/profile');
 
             expect(response.status).toBe(200);
-            expect(response.body.id).toBe(user.id);
+            expect(response.body.uid).toBe(user.uid);
+            expect(response.body).not.toHaveProperty('id');
             expect(response.body.email).toBe(user.email);
             expect(response.body).toHaveProperty('appearance');
             expect(response.body).toHaveProperty('language');
@@ -66,6 +67,8 @@ describe('Users Routes', () => {
             const response = await agent.patch('/api/profile').send(updateData);
 
             expect(response.status).toBe(200);
+            expect(response.body.uid).toBe(user.uid);
+            expect(response.body).not.toHaveProperty('id');
             expect(response.body.appearance).toBe(updateData.appearance);
             expect(response.body.language).toBe(updateData.language);
             expect(response.body.timezone).toBe(updateData.timezone);

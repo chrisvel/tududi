@@ -12,17 +12,17 @@ router.get('/version', (req, res) => {
 router.get('/current_user', async (req, res) => {
     try {
         if (req.session && req.session.userId) {
-            const user = await User.findByPk(req.session.userId);
+            const user = await User.findByPk(req.session.userId, {
+                attributes: [
+                    'uid',
+                    'email',
+                    'language',
+                    'appearance',
+                    'timezone',
+                ],
+            });
             if (user) {
-                return res.json({
-                    user: {
-                        id: user.id,
-                        email: user.email,
-                        language: user.language,
-                        appearance: user.appearance,
-                        timezone: user.timezone,
-                    },
-                });
+                return res.json({ user });
             }
         }
 
@@ -66,7 +66,7 @@ router.post('/login', async (req, res) => {
 
         res.json({
             user: {
-                id: user.id,
+                uid: user.uid,
                 email: user.email,
                 language: user.language,
                 appearance: user.appearance,

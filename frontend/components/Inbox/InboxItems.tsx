@@ -347,7 +347,7 @@ const InboxItems: React.FC = () => {
                 setCurrentConversionItemUid(null);
             }
 
-            setIsProjectModalOpen(false);
+            // Don't set isProjectModalOpen here - the modal handles its own closing via handleClose()
         } catch (error) {
             console.error('Failed to create project:', error);
             showErrorToast(t('project.createError'));

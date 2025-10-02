@@ -32,13 +32,13 @@ import FirstDayOfWeekDropdown from '../Shared/FirstDayOfWeekDropdown';
 import { getLocaleFirstDayOfWeek } from '../../utils/profileService';
 
 interface ProfileSettingsProps {
-    currentUser: { id: number; email: string };
+    currentUser: { uid: string; email: string };
     isDarkMode?: boolean;
     toggleDarkMode?: () => void;
 }
 
 interface Profile {
-    id: number;
+    uid: string;
     email: string;
     appearance: 'light' | 'dark';
     language: string;
