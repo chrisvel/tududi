@@ -1,12 +1,12 @@
-const express = require("express");
-const { Note, Tag, Project } = require("../models");
-const { extractUidFromSlug } = require("../utils/slug-utils");
-const { validateTagName } = require("../services/tagsService");
+const express = require('express');
+const { Note, Tag, Project } = require('../models');
+const { extractUidFromSlug, isValidUid } = require('../utils/slug-utils');
+const { validateTagName } = require('../services/tagsService');
 const router = express.Router();
-const permissionsService = require("../services/permissionsService");
-const { hasAccess } = require("../middleware/authorize");
-const _ = require("lodash");
-const { logError } = require("../services/logService");
+const permissionsService = require('../services/permissionsService');
+const { hasAccess } = require('../middleware/authorize');
+const _ = require('lodash');
+const { logError } = require('../services/logService');
 
 // Helper function to update note tags
 async function updateNoteTags(note, tagsArray, userId) {
@@ -34,7 +34,7 @@ async function updateNoteTags(note, tagsArray, userId) {
 
         if (invalidTags.length > 0) {
             throw new Error(
-                `Invalid tag names: ${invalidTags.map((t) => `"${t.name}" (${t.error})`).join(", ")}`
+                `Invalid tag names: ${invalidTags.map((t) => `"${t.name}" (${t.error})`).join(', ')}`
             );
         }
 
@@ -42,39 +42,39 @@ async function updateNoteTags(note, tagsArray, userId) {
             validTagNames.map(async (name) => {
                 const [tag] = await Tag.findOrCreate({
                     where: { name, user_id: userId },
-                    defaults: { name, user_id: userId }
+                    defaults: { name, user_id: userId },
                 });
                 return tag;
             })
         );
         await note.setTags(tags);
     } catch (error) {
-        logError("Failed to update tags:", error.message);
+        logError('Failed to update tags:', error.message);
         throw error; // Re-throw to handle at route level
     }
 }
 
 // GET /api/notes
-router.get("/notes", async (req, res) => {
+router.get('/notes', async (req, res) => {
     try {
-        const orderBy = req.query.order_by || "title:asc";
-        const [orderColumn, orderDirection] = orderBy.split(":");
+        const orderBy = req.query.order_by || 'title:asc';
+        const [orderColumn, orderDirection] = orderBy.split(':');
 
         const whereClause = await permissionsService.ownershipOrPermissionWhere(
-            "note",
+            'note',
             req.session.userId
         );
         let includeClause = [
             {
                 model: Tag,
-                attributes: ["name", "uid"],
-                through: { attributes: [] }
+                attributes: ['name', 'uid'],
+                through: { attributes: [] },
             },
             {
                 model: Project,
                 required: false,
-                attributes: ["name", "uid"]
-            }
+                attributes: ['name', 'uid'],
+            },
         ];
 
         // Filter by tag
@@ -87,24 +87,31 @@ router.get("/notes", async (req, res) => {
             where: whereClause,
             include: includeClause,
             order: [[orderColumn, orderDirection.toUpperCase()]],
-            distinct: true
+            distinct: true,
         });
 
         res.json(notes);
     } catch (error) {
-        logError("Error fetching notes:", error);
-        res.status(500).json({ error: "Internal server error" });
+        logError('Error fetching notes:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-router.get("/note/:uidSlug",
+router.get(
+    '/note/:uidSlug',
     hasAccess(
-        "ro",
-        "note",
+        'ro',
+        'note',
         async (req) => {
-            return extractUidFromSlug(req.params.uidSlug);
+            const uid = extractUidFromSlug(req.params.uidSlug);
+            // Check if note exists - return null if it doesn't (triggers 404)
+            const note = await Note.findOne({
+                where: { uid },
+                attributes: ['uid'],
+            });
+            return note ? note.uid : null;
         },
-        { notFoundMessage: "Note not found." }
+        { notFoundMessage: 'Note not found.' }
     ),
     async (req, res) => {
         try {
@@ -113,148 +120,193 @@ router.get("/note/:uidSlug",
                 include: [
                     {
                         model: Tag,
-                        attributes: ["name", "uid"],
-                        through: { attributes: [] }
+                        attributes: ['name', 'uid'],
+                        through: { attributes: [] },
                     },
                     {
                         model: Project,
                         required: false,
-                        attributes: ["name", "uid"]
-                    }
-                ]
+                        attributes: ['name', 'uid'],
+                    },
+                ],
             });
 
             res.json(note);
         } catch (error) {
-            logError("Error fetching note:", error);
-            res.status(500).json({ error: "Internal server error" });
+            logError('Error fetching note:', error);
+            res.status(500).json({ error: 'Internal server error' });
         }
     }
 );
 
 // POST /api/note
-router.post("/note",
-    hasAccess(
-        "rw",
-        "project",
-        async (req) => {
-            const { project_uid } = req.body;
-            if (!project_uid || _.isEmpty(project_uid.toString().trim())) {
-                return null;
+router.post('/note', async (req, res) => {
+    try {
+        const { title, content, project_uid, project_id, tags } = req.body;
+
+        const noteAttributes = {
+            title,
+            content,
+            user_id: req.session.userId,
+        };
+
+        // Support both project_uid (new) and project_id (legacy)
+        const projectIdentifier = project_uid || project_id;
+
+        // If project identifier is provided, validate access and assign
+        if (
+            projectIdentifier &&
+            !_.isEmpty(projectIdentifier.toString().trim())
+        ) {
+            let project;
+
+            // Try to find by UID first (new way), then by ID (legacy)
+            if (project_uid) {
+                const projectUidValue = project_uid.toString().trim();
+                project = await Project.findOne({
+                    where: { uid: projectUidValue },
+                });
+            } else {
+                // Legacy: find by numeric ID
+                project = await Project.findByPk(project_id);
             }
-            return project_uid.toString().trim();
-        },
-        { notFoundMessage: "Note project not found" }
-    ),
-    async (req, res) => {
-        try {
-            const { title, content, project_uid, tags } = req.body;
 
-            const noteAttributes = {
-                title,
-                content,
-                user_id: req.session.userId
-            };
+            if (!project) {
+                return res
+                    .status(404)
+                    .json({ error: 'Note project not found' });
+            }
 
-            // project_uid is already validated by hasAccess middleware
-            const project = await Project.findOne({
-                where: { uid: project_uid.toString().trim() }
-            });
+            // Check if user has write access to the project
+            const projectAccess = await permissionsService.getAccess(
+                req.session.userId,
+                'project',
+                project.uid
+            );
+            const isOwner = project.user_id === req.session.userId;
+            const canWrite =
+                isOwner || projectAccess === 'rw' || projectAccess === 'admin';
+
+            if (!canWrite) {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
 
             noteAttributes.project_id = project.id;
-
-            const note = await Note.create(noteAttributes);
-
-            // Handle tags - can be an array of strings
-            // or array of objects with name property
-            let tagNames = [];
-            if (Array.isArray(tags)) {
-                if (tags.every((t) => typeof t === "string")) {
-                    tagNames = tags;
-                } else if (tags.every((t) => typeof t === "object" && t.name)) {
-                    tagNames = tags.map((t) => t.name);
-                }
-            }
-
-            await updateNoteTags(note, tagNames, req.session.userId);
-
-            // Reload note with associations
-            const noteWithAssociations = await Note.findByPk(note.id, {
-                include: [
-                    {
-                        model: Tag,
-                        attributes: ["name", "uid"],
-                        through: { attributes: [] }
-                    },
-                    {
-                        model: Project,
-                        required: false,
-                        attributes: ["name", "uid"]
-                    }
-                ]
-            });
-
-            res.status(201).json({
-                ...noteWithAssociations.toJSON(),
-                uid: noteWithAssociations.uid
-            });
-        } catch (error) {
-            logError("Error creating note:", error);
-            res.status(400).json({
-                error: "There was a problem creating the note.",
-                details: error.errors
-                    ? error.errors.map((e) => e.message)
-                    : [error.message]
-            });
         }
-    });
+
+        const note = await Note.create(noteAttributes);
+
+        // Handle tags - can be an array of strings
+        // or array of objects with name property
+        let tagNames = [];
+        if (Array.isArray(tags)) {
+            if (tags.every((t) => typeof t === 'string')) {
+                tagNames = tags;
+            } else if (tags.every((t) => typeof t === 'object' && t.name)) {
+                tagNames = tags.map((t) => t.name);
+            }
+        }
+
+        await updateNoteTags(note, tagNames, req.session.userId);
+
+        // Reload note with associations
+        const noteWithAssociations = await Note.findByPk(note.id, {
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['name', 'uid'],
+                    through: { attributes: [] },
+                },
+                {
+                    model: Project,
+                    required: false,
+                    attributes: ['name', 'uid'],
+                },
+            ],
+        });
+
+        res.status(201).json({
+            ...noteWithAssociations.toJSON(),
+            uid: noteWithAssociations.uid,
+        });
+    } catch (error) {
+        logError('Error creating note:', error);
+        res.status(400).json({
+            error: 'There was a problem creating the note.',
+            details: error.errors
+                ? error.errors.map((e) => e.message)
+                : [error.message],
+        });
+    }
+});
 
 router.patch(
-    "/note/:uid",
+    '/note/:uid',
     hasAccess(
-        "rw",
-        "note",
+        'rw',
+        'note',
         async (req) => {
-            return extractUidFromSlug(req.params.uid);
+            const uid = extractUidFromSlug(req.params.uid);
+            // Check if note exists - return null if it doesn't (triggers 404)
+            const note = await Note.findOne({
+                where: { uid },
+                attributes: ['uid'],
+            });
+            return note ? note.uid : null;
         },
-        { notFoundMessage: "Note not found." }
+        { notFoundMessage: 'Note not found.' }
     ),
     async (req, res) => {
         try {
             const note = await Note.findOne({
-                where: { uid: req.params.uid }
+                where: { uid: req.params.uid },
             });
 
-            const { title, content, project_uid, tags } = req.body;
+            const { title, content, project_uid, project_id, tags } = req.body;
 
             const updateData = {};
             if (title !== undefined) updateData.title = title;
             if (content !== undefined) updateData.content = content;
 
-            // Handle project assignment
-            if (project_uid !== undefined) {
-                if (project_uid && typeof project_uid === 'string' && project_uid.trim()) {
-                    const projectUidValue = project_uid.trim();
-                    const project = await Project.findOne({
-                        where: { uid: projectUidValue }
-                    });
+            // Handle project assignment - support both project_uid (new) and project_id (legacy)
+            const projectIdentifier =
+                project_uid !== undefined ? project_uid : project_id;
+
+            if (projectIdentifier !== undefined) {
+                if (projectIdentifier && projectIdentifier.toString().trim()) {
+                    let project;
+
+                    // Try to find by UID first (new way), then by ID (legacy)
+                    if (
+                        project_uid !== undefined &&
+                        typeof project_uid === 'string'
+                    ) {
+                        const projectUidValue = project_uid.trim();
+                        project = await Project.findOne({
+                            where: { uid: projectUidValue },
+                        });
+                    } else if (project_id !== undefined) {
+                        // Legacy: find by numeric ID
+                        project = await Project.findByPk(project_id);
+                    }
+
                     if (!project) {
                         return res
                             .status(400)
-                            .json({ error: "Invalid project." });
+                            .json({ error: 'Invalid project.' });
                     }
                     const projectAccess = await permissionsService.getAccess(
                         req.session.userId,
-                        "project",
+                        'project',
                         project.uid
                     );
                     const isOwner = project.user_id === req.session.userId;
                     const canWrite =
                         isOwner ||
-                        projectAccess === "rw" ||
-                        projectAccess === "admin";
+                        projectAccess === 'rw' ||
+                        projectAccess === 'admin';
                     if (!canWrite) {
-                        return res.status(403).json({ error: "Forbidden" });
+                        return res.status(403).json({ error: 'Forbidden' });
                     }
                     updateData.project_id = project.id;
                 } else {
@@ -268,10 +320,10 @@ router.patch(
             if (tags !== undefined) {
                 let tagNames = [];
                 if (Array.isArray(tags)) {
-                    if (tags.every((t) => typeof t === "string")) {
+                    if (tags.every((t) => typeof t === 'string')) {
                         tagNames = tags;
                     } else if (
-                        tags.every((t) => typeof t === "object" && t.name)
+                        tags.every((t) => typeof t === 'object' && t.name)
                     ) {
                         tagNames = tags.map((t) => t.name);
                     }
@@ -284,51 +336,57 @@ router.patch(
                 include: [
                     {
                         model: Tag,
-                        attributes: ["id", "name", "uid"],
-                        through: { attributes: [] }
+                        attributes: ['id', 'name', 'uid'],
+                        through: { attributes: [] },
                     },
                     {
                         model: Project,
                         required: false,
-                        attributes: ["id", "name", "uid"]
-                    }
-                ]
+                        attributes: ['id', 'name', 'uid'],
+                    },
+                ],
             });
 
             res.json(noteWithAssociations);
         } catch (error) {
-            logError("Error updating note:", error);
+            logError('Error updating note:', error);
             res.status(400).json({
-                error: "There was a problem updating the note.",
+                error: 'There was a problem updating the note.',
                 details: error.errors
                     ? error.errors.map((e) => e.message)
-                    : [error.message]
+                    : [error.message],
             });
         }
     }
 );
 
 router.delete(
-    "/note/:uid",
+    '/note/:uid',
     hasAccess(
-        "rw",
-        "note",
+        'rw',
+        'note',
         async (req) => {
-            return extractUidFromSlug(req.params.uid);
+            const uid = extractUidFromSlug(req.params.uid);
+            // Check if note exists - return null if it doesn't (triggers 404)
+            const note = await Note.findOne({
+                where: { uid },
+                attributes: ['uid'],
+            });
+            return note ? note.uid : null;
         },
-        { notFoundMessage: "Note not found." }
+        { notFoundMessage: 'Note not found.' }
     ),
     async (req, res) => {
         try {
             const note = await Note.findOne({
-                where: { uid: req.params.uid }
+                where: { uid: req.params.uid },
             });
 
             await note.destroy();
-            res.json({ message: "Note deleted successfully." });
+            res.json({ message: 'Note deleted successfully.' });
         } catch (error) {
-            logError("Error deleting note:", error);
-            res.status(500).json({ error: "Internal server error" });
+            logError('Error deleting note:', error);
+            res.status(500).json({ error: 'Internal server error' });
         }
     }
 );

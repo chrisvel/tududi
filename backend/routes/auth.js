@@ -26,7 +26,7 @@ router.get('/current_user', async (req, res) => {
                 const admin = await isAdmin(user.id);
                 return res.json({
                     user: {
-                        id: user.id,
+                        uid: user.uid,
                         email: user.email,
                         language: user.language,
                         appearance: user.appearance,

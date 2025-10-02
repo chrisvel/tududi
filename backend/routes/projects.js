@@ -268,7 +268,13 @@ router.get(
         'ro',
         'project',
         async (req) => {
-            return extractUidFromSlug(req.params.uidSlug);
+            const uid = extractUidFromSlug(req.params.uidSlug);
+            // Check if project exists - return null if it doesn't (triggers 404)
+            const project = await Project.findOne({
+                where: { uid },
+                attributes: ['uid'],
+            });
+            return project ? project.uid : null;
         },
         { notFoundMessage: 'Project not found' }
     ),
@@ -464,7 +470,13 @@ router.patch(
         'rw',
         'project',
         async (req) => {
-            return extractUidFromSlug(req.params.uid);
+            const uid = extractUidFromSlug(req.params.uid);
+            // Check if project exists - return null if it doesn't (triggers 404)
+            const project = await Project.findOne({
+                where: { uid },
+                attributes: ['uid'],
+            });
+            return project ? project.uid : null;
         },
         { notFoundMessage: 'Project not found.' }
     ),
@@ -541,7 +553,13 @@ router.delete(
         'rw',
         'project',
         async (req) => {
-            return extractUidFromSlug(req.params.uid);
+            const uid = extractUidFromSlug(req.params.uid);
+            // Check if project exists - return null if it doesn't (triggers 404)
+            const project = await Project.findOne({
+                where: { uid },
+                attributes: ['uid'],
+            });
+            return project ? project.uid : null;
         },
         { notFoundMessage: 'Project not found.' }
     ),
@@ -554,7 +572,9 @@ router.delete(
             // Use a transaction to ensure atomicity
             await sequelize.transaction(async (transaction) => {
                 // Disable foreign key constraints for this operation
-                await sequelize.query('PRAGMA foreign_keys = OFF', { transaction });
+                await sequelize.query('PRAGMA foreign_keys = OFF', {
+                    transaction,
+                });
 
                 try {
                     // First, orphan all tasks associated with this project by setting project_id to NULL

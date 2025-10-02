@@ -7,6 +7,7 @@ certs/
 .cursor
 AGENTS.md
 CLAUDE.local.md
+AGENTS.md
 
 .byebug_history
 node_modules

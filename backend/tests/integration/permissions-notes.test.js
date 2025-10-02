@@ -26,7 +26,7 @@ describe('Notes Permissions', () => {
             user_id: otherUser.id,
         });
 
-        const res = await agent.get(`/api/note/${otherNote.id}`);
+        const res = await agent.get(`/api/note/${otherNote.uid}`);
         expect(res.status).toBe(403);
         expect(res.body.error).toBe('Forbidden');
     });
@@ -55,7 +55,7 @@ describe('Notes Permissions', () => {
         });
 
         const res = await agent
-            .patch(`/api/note/${myNote.id}`)
+            .patch(`/api/note/${myNote.uid}`)
             .send({ project_id: otherProject.id });
         expect(res.status).toBe(403);
         expect(res.body.error).toBe('Forbidden');
