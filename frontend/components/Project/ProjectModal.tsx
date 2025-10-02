@@ -8,8 +8,8 @@ import TagInput from '../Tag/TagInput';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import AreaDropdown from '../Shared/AreaDropdown';
 import DatePicker from '../Shared/DatePicker';
+import ProjectStateDropdown from '../Shared/ProjectStateDropdown';
 import { PriorityType } from '../../entities/Task';
-import Switch from '../Shared/Switch';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
 import {
@@ -19,14 +19,14 @@ import {
     CameraIcon,
     CalendarIcon,
     ExclamationTriangleIcon,
-    PowerIcon,
+    PlayIcon,
 } from '@heroicons/react/24/outline';
 
 interface ProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (project: Project) => void;
-    onDelete?: (projectId: number) => Promise<void>;
+    onDelete?: (projectUid: string) => Promise<void>;
     project?: Project;
     areas: Area[];
 }
@@ -45,7 +45,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             name: '',
             description: '',
             area_id: null,
-            active: true,
+            state: 'idea',
             tags: [],
             priority: 'low',
             due_date_at: null,
@@ -76,35 +76,32 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     // Collapsible sections state
     const [expandedSections, setExpandedSections] = useState({
+        state: false,
         tags: false,
         area: false,
         image: false,
         priority: false,
         dueDate: false,
-        active: false,
     });
 
     const { showSuccessToast, showErrorToast } = useToast();
     const { t } = useTranslation();
 
-    // Load tags when modal opens and auto-focus on the name input
+    // Auto-focus on the name input when modal opens
     useEffect(() => {
         if (isOpen) {
-            // Load tags with a delay to avoid conflicts with modal state
-            if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
-                // Delay tag loading to avoid immediate state conflicts
-                setTimeout(() => {
-                    if (isOpen) {
-                        // Only load if modal is still open
-                        tagsStore.loadTags();
-                    }
-                }, 300);
-            }
             setTimeout(() => {
                 nameInputRef.current?.focus();
             }, 200);
         }
-    }, [isOpen, tagsStore]);
+    }, [isOpen]);
+
+    // Load tags only when user actually interacts with tag input to prevent refresh
+    const handleTagInputFocus = () => {
+        if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
+            tagsStore.loadTags();
+        }
+    };
 
     // Manage body scroll when modal is open
     useEffect(() => {
@@ -139,7 +136,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 name: '',
                 description: '',
                 area_id: null,
-                active: true,
+                state: 'idea',
                 tags: [],
                 priority: 'low',
                 due_date_at: null,
@@ -176,13 +173,13 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             handleClose();
         };
 
-        if (isOpen) {
+        if (isOpen && !modalJustOpened) {
             document.addEventListener('mousedown', handleClickOutside);
         }
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isOpen]);
+    }, [isOpen, modalJustOpened]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -348,8 +345,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 tags: tags.map((name) => ({ name })),
             };
 
-            // Save the project
-            onSave(projectData);
+            // Save the project and wait for it to complete
+            await onSave(projectData);
 
             showSuccessToast(
                 project
@@ -369,9 +366,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     };
 
     const handleDeleteConfirm = async () => {
-        if (project && project.id && onDelete) {
+        if (project && project.uid && onDelete) {
             try {
-                await onDelete(project.id);
+                await onDelete(project.uid);
                 showSuccessToast(t('success.projectDeleted'));
                 setShowConfirmDialog(false);
                 handleClose();
@@ -388,13 +385,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             onClose();
             setIsClosing(false);
         }, 300);
-    };
-
-    const handleToggleActive = () => {
-        setFormData((prev) => ({
-            ...prev,
-            active: !prev.active,
-        }));
     };
 
     const toggleSection = useCallback(
@@ -445,7 +435,6 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     return createPortal(
         <>
-            ,
             <div
                 className={`fixed top-16 left-0 right-0 bottom-0 flex items-start sm:items-center justify-center bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 ${
                     isClosing ? 'opacity-0' : 'opacity-100'
@@ -529,34 +518,29 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             </div>
 
                                             {/* Expandable Sections - Only show when expanded */}
-                                            {/* Active Status Section - First */}
-                                            {expandedSections.active && (
+                                            {/* State Section - First */}
+                                            {expandedSections.state && (
                                                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
                                                     <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                                         {t(
-                                                            'projects.active',
-                                                            'Status'
+                                                            'projects.state',
+                                                            'Project State'
                                                         )}
                                                     </h3>
-                                                    <div className="flex items-center">
-                                                        <Switch
-                                                            isChecked={
-                                                                formData.active
-                                                            }
-                                                            onToggle={
-                                                                handleToggleActive
-                                                            }
-                                                        />
-                                                        <label
-                                                            htmlFor="active"
-                                                            className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                                                        >
-                                                            {t(
-                                                                'projects.active',
-                                                                'Active'
-                                                            )}
-                                                        </label>
-                                                    </div>
+                                                    <ProjectStateDropdown
+                                                        value={
+                                                            formData.state ||
+                                                            'idea'
+                                                        }
+                                                        onChange={(state) =>
+                                                            setFormData(
+                                                                (prev) => ({
+                                                                    ...prev,
+                                                                    state,
+                                                                })
+                                                            )
+                                                        }
+                                                    />
                                                 </div>
                                             )}
 
@@ -575,6 +559,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         initialTags={tags}
                                                         availableTags={
                                                             availableTags
+                                                        }
+                                                        onFocus={
+                                                            handleTagInputFocus
                                                         }
                                                     />
                                                 </div>
@@ -741,26 +728,27 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                 <div className="flex items-center justify-between">
                                     {/* Left side: Section icons */}
                                     <div className="flex items-center space-x-1">
-                                        {/* Active Status Toggle - First */}
+                                        {/* State Toggle - First */}
                                         <button
                                             type="button"
                                             onClick={() =>
-                                                toggleSection('active')
+                                                toggleSection('state')
                                             }
                                             className={`relative p-2 rounded-full transition-colors ${
-                                                expandedSections.active
+                                                expandedSections.state
                                                     ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
                                                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                                             }`}
                                             title={t(
-                                                'projects.active',
-                                                'Status'
+                                                'projects.state',
+                                                'Project State'
                                             )}
                                         >
-                                            <PowerIcon className="h-5 w-5" />
-                                            {!formData.active && (
-                                                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-                                            )}
+                                            <PlayIcon className="h-5 w-5" />
+                                            {formData.state &&
+                                                formData.state !== 'idea' && (
+                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                                                )}
                                         </button>
 
                                         {/* Tags Toggle */}

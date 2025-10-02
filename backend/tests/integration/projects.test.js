@@ -29,7 +29,7 @@ describe('Projects Routes', () => {
             const projectData = {
                 name: 'Test Project',
                 description: 'Test Description',
-                active: true,
+                state: 'planned',
                 pin_to_sidebar: false,
                 priority: 1,
                 area_id: area.id,
@@ -40,7 +40,7 @@ describe('Projects Routes', () => {
             expect(response.status).toBe(201);
             expect(response.body.name).toBe(projectData.name);
             expect(response.body.description).toBe(projectData.description);
-            expect(response.body.active).toBe(projectData.active);
+            expect(response.body.state).toBe(projectData.state);
             expect(response.body.pin_to_sidebar).toBe(
                 projectData.pin_to_sidebar
             );
@@ -217,7 +217,7 @@ describe('Projects Routes', () => {
             project = await Project.create({
                 name: 'Test Project',
                 description: 'Test Description',
-                active: false,
+                state: 'idea',
                 priority: 0,
                 user_id: user.id,
             });
@@ -227,24 +227,24 @@ describe('Projects Routes', () => {
             const updateData = {
                 name: 'Updated Project',
                 description: 'Updated Description',
-                active: true,
+                state: 'in_progress',
                 priority: 2,
             };
 
             const response = await agent
-                .patch(`/api/project/${project.id}`)
+                .patch(`/api/project/${project.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
             expect(response.body.name).toBe(updateData.name);
             expect(response.body.description).toBe(updateData.description);
-            expect(response.body.active).toBe(updateData.active);
+            expect(response.body.state).toBe(updateData.state);
             expect(response.body.priority).toBe(updateData.priority);
         });
 
         it('should return 404 for non-existent project', async () => {
             const response = await agent
-                .patch('/api/project/999999')
+                .patch('/api/project/nonexistentuid')
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -264,7 +264,7 @@ describe('Projects Routes', () => {
             });
 
             const response = await agent
-                .patch(`/api/project/${otherProject.id}`)
+                .patch(`/api/project/${otherProject.uid}`)
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(403);
@@ -273,7 +273,7 @@ describe('Projects Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app)
-                .patch(`/api/project/${project.id}`)
+                .patch(`/api/project/${project.uid}`)
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(401);
@@ -292,7 +292,7 @@ describe('Projects Routes', () => {
         });
 
         it('should delete project', async () => {
-            const response = await agent.delete(`/api/project/${project.id}`);
+            const response = await agent.delete(`/api/project/${project.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.message).toBe('Project successfully deleted');
@@ -303,7 +303,7 @@ describe('Projects Routes', () => {
         });
 
         it('should return 404 for non-existent project', async () => {
-            const response = await agent.delete('/api/project/999999');
+            const response = await agent.delete('/api/project/nonexistentuid');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Project not found.');
@@ -322,7 +322,7 @@ describe('Projects Routes', () => {
             });
 
             const response = await agent.delete(
-                `/api/project/${otherProject.id}`
+                `/api/project/${otherProject.uid}`
             );
 
             expect(response.status).toBe(403);
@@ -331,7 +331,7 @@ describe('Projects Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app).delete(
-                `/api/project/${project.id}`
+                `/api/project/${project.uid}`
             );
 
             expect(response.status).toBe(401);
@@ -355,7 +355,7 @@ describe('Projects Routes', () => {
             });
 
             // Delete the project
-            const response = await agent.delete(`/api/project/${project.id}`);
+            const response = await agent.delete(`/api/project/${project.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.message).toBe('Project successfully deleted');
@@ -387,7 +387,7 @@ describe('Projects Routes', () => {
             });
 
             // Delete the project
-            const response = await agent.delete(`/api/project/${project.id}`);
+            const response = await agent.delete(`/api/project/${project.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.message).toBe('Project successfully deleted');
@@ -427,7 +427,7 @@ describe('Projects Routes', () => {
             });
 
             // Delete the project
-            const response = await agent.delete(`/api/project/${project.id}`);
+            const response = await agent.delete(`/api/project/${project.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.message).toBe('Project successfully deleted');

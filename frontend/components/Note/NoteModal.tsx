@@ -27,7 +27,7 @@ interface NoteModalProps {
     onClose: () => void;
     note?: Note | null;
     onSave: (noteData: Note) => Promise<void>;
-    onDelete?: (noteId: number) => Promise<void>;
+    onDelete?: (noteUid: string) => Promise<void>;
     projects?: Project[];
     onCreateProject?: (name: string) => Promise<Project>;
 }
@@ -119,9 +119,9 @@ const NoteModal: React.FC<NoteModalProps> = ({
                 setNewProjectName(currentProject ? currentProject.name : '');
 
                 // Auto-expand sections if they have content from existing note, editing existing note, or creating new note with pre-filled project
-                const shouldExpandTags = tagNames.length > 0 || !!note.id; // Expand if has tags OR editing existing note
+                const shouldExpandTags = tagNames.length > 0 || !!note.uid; // Expand if has tags OR editing existing note
                 const shouldExpandProject =
-                    !!currentProject || !!note.id || !!projectIdToFind; // Expand if has project OR editing existing note OR has project_id
+                    !!currentProject || !!note.uid || !!projectIdToFind; // Expand if has project OR editing existing note OR has project_id
 
                 setExpandedSections({
                     tags: shouldExpandTags,
@@ -260,8 +260,8 @@ const NoteModal: React.FC<NoteModalProps> = ({
     const handleProjectSelection = (project: Project) => {
         setFormData((prev) => ({
             ...prev,
-            project: { id: project.id!, name: project.name },
-            project_id: project.id,
+            project: { id: project.id!, name: project.name, uid: project.uid },
+            project_uid: project.uid,
         }));
         setNewProjectName(project.name);
         setDropdownOpen(false);
@@ -274,8 +274,12 @@ const NoteModal: React.FC<NoteModalProps> = ({
                 const newProject = await onCreateProject(newProjectName.trim());
                 setFormData((prev) => ({
                     ...prev,
-                    project: { id: newProject.id!, name: newProject.name },
-                    project_id: newProject.id,
+                    project: {
+                        id: newProject.id!,
+                        name: newProject.name,
+                        uid: newProject.uid,
+                    },
+                    project_uid: newProject.uid,
                 }));
                 setFilteredProjects([...filteredProjects, newProject]);
                 setNewProjectName(newProject.name);
@@ -339,9 +343,9 @@ const NoteModal: React.FC<NoteModalProps> = ({
     };
 
     const handleDeleteNote = async () => {
-        if (formData.id && formData.id !== 0 && onDelete) {
+        if (formData.uid && onDelete) {
             try {
-                await onDelete(formData.id);
+                await onDelete(formData.uid);
                 showSuccessToast(t('success.noteDeleted'));
                 handleClose();
             } catch (err) {
@@ -636,7 +640,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                 <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between sm:rounded-b-lg">
                                     {/* Left side: Delete and Cancel */}
                                     <div className="flex items-center space-x-3">
-                                        {note && note.id && onDelete && (
+                                        {note && note.uid && onDelete && (
                                             <button
                                                 type="button"
                                                 onClick={handleDeleteNote}

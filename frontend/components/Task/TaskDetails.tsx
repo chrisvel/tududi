@@ -484,6 +484,7 @@ const TaskDetails: React.FC = () => {
                                                     ) => (
                                                         <React.Fragment
                                                             key={
+                                                                tag.uid ||
                                                                 tag.id ||
                                                                 tag.name
                                                             }
@@ -1014,7 +1015,7 @@ const TaskDetails: React.FC = () => {
                             </h4>
                             <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
                                 <TaskTimeline
-                                    taskId={task.id}
+                                    taskUid={task.uid}
                                     refreshKey={timelineRefreshKey}
                                 />
                             </div>

@@ -149,15 +149,15 @@ const Layout: React.FC<LayoutProps> = ({
     const handleSaveNote = async (noteData: Note) => {
         try {
             let result: Note;
-            if (noteData.id) {
-                result = await updateNote(noteData.id, noteData);
+            if (noteData.uid) {
+                result = await updateNote(noteData.uid, noteData);
                 // Update existing note in global store
                 const currentNotes = useStore.getState().notesStore.notes;
                 useStore
                     .getState()
                     .notesStore.setNotes(
                         currentNotes.map((note) =>
-                            note.id === result.id ? result : note
+                            note.uid === result.uid ? result : note
                         )
                     );
             } else {
@@ -223,7 +223,7 @@ const Layout: React.FC<LayoutProps> = ({
         try {
             const newProject = await createProject({
                 name,
-                active: true,
+                state: 'planned',
             });
             return newProject;
         } catch (error) {
@@ -234,8 +234,8 @@ const Layout: React.FC<LayoutProps> = ({
 
     const handleSaveProject = async (projectData: Project) => {
         try {
-            if (projectData.id) {
-                await updateProject(projectData.id, projectData);
+            if (projectData.uid) {
+                await updateProject(projectData.uid, projectData);
             } else {
                 await createProject(projectData);
             }
@@ -255,15 +255,15 @@ const Layout: React.FC<LayoutProps> = ({
     const handleSaveArea = async (areaData: Partial<Area>) => {
         try {
             let result: Area;
-            if (areaData.id) {
-                result = await updateArea(areaData.id, areaData);
+            if (areaData.uid) {
+                result = await updateArea(areaData.uid, areaData);
                 // Update existing area in global store
                 const currentAreas = useStore.getState().areasStore.areas;
                 useStore
                     .getState()
                     .areasStore.setAreas(
                         currentAreas.map((area) =>
-                            area.id === result.id ? result : area
+                            area.uid === result.uid ? result : area
                         )
                     );
             } else {
@@ -288,15 +288,15 @@ const Layout: React.FC<LayoutProps> = ({
     const handleSaveTag = async (tagData: Tag) => {
         try {
             let result: Tag;
-            if (tagData.id) {
-                result = await updateTag(tagData.id, tagData);
+            if (tagData.uid) {
+                result = await updateTag(tagData.uid, tagData);
                 // Update existing tag in global store
                 const currentTags = useStore.getState().tagsStore.tags;
                 useStore
                     .getState()
                     .tagsStore.setTags(
                         currentTags.map((tag) =>
-                            tag.id === result.id ? result : tag
+                            tag.uid === result.uid ? result : tag
                         )
                     );
             } else {
@@ -474,12 +474,12 @@ const Layout: React.FC<LayoutProps> = ({
                         isOpen={isProjectModalOpen}
                         onClose={closeProjectModal}
                         onSave={handleSaveProject}
-                        onDelete={async (projectId) => {
+                        onDelete={async (projectUid) => {
                             try {
                                 const { deleteProject } = await import(
                                     './utils/projectsService'
                                 );
-                                await deleteProject(projectId);
+                                await deleteProject(projectUid);
 
                                 // Update global projects store
                                 const currentProjects =
@@ -488,7 +488,7 @@ const Layout: React.FC<LayoutProps> = ({
                                     .getState()
                                     .projectsStore.setProjects(
                                         currentProjects.filter(
-                                            (p) => p.id !== projectId
+                                            (p) => p.uid !== projectUid
                                         )
                                     );
 

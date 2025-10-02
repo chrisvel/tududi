@@ -35,8 +35,8 @@ export const createTag = async (tagData: Tag): Promise<Tag> => {
     return await response.json();
 };
 
-export const updateTag = async (tagId: number, tagData: Tag): Promise<Tag> => {
-    const response = await fetch(`/api/tag/${tagId}`, {
+export const updateTag = async (tagUid: string, tagData: Tag): Promise<Tag> => {
+    const response = await fetch(`/api/tag/${tagUid}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -50,8 +50,8 @@ export const updateTag = async (tagId: number, tagData: Tag): Promise<Tag> => {
     return await response.json();
 };
 
-export const deleteTag = async (tagId: number): Promise<void> => {
-    const response = await fetch(`/api/tag/${tagId}`, {
+export const deleteTag = async (tagUid: string): Promise<void> => {
+    const response = await fetch(`/api/tag/${tagUid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {

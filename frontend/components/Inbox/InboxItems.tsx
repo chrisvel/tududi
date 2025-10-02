@@ -60,13 +60,13 @@ const InboxItems: React.FC = () => {
     const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
     const [noteToEdit, setNoteToEdit] = useState<Note | null>(null);
 
-    // Track the current inbox item ID being converted (for task/project/note conversion)
-    const [currentConversionItemId, setCurrentConversionItemId] = useState<
-        number | null
+    // Track the current inbox item UID being converted (for task/project/note conversion)
+    const [currentConversionItemUid, setCurrentConversionItemUid] = useState<
+        string | null
     >(null);
 
     // Track the current inbox item being edited
-    const [itemToEdit, setItemToEdit] = useState<number | null>(null);
+    const [itemToEdit, setItemToEdit] = useState<string | null>(null);
 
     // Create stable default task object to prevent infinite re-renders
     const defaultTask = useMemo(
@@ -182,9 +182,12 @@ const InboxItems: React.FC = () => {
         };
     }, [t, showSuccessToast]); // Include dependencies that are actually used
 
-    const handleProcessItem = async (id: number, showToast: boolean = true) => {
+    const handleProcessItem = async (
+        uid: string,
+        showToast: boolean = true
+    ) => {
         try {
-            await processInboxItemWithStore(id);
+            await processInboxItemWithStore(uid);
             if (showToast) {
                 showSuccessToast(t('inbox.itemProcessed'));
             }
@@ -194,9 +197,9 @@ const InboxItems: React.FC = () => {
         }
     };
 
-    const handleUpdateItem = async (id: number): Promise<void> => {
+    const handleUpdateItem = async (uid: string): Promise<void> => {
         // When edit button is clicked, we open the InboxModal instead of doing inline editing
-        setItemToEdit(id);
+        setItemToEdit(uid);
         setIsEditModalOpen(true);
     };
 
@@ -214,9 +217,9 @@ const InboxItems: React.FC = () => {
         }
     };
 
-    const handleDeleteItem = async (id: number) => {
+    const handleDeleteItem = async (uid: string) => {
         try {
-            await deleteInboxItemWithStore(id);
+            await deleteInboxItemWithStore(uid);
             showSuccessToast(t('inbox.itemDeleted'));
         } catch (error) {
             console.error('Failed to delete inbox item:', error);
@@ -225,7 +228,7 @@ const InboxItems: React.FC = () => {
     };
 
     // Modal handlers
-    const handleOpenTaskModal = async (task: Task, inboxItemId?: number) => {
+    const handleOpenTaskModal = async (task: Task, inboxItemUid?: string) => {
         try {
             // Load projects first before opening the modal
             try {
@@ -242,8 +245,8 @@ const InboxItems: React.FC = () => {
 
             setTaskToEdit(task);
 
-            if (inboxItemId) {
-                setCurrentConversionItemId(inboxItemId);
+            if (inboxItemUid) {
+                setCurrentConversionItemUid(inboxItemUid);
             }
 
             setIsTaskModalOpen(true);
@@ -254,7 +257,7 @@ const InboxItems: React.FC = () => {
 
     const handleOpenProjectModal = async (
         project: Project | null,
-        inboxItemId?: number
+        inboxItemUid?: string
     ) => {
         try {
             // Load areas first before opening the modal (similar to task modal)
@@ -269,8 +272,8 @@ const InboxItems: React.FC = () => {
 
             setProjectToEdit(project);
 
-            if (inboxItemId) {
-                setCurrentConversionItemId(inboxItemId);
+            if (inboxItemUid) {
+                setCurrentConversionItemUid(inboxItemUid);
             }
 
             setIsProjectModalOpen(true);
@@ -281,7 +284,7 @@ const InboxItems: React.FC = () => {
 
     const handleOpenNoteModal = async (
         note: Note | null,
-        inboxItemId?: number
+        inboxItemUid?: string
     ) => {
         // Set up the note data first
         if (note && note.content && isUrl(note.content.trim())) {
@@ -294,8 +297,8 @@ const InboxItems: React.FC = () => {
 
         setNoteToEdit(note);
 
-        if (inboxItemId) {
-            setCurrentConversionItemId(inboxItemId);
+        if (inboxItemUid) {
+            setCurrentConversionItemUid(inboxItemUid);
         }
 
         // Projects are already available from the store
@@ -321,9 +324,9 @@ const InboxItems: React.FC = () => {
             showSuccessToast(taskLink);
 
             // Process the inbox item after successful task creation
-            if (currentConversionItemId !== null) {
-                await handleProcessItem(currentConversionItemId, false);
-                setCurrentConversionItemId(null);
+            if (currentConversionItemUid !== null) {
+                await handleProcessItem(currentConversionItemUid, false);
+                setCurrentConversionItemUid(null);
             }
 
             setIsTaskModalOpen(false);
@@ -339,12 +342,12 @@ const InboxItems: React.FC = () => {
             showSuccessToast(t('project.createSuccess'));
 
             // Process the inbox item after successful project creation
-            if (currentConversionItemId !== null) {
-                await handleProcessItem(currentConversionItemId, false);
-                setCurrentConversionItemId(null);
+            if (currentConversionItemUid !== null) {
+                await handleProcessItem(currentConversionItemUid, false);
+                setCurrentConversionItemUid(null);
             }
 
-            setIsProjectModalOpen(false);
+            // Don't set isProjectModalOpen here - the modal handles its own closing via handleClose()
         } catch (error) {
             console.error('Failed to create project:', error);
             showErrorToast(t('project.createError'));
@@ -378,9 +381,9 @@ const InboxItems: React.FC = () => {
             );
 
             // Process the inbox item after successful note creation
-            if (currentConversionItemId !== null) {
-                await handleProcessItem(currentConversionItemId, false);
-                setCurrentConversionItemId(null);
+            if (currentConversionItemUid !== null) {
+                await handleProcessItem(currentConversionItemUid, false);
+                setCurrentConversionItemUid(null);
             }
 
             setIsNoteModalOpen(false);
@@ -392,7 +395,7 @@ const InboxItems: React.FC = () => {
 
     const handleCreateProject = async (name: string): Promise<Project> => {
         try {
-            const project = await createProject({ name, active: true });
+            const project = await createProject({ name, state: 'planned' });
             showSuccessToast(t('project.createSuccess'));
             return project;
         } catch (error) {
@@ -510,7 +513,7 @@ const InboxItems: React.FC = () => {
                         <div className="space-y-2">
                             {inboxItems.map((item) => (
                                 <InboxItemDetail
-                                    key={item.id}
+                                    key={item.uid || item.id}
                                     item={item}
                                     onProcess={handleProcessItem}
                                     onDelete={handleDeleteItem}
@@ -677,7 +680,7 @@ const InboxItems: React.FC = () => {
                         onSave={handleSaveTask}
                         onSaveNote={handleSaveNote}
                         initialText={
-                            inboxItems.find((item) => item.id === itemToEdit)
+                            inboxItems.find((item) => item.uid === itemToEdit)
                                 ?.content || ''
                         }
                         editMode={true}

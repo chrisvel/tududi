@@ -95,6 +95,7 @@ interface InboxStore {
     addInboxItem: (inboxItem: InboxItem) => void;
     updateInboxItem: (inboxItem: InboxItem) => void;
     removeInboxItem: (id: number) => void;
+    removeInboxItemByUid: (uid: string) => void;
     setLoading: (isLoading: boolean) => void;
     setError: (isError: boolean) => void;
     resetPagination: () => void;
@@ -629,7 +630,10 @@ export const useStore = create<StoreState>((set: any) => ({
                 inboxStore: {
                     ...state.inboxStore,
                     inboxItems: state.inboxStore.inboxItems.map((item) =>
-                        item.id === inboxItem.id ? inboxItem : item
+                        (inboxItem.uid && item.uid === inboxItem.uid) ||
+                        (inboxItem.id && item.id === inboxItem.id)
+                            ? inboxItem
+                            : item
                     ),
                 },
             })),
@@ -639,6 +643,22 @@ export const useStore = create<StoreState>((set: any) => ({
                     ...state.inboxStore,
                     inboxItems: state.inboxStore.inboxItems.filter(
                         (item) => item.id !== id
+                    ),
+                    pagination: {
+                        ...state.inboxStore.pagination,
+                        total: Math.max(
+                            0,
+                            state.inboxStore.pagination.total - 1
+                        ),
+                    },
+                },
+            })),
+        removeInboxItemByUid: (uid) =>
+            set((state) => ({
+                inboxStore: {
+                    ...state.inboxStore,
+                    inboxItems: state.inboxStore.inboxItems.filter(
+                        (item) => item.uid !== uid
                     ),
                     pagination: {
                         ...state.inboxStore.pagination,

@@ -61,11 +61,7 @@ const NoteDetails: React.FC = () => {
     const handleDeleteNote = async () => {
         if (!noteToDelete) return;
         try {
-            await deleteNoteWithStoreUpdate(
-                noteToDelete.id!,
-                showSuccessToast,
-                t
-            );
+            await deleteNoteWithStoreUpdate(noteToDelete, showSuccessToast, t);
             navigate('/notes');
         } catch (err) {
             console.error('Error deleting note:', err);
@@ -74,14 +70,18 @@ const NoteDetails: React.FC = () => {
 
     const handleSaveNote = async (updatedNote: Note) => {
         try {
-            if (updatedNote.id !== undefined) {
+            const noteIdentifier =
+                updatedNote.uid ??
+                (updatedNote.id !== undefined ? String(updatedNote.id) : null);
+
+            if (noteIdentifier) {
                 const savedNote = await apiUpdateNote(
-                    updatedNote.id,
+                    noteIdentifier,
                     updatedNote
                 );
                 setNote(savedNote);
             } else {
-                console.error('Error: Note ID is undefined.');
+                console.error('Error: Note identifier is undefined.');
             }
         } catch (err) {
             console.error('Error saving note:', err);
@@ -237,10 +237,10 @@ const NoteDetails: React.FC = () => {
                         isOpen={isNoteModalOpen}
                         onClose={() => setIsNoteModalOpen(false)}
                         onSave={handleSaveNote}
-                        onDelete={async (noteId) => {
+                        onDelete={async (noteUid) => {
                             try {
                                 await deleteNoteWithStoreUpdate(
-                                    noteId,
+                                    noteUid,
                                     showSuccessToast,
                                     t
                                 );

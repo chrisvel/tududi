@@ -29,7 +29,7 @@ const Areas: React.FC = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
         useState<boolean>(false);
     const [areaToDelete, setAreaToDelete] = useState<Area | null>(null);
-    const [dropdownOpen, setDropdownOpen] = useState<number | null>(null);
+    const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
     const justOpenedRef = useRef<boolean>(false);
 
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -78,8 +78,8 @@ const Areas: React.FC = () => {
         try {
             useStore.getState().areasStore.setLoading(true);
             let result: Area;
-            if (areaData.id && areaData.id !== 0) {
-                result = await updateArea(areaData.id, {
+            if (areaData.uid) {
+                result = await updateArea(areaData.uid, {
                     name: areaData.name,
                     description: areaData.description,
                 });
@@ -89,7 +89,7 @@ const Areas: React.FC = () => {
                     .getState()
                     .areasStore.setAreas(
                         currentAreas.map((area: any) =>
-                            area.id === result.id ? result : area
+                            area.uid === result.uid ? result : area
                         )
                     );
             } else {
@@ -131,14 +131,14 @@ const Areas: React.FC = () => {
 
         useStore.getState().areasStore.setLoading(true);
         try {
-            await deleteArea(areaToDelete.id!);
+            await deleteArea(areaToDelete.uid!);
             // Remove the area from global state immediately
             const currentAreas = useStore.getState().areasStore.areas;
             useStore
                 .getState()
                 .areasStore.setAreas(
                     currentAreas.filter(
-                        (area: any) => area.id !== areaToDelete.id
+                        (area: any) => area.uid !== areaToDelete.uid
                     )
                 );
             setIsConfirmDialogOpen(false);
@@ -174,17 +174,17 @@ const Areas: React.FC = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {areas.map((area: any) => (
                             <Link
-                                key={area.id}
+                                key={area.uid}
                                 to={
                                     area.uid
                                         ? `/projects?area=${area.uid}-${area.name
                                               .toLowerCase()
                                               .replace(/[^a-z0-9]+/g, '-')
                                               .replace(/^-|-$/g, '')}`
-                                        : `/projects?area_id=${area.id}`
+                                        : `/projects?area_id=${area.uid}`
                                 }
                                 className={`bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col group hover:opacity-90 transition-opacity cursor-pointer ${
-                                    dropdownOpen === area.id ? 'z-50' : ''
+                                    dropdownOpen === area.uid ? 'z-50' : ''
                                 }`}
                                 style={{
                                     minHeight: '120px',
@@ -215,9 +215,9 @@ const Areas: React.FC = () => {
                                             e.preventDefault();
                                             e.stopPropagation();
                                             const newDropdownState =
-                                                dropdownOpen === area.id
+                                                dropdownOpen === area.uid
                                                     ? null
-                                                    : area.id!;
+                                                    : area.uid!;
 
                                             if (newDropdownState !== null) {
                                                 justOpenedRef.current = true;
@@ -228,12 +228,12 @@ const Areas: React.FC = () => {
                                         aria-label={t(
                                             'areas.toggleDropdownMenu'
                                         )}
-                                        data-testid={`area-dropdown-${area.id}`}
+                                        data-testid={`area-dropdown-${area.uid}`}
                                     >
                                         <EllipsisVerticalIcon className="h-5 w-5" />
                                     </button>
 
-                                    {dropdownOpen === area.id && (
+                                    {dropdownOpen === area.uid && (
                                         <div className="absolute right-0 top-full mt-1 w-28 bg-white dark:bg-gray-700 shadow-lg rounded-md z-[60]">
                                             <button
                                                 onClick={(e) => {
@@ -243,7 +243,7 @@ const Areas: React.FC = () => {
                                                     setDropdownOpen(null);
                                                 }}
                                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
-                                                data-testid={`area-edit-${area.id}`}
+                                                data-testid={`area-edit-${area.uid}`}
                                             >
                                                 {t('areas.edit', 'Edit')}
                                             </button>
@@ -255,7 +255,7 @@ const Areas: React.FC = () => {
                                                     setDropdownOpen(null);
                                                 }}
                                                 className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
-                                                data-testid={`area-delete-${area.id}`}
+                                                data-testid={`area-delete-${area.uid}`}
                                             >
                                                 {t('areas.delete', 'Delete')}
                                             </button>
@@ -273,9 +273,9 @@ const Areas: React.FC = () => {
                         isOpen={isAreaModalOpen}
                         onClose={() => setIsAreaModalOpen(false)}
                         onSave={handleSaveArea}
-                        onDelete={async (areaId) => {
+                        onDelete={async (areaUid: string) => {
                             try {
-                                await deleteArea(areaId);
+                                await deleteArea(areaUid);
                                 const updatedAreas = await fetchAreas();
                                 useStore
                                     .getState()

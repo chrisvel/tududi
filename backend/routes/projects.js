@@ -8,8 +8,9 @@ const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
 const permissionsService = require('../services/permissionsService');
 const { Op } = require('sequelize');
 const { extractUidFromSlug } = require('../utils/slug-utils');
-const { validateTagName } = require('../utils/validation');
+const { validateTagName } = require('../services/tagsService');
 const { uid } = require('../utils/uid');
+const { logError } = require('../services/logService');
 const router = express.Router();
 const { hasAccess } = require('../middleware/authorize');
 
@@ -115,10 +116,6 @@ async function updateProjectTags(project, tagsData, userId) {
 // POST /api/upload/project-image
 router.post('/upload/project-image', upload.single('image'), (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         if (!req.file) {
             return res.status(400).json({ error: 'No image file provided' });
         }
@@ -127,7 +124,7 @@ router.post('/upload/project-image', upload.single('image'), (req, res) => {
         const imageUrl = `/api/uploads/projects/${req.file.filename}`;
         res.json({ imageUrl });
     } catch (error) {
-        console.error('Error uploading image:', error);
+        logError('Error uploading image:', error);
         res.status(500).json({ error: 'Failed to upload image' });
     }
 });
@@ -135,11 +132,7 @@ router.post('/upload/project-image', upload.single('image'), (req, res) => {
 // GET /api/projects
 router.get('/projects', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
-        const { active, pin_to_sidebar, area_id, area } = req.query;
+        const { state, active, pin_to_sidebar, area_id, area } = req.query;
 
         // Base: owned or shared projects
         const ownedOrShared =
@@ -149,11 +142,22 @@ router.get('/projects', async (req, res) => {
             );
         let whereClause = ownedOrShared;
 
-        // Filter by active status
+        // Filter by state (new primary filter)
+        if (state && state !== 'all') {
+            if (Array.isArray(state)) {
+                whereClause.state = { [Op.in]: state };
+            } else {
+                whereClause.state = state;
+            }
+        }
+
+        // Legacy support for active filter - map to states
         if (active === 'true') {
-            whereClause.active = true;
+            whereClause.state = {
+                [Op.in]: ['planned', 'in_progress', 'blocked'],
+            };
         } else if (active === 'false') {
-            whereClause.active = false;
+            whereClause.state = { [Op.in]: ['idea', 'completed'] };
         }
 
         // Filter by pinned status
@@ -252,7 +256,7 @@ router.get('/projects', async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Error fetching projects:', error);
+        logError('Error fetching projects:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -264,19 +268,13 @@ router.get(
         'ro',
         'project',
         async (req) => {
-            const uidPart = req.params.uidSlug.split('-')[0];
-            const p = await Project.findOne({
-                where: { uid: uidPart },
-                attributes: ['uid'],
-            });
-            return p?.uid;
+            return extractUidFromSlug(req.params.uidSlug);
         },
         { notFoundMessage: 'Project not found' }
     ),
     async (req, res) => {
         try {
-            // Extract UID from slug and fetch full project with associations
-            const uidPart = req.params.uidSlug.split('-')[0];
+            const uidPart = extractUidFromSlug(req.params.uidSlug);
             const project = await Project.findOne({
                 where: { uid: uidPart },
                 include: [
@@ -285,8 +283,7 @@ router.get(
                         required: false,
                         where: {
                             parent_task_id: null,
-                            recurring_parent_id: null, // Exclude recurring task instances, only show templates
-                            // Include ALL tasks regardless of status for client-side filtering
+                            recurring_parent_id: null,
                         },
                         include: [
                             {
@@ -342,10 +339,6 @@ router.get(
                 ],
             });
 
-            if (!project) {
-                return res.status(404).json({ error: 'Project not found' });
-            }
-
             const projectJson = project.toJSON();
 
             // Normalize task data to match frontend expectations
@@ -390,7 +383,7 @@ router.get(
 
             res.json(result);
         } catch (error) {
-            console.error('Error fetching project:', error);
+            logError('Error fetching project:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -399,18 +392,14 @@ router.get(
 // POST /api/project
 router.post('/project', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const {
             name,
             description,
             area_id,
-            active,
             priority,
             due_date_at,
             image_url,
+            state,
             tags,
             Tags,
         } = req.body;
@@ -430,11 +419,11 @@ router.post('/project', async (req, res) => {
             name: name.trim(),
             description: description || '',
             area_id: area_id || null,
-            active: active !== undefined ? active : true,
             pin_to_sidebar: false,
             priority: priority || null,
             due_date_at: due_date_at || null,
             image_url: image_url || null,
+            state: state || 'idea',
             user_id: req.session.userId,
         };
 
@@ -445,7 +434,7 @@ router.post('/project', async (req, res) => {
         try {
             await updateProjectTags(project, tagsData, req.session.userId);
         } catch (tagError) {
-            console.warn(
+            logError(
                 'Tag update failed, but project created successfully:',
                 tagError.message
             );
@@ -458,7 +447,7 @@ router.post('/project', async (req, res) => {
             due_date_at: formatDate(project.due_date_at),
         });
     } catch (error) {
-        console.error('Error creating project:', error);
+        logError('Error creating project:', error);
         res.status(400).json({
             error: 'There was a problem creating the project.',
             details: error.errors
@@ -468,38 +457,32 @@ router.post('/project', async (req, res) => {
     }
 });
 
-// PATCH /api/project/:id
+// PATCH /api/project/:uid
 router.patch(
-    '/project/:id',
+    '/project/:uid',
     hasAccess(
         'rw',
         'project',
         async (req) => {
-            const p = await Project.findByPk(req.params.id, {
-                attributes: ['uid'],
-            });
-            return p?.uid;
+            return extractUidFromSlug(req.params.uid);
         },
         { notFoundMessage: 'Project not found.' }
     ),
     async (req, res) => {
         try {
-            // Load project and check RW access (owner/admin or shared rw)
-            const project = await Project.findByPk(req.params.id);
-            if (!project) {
-                return res.status(404).json({ error: 'Project not found.' });
-            }
-            // access ensured by middleware
+            const project = await Project.findOne({
+                where: { uid: req.params.uid },
+            });
 
             const {
                 name,
                 description,
                 area_id,
-                active,
                 pin_to_sidebar,
                 priority,
                 due_date_at,
                 image_url,
+                state,
                 tags,
                 Tags,
             } = req.body;
@@ -511,12 +494,12 @@ router.patch(
             if (name !== undefined) updateData.name = name;
             if (description !== undefined) updateData.description = description;
             if (area_id !== undefined) updateData.area_id = area_id;
-            if (active !== undefined) updateData.active = active;
             if (pin_to_sidebar !== undefined)
                 updateData.pin_to_sidebar = pin_to_sidebar;
             if (priority !== undefined) updateData.priority = priority;
             if (due_date_at !== undefined) updateData.due_date_at = due_date_at;
             if (image_url !== undefined) updateData.image_url = image_url;
+            if (state !== undefined) updateData.state = state;
 
             await project.update(updateData);
             await updateProjectTags(project, tagsData, req.session.userId);
@@ -536,11 +519,11 @@ router.patch(
 
             res.json({
                 ...projectJson,
-                tags: projectJson.Tags || [], // Normalize Tags to tags
+                tags: projectJson.Tags || [],
                 due_date_at: formatDate(projectWithAssociations.due_date_at),
             });
         } catch (error) {
-            console.error('Error updating project:', error);
+            logError('Error updating project:', error);
             res.status(400).json({
                 error: 'There was a problem updating the project.',
                 details: error.errors
@@ -551,34 +534,27 @@ router.patch(
     }
 );
 
-// DELETE /api/project/:id
+// DELETE /api/project/:uid
 router.delete(
-    '/project/:id',
+    '/project/:uid',
     hasAccess(
         'rw',
         'project',
         async (req) => {
-            const p = await Project.findByPk(req.params.id, {
-                attributes: ['uid'],
-            });
-            return p?.uid;
+            return extractUidFromSlug(req.params.uid);
         },
         { notFoundMessage: 'Project not found.' }
     ),
     async (req, res) => {
         try {
-            const project = await Project.findByPk(req.params.id);
-            if (!project) {
-                return res.status(404).json({ error: 'Project not found.' });
-            }
-            // access ensured by middleware
+            const project = await Project.findOne({
+                where: { uid: req.params.uid },
+            });
 
             // Use a transaction to ensure atomicity
             await sequelize.transaction(async (transaction) => {
                 // Disable foreign key constraints for this operation
-                await sequelize.query('PRAGMA foreign_keys = OFF', {
-                    transaction,
-                });
+                await sequelize.query('PRAGMA foreign_keys = OFF', { transaction });
 
                 try {
                     // First, orphan all tasks associated with this project by setting project_id to NULL
@@ -586,7 +562,7 @@ router.delete(
                         { project_id: null },
                         {
                             where: {
-                                project_id: req.params.id,
+                                project_id: project.id,
                                 user_id: req.session.userId,
                             },
                             transaction,
@@ -605,7 +581,7 @@ router.delete(
 
             res.json({ message: 'Project successfully deleted' });
         } catch (error) {
-            console.error('Error deleting project:', error);
+            logError('Error deleting project:', error);
             res.status(400).json({
                 error: 'There was a problem deleting the project.',
             });

@@ -8,7 +8,7 @@ interface AreaModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (areaData: Partial<Area>) => Promise<void>;
-    onDelete?: (areaId: number) => Promise<void>;
+    onDelete?: (areaUid: string) => Promise<void>;
     area?: Area | null;
 }
 
@@ -22,6 +22,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
     const { t } = useTranslation();
     const [formData, setFormData] = useState<Area>({
         id: area?.id || 0,
+        uid: area?.uid || '',
         name: area?.name || '',
         description: area?.description || '',
     });
@@ -38,6 +39,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
         if (isOpen) {
             setFormData({
                 id: area?.id || 0,
+                uid: area?.uid || '',
                 name: area?.name || '',
                 description: area?.description || '',
             });
@@ -109,7 +111,7 @@ const AreaModal: React.FC<AreaModalProps> = ({
         try {
             await onSave(formData);
             showSuccessToast(
-                formData.id
+                formData.uid
                     ? t('success.areaUpdated')
                     : t('success.areaCreated')
             );
@@ -131,9 +133,9 @@ const AreaModal: React.FC<AreaModalProps> = ({
     };
 
     const handleDeleteArea = async () => {
-        if (formData.id && formData.id !== 0 && onDelete) {
+        if (formData.uid && onDelete) {
             try {
-                await onDelete(formData.id);
+                await onDelete(formData.uid);
                 showSuccessToast(
                     t('success.areaDeleted', 'Area deleted successfully!')
                 );
@@ -225,22 +227,16 @@ const AreaModal: React.FC<AreaModalProps> = ({
                             <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between sm:rounded-b-lg">
                                 {/* Left side: Delete and Cancel */}
                                 <div className="flex items-center space-x-3">
-                                    {area &&
-                                        area.id &&
-                                        area.id !== 0 &&
-                                        onDelete && (
-                                            <button
-                                                type="button"
-                                                onClick={handleDeleteArea}
-                                                className="p-2 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none transition duration-150 ease-in-out"
-                                                title={t(
-                                                    'common.delete',
-                                                    'Delete'
-                                                )}
-                                            >
-                                                <TrashIcon className="h-4 w-4" />
-                                            </button>
-                                        )}
+                                    {area && area.uid && onDelete && (
+                                        <button
+                                            type="button"
+                                            onClick={handleDeleteArea}
+                                            className="p-2 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none transition duration-150 ease-in-out"
+                                            title={t('common.delete', 'Delete')}
+                                        >
+                                            <TrashIcon className="h-4 w-4" />
+                                        </button>
+                                    )}
                                     <button
                                         type="button"
                                         onClick={handleClose}

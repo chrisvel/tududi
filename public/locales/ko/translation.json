@@ -655,6 +655,20 @@
       "inactive": "비활성",
       "all": "모두",
       "allAreas": "모든 영역"
+    },
+    "selectState": "상태 선택",
+    "state": "프로젝트 상태",
+    "states": {
+      "idea": "아이디어",
+      "planned": "계획됨",
+      "in_progress": "진행 중",
+      "blocked": "차단됨",
+      "completed": "완료됨",
+      "idea_desc": "포착되었지만 아직 계획되지 않음",
+      "planned_desc": "범위가 정의되고 시작할 준비가 됨",
+      "in_progress_desc": "활동적인 작업 진행 중",
+      "blocked_desc": "일시적으로 중단되거나 막힘",
+      "completed_desc": "완료되고 끝남"
     }
   },
   "projectItem": {

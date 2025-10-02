@@ -655,6 +655,20 @@
       "inactive": "Pasif",
       "all": "Hepsi",
       "allAreas": "Tüm Alanlar"
+    },
+    "selectState": "Durum Seç",
+    "state": "Proje Durumu",
+    "states": {
+      "idea": "Fikir",
+      "planned": "Planlandı",
+      "in_progress": "Devam Ediyor",
+      "blocked": "Engellendi",
+      "completed": "Tamamlandı",
+      "idea_desc": "Kaydedildi ama henüz planlanmadı",
+      "planned_desc": "Kapsam belirlendi ve başlamaya hazır",
+      "in_progress_desc": "Aktif çalışma devam ediyor",
+      "blocked_desc": "Geçici olarak duraklatıldı veya takıldı",
+      "completed_desc": "Tamamlandı ve sona erdi"
     }
   },
   "projectItem": {

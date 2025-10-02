@@ -31,7 +31,8 @@ describe('Areas Routes', () => {
             expect(response.status).toBe(201);
             expect(response.body.name).toBe(areaData.name);
             expect(response.body.description).toBe(areaData.description);
-            expect(response.body.user_id).toBe(user.id);
+            expect(response.body.uid).toBeDefined();
+            expect(typeof response.body.uid).toBe('string');
         });
 
         it('should require authentication', async () => {
@@ -81,8 +82,8 @@ describe('Areas Routes', () => {
 
             expect(response.status).toBe(200);
             expect(response.body).toHaveLength(2);
-            expect(response.body.map((a) => a.id)).toContain(area1.id);
-            expect(response.body.map((a) => a.id)).toContain(area2.id);
+            expect(response.body.map((a) => a.uid)).toContain(area1.uid);
+            expect(response.body.map((a) => a.uid)).toContain(area2.uid);
         });
 
         it('should order areas by name', async () => {
@@ -101,7 +102,7 @@ describe('Areas Routes', () => {
         });
     });
 
-    describe('GET /api/areas/:id', () => {
+    describe('GET /api/areas/:uid', () => {
         let area;
 
         beforeEach(async () => {
@@ -112,17 +113,24 @@ describe('Areas Routes', () => {
             });
         });
 
-        it('should get area by id', async () => {
-            const response = await agent.get(`/api/areas/${area.id}`);
+        it('should get area by uid', async () => {
+            const response = await agent.get(`/api/areas/${area.uid}`);
 
             expect(response.status).toBe(200);
-            expect(response.body.id).toBe(area.id);
+            expect(response.body.uid).toBe(area.uid);
             expect(response.body.name).toBe(area.name);
             expect(response.body.description).toBe(area.description);
         });
 
+        it('should return 400 for invalid uid format', async () => {
+            const response = await agent.get('/api/areas/invalid-uid');
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Invalid UID');
+        });
+
         it('should return 404 for non-existent area', async () => {
-            const response = await agent.get('/api/areas/999999');
+            const response = await agent.get('/api/areas/abcd1234efghijk');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe(
@@ -142,7 +150,7 @@ describe('Areas Routes', () => {
                 user_id: otherUser.id,
             });
 
-            const response = await agent.get(`/api/areas/${otherArea.id}`);
+            const response = await agent.get(`/api/areas/${otherArea.uid}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe(
@@ -151,14 +159,14 @@ describe('Areas Routes', () => {
         });
 
         it('should require authentication', async () => {
-            const response = await request(app).get(`/api/areas/${area.id}`);
+            const response = await request(app).get(`/api/areas/${area.uid}`);
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');
         });
     });
 
-    describe('PATCH /api/areas/:id', () => {
+    describe('PATCH /api/areas/:uid', () => {
         let area;
 
         beforeEach(async () => {
@@ -176,7 +184,7 @@ describe('Areas Routes', () => {
             };
 
             const response = await agent
-                .patch(`/api/areas/${area.id}`)
+                .patch(`/api/areas/${area.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -184,9 +192,18 @@ describe('Areas Routes', () => {
             expect(response.body.description).toBe(updateData.description);
         });
 
+        it('should return 400 for invalid uid format', async () => {
+            const response = await agent
+                .patch('/api/areas/invalid-uid')
+                .send({ name: 'Updated' });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Invalid UID');
+        });
+
         it('should return 404 for non-existent area', async () => {
             const response = await agent
-                .patch('/api/areas/999999')
+                .patch('/api/areas/abcd1234efghijk')
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -206,7 +223,7 @@ describe('Areas Routes', () => {
             });
 
             const response = await agent
-                .patch(`/api/areas/${otherArea.id}`)
+                .patch(`/api/areas/${otherArea.uid}`)
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -215,7 +232,7 @@ describe('Areas Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app)
-                .patch(`/api/areas/${area.id}`)
+                .patch(`/api/areas/${area.uid}`)
                 .send({ name: 'Updated' });
 
             expect(response.status).toBe(401);
@@ -223,7 +240,7 @@ describe('Areas Routes', () => {
         });
     });
 
-    describe('DELETE /api/areas/:id', () => {
+    describe('DELETE /api/areas/:uid', () => {
         let area;
 
         beforeEach(async () => {
@@ -234,17 +251,26 @@ describe('Areas Routes', () => {
         });
 
         it('should delete area', async () => {
-            const response = await agent.delete(`/api/areas/${area.id}`);
+            const response = await agent.delete(`/api/areas/${area.uid}`);
 
             expect(response.status).toBe(204);
 
             // Verify area is deleted
-            const deletedArea = await Area.findByPk(area.id);
+            const deletedArea = await Area.findOne({
+                where: { uid: area.uid },
+            });
             expect(deletedArea).toBeNull();
         });
 
+        it('should return 400 for invalid uid format', async () => {
+            const response = await agent.delete('/api/areas/invalid-uid');
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Invalid UID');
+        });
+
         it('should return 404 for non-existent area', async () => {
-            const response = await agent.delete('/api/areas/999999');
+            const response = await agent.delete('/api/areas/abcd1234efghijk');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Area not found.');
@@ -262,14 +288,16 @@ describe('Areas Routes', () => {
                 user_id: otherUser.id,
             });
 
-            const response = await agent.delete(`/api/areas/${otherArea.id}`);
+            const response = await agent.delete(`/api/areas/${otherArea.uid}`);
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Area not found.');
         });
 
         it('should require authentication', async () => {
-            const response = await request(app).delete(`/api/areas/${area.id}`);
+            const response = await request(app).delete(
+                `/api/areas/${area.uid}`
+            );
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');

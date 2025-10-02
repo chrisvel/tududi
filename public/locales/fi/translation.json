@@ -655,6 +655,20 @@
       "inactive": "Passiivinen",
       "all": "Kaikki",
       "allAreas": "Kaikki alueet"
+    },
+    "selectState": "Valitse tila",
+    "state": "Projektin tila",
+    "states": {
+      "idea": "Idea",
+      "planned": "Suunniteltu",
+      "in_progress": "Käynnissä",
+      "blocked": "Estetty",
+      "completed": "Valmis",
+      "idea_desc": "Tallennettu mutta ei vielä suunniteltu",
+      "planned_desc": "Määritelty ja valmis aloittamaan",
+      "in_progress_desc": "Aktiivista työtä käynnissä",
+      "blocked_desc": "Tilapäisesti keskeytetty tai jumissa",
+      "completed_desc": "Valmistunut ja tehty"
     }
   },
   "projectItem": {

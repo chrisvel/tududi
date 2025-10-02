@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Usage: ./run-single-test.sh "test name pattern" [browser]
+# Example: ./run-single-test.sh "delete an existing project" firefox
+
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <test-name-pattern> [browser]"
+  echo "Example: $0 'delete an existing project' firefox"
+  exit 1
+fi
+
+TEST_PATTERN="$1"
+BROWSER="${2:-Chromium}"
+
 # Config
 APP_URL_DEFAULT="http://localhost:8080"
 BACKEND_URL="http://localhost:3002"
@@ -12,7 +24,7 @@ red() { printf "\033[31m%s\033[0m\n" "$*"; }
 green() { printf "\033[32m%s\033[0m\n" "$*"; }
 yellow() { printf "\033[33m%s\033[0m\n" "$*"; }
 
-# Ensure dependencies in e2e/
+# Setup paths
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 E2E_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 ROOT_DIR="$(cd "$E2E_DIR/.." && pwd)"
@@ -23,15 +35,10 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-# Install e2e deps and browsers
+# Install e2e deps if needed
 if [ ! -d node_modules ]; then
   yellow "Installing e2e dependencies..."
   npm ci
-fi
-
-if ! npx playwright --version >/dev/null 2>&1; then
-  yellow "Installing Playwright browsers..."
-  npm run install-browsers
 fi
 
 # Start backend and frontend
@@ -46,11 +53,11 @@ BACKEND_PID=$!
 
 cleanup() {
   yellow "Stopping background processes..."
-  # Attempt graceful group termination
+  # Kill by PIDs
   if [ -n "${FRONTEND_PID:-}" ]; then kill -TERM -$FRONTEND_PID >/dev/null 2>&1 || true; fi
   if [ -n "${BACKEND_PID:-}" ]; then kill -TERM -$BACKEND_PID >/dev/null 2>&1 || true; fi
 
-  # Kill by known ports (best-effort)
+  # Kill by ports (best-effort)
   if command -v lsof >/dev/null 2>&1; then
     FRONTEND_PIDS_KILL=$(lsof -ti tcp:8080 || true)
     BACKEND_PIDS_KILL=$(lsof -ti tcp:3002 || true)
@@ -58,7 +65,7 @@ cleanup() {
     if [ -n "${BACKEND_PIDS_KILL:-}" ]; then kill ${BACKEND_PIDS_KILL} >/dev/null 2>&1 || true; fi
   fi
 
-  # Direct child processes as fallback
+  # Fallback direct kill
   if [ -n "${FRONTEND_PID:-}" ] && ps -p $FRONTEND_PID >/dev/null 2>&1; then kill $FRONTEND_PID || true; fi
   if [ -n "${BACKEND_PID:-}" ] && ps -p $BACKEND_PID >/dev/null 2>&1; then kill $BACKEND_PID || true; fi
 }
@@ -99,17 +106,8 @@ done
 # Run tests
 cd "$E2E_DIR"
 
-yellow "Running Playwright tests..."
+yellow "Running Playwright tests matching: ${TEST_PATTERN} on ${BROWSER}..."
 APP_URL="$FRONTEND_URL" \
 E2E_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
 E2E_PASSWORD="${E2E_PASSWORD:-password123}" \
-bash -c '
-  if [ "${E2E_MODE:-}" = "ui" ]; then
-    npm run test:ui
-  elif [ "${E2E_MODE:-}" = "headed" ]; then
-    # Respect E2E_SLOWMO and run only Firefox sequentially
-    npx playwright test --headed --project=Firefox --workers=1
-  else
-    npx playwright test --workers=10
-  fi
-'
+npx playwright test --grep "$TEST_PATTERN" --project="$BROWSER"

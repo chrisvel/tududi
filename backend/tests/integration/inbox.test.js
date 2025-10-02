@@ -32,7 +32,8 @@ describe('Inbox Routes', () => {
             expect(response.body.content).toBe(inboxData.content);
             expect(response.body.source).toBe(inboxData.source);
             expect(response.body.status).toBe('added');
-            expect(response.body.user_id).toBe(user.id);
+            expect(response.body.uid).toBeDefined();
+            expect(typeof response.body.uid).toBe('string');
         });
 
         it('should require authentication', async () => {
@@ -83,7 +84,7 @@ describe('Inbox Routes', () => {
             expect(response.status).toBe(200);
             expect(Array.isArray(response.body)).toBe(true);
             expect(response.body.length).toBe(1); // Only items with status 'added' are returned
-            expect(response.body.map((i) => i.id)).toContain(inboxItem1.id);
+            expect(response.body.map((i) => i.uid)).toContain(inboxItem1.uid);
         });
 
         it('should only return items with added status', async () => {
@@ -91,7 +92,7 @@ describe('Inbox Routes', () => {
 
             expect(response.status).toBe(200);
             expect(response.body.length).toBe(1);
-            expect(response.body[0].id).toBe(inboxItem1.id);
+            expect(response.body[0].uid).toBe(inboxItem1.uid);
             expect(response.body[0].status).toBe('added');
         });
 
@@ -129,9 +130,9 @@ describe('Inbox Routes', () => {
             expect(response.body.length).toBe(4); // Including the item from beforeEach
 
             // Check that items are ordered by newest first
-            expect(response.body[0].id).toBe(item3.id);
-            expect(response.body[1].id).toBe(item2.id);
-            expect(response.body[2].id).toBe(item1.id);
+            expect(response.body[0].uid).toBe(item3.uid);
+            expect(response.body[1].uid).toBe(item2.uid);
+            expect(response.body[2].uid).toBe(item1.uid);
 
             // Verify the content matches expected order
             expect(response.body[0].content).toBe('Third item (newest)');
@@ -147,7 +148,7 @@ describe('Inbox Routes', () => {
         });
     });
 
-    describe('GET /api/inbox/:id', () => {
+    describe('GET /api/inbox/:uid', () => {
         let inboxItem;
 
         beforeEach(async () => {
@@ -158,16 +159,23 @@ describe('Inbox Routes', () => {
             });
         });
 
-        it('should get inbox item by id', async () => {
-            const response = await agent.get(`/api/inbox/${inboxItem.id}`);
+        it('should get inbox item by uid', async () => {
+            const response = await agent.get(`/api/inbox/${inboxItem.uid}`);
 
             expect(response.status).toBe(200);
-            expect(response.body.id).toBe(inboxItem.id);
+            expect(response.body.uid).toBe(inboxItem.uid);
             expect(response.body.content).toBe(inboxItem.content);
         });
 
+        it('should return 400 for invalid uid format', async () => {
+            const response = await agent.get('/api/inbox/invalid-uid');
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Invalid UID');
+        });
+
         it('should return 404 for non-existent inbox item', async () => {
-            const response = await agent.get('/api/inbox/999999');
+            const response = await agent.get('/api/inbox/abcd1234efghijk');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Inbox item not found.');
@@ -186,7 +194,9 @@ describe('Inbox Routes', () => {
                 user_id: otherUser.id,
             });
 
-            const response = await agent.get(`/api/inbox/${otherInboxItem.id}`);
+            const response = await agent.get(
+                `/api/inbox/${otherInboxItem.uid}`
+            );
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Inbox item not found.');
@@ -194,7 +204,7 @@ describe('Inbox Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app).get(
-                `/api/inbox/${inboxItem.id}`
+                `/api/inbox/${inboxItem.uid}`
             );
 
             expect(response.status).toBe(401);
@@ -202,7 +212,7 @@ describe('Inbox Routes', () => {
         });
     });
 
-    describe('PATCH /api/inbox/:id', () => {
+    describe('PATCH /api/inbox/:uid', () => {
         let inboxItem;
 
         beforeEach(async () => {
@@ -221,7 +231,7 @@ describe('Inbox Routes', () => {
             };
 
             const response = await agent
-                .patch(`/api/inbox/${inboxItem.id}`)
+                .patch(`/api/inbox/${inboxItem.uid}`)
                 .send(updateData);
 
             expect(response.status).toBe(200);
@@ -229,9 +239,18 @@ describe('Inbox Routes', () => {
             expect(response.body.status).toBe(updateData.status);
         });
 
+        it('should return 400 for invalid uid format', async () => {
+            const response = await agent
+                .patch('/api/inbox/invalid-uid')
+                .send({ content: 'Updated' });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Invalid UID');
+        });
+
         it('should return 404 for non-existent inbox item', async () => {
             const response = await agent
-                .patch('/api/inbox/999999')
+                .patch('/api/inbox/abcd1234efghijk')
                 .send({ content: 'Updated' });
 
             expect(response.status).toBe(404);
@@ -240,7 +259,7 @@ describe('Inbox Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app)
-                .patch(`/api/inbox/${inboxItem.id}`)
+                .patch(`/api/inbox/${inboxItem.uid}`)
                 .send({ content: 'Updated' });
 
             expect(response.status).toBe(401);
@@ -248,7 +267,7 @@ describe('Inbox Routes', () => {
         });
     });
 
-    describe('DELETE /api/inbox/:id', () => {
+    describe('DELETE /api/inbox/:uid', () => {
         let inboxItem;
 
         beforeEach(async () => {
@@ -260,7 +279,7 @@ describe('Inbox Routes', () => {
         });
 
         it('should delete inbox item', async () => {
-            const response = await agent.delete(`/api/inbox/${inboxItem.id}`);
+            const response = await agent.delete(`/api/inbox/${inboxItem.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.message).toBe(
@@ -268,13 +287,22 @@ describe('Inbox Routes', () => {
             );
 
             // Verify inbox item status is updated to deleted
-            const deletedItem = await InboxItem.findByPk(inboxItem.id);
+            const deletedItem = await InboxItem.findOne({
+                where: { uid: inboxItem.uid },
+            });
             expect(deletedItem).not.toBeNull();
             expect(deletedItem.status).toBe('deleted');
         });
 
+        it('should return 400 for invalid uid format', async () => {
+            const response = await agent.delete('/api/inbox/invalid-uid');
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Invalid UID');
+        });
+
         it('should return 404 for non-existent inbox item', async () => {
-            const response = await agent.delete('/api/inbox/999999');
+            const response = await agent.delete('/api/inbox/abcd1234efghijk');
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Inbox item not found.');
@@ -282,7 +310,7 @@ describe('Inbox Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app).delete(
-                `/api/inbox/${inboxItem.id}`
+                `/api/inbox/${inboxItem.uid}`
             );
 
             expect(response.status).toBe(401);
@@ -290,7 +318,7 @@ describe('Inbox Routes', () => {
         });
     });
 
-    describe('PATCH /api/inbox/:id/process', () => {
+    describe('PATCH /api/inbox/:uid/process', () => {
         let inboxItem;
 
         beforeEach(async () => {
@@ -304,7 +332,7 @@ describe('Inbox Routes', () => {
 
         it('should process inbox item', async () => {
             const response = await agent.patch(
-                `/api/inbox/${inboxItem.id}/process`
+                `/api/inbox/${inboxItem.uid}/process`
             );
 
             expect(response.status).toBe(200);
@@ -312,7 +340,18 @@ describe('Inbox Routes', () => {
         });
 
         it('should return 404 for non-existent inbox item', async () => {
-            const response = await agent.patch('/api/inbox/999999/process');
+            const response = await agent.patch(
+                '/api/inbox/invalid-uid/process'
+            );
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Invalid UID');
+        });
+
+        it('should return 404 for non-existent item', async () => {
+            const response = await agent.patch(
+                '/api/inbox/abcd1234efghijk/process'
+            );
 
             expect(response.status).toBe(404);
             expect(response.body.error).toBe('Inbox item not found.');
@@ -320,7 +359,7 @@ describe('Inbox Routes', () => {
 
         it('should require authentication', async () => {
             const response = await request(app).patch(
-                `/api/inbox/${inboxItem.id}/process`
+                `/api/inbox/${inboxItem.uid}/process`
             );
 
             expect(response.status).toBe(401);

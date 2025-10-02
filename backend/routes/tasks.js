@@ -20,7 +20,7 @@ const {
     logTaskUpdate,
     getTaskTodayMoveCount,
 } = require('../services/taskEventService');
-const { validateTagName } = require('../utils/validation');
+const { validateTagName } = require('../services/tagsService');
 const {
     getSafeTimezone,
     getUpcomingRangeInUTC,
@@ -532,7 +532,7 @@ async function filterTasksByParams(params, userId, userTimezone) {
         },
         {
             model: Project,
-            attributes: ['id', 'name', 'uid'],
+            attributes: ['id', 'name', 'state', 'uid'],
             required: false,
         },
         {
@@ -742,7 +742,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active', 'uid'],
+                attributes: ['id', 'name', 'state', 'uid'],
                 required: false,
             },
             {
@@ -787,7 +787,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active', 'uid'],
+                attributes: ['id', 'name', 'state', 'uid'],
                 required: false,
             },
             {
@@ -845,7 +845,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active', 'uid'],
+                attributes: ['id', 'name', 'state', 'uid'],
                 required: false,
             },
             {
@@ -914,7 +914,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'active', 'uid'],
+                    attributes: ['id', 'name', 'uid'],
                     required: false,
                 },
                 {
@@ -959,7 +959,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                 },
                 {
                     model: Project,
-                    attributes: ['id', 'name', 'active', 'uid'],
+                    attributes: ['id', 'name', 'uid'],
                     required: false,
                 },
                 {
@@ -1015,7 +1015,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
                     },
                     {
                         model: Project,
-                        attributes: ['id', 'name', 'active', 'uid'],
+                        attributes: ['id', 'name', 'uid'],
                         required: false,
                     },
                     {
@@ -1069,7 +1069,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
             },
             {
                 model: Project,
-                attributes: ['id', 'name', 'active', 'uid'],
+                attributes: ['id', 'name', 'state', 'uid'],
                 required: false,
             },
             {

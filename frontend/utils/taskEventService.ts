@@ -11,8 +11,10 @@ const API_BASE = '/api';
 /**
  * Get task timeline (all events for a specific task)
  */
-export const getTaskTimeline = async (taskId: number): Promise<TaskEvent[]> => {
-    const response = await fetch(`${API_BASE}/task/${taskId}/timeline`, {
+export const getTaskTimeline = async (
+    taskUid: string
+): Promise<TaskEvent[]> => {
+    const response = await fetch(`${API_BASE}/task/${taskUid}/timeline`, {
         credentials: 'include',
     });
 
@@ -29,11 +31,14 @@ export const getTaskTimeline = async (taskId: number): Promise<TaskEvent[]> => {
  * Get task completion time analytics
  */
 export const getTaskCompletionTime = async (
-    taskId: number
+    taskUid: string
 ): Promise<TaskCompletionTime | null> => {
-    const response = await fetch(`${API_BASE}/task/${taskId}/completion-time`, {
-        credentials: 'include',
-    });
+    const response = await fetch(
+        `${API_BASE}/task/${taskUid}/completion-time`,
+        {
+            credentials: 'include',
+        }
+    );
 
     if (response.status === 404) {
         return null;
@@ -111,15 +116,14 @@ export const getCompletionAnalytics = async (
     options: {
         limit?: number;
         offset?: number;
-        projectId?: number;
+        projectUid?: string;
     } = {}
 ): Promise<CompletionAnalyticsResponse> => {
     const params = new URLSearchParams();
 
     if (options.limit) params.append('limit', options.limit.toString());
     if (options.offset) params.append('offset', options.offset.toString());
-    if (options.projectId)
-        params.append('projectId', options.projectId.toString());
+    if (options.projectUid) params.append('projectUid', options.projectUid);
 
     const response = await fetch(
         `${API_BASE}/tasks/completion-analytics?${params}`,

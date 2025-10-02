@@ -926,7 +926,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
             try {
                 await createProject({
                     name: projectName,
-                    active: true,
+                    state: 'planned',
                 });
                 // Projects are managed by the parent component through props
                 // No need to update local state
@@ -1644,7 +1644,11 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                         >
                                             {filteredTags.map((tag, index) => (
                                                 <button
-                                                    key={tag.id || index}
+                                                    key={
+                                                        tag.uid ||
+                                                        tag.id ||
+                                                        index
+                                                    }
                                                     onClick={() =>
                                                         handleTagSelect(
                                                             tag.name

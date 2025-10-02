@@ -65,7 +65,7 @@ async function seedDatabase() {
                 description: 'Complete overhaul of company website',
                 user_id: testUser.id,
                 area_id: areas[1].id,
-                active: true,
+                state: 'in_progress',
                 due_date_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
             },
             {
@@ -73,14 +73,14 @@ async function seedDatabase() {
                 description: 'Master mobile app development',
                 user_id: testUser.id,
                 area_id: areas[3].id,
-                active: true,
+                state: 'in_progress',
             },
             {
                 name: 'Home Renovation',
                 description: 'Kitchen and bathroom updates',
                 user_id: testUser.id,
                 area_id: areas[4].id,
-                active: true,
+                state: 'in_progress',
                 due_date_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
             },
             {
@@ -88,7 +88,7 @@ async function seedDatabase() {
                 description: '90-day fitness transformation',
                 user_id: testUser.id,
                 area_id: areas[2].id,
-                active: true,
+                state: 'in_progress',
                 due_date_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
             },
             {
@@ -96,14 +96,14 @@ async function seedDatabase() {
                 description: 'Launch online consulting service',
                 user_id: testUser.id,
                 area_id: areas[1].id,
-                active: true,
+                state: 'in_progress',
             },
             {
                 name: 'Investment Portfolio',
                 description: 'Build diversified investment portfolio',
                 user_id: testUser.id,
                 area_id: areas[5].id,
-                active: true,
+                state: 'in_progress',
                 due_date_at: new Date(Date.now() + 120 * 24 * 60 * 60 * 1000), // 120 days from now
             },
             {
@@ -111,7 +111,7 @@ async function seedDatabase() {
                 description: 'Plan and execute 3-week European vacation',
                 user_id: testUser.id,
                 area_id: areas[6].id,
-                active: true,
+                state: 'in_progress',
                 due_date_at: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000), // 180 days from now
             },
             {
@@ -119,14 +119,14 @@ async function seedDatabase() {
                 description: 'Learn advanced photography techniques',
                 user_id: testUser.id,
                 area_id: areas[7].id,
-                active: true,
+                state: 'in_progress',
             },
             {
                 name: 'Professional Certification',
                 description: 'Get AWS Solutions Architect certification',
                 user_id: testUser.id,
                 area_id: areas[9].id,
-                active: true,
+                state: 'in_progress',
                 due_date_at: new Date(Date.now() + 150 * 24 * 60 * 60 * 1000), // 150 days from now
             },
             {
@@ -134,7 +134,7 @@ async function seedDatabase() {
                 description: 'Transform backyard into productive garden',
                 user_id: testUser.id,
                 area_id: areas[4].id,
-                active: true,
+                state: 'in_progress',
                 due_date_at: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000), // 45 days from now
             },
             {
@@ -142,21 +142,21 @@ async function seedDatabase() {
                 description: 'Start personal tech blog',
                 user_id: testUser.id,
                 area_id: areas[0].id,
-                active: true,
+                state: 'in_progress',
             },
             {
                 name: 'Language Learning Spanish',
                 description: 'Become conversational in Spanish',
                 user_id: testUser.id,
                 area_id: areas[3].id,
-                active: false, // Paused project
+                state: 'blocked', // Paused project
             },
             {
                 name: 'Wedding Planning',
                 description: 'Plan and organize wedding ceremony',
                 user_id: testUser.id,
                 area_id: areas[8].id,
-                active: true,
+                state: 'in_progress',
                 due_date_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
             },
             {
@@ -164,14 +164,14 @@ async function seedDatabase() {
                 description: 'Establish weekly meal preparation routine',
                 user_id: testUser.id,
                 area_id: areas[2].id,
-                active: true,
+                state: 'in_progress',
             },
             {
                 name: 'Smart Home Setup',
                 description: 'Install and configure smart home devices',
                 user_id: testUser.id,
                 area_id: areas[4].id,
-                active: true,
+                state: 'in_progress',
                 due_date_at: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000), // 21 days from now
             },
         ]);

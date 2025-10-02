@@ -1,4 +1,4 @@
-const { validateTagName } = require('../../../utils/validation');
+const { validateTagName } = require('../../../services/tagsService');
 
 describe('validation utils', () => {
     describe('validateTagName', () => {

@@ -66,7 +66,7 @@ const Projects: React.FC = () => {
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const activeFilter = searchParams.get('active') || 'all';
+    const stateFilter = searchParams.get('state') || 'all';
 
     // Handle both 'area_id' and 'area' parameters from URL
     const getAreaIdFromParams = () => {
@@ -99,8 +99,17 @@ const Projects: React.FC = () => {
     // Filter options for dropdowns
     const statusOptions: FilterOption[] = [
         { value: 'all', label: t('projects.filters.all') },
-        { value: 'true', label: t('projects.filters.active') },
-        { value: 'false', label: t('projects.filters.inactive') },
+        { value: 'idea', label: t('projects.states.idea', 'Idea') },
+        { value: 'planned', label: t('projects.states.planned', 'Planned') },
+        {
+            value: 'in_progress',
+            label: t('projects.states.in_progress', 'In Progress'),
+        },
+        { value: 'blocked', label: t('projects.states.blocked', 'Blocked') },
+        {
+            value: 'completed',
+            label: t('projects.states.completed', 'Completed'),
+        },
     ];
 
     const areaOptions: FilterOption[] = [
@@ -169,8 +178,8 @@ const Projects: React.FC = () => {
     const handleSaveProject = async (project: Project) => {
         setProjectsLoading(true);
         try {
-            if (project.id) {
-                await updateProject(project.id, project);
+            if (project.uid) {
+                await updateProject(project.uid, project);
             } else {
                 await createProject(project);
             }
@@ -200,15 +209,15 @@ const Projects: React.FC = () => {
         if (!projectToDelete) return;
 
         try {
-            if (projectToDelete.id !== undefined) {
+            if (projectToDelete.uid !== undefined) {
                 setProjectsLoading(true);
-                await deleteProject(projectToDelete.id);
+                await deleteProject(projectToDelete.uid);
 
                 // Update global state
                 const projectsData = await fetchProjects();
                 setProjects(projectsData);
             } else {
-                console.error('Cannot delete project: ID is undefined.');
+                console.error('Cannot delete project: UID is undefined.');
             }
         } catch (error: any) {
             console.error('Error deleting project:', error);
@@ -231,13 +240,13 @@ const Projects: React.FC = () => {
         return (project as any).completion_percentage || 0;
     };
 
-    const handleActiveFilterChange = (value: string) => {
+    const handleStateFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
         if (value === 'all') {
-            params.delete('active');
+            params.delete('state');
         } else {
-            params.set('active', value);
+            params.set('state', value);
         }
         setSearchParams(params);
     };
@@ -265,11 +274,10 @@ const Projects: React.FC = () => {
     const displayProjects = useMemo(() => {
         let filteredProjects = [...projects];
 
-        // Apply active filter
-        if (activeFilter !== 'all') {
-            const isActive = activeFilter === 'true';
+        // Apply state filter
+        if (stateFilter !== 'all') {
             filteredProjects = filteredProjects.filter(
-                (project) => project.active === isActive
+                (project) => project.state === stateFilter
             );
         }
 
@@ -340,7 +348,7 @@ const Projects: React.FC = () => {
         });
 
         return filteredProjects;
-    }, [projects, activeFilter, actualAreaFilter, searchQuery, orderBy]);
+    }, [projects, stateFilter, actualAreaFilter, searchQuery, orderBy]);
 
     if (isLoading) {
         return (
@@ -419,8 +427,8 @@ const Projects: React.FC = () => {
                         <div className="w-full md:w-auto mb-4 md:mb-0">
                             <FilterDropdown
                                 options={statusOptions}
-                                value={activeFilter}
-                                onChange={handleActiveFilterChange}
+                                value={stateFilter}
+                                onChange={handleStateFilterChange}
                                 size="desktop"
                                 autoWidth={true}
                             />
@@ -508,13 +516,13 @@ const Projects: React.FC = () => {
                         setModalState({ isOpen: false, projectToEdit: null });
                     }}
                     onSave={handleSaveProject}
-                    onDelete={async (projectId) => {
+                    onDelete={async (projectUid) => {
                         try {
-                            await deleteProject(projectId);
+                            await deleteProject(projectUid);
 
                             // Update both local and global state
                             const updatedProjects = projects.filter(
-                                (p: Project) => p.id !== projectId
+                                (p: Project) => p.uid !== projectUid
                             );
                             setProjects(updatedProjects);
 

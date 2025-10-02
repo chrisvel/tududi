@@ -1,8 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { Project } from '../../entities/Project';
+import {
+    PencilSquareIcon,
+    TrashIcon,
+    LightBulbIcon,
+    DocumentTextIcon,
+    PlayIcon,
+    StopIcon,
+    CheckCircleIcon,
+} from '@heroicons/react/24/outline';
+import { Project, ProjectState } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
 
@@ -31,6 +39,40 @@ const getProjectInitials = (name: string, maxLetters?: number) => {
 
     const initials = words.map((word) => word[0].toUpperCase()).join('');
     return maxLetters ? initials.substring(0, maxLetters) : initials;
+};
+
+const getStateIcon = (state: ProjectState | undefined) => {
+    switch (state) {
+        case 'idea':
+            return { icon: LightBulbIcon };
+        case 'planned':
+            return { icon: DocumentTextIcon };
+        case 'in_progress':
+            return { icon: PlayIcon };
+        case 'blocked':
+            return { icon: StopIcon };
+        case 'completed':
+            return { icon: CheckCircleIcon };
+        default:
+            return { icon: LightBulbIcon };
+    }
+};
+
+const getStateLabel = (state: ProjectState | undefined, t: any): string => {
+    switch (state) {
+        case 'idea':
+            return t('projects.states.idea', 'Idea');
+        case 'planned':
+            return t('projects.states.planned', 'Planned');
+        case 'in_progress':
+            return t('projects.states.in_progress', 'In Progress');
+        case 'blocked':
+            return t('projects.states.blocked', 'Blocked');
+        case 'completed':
+            return t('projects.states.completed', 'Completed');
+        default:
+            return t('projects.states.idea', 'Idea');
+    }
 };
 
 const ProjectItem: React.FC<ProjectItemProps> = ({
@@ -89,6 +131,21 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                 {getProjectInitials(project.name)}
                             </span>
                         )}
+
+                        {/* State icon in top right corner of image area */}
+                        <div
+                            className="absolute top-2 right-2 z-10"
+                            title={getStateLabel(project.state, t)}
+                        >
+                            {(() => {
+                                const { icon: StateIcon } = getStateIcon(
+                                    project.state
+                                );
+                                return (
+                                    <StateIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 opacity-70 drop-shadow-sm" />
+                                );
+                            })()}
+                        </div>
                     </div>
                 </Link>
             )}

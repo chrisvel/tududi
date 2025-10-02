@@ -2,13 +2,13 @@ import { Project } from '../entities/Project';
 import { handleAuthResponse } from './authUtils';
 
 export const fetchProjects = async (
-    activeFilter = 'all',
+    stateFilter = 'all',
     areaFilter = ''
 ): Promise<Project[]> => {
     let url = `/api/projects`;
     const params = new URLSearchParams();
 
-    if (activeFilter !== 'all') params.append('active', activeFilter);
+    if (stateFilter !== 'all') params.append('state', stateFilter);
     if (areaFilter) params.append('area_id', areaFilter);
     if (params.toString()) url += `?${params.toString()}`;
 
@@ -24,14 +24,14 @@ export const fetchProjects = async (
 };
 
 export const fetchGroupedProjects = async (
-    activeFilter = 'all',
+    stateFilter = 'all',
     areaFilter = ''
 ): Promise<Record<string, Project[]>> => {
     let url = `/api/projects`;
     const params = new URLSearchParams();
 
     params.append('grouped', 'true');
-    if (activeFilter !== 'all') params.append('active', activeFilter);
+    if (stateFilter !== 'all') params.append('state', stateFilter);
     if (areaFilter) params.append('area_id', areaFilter);
     if (params.toString()) url += `?${params.toString()}`;
 
@@ -74,10 +74,10 @@ export const createProject = async (
 };
 
 export const updateProject = async (
-    projectId: number,
+    projectUid: string,
     projectData: Partial<Project>
 ): Promise<Project> => {
-    const response = await fetch(`/api/project/${projectId}`, {
+    const response = await fetch(`/api/project/${projectUid}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -91,14 +91,14 @@ export const updateProject = async (
     return await response.json();
 };
 
-export const deleteProject = async (projectId: number): Promise<void> => {
-    if (!projectId || projectId === null || projectId === undefined) {
-        throw new Error('Cannot delete project: Invalid project ID');
+export const deleteProject = async (projectUid: string): Promise<void> => {
+    if (!projectUid || projectUid === null || projectUid === undefined) {
+        throw new Error('Cannot delete project: Invalid project UID');
     }
 
-    console.log('Attempting to delete project with ID:', projectId);
+    console.log('Attempting to delete project with UID:', projectUid);
 
-    const response = await fetch(`/api/project/${projectId}`, {
+    const response = await fetch(`/api/project/${projectUid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
