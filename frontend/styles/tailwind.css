@@ -163,3 +163,59 @@ select:focus {
   display: none; /* Chrome/Safari */
 }
 
+/* PWA Safe Area Padding */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  /* Old devices fallback */
+  padding-top: constant(safe-area-inset-top);
+  padding-right: constant(safe-area-inset-right);
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-left: constant(safe-area-inset-left);
+
+  /* Modern devices */
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+
+  min-height: 100dvh;
+  background: var(--app-bg, #fff);
+  box-sizing: border-box;
+}
+
+/* Apply same safe-area padding to modals/portals/overlays */
+#modal-root, #portal-root, [data-portal-root],
+[role="dialog"][aria-modal="true"] {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  box-sizing: border-box;
+}
+
+/* Ensure fixed positioned elements respect safe areas */
+.fixed, [class*="fixed-"] {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  box-sizing: border-box;
+}
+
+/* PWA Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .touch-spacing {
+    margin: 8px;
+    padding: 12px;
+  }
+}
+

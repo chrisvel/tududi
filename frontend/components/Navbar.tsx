@@ -115,12 +115,22 @@ const Navbar: React.FC<NavbarProps> = ({
     };
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md h-16">
-            <div className="h-full flex items-center">
-                {/* Sidebar-width area with logo and hamburger */}
-                <div
-                    className={`${isSidebarOpen ? 'w-full sm:w-72' : 'w-16'} flex items-center ${isSidebarOpen ? 'sm:justify-center' : 'sm:justify-start'} transition-all duration-300 ease-in-out px-4 relative`}
-                >
+        <>
+                {/* Status bar background that fills the safe area */}
+                <div 
+                    className="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-gray-900" 
+                    style={{ height: 'env(safe-area-inset-top, 0px)' }}
+                />
+                <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md" style={{ 
+                    paddingTop: 'env(safe-area-inset-top, 0px)', 
+                    height: 'calc(4rem + env(safe-area-inset-top, 0px))',
+                    minHeight: '4rem'
+                }}>
+                <div className="h-full flex items-center">
+                    {/* Sidebar-width area with logo and hamburger */}
+                    <div
+                        className={`${isSidebarOpen ? 'w-full sm:w-72' : 'w-16'} flex items-center ${isSidebarOpen ? 'sm:justify-center' : 'sm:justify-start'} transition-all duration-300 ease-in-out px-4 relative`}
+                    >
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                         className={`flex items-center focus:outline-none text-gray-500 dark:text-gray-500 ${isSidebarOpen ? 'sm:absolute sm:left-4' : 'sm:relative'}`}
@@ -219,6 +229,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 </div>
             </div>
         </nav>
+        </>
     );
 };
 
