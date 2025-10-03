@@ -459,7 +459,7 @@ async function filterTasksByParams(params, userId, userTimezone) {
     // Include owned or shared tasks; exclude subtasks by default
     const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
         'task',
-        'userId'
+        userId
     );
     if (params.type === 'upcoming') {
         // Remove search-related parameters to prevent search functionality
@@ -467,7 +467,6 @@ async function filterTasksByParams(params, userId, userTimezone) {
         delete params.search;
     }
     let whereClause = {
-        ...ownedOrShared,
         parent_task_id: null,
     };
 
@@ -572,7 +571,6 @@ async function filterTasksByParams(params, userId, userTimezone) {
             // Override the default whereClause to include recurring instances
             // NOTE: Search functionality is disabled for upcoming view - ignore client_side_filtering
             whereClause = {
-                ...ownedOrShared,
                 parent_task_id: null, // Exclude subtasks from main task lists
                 due_date: {
                     [Op.between]: [upcomingRange.start, upcomingRange.end],
@@ -694,8 +692,13 @@ async function filterTasksByParams(params, userId, userTimezone) {
         }
     }
 
+    // Always apply ownership filter
+    const finalWhereClause = {
+        [Op.and]: [ownedOrShared, whereClause]
+    };
+
     return await Task.findAll({
-        where: whereClause,
+        where: finalWhereClause,
         include: includeClause,
         order: orderClause,
         distinct: true,
