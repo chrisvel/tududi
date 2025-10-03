@@ -1149,7 +1149,42 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
     };
 }
 
-// GET /api/tasks
+/**
+ * @swagger
+ * /tasks:
+ *   get:
+ *     summary: Get all tasks for the authenticated user
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [all, upcoming, today, overdue]
+ *         description: Filter tasks by type
+ *     responses:
+ *       200:
+ *         description: List of tasks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   name:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   status:
+ *                     type: string
+ *                   priority:
+ *                     type: string
+ *                   dueDate:
+ *                     type: string
+ *                     format: date-time
+ */
 router.get('/tasks', async (req, res) => {
     try {
         // Generate recurring tasks for upcoming view, but prevent concurrent execution
@@ -1442,7 +1477,33 @@ router.get('/task/:id/subtasks', async (req, res) => {
     }
 });
 
-// POST /api/task
+/**
+ * @swagger
+ * /task:
+ *   post:
+ *     summary: Create a new task
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               priority:
+ *                 type: string
+ *               due_date:
+ *                 type: string
+ *                 format: date-time
+ *               status:
+ *                 type: string
+ *               note:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Task created
+ */
 router.post('/task', async (req, res) => {
     try {
         const {
@@ -1643,7 +1704,38 @@ router.post('/task', async (req, res) => {
     }
 });
 
-// PATCH /api/task/:id
+/**
+ * @swagger
+ * /task/{id}:
+ *   patch:
+ *     summary: Update a task
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               priority:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *               note:
+ *                 type: string
+ *               due_date:
+ *                 type: string
+ *                 format: date-time
+ *     responses:
+ *       200:
+ *         description: Task updated
+ */
 router.patch('/task/:id', async (req, res) => {
     try {
         const {
