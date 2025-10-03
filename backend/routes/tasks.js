@@ -694,7 +694,7 @@ async function filterTasksByParams(params, userId, userTimezone) {
 
     // Always apply ownership filter
     const finalWhereClause = {
-        [Op.and]: [ownedOrShared, whereClause]
+        [Op.and]: [ownedOrShared, whereClause],
     };
 
     return await Task.findAll({

@@ -9,6 +9,7 @@ import {
     PlayIcon,
     StopIcon,
     CheckCircleIcon,
+    ShareIcon,
 } from '@heroicons/react/24/outline';
 import { Project, ProjectState } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
@@ -90,6 +91,17 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     const { showErrorToast } = useToast();
     const currentUser = (window as any).__CURRENT_USER__;
     const isOwner = currentUser && (project as any).user_id === currentUser.id;
+
+    // Debug logging
+    console.log('ProjectItem Debug:', {
+        projectId: project.id,
+        projectName: project.name,
+        projectUserId: (project as any).user_id,
+        currentUserId: currentUser?.id,
+        isOwner: isOwner,
+        currentUser: currentUser
+    });
+
     return (
         <div
             className={`${
@@ -316,6 +328,19 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             >
                                 <PencilSquareIcon className="h-5 w-5" />
                             </button>
+                            {isOwner && (
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onOpenShare(project);
+                                    }}
+                                    className="text-gray-500 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200"
+                                    data-testid={`project-share-list-${project.id}`}
+                                >
+                                    <ShareIcon className="h-5 w-5" />
+                                </button>
+                            )}
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();
