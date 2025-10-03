@@ -90,18 +90,8 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     const { t } = useTranslation();
     const { showErrorToast } = useToast();
     const currentUser = (window as any).__CURRENT_USER__;
-    const isOwner = currentUser && (project as any).user_id === currentUser.id;
-
-    // Debug logging
-    console.log('ProjectItem Debug:', {
-        projectId: project.id,
-        projectName: project.name,
-        projectUserId: (project as any).user_id,
-        currentUserId: currentUser?.id,
-        isOwner: isOwner,
-        currentUser: currentUser
-    });
-
+    const isOwner =
+        currentUser && (project as any).user_uid === currentUser.uid;
     return (
         <div
             className={`${

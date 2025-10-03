@@ -4,7 +4,15 @@ const path = require('path');
 const { getConfig } = require('../config/config');
 const config = getConfig();
 const fs = require('fs');
-const { Project, Task, Tag, Area, Note, sequelize } = require('../models');
+const {
+    Project,
+    Task,
+    Tag,
+    Area,
+    Note,
+    User,
+    sequelize,
+} = require('../models');
 const permissionsService = require('../services/permissionsService');
 const { Op } = require('sequelize');
 const { extractUidFromSlug } = require('../utils/slug-utils');
@@ -206,6 +214,11 @@ router.get('/projects', async (req, res) => {
                     attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
                 },
+                {
+                    model: User,
+                    required: false,
+                    attributes: ['uid'],
+                },
             ],
             order: [['name', 'ASC']],
         });
@@ -235,7 +248,7 @@ router.get('/projects', async (req, res) => {
                     taskStatus.total > 0
                         ? Math.round((taskStatus.done / taskStatus.total) * 100)
                         : 0,
-                user_id: project.user_id,
+                user_uid: projectJson.User?.uid,
             };
         });
 
