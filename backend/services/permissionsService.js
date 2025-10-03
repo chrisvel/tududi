@@ -58,6 +58,11 @@ async function getAccess(userId, resourceType, resourceUid) {
 }
 
 async function ownershipOrPermissionWhere(resourceType, userId) {
+    // Admin users can see all resources
+    if (await isAdmin(userId)) {
+        return {}; // empty where clause = no restriction
+    }
+
     const sharedUids = await getSharedUidsForUser(resourceType, userId);
     return {
         [Op.or]: [
