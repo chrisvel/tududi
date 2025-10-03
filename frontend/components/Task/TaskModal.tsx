@@ -72,6 +72,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [isCreatingProject, setIsCreatingProject] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
+    const titleInputRef = useRef<HTMLInputElement>(null);
     const [isClosing, setIsClosing] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
@@ -448,6 +449,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
         }
     }, [isOpen, task.id]);
 
+    // Auto-focus on the title input when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setTimeout(() => {
+                titleInputRef.current?.focus();
+            }, 100);
+        }
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
     return createPortal(
@@ -506,6 +516,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                         taskIntelligenceEnabled
                                                     }
                                                     onSubmit={handleSubmit}
+                                                    inputRef={titleInputRef}
                                                 />
 
                                                 {/* Content Section - Always Visible */}

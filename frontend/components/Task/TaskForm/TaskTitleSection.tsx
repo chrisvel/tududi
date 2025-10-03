@@ -15,6 +15,7 @@ interface TaskTitleSectionProps {
     taskAnalysis: TaskAnalysis | null;
     taskIntelligenceEnabled: boolean;
     onSubmit?: () => void;
+    inputRef?: React.RefObject<HTMLInputElement>;
 }
 
 const TaskTitleSection: React.FC<TaskTitleSectionProps> = ({
@@ -24,6 +25,7 @@ const TaskTitleSection: React.FC<TaskTitleSectionProps> = ({
     taskAnalysis,
     taskIntelligenceEnabled,
     onSubmit,
+    inputRef,
 }) => {
     const { t } = useTranslation();
 
@@ -40,6 +42,7 @@ const TaskTitleSection: React.FC<TaskTitleSectionProps> = ({
     return (
         <div className="px-4 py-4">
             <input
+                ref={inputRef}
                 type="text"
                 id={`task_name_${taskId}`}
                 name="name"
