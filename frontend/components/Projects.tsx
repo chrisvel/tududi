@@ -61,21 +61,13 @@ const Projects: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const stateFilter = searchParams.get('state') || 'all';
 
-    // Handle both 'area_id' and 'area' parameters from URL
-    const getAreaIdFromParams = () => {
-        const areaId = searchParams.get('area_id');
+    // Get area UID from URL parameters
+    const getAreaUidFromParams = () => {
         const areaParam = searchParams.get('area');
 
-        if (areaId) {
-            return areaId;
-        }
-
         if (areaParam) {
-            // Extract area UID from the area parameter (format: uid-name-slug)
-            const areaUid = areaParam.split('-')[0];
-            // Find the area by UID and return its ID
-            const area = areas.find((area) => area.uid === areaUid);
-            return area?.id?.toString() || '';
+            // Extract area UID from the area parameter (format: uid-name-slug or just uid)
+            return areaParam.split('-')[0];
         }
 
         return '';
@@ -108,7 +100,7 @@ const Projects: React.FC = () => {
     const areaOptions: FilterOption[] = [
         { value: '', label: t('projects.filters.allAreas') },
         ...areas.map((area) => ({
-            value: area.id?.toString() || '',
+            value: area.uid,
             label: area.name,
         })),
     ];
@@ -176,7 +168,10 @@ const Projects: React.FC = () => {
             } else {
                 await createProject(project);
             }
-            const projectsData = await fetchProjects();
+            const projectsData = await fetchProjects(
+                stateFilter,
+                actualAreaFilter
+            );
             setProjects(projectsData);
         } catch (error) {
             console.error('Error saving project:', error);
@@ -207,7 +202,10 @@ const Projects: React.FC = () => {
                 await deleteProject(projectToDelete.id);
 
                 // Update global state
-                const projectsData = await fetchProjects();
+                const projectsData = await fetchProjects(
+                    stateFilter,
+                    actualAreaFilter
+                );
                 setProjects(projectsData);
             } else {
                 console.error('Cannot delete project: ID is undefined.');
@@ -241,12 +239,10 @@ const Projects: React.FC = () => {
     const handleAreaFilterChange = (value: string) => {
         const params = new URLSearchParams(searchParams);
 
-        // Clear both area parameters
-        params.delete('area_id');
         params.delete('area');
 
         if (value !== '') {
-            params.set('area_id', value);
+            params.set('area', value);
         }
 
         setSearchParams(params);
@@ -254,7 +250,7 @@ const Projects: React.FC = () => {
 
     // Update the area filter when areas are loaded (to handle area UID lookups)
     const actualAreaFilter = useMemo(() => {
-        return getAreaIdFromParams();
+        return getAreaUidFromParams();
     }, [searchParams, areas]);
 
     // Filter, sort and search projects
@@ -268,11 +264,10 @@ const Projects: React.FC = () => {
             );
         }
 
-        // Apply area filter
+        // Apply area filter by UID
         if (actualAreaFilter) {
-            const areaId = parseInt(actualAreaFilter);
             filteredProjects = filteredProjects.filter(
-                (project) => project.area_id === areaId
+                (project) => project.area?.uid === actualAreaFilter
             );
         }
 

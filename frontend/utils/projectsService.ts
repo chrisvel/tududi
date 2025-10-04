@@ -9,7 +9,7 @@ export const fetchProjects = async (
     const params = new URLSearchParams();
 
     if (stateFilter !== 'all') params.append('state', stateFilter);
-    if (areaFilter) params.append('area_id', areaFilter);
+    if (areaFilter) params.append('area', areaFilter);
     if (params.toString()) url += `?${params.toString()}`;
 
     const response = await fetch(url, {
@@ -32,7 +32,7 @@ export const fetchGroupedProjects = async (
 
     params.append('grouped', 'true');
     if (stateFilter !== 'all') params.append('state', stateFilter);
-    if (areaFilter) params.append('area_id', areaFilter);
+    if (areaFilter) params.append('area', areaFilter);
     if (params.toString()) url += `?${params.toString()}`;
 
     const response = await fetch(url, {
