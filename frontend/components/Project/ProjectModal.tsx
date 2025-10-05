@@ -500,7 +500,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             </div>
 
                                             {/* Description Section - Always Visible */}
-                                            <div className="flex-1 border-b border-gray-200 dark:border-gray-700 pb-4 px-4 flex flex-col mb-2">
+                                            <div className="flex-1 border-b border-gray-200 dark:border-gray-700 pb-4 sm:px-4 flex flex-col mb-2">
                                                 <textarea
                                                     id="projectDescription"
                                                     name="description"
@@ -509,7 +509,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                         ''
                                                     }
                                                     onChange={handleChange}
-                                                    className="block w-full h-full min-h-0 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
+                                                    className="block w-full h-full min-h-0 sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 px-3 sm:py-3 sm:px-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 sm:focus:ring-2 sm:focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
                                                     placeholder={t(
                                                         'forms.projectDescriptionPlaceholder',
                                                         'Enter project description (optional)'
