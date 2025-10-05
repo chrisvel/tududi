@@ -496,7 +496,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             data-testid="note-content-textarea"
                                                         />
                                                     ) : (
-                                                        <div className="block w-full h-full min-h-0 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-gray-50 dark:bg-gray-800 overflow-y-auto">
+                                                        <div className="block w-full h-full min-h-0 sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 px-3 sm:py-3 sm:px-3 text-sm bg-gray-50 dark:bg-gray-800 overflow-y-auto">
                                                             {formData.content ? (
                                                                 <MarkdownRenderer
                                                                     content={
