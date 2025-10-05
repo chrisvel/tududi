@@ -23,7 +23,7 @@ router.get('/profile', async (req, res) => {
 
         const user = await User.findByPk(req.session.userId, {
             attributes: [
-                'id',
+                'uid',
                 'email',
                 'appearance',
                 'language',
@@ -172,7 +172,7 @@ router.patch('/profile', async (req, res) => {
         // Return updated user with limited fields
         const updatedUser = await User.findByPk(user.id, {
             attributes: [
-                'id',
+                'uid',
                 'email',
                 'appearance',
                 'language',

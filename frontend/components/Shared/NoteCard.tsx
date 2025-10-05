@@ -231,7 +231,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                                         setDropdownOpen(false);
                                     }}
                                     className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
-                                    data-testid={`note-delete-${noteIdentifier}`}
+                                    data-testid={`note-delete-${note.uid}`}
                                 >
                                     {t('notes.delete', 'Delete')}
                                 </button>

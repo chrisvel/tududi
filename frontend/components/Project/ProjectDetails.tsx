@@ -408,13 +408,13 @@ const ProjectDetails: React.FC = () => {
     }, [openModal]);
 
     const handleSaveProject = async (updatedProject: Project) => {
-        if (!updatedProject.id) {
+        if (!updatedProject.uid) {
             return;
         }
 
         try {
             const savedProject = await updateProject(
-                updatedProject.id,
+                updatedProject.uid,
                 updatedProject
             );
             // Merge the saved project with existing project to preserve area data
@@ -510,12 +510,12 @@ const ProjectDetails: React.FC = () => {
     };
 
     const handleDeleteProject = async () => {
-        if (!project?.id) {
+        if (!project?.uid) {
             return;
         }
 
         try {
-            await deleteProject(project.id);
+            await deleteProject(project.uid);
             navigate('/projects');
         } catch {
             // Error deleting project - silently handled

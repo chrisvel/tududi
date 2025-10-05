@@ -13,7 +13,7 @@ module.exports = {
     ],
     coverageDirectory: 'coverage',
     coverageReporters: ['text', 'lcov', 'html'],
-    verbose: true,
+    verbose: false,
     forceExit: true,
     clearMocks: true,
     resetMocks: true,

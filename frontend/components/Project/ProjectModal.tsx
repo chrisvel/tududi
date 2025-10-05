@@ -26,7 +26,7 @@ interface ProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (project: Project) => void;
-    onDelete?: (projectId: number) => Promise<void>;
+    onDelete?: (projectUid: string) => Promise<void>;
     project?: Project;
     areas: Area[];
 }
@@ -345,8 +345,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 tags: tags.map((name) => ({ name })),
             };
 
-            // Save the project
-            onSave(projectData);
+            // Save the project and wait for it to complete
+            await onSave(projectData);
 
             showSuccessToast(
                 project
@@ -366,9 +366,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     };
 
     const handleDeleteConfirm = async () => {
-        if (project && project.id && onDelete) {
+        if (project && project.uid && onDelete) {
             try {
-                await onDelete(project.id);
+                await onDelete(project.uid);
                 showSuccessToast(t('success.projectDeleted'));
                 setShowConfirmDialog(false);
                 handleClose();
