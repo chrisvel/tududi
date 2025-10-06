@@ -62,6 +62,33 @@ router.post('/shares', async (req, res) => {
         if (!target)
             return res.status(404).json({ error: 'Target user not found' });
 
+        // Prevent sharing with the owner (owner already has full access)
+        const resource = await (async () => {
+            if (resource_type === 'project') {
+                return await Project.findOne({
+                    where: { uid: resource_uid },
+                    attributes: ['user_id'],
+                });
+            } else if (resource_type === 'task') {
+                return await Task.findOne({
+                    where: { uid: resource_uid },
+                    attributes: ['user_id'],
+                });
+            } else if (resource_type === 'note') {
+                return await Note.findOne({
+                    where: { uid: resource_uid },
+                    attributes: ['user_id'],
+                });
+            }
+            return null;
+        })();
+
+        if (resource && resource.user_id === target.id) {
+            return res.status(400).json({
+                error: 'Cannot grant permissions to the owner. Owner already has full access.',
+            });
+        }
+
         await execAction({
             verb: 'share_grant',
             actorUserId: req.session.userId,
@@ -93,6 +120,33 @@ router.delete('/shares', async (req, res) => {
         );
         if (!userIsAdmin && !userIsOwner) {
             return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        // Prevent revoking permissions from the owner
+        const resource = await (async () => {
+            if (resource_type === 'project') {
+                return await Project.findOne({
+                    where: { uid: resource_uid },
+                    attributes: ['user_id'],
+                });
+            } else if (resource_type === 'task') {
+                return await Task.findOne({
+                    where: { uid: resource_uid },
+                    attributes: ['user_id'],
+                });
+            } else if (resource_type === 'note') {
+                return await Note.findOne({
+                    where: { uid: resource_uid },
+                    attributes: ['user_id'],
+                });
+            }
+            return null;
+        })();
+
+        if (resource && resource.user_id === Number(target_user_id)) {
+            return res.status(400).json({
+                error: 'Cannot revoke permissions from the owner.',
+            });
         }
 
         await execAction({
@@ -128,6 +182,43 @@ router.get('/shares', async (req, res) => {
             return res.status(403).json({ error: 'Forbidden' });
         }
 
+        // Get resource owner information
+        let ownerInfo = null;
+        const resource = await (async () => {
+            if (resource_type === 'project') {
+                return await Project.findOne({
+                    where: { uid: resource_uid },
+                    attributes: ['user_id'],
+                });
+            } else if (resource_type === 'task') {
+                return await Task.findOne({
+                    where: { uid: resource_uid },
+                    attributes: ['user_id'],
+                });
+            } else if (resource_type === 'note') {
+                return await Note.findOne({
+                    where: { uid: resource_uid },
+                    attributes: ['user_id'],
+                });
+            }
+            return null;
+        })();
+
+        if (resource) {
+            const owner = await User.findByPk(resource.user_id, {
+                attributes: ['id', 'email'],
+            });
+            if (owner) {
+                ownerInfo = {
+                    user_id: owner.id,
+                    access_level: 'owner',
+                    created_at: null,
+                    email: owner.email,
+                    is_owner: true,
+                };
+            }
+        }
+
         const rows = await Permission.findAll({
             where: { resource_type, resource_uid, propagation: 'direct' },
             attributes: ['user_id', 'access_level', 'created_at'],
@@ -152,8 +243,13 @@ router.get('/shares', async (req, res) => {
         const withEmails = rows.map((r) => ({
             ...r,
             email: usersById[r.user_id] || null,
+            is_owner: false,
         }));
-        res.json({ shares: withEmails });
+
+        // Prepend owner to the list
+        const allShares = ownerInfo ? [ownerInfo, ...withEmails] : withEmails;
+
+        res.json({ shares: allShares });
     } catch (err) {
         console.error('Error listing shares:', err);
         res.status(400).json({ error: 'Unable to list shares' });

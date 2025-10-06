@@ -16,9 +16,10 @@ interface ProjectShareModalProps {
 
 interface ShareRow {
     user_id: number;
-    access_level: AccessLevel;
-    created_at: string;
+    access_level: AccessLevel | 'owner';
+    created_at: string | null;
     email?: string; // best-effort; may stay undefined without a lookup API
+    is_owner?: boolean;
 }
 
 const isValidEmail = (value: string) =>
@@ -107,10 +108,12 @@ const ProjectShareModal: React.FC<ProjectShareModalProps> = ({
         }
     };
 
-    const accessLabel = (al: AccessLevel) =>
-        al === 'rw'
-            ? t('shares.readWrite', 'Read & write')
-            : t('shares.readOnly', 'Read only');
+    const accessLabel = (al: AccessLevel | 'owner') =>
+        al === 'owner'
+            ? t('shares.owner', 'Owner')
+            : al === 'rw'
+              ? t('shares.readWrite', 'Read & write')
+              : t('shares.readOnly', 'Read only');
 
     return (
         <div
@@ -205,23 +208,33 @@ const ProjectShareModal: React.FC<ProjectShareModalProps> = ({
                             <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                                 {rows.map((r) => (
                                     <li
-                                        key={`${r.user_id}-${r.created_at}`}
+                                        key={`${r.user_id}-${r.created_at || 'owner'}`}
                                         className="flex items-center justify-between px-3 py-2"
                                     >
                                         <div>
-                                            <div className="text-sm text-gray-900 dark:text-gray-100">
+                                            <div
+                                                className={`text-sm ${r.is_owner ? 'font-semibold' : ''} text-gray-900 dark:text-gray-100`}
+                                            >
                                                 {r.email || `#${r.user_id}`}
                                             </div>
                                             <div className="text-xs text-gray-500">
                                                 {accessLabel(r.access_level)}
                                             </div>
                                         </div>
-                                        <button
-                                            onClick={() => onRevoke(r.user_id)}
-                                            className="px-2 py-1 text-xs rounded bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 dark:bg-transparent dark:text-red-400 dark:border-red-500"
-                                        >
-                                            {t('shares.revoke', 'Revoke')}
-                                        </button>
+                                        {r.is_owner ? (
+                                            <span className="px-2 py-1 text-xs rounded bg-blue-50 text-blue-600 border border-blue-200 dark:bg-transparent dark:text-blue-400 dark:border-blue-500">
+                                                {t('shares.owner', 'Owner')}
+                                            </span>
+                                        ) : (
+                                            <button
+                                                onClick={() =>
+                                                    onRevoke(r.user_id)
+                                                }
+                                                className="px-2 py-1 text-xs rounded bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 dark:bg-transparent dark:text-red-400 dark:border-red-500"
+                                            >
+                                                {t('shares.revoke', 'Revoke')}
+                                            </button>
+                                        )}
                                     </li>
                                 ))}
                             </ul>
