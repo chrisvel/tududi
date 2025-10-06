@@ -1,9 +1,37 @@
 const express = require('express');
-const { User, Permission } = require('../models');
+const { User, Permission, Project, Task, Note } = require('../models');
 const { execAction } = require('../services/execAction');
 const router = express.Router();
 
 const permissionsService = require('../services/permissionsService');
+const { isAdmin } = require('../services/rolesService');
+
+// Helper function to check if user is the actual owner of a resource
+async function isResourceOwner(userId, resourceType, resourceUid) {
+    let resource = null;
+
+    if (resourceType === 'project') {
+        resource = await Project.findOne({
+            where: { uid: resourceUid },
+            attributes: ['user_id'],
+            raw: true,
+        });
+    } else if (resourceType === 'task') {
+        resource = await Task.findOne({
+            where: { uid: resourceUid },
+            attributes: ['user_id'],
+            raw: true,
+        });
+    } else if (resourceType === 'note') {
+        resource = await Note.findOne({
+            where: { uid: resourceUid },
+            attributes: ['user_id'],
+            raw: true,
+        });
+    }
+
+    return resource && resource.user_id === userId;
+}
 
 // POST /api/shares
 router.post('/shares', async (req, res) => {
@@ -22,13 +50,13 @@ router.post('/shares', async (req, res) => {
             return res.status(400).json({ error: 'Missing parameters' });
         }
         // Only owner (or admin) can grant shares
-        const actorAccess = await permissionsService.getAccess(
+        const userIsAdmin = await isAdmin(req.session.userId);
+        const userIsOwner = await isResourceOwner(
             req.session.userId,
             resource_type,
             resource_uid
         );
-        const isOwnerOrAdmin = actorAccess === 'admin' || actorAccess === 'rw';
-        if (!isOwnerOrAdmin) {
+        if (!userIsAdmin && !userIsOwner) {
             return res.status(403).json({ error: 'Forbidden' });
         }
         const target = await User.findOne({
@@ -63,13 +91,13 @@ router.delete('/shares', async (req, res) => {
             return res.status(400).json({ error: 'Missing parameters' });
         }
         // Only owner (or admin) can revoke shares
-        const actorAccess = await permissionsService.getAccess(
+        const userIsAdmin = await isAdmin(req.session.userId);
+        const userIsOwner = await isResourceOwner(
             req.session.userId,
             resource_type,
             resource_uid
         );
-        const isOwnerOrAdmin = actorAccess === 'admin' || actorAccess === 'rw';
-        if (!isOwnerOrAdmin) {
+        if (!userIsAdmin && !userIsOwner) {
             return res.status(403).json({ error: 'Forbidden' });
         }
 

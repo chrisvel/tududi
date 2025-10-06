@@ -80,6 +80,16 @@ const ProjectDetails: React.FC = () => {
     const editButtonRef = useRef<HTMLButtonElement>(null);
 
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+
+    // Check if current user is the owner
+    const currentUser = (window as any).__CURRENT_USER__;
+    const isOwner = useMemo(() => {
+        return (
+            currentUser &&
+            project &&
+            (project as any).user_uid === currentUser.uid
+        );
+    }, [currentUser, project]);
     const [showCompleted, setShowCompleted] = useState(false);
     const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
     const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(false);
@@ -897,27 +907,29 @@ const ProjectDetails: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Edit/Delete Buttons - Bottom Right */}
-                    <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button
-                            ref={editButtonRef}
-                            type="button"
-                            className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                        >
-                            <PencilSquareIcon className="h-5 w-5" />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setIsConfirmDialogOpen(true);
-                            }}
-                            className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                        >
-                            <TrashIcon className="h-5 w-5" />
-                        </button>
-                    </div>
+                    {/* Edit/Delete Buttons - Bottom Right (only for owners) */}
+                    {isOwner && (
+                        <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <button
+                                ref={editButtonRef}
+                                type="button"
+                                className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                            >
+                                <PencilSquareIcon className="h-5 w-5" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setIsConfirmDialogOpen(true);
+                                }}
+                                className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                            >
+                                <TrashIcon className="h-5 w-5" />
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Header with Tab Links and Controls */}
