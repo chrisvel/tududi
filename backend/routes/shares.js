@@ -36,9 +36,6 @@ async function isResourceOwner(userId, resourceType, resourceUid) {
 // POST /api/shares
 router.post('/shares', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
         const { resource_type, resource_uid, target_user_email, access_level } =
             req.body;
         if (
@@ -83,9 +80,6 @@ router.post('/shares', async (req, res) => {
 // DELETE /api/shares
 router.delete('/shares', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
         const { resource_type, resource_uid, target_user_id } = req.body;
         if (!resource_type || !resource_uid || !target_user_id) {
             return res.status(400).json({ error: 'Missing parameters' });
@@ -118,12 +112,20 @@ router.delete('/shares', async (req, res) => {
 // GET /api/shares?resource_type=...&resource_uid=...
 router.get('/shares', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
         const { resource_type, resource_uid } = req.query;
         if (!resource_type || !resource_uid) {
             return res.status(400).json({ error: 'Missing parameters' });
+        }
+
+        // Only owner (or admin) can view shares
+        const userIsAdmin = await isAdmin(req.session.userId);
+        const userIsOwner = await isResourceOwner(
+            req.session.userId,
+            resource_type,
+            resource_uid
+        );
+        if (!userIsAdmin && !userIsOwner) {
+            return res.status(403).json({ error: 'Forbidden' });
         }
 
         const rows = await Permission.findAll({
