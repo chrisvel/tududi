@@ -22,7 +22,8 @@ describe('Auth Routes', () => {
             expect(response.status).toBe(200);
             expect(response.body.user).toBeDefined();
             expect(response.body.user.email).toBe('test@example.com');
-            expect(response.body.user.id).toBe(user.id);
+            expect(response.body.user.uid).toBe(user.uid);
+            expect(response.body.user).not.toHaveProperty('id');
             expect(response.body.user.language).toBe('en');
             expect(response.body.user.appearance).toBe('light');
             expect(response.body.user.timezone).toBe('UTC');
@@ -91,7 +92,8 @@ describe('Auth Routes', () => {
             expect(response.status).toBe(200);
             expect(response.body.user).toBeDefined();
             expect(response.body.user.email).toBe('test@example.com');
-            expect(response.body.user.id).toBe(user.id);
+            expect(response.body.user.uid).toBe(user.uid);
+            expect(response.body.user).not.toHaveProperty('id');
         });
 
         it('should return null user when not logged in', async () => {

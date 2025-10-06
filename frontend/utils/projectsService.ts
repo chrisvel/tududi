@@ -9,7 +9,7 @@ export const fetchProjects = async (
     const params = new URLSearchParams();
 
     if (stateFilter !== 'all') params.append('state', stateFilter);
-    if (areaFilter) params.append('area_id', areaFilter);
+    if (areaFilter) params.append('area', areaFilter);
     if (params.toString()) url += `?${params.toString()}`;
 
     const response = await fetch(url, {
@@ -32,7 +32,7 @@ export const fetchGroupedProjects = async (
 
     params.append('grouped', 'true');
     if (stateFilter !== 'all') params.append('state', stateFilter);
-    if (areaFilter) params.append('area_id', areaFilter);
+    if (areaFilter) params.append('area', areaFilter);
     if (params.toString()) url += `?${params.toString()}`;
 
     const response = await fetch(url, {
@@ -74,10 +74,10 @@ export const createProject = async (
 };
 
 export const updateProject = async (
-    projectId: number,
+    projectUid: string,
     projectData: Partial<Project>
 ): Promise<Project> => {
-    const response = await fetch(`/api/project/${projectId}`, {
+    const response = await fetch(`/api/project/${projectUid}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -91,14 +91,14 @@ export const updateProject = async (
     return await response.json();
 };
 
-export const deleteProject = async (projectId: number): Promise<void> => {
-    if (!projectId || projectId === null || projectId === undefined) {
-        throw new Error('Cannot delete project: Invalid project ID');
+export const deleteProject = async (projectUid: string): Promise<void> => {
+    if (!projectUid || projectUid === null || projectUid === undefined) {
+        throw new Error('Cannot delete project: Invalid project UID');
     }
 
-    console.log('Attempting to delete project with ID:', projectId);
+    console.log('Attempting to delete project with UID:', projectUid);
 
-    const response = await fetch(`/api/project/${projectId}`, {
+    const response = await fetch(`/api/project/${projectUid}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {

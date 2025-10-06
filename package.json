@@ -1,6 +1,6 @@
 {
   "name": "tududi",
-  "version": "v0.83-rc7",
+  "version": "v0.83",
   "description": "Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration.",
   "directories": {
     "test": "test"
@@ -12,6 +12,7 @@
     "pre-push": "npm run lint:fix && npm run format:fix",
     "pre-release": "npm run lint:fix && npm run format:fix && npm run test && npm run test:ui",
     "test": "npm run backend:test",
+    "test:backend": "npm run backend:test",
     "test:ui": "bash e2e/bin/run-e2e.sh && echo \"Success!\"",
     "test:ui:headed": "cross-env E2E_MODE=headed E2E_SLOWMO=500 bash e2e/bin/run-e2e.sh",
     "test:watch": "npm run frontend:test:watch",
