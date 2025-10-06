@@ -283,10 +283,6 @@ async function fetchUrlMetadata(url, maxRedirects = 5) {
 // GET /api/url/title
 router.get('/url/title', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const { url } = req.query;
 
         if (!url) {
@@ -320,10 +316,6 @@ router.get('/url/title', async (req, res) => {
 // POST /api/url/extract-from-text
 router.post('/url/extract-from-text', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const { text } = req.body;
 
         if (!text) {

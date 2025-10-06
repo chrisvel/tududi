@@ -17,10 +17,6 @@ const VALID_FREQUENCIES = [
 // GET /api/profile
 router.get('/profile', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId, {
             attributes: [
                 'uid',
@@ -68,10 +64,6 @@ router.get('/profile', async (req, res) => {
 // PATCH /api/profile
 router.patch('/profile', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'Profile not found.' });
@@ -206,10 +198,6 @@ router.patch('/profile', async (req, res) => {
 // POST /api/profile/change-password
 router.post('/profile/change-password', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const { currentPassword, newPassword } = req.body;
 
         if (!currentPassword || !newPassword) {
@@ -256,10 +244,6 @@ router.post('/profile/change-password', async (req, res) => {
 // POST /api/profile/task-summary/toggle
 router.post('/profile/task-summary/toggle', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
@@ -293,10 +277,6 @@ router.post('/profile/task-summary/toggle', async (req, res) => {
 // POST /api/profile/task-summary/frequency
 router.post('/profile/task-summary/frequency', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const { frequency } = req.body;
 
         if (!frequency) {
@@ -333,10 +313,6 @@ router.post('/profile/task-summary/frequency', async (req, res) => {
 // POST /api/profile/task-summary/send-now
 router.post('/profile/task-summary/send-now', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
@@ -373,10 +349,6 @@ router.post('/profile/task-summary/send-now', async (req, res) => {
 // GET /api/profile/task-summary/status
 router.get('/profile/task-summary/status', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
@@ -398,10 +370,6 @@ router.get('/profile/task-summary/status', async (req, res) => {
 // PUT /api/profile/today-settings
 router.put('/profile/today-settings', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });

@@ -7,10 +7,6 @@ const router = express.Router();
 // POST /api/telegram/start-polling
 router.post('/telegram/start-polling', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user || !user.telegram_bot_token) {
             return res
@@ -40,10 +36,6 @@ router.post('/telegram/start-polling', async (req, res) => {
 // POST /api/telegram/stop-polling
 router.post('/telegram/stop-polling', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const success = telegramPoller.removeUser(req.session.userId);
 
         res.json({
@@ -60,10 +52,6 @@ router.post('/telegram/stop-polling', async (req, res) => {
 // GET /api/telegram/polling-status
 router.get('/telegram/polling-status', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         res.json({
             success: true,
             status: telegramPoller.getStatus(),
@@ -77,10 +65,6 @@ router.get('/telegram/polling-status', async (req, res) => {
 // POST /api/telegram/setup
 router.post('/telegram/setup', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const { token } = req.body;
 
         if (!token) {
@@ -138,10 +122,6 @@ router.post('/telegram/setup', async (req, res) => {
 // POST /api/telegram/send-welcome
 router.post('/telegram/send-welcome', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user || !user.telegram_bot_token) {
             return res
