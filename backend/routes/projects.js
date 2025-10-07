@@ -543,6 +543,18 @@ router.delete('/project/:uid', async (req, res) => {
                     }
                 );
 
+                // Also orphan all notes associated with this project by setting project_id to NULL
+                await Note.update(
+                    { project_id: null },
+                    {
+                        where: {
+                            project_id: project.id,
+                            user_id: req.session.userId,
+                        },
+                        transaction,
+                    }
+                );
+
                 // Then delete the project
                 await project.destroy({ transaction });
             } finally {

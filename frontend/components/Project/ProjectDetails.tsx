@@ -54,7 +54,7 @@ const ProjectDetails: React.FC = () => {
     const { showSuccessToast } = useToast();
 
     // Load areas from store (similar to how we handle tags)
-    const { areasStore } = useStore();
+    const { areasStore, projectsStore } = useStore();
     const areas = areasStore.areas;
 
     // Load areas when component mounts
@@ -520,6 +520,14 @@ const ProjectDetails: React.FC = () => {
 
         try {
             await deleteProject(project.uid);
+
+            // Update the global projects store to remove the deleted project
+            const currentProjects = projectsStore.projects;
+            const updatedProjects = currentProjects.filter(
+                (p) => p.uid !== project.uid
+            );
+            projectsStore.setProjects(updatedProjects);
+
             navigate('/projects');
         } catch {
             // Error deleting project - silently handled
