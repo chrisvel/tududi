@@ -1146,6 +1146,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         suggested_tasks: suggestedTasks,
         tasks_completed_today: tasksCompletedToday,
         weekly_completions: weeklyData,
+        weekly_worked_on: weeklyWorkedOnData,
     };
 }
 
@@ -1277,6 +1278,7 @@ router.get('/tasks', async (req, res) => {
                     })
                 ),
                 weekly_completions: metrics.weekly_completions,
+                weekly_worked_on: metrics.weekly_worked_on,
             },
         };
 

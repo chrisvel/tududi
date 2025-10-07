@@ -6,6 +6,12 @@ export interface WeeklyCompletion {
     dayName: string;
 }
 
+export interface WeeklyWorkedOn {
+    date: string;
+    count: number;
+    dayName: string;
+}
+
 export interface Metrics {
     total_open_tasks: number;
     tasks_pending_over_month: number;
@@ -16,4 +22,5 @@ export interface Metrics {
     suggested_tasks: Task[];
     tasks_completed_today: Task[];
     weekly_completions: WeeklyCompletion[];
+    weekly_worked_on: WeeklyWorkedOn[];
 }
