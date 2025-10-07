@@ -192,7 +192,7 @@ router.get('/projects', async (req, res) => {
                 {
                     model: Area,
                     required: false,
-                    attributes: ['uid', 'name'],
+                    attributes: ['id', 'uid', 'name'],
                 },
                 {
                     model: Tag,
@@ -314,7 +314,11 @@ router.get('/project/:uidSlug', async (req, res) => {
                         },
                     ],
                 },
-                { model: Area, required: false, attributes: ['uid', 'name'] },
+                {
+                    model: Area,
+                    required: false,
+                    attributes: ['id', 'uid', 'name'],
+                },
                 {
                     model: Tag,
                     attributes: ['id', 'name', 'uid'],
@@ -492,6 +496,11 @@ router.patch('/project/:uid', async (req, res) => {
                     model: Tag,
                     attributes: ['id', 'name', 'uid'],
                     through: { attributes: [] },
+                },
+                {
+                    model: Area,
+                    required: false,
+                    attributes: ['id', 'uid', 'name'],
                 },
             ],
         });

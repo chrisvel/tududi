@@ -9,7 +9,7 @@ router.get('/areas', async (req, res) => {
     try {
         const areas = await Area.findAll({
             where: { user_id: req.session.userId },
-            attributes: ['uid', 'name', 'description'],
+            attributes: ['id', 'uid', 'name', 'description'],
             order: [['name', 'ASC']],
         });
 
