@@ -261,12 +261,10 @@ const Projects: React.FC = () => {
 
         // Apply area filter by UID
         if (actualAreaFilter) {
-            filteredProjects = filteredProjects.filter(
-                (project) => {
-                    const projectArea = project.area || (project as any).Area;
-                    return projectArea?.uid === actualAreaFilter;
-                }
-            );
+            filteredProjects = filteredProjects.filter((project) => {
+                const projectArea = project.area || (project as any).Area;
+                return projectArea?.uid === actualAreaFilter;
+            });
         }
 
         // Apply search filter
