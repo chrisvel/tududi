@@ -56,7 +56,7 @@ const Projects: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [viewMode, setViewMode] = useState<'cards' | 'list'>(() => {
         const saved = localStorage.getItem('projectsViewMode');
-        return (saved === 'list' || saved === 'cards') ? saved : 'cards';
+        return saved === 'list' || saved === 'cards' ? saved : 'cards';
     });
     const [isSearchExpanded, setIsSearchExpanded] = useState<boolean>(false);
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
