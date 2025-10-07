@@ -3,6 +3,9 @@
 `tududi` is the self-hosted task management tool that puts you in control. Organize your life and projects with a clear, hierarchical structure,
 smart recurring tasks, and seamless Telegram integration. Get focused, stay productive, and keep your data private.
 
+I'm using this opensource code to try out some SDLC integrations.
+
+
 ![Light Mode Screenshot](screenshots/all-light.png)
 
 More screenshots [here](#screenshots).
