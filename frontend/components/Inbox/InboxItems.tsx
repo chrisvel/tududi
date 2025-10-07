@@ -206,7 +206,10 @@ const InboxItems: React.FC = () => {
 
         // Only update URL if the count has actually changed from what's in the URL
         if (inboxItems.length > 20 && inboxItems.length !== urlLoadedCount) {
-            setSearchParams({ loaded: inboxItems.length.toString() }, { replace: true });
+            setSearchParams(
+                { loaded: inboxItems.length.toString() },
+                { replace: true }
+            );
         } else if (inboxItems.length <= 20 && urlLoadedCount > 0) {
             // Remove the parameter if we're at the default page size
             setSearchParams({}, { replace: true });
