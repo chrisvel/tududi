@@ -274,4 +274,46 @@ describe('Recurring Task Display Fixes', () => {
             expect(taskNames).toContain('Daily');
         });
     });
+
+    describe('Task By UID Endpoint', () => {
+        it('should return actual task name when fetching recurring task by UID', async () => {
+            const recurringTask = await Task.create({
+                name: 'My Weekly Review',
+                user_id: user.id,
+                recurrence_type: 'weekly',
+                recurring_parent_id: null,
+                status: Task.STATUS.NOT_STARTED,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            const response = await agent.get(
+                `/api/task?uid=${recurringTask.uid}`
+            );
+
+            expect(response.status).toBe(200);
+            expect(response.body.name).toBe('My Weekly Review');
+            expect(response.body.original_name).toBe('My Weekly Review');
+            expect(response.body.recurrence_type).toBe('weekly');
+        });
+
+        it('should return actual task name for monthly recurring task by UID', async () => {
+            const monthlyTask = await Task.create({
+                name: 'Monthly Budget Review',
+                user_id: user.id,
+                recurrence_type: 'monthly',
+                recurring_parent_id: null,
+                status: Task.STATUS.NOT_STARTED,
+                priority: Task.PRIORITY.MEDIUM,
+            });
+
+            const response = await agent.get(
+                `/api/task?uid=${monthlyTask.uid}`
+            );
+
+            expect(response.status).toBe(200);
+            expect(response.body.name).toBe('Monthly Budget Review');
+            expect(response.body.original_name).toBe('Monthly Budget Review');
+            expect(response.body.recurrence_type).toBe('monthly');
+        });
+    });
 });

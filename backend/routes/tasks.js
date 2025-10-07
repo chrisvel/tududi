@@ -1349,7 +1349,8 @@ router.get('/task', async (req, res) => {
 
         const serializedTask = await serializeTask(
             task,
-            req.currentUser.timezone
+            req.currentUser.timezone,
+            { skipDisplayNameTransform: true }
         );
 
         res.json(serializedTask);
