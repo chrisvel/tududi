@@ -127,7 +127,26 @@ router.post('/upload/project-image', upload.single('image'), (req, res) => {
     }
 });
 
-// GET /api/projects
+/**
+ * @swagger
+ * /projects:
+ *   get:
+ *     summary: Get all projects for the authenticated user
+ *     parameters:
+ *       - in: query
+ *         name: state
+ *         schema:
+ *           type: string
+ *         description: Filter by project state
+ *       - in: query
+ *         name: area_id
+ *         schema:
+ *           type: integer
+ *         description: Filter by area ID
+ *     responses:
+ *       200:
+ *         description: List of projects
+ */
 router.get('/projects', async (req, res) => {
     try {
         if (!req.session || !req.session.userId) {
@@ -381,7 +400,30 @@ router.get('/project/:uidSlug', async (req, res) => {
     }
 });
 
-// POST /api/project
+/**
+ * @swagger
+ * /project:
+ *   post:
+ *     summary: Create a new project
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *               area_id:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Project created
+ */
 router.post('/project', async (req, res) => {
     try {
         const {
@@ -448,7 +490,35 @@ router.post('/project', async (req, res) => {
     }
 });
 
-// PATCH /api/project/:uid
+/**
+ * @swagger
+ * /project/{uid}:
+ *   patch:
+ *     summary: Update a project
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *               area_id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Project updated
+ */
 router.patch('/project/:uid', async (req, res) => {
     try {
         const project = await Project.findOne({
