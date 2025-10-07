@@ -292,6 +292,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 project.name.toLowerCase().includes(query.toLowerCase())
             )
         );
+
+        // If the user clears the project name, also clear the project_id in form data
+        if (query.trim() === '') {
+            setFormData({ ...formData, project_id: null });
+        }
     };
 
     const handleProjectSelection = (project: Project) => {

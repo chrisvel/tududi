@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
 // Shared login function
-async function loginAndNavigateToProjects(page, baseURL) {
+async function loginAndNavigateToProjects(page: Page, baseURL: string | undefined) {
   const appUrl = baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
   
   // Go directly to login page first
@@ -26,7 +26,7 @@ async function loginAndNavigateToProjects(page, baseURL) {
 }
 
 // Shared function to create a project via the sidebar button
-async function createProject(page, projectName) {
+async function createProject(page: Page, projectName: string) {
   // Find the "Add Project" button in the sidebar
   const addProjectButton = page.locator('button[aria-label="Add Project"]');
   await expect(addProjectButton).toBeVisible();
@@ -68,7 +68,7 @@ async function createProject(page, projectName) {
       await page.keyboard.press('Control+a'); // Select all
       await page.keyboard.press('Delete'); // Delete selected
       await page.waitForTimeout(100);
-      await nameInput.type(projectName, { delay: 20 });
+      await nameInput.pressSequentially(projectName, { delay: 20 });
       
       if (retryCount === 3) {
         throw new Error(`Failed to fill project name after ${retryCount} attempts`);
@@ -313,4 +313,66 @@ test('user can delete a project with tasks - tasks should survive', async ({ pag
   // - project.destroy() doesn't cascade to tasks
   // - tasks have project_id set to NULL when project is deleted
   await expect(page.getByText(new RegExp(taskName)).first()).toBeVisible({ timeout: 10000 });
+});
+
+test('user can create a note from project details page and view it in project notes', async ({ page, baseURL }) => {
+  await loginAndNavigateToProjects(page, baseURL);
+
+  // Create a project for testing
+  const timestamp = Date.now();
+  const projectName = `Test project for notes ${timestamp}`;
+  await createProject(page, projectName);
+
+  // Click on the project to open its details view
+  await page.getByText(projectName).click();
+
+  // Wait for the project details page to load
+  await expect(page).toHaveURL(/\/project\//);
+
+  // Click on the "Notes" tab to show the notes section
+  const notesTab = page.getByRole('button', { name: /^Notes$/i });
+  await expect(notesTab).toBeVisible({ timeout: 5000 });
+  await notesTab.click();
+
+  // Wait for the notes tab to be active
+  await page.waitForTimeout(500);
+
+  // Find and click the "Create New Note" button
+  const createNoteButton = page.getByRole('button', { name: /create new note/i });
+  await expect(createNoteButton).toBeVisible({ timeout: 5000 });
+  await createNoteButton.click();
+
+  // Wait for the note modal to appear
+  const noteTitleInput = page.locator('[data-testid="note-title-input"]');
+  await expect(noteTitleInput).toBeVisible({ timeout: 5000 });
+
+  // Fill in the note details
+  const noteTitle = `Test note ${timestamp}`;
+  const noteContent = `This is a test note created at ${timestamp}`;
+
+  await noteTitleInput.fill(noteTitle);
+
+  // Find the content textarea and fill it
+  const noteContentTextarea = page.locator('textarea[name="content"]');
+  await expect(noteContentTextarea).toBeVisible();
+  await noteContentTextarea.fill(noteContent);
+
+  // Save the note
+  const saveNoteButton = page.locator('[data-testid="note-save-button"]');
+  await expect(saveNoteButton).toBeEnabled();
+  await saveNoteButton.click();
+
+  // Wait for the modal to close
+  await expect(noteTitleInput).not.toBeVisible({ timeout: 5000 });
+
+  // Wait for the note to be created
+  await page.waitForTimeout(2000);
+
+  // Verify the note appears in the project's notes section
+  // Look for the note title as a heading (more specific than just text)
+  await expect(page.getByRole('heading', { name: noteTitle })).toBeVisible({ timeout: 10000 });
+
+  // Verify we can see the note card with the content
+  // Use a more specific selector - look for the note content within a paragraph
+  await expect(page.locator('p', { hasText: noteContent })).toBeVisible();
 });

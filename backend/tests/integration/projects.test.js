@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Project, User, Area, Task } = require('../../models');
+const { Project, User, Area, Task, Note } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Projects Routes', () => {
@@ -434,6 +434,99 @@ describe('Projects Routes', () => {
             expect(taskById[notStartedTask.id].status).toBe(0);
             expect(taskById[inProgressTask.id].status).toBe(1);
             expect(taskById[completedTask.id].status).toBe(2);
+        });
+
+        it('should delete project with associated notes (orphan notes)', async () => {
+            // Create notes associated with the project
+            const note1 = await Note.create({
+                title: 'Note 1',
+                content: 'Content for note 1',
+                user_id: user.id,
+                project_id: project.id,
+            });
+
+            const note2 = await Note.create({
+                title: 'Note 2',
+                content: 'Content for note 2',
+                user_id: user.id,
+                project_id: project.id,
+            });
+
+            const note3 = await Note.create({
+                title: 'Note 3',
+                content: 'Content for note 3',
+                user_id: user.id,
+                project_id: project.id,
+            });
+
+            // Delete the project
+            const response = await agent.delete(`/api/project/${project.uid}`);
+
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe('Project successfully deleted');
+
+            // Verify project is deleted
+            const deletedProject = await Project.findByPk(project.id);
+            expect(deletedProject).toBeNull();
+
+            // Verify notes are orphaned (project_id set to null) but still exist
+            const orphanedNote1 = await Note.findByPk(note1.id);
+            const orphanedNote2 = await Note.findByPk(note2.id);
+            const orphanedNote3 = await Note.findByPk(note3.id);
+
+            expect(orphanedNote1).not.toBeNull();
+            expect(orphanedNote1.project_id).toBeNull();
+            expect(orphanedNote1.title).toBe('Note 1');
+            expect(orphanedNote1.content).toBe('Content for note 1');
+
+            expect(orphanedNote2).not.toBeNull();
+            expect(orphanedNote2.project_id).toBeNull();
+            expect(orphanedNote2.title).toBe('Note 2');
+
+            expect(orphanedNote3).not.toBeNull();
+            expect(orphanedNote3.project_id).toBeNull();
+            expect(orphanedNote3.title).toBe('Note 3');
+        });
+
+        it('should delete project with both tasks and notes (orphan both)', async () => {
+            // Create tasks associated with the project
+            const task = await Task.create({
+                name: 'Task with project',
+                user_id: user.id,
+                project_id: project.id,
+                status: 0,
+            });
+
+            // Create notes associated with the project
+            const note = await Note.create({
+                title: 'Note with project',
+                content: 'This note belongs to a project',
+                user_id: user.id,
+                project_id: project.id,
+            });
+
+            // Delete the project
+            const response = await agent.delete(`/api/project/${project.uid}`);
+
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe('Project successfully deleted');
+
+            // Verify project is deleted
+            const deletedProject = await Project.findByPk(project.id);
+            expect(deletedProject).toBeNull();
+
+            // Verify task is orphaned but still exists
+            const orphanedTask = await Task.findByPk(task.id);
+            expect(orphanedTask).not.toBeNull();
+            expect(orphanedTask.project_id).toBeNull();
+            expect(orphanedTask.name).toBe('Task with project');
+
+            // Verify note is orphaned but still exists
+            const orphanedNote = await Note.findByPk(note.id);
+            expect(orphanedNote).not.toBeNull();
+            expect(orphanedNote.project_id).toBeNull();
+            expect(orphanedNote.title).toBe('Note with project');
+            expect(orphanedNote.content).toBe('This note belongs to a project');
         });
     });
 });

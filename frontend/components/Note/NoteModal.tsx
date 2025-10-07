@@ -193,6 +193,22 @@ const NoteModal: React.FC<NoteModalProps> = ({
         };
     }, [isOpen, handleClose]);
 
+    // Handle body scroll when modal opens/closes
+    useEffect(() => {
+        if (isOpen) {
+            // Disable body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        } else {
+            // Re-enable body scroll when modal is closed
+            document.body.style.overflow = 'unset';
+        }
+
+        return () => {
+            // Clean up: re-enable body scroll
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -255,6 +271,11 @@ const NoteModal: React.FC<NoteModalProps> = ({
             project.name.toLowerCase().includes(query)
         );
         setFilteredProjects(filtered);
+
+        // If the user clears the project name, also clear the project_id in form data
+        if (value.trim() === '') {
+            setFormData((prev) => ({ ...prev, project_id: null }));
+        }
     };
 
     const handleProjectSelection = (project: Project) => {
@@ -325,7 +346,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
             const noteTags: Tag[] = tags.map((tagName) => ({ name: tagName }));
 
             // Create final form data with the tags
-            const finalFormData = { ...formData, tags: noteTags };
+            // If project name is empty, clear the project_id
+            const finalFormData = {
+                ...formData,
+                project_id:
+                    newProjectName.trim() === '' ? null : formData.project_id,
+                tags: noteTags,
+            };
 
             await onSave(finalFormData);
             showSuccessToast(

@@ -54,7 +54,7 @@ const ProjectDetails: React.FC = () => {
     const { showSuccessToast } = useToast();
 
     // Load areas from store (similar to how we handle tags)
-    const { areasStore } = useStore();
+    const { areasStore, projectsStore } = useStore();
     const areas = areasStore.areas;
 
     // Load areas when component mounts
@@ -299,7 +299,11 @@ const ProjectDetails: React.FC = () => {
             const savedTask = await response.json();
 
             // If the task's project was changed/cleared and no longer belongs to this project, remove it
-            if (savedTask.project_id !== project?.id) {
+            // Handle both null and undefined project_id values
+            const savedTaskProjectId = savedTask.project_id ?? null;
+            const currentProjectId = project?.id ?? null;
+
+            if (savedTaskProjectId !== currentProjectId) {
                 setTasks(tasks.filter((task) => task.id !== updatedTask.id));
             } else {
                 // Otherwise, update the task in place
@@ -516,6 +520,14 @@ const ProjectDetails: React.FC = () => {
 
         try {
             await deleteProject(project.uid);
+
+            // Update the global projects store to remove the deleted project
+            const currentProjects = projectsStore.projects;
+            const updatedProjects = currentProjects.filter(
+                (p) => p.uid !== project.uid
+            );
+            projectsStore.setProjects(updatedProjects);
+
             navigate('/projects');
         } catch {
             // Error deleting project - silently handled
@@ -587,7 +599,11 @@ const ProjectDetails: React.FC = () => {
             }
 
             // If updated note moved to another project, remove it from this list
-            if (savedNote.id && savedNote.project_id !== project?.id) {
+            // Handle both null and undefined project_id values
+            const savedNoteProjectId = savedNote.project_id ?? null;
+            const currentProjectId = project?.id ?? null;
+
+            if (savedNote.id && savedNoteProjectId !== currentProjectId) {
                 setNotes(notes.filter((n) => n.id !== savedNote.id));
             } else if (isUpdate) {
                 const savedIdentifier =
@@ -1199,6 +1215,7 @@ const ProjectDetails: React.FC = () => {
                                             title: '',
                                             content: '',
                                             tags: [],
+                                            project_id: project.id,
                                             project: {
                                                 id: project.id,
                                                 name: project.name,
@@ -1226,18 +1243,16 @@ const ProjectDetails: React.FC = () => {
                 />
 
                 {/* NoteModal */}
-                {isNoteModalOpen && (
-                    <NoteModal
-                        isOpen={isNoteModalOpen}
-                        onClose={() => {
-                            setIsNoteModalOpen(false);
-                            setSelectedNote(null);
-                        }}
-                        onSave={handleSaveNote}
-                        note={selectedNote}
-                        projects={allProjects}
-                    />
-                )}
+                <NoteModal
+                    isOpen={isNoteModalOpen}
+                    onClose={() => {
+                        setIsNoteModalOpen(false);
+                        setSelectedNote(null);
+                    }}
+                    onSave={handleSaveNote}
+                    note={selectedNote}
+                    projects={allProjects}
+                />
 
                 {isConfirmDialogOpen && noteToDelete && (
                     <ConfirmDialog

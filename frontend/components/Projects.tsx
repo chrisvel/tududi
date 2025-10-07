@@ -168,10 +168,8 @@ const Projects: React.FC = () => {
             } else {
                 await createProject(project);
             }
-            const projectsData = await fetchProjects(
-                stateFilter,
-                actualAreaFilter
-            );
+            // Fetch all projects without filters to keep global store complete
+            const projectsData = await fetchProjects('all', '');
             setProjects(projectsData);
         } catch (error) {
             console.error('Error saving project:', error);
@@ -201,11 +199,8 @@ const Projects: React.FC = () => {
                 setProjectsLoading(true);
                 await deleteProject(projectToDelete.uid);
 
-                // Update global state
-                const projectsData = await fetchProjects(
-                    stateFilter,
-                    actualAreaFilter
-                );
+                // Fetch all projects without filters to keep global store complete
+                const projectsData = await fetchProjects('all', '');
                 setProjects(projectsData);
             } else {
                 console.error('Cannot delete project: UID is undefined.');
@@ -266,9 +261,10 @@ const Projects: React.FC = () => {
 
         // Apply area filter by UID
         if (actualAreaFilter) {
-            filteredProjects = filteredProjects.filter(
-                (project) => project.area?.uid === actualAreaFilter
-            );
+            filteredProjects = filteredProjects.filter((project) => {
+                const projectArea = project.area || (project as any).Area;
+                return projectArea?.uid === actualAreaFilter;
+            });
         }
 
         // Apply search filter
