@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
@@ -29,6 +30,10 @@ import { useStore } from '../../store/useStore';
 const InboxItems: React.FC = () => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Track if we've done the initial load from URL
+    const [hasInitialized, setHasInitialized] = useState(false);
 
     // Access store data
     const { inboxItems, isLoading, pagination } = useStore(
@@ -80,8 +85,13 @@ const InboxItems: React.FC = () => {
     );
 
     useEffect(() => {
-        // Initial data loading
-        loadInboxItemsToStore(true);
+        // Read the page size from URL parameter or use default
+        const urlPageSize = searchParams.get('loaded');
+        const currentLoadedCount = urlPageSize ? parseInt(urlPageSize, 10) : 20;
+
+        // Initial data loading - load the amount specified in URL
+        loadInboxItemsToStore(true, currentLoadedCount);
+        setHasInitialized(true);
 
         // Load projects initially
         const loadInitialProjects = async () => {
@@ -122,7 +132,9 @@ const InboxItems: React.FC = () => {
         const handleForceReload = () => {
             // Wait a short time to ensure the backend has processed the new item
             setTimeout(() => {
-                loadInboxItemsToStore(false); // Don't show loading state during forced reload
+                const currentInboxStore = useStore.getState().inboxStore;
+                const currentCount = currentInboxStore.inboxItems.length;
+                loadInboxItemsToStore(false, currentCount); // Preserve current loaded count
             }, 500);
         };
 
@@ -162,7 +174,9 @@ const InboxItems: React.FC = () => {
         // This ensures real-time updates when items are added externally
         // Use a reasonable interval that balances responsiveness with performance
         const pollInterval = setInterval(() => {
-            loadInboxItemsToStore(false); // Don't show loading state during polling
+            const currentInboxStore = useStore.getState().inboxStore;
+            const currentCount = currentInboxStore.inboxItems.length;
+            loadInboxItemsToStore(false, currentCount); // Preserve current loaded count
         }, 15000); // Check for new items every 15 seconds
 
         // Add event listeners
@@ -181,6 +195,26 @@ const InboxItems: React.FC = () => {
             );
         };
     }, [t, showSuccessToast]); // Include dependencies that are actually used
+
+    // Update URL when inboxItems count changes (but only after initialization)
+    useEffect(() => {
+        // Don't update URL until we've done the initial load from URL
+        if (!hasInitialized) return;
+
+        const urlPageSize = searchParams.get('loaded');
+        const urlLoadedCount = urlPageSize ? parseInt(urlPageSize, 10) : 0;
+
+        // Only update URL if the count has actually changed from what's in the URL
+        if (inboxItems.length > 20 && inboxItems.length !== urlLoadedCount) {
+            setSearchParams(
+                { loaded: inboxItems.length.toString() },
+                { replace: true }
+            );
+        } else if (inboxItems.length <= 20 && urlLoadedCount > 0) {
+            // Remove the parameter if we're at the default page size
+            setSearchParams({}, { replace: true });
+        }
+    }, [inboxItems.length, hasInitialized]); // Track hasInitialized to prevent premature URL updates
 
     const handleProcessItem = async (
         uid: string,

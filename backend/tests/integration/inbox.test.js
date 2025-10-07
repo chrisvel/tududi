@@ -146,6 +146,82 @@ describe('Inbox Routes', () => {
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');
         });
+
+        it('should support pagination with limit and offset', async () => {
+            // Create 25 inbox items
+            const items = [];
+            for (let i = 1; i <= 25; i++) {
+                const item = await InboxItem.create({
+                    content: `Item ${i}`,
+                    status: 'added',
+                    source: 'test',
+                    user_id: user.id,
+                });
+                items.push(item);
+                // Small delay to ensure different timestamps
+                await new Promise((resolve) => setTimeout(resolve, 5));
+            }
+
+            // Test first page (default limit of 20)
+            const response1 = await agent.get('/api/inbox?limit=20&offset=0');
+            expect(response1.status).toBe(200);
+            expect(response1.body.items.length).toBe(20);
+            expect(response1.body.pagination.total).toBe(26); // 25 + 1 from beforeEach
+            expect(response1.body.pagination.hasMore).toBe(true);
+            expect(response1.body.pagination.offset).toBe(0);
+            expect(response1.body.pagination.limit).toBe(20);
+
+            // Test second page
+            const response2 = await agent.get('/api/inbox?limit=20&offset=20');
+            expect(response2.status).toBe(200);
+            expect(response2.body.items.length).toBe(6); // Remaining items
+            expect(response2.body.pagination.total).toBe(26);
+            expect(response2.body.pagination.hasMore).toBe(false);
+            expect(response2.body.pagination.offset).toBe(20);
+        });
+
+        it('should support loading more than 20 items at once', async () => {
+            // Create 30 inbox items
+            for (let i = 1; i <= 30; i++) {
+                await InboxItem.create({
+                    content: `Item ${i}`,
+                    status: 'added',
+                    source: 'test',
+                    user_id: user.id,
+                });
+                await new Promise((resolve) => setTimeout(resolve, 5));
+            }
+
+            // Request 40 items (should get all 31: 30 + 1 from beforeEach)
+            const response = await agent.get('/api/inbox?limit=40&offset=0');
+            expect(response.status).toBe(200);
+            expect(response.body.items.length).toBe(31);
+            expect(response.body.pagination.total).toBe(31);
+            expect(response.body.pagination.hasMore).toBe(false);
+            expect(response.body.pagination.limit).toBe(40);
+        });
+
+        it('should return items in newest-first order when paginating', async () => {
+            // Create 25 inbox items
+            for (let i = 1; i <= 25; i++) {
+                await InboxItem.create({
+                    content: `Item ${i}`,
+                    status: 'added',
+                    source: 'test',
+                    user_id: user.id,
+                });
+                await new Promise((resolve) => setTimeout(resolve, 5));
+            }
+
+            // Get first page
+            const response = await agent.get('/api/inbox?limit=20&offset=0');
+            expect(response.status).toBe(200);
+
+            // Verify newest items are first
+            const items = response.body.items;
+            expect(items[0].content).toBe('Item 25'); // Newest
+            expect(items[19].content).toBe('Item 6'); // 20th item
+        });
     });
 
     describe('GET /api/inbox/:uid', () => {
