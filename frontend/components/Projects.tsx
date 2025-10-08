@@ -54,7 +54,10 @@ const Projects: React.FC = () => {
         useState<boolean>(false);
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
+    const [viewMode, setViewMode] = useState<'cards' | 'list'>(() => {
+        const saved = localStorage.getItem('projectsViewMode');
+        return saved === 'list' || saved === 'cards' ? saved : 'cards';
+    });
     const [isSearchExpanded, setIsSearchExpanded] = useState<boolean>(false);
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
@@ -118,6 +121,11 @@ const Projects: React.FC = () => {
 
         loadAreas();
     }, []);
+
+    // Persist viewMode to localStorage
+    useEffect(() => {
+        localStorage.setItem('projectsViewMode', viewMode);
+    }, [viewMode]);
 
     // Projects are now loaded by Layout component into global store
 
