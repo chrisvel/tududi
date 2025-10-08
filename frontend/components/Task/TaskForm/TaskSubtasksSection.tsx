@@ -37,28 +37,37 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
         }, 100);
     };
 
-    const handleCreateSubtask = () => {
-        if (!newSubtaskName.trim()) return;
+    const newSubtask = (name: string): Task => ({
+        name: name.trim(),
+        status: 'not_started',
+        priority: 'low',
+        today: false,
+        parent_task_id: parentTaskId, // Set the parent task ID immediately
+        // Mark as new for backend processing
+        isNew: true,
+        // Also keep for UI purposes
+        _isNew: true,
+        completed_at: null,
+    } as Task);
 
-        const newSubtask: Task = {
-            name: newSubtaskName.trim(),
-            status: 'not_started',
-            priority: 'low',
-            today: false,
-            parent_task_id: parentTaskId, // Set the parent task ID immediately
-            // Mark as new for backend processing
-            isNew: true,
-            // Also keep for UI purposes
-            _isNew: true,
-            completed_at: null,
-        } as Task;
+    const addSubtasks = (names: string | string[]) => {
+        const list = Array.isArray(names) ? names : [names];
+        const cleaned = list.map(n => n.trim()).filter(Boolean);
+        if (cleaned.length === 0) {
+            return;
+        }
 
-        onSubtasksChange([...subtasks, newSubtask]);
+        const newOnes = cleaned.map(newSubtask);
+
+        onSubtasksChange([...subtasks, ...newOnes]);
         setNewSubtaskName('');
 
         // Only scroll when adding new subtask, not when toggling completion
         scrollToBottom();
     };
+
+    const handleCreateSubtask = () => addSubtasks(newSubtaskName);
+    const handleCreateSubtasks = (names: string[]) => addSubtasks(names);
 
     const handleDeleteSubtask = (index: number) => {
         const updatedSubtasks = subtasks.filter((_, i) => i !== index);
@@ -324,6 +333,11 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                     value={newSubtaskName}
                     onChange={(e) => setNewSubtaskName(e.target.value)}
                     onKeyDown={handleKeyPress}
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      const text = e.clipboardData.getData('text');
+                      handleCreateSubtasks(text.split(/\r?\n/));
+                    }}
                     placeholder={t('subtasks.placeholder', 'Add a subtask...')}
                     className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                 />
