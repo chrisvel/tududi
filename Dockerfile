@@ -81,6 +81,7 @@ RUN chmod +x /app/scripts/docker-entrypoint.sh
 RUN rm -rf /app/backend/dist
 COPY --from=builder --chown=app:app /app/dist ./backend/dist
 COPY --from=builder --chown=app:app /app/public/favicon* ./backend/dist/
+COPY --from=builder --chown=app:app /app/public/manifest.json ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
 COPY --from=builder --chown=app:app /app/node_modules ./node_modules
 COPY --from=builder --chown=app:app /app/package.json /app/
