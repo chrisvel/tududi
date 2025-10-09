@@ -1,6 +1,7 @@
 const express = require('express');
 const { User } = require('../models');
 const { isAdmin } = require('../services/rolesService');
+const { logError } = require('../services/logService');
 const packageJson = require('../../package.json');
 const router = express.Router();
 
@@ -39,7 +40,7 @@ router.get('/current_user', async (req, res) => {
 
         res.json({ user: null });
     } catch (error) {
-        console.error('Error fetching current user:', error);
+        logError('Error fetching current user:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -87,7 +88,7 @@ router.post('/login', async (req, res) => {
             },
         });
     } catch (error) {
-        console.error('Login error:', error);
+        logError('Login error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -96,7 +97,7 @@ router.post('/login', async (req, res) => {
 router.get('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            console.error('Logout error:', err);
+            logError('Logout error:', err);
             return res.status(500).json({ error: 'Could not log out' });
         }
 

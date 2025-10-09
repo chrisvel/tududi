@@ -21,6 +21,7 @@ const { uid } = require('../utils/uid');
 const { logError } = require('../services/logService');
 const router = express.Router();
 const { hasAccess } = require('../middleware/authorize');
+const { requireAuth } = require('../middleware/auth');
 
 // Helper function to safely format dates
 const formatDate = (date) => {
@@ -122,7 +123,7 @@ async function updateProjectTags(project, tagsData, userId) {
 }
 
 // POST /api/upload/project-image
-router.post('/upload/project-image', upload.single('image'), (req, res) => {
+router.post('/upload/project-image', requireAuth, upload.single('image'), (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No image file provided' });

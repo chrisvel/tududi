@@ -28,6 +28,7 @@ const {
     processDueDateForStorage,
     processDueDateForResponse,
 } = require('../utils/timezone-utils');
+const { logError } = require('../services/logService');
 const moment = require('moment-timezone');
 const _ = require('lodash');
 const router = express.Router();
@@ -363,7 +364,7 @@ async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
         }
         return false;
     } catch (error) {
-        console.error('Error checking parent task completion:', error);
+        logError('Error checking parent task completion:', error);
         return false;
     }
 }
@@ -401,7 +402,7 @@ async function undoneParentTaskIfNeeded(parentTaskId, userId) {
         }
         return false;
     } catch (error) {
-        console.error('Error undoing parent task:', error);
+        logError('Error undoing parent task:', error);
         return false;
     }
 }
@@ -424,7 +425,7 @@ async function completeAllSubtasks(parentTaskId, userId) {
         );
         return result[0] > 0; // Return true if any subtasks were actually updated
     } catch (error) {
-        console.error('Error completing all subtasks:', error);
+        logError('Error completing all subtasks:', error);
         return false;
     }
 }
@@ -449,7 +450,7 @@ async function undoneAllSubtasks(parentTaskId, userId) {
         );
         return result[0] > 0; // Return true if any subtasks were actually updated
     } catch (error) {
-        console.error('Error undoing all subtasks:', error);
+        logError('Error undoing all subtasks:', error);
         return false;
     }
 }
@@ -1306,7 +1307,7 @@ router.get('/tasks', async (req, res) => {
 
         res.json(response);
     } catch (error) {
-        console.error('Error fetching tasks:', error);
+        logError('Error fetching tasks:', error);
         if (error.message === 'Invalid order column specified.') {
             return res.status(400).json({ error: error.message });
         }
@@ -1376,7 +1377,7 @@ router.get('/task', async (req, res) => {
 
         res.json(serializedTask);
     } catch (error) {
-        console.error('Error fetching task by UID:', error);
+        logError('Error fetching task by UID:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -1437,7 +1438,7 @@ router.get(
 
             res.json(serializedTask);
         } catch (error) {
-            console.error('Error fetching task:', error);
+            logError('Error fetching task:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -1487,7 +1488,7 @@ router.get('/task/:id/subtasks', async (req, res) => {
 
         res.json(serializedSubtasks);
     } catch (error) {
-        console.error('Error fetching subtasks:', error);
+        logError('Error fetching subtasks:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -1644,7 +1645,7 @@ router.post('/task', async (req, res) => {
                 { source: 'web' }
             );
         } catch (eventError) {
-            console.error('Error logging task creation event:', eventError);
+            logError('Error logging task creation event:', eventError);
             // Don't fail the request if event logging fails
         }
         */
@@ -1666,7 +1667,7 @@ router.post('/task', async (req, res) => {
         });
 
         if (!taskWithAssociations) {
-            console.error('Failed to reload created task:', task.id);
+            logError('Failed to reload created task:', task.id);
             // Return the original task data as fallback
             const fallbackTask = {
                 ...task.toJSON(),
@@ -1703,9 +1704,9 @@ router.post('/task', async (req, res) => {
 
         res.status(201).json(serializedTask);
     } catch (error) {
-        console.error('Error creating task:', error);
-        console.error('Error stack:', error.stack);
-        console.error('Error name:', error.name);
+        logError('Error creating task:', error);
+        logError('Error stack:', error.stack);
+        logError('Error name:', error.name);
         res.status(400).json({
             error: 'There was a problem creating the task.',
             details: error.errors
@@ -2026,7 +2027,7 @@ router.patch(
                         // Generate new recurring tasks for the updated pattern
                         await generateRecurringTasks(req.currentUser.id, 7);
                     } catch (error) {
-                        console.error(
+                        logError(
                             'Error generating new recurring tasks after update:',
                             error
                         );
@@ -2304,7 +2305,7 @@ router.patch(
                     }
                 }
             } catch (eventError) {
-                console.error('Error logging task update events:', eventError);
+                logError('Error logging task update events:', eventError);
                 // Don't fail the request if event logging fails
             }
 
@@ -2333,7 +2334,7 @@ router.patch(
 
             res.json(serializedTask);
         } catch (error) {
-            console.error('Error updating task:', error);
+            logError('Error updating task:', error);
             res.status(400).json({
                 error: 'There was a problem updating the task.',
                 details: error.errors
@@ -2506,8 +2507,8 @@ router.patch(
 
             res.json(response);
         } catch (error) {
-            console.error('Error in toggle completion endpoint:', error);
-            console.error('Error stack:', error.stack);
+            logError('Error in toggle completion endpoint:', error);
+            logError('Error stack:', error.stack);
             res.status(422).json({
                 error: 'Unable to update task',
                 details: error.message,
@@ -2607,8 +2608,15 @@ router.delete(
                 { type: sequelize.QueryTypes.SELECT }
             );
 
+            // Whitelist of known valid table names to prevent SQL injection
+            const validTableNames = [
+                'tasks', 'projects', 'notes', 'users', 'tags', 'areas',
+                'permissions', 'actions', 'task_events', 'inbox_items',
+                'tasks_tags', 'notes_tags', 'projects_tags', 'Sessions'
+            ];
+
             for (const table of allTables) {
-                if (table.name !== 'tasks') {
+                if (table.name !== 'tasks' && validTableNames.includes(table.name)) {
                     try {
                         const fks = await sequelize.query(
                             `PRAGMA foreign_key_list(${table.name})`,
@@ -2688,7 +2696,7 @@ router.post('/tasks/generate-recurring', async (req, res) => {
             })),
         });
     } catch (error) {
-        console.error('Error generating recurring tasks:', error);
+        logError('Error generating recurring tasks:', error);
         res.status(500).json({ error: 'Failed to generate recurring tasks' });
     }
 });
@@ -2758,7 +2766,7 @@ router.patch(
                     metadata: { source: 'web', action: 'toggle_today' },
                 });
             } catch (eventError) {
-                console.error('Error logging today toggle event:', eventError);
+                logError('Error logging today toggle event:', eventError);
                 // Don't fail the request if event logging fails
             }
 
@@ -2769,7 +2777,7 @@ router.patch(
             );
             res.json(serializedTask);
         } catch (error) {
-            console.error('Error toggling task today flag:', error);
+            logError('Error toggling task today flag:', error);
             res.status(500).json({ error: 'Failed to update task today flag' });
         }
     }
@@ -2873,7 +2881,7 @@ router.get('/task/:id/next-iterations', async (req, res) => {
 
         res.json({ iterations });
     } catch (error) {
-        console.error('Error getting next iterations:', error);
+        logError('Error getting next iterations:', error);
         res.status(500).json({ error: 'Failed to get next iterations' });
     }
 });

@@ -1,6 +1,7 @@
 const express = require('express');
 const { User, Permission, Project, Task, Note } = require('../models');
 const { execAction } = require('../services/execAction');
+const { logError } = require('../services/logService');
 const router = express.Router();
 
 const permissionsService = require('../services/permissionsService');
@@ -83,7 +84,11 @@ router.post('/shares', async (req, res) => {
             return null;
         })();
 
-        if (resource && resource.user_id === target.id) {
+        if (!resource) {
+            return res.status(404).json({ error: 'Resource not found' });
+        }
+
+        if (resource.user_id === target.id) {
             return res.status(400).json({
                 error: 'Cannot grant permissions to the owner. Owner already has full access.',
             });
@@ -99,7 +104,7 @@ router.post('/shares', async (req, res) => {
         });
         res.status(204).end();
     } catch (err) {
-        console.error('Error sharing resource:', err);
+        logError('Error sharing resource:', err);
         res.status(400).json({ error: 'Unable to share resource' });
     }
 });
@@ -158,7 +163,7 @@ router.delete('/shares', async (req, res) => {
         });
         res.status(204).end();
     } catch (err) {
-        console.error('Error revoking share:', err);
+        logError('Error revoking share:', err);
         res.status(400).json({ error: 'Unable to revoke share' });
     }
 });
@@ -251,7 +256,7 @@ router.get('/shares', async (req, res) => {
 
         res.json({ shares: allShares });
     } catch (err) {
-        console.error('Error listing shares:', err);
+        logError('Error listing shares:', err);
         res.status(400).json({ error: 'Unable to list shares' });
     }
 });

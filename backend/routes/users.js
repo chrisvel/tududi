@@ -1,5 +1,6 @@
 const express = require('express');
 const { User } = require('../models');
+const { logError } = require('../services/logService');
 const taskSummaryService = require('../services/taskSummaryService');
 const router = express.Router();
 
@@ -49,14 +50,14 @@ router.get('/profile', async (req, res) => {
             try {
                 user.today_settings = JSON.parse(user.today_settings);
             } catch (error) {
-                console.error('Error parsing today_settings:', error);
+                logError('Error parsing today_settings:', error);
                 user.today_settings = null;
             }
         }
 
         res.json(user);
     } catch (error) {
-        console.error('Error fetching profile:', error);
+        logError('Error fetching profile:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -185,7 +186,7 @@ router.patch('/profile', async (req, res) => {
 
         res.json(updatedUser);
     } catch (error) {
-        console.error('Error updating profile:', error);
+        logError('Error updating profile:', error);
         res.status(400).json({
             error: 'Failed to update profile.',
             details: error.errors
@@ -236,7 +237,7 @@ router.post('/profile/change-password', async (req, res) => {
 
         res.json({ message: 'Password changed successfully' });
     } catch (error) {
-        console.error('Error changing password:', error);
+        logError('Error changing password:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -264,7 +265,7 @@ router.post('/profile/task-summary/toggle', async (req, res) => {
             message: message,
         });
     } catch (error) {
-        console.error('Error toggling task summary:', error);
+        logError('Error toggling task summary:', error);
         res.status(400).json({
             error: 'Failed to update task summary settings.',
             details: error.errors
@@ -300,7 +301,7 @@ router.post('/profile/task-summary/frequency', async (req, res) => {
             message: `Task summary frequency has been set to ${frequency}.`,
         });
     } catch (error) {
-        console.error('Error updating task summary frequency:', error);
+        logError('Error updating task summary frequency:', error);
         res.status(400).json({
             error: 'Failed to update task summary frequency.',
             details: error.errors
@@ -338,7 +339,7 @@ router.post('/profile/task-summary/send-now', async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Error sending task summary:', error);
+        logError('Error sending task summary:', error);
         res.status(400).json({
             error: 'Error sending message to Telegram.',
             details: error.message,
@@ -362,7 +363,7 @@ router.get('/profile/task-summary/status', async (req, res) => {
             next_run: user.task_summary_next_run,
         });
     } catch (error) {
-        console.error('Error fetching task summary status:', error);
+        logError('Error fetching task summary status:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -438,7 +439,7 @@ router.put('/profile/today-settings', async (req, res) => {
             today_settings: todaySettings,
         });
     } catch (error) {
-        console.error('Error updating today settings:', error);
+        logError('Error updating today settings:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

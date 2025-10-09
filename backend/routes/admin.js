@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Role, User } = require('../models');
 const { isAdmin } = require('../services/rolesService');
+const { logError } = require('../services/logService');
 
 // POST /api/admin/set-admin-role
 // Body: { user_id: number, is_admin: boolean }
@@ -38,7 +39,7 @@ router.post('/admin/set-admin-role', async (req, res) => {
         }
         res.json({ user_id, is_admin: role.is_admin });
     } catch (err) {
-        console.error('Error setting admin role:', err);
+        logError('Error setting admin role:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -81,7 +82,7 @@ router.get('/admin/users', requireAdmin, async (req, res) => {
         }));
         res.json(result);
     } catch (err) {
-        console.error('Error listing users:', err);
+        logError('Error listing users:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -121,7 +122,7 @@ router.post('/admin/users', requireAdmin, async (req, res) => {
             role: makeAdmin ? 'admin' : 'user',
         });
     } catch (err) {
-        console.error('Error creating user:', err);
+        logError('Error creating user:', err);
         // Unique constraint
         if (err?.name === 'SequelizeUniqueConstraintError') {
             return res.status(409).json({ error: 'Email already exists' });
@@ -161,7 +162,7 @@ router.delete('/admin/users/:id', requireAdmin, async (req, res) => {
         await user.destroy();
         res.status(204).send();
     } catch (err) {
-        console.error('Error deleting user:', err);
+        logError('Error deleting user:', err);
         res.status(400).json({
             error: 'There was a problem deleting the user.',
         });
