@@ -84,7 +84,12 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
         return (
             <CheckCircleIcon
                 className={`${colorClass} cursor-pointer flex-shrink-0 transition-all duration-300 ease-in-out animate-scale-in`}
-                style={{ width: '20px', height: '20px', marginLeft: '-2px', marginRight: '-2px' }}
+                style={{
+                    width: '20px',
+                    height: '20px',
+                    marginLeft: '-2px',
+                    marginRight: '-2px',
+                }}
                 onClick={handleClick}
                 title={getPriorityText()}
                 role="checkbox"
