@@ -196,13 +196,13 @@ const AreaModal: React.FC<AreaModalProps> = ({
                                             </div>
 
                                             {/* Description Section - Always Visible */}
-                                            <div className="flex-1 pb-4 px-4">
+                                            <div className="flex-1 pb-4 sm:px-4">
                                                 <textarea
                                                     id="areaDescription"
                                                     name="description"
                                                     value={formData.description}
                                                     onChange={handleChange}
-                                                    className="block w-full h-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
+                                                    className="block w-full h-full sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 px-3 sm:py-3 sm:px-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 sm:focus:ring-2 sm:focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
                                                     placeholder={t(
                                                         'forms.areaDescriptionPlaceholder'
                                                     )}

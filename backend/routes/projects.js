@@ -207,7 +207,7 @@ router.get('/projects', async (req, res) => {
                 {
                     model: Area,
                     required: false,
-                    attributes: ['name'],
+                    attributes: ['id', 'uid', 'name'],
                 },
                 {
                     model: Tag,
@@ -348,7 +348,7 @@ router.get(
                     {
                         model: Area,
                         required: false,
-                        attributes: ['id', 'name'],
+                        attributes: ['id', 'uid', 'name'],
                     },
                     {
                         model: Tag,
@@ -537,6 +537,11 @@ router.patch(
                         attributes: ['id', 'name', 'uid'],
                         through: { attributes: [] },
                     },
+                    {
+                        model: Area,
+                        required: false,
+                        attributes: ['id', 'uid', 'name'],
+                    },
                 ],
             });
 
@@ -592,6 +597,18 @@ router.delete(
                 try {
                     // First, orphan all tasks associated with this project by setting project_id to NULL
                     await Task.update(
+                        { project_id: null },
+                        {
+                            where: {
+                                project_id: project.id,
+                                user_id: req.session.userId,
+                            },
+                            transaction,
+                        }
+                    );
+
+                    // Also orphan all notes associated with this project by setting project_id to NULL
+                    await Note.update(
                         { project_id: null },
                         {
                             where: {

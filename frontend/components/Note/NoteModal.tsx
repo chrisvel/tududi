@@ -193,6 +193,22 @@ const NoteModal: React.FC<NoteModalProps> = ({
         };
     }, [isOpen, handleClose]);
 
+    // Handle body scroll when modal opens/closes
+    useEffect(() => {
+        if (isOpen) {
+            // Disable body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        } else {
+            // Re-enable body scroll when modal is closed
+            document.body.style.overflow = 'unset';
+        }
+
+        return () => {
+            // Clean up: re-enable body scroll
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -255,6 +271,11 @@ const NoteModal: React.FC<NoteModalProps> = ({
             project.name.toLowerCase().includes(query)
         );
         setFilteredProjects(filtered);
+
+        // If the user clears the project name, also clear the project_id in form data
+        if (value.trim() === '') {
+            setFormData((prev) => ({ ...prev, project_id: null }));
+        }
     };
 
     const handleProjectSelection = (project: Project) => {
@@ -325,7 +346,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
             const noteTags: Tag[] = tags.map((tagName) => ({ name: tagName }));
 
             // Create final form data with the tags
-            const finalFormData = { ...formData, tags: noteTags };
+            // If project name is empty, clear the project_id
+            const finalFormData = {
+                ...formData,
+                project_id:
+                    newProjectName.trim() === '' ? null : formData.project_id,
+                tags: noteTags,
+            };
 
             await onSave(finalFormData);
             showSuccessToast(
@@ -426,8 +453,8 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                 </div>
 
                                                 {/* Content Section - Always Visible */}
-                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 px-4 flex-1 flex flex-col mb-2">
-                                                    <div className="flex items-center justify-between mb-2">
+                                                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 sm:px-4 flex-1 flex flex-col mb-2">
+                                                    <div className="flex items-center justify-between mb-2 px-4 sm:px-0">
                                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                                             {t(
                                                                 'forms.noteContent'
@@ -490,13 +517,13 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                             onChange={
                                                                 handleChange
                                                             }
-                                                            className="block w-full h-full min-h-0 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
+                                                            className="block w-full h-full min-h-0 sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 sm:py-3 px-3 sm:px-3 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 sm:focus:ring-2 sm:focus:ring-blue-500 transition duration-150 ease-in-out resize-none"
                                                             placeholder="Write your content using Markdown formatting...&#10;&#10;Examples:&#10;# Heading&#10;**Bold text**&#10;*Italic text*&#10;- List item&#10;```code```"
                                                             autoComplete="off"
                                                             data-testid="note-content-textarea"
                                                         />
                                                     ) : (
-                                                        <div className="block w-full h-full min-h-0 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm p-3 text-sm bg-gray-50 dark:bg-gray-800 overflow-y-auto">
+                                                        <div className="block w-full h-full min-h-0 sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 px-3 sm:py-3 sm:px-3 text-sm bg-gray-50 dark:bg-gray-800 overflow-y-auto">
                                                             {formData.content ? (
                                                                 <MarkdownRenderer
                                                                     content={
