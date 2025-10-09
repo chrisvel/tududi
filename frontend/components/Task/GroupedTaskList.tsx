@@ -240,27 +240,31 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                             {/* Day column tasks */}
                                             <div className="space-y-1.5">
                                                 {dayTasks.map((task) => (
-                                                    <TaskItem
+                                                    <div
                                                         key={task.id}
-                                                        task={task}
-                                                        onTaskUpdate={
-                                                            onTaskUpdate
-                                                        }
-                                                        onTaskCompletionToggle={
-                                                            onTaskCompletionToggle
-                                                        }
-                                                        onTaskDelete={
-                                                            onTaskDelete
-                                                        }
-                                                        projects={projects}
-                                                        hideProjectName={
-                                                            hideProjectName
-                                                        }
-                                                        onToggleToday={
-                                                            onToggleToday
-                                                        }
-                                                        isUpcomingView={true}
-                                                    />
+                                                    >
+                                                        <TaskItem
+                                                            task={task}
+                                                            onTaskUpdate={
+                                                                onTaskUpdate
+                                                            }
+                                                            onTaskCompletionToggle={
+                                                                onTaskCompletionToggle
+                                                            }
+                                                            onTaskDelete={
+                                                                onTaskDelete
+                                                            }
+                                                            projects={projects}
+                                                            hideProjectName={
+                                                                hideProjectName
+                                                            }
+                                                            onToggleToday={
+                                                                onToggleToday
+                                                            }
+                                                            isUpcomingView={true}
+                                                            showCompletedTasks={showCompletedTasks}
+                                                        />
+                                                    </div>
                                                 ))}
 
                                                 {/* Empty state for columns with no tasks */}
