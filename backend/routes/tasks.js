@@ -2610,13 +2610,27 @@ router.delete(
 
             // Whitelist of known valid table names to prevent SQL injection
             const validTableNames = [
-                'tasks', 'projects', 'notes', 'users', 'tags', 'areas',
-                'permissions', 'actions', 'task_events', 'inbox_items',
-                'tasks_tags', 'notes_tags', 'projects_tags', 'Sessions'
+                'tasks',
+                'projects',
+                'notes',
+                'users',
+                'tags',
+                'areas',
+                'permissions',
+                'actions',
+                'task_events',
+                'inbox_items',
+                'tasks_tags',
+                'notes_tags',
+                'projects_tags',
+                'Sessions',
             ];
 
             for (const table of allTables) {
-                if (table.name !== 'tasks' && validTableNames.includes(table.name)) {
+                if (
+                    table.name !== 'tasks' &&
+                    validTableNames.includes(table.name)
+                ) {
                     try {
                         const fks = await sequelize.query(
                             `PRAGMA foreign_key_list(${table.name})`,

@@ -123,20 +123,27 @@ async function updateProjectTags(project, tagsData, userId) {
 }
 
 // POST /api/upload/project-image
-router.post('/upload/project-image', requireAuth, upload.single('image'), (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No image file provided' });
-        }
+router.post(
+    '/upload/project-image',
+    requireAuth,
+    upload.single('image'),
+    (req, res) => {
+        try {
+            if (!req.file) {
+                return res
+                    .status(400)
+                    .json({ error: 'No image file provided' });
+            }
 
-        // Return the relative URL that can be accessed from the frontend
-        const imageUrl = `/api/uploads/projects/${req.file.filename}`;
-        res.json({ imageUrl });
-    } catch (error) {
-        logError('Error uploading image:', error);
-        res.status(500).json({ error: 'Failed to upload image' });
+            // Return the relative URL that can be accessed from the frontend
+            const imageUrl = `/api/uploads/projects/${req.file.filename}`;
+            res.json({ imageUrl });
+        } catch (error) {
+            logError('Error uploading image:', error);
+            res.status(500).json({ error: 'Failed to upload image' });
+        }
     }
-});
+);
 
 // GET /api/projects
 router.get('/projects', async (req, res) => {

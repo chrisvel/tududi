@@ -198,10 +198,7 @@ async function sendWelcomeMessage(token, chatId) {
                         resolve(false);
                     }
                 } catch (error) {
-                    logError(
-                        'Error parsing welcome message response:',
-                        error
-                    );
+                    logError('Error parsing welcome message response:', error);
                     resolve(false);
                 }
             });
