@@ -240,9 +240,7 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                             {/* Day column tasks */}
                                             <div className="space-y-1.5">
                                                 {dayTasks.map((task) => (
-                                                    <div
-                                                        key={task.id}
-                                                    >
+                                                    <div key={task.id}>
                                                         <TaskItem
                                                             task={task}
                                                             onTaskUpdate={
@@ -261,8 +259,12 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
                                                             onToggleToday={
                                                                 onToggleToday
                                                             }
-                                                            isUpcomingView={true}
-                                                            showCompletedTasks={showCompletedTasks}
+                                                            isUpcomingView={
+                                                                true
+                                                            }
+                                                            showCompletedTasks={
+                                                                showCompletedTasks
+                                                            }
                                                         />
                                                     </div>
                                                 ))}

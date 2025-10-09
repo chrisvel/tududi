@@ -566,8 +566,12 @@ async function filterTasksByParams(params, userId, userTimezone) {
 
             console.log('📅 UPCOMING RANGE DEBUG:');
             console.log(`  Timezone: ${safeTimezone}`);
-            console.log(`  Range Start (UTC): ${upcomingRange.start.toISOString()}`);
-            console.log(`  Range End (UTC): ${upcomingRange.end.toISOString()}`);
+            console.log(
+                `  Range Start (UTC): ${upcomingRange.start.toISOString()}`
+            );
+            console.log(
+                `  Range End (UTC): ${upcomingRange.end.toISOString()}`
+            );
             console.log(`  User ID: ${userId}`);
 
             // For upcoming view, we want to show recurring instances (children) with due dates

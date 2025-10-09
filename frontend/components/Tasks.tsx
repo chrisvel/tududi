@@ -341,11 +341,13 @@ const Tasks: React.FC = () => {
                 if (!prevGroupedTasks) return null;
 
                 const newGroupedTasks: GroupedTasks = {};
-                Object.entries(prevGroupedTasks).forEach(([groupName, tasks]) => {
-                    newGroupedTasks[groupName] = tasks.map((task) =>
-                        task.id === updatedTask.id ? updatedTask : task
-                    );
-                });
+                Object.entries(prevGroupedTasks).forEach(
+                    ([groupName, tasks]) => {
+                        newGroupedTasks[groupName] = tasks.map((task) =>
+                            task.id === updatedTask.id ? updatedTask : task
+                        );
+                    }
+                );
                 return newGroupedTasks;
             });
         }

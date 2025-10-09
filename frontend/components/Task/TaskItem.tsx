@@ -317,13 +317,17 @@ const TaskItem: React.FC<TaskItemProps> = ({
         if (task.id) {
             try {
                 // Check if task is being completed (not uncompleted)
-                const isCompletingTask = task.status !== 'done' && task.status !== 2 && task.status !== 'archived' && task.status !== 3;
+                const isCompletingTask =
+                    task.status !== 'done' &&
+                    task.status !== 2 &&
+                    task.status !== 'archived' &&
+                    task.status !== 3;
 
                 // If completing the task in upcoming view and not showing completed tasks, trigger animation
                 if (isCompletingTask && isUpcomingView && !showCompletedTasks) {
                     setIsAnimatingOut(true);
                     // Wait for animation to complete before updating state
-                    await new Promise(resolve => setTimeout(resolve, 300));
+                    await new Promise((resolve) => setTimeout(resolve, 300));
                 }
 
                 const response = await toggleTaskCompletion(task.id);
@@ -429,11 +433,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     isInProgress
                         ? 'border-2 border-green-400/60 dark:border-green-500/60'
                         : ''
-                } ${
-                    isAnimatingOut
-                        ? 'opacity-0'
-                        : 'opacity-100'
-                }`}
+                } ${isAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
             >
                 <TaskHeader
                     task={task}
