@@ -457,7 +457,8 @@ async function filterTasksByParams(params, userId, userTimezone) {
     // Disable search functionality for upcoming view
     if (params.type === 'upcoming') {
         // Remove search-related parameters to prevent search functionality
-        params = { ...params, client_side_filtering: false };
+        // Keep client_side_filtering to allow frontend to control completed task visibility
+        params = { ...params };
         delete params.search;
     }
 
@@ -563,16 +564,24 @@ async function filterTasksByParams(params, userId, userTimezone) {
             const safeTimezone = getSafeTimezone(userTimezone);
             const upcomingRange = getUpcomingRangeInUTC(safeTimezone, 7);
 
+            console.log('📅 UPCOMING RANGE DEBUG:');
+            console.log(`  Timezone: ${safeTimezone}`);
+            console.log(
+                `  Range Start (UTC): ${upcomingRange.start.toISOString()}`
+            );
+            console.log(
+                `  Range End (UTC): ${upcomingRange.end.toISOString()}`
+            );
+            console.log(`  User ID: ${userId}`);
+
             // For upcoming view, we want to show recurring instances (children) with due dates
             // Override the default whereClause to include recurring instances
-            // NOTE: Search functionality is disabled for upcoming view - ignore client_side_filtering
             whereClause = {
                 user_id: userId,
                 parent_task_id: null, // Exclude subtasks from main task lists
                 due_date: {
                     [Op.between]: [upcomingRange.start, upcomingRange.end],
                 },
-                status: { [Op.notIn]: [Task.STATUS.DONE, 'done'] },
                 [Op.or]: [
                     // Include non-recurring tasks
                     {
@@ -595,6 +604,15 @@ async function filterTasksByParams(params, userId, userTimezone) {
                     },
                 ],
             };
+
+            // Apply status filter based on client_side_filtering
+            if (params.status === 'done') {
+                whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
+            } else if (!params.client_side_filtering) {
+                // Only exclude completed tasks if not doing client-side filtering
+                whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
+            }
+            // If client_side_filtering is true, don't add any status filter (include all)
             break;
         }
         case 'next':
@@ -1178,11 +1196,16 @@ router.get('/tasks', async (req, res) => {
         // Debug logging for upcoming view
         if (req.query.type === 'upcoming') {
             console.log('🔍 UPCOMING TASKS DEBUG:');
-            tasks.forEach((task) => {
-                console.log(
-                    `- ID: ${task.id}, Name: "${task.name}", Due: ${task.due_date}, Recur: ${task.recurrence_type}, Parent: ${task.recurring_parent_id}`
-                );
-            });
+            console.log(`  Total tasks returned: ${tasks.length}`);
+            if (tasks.length > 0) {
+                tasks.forEach((task) => {
+                    console.log(
+                        `- ID: ${task.id}, Name: "${task.name}", Due: ${task.due_date}, Recur: ${task.recurrence_type}, Parent: ${task.recurring_parent_id}, Status: ${task.status}`
+                    );
+                });
+            } else {
+                console.log('  ⚠️ No tasks matched the query!');
+            }
         }
 
         // Group upcoming tasks by day of week if requested

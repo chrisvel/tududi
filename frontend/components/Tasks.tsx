@@ -67,36 +67,42 @@ const Tasks: React.FC = () => {
     const displayTasks = useMemo(() => {
         let filteredTasks;
 
-        // First filter by completion status
-        if (showCompleted) {
-            // Show only completed tasks (done=2 or archived=3)
-            filteredTasks = tasks.filter(
-                (task) =>
-                    task.status === 'done' ||
-                    task.status === 'archived' ||
-                    task.status === 2 ||
-                    task.status === 3
-            );
+        // For upcoming view, don't filter by completion status here
+        // Let GroupedTaskList handle it
+        if (isUpcomingView) {
+            filteredTasks = tasks;
         } else {
-            // Show only non-completed tasks - exclude done(2) and archived(3)
-            filteredTasks = tasks.filter(
-                (task) =>
-                    task.status !== 'done' &&
-                    task.status !== 'archived' &&
-                    task.status !== 2 &&
-                    task.status !== 3
-            );
-        }
+            // First filter by completion status
+            if (showCompleted) {
+                // Show only completed tasks (done=2 or archived=3)
+                filteredTasks = tasks.filter(
+                    (task) =>
+                        task.status === 'done' ||
+                        task.status === 'archived' ||
+                        task.status === 2 ||
+                        task.status === 3
+                );
+            } else {
+                // Show only non-completed tasks - exclude done(2) and archived(3)
+                filteredTasks = tasks.filter(
+                    (task) =>
+                        task.status !== 'done' &&
+                        task.status !== 'archived' &&
+                        task.status !== 2 &&
+                        task.status !== 3
+                );
+            }
 
-        // Then filter by search query if provided (skip for upcoming view)
-        if (taskSearchQuery.trim() && !isUpcomingView) {
-            const query = taskSearchQuery.toLowerCase();
-            filteredTasks = filteredTasks.filter(
-                (task) =>
-                    task.name.toLowerCase().includes(query) ||
-                    task.original_name?.toLowerCase().includes(query) ||
-                    task.note?.toLowerCase().includes(query)
-            );
+            // Then filter by search query if provided (skip for upcoming view)
+            if (taskSearchQuery.trim()) {
+                const query = taskSearchQuery.toLowerCase();
+                filteredTasks = filteredTasks.filter(
+                    (task) =>
+                        task.name.toLowerCase().includes(query) ||
+                        task.original_name?.toLowerCase().includes(query) ||
+                        task.note?.toLowerCase().includes(query)
+                );
+            }
         }
 
         return filteredTasks;
@@ -328,6 +334,23 @@ const Tasks: React.FC = () => {
                 task.id === updatedTask.id ? updatedTask : task
             )
         );
+
+        // Also update groupedTasks if they exist
+        if (groupedTasks) {
+            setGroupedTasks((prevGroupedTasks) => {
+                if (!prevGroupedTasks) return null;
+
+                const newGroupedTasks: GroupedTasks = {};
+                Object.entries(prevGroupedTasks).forEach(
+                    ([groupName, tasks]) => {
+                        newGroupedTasks[groupName] = tasks.map((task) =>
+                            task.id === updatedTask.id ? updatedTask : task
+                        );
+                    }
+                );
+                return newGroupedTasks;
+            });
+        }
     };
 
     const handleTaskDelete = async (taskId: number) => {
@@ -507,40 +530,38 @@ const Tasks: React.FC = () => {
                                 </span>
                             </button>
                         )}
-                        {!isUpcomingView && (
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
-                                    Show completed
-                                </span>
-                                <button
-                                    onClick={() => setShowCompleted((v) => !v)}
-                                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                Show completed
+                            </span>
+                            <button
+                                onClick={() => setShowCompleted((v) => !v)}
+                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                                    showCompleted
+                                        ? 'bg-blue-600'
+                                        : 'bg-gray-200 dark:bg-gray-600'
+                                }`}
+                                aria-pressed={showCompleted}
+                                aria-label={
+                                    showCompleted
+                                        ? 'Hide completed tasks'
+                                        : 'Show completed tasks'
+                                }
+                                title={
+                                    showCompleted
+                                        ? 'Hide completed tasks'
+                                        : 'Show completed tasks'
+                                }
+                            >
+                                <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                                         showCompleted
-                                            ? 'bg-blue-600'
-                                            : 'bg-gray-200 dark:bg-gray-600'
+                                            ? 'translate-x-4'
+                                            : 'translate-x-0.5'
                                     }`}
-                                    aria-pressed={showCompleted}
-                                    aria-label={
-                                        showCompleted
-                                            ? 'Hide completed tasks'
-                                            : 'Show completed tasks'
-                                    }
-                                    title={
-                                        showCompleted
-                                            ? 'Hide completed tasks'
-                                            : 'Show completed tasks'
-                                    }
-                                >
-                                    <span
-                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                            showCompleted
-                                                ? 'translate-x-4'
-                                                : 'translate-x-0.5'
-                                        }`}
-                                    />
-                                </button>
-                            </div>
-                        )}
+                                />
+                            </button>
+                        </div>
                         <SortFilter
                             sortOptions={sortOptions}
                             sortValue={orderBy}
