@@ -249,7 +249,7 @@ const App: React.FC = () => {
                             <Route
                                 path="/admin/users"
                                 element={
-                                    currentUser.is_admin ? (
+                                    currentUser?.is_admin === true ? (
                                         <React.Suspense
                                             fallback={
                                                 <div className="p-4">

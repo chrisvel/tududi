@@ -174,20 +174,22 @@ const AddUserModal: React.FC<{
                         </select>
                     </div>
                     {error && (
-                        <div className="text-sm text-red-500">{error}</div>
+                        <div className="text-sm text-red-600 dark:text-red-400">
+                            {error}
+                        </div>
                     )}
-                    <div className="flex justify-end space-x-2 pt-2">
+                    <div className="flex justify-end space-x-3 pt-2">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none transition duration-150 ease-in-out text-sm"
                         >
                             {t('common.cancel', 'Cancel')}
                         </button>
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-60"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                             {submitting
                                 ? t('common.saving', 'Saving...')
@@ -277,64 +279,65 @@ const AdminUsersPage: React.FC = () => {
     }, [users, selectedIds]);
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-semibold">
+                <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
                     {t('admin.userManagement', 'User Management')}
                 </h1>
-                <div className="space-x-2">
+                <div className="flex items-center space-x-2">
                     <button
                         onClick={() => setAddOpen(true)}
-                        className="inline-flex items-center px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                        className="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm"
                     >
-                        <UserPlusIcon className="h-5 w-5 mr-1" />{' '}
+                        <UserPlusIcon className="h-5 w-5 mr-2" />
                         {t('admin.addUser', 'Add user')}
                     </button>
                     <button
                         onClick={removeSelected}
                         disabled={selectedCount === 0}
-                        className="inline-flex items-center px-3 py-2 rounded bg-red-600 text-white disabled:opacity-50"
+                        className="inline-flex items-center px-4 py-2 rounded-md border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none transition duration-150 ease-in-out text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <TrashIcon className="h-5 w-5 mr-1" />{' '}
+                        <TrashIcon className="h-5 w-5 mr-2" />
                         {t('admin.remove', 'Remove')}
                     </button>
                 </div>
             </div>
 
             {error && (
-                <div className="p-3 rounded bg-red-50 text-red-700 border border-red-200">
+                <div className="p-4 rounded-md bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800">
                     {error}
                 </div>
             )}
 
-            <div className="bg-white dark:bg-gray-900 rounded shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-800">
+                    <thead className="bg-gray-50 dark:bg-gray-900">
                         <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 <input
                                     type="checkbox"
                                     checked={headerCheckboxChecked}
                                     onChange={toggleSelectAll}
+                                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-2 bg-white dark:bg-gray-700"
                                 />
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 {t('admin.email', 'Email')}
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 {t('admin.created', 'Created')}
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 {t('admin.role', 'Role')}
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {loading && (
                             <tr>
                                 <td
                                     colSpan={4}
-                                    className="px-4 py-6 text-center text-gray-500"
+                                    className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                                 >
                                     {t(
                                         'admin.loadingUsers',
@@ -347,7 +350,7 @@ const AdminUsersPage: React.FC = () => {
                             <tr>
                                 <td
                                     colSpan={4}
-                                    className="px-4 py-6 text-center text-gray-500"
+                                    className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                                 >
                                     {t('admin.noUsers', 'No users')}
                                 </td>
@@ -358,24 +361,27 @@ const AdminUsersPage: React.FC = () => {
                             users.map((u) => (
                                 <tr
                                     key={u.id}
-                                    className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150"
                                 >
-                                    <td className="px-4 py-2">
+                                    <td className="px-6 py-4 whitespace-nowrap">
                                         <input
                                             type="checkbox"
                                             checked={selectedIds.has(u.id)}
                                             onChange={() => toggleSelect(u.id)}
+                                            className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-2 bg-white dark:bg-gray-700"
                                         />
                                     </td>
-                                    <td className="px-4 py-2">{u.email}</td>
-                                    <td className="px-4 py-2 text-sm text-gray-500">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                        {u.email}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                         {new Date(
                                             u.created_at
                                         ).toLocaleString()}
                                     </td>
-                                    <td className="px-4 py-2">
+                                    <td className="px-6 py-4 whitespace-nowrap">
                                         <span
-                                            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${u.role === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'}`}
+                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${u.role === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'}`}
                                         >
                                             {u.role === 'admin'
                                                 ? t('admin.admin', 'admin')

@@ -8,7 +8,6 @@ import {
     ClockIcon,
 } from '@heroicons/react/24/solid';
 import { useStore } from '../../store/useStore';
-import { ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { loadInboxItemsToStore } from '../../utils/inboxService';
 
 interface SidebarNavProps {
@@ -55,20 +54,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             icon: <ListBulletIcon className="h-5 w-5" />,
         },
     ];
-
-    // Append admin link if current user is admin (read from global window state via current_user fetch in App)
-    try {
-        const raw = (window as any).__CURRENT_USER__;
-        if (raw?.is_admin) {
-            navLinks.push({
-                path: '/admin/users',
-                title: t('sidebar.adminUsers', 'User Management'),
-                icon: <ShieldCheckIcon className="h-5 w-5" />,
-            } as any);
-        }
-    } catch {
-        // ignore missing window state
-    }
 
     const isActive = (path: string, query?: string) => {
         // Handle special case for paths without query parameters

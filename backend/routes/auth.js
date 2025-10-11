@@ -15,16 +15,10 @@ router.get('/current_user', async (req, res) => {
     try {
         if (req.session && req.session.userId) {
             const user = await User.findByPk(req.session.userId, {
-                attributes: [
-                    'uid',
-                    'email',
-                    'language',
-                    'appearance',
-                    'timezone',
-                ],
+                attributes: ['uid', 'email', 'language', 'appearance', 'timezone'],
             });
             if (user) {
-                const admin = await isAdmin(user.id);
+                const admin = await isAdmin(user.uid);
                 return res.json({
                     user: {
                         uid: user.uid,
@@ -76,7 +70,7 @@ router.post('/login', async (req, res) => {
             });
         });
 
-        const admin = await isAdmin(user.id);
+        const admin = await isAdmin(user.uid);
         res.json({
             user: {
                 uid: user.uid,
