@@ -6,6 +6,8 @@ import { UserPlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 interface AdminUserItem {
     id: number;
     email: string;
+    name?: string;
+    surname?: string;
     created_at: string;
     role: 'admin' | 'user';
 }
@@ -24,6 +26,8 @@ const fetchAdminUsers = async (): Promise<AdminUserItem[]> => {
 const createAdminUser = async (
     email: string,
     password: string,
+    name?: string,
+    surname?: string,
     role?: 'admin' | 'user'
 ): Promise<AdminUserItem> => {
     const res = await fetch('/api/admin/users', {
@@ -33,7 +37,7 @@ const createAdminUser = async (
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({ email, password, name, surname, role }),
     });
     if (res.status === 401) throw new Error('Authentication required');
     if (res.status === 403) throw new Error('Forbidden');
@@ -75,6 +79,8 @@ const AddUserModal: React.FC<{
     const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [surname, setSurname] = useState('');
     const [role, setRole] = useState<'user' | 'admin'>('user');
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -88,6 +94,8 @@ const AddUserModal: React.FC<{
         if (isOpen) {
             setEmail('');
             setPassword('');
+            setName('');
+            setSurname('');
             setRole('user');
             setError(null);
         }
@@ -108,7 +116,7 @@ const AddUserModal: React.FC<{
         }
         setSubmitting(true);
         try {
-            const user = await createAdminUser(email, password, role);
+            const user = await createAdminUser(email, password, name, surname, role);
             onCreated(user);
             onClose();
         } catch (err: any) {
@@ -141,6 +149,28 @@ const AddUserModal: React.FC<{
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
+                            {t('admin.name', 'Name')}
+                        </label>
+                        <input
+                            type="text"
+                            className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
+                            {t('admin.surname', 'Surname')}
+                        </label>
+                        <input
+                            type="text"
+                            className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                            value={surname}
+                            onChange={(e) => setSurname(e.target.value)}
                         />
                     </div>
                     <div>
@@ -325,6 +355,12 @@ const AdminUsersPage: React.FC = () => {
                                 {t('admin.email', 'Email')}
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                {t('admin.name', 'Name')}
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                {t('admin.surname', 'Surname')}
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 {t('admin.created', 'Created')}
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -336,7 +372,7 @@ const AdminUsersPage: React.FC = () => {
                         {loading && (
                             <tr>
                                 <td
-                                    colSpan={4}
+                                    colSpan={6}
                                     className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                                 >
                                     {t(
@@ -349,7 +385,7 @@ const AdminUsersPage: React.FC = () => {
                         {!loading && users && users.length === 0 && (
                             <tr>
                                 <td
-                                    colSpan={4}
+                                    colSpan={6}
                                     className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                                 >
                                     {t('admin.noUsers', 'No users')}
@@ -373,6 +409,12 @@ const AdminUsersPage: React.FC = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                         {u.email}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        {u.name || '-'}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        {u.surname || '-'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                         {new Date(

@@ -22,6 +22,8 @@ router.get('/profile', async (req, res) => {
             attributes: [
                 'uid',
                 'email',
+                'name',
+                'surname',
                 'appearance',
                 'language',
                 'timezone',
@@ -71,6 +73,8 @@ router.patch('/profile', async (req, res) => {
         }
 
         const {
+            name,
+            surname,
             appearance,
             language,
             timezone,
@@ -90,6 +94,8 @@ router.patch('/profile', async (req, res) => {
         } = req.body;
 
         const allowedUpdates = {};
+        if (name !== undefined) allowedUpdates.name = name;
+        if (surname !== undefined) allowedUpdates.surname = surname;
         if (appearance !== undefined) allowedUpdates.appearance = appearance;
         if (language !== undefined) allowedUpdates.language = language;
         if (timezone !== undefined) allowedUpdates.timezone = timezone;
@@ -167,6 +173,8 @@ router.patch('/profile', async (req, res) => {
             attributes: [
                 'uid',
                 'email',
+                'name',
+                'surname',
                 'appearance',
                 'language',
                 'timezone',

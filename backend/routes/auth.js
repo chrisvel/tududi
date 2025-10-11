@@ -18,6 +18,8 @@ router.get('/current_user', async (req, res) => {
                 attributes: [
                     'uid',
                     'email',
+                    'name',
+                    'surname',
                     'language',
                     'appearance',
                     'timezone',
@@ -29,6 +31,8 @@ router.get('/current_user', async (req, res) => {
                     user: {
                         uid: user.uid,
                         email: user.email,
+                        name: user.name,
+                        surname: user.surname,
                         language: user.language,
                         appearance: user.appearance,
                         timezone: user.timezone,
@@ -81,6 +85,8 @@ router.post('/login', async (req, res) => {
             user: {
                 uid: user.uid,
                 email: user.email,
+                name: user.name,
+                surname: user.surname,
                 language: user.language,
                 appearance: user.appearance,
                 timezone: user.timezone,

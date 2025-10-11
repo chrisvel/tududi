@@ -80,7 +80,7 @@ async function requireAdmin(req, res, next) {
 router.get('/admin/users', requireAdmin, async (req, res) => {
     try {
         const users = await User.findAll({
-            attributes: ['id', 'email', 'created_at'],
+            attributes: ['id', 'email', 'name', 'surname', 'created_at'],
         });
         // Fetch roles in bulk
         const roles = await Role.findAll({
@@ -90,6 +90,8 @@ router.get('/admin/users', requireAdmin, async (req, res) => {
         const result = users.map((u) => ({
             id: u.id,
             email: u.email,
+            name: u.name,
+            surname: u.surname,
             created_at: u.created_at,
             role: userIdToRole.get(u.id) ? 'admin' : 'user',
         }));
@@ -103,7 +105,7 @@ router.get('/admin/users', requireAdmin, async (req, res) => {
 // POST /api/admin/users - create a user (default role: user)
 router.post('/admin/users', requireAdmin, async (req, res) => {
     try {
-        const { email, password, role } = req.body || {};
+        const { email, password, name, surname, role } = req.body || {};
         if (!email || !password) {
             return res
                 .status(400)
@@ -119,7 +121,10 @@ router.post('/admin/users', requireAdmin, async (req, res) => {
                 .json({ error: 'Password must be at least 6 characters' });
         }
         // Create user; model hook will hash password
-        const user = await User.create({ email, password });
+        const userData = { email, password };
+        if (name) userData.name = name;
+        if (surname) userData.surname = surname;
+        const user = await User.create(userData);
         // Optionally assign admin role if requested and allowed
         const makeAdmin = role === 'admin';
         if (makeAdmin) {
@@ -131,6 +136,8 @@ router.post('/admin/users', requireAdmin, async (req, res) => {
         res.status(201).json({
             id: user.id,
             email: user.email,
+            name: user.name,
+            surname: user.surname,
             created_at: user.created_at,
             role: makeAdmin ? 'admin' : 'user',
         });
