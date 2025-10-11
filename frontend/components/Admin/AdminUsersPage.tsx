@@ -116,7 +116,13 @@ const AddUserModal: React.FC<{
         }
         setSubmitting(true);
         try {
-            const user = await createAdminUser(email, password, name, surname, role);
+            const user = await createAdminUser(
+                email,
+                password,
+                name,
+                surname,
+                role
+            );
             onCreated(user);
             onClose();
         } catch (err: any) {
