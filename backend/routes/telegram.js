@@ -1,5 +1,6 @@
 const express = require('express');
 const { User } = require('../models');
+const { logError } = require('../services/logService');
 const telegramPoller = require('../services/telegramPoller');
 const { getBotInfo } = require('../services/telegramApi');
 const router = express.Router();
@@ -7,10 +8,6 @@ const router = express.Router();
 // POST /api/telegram/start-polling
 router.post('/telegram/start-polling', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user || !user.telegram_bot_token) {
             return res
@@ -32,7 +29,7 @@ router.post('/telegram/start-polling', async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Error starting Telegram polling:', error);
+        logError('Error starting Telegram polling:', error);
         res.status(500).json({ error: 'Failed to start Telegram polling.' });
     }
 });
@@ -40,10 +37,6 @@ router.post('/telegram/start-polling', async (req, res) => {
 // POST /api/telegram/stop-polling
 router.post('/telegram/stop-polling', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const success = telegramPoller.removeUser(req.session.userId);
 
         res.json({
@@ -52,7 +45,7 @@ router.post('/telegram/stop-polling', async (req, res) => {
             status: telegramPoller.getStatus(),
         });
     } catch (error) {
-        console.error('Error stopping Telegram polling:', error);
+        logError('Error stopping Telegram polling:', error);
         res.status(500).json({ error: 'Failed to stop Telegram polling.' });
     }
 });
@@ -60,16 +53,12 @@ router.post('/telegram/stop-polling', async (req, res) => {
 // GET /api/telegram/polling-status
 router.get('/telegram/polling-status', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         res.json({
             success: true,
             status: telegramPoller.getStatus(),
         });
     } catch (error) {
-        console.error('Error getting Telegram polling status:', error);
+        logError('Error getting Telegram polling status:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -77,10 +66,6 @@ router.get('/telegram/polling-status', async (req, res) => {
 // POST /api/telegram/setup
 router.post('/telegram/setup', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const { token } = req.body;
 
         if (!token) {
@@ -130,7 +115,7 @@ router.post('/telegram/setup', async (req, res) => {
             bot: botInfo,
         });
     } catch (error) {
-        console.error('Error setting up Telegram:', error);
+        logError('Error setting up Telegram:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -138,10 +123,6 @@ router.post('/telegram/setup', async (req, res) => {
 // POST /api/telegram/send-welcome
 router.post('/telegram/send-welcome', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user || !user.telegram_bot_token) {
             return res
@@ -171,7 +152,7 @@ router.post('/telegram/send-welcome', async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Error sending welcome message:', error);
+        logError('Error sending welcome message:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -210,24 +191,21 @@ async function sendWelcomeMessage(token, chatId) {
                         console.log('Welcome message sent successfully');
                         resolve(true);
                     } else {
-                        console.error(
+                        logError(
                             'Failed to send welcome message:',
                             response.description
                         );
                         resolve(false);
                     }
                 } catch (error) {
-                    console.error(
-                        'Error parsing welcome message response:',
-                        error
-                    );
+                    logError('Error parsing welcome message response:', error);
                     resolve(false);
                 }
             });
         });
 
         req.on('error', (error) => {
-            console.error('Error sending welcome message:', error);
+            logError('Error sending welcome message:', error);
             resolve(false);
         });
 

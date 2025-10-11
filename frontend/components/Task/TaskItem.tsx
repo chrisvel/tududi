@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import TaskHeader from './TaskHeader';
+import { useToast } from '../Shared/ToastContext';
 import TaskPriorityIcon from './TaskPriorityIcon';
 
 // Import SubtasksDisplay component from TaskHeader
@@ -164,6 +165,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const [parentTaskModalOpen, setParentTaskModalOpen] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+    const { showErrorToast } = useToast();
     const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
     // Subtasks state
@@ -285,8 +287,13 @@ const TaskItem: React.FC<TaskItemProps> = ({
     };
 
     const handleSave = async (updatedTask: Task) => {
-        await onTaskUpdate(updatedTask);
-        modalStore.closeTaskModal();
+        try {
+            await onTaskUpdate(updatedTask);
+            modalStore.closeTaskModal();
+        } catch (error: any) {
+            console.error('Task update failed:', error);
+            showErrorToast(t('errors.permissionDenied', 'Permission denied'));
+        }
     };
 
     const handleEdit = (e: React.MouseEvent) => {
@@ -308,8 +315,15 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     const handleDelete = async () => {
         if (task.id) {
-            modalStore.closeTaskModal(); // Close modal when deleting
-            onTaskDelete(task.id);
+            try {
+                modalStore.closeTaskModal();
+                await onTaskDelete(task.id);
+            } catch (error: any) {
+                console.error('Task delete failed:', error);
+                showErrorToast(
+                    t('errors.permissionDenied', 'Permission denied')
+                );
+            }
         }
     };
 

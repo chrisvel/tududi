@@ -40,6 +40,8 @@ interface ProfileSettingsProps {
 interface Profile {
     uid: string;
     email: string;
+    name?: string;
+    surname?: string;
     appearance: 'light' | 'dark';
     language: string;
     timezone: string;
@@ -102,6 +104,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             }
         >
     >({
+        name: '',
+        surname: '',
         appearance: isDarkMode ? 'dark' : 'light',
         language: 'en',
         timezone: 'UTC',
@@ -259,6 +263,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 const data = await response.json();
                 setProfile(data);
                 setFormData({
+                    name: data.name || '',
+                    surname: data.surname || '',
                     appearance:
                         data.appearance || (isDarkMode ? 'dark' : 'light'),
                     language: data.language || 'en',
@@ -847,6 +853,40 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         </h3>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    {t('profile.name', 'Name')}
+                                </label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name || ''}
+                                    onChange={handleChange}
+                                    className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder={t(
+                                        'profile.enterName',
+                                        'Enter your name'
+                                    )}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    {t('profile.surname', 'Surname')}
+                                </label>
+                                <input
+                                    type="text"
+                                    name="surname"
+                                    value={formData.surname || ''}
+                                    onChange={handleChange}
+                                    className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder={t(
+                                        'profile.enterSurname',
+                                        'Enter your surname'
+                                    )}
+                                />
+                            </div>
+
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     {t('profile.appearance')}

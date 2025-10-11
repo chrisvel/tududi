@@ -1,6 +1,8 @@
 const express = require('express');
 const { Task, Tag, Project, TaskEvent, sequelize } = require('../models');
 const { Op } = require('sequelize');
+const permissionsService = require('../services/permissionsService');
+const { hasAccess } = require('../middleware/authorize');
 const {
     generateRecurringTasks,
     handleTaskCompletion,
@@ -26,6 +28,7 @@ const {
     processDueDateForStorage,
     processDueDateForResponse,
 } = require('../utils/timezone-utils');
+const { logError } = require('../services/logService');
 const moment = require('moment-timezone');
 const _ = require('lodash');
 const router = express.Router();
@@ -361,7 +364,7 @@ async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
         }
         return false;
     } catch (error) {
-        console.error('Error checking parent task completion:', error);
+        logError('Error checking parent task completion:', error);
         return false;
     }
 }
@@ -399,7 +402,7 @@ async function undoneParentTaskIfNeeded(parentTaskId, userId) {
         }
         return false;
     } catch (error) {
-        console.error('Error undoing parent task:', error);
+        logError('Error undoing parent task:', error);
         return false;
     }
 }
@@ -422,7 +425,7 @@ async function completeAllSubtasks(parentTaskId, userId) {
         );
         return result[0] > 0; // Return true if any subtasks were actually updated
     } catch (error) {
-        console.error('Error completing all subtasks:', error);
+        logError('Error completing all subtasks:', error);
         return false;
     }
 }
@@ -447,24 +450,26 @@ async function undoneAllSubtasks(parentTaskId, userId) {
         );
         return result[0] > 0; // Return true if any subtasks were actually updated
     } catch (error) {
-        console.error('Error undoing all subtasks:', error);
+        logError('Error undoing all subtasks:', error);
         return false;
     }
 }
 
 // Filter tasks by parameters
 async function filterTasksByParams(params, userId, userTimezone) {
-    // Disable search functionality for upcoming view
+    // Include owned or shared tasks; exclude subtasks by default
+    const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
+        'task',
+        userId
+    );
     if (params.type === 'upcoming') {
         // Remove search-related parameters to prevent search functionality
         // Keep client_side_filtering to allow frontend to control completed task visibility
         params = { ...params };
         delete params.search;
     }
-
     let whereClause = {
-        user_id: userId,
-        parent_task_id: null, // Exclude subtasks from main task lists
+        parent_task_id: null,
     };
 
     // Include both recurring templates and instances, but handle them appropriately
@@ -577,7 +582,6 @@ async function filterTasksByParams(params, userId, userTimezone) {
             // For upcoming view, we want to show recurring instances (children) with due dates
             // Override the default whereClause to include recurring instances
             whereClause = {
-                user_id: userId,
                 parent_task_id: null, // Exclude subtasks from main task lists
                 due_date: {
                     [Op.between]: [upcomingRange.start, upcomingRange.end],
@@ -707,8 +711,13 @@ async function filterTasksByParams(params, userId, userTimezone) {
         }
     }
 
+    // Always apply ownership filter
+    const finalWhereClause = {
+        [Op.and]: [ownedOrShared, whereClause],
+    };
+
     return await Task.findAll({
-        where: whereClause,
+        where: finalWhereClause,
         include: includeClause,
         order: orderClause,
         distinct: true,
@@ -717,9 +726,11 @@ async function filterTasksByParams(params, userId, userTimezone) {
 
 // Compute task metrics
 async function computeTaskMetrics(userId, userTimezone = 'UTC') {
+    const visibleTasksWhere =
+        await permissionsService.ownershipOrPermissionWhere('task', userId);
     const totalOpenTasks = await Task.count({
         where: {
-            user_id: userId,
+            ...visibleTasksWhere,
             status: { [Op.ne]: Task.STATUS.DONE },
             parent_task_id: null, // Exclude subtasks
             recurring_parent_id: null, // Exclude recurring instances
@@ -729,7 +740,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
     const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const tasksPendingOverMonth = await Task.count({
         where: {
-            user_id: userId,
+            ...visibleTasksWhere,
             status: { [Op.ne]: Task.STATUS.DONE },
             created_at: { [Op.lt]: oneMonthAgo },
             parent_task_id: null, // Exclude subtasks
@@ -739,7 +750,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
 
     const tasksInProgress = await Task.findAll({
         where: {
-            user_id: userId,
+            ...visibleTasksWhere,
             status: { [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'] },
             parent_task_id: null, // Exclude subtasks
             recurring_parent_id: null, // Exclude recurring instances
@@ -776,7 +787,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
     // Get tasks in today plan
     const todayPlanTasks = await Task.findAll({
         where: {
-            user_id: userId,
+            ...visibleTasksWhere,
             today: true,
             status: {
                 [Op.notIn]: [
@@ -827,7 +838,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
 
     const tasksDueToday = await Task.findAll({
         where: {
-            user_id: userId,
+            ...visibleTasksWhere,
             status: {
                 [Op.notIn]: [
                     Task.STATUS.DONE,
@@ -907,7 +918,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         // Get tasks without projects (excluding someday tagged tasks)
         const nonProjectTasks = await Task.findAll({
             where: {
-                user_id: userId,
+                ...visibleTasksWhere,
                 status: {
                     [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
                 },
@@ -952,7 +963,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
         // Get tasks with projects (excluding someday tagged tasks)
         const projectTasks = await Task.findAll({
             where: {
-                user_id: userId,
+                ...visibleTasksWhere,
                 status: {
                     [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
                 },
@@ -1319,7 +1330,7 @@ router.get('/tasks', async (req, res) => {
 
         res.json(response);
     } catch (error) {
-        console.error('Error fetching tasks:', error);
+        logError('Error fetching tasks:', error);
         if (error.message === 'Invalid order column specified.') {
             return res.status(400).json({ error: error.message });
         }
@@ -1339,7 +1350,9 @@ router.get('/task', async (req, res) => {
         }
 
         const task = await Task.findOne({
-            where: { uid: uid, user_id: req.currentUser.id },
+            where: {
+                uid: uid,
+            },
             include: [
                 {
                     model: Tag,
@@ -1370,6 +1383,16 @@ router.get('/task', async (req, res) => {
             return res.status(404).json({ error: 'Task not found.' });
         }
 
+        // Ensure read access to the task
+        const access = await permissionsService.getAccess(
+            req.currentUser.id,
+            'task',
+            task.uid
+        );
+        if (access === 'none') {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
         const serializedTask = await serializeTask(
             task,
             req.currentUser.timezone,
@@ -1378,65 +1401,93 @@ router.get('/task', async (req, res) => {
 
         res.json(serializedTask);
     } catch (error) {
-        console.error('Error fetching task by UID:', error);
+        logError('Error fetching task by UID:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
 // GET /api/task/:id
-router.get('/task/:id', async (req, res) => {
-    try {
-        const task = await Task.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                },
-                {
-                    model: Project,
-                    attributes: ['id', 'name', 'uid'],
-                    required: false,
-                },
-                {
-                    model: Task,
-                    as: 'Subtasks',
-                    include: [
-                        {
-                            model: Tag,
-                            attributes: ['id', 'name', 'uid'],
-                            through: { attributes: [] },
-                        },
-                    ],
-                },
-            ],
-        });
+router.get(
+    '/task/:id',
+    hasAccess(
+        'ro',
+        'task',
+        async (req) => {
+            const t = await Task.findOne({
+                where: { id: req.params.id },
+                attributes: ['uid'],
+            });
+            return t?.uid;
+        },
+        { notFoundMessage: 'Task not found.' }
+    ),
+    async (req, res) => {
+        try {
+            const task = await Task.findOne({
+                where: { id: req.params.id },
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name', 'uid'],
+                        through: { attributes: [] },
+                    },
+                    {
+                        model: Project,
+                        attributes: ['id', 'name', 'uid'],
+                        required: false,
+                    },
+                    {
+                        model: Task,
+                        as: 'Subtasks',
+                        include: [
+                            {
+                                model: Tag,
+                                attributes: ['id', 'name', 'uid'],
+                                through: { attributes: [] },
+                            },
+                        ],
+                    },
+                ],
+            });
 
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found.' });
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found.' });
+            }
+
+            const serializedTask = await serializeTask(
+                task,
+                req.currentUser.timezone,
+                { skipDisplayNameTransform: true }
+            );
+
+            res.json(serializedTask);
+        } catch (error) {
+            logError('Error fetching task:', error);
+            res.status(500).json({ error: 'Internal server error' });
         }
-
-        const serializedTask = await serializeTask(
-            task,
-            req.currentUser.timezone,
-            { skipDisplayNameTransform: true }
-        );
-
-        res.json(serializedTask);
-    } catch (error) {
-        console.error('Error fetching task:', error);
-        res.status(500).json({ error: 'Internal server error' });
     }
-});
+);
 
 // GET /api/task/:id/subtasks
 router.get('/task/:id/subtasks', async (req, res) => {
     try {
+        // Ensure parent visibility first
+        const parent = await Task.findOne({ where: { id: req.params.id } });
+        if (!parent) {
+            return res.json([]);
+        }
+        const pAccess = await permissionsService.getAccess(
+            req.currentUser.id,
+            'task',
+            parent.uid
+        );
+        if (pAccess === 'none') {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
         const subtasks = await Task.findAll({
             where: {
                 parent_task_id: req.params.id,
-                user_id: req.currentUser.id,
             },
             include: [
                 {
@@ -1461,7 +1512,7 @@ router.get('/task/:id/subtasks', async (req, res) => {
 
         res.json(serializedSubtasks);
     } catch (error) {
-        console.error('Error fetching subtasks:', error);
+        logError('Error fetching subtasks:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -1538,10 +1589,21 @@ router.post('/task', async (req, res) => {
         // Handle project assignment
         if (project_id && project_id.toString().trim()) {
             const project = await Project.findOne({
-                where: { id: project_id, user_id: req.currentUser.id },
+                where: { id: project_id },
             });
             if (!project) {
                 return res.status(400).json({ error: 'Invalid project.' });
+            }
+            const projectAccess = await permissionsService.getAccess(
+                req.currentUser.id,
+                'project',
+                project.uid
+            );
+            const isOwner = project.user_id === req.currentUser.id;
+            const canWrite =
+                isOwner || projectAccess === 'rw' || projectAccess === 'admin';
+            if (!canWrite) {
+                return res.status(403).json({ error: 'Forbidden' });
             }
             taskAttributes.project_id = project_id;
         }
@@ -1549,9 +1611,20 @@ router.post('/task', async (req, res) => {
         // Handle parent task assignment
         if (parent_task_id && parent_task_id.toString().trim()) {
             const parentTask = await Task.findOne({
-                where: { id: parent_task_id, user_id: req.currentUser.id },
+                where: { id: parent_task_id },
             });
             if (!parentTask) {
+                return res.status(400).json({ error: 'Invalid parent task.' });
+            }
+            const parentAccess = await permissionsService.getAccess(
+                req.currentUser.id,
+                'task',
+                parentTask.uid
+            );
+            const isOwner = parentTask.user_id === req.currentUser.id;
+            const canWrite =
+                isOwner || parentAccess === 'rw' || parentAccess === 'admin';
+            if (!canWrite) {
                 return res.status(400).json({ error: 'Invalid parent task.' });
             }
             taskAttributes.parent_task_id = parent_task_id;
@@ -1596,7 +1669,7 @@ router.post('/task', async (req, res) => {
                 { source: 'web' }
             );
         } catch (eventError) {
-            console.error('Error logging task creation event:', eventError);
+            logError('Error logging task creation event:', eventError);
             // Don't fail the request if event logging fails
         }
         */
@@ -1618,7 +1691,7 @@ router.post('/task', async (req, res) => {
         });
 
         if (!taskWithAssociations) {
-            console.error('Failed to reload created task:', task.id);
+            logError('Failed to reload created task:', task.id);
             // Return the original task data as fallback
             const fallbackTask = {
                 ...task.toJSON(),
@@ -1655,9 +1728,9 @@ router.post('/task', async (req, res) => {
 
         res.status(201).json(serializedTask);
     } catch (error) {
-        console.error('Error creating task:', error);
-        console.error('Error stack:', error.stack);
-        console.error('Error name:', error.name);
+        logError('Error creating task:', error);
+        logError('Error stack:', error.stack);
+        logError('Error name:', error.name);
         res.status(400).json({
             error: 'There was a problem creating the task.',
             details: error.errors
@@ -1668,879 +1741,983 @@ router.post('/task', async (req, res) => {
 });
 
 // PATCH /api/task/:id
-router.patch('/task/:id', async (req, res) => {
-    try {
-        const {
-            name,
-            priority,
-            status,
-            note,
-            due_date,
-            project_id,
-            parent_task_id,
-            tags,
-            Tags,
-            subtasks,
-            today,
-            recurrence_type,
-            recurrence_interval,
-            recurrence_end_date,
-            recurrence_weekday,
-            recurrence_month_day,
-            recurrence_week_of_month,
-            completion_based,
-            update_parent_recurrence,
-        } = req.body;
+router.patch(
+    '/task/:id',
+    hasAccess(
+        'rw',
+        'task',
+        async (req) => {
+            const t = await Task.findOne({
+                where: { id: req.params.id },
+                attributes: ['uid'],
+            });
+            return t?.uid;
+        },
+        { notFoundMessage: 'Task not found.' }
+    ),
+    async (req, res) => {
+        try {
+            const {
+                name,
+                priority,
+                status,
+                note,
+                due_date,
+                project_id,
+                parent_task_id,
+                tags,
+                Tags,
+                subtasks,
+                today,
+                recurrence_type,
+                recurrence_interval,
+                recurrence_end_date,
+                recurrence_weekday,
+                recurrence_month_day,
+                recurrence_week_of_month,
+                completion_based,
+                update_parent_recurrence,
+            } = req.body;
 
-        // Handle both tags and Tags (Sequelize association format)
-        const tagsData = tags || Tags;
+            // Handle both tags and Tags (Sequelize association format)
+            const tagsData = tags || Tags;
 
-        const task = await Task.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                },
-            ],
-        });
-
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found.' });
-        }
-
-        // Capture old values for event logging
-        const oldValues = {
-            name: task.name,
-            status: task.status,
-            priority: task.priority,
-            due_date: task.due_date,
-            project_id: task.project_id,
-            note: task.note,
-            recurrence_type: task.recurrence_type,
-            recurrence_interval: task.recurrence_interval,
-            recurrence_end_date: task.recurrence_end_date,
-            recurrence_weekday: task.recurrence_weekday,
-            recurrence_month_day: task.recurrence_month_day,
-            recurrence_week_of_month: task.recurrence_week_of_month,
-            completion_based: task.completion_based,
-            tags: task.Tags
-                ? task.Tags.map((tag) => ({ id: tag.id, name: tag.name }))
-                : [],
-        };
-
-        // Handle updating parent recurrence settings if this is a child task
-        if (update_parent_recurrence && task.recurring_parent_id) {
-            const parentTask = await Task.findOne({
-                where: {
-                    id: task.recurring_parent_id,
-                    user_id: req.currentUser.id,
-                },
+            const task = await Task.findOne({
+                where: { id: req.params.id },
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name', 'uid'],
+                        through: { attributes: [] },
+                    },
+                ],
             });
 
-            if (parentTask) {
-                await parentTask.update({
-                    recurrence_type:
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found.' });
+            }
+            // access ensured by middleware
+
+            // Capture old values for event logging
+            const oldValues = {
+                name: task.name,
+                status: task.status,
+                priority: task.priority,
+                due_date: task.due_date,
+                project_id: task.project_id,
+                note: task.note,
+                recurrence_type: task.recurrence_type,
+                recurrence_interval: task.recurrence_interval,
+                recurrence_end_date: task.recurrence_end_date,
+                recurrence_weekday: task.recurrence_weekday,
+                recurrence_month_day: task.recurrence_month_day,
+                recurrence_week_of_month: task.recurrence_week_of_month,
+                completion_based: task.completion_based,
+                tags: task.Tags
+                    ? task.Tags.map((tag) => ({ id: tag.id, name: tag.name }))
+                    : [],
+            };
+
+            // Handle updating parent recurrence settings if this is a child task
+            if (update_parent_recurrence && task.recurring_parent_id) {
+                const parentTask = await Task.findOne({
+                    where: {
+                        id: task.recurring_parent_id,
+                        user_id: req.currentUser.id,
+                    },
+                });
+
+                if (parentTask) {
+                    await parentTask.update({
+                        recurrence_type:
+                            recurrence_type !== undefined
+                                ? recurrence_type
+                                : parentTask.recurrence_type,
+                        recurrence_interval:
+                            recurrence_interval !== undefined
+                                ? recurrence_interval
+                                : parentTask.recurrence_interval,
+                        recurrence_end_date:
+                            recurrence_end_date !== undefined
+                                ? recurrence_end_date
+                                : parentTask.recurrence_end_date,
+                        recurrence_weekday:
+                            recurrence_weekday !== undefined
+                                ? recurrence_weekday
+                                : parentTask.recurrence_weekday,
+                        recurrence_month_day:
+                            recurrence_month_day !== undefined
+                                ? recurrence_month_day
+                                : parentTask.recurrence_month_day,
+                        recurrence_week_of_month:
+                            recurrence_week_of_month !== undefined
+                                ? recurrence_week_of_month
+                                : parentTask.recurrence_week_of_month,
+                        completion_based:
+                            completion_based !== undefined
+                                ? completion_based
+                                : parentTask.completion_based,
+                    });
+                }
+            }
+
+            const taskAttributes = {
+                name,
+                priority:
+                    priority !== undefined
+                        ? typeof priority === 'string'
+                            ? Task.getPriorityValue(priority)
+                            : priority
+                        : undefined,
+                status:
+                    status !== undefined
+                        ? typeof status === 'string'
+                            ? Task.getStatusValue(status)
+                            : status
+                        : Task.STATUS.NOT_STARTED,
+                note,
+                due_date: processDueDateForStorage(
+                    due_date,
+                    getSafeTimezone(req.currentUser.timezone)
+                ),
+                today: today !== undefined ? today : task.today,
+                recurrence_type:
+                    recurrence_type !== undefined
+                        ? recurrence_type
+                        : task.recurrence_type,
+                recurrence_interval:
+                    recurrence_interval !== undefined
+                        ? recurrence_interval
+                        : task.recurrence_interval,
+                recurrence_end_date:
+                    recurrence_end_date !== undefined
+                        ? recurrence_end_date
+                        : task.recurrence_end_date,
+                recurrence_weekday:
+                    recurrence_weekday !== undefined
+                        ? recurrence_weekday
+                        : task.recurrence_weekday,
+                recurrence_month_day:
+                    recurrence_month_day !== undefined
+                        ? recurrence_month_day
+                        : task.recurrence_month_day,
+                recurrence_week_of_month:
+                    recurrence_week_of_month !== undefined
+                        ? recurrence_week_of_month
+                        : task.recurrence_week_of_month,
+                completion_based:
+                    completion_based !== undefined
+                        ? completion_based
+                        : task.completion_based,
+            };
+
+            // If task is being moved away from today and has in_progress status, change it to not_started
+            if (
+                today !== undefined &&
+                task.today === true &&
+                today === false &&
+                task.status === Task.STATUS.IN_PROGRESS
+            ) {
+                taskAttributes.status = Task.STATUS.NOT_STARTED;
+            }
+
+            // Set completed_at when task is marked as done
+            if (status !== undefined) {
+                const newStatus =
+                    typeof status === 'string'
+                        ? Task.getStatusValue(status)
+                        : status;
+                const oldStatus =
+                    typeof task.status === 'string'
+                        ? Task.getStatusValue(task.status)
+                        : task.status;
+
+                if (
+                    newStatus === Task.STATUS.DONE &&
+                    oldStatus !== Task.STATUS.DONE
+                ) {
+                    // Task is being completed
+                    taskAttributes.completed_at = new Date();
+                } else if (
+                    newStatus !== Task.STATUS.DONE &&
+                    oldStatus === Task.STATUS.DONE
+                ) {
+                    // Task is being uncompleted
+                    taskAttributes.completed_at = null;
+                }
+            }
+
+            // Handle project assignment
+            if (project_id && project_id.toString().trim()) {
+                const project = await Project.findOne({
+                    where: { id: project_id },
+                });
+                if (!project) {
+                    return res.status(400).json({ error: 'Invalid project.' });
+                }
+                const projectAccess = await permissionsService.getAccess(
+                    req.currentUser.id,
+                    'project',
+                    project.uid
+                );
+                const isOwner = project.user_id === req.currentUser.id;
+                const canWrite =
+                    isOwner ||
+                    projectAccess === 'rw' ||
+                    projectAccess === 'admin';
+                if (!canWrite) {
+                    return res.status(403).json({ error: 'Forbidden' });
+                }
+                taskAttributes.project_id = project_id;
+            } else {
+                taskAttributes.project_id = null;
+            }
+
+            // Handle parent task assignment
+            if (parent_task_id && parent_task_id.toString().trim()) {
+                const parentTask = await Task.findOne({
+                    where: { id: parent_task_id, user_id: req.currentUser.id },
+                });
+                if (!parentTask) {
+                    return res
+                        .status(400)
+                        .json({ error: 'Invalid parent task.' });
+                }
+                taskAttributes.parent_task_id = parent_task_id;
+            } else if (parent_task_id === null || parent_task_id === '') {
+                taskAttributes.parent_task_id = null;
+            }
+
+            // Check if any recurrence settings are changing and cleanup future instances if needed
+            const recurrenceFields = [
+                'recurrence_type',
+                'recurrence_interval',
+                'recurrence_end_date',
+                'recurrence_weekday',
+                'recurrence_month_day',
+                'recurrence_week_of_month',
+                'completion_based',
+            ];
+
+            const recurrenceChanged = recurrenceFields.some((field) => {
+                const newValue = req.body[field];
+                return newValue !== undefined && newValue !== task[field];
+            });
+
+            // Only cleanup if recurrence changed AND the old task was recurring (not 'none')
+            // This prevents cleanup when changing TO 'none' from 'none'
+            if (recurrenceChanged && task.recurrence_type !== 'none') {
+                // Find child instances of this recurring task
+                const childTasks = await Task.findAll({
+                    where: { recurring_parent_id: task.id },
+                });
+
+                if (childTasks.length > 0) {
+                    const now = new Date();
+
+                    // Separate future and past instances
+                    const futureInstances = childTasks.filter((child) => {
+                        if (!child.due_date) return true; // Tasks without due_date are considered future (not yet scheduled)
+                        return new Date(child.due_date) > now;
+                    });
+
+                    // Only cleanup future instances if not changing to 'none'
+                    const newRecurrenceType =
                         recurrence_type !== undefined
                             ? recurrence_type
-                            : parentTask.recurrence_type,
-                    recurrence_interval:
-                        recurrence_interval !== undefined
-                            ? recurrence_interval
-                            : parentTask.recurrence_interval,
-                    recurrence_end_date:
-                        recurrence_end_date !== undefined
-                            ? recurrence_end_date
-                            : parentTask.recurrence_end_date,
-                    recurrence_weekday:
-                        recurrence_weekday !== undefined
-                            ? recurrence_weekday
-                            : parentTask.recurrence_weekday,
-                    recurrence_month_day:
-                        recurrence_month_day !== undefined
-                            ? recurrence_month_day
-                            : parentTask.recurrence_month_day,
-                    recurrence_week_of_month:
-                        recurrence_week_of_month !== undefined
-                            ? recurrence_week_of_month
-                            : parentTask.recurrence_week_of_month,
-                    completion_based:
-                        completion_based !== undefined
-                            ? completion_based
-                            : parentTask.completion_based,
-                });
+                            : task.recurrence_type;
+                    if (newRecurrenceType !== 'none') {
+                        // Delete future instances since recurrence changed
+                        for (const futureInstance of futureInstances) {
+                            await futureInstance.destroy();
+                        }
+                    }
+
+                    // Past instances remain as orphaned instances (no changes needed)
+                    // This allows users to keep their completed/in-progress work
+                }
             }
-        }
 
-        const taskAttributes = {
-            name,
-            priority:
-                priority !== undefined
-                    ? typeof priority === 'string'
-                        ? Task.getPriorityValue(priority)
-                        : priority
-                    : undefined,
-            status:
-                status !== undefined
-                    ? typeof status === 'string'
-                        ? Task.getStatusValue(status)
-                        : status
-                    : Task.STATUS.NOT_STARTED,
-            note,
-            due_date: processDueDateForStorage(
-                due_date,
-                getSafeTimezone(req.currentUser.timezone)
-            ),
-            today: today !== undefined ? today : task.today,
-            recurrence_type:
-                recurrence_type !== undefined
-                    ? recurrence_type
-                    : task.recurrence_type,
-            recurrence_interval:
-                recurrence_interval !== undefined
-                    ? recurrence_interval
-                    : task.recurrence_interval,
-            recurrence_end_date:
-                recurrence_end_date !== undefined
-                    ? recurrence_end_date
-                    : task.recurrence_end_date,
-            recurrence_weekday:
-                recurrence_weekday !== undefined
-                    ? recurrence_weekday
-                    : task.recurrence_weekday,
-            recurrence_month_day:
-                recurrence_month_day !== undefined
-                    ? recurrence_month_day
-                    : task.recurrence_month_day,
-            recurrence_week_of_month:
-                recurrence_week_of_month !== undefined
-                    ? recurrence_week_of_month
-                    : task.recurrence_week_of_month,
-            completion_based:
-                completion_based !== undefined
-                    ? completion_based
-                    : task.completion_based,
-        };
+            await task.update(taskAttributes);
 
-        // If task is being moved away from today and has in_progress status, change it to not_started
-        if (
-            today !== undefined &&
-            task.today === true &&
-            today === false &&
-            task.status === Task.STATUS.IN_PROGRESS
-        ) {
-            taskAttributes.status = Task.STATUS.NOT_STARTED;
-        }
-
-        // Set completed_at when task is marked as done
-        if (status !== undefined) {
-            const newStatus =
-                typeof status === 'string'
-                    ? Task.getStatusValue(status)
-                    : status;
-            const oldStatus =
-                typeof task.status === 'string'
-                    ? Task.getStatusValue(task.status)
-                    : task.status;
-
-            if (
-                newStatus === Task.STATUS.DONE &&
-                oldStatus !== Task.STATUS.DONE
-            ) {
-                // Task is being completed
-                taskAttributes.completed_at = new Date();
-            } else if (
-                newStatus !== Task.STATUS.DONE &&
-                oldStatus === Task.STATUS.DONE
-            ) {
-                // Task is being uncompleted
-                taskAttributes.completed_at = null;
-            }
-        }
-
-        // Handle project assignment
-        if (project_id && project_id.toString().trim()) {
-            const project = await Project.findOne({
-                where: { id: project_id, user_id: req.currentUser.id },
-            });
-            if (!project) {
-                return res.status(400).json({ error: 'Invalid project.' });
-            }
-            taskAttributes.project_id = project_id;
-        } else {
-            taskAttributes.project_id = null;
-        }
-
-        // Handle parent task assignment
-        if (parent_task_id && parent_task_id.toString().trim()) {
-            const parentTask = await Task.findOne({
-                where: { id: parent_task_id, user_id: req.currentUser.id },
-            });
-            if (!parentTask) {
-                return res.status(400).json({ error: 'Invalid parent task.' });
-            }
-            taskAttributes.parent_task_id = parent_task_id;
-        } else if (parent_task_id === null || parent_task_id === '') {
-            taskAttributes.parent_task_id = null;
-        }
-
-        // Check if any recurrence settings are changing and cleanup future instances if needed
-        const recurrenceFields = [
-            'recurrence_type',
-            'recurrence_interval',
-            'recurrence_end_date',
-            'recurrence_weekday',
-            'recurrence_month_day',
-            'recurrence_week_of_month',
-            'completion_based',
-        ];
-
-        const recurrenceChanged = recurrenceFields.some((field) => {
-            const newValue = req.body[field];
-            return newValue !== undefined && newValue !== task[field];
-        });
-
-        // Only cleanup if recurrence changed AND the old task was recurring (not 'none')
-        // This prevents cleanup when changing TO 'none' from 'none'
-        if (recurrenceChanged && task.recurrence_type !== 'none') {
-            // Find child instances of this recurring task
-            const childTasks = await Task.findAll({
-                where: { recurring_parent_id: task.id },
-            });
-
-            if (childTasks.length > 0) {
-                const now = new Date();
-
-                // Separate future and past instances
-                const futureInstances = childTasks.filter((child) => {
-                    if (!child.due_date) return true; // Tasks without due_date are considered future (not yet scheduled)
-                    return new Date(child.due_date) > now;
-                });
-
-                // Only cleanup future instances if not changing to 'none'
+            // Generate new recurring tasks after updating recurrence settings (if still recurring)
+            if (recurrenceChanged && task.recurrence_type !== 'none') {
                 const newRecurrenceType =
                     recurrence_type !== undefined
                         ? recurrence_type
                         : task.recurrence_type;
                 if (newRecurrenceType !== 'none') {
-                    // Delete future instances since recurrence changed
-                    for (const futureInstance of futureInstances) {
-                        await futureInstance.destroy();
+                    try {
+                        // Generate new recurring tasks for the updated pattern
+                        await generateRecurringTasks(req.currentUser.id, 7);
+                    } catch (error) {
+                        logError(
+                            'Error generating new recurring tasks after update:',
+                            error
+                        );
+                        // Don't fail the update if regeneration fails
                     }
                 }
-
-                // Past instances remain as orphaned instances (no changes needed)
-                // This allows users to keep their completed/in-progress work
             }
-        }
+            await updateTaskTags(task, tagsData, req.currentUser.id);
 
-        await task.update(taskAttributes);
-
-        // Generate new recurring tasks after updating recurrence settings (if still recurring)
-        if (recurrenceChanged && task.recurrence_type !== 'none') {
-            const newRecurrenceType =
-                recurrence_type !== undefined
-                    ? recurrence_type
-                    : task.recurrence_type;
-            if (newRecurrenceType !== 'none') {
-                try {
-                    // Generate new recurring tasks for the updated pattern
-                    await generateRecurringTasks(req.currentUser.id, 7);
-                } catch (error) {
-                    console.error(
-                        'Error generating new recurring tasks after update:',
-                        error
-                    );
-                    // Don't fail the update if regeneration fails
-                }
-            }
-        }
-        await updateTaskTags(task, tagsData, req.currentUser.id);
-
-        // Handle subtasks updates
-        if (subtasks && Array.isArray(subtasks)) {
-            // Delete existing subtasks that are not in the new list
-            const existingSubtasks = await Task.findAll({
-                where: { parent_task_id: task.id, user_id: req.currentUser.id },
-            });
-
-            const subtasksToKeep = subtasks.filter((s) => s.id && !s.isNew);
-            const subtasksToDelete = existingSubtasks.filter(
-                (existing) =>
-                    !subtasksToKeep.find((keep) => keep.id === existing.id)
-            );
-
-            // Delete removed subtasks
-            if (subtasksToDelete.length > 0) {
-                await Task.destroy({
+            // Handle subtasks updates
+            if (subtasks && Array.isArray(subtasks)) {
+                // Delete existing subtasks that are not in the new list
+                const existingSubtasks = await Task.findAll({
                     where: {
-                        id: subtasksToDelete.map((s) => s.id),
+                        parent_task_id: task.id,
                         user_id: req.currentUser.id,
                     },
                 });
-            }
 
-            // Update edited subtasks and status changes
-            const subtasksToUpdate = subtasks.filter(
-                (s) =>
-                    s.id &&
-                    ((s.isEdited && s.name && s.name.trim()) ||
-                        s._statusChanged)
-            );
-            if (subtasksToUpdate.length > 0) {
-                const updatePromises = subtasksToUpdate.map((subtask) => {
-                    const updateData = {};
+                const subtasksToKeep = subtasks.filter((s) => s.id && !s.isNew);
+                const subtasksToDelete = existingSubtasks.filter(
+                    (existing) =>
+                        !subtasksToKeep.find((keep) => keep.id === existing.id)
+                );
 
-                    if (
-                        subtask.isEdited &&
-                        subtask.name &&
-                        subtask.name.trim()
-                    ) {
-                        updateData.name = subtask.name.trim();
-                    }
-
-                    if (
-                        subtask._statusChanged ||
-                        subtask.status !== undefined
-                    ) {
-                        updateData.status = subtask.status
-                            ? typeof subtask.status === 'string'
-                                ? Task.getStatusValue(subtask.status)
-                                : subtask.status
-                            : Task.STATUS.NOT_STARTED;
-
-                        if (
-                            updateData.status === Task.STATUS.DONE &&
-                            !subtask.completed_at
-                        ) {
-                            updateData.completed_at = new Date();
-                        } else if (updateData.status !== Task.STATUS.DONE) {
-                            updateData.completed_at = null;
-                        }
-                    }
-
-                    if (subtask.priority !== undefined) {
-                        updateData.priority = subtask.priority
-                            ? typeof subtask.priority === 'string'
-                                ? Task.getPriorityValue(subtask.priority)
-                                : subtask.priority
-                            : Task.PRIORITY.LOW;
-                    }
-
-                    return Task.update(updateData, {
+                // Delete removed subtasks
+                if (subtasksToDelete.length > 0) {
+                    await Task.destroy({
                         where: {
-                            id: subtask.id,
+                            id: subtasksToDelete.map((s) => s.id),
                             user_id: req.currentUser.id,
                         },
                     });
-                });
+                }
 
-                await Promise.all(updatePromises);
-            }
-
-            // Create new subtasks
-            const newSubtasks = subtasks.filter(
-                (s) => s.isNew && s.name && s.name.trim()
-            );
-            if (newSubtasks.length > 0) {
-                const subtaskPromises = newSubtasks.map((subtask) =>
-                    Task.create({
-                        name: subtask.name.trim(),
-                        parent_task_id: task.id,
-                        user_id: req.currentUser.id,
-                        priority: subtask.priority
-                            ? typeof subtask.priority === 'string'
-                                ? Task.getPriorityValue(subtask.priority)
-                                : subtask.priority
-                            : Task.PRIORITY.LOW,
-                        status: subtask.status
-                            ? typeof subtask.status === 'string'
-                                ? Task.getStatusValue(subtask.status)
-                                : subtask.status
-                            : Task.STATUS.NOT_STARTED,
-                        completed_at:
-                            subtask.status === 'done' ||
-                            subtask.status === Task.STATUS.DONE
-                                ? subtask.completed_at
-                                    ? new Date(subtask.completed_at)
-                                    : new Date()
-                                : null,
-                        today: subtask.today || false,
-                        recurrence_type: 'none',
-                        completion_based: false,
-                    })
+                // Update edited subtasks and status changes
+                const subtasksToUpdate = subtasks.filter(
+                    (s) =>
+                        s.id &&
+                        ((s.isEdited && s.name && s.name.trim()) ||
+                            s._statusChanged)
                 );
+                if (subtasksToUpdate.length > 0) {
+                    const updatePromises = subtasksToUpdate.map((subtask) => {
+                        const updateData = {};
 
-                await Promise.all(subtaskPromises);
-            }
-        }
+                        if (
+                            subtask.isEdited &&
+                            subtask.name &&
+                            subtask.name.trim()
+                        ) {
+                            updateData.name = subtask.name.trim();
+                        }
 
-        // Log task update events
-        try {
-            const changes = {};
+                        if (
+                            subtask._statusChanged ||
+                            subtask.status !== undefined
+                        ) {
+                            updateData.status = subtask.status
+                                ? typeof subtask.status === 'string'
+                                    ? Task.getStatusValue(subtask.status)
+                                    : subtask.status
+                                : Task.STATUS.NOT_STARTED;
 
-            // Check for changes in each field
-            if (name !== undefined && name !== oldValues.name) {
-                changes.name = { oldValue: oldValues.name, newValue: name };
-            }
-            if (status !== undefined && status !== oldValues.status) {
-                changes.status = {
-                    oldValue: oldValues.status,
-                    newValue: status,
-                };
-            }
-            if (priority !== undefined && priority !== oldValues.priority) {
-                changes.priority = {
-                    oldValue: oldValues.priority,
-                    newValue: priority,
-                };
-            }
-            if (due_date !== undefined) {
-                // Normalize dates for comparison (convert to YYYY-MM-DD format)
-                const oldDateStr = oldValues.due_date
-                    ? oldValues.due_date.toISOString().split('T')[0]
-                    : null;
-                const newDateStr = due_date || null;
+                            if (
+                                updateData.status === Task.STATUS.DONE &&
+                                !subtask.completed_at
+                            ) {
+                                updateData.completed_at = new Date();
+                            } else if (updateData.status !== Task.STATUS.DONE) {
+                                updateData.completed_at = null;
+                            }
+                        }
 
-                if (oldDateStr !== newDateStr) {
-                    changes.due_date = {
-                        oldValue: oldValues.due_date,
-                        newValue: due_date,
-                    };
+                        if (subtask.priority !== undefined) {
+                            updateData.priority = subtask.priority
+                                ? typeof subtask.priority === 'string'
+                                    ? Task.getPriorityValue(subtask.priority)
+                                    : subtask.priority
+                                : Task.PRIORITY.LOW;
+                        }
+
+                        return Task.update(updateData, {
+                            where: {
+                                id: subtask.id,
+                                user_id: req.currentUser.id,
+                            },
+                        });
+                    });
+
+                    await Promise.all(updatePromises);
+                }
+
+                // Create new subtasks
+                const newSubtasks = subtasks.filter(
+                    (s) => s.isNew && s.name && s.name.trim()
+                );
+                if (newSubtasks.length > 0) {
+                    const subtaskPromises = newSubtasks.map((subtask) =>
+                        Task.create({
+                            name: subtask.name.trim(),
+                            parent_task_id: task.id,
+                            user_id: req.currentUser.id,
+                            priority: subtask.priority
+                                ? typeof subtask.priority === 'string'
+                                    ? Task.getPriorityValue(subtask.priority)
+                                    : subtask.priority
+                                : Task.PRIORITY.LOW,
+                            status: subtask.status
+                                ? typeof subtask.status === 'string'
+                                    ? Task.getStatusValue(subtask.status)
+                                    : subtask.status
+                                : Task.STATUS.NOT_STARTED,
+                            completed_at:
+                                subtask.status === 'done' ||
+                                subtask.status === Task.STATUS.DONE
+                                    ? subtask.completed_at
+                                        ? new Date(subtask.completed_at)
+                                        : new Date()
+                                    : null,
+                            today: subtask.today || false,
+                            recurrence_type: 'none',
+                            completion_based: false,
+                        })
+                    );
+
+                    await Promise.all(subtaskPromises);
                 }
             }
-            if (
-                project_id !== undefined &&
-                project_id !== oldValues.project_id
-            ) {
-                changes.project_id = {
-                    oldValue: oldValues.project_id,
-                    newValue: project_id,
-                };
-            }
-            if (note !== undefined && note !== oldValues.note) {
-                changes.note = { oldValue: oldValues.note, newValue: note };
-            }
 
-            // Check recurrence field changes
-            if (
-                recurrence_type !== undefined &&
-                recurrence_type !== oldValues.recurrence_type
-            ) {
-                changes.recurrence_type = {
-                    oldValue: oldValues.recurrence_type,
-                    newValue: recurrence_type,
-                };
-            }
-            if (
-                recurrence_interval !== undefined &&
-                recurrence_interval !== oldValues.recurrence_interval
-            ) {
-                changes.recurrence_interval = {
-                    oldValue: oldValues.recurrence_interval,
-                    newValue: recurrence_interval,
-                };
-            }
-            if (
-                recurrence_end_date !== undefined &&
-                recurrence_end_date !== oldValues.recurrence_end_date
-            ) {
-                changes.recurrence_end_date = {
-                    oldValue: oldValues.recurrence_end_date,
-                    newValue: recurrence_end_date,
-                };
-            }
-            if (
-                recurrence_weekday !== undefined &&
-                recurrence_weekday !== oldValues.recurrence_weekday
-            ) {
-                changes.recurrence_weekday = {
-                    oldValue: oldValues.recurrence_weekday,
-                    newValue: recurrence_weekday,
-                };
-            }
-            if (
-                recurrence_month_day !== undefined &&
-                recurrence_month_day !== oldValues.recurrence_month_day
-            ) {
-                changes.recurrence_month_day = {
-                    oldValue: oldValues.recurrence_month_day,
-                    newValue: recurrence_month_day,
-                };
-            }
-            if (
-                recurrence_week_of_month !== undefined &&
-                recurrence_week_of_month !== oldValues.recurrence_week_of_month
-            ) {
-                changes.recurrence_week_of_month = {
-                    oldValue: oldValues.recurrence_week_of_month,
-                    newValue: recurrence_week_of_month,
-                };
-            }
-            if (
-                completion_based !== undefined &&
-                completion_based !== oldValues.completion_based
-            ) {
-                changes.completion_based = {
-                    oldValue: oldValues.completion_based,
-                    newValue: completion_based,
-                };
-            }
+            // Log task update events
+            try {
+                const changes = {};
 
-            // Log all changes
-            if (Object.keys(changes).length > 0) {
-                await logTaskUpdate(task.id, req.currentUser.id, changes, {
-                    source: 'web',
-                });
-            }
+                // Check for changes in each field
+                if (name !== undefined && name !== oldValues.name) {
+                    changes.name = { oldValue: oldValues.name, newValue: name };
+                }
+                if (status !== undefined && status !== oldValues.status) {
+                    changes.status = {
+                        oldValue: oldValues.status,
+                        newValue: status,
+                    };
+                }
+                if (priority !== undefined && priority !== oldValues.priority) {
+                    changes.priority = {
+                        oldValue: oldValues.priority,
+                        newValue: priority,
+                    };
+                }
+                if (due_date !== undefined) {
+                    // Normalize dates for comparison (convert to YYYY-MM-DD format)
+                    const oldDateStr = oldValues.due_date
+                        ? oldValues.due_date.toISOString().split('T')[0]
+                        : null;
+                    const newDateStr = due_date || null;
 
-            // Check for tag changes (this is more complex due to the array comparison)
-            if (tagsData) {
-                const newTags = tagsData.map((tag) => ({
-                    id: tag.id,
-                    name: tag.name,
-                }));
-                const oldTagNames = oldValues.tags
-                    .map((tag) => tag.name)
-                    .sort();
-                const newTagNames = newTags.map((tag) => tag.name).sort();
-
+                    if (oldDateStr !== newDateStr) {
+                        changes.due_date = {
+                            oldValue: oldValues.due_date,
+                            newValue: due_date,
+                        };
+                    }
+                }
                 if (
-                    JSON.stringify(oldTagNames) !== JSON.stringify(newTagNames)
+                    project_id !== undefined &&
+                    project_id !== oldValues.project_id
                 ) {
-                    await logEvent({
-                        taskId: task.id,
-                        userId: req.currentUser.id,
-                        eventType: 'tags_changed',
-                        fieldName: 'tags',
-                        oldValue: oldValues.tags,
-                        newValue: newTags,
-                        metadata: { source: 'web', action: 'tags_update' },
+                    changes.project_id = {
+                        oldValue: oldValues.project_id,
+                        newValue: project_id,
+                    };
+                }
+                if (note !== undefined && note !== oldValues.note) {
+                    changes.note = { oldValue: oldValues.note, newValue: note };
+                }
+
+                // Check recurrence field changes
+                if (
+                    recurrence_type !== undefined &&
+                    recurrence_type !== oldValues.recurrence_type
+                ) {
+                    changes.recurrence_type = {
+                        oldValue: oldValues.recurrence_type,
+                        newValue: recurrence_type,
+                    };
+                }
+                if (
+                    recurrence_interval !== undefined &&
+                    recurrence_interval !== oldValues.recurrence_interval
+                ) {
+                    changes.recurrence_interval = {
+                        oldValue: oldValues.recurrence_interval,
+                        newValue: recurrence_interval,
+                    };
+                }
+                if (
+                    recurrence_end_date !== undefined &&
+                    recurrence_end_date !== oldValues.recurrence_end_date
+                ) {
+                    changes.recurrence_end_date = {
+                        oldValue: oldValues.recurrence_end_date,
+                        newValue: recurrence_end_date,
+                    };
+                }
+                if (
+                    recurrence_weekday !== undefined &&
+                    recurrence_weekday !== oldValues.recurrence_weekday
+                ) {
+                    changes.recurrence_weekday = {
+                        oldValue: oldValues.recurrence_weekday,
+                        newValue: recurrence_weekday,
+                    };
+                }
+                if (
+                    recurrence_month_day !== undefined &&
+                    recurrence_month_day !== oldValues.recurrence_month_day
+                ) {
+                    changes.recurrence_month_day = {
+                        oldValue: oldValues.recurrence_month_day,
+                        newValue: recurrence_month_day,
+                    };
+                }
+                if (
+                    recurrence_week_of_month !== undefined &&
+                    recurrence_week_of_month !==
+                        oldValues.recurrence_week_of_month
+                ) {
+                    changes.recurrence_week_of_month = {
+                        oldValue: oldValues.recurrence_week_of_month,
+                        newValue: recurrence_week_of_month,
+                    };
+                }
+                if (
+                    completion_based !== undefined &&
+                    completion_based !== oldValues.completion_based
+                ) {
+                    changes.completion_based = {
+                        oldValue: oldValues.completion_based,
+                        newValue: completion_based,
+                    };
+                }
+
+                // Log all changes
+                if (Object.keys(changes).length > 0) {
+                    await logTaskUpdate(task.id, req.currentUser.id, changes, {
+                        source: 'web',
+                    });
+                }
+
+                // Check for tag changes (this is more complex due to the array comparison)
+                if (tagsData) {
+                    const newTags = tagsData.map((tag) => ({
+                        id: tag.id,
+                        name: tag.name,
+                    }));
+                    const oldTagNames = oldValues.tags
+                        .map((tag) => tag.name)
+                        .sort();
+                    const newTagNames = newTags.map((tag) => tag.name).sort();
+
+                    if (
+                        JSON.stringify(oldTagNames) !==
+                        JSON.stringify(newTagNames)
+                    ) {
+                        await logEvent({
+                            taskId: task.id,
+                            userId: req.currentUser.id,
+                            eventType: 'tags_changed',
+                            fieldName: 'tags',
+                            oldValue: oldValues.tags,
+                            newValue: newTags,
+                            metadata: { source: 'web', action: 'tags_update' },
+                        });
+                    }
+                }
+            } catch (eventError) {
+                logError('Error logging task update events:', eventError);
+                // Don't fail the request if event logging fails
+            }
+
+            // Reload task with associations
+            const taskWithAssociations = await Task.findByPk(task.id, {
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name', 'uid'],
+                        through: { attributes: [] },
+                    },
+                    {
+                        model: Project,
+                        attributes: ['id', 'name', 'uid'],
+                        required: false,
+                    },
+                ],
+            });
+
+            // Use serializeTask to include subtasks data
+            const serializedTask = await serializeTask(
+                taskWithAssociations,
+                req.currentUser.timezone,
+                { skipDisplayNameTransform: true }
+            );
+
+            res.json(serializedTask);
+        } catch (error) {
+            logError('Error updating task:', error);
+            res.status(400).json({
+                error: 'There was a problem updating the task.',
+                details: error.errors
+                    ? error.errors.map((e) => e.message)
+                    : [error.message],
+            });
+        }
+    }
+);
+
+// PATCH /api/task/:id/toggle_completion
+router.patch(
+    '/task/:id/toggle_completion',
+    hasAccess(
+        'rw',
+        'task',
+        async (req) => {
+            const t = await Task.findOne({
+                where: { id: req.params.id },
+                attributes: ['uid'],
+            });
+            return t?.uid;
+        },
+        { notFoundMessage: 'Task not found.' }
+    ),
+    async (req, res) => {
+        try {
+            const task = await Task.findOne({
+                where: { id: req.params.id },
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name', 'uid'],
+                        through: { attributes: [] },
+                    },
+                    {
+                        model: Project,
+                        attributes: ['id', 'name', 'uid'],
+                        required: false,
+                    },
+                    {
+                        model: Task,
+                        as: 'Subtasks',
+                        include: [
+                            {
+                                model: Tag,
+                                attributes: ['id', 'name', 'uid'],
+                                through: { attributes: [] },
+                            },
+                        ],
+                    },
+                ],
+            });
+
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found.' });
+            }
+            // access ensured by middleware
+
+            // Track if parent-child logic was executed
+            let parentChildLogicExecuted = false;
+
+            const newStatus =
+                task.status === Task.STATUS.DONE || task.status === 'done'
+                    ? task.note
+                        ? Task.STATUS.IN_PROGRESS
+                        : Task.STATUS.NOT_STARTED
+                    : Task.STATUS.DONE;
+
+            // Set completed_at when task is completed/uncompleted
+            const updateData = { status: newStatus };
+            if (newStatus === Task.STATUS.DONE) {
+                updateData.completed_at = new Date();
+            } else if (
+                task.status === Task.STATUS.DONE ||
+                task.status === 'done'
+            ) {
+                updateData.completed_at = null;
+            }
+
+            await task.update(updateData);
+
+            // Check if subtasks exist in database directly to debug association issue
+            const directSubtasksQuery = await Task.findAll({
+                where: {
+                    parent_task_id: task.id,
+                    user_id: req.currentUser.id,
+                },
+                attributes: ['id', 'name', 'status', 'parent_task_id'],
+            });
+
+            // If direct query finds subtasks but task.Subtasks is empty, there's an association issue
+            if (
+                directSubtasksQuery.length > 0 &&
+                (!task.Subtasks || task.Subtasks.length === 0)
+            ) {
+                task.Subtasks = directSubtasksQuery;
+            }
+
+            if (task.parent_task_id) {
+                if (newStatus === Task.STATUS.DONE || newStatus === 'done') {
+                    // When subtask is done, check if parent should be done
+                    const parentUpdated =
+                        await checkAndUpdateParentTaskCompletion(
+                            task.parent_task_id,
+                            req.currentUser.id
+                        );
+                    if (parentUpdated) {
+                        parentChildLogicExecuted = true;
+                    }
+                } else {
+                    // When subtask is undone, undone parent if it was done
+                    const parentUpdated = await undoneParentTaskIfNeeded(
+                        task.parent_task_id,
+                        req.currentUser.id
+                    );
+                    if (parentUpdated) {
+                        parentChildLogicExecuted = true;
+                    }
+                }
+            } else if (task.Subtasks && task.Subtasks.length > 0) {
+                // This is a parent task with subtasks
+                if (newStatus === Task.STATUS.DONE) {
+                    // When parent is done, complete all subtasks
+                    const subtasksUpdated = await completeAllSubtasks(
+                        task.id,
+                        req.currentUser.id
+                    );
+                    if (subtasksUpdated) {
+                        parentChildLogicExecuted = true;
+                    }
+                } else {
+                    // When parent is undone, undone all subtasks
+                    const subtasksUpdated = await undoneAllSubtasks(
+                        task.id,
+                        req.currentUser.id
+                    );
+                    if (subtasksUpdated) {
+                        parentChildLogicExecuted = true;
+                    }
+                }
+            }
+
+            // Handle recurring task completion
+            let nextTask = null;
+            if (newStatus === Task.STATUS.DONE || newStatus === 'done') {
+                nextTask = await handleTaskCompletion(task);
+            }
+
+            // Use serializeTask to include subtasks data
+            const response = await serializeTask(
+                task,
+                req.currentUser.timezone
+            );
+
+            // If parent-child logic was executed, we might need to reload data
+            // For now, let the frontend handle the refresh to avoid complex reloading logic
+
+            if (nextTask) {
+                response.next_task = {
+                    ...nextTask.toJSON(),
+                    due_date: nextTask.due_date
+                        ? nextTask.due_date.toISOString().split('T')[0]
+                        : null,
+                };
+            }
+
+            // Add flag to response to indicate if parent-child logic was executed
+            response.parent_child_logic_executed = parentChildLogicExecuted;
+
+            res.json(response);
+        } catch (error) {
+            logError('Error in toggle completion endpoint:', error);
+            logError('Error stack:', error.stack);
+            res.status(422).json({
+                error: 'Unable to update task',
+                details: error.message,
+            });
+        }
+    }
+);
+
+// DELETE /api/task/:id
+router.delete(
+    '/task/:id',
+    hasAccess(
+        'rw',
+        'task',
+        async (req) => {
+            const t = await Task.findOne({
+                where: { id: req.params.id },
+                attributes: ['uid'],
+            });
+            return t?.uid;
+        },
+        { notFoundMessage: 'Task not found.' }
+    ),
+    async (req, res) => {
+        try {
+            const task = await Task.findOne({
+                where: { id: req.params.id },
+            });
+
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found.' });
+            }
+            // access ensured by middleware
+
+            // Check for child tasks - prevent deletion of parent tasks with children
+            const childTasks = await Task.findAll({
+                where: { recurring_parent_id: req.params.id },
+            });
+
+            // If this is a recurring parent task with children, prevent deletion
+            if (childTasks.length > 0) {
+                const now = new Date();
+
+                // Separate past and future instances
+                const futureInstances = childTasks.filter((child) => {
+                    if (!child.due_date) return true; // Tasks without due_date are considered future (not yet scheduled)
+                    return new Date(child.due_date) > now;
+                });
+
+                const pastInstances = childTasks.filter((child) => {
+                    if (!child.due_date) return false; // Tasks without due_date are considered future, not past
+                    return new Date(child.due_date) <= now;
+                });
+
+                // Delete future instances
+                for (const futureInstance of futureInstances) {
+                    await futureInstance.destroy();
+                }
+
+                // Orphan past instances (remove parent relationship)
+                for (const pastInstance of pastInstances) {
+                    await pastInstance.update({
+                        recurring_parent_id: null,
+                        recurrence_type: 'none',
+                        recurrence_interval: null,
+                        recurrence_end_date: null,
+                        last_generated_date: null,
+                        recurrence_weekday: null,
+                        recurrence_month_day: null,
+                        recurrence_week_of_month: null,
+                        completion_based: false,
                     });
                 }
             }
-        } catch (eventError) {
-            console.error('Error logging task update events:', eventError);
-            // Don't fail the request if event logging fails
-        }
 
-        // Reload task with associations
-        const taskWithAssociations = await Task.findByPk(task.id, {
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                },
-                {
-                    model: Project,
-                    attributes: ['id', 'name', 'uid'],
-                    required: false,
-                },
-            ],
-        });
-
-        // Use serializeTask to include subtasks data
-        const serializedTask = await serializeTask(
-            taskWithAssociations,
-            req.currentUser.timezone,
-            { skipDisplayNameTransform: true }
-        );
-
-        res.json(serializedTask);
-    } catch (error) {
-        console.error('Error updating task:', error);
-        res.status(400).json({
-            error: 'There was a problem updating the task.',
-            details: error.errors
-                ? error.errors.map((e) => e.message)
-                : [error.message],
-        });
-    }
-});
-
-// PATCH /api/task/:id/toggle_completion
-router.patch('/task/:id/toggle_completion', async (req, res) => {
-    try {
-        const task = await Task.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                },
-                {
-                    model: Project,
-                    attributes: ['id', 'name', 'uid'],
-                    required: false,
-                },
-                {
-                    model: Task,
-                    as: 'Subtasks',
-                    include: [
-                        {
-                            model: Tag,
-                            attributes: ['id', 'name', 'uid'],
-                            through: { attributes: [] },
-                        },
-                    ],
-                },
-            ],
-        });
-
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found.' });
-        }
-
-        // Track if parent-child logic was executed
-        let parentChildLogicExecuted = false;
-
-        const newStatus =
-            task.status === Task.STATUS.DONE || task.status === 'done'
-                ? task.note
-                    ? Task.STATUS.IN_PROGRESS
-                    : Task.STATUS.NOT_STARTED
-                : Task.STATUS.DONE;
-
-        // Set completed_at when task is completed/uncompleted
-        const updateData = { status: newStatus };
-        if (newStatus === Task.STATUS.DONE) {
-            updateData.completed_at = new Date();
-        } else if (task.status === Task.STATUS.DONE || task.status === 'done') {
-            updateData.completed_at = null;
-        }
-
-        await task.update(updateData);
-
-        // Check if subtasks exist in database directly to debug association issue
-        const directSubtasksQuery = await Task.findAll({
-            where: {
-                parent_task_id: task.id,
-                user_id: req.currentUser.id,
-            },
-            attributes: ['id', 'name', 'status', 'parent_task_id'],
-        });
-
-        // If direct query finds subtasks but task.Subtasks is empty, there's an association issue
-        if (
-            directSubtasksQuery.length > 0 &&
-            (!task.Subtasks || task.Subtasks.length === 0)
-        ) {
-            task.Subtasks = directSubtasksQuery;
-        }
-
-        if (task.parent_task_id) {
-            if (newStatus === Task.STATUS.DONE || newStatus === 'done') {
-                // When subtask is done, check if parent should be done
-                const parentUpdated = await checkAndUpdateParentTaskCompletion(
-                    task.parent_task_id,
-                    req.currentUser.id
-                );
-                if (parentUpdated) {
-                    parentChildLogicExecuted = true;
-                }
-            } else {
-                // When subtask is undone, undone parent if it was done
-                const parentUpdated = await undoneParentTaskIfNeeded(
-                    task.parent_task_id,
-                    req.currentUser.id
-                );
-                if (parentUpdated) {
-                    parentChildLogicExecuted = true;
-                }
-            }
-        } else if (task.Subtasks && task.Subtasks.length > 0) {
-            // This is a parent task with subtasks
-            if (newStatus === Task.STATUS.DONE) {
-                // When parent is done, complete all subtasks
-                const subtasksUpdated = await completeAllSubtasks(
-                    task.id,
-                    req.currentUser.id
-                );
-                if (subtasksUpdated) {
-                    parentChildLogicExecuted = true;
-                }
-            } else {
-                // When parent is undone, undone all subtasks
-                const subtasksUpdated = await undoneAllSubtasks(
-                    task.id,
-                    req.currentUser.id
-                );
-                if (subtasksUpdated) {
-                    parentChildLogicExecuted = true;
-                }
-            }
-        }
-
-        // Handle recurring task completion
-        let nextTask = null;
-        if (newStatus === Task.STATUS.DONE || newStatus === 'done') {
-            nextTask = await handleTaskCompletion(task);
-        }
-
-        // Use serializeTask to include subtasks data
-        const response = await serializeTask(task, req.currentUser.timezone);
-
-        // If parent-child logic was executed, we might need to reload data
-        // For now, let the frontend handle the refresh to avoid complex reloading logic
-
-        if (nextTask) {
-            response.next_task = {
-                ...nextTask.toJSON(),
-                due_date: nextTask.due_date
-                    ? nextTask.due_date.toISOString().split('T')[0]
-                    : null,
-            };
-        }
-
-        // Add flag to response to indicate if parent-child logic was executed
-        response.parent_child_logic_executed = parentChildLogicExecuted;
-
-        res.json(response);
-    } catch (error) {
-        console.error('Error in toggle completion endpoint:', error);
-        console.error('Error stack:', error.stack);
-        res.status(422).json({
-            error: 'Unable to update task',
-            details: error.message,
-        });
-    }
-});
-
-// DELETE /api/task/:id
-router.delete('/task/:id', async (req, res) => {
-    try {
-        const task = await Task.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
-        });
-
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found.' });
-        }
-
-        // Check for child tasks and handle smart deletion for recurring tasks
-        const childTasks = await Task.findAll({
-            where: { recurring_parent_id: req.params.id },
-        });
-
-        // If this is a recurring parent task with children, implement smart deletion
-        if (childTasks.length > 0) {
-            const now = new Date();
-
-            // Separate past and future instances
-            const futureInstances = childTasks.filter((child) => {
-                if (!child.due_date) return true; // Tasks without due_date are considered future (not yet scheduled)
-                return new Date(child.due_date) > now;
-            });
-
-            const pastInstances = childTasks.filter((child) => {
-                if (!child.due_date) return false; // Tasks without due_date are considered future, not past
-                return new Date(child.due_date) <= now;
-            });
-
-            // Delete future instances
-            for (const futureInstance of futureInstances) {
-                await futureInstance.destroy();
-            }
-
-            // Orphan past instances (remove parent relationship)
-            for (const pastInstance of pastInstances) {
-                await pastInstance.update({
-                    recurring_parent_id: null,
-                    recurrence_type: 'none',
-                    recurrence_interval: null,
-                    recurrence_end_date: null,
-                    last_generated_date: null,
-                    recurrence_weekday: null,
-                    recurrence_month_day: null,
-                    recurrence_week_of_month: null,
-                    completion_based: false,
-                });
-            }
-        }
-
-        const taskEvents = await TaskEvent.findAll({
-            where: { task_id: req.params.id },
-        });
-
-        const tagAssociations = await sequelize.query(
-            'SELECT COUNT(*) as count FROM tasks_tags WHERE task_id = ?',
-            { replacements: [req.params.id], type: sequelize.QueryTypes.SELECT }
-        );
-
-        // Check SQLite foreign key list for tasks table
-        const foreignKeys = await sequelize.query(
-            'PRAGMA foreign_key_list(tasks)',
-            { type: sequelize.QueryTypes.SELECT }
-        );
-
-        // Find all tables that reference tasks
-        const allTables = await sequelize.query(
-            "SELECT name FROM sqlite_master WHERE type='table'",
-            { type: sequelize.QueryTypes.SELECT }
-        );
-
-        for (const table of allTables) {
-            if (table.name !== 'tasks') {
-                try {
-                    const fks = await sequelize.query(
-                        `PRAGMA foreign_key_list(${table.name})`,
-                        { type: sequelize.QueryTypes.SELECT }
-                    );
-                    const taskRefs = fks.filter((fk) => fk.table === 'tasks');
-                    if (taskRefs.length > 0) {
-                        // Check if this table has any records referencing our task
-                        for (const fk of taskRefs) {
-                            const count = await sequelize.query(
-                                `SELECT COUNT(*) as count FROM ${table.name} WHERE ${fk.from} = ?`,
-                                {
-                                    replacements: [req.params.id],
-                                    type: sequelize.QueryTypes.SELECT,
-                                }
-                            );
-                        }
-                    }
-                } catch (error) {
-                    // Skip tables that might not exist or have issues
-                }
-            }
-        }
-
-        // Temporarily disable foreign key constraints for this operation
-        await sequelize.query('PRAGMA foreign_keys = OFF');
-
-        try {
-            // Use force delete to bypass foreign key constraints
-            await TaskEvent.destroy({
+            const taskEvents = await TaskEvent.findAll({
                 where: { task_id: req.params.id },
-                force: true,
             });
 
-            await sequelize.query('DELETE FROM tasks_tags WHERE task_id = ?', {
-                replacements: [req.params.id],
-            });
-
-            await Task.update(
-                { recurring_parent_id: null },
-                { where: { recurring_parent_id: req.params.id } }
+            const tagAssociations = await sequelize.query(
+                'SELECT COUNT(*) as count FROM tasks_tags WHERE task_id = ?',
+                {
+                    replacements: [req.params.id],
+                    type: sequelize.QueryTypes.SELECT,
+                }
             );
 
-            // Delete the task itself
-            await task.destroy({ force: true });
-        } finally {
-            // Re-enable foreign key constraints
-            await sequelize.query('PRAGMA foreign_keys = ON');
-        }
+            // Check SQLite foreign key list for tasks table
+            const foreignKeys = await sequelize.query(
+                'PRAGMA foreign_key_list(tasks)',
+                { type: sequelize.QueryTypes.SELECT }
+            );
 
-        res.json({ message: 'Task successfully deleted' });
-    } catch (error) {
-        res.status(400).json({
-            error: 'There was a problem deleting the task.',
-        });
+            // Find all tables that reference tasks
+            const allTables = await sequelize.query(
+                "SELECT name FROM sqlite_master WHERE type='table'",
+                { type: sequelize.QueryTypes.SELECT }
+            );
+
+            // Whitelist of known valid table names to prevent SQL injection
+            const validTableNames = [
+                'tasks',
+                'projects',
+                'notes',
+                'users',
+                'tags',
+                'areas',
+                'permissions',
+                'actions',
+                'task_events',
+                'inbox_items',
+                'tasks_tags',
+                'notes_tags',
+                'projects_tags',
+                'Sessions',
+            ];
+
+            for (const table of allTables) {
+                if (
+                    table.name !== 'tasks' &&
+                    validTableNames.includes(table.name)
+                ) {
+                    try {
+                        const fks = await sequelize.query(
+                            `PRAGMA foreign_key_list(${table.name})`,
+                            { type: sequelize.QueryTypes.SELECT }
+                        );
+                        const taskRefs = fks.filter(
+                            (fk) => fk.table === 'tasks'
+                        );
+                        if (taskRefs.length > 0) {
+                            // Check if this table has any records referencing our task
+                            for (const fk of taskRefs) {
+                                const count = await sequelize.query(
+                                    `SELECT COUNT(*) as count FROM ${table.name} WHERE ${fk.from} = ?`,
+                                    {
+                                        replacements: [req.params.id],
+                                        type: sequelize.QueryTypes.SELECT,
+                                    }
+                                );
+                            }
+                        }
+                    } catch (error) {
+                        // Skip tables that might not exist or have issues
+                    }
+                }
+            }
+
+            // Temporarily disable foreign key constraints for this operation
+            await sequelize.query('PRAGMA foreign_keys = OFF');
+
+            try {
+                // Use force delete to bypass foreign key constraints
+                await TaskEvent.destroy({
+                    where: { task_id: req.params.id },
+                    force: true,
+                });
+
+                await sequelize.query(
+                    'DELETE FROM tasks_tags WHERE task_id = ?',
+                    {
+                        replacements: [req.params.id],
+                    }
+                );
+
+                await Task.update(
+                    { recurring_parent_id: null },
+                    { where: { recurring_parent_id: req.params.id } }
+                );
+
+                // Delete the task itself
+                await task.destroy({ force: true });
+            } finally {
+                // Re-enable foreign key constraints
+                await sequelize.query('PRAGMA foreign_keys = ON');
+            }
+
+            res.json({ message: 'Task successfully deleted' });
+        } catch (error) {
+            res.status(400).json({
+                error: 'There was a problem deleting the task.',
+            });
+        }
     }
-});
+);
 
 // POST /api/tasks/generate-recurring
 router.post('/tasks/generate-recurring', async (req, res) => {
@@ -2557,75 +2734,92 @@ router.post('/tasks/generate-recurring', async (req, res) => {
             })),
         });
     } catch (error) {
-        console.error('Error generating recurring tasks:', error);
+        logError('Error generating recurring tasks:', error);
         res.status(500).json({ error: 'Failed to generate recurring tasks' });
     }
 });
 
 // PATCH /api/task/:id/toggle-today
-router.patch('/task/:id/toggle-today', async (req, res) => {
-    try {
-        const task = await Task.findOne({
-            where: { id: req.params.id, user_id: req.currentUser.id },
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                },
-                {
-                    model: Project,
-                    attributes: ['id', 'name', 'uid'],
-                    required: false,
-                },
-            ],
-        });
-
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found.' });
-        }
-
-        // Toggle the today flag
-        const newTodayValue = !task.today;
-        const updateData = { today: newTodayValue };
-
-        // If task is being moved away from today and has in_progress status, change it to not_started
-        if (
-            task.today === true &&
-            newTodayValue === false &&
-            task.status === Task.STATUS.IN_PROGRESS
-        ) {
-            updateData.status = Task.STATUS.NOT_STARTED;
-        }
-        await task.update(updateData);
-
-        // Log the change
-        try {
-            await logEvent({
-                taskId: task.id,
-                userId: req.currentUser.id,
-                eventType: 'today_changed',
-                fieldName: 'today',
-                oldValue: !newTodayValue,
-                newValue: newTodayValue,
-                metadata: { source: 'web', action: 'toggle_today' },
+router.patch(
+    '/task/:id/toggle-today',
+    hasAccess(
+        'rw',
+        'task',
+        async (req) => {
+            const t = await Task.findOne({
+                where: { id: req.params.id },
+                attributes: ['uid'],
             });
-        } catch (eventError) {
-            console.error('Error logging today toggle event:', eventError);
-            // Don't fail the request if event logging fails
-        }
+            return t?.uid;
+        },
+        { notFoundMessage: 'Task not found.' }
+    ),
+    async (req, res) => {
+        try {
+            const task = await Task.findOne({
+                where: { id: req.params.id },
+                include: [
+                    {
+                        model: Tag,
+                        attributes: ['id', 'name', 'uid'],
+                        through: { attributes: [] },
+                    },
+                    {
+                        model: Project,
+                        attributes: ['id', 'name', 'uid'],
+                        required: false,
+                    },
+                ],
+            });
 
-        // Use serializeTask helper to ensure consistent response format including tags
-        const serializedTask = await serializeTask(
-            task,
-            req.currentUser.timezone
-        );
-        res.json(serializedTask);
-    } catch (error) {
-        console.error('Error toggling task today flag:', error);
-        res.status(500).json({ error: 'Failed to update task today flag' });
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found.' });
+            }
+
+            // access ensured by middleware
+
+            // Toggle the today flag
+            const newTodayValue = !task.today;
+            const updateData = { today: newTodayValue };
+
+            // If task is being moved away from today and has in_progress status, change it to not_started
+            if (
+                task.today === true &&
+                newTodayValue === false &&
+                task.status === Task.STATUS.IN_PROGRESS
+            ) {
+                updateData.status = Task.STATUS.NOT_STARTED;
+            }
+            await task.update(updateData);
+
+            // Log the change
+            try {
+                await logEvent({
+                    taskId: task.id,
+                    userId: req.currentUser.id,
+                    eventType: 'today_changed',
+                    fieldName: 'today',
+                    oldValue: !newTodayValue,
+                    newValue: newTodayValue,
+                    metadata: { source: 'web', action: 'toggle_today' },
+                });
+            } catch (eventError) {
+                logError('Error logging today toggle event:', eventError);
+                // Don't fail the request if event logging fails
+            }
+
+            // Use serializeTask helper to ensure consistent response format including tags
+            const serializedTask = await serializeTask(
+                task,
+                req.currentUser.timezone
+            );
+            res.json(serializedTask);
+        } catch (error) {
+            logError('Error toggling task today flag:', error);
+            res.status(500).json({ error: 'Failed to update task today flag' });
+        }
     }
-});
+);
 
 // GET /api/task/:id/next-iterations
 router.get('/task/:id/next-iterations', async (req, res) => {
@@ -2725,7 +2919,7 @@ router.get('/task/:id/next-iterations', async (req, res) => {
 
         res.json({ iterations });
     } catch (error) {
-        console.error('Error getting next iterations:', error);
+        logError('Error getting next iterations:', error);
         res.status(500).json({ error: 'Failed to get next iterations' });
     }
 });

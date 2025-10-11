@@ -29,6 +29,9 @@ const Tag = require('./tag')(sequelize);
 const Note = require('./note')(sequelize);
 const InboxItem = require('./inbox_item')(sequelize);
 const TaskEvent = require('./task_event')(sequelize);
+const Role = require('./role')(sequelize);
+const Action = require('./action')(sequelize);
+const Permission = require('./permission')(sequelize);
 
 // Define associations
 User.hasMany(Area, { foreignKey: 'user_id' });
@@ -115,6 +118,22 @@ Tag.belongsToMany(Project, {
     otherKey: 'project_id',
 });
 
+// Roles and permissions associations
+User.hasOne(Role, { foreignKey: 'user_id' });
+Role.belongsTo(User, { foreignKey: 'user_id' });
+
+Permission.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+Permission.belongsTo(User, {
+    foreignKey: 'granted_by_user_id',
+    as: 'GrantedBy',
+});
+// Optional backrefs if needed later:
+// User.hasMany(Permission, { foreignKey: 'user_id', as: 'Permissions' });
+
+// Actions relations (optional aliases)
+Action.belongsTo(User, { foreignKey: 'actor_user_id', as: 'Actor' });
+Action.belongsTo(User, { foreignKey: 'target_user_id', as: 'Target' });
+
 module.exports = {
     sequelize,
     User,
@@ -125,4 +144,7 @@ module.exports = {
     Note,
     InboxItem,
     TaskEvent,
+    Role,
+    Action,
+    Permission,
 };

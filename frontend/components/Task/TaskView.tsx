@@ -10,12 +10,16 @@ import {
     deleteTask,
 } from '../../utils/tasksService';
 import { createProject } from '../../utils/projectsService';
+import { useToast } from '../Shared/ToastContext';
+import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
 
 const TaskView: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
     const navigate = useNavigate();
     const store = useStore();
+    const { showErrorToast } = useToast();
+    const { t } = useTranslation();
     const [task, setTask] = useState<Task | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -72,8 +76,9 @@ const TaskView: React.FC = () => {
                 const updated = await updateTask(task.id, updatedTask);
                 setTask(updated);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating task:', error);
+            showErrorToast(t('errors.permissionDenied', 'Permission denied'));
         }
     };
 
@@ -81,9 +86,9 @@ const TaskView: React.FC = () => {
         try {
             await deleteTask(taskId);
             navigate('/today'); // Navigate back to today view after deletion
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting task:', error);
-            throw error;
+            showErrorToast(t('errors.permissionDenied', 'Permission denied'));
         }
     };
 

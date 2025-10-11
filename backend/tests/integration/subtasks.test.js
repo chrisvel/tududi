@@ -616,7 +616,7 @@ describe('Subtasks API', () => {
     });
 
     describe('Authentication and Authorization', () => {
-        it('should not allow access to subtasks of other users', async () => {
+        it('should return 403 when accessing subtasks of other users', async () => {
             const otherUser = await createTestUser({
                 email: `other_${Date.now()}@example.com`,
             });
@@ -627,12 +627,10 @@ describe('Subtasks API', () => {
                 priority: Task.PRIORITY.MEDIUM,
             });
 
-            // API returns empty array for other users' tasks instead of 401
             const response = await agent
                 .get(`/api/task/${otherTask.id}/subtasks`)
-                .expect(200);
-
-            expect(response.body).toHaveLength(0);
+                .expect(403);
+            expect(response.body.error).toBe('Forbidden');
         });
 
         it('should not allow creating subtasks for other users tasks', async () => {
