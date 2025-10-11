@@ -118,7 +118,8 @@ const lastCheckTimestamp = Date.now();
 
 // Store-aware functions
 export const loadInboxItemsToStore = async (
-    isInitialLoad: boolean = false
+    isInitialLoad: boolean = false,
+    requestedCount: number = 20
 ): Promise<void> => {
     const inboxStore = useStore.getState().inboxStore;
     // Only show loading for initial load, not for polling
@@ -128,7 +129,8 @@ export const loadInboxItemsToStore = async (
     }
 
     try {
-        const { items, pagination } = await fetchInboxItems(20, 0); // Always load first page for refresh
+        // Load the requested number of items (for pagination preservation)
+        const { items, pagination } = await fetchInboxItems(requestedCount, 0);
 
         // Check for new items since last check (only for non-initial loads)
         if (!isInitialLoad) {

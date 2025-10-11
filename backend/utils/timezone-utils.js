@@ -71,6 +71,7 @@ function getTodayBoundsInUTC(userTimezone) {
 
 /**
  * Get date range for "upcoming" tasks (next N days) in user timezone
+ * Includes today through N days ahead
  * @param {string} userTimezone - User's timezone
  * @param {number} days - Number of days to look ahead (default: 7)
  * @returns {Object} { start: Date, end: Date } - UTC Date objects

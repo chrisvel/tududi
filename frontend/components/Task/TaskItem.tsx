@@ -141,6 +141,7 @@ interface TaskItemProps {
     hideProjectName?: boolean;
     onToggleToday?: (taskId: number) => Promise<void>;
     isUpcomingView?: boolean;
+    showCompletedTasks?: boolean;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -152,6 +153,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     hideProjectName = false,
     onToggleToday,
     isUpcomingView = false,
+    showCompletedTasks = false,
 }) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -164,6 +166,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const { showErrorToast } = useToast();
+    const [isAnimatingOut, setIsAnimatingOut] = useState(false);
 
     // Subtasks state
     const [showSubtasks, setShowSubtasks] = useState(false);
@@ -327,6 +330,20 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const handleToggleCompletion = async () => {
         if (task.id) {
             try {
+                // Check if task is being completed (not uncompleted)
+                const isCompletingTask =
+                    task.status !== 'done' &&
+                    task.status !== 2 &&
+                    task.status !== 'archived' &&
+                    task.status !== 3;
+
+                // If completing the task in upcoming view and not showing completed tasks, trigger animation
+                if (isCompletingTask && isUpcomingView && !showCompletedTasks) {
+                    setIsAnimatingOut(true);
+                    // Wait for animation to complete before updating state
+                    await new Promise((resolve) => setTimeout(resolve, 300));
+                }
+
                 const response = await toggleTaskCompletion(task.id);
 
                 // Handle the updated task
@@ -380,6 +397,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                 }
             } catch (error) {
                 console.error('Error toggling task completion:', error);
+                setIsAnimatingOut(false); // Reset animation state on error
             }
         }
     };
@@ -425,11 +443,11 @@ const TaskItem: React.FC<TaskItemProps> = ({
     return (
         <>
             <div
-                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-all duration-200 ease-in-out ${
+                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 relative overflow-visible transition-opacity duration-300 ease-in-out ${
                     isInProgress
                         ? 'border-2 border-green-400/60 dark:border-green-500/60'
                         : ''
-                }`}
+                } ${isAnimatingOut ? 'opacity-0' : 'opacity-100'}`}
             >
                 <TaskHeader
                     task={task}
