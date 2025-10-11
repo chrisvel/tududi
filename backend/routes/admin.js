@@ -13,7 +13,9 @@ router.post('/admin/set-admin-role', async (req, res) => {
             return res.status(401).json({ error: 'Authentication required' });
 
         // Fetch user to get uid for isAdmin check
-        const requester = await User.findByPk(requesterId, { attributes: ['uid'] });
+        const requester = await User.findByPk(requesterId, {
+            attributes: ['uid'],
+        });
         if (!requester)
             return res.status(401).json({ error: 'Authentication required' });
 
@@ -63,7 +65,8 @@ async function requireAdmin(req, res, next) {
 
         // Fetch user to get uid for isAdmin check
         const user = await User.findByPk(requesterId, { attributes: ['uid'] });
-        if (!user) return res.status(401).json({ error: 'Authentication required' });
+        if (!user)
+            return res.status(401).json({ error: 'Authentication required' });
 
         const admin = await isAdmin(user.uid);
         if (!admin) return res.status(403).json({ error: 'Forbidden' });

@@ -15,7 +15,13 @@ router.get('/current_user', async (req, res) => {
     try {
         if (req.session && req.session.userId) {
             const user = await User.findByPk(req.session.userId, {
-                attributes: ['uid', 'email', 'language', 'appearance', 'timezone'],
+                attributes: [
+                    'uid',
+                    'email',
+                    'language',
+                    'appearance',
+                    'timezone',
+                ],
             });
             if (user) {
                 const admin = await isAdmin(user.uid);
