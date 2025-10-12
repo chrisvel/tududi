@@ -13,6 +13,7 @@ import {
     ClipboardDocumentListIcon,
     ExclamationTriangleIcon,
     CheckCircleIcon,
+    ShareIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
@@ -807,7 +808,7 @@ const ProjectDetails: React.FC = () => {
                     <div className="absolute bottom-2 left-2 flex items-center space-x-2">
                         {/* Project State Display */}
                         {project.state && (
-                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
+                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-2">
                                 {getStateIcon(project.state)}
                                 <div className="flex items-center space-x-1">
                                     <span>
@@ -823,7 +824,7 @@ const ProjectDetails: React.FC = () => {
 
                         {/* Tags Display */}
                         {project.tags && project.tags.length > 0 && (
-                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
+                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-2">
                                 <TagIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
                                 <div className="flex items-center space-x-1">
                                     {project.tags.map((tag, index) => (
@@ -870,7 +871,7 @@ const ProjectDetails: React.FC = () => {
 
                         {/* Area Display */}
                         {(project.area || (project as any).Area) && (
-                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
+                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-2">
                                 <Squares2X2Icon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
                                 <div className="flex items-center space-x-1">
                                     <span>
@@ -922,31 +923,39 @@ const ProjectDetails: React.FC = () => {
                                 </div>
                             </div>
                         )}
+
+                        {/* Shared Badge */}
+                        {project.is_shared && (
+                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-2">
+                                <ShareIcon className="h-3 w-3 text-green-500 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                                <span className="text-xs text-white/90 font-medium">
+                                    {t('projects.shared', 'Shared')}
+                                </span>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Edit/Delete Buttons - Bottom Right (only for owners) */}
-                    {isOwner && (
-                        <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <button
-                                ref={editButtonRef}
-                                type="button"
-                                className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                            >
-                                <PencilSquareIcon className="h-5 w-5" />
-                            </button>
-                            <button
-                                type="button"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setIsConfirmDialogOpen(true);
-                                }}
-                                className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                            >
-                                <TrashIcon className="h-5 w-5" />
-                            </button>
-                        </div>
-                    )}
+                    {/* Edit/Delete Buttons - Bottom Right */}
+                    <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button
+                            ref={editButtonRef}
+                            type="button"
+                            className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                        >
+                            <PencilSquareIcon className="h-5 w-5" />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsConfirmDialogOpen(true);
+                            }}
+                            className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
+                        >
+                            <TrashIcon className="h-5 w-5" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Header with Tab Links and Controls */}

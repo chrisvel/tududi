@@ -437,6 +437,18 @@ router.get(
                   })
                 : [];
 
+            // Get share count for this project
+            let shareCount = 0;
+            if (project.uid) {
+                const shareCountResult = await Permission.count({
+                    where: {
+                        resource_type: 'project',
+                        resource_uid: project.uid,
+                    },
+                });
+                shareCount = shareCountResult || 0;
+            }
+
             const result = {
                 ...projectJson,
                 tags: projectJson.Tags || [],
@@ -444,6 +456,8 @@ router.get(
                 Notes: normalizedNotes,
                 due_date_at: formatDate(project.due_date_at),
                 user_id: project.user_id,
+                share_count: shareCount,
+                is_shared: shareCount > 0,
             };
 
             res.json(result);
