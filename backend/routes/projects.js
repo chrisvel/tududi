@@ -11,6 +11,7 @@ const {
     Area,
     Note,
     User,
+    Permission,
     sequelize,
 } = require('../models');
 const permissionsService = require('../services/permissionsService');
@@ -233,7 +234,40 @@ router.get('/projects', async (req, res) => {
 
         const { grouped } = req.query;
 
-        // Calculate task status counts for each project
+        // Calculate task status counts and share counts for each project
+        const projectIds = projects.map((p) => p.id);
+        const projectUids = projects.map((p) => p.uid).filter(Boolean);
+
+        // Get share counts for all projects in one query using permissions table
+        const shareCountMap = {};
+        if (projectUids.length > 0) {
+            const shareCounts = await Permission.findAll({
+                attributes: [
+                    'resource_uid',
+                    [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
+                ],
+                where: {
+                    resource_type: 'project',
+                    resource_uid: { [Op.in]: projectUids },
+                },
+                group: ['resource_uid'],
+                raw: true,
+            });
+
+            // Create a map of project_uid to share_count
+            const uidToCountMap = {};
+            shareCounts.forEach((item) => {
+                uidToCountMap[item.resource_uid] = parseInt(item.count, 10);
+            });
+
+            // Map uids back to project ids
+            projects.forEach((project) => {
+                if (project.uid && uidToCountMap[project.uid]) {
+                    shareCountMap[project.id] = uidToCountMap[project.uid];
+                }
+            });
+        }
+
         const taskStatusCounts = {};
         const enhancedProjects = projects.map((project) => {
             const tasks = project.Tasks || [];
@@ -247,6 +281,8 @@ router.get('/projects', async (req, res) => {
             taskStatusCounts[project.id] = taskStatus;
 
             const projectJson = project.toJSON();
+            const shareCount = shareCountMap[project.id] || 0;
+
             return {
                 ...projectJson,
                 tags: projectJson.Tags || [], // Normalize Tags to tags
@@ -257,6 +293,8 @@ router.get('/projects', async (req, res) => {
                         ? Math.round((taskStatus.done / taskStatus.total) * 100)
                         : 0,
                 user_uid: projectJson.User?.uid,
+                share_count: shareCount,
+                is_shared: shareCount > 0,
             };
         });
 

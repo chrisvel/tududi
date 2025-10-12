@@ -1,5 +1,5 @@
 const express = require('express');
-const { User } = require('../models');
+const { User, Role } = require('../models');
 const { logError } = require('../services/logService');
 const taskSummaryService = require('../services/taskSummaryService');
 const router = express.Router();
@@ -14,6 +14,35 @@ const VALID_FREQUENCIES = [
     '8h',
     '12h',
 ];
+
+// GET /api/users - list all users for sharing purposes
+router.get('/users', async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: ['id', 'email', 'name', 'surname'],
+            order: [['email', 'ASC']],
+        });
+
+        // Fetch roles in bulk
+        const roles = await Role.findAll({
+            attributes: ['user_id', 'is_admin'],
+        });
+        const userIdToRole = new Map(roles.map((r) => [r.user_id, r.is_admin]));
+
+        const result = users.map((u) => ({
+            id: u.id,
+            email: u.email,
+            name: u.name,
+            surname: u.surname,
+            role: userIdToRole.get(u.id) ? 'admin' : 'user',
+        }));
+
+        res.json(result);
+    } catch (err) {
+        logError('Error listing users:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 // GET /api/profile
 router.get('/profile', async (req, res) => {

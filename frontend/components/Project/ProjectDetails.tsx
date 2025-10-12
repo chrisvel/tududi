@@ -46,6 +46,7 @@ import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
 import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import { usePersistedModal } from '../../hooks/usePersistedModal';
+import { getCurrentUser } from '../../utils/userUtils';
 
 const ProjectDetails: React.FC = () => {
     const { uidSlug } = useParams<{ uidSlug: string }>();
@@ -82,7 +83,7 @@ const ProjectDetails: React.FC = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
     // Check if current user is the owner
-    const currentUser = (window as any).__CURRENT_USER__;
+    const currentUser = getCurrentUser();
     const isOwner = useMemo(() => {
         return (
             currentUser &&

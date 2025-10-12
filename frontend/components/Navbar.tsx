@@ -16,6 +16,7 @@ interface NavbarProps {
     currentUser: {
         email: string;
         avatarUrl?: string;
+        is_admin?: boolean;
     };
     setCurrentUser: React.Dispatch<React.SetStateAction<any>>;
     isSidebarOpen: boolean;

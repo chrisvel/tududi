@@ -20,6 +20,7 @@ import TasksToday from './components/Task/TasksToday';
 import TaskDetails from './components/Task/TaskDetails';
 import LoadingScreen from './components/Shared/LoadingScreen';
 import InboxItems from './components/Inbox/InboxItems';
+import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 
@@ -52,10 +53,10 @@ const App: React.FC = () => {
             const data = await response.json();
             if (data.user) {
                 setCurrentUser(data.user);
-                (window as any).__CURRENT_USER__ = data.user;
+                setUserInStorage(data.user);
             } else {
                 setCurrentUser(null);
-                (window as any).__CURRENT_USER__ = null;
+                setUserInStorage(null);
             }
         } catch {
             setCurrentUser(null);
@@ -74,7 +75,7 @@ const App: React.FC = () => {
         const handleUserLoggedIn = (event: CustomEvent) => {
             const user = event.detail;
             setCurrentUser(user);
-            (window as any).__CURRENT_USER__ = user;
+            setUserInStorage(user);
         };
 
         window.addEventListener(

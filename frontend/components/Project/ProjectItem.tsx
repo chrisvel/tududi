@@ -14,6 +14,7 @@ import {
 import { Project, ProjectState } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../Shared/ToastContext';
+import { getCurrentUser } from '../../utils/userUtils';
 
 interface ProjectItemProps {
     project: Project;
@@ -89,7 +90,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
 }) => {
     const { t } = useTranslation();
     const { showErrorToast } = useToast();
-    const currentUser = (window as any).__CURRENT_USER__;
+    const currentUser = getCurrentUser();
     const isOwner =
         currentUser && (project as any).user_uid === currentUser.uid;
     return (
@@ -134,17 +135,29 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             </span>
                         )}
 
-                        {/* State icon in top right corner of image area */}
-                        <div
-                            className="absolute top-2 right-2 z-10"
-                            title={getStateLabel(project.state, t)}
-                        >
+                        {/* Icons in top right corner of image area */}
+                        <div className="absolute top-2 right-2 z-10 flex items-center space-x-2">
+                            {/* Shared project icon */}
+                            {project.is_shared && (
+                                <ShareIcon
+                                    className="h-4 w-4 text-green-500 dark:text-green-400 opacity-70 drop-shadow-sm"
+                                    title={t(
+                                        'projectItem.sharedProject',
+                                        'Shared with team'
+                                    )}
+                                />
+                            )}
+
+                            {/* State icon */}
                             {(() => {
                                 const { icon: StateIcon } = getStateIcon(
                                     project.state
                                 );
                                 return (
-                                    <StateIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 opacity-70 drop-shadow-sm" />
+                                    <StateIcon
+                                        className="h-4 w-4 text-gray-500 dark:text-gray-400 opacity-70 drop-shadow-sm"
+                                        title={getStateLabel(project.state, t)}
+                                    />
                                 );
                             })()}
                         </div>
@@ -297,7 +310,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                 )}
                         </>
                     ) : (
-                        <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();
@@ -325,7 +338,11 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                         e.stopPropagation();
                                         onOpenShare(project);
                                     }}
-                                    className="text-gray-500 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200"
+                                    className={`transition-colors duration-200 ${
+                                        project.is_shared
+                                            ? 'text-green-500 dark:text-green-400 hover:text-green-600 dark:hover:text-green-500'
+                                            : 'text-gray-500 hover:text-green-600 dark:hover:text-green-400'
+                                    }`}
                                     data-testid={`project-share-list-${project.id}`}
                                 >
                                     <ShareIcon className="h-5 w-5" />
