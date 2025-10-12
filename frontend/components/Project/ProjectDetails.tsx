@@ -796,7 +796,7 @@ const ProjectDetails: React.FC = () => {
                     </div>
 
                     {/* State, Tags and Area Display - Bottom Left */}
-                    <div className="absolute bottom-2 left-2 flex items-center space-x-2">
+                    <div className="absolute bottom-2 left-2 right-14 flex items-center flex-wrap gap-2">
                         {/* Project State Display */}
                         {project.state && (
                             <BannerBadge>
