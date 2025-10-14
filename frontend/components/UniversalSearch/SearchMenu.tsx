@@ -10,11 +10,26 @@ interface SearchMenuProps {
 }
 
 const filterTypes = [
-    { name: 'Task', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' },
-    { name: 'Project', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' },
-    { name: 'Area', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' },
-    { name: 'Note', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' },
-    { name: 'Tag', color: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200' },
+    {
+        name: 'Task',
+        color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    },
+    {
+        name: 'Project',
+        color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+    },
+    {
+        name: 'Area',
+        color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    },
+    {
+        name: 'Note',
+        color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+    },
+    {
+        name: 'Tag',
+        color: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
+    },
 ];
 
 const priorityOptions = [
@@ -35,7 +50,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
     selectedFilters,
     onFilterToggle,
 }) => {
-    const [selectedPriority, setSelectedPriority] = useState<string | null>(null);
+    const [selectedPriority, setSelectedPriority] = useState<string | null>(
+        null
+    );
     const [selectedDue, setSelectedDue] = useState<string | null>(null);
 
     const handlePriorityToggle = (priority: string) => {
@@ -52,7 +69,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         // Build entity types part
         if (selectedFilters.length > 0) {
             const entities = selectedFilters.map((f) => (
-                <span key={f} style={{ fontWeight: 800, fontStyle: 'normal' }}>{f.toLowerCase()}s</span>
+                <span key={f} style={{ fontWeight: 800, fontStyle: 'normal' }}>
+                    {f.toLowerCase()}s
+                </span>
             ));
             const entitiesWithSeparators: React.ReactNode[] = [];
             entities.forEach((entity, index) => {
@@ -64,41 +83,71 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
             parts.push(...entitiesWithSeparators);
         } else {
             // If no specific entities selected, show "all items"
-            parts.push(<span key="all" style={{ fontWeight: 800, fontStyle: 'normal' }}>all items</span>);
+            parts.push(
+                <span
+                    key="all"
+                    style={{ fontWeight: 800, fontStyle: 'normal' }}
+                >
+                    all items
+                </span>
+            );
         }
 
         // Add search query
         if (searchQuery.trim()) {
             parts.push(', containing the text ');
-            parts.push(<span key="query" style={{ fontWeight: 800, fontStyle: 'normal' }}>"{searchQuery.trim()}"</span>);
+            parts.push(
+                <span
+                    key="query"
+                    style={{ fontWeight: 800, fontStyle: 'normal' }}
+                >
+                    "{searchQuery.trim()}"
+                </span>
+            );
         }
 
         // Add priority filter
         if (selectedPriority) {
             parts.push(', with ');
-            parts.push(<span key="priority" style={{ fontWeight: 800, fontStyle: 'normal' }}>{selectedPriority}</span>);
+            parts.push(
+                <span
+                    key="priority"
+                    style={{ fontWeight: 800, fontStyle: 'normal' }}
+                >
+                    {selectedPriority}
+                </span>
+            );
             parts.push(' priority');
         }
 
         // Add due date filter
         if (selectedDue) {
-            const dueLabel = dueOptions.find((opt) => opt.value === selectedDue)?.label || selectedDue;
+            const dueLabel =
+                dueOptions.find((opt) => opt.value === selectedDue)?.label ||
+                selectedDue;
             parts.push(', due ');
-            parts.push(<span key="due" style={{ fontWeight: 800, fontStyle: 'normal' }}>{dueLabel}</span>);
+            parts.push(
+                <span
+                    key="due"
+                    style={{ fontWeight: 800, fontStyle: 'normal' }}
+                >
+                    {dueLabel}
+                </span>
+            );
         }
 
         if (parts.length === 0) return null;
 
         // Construct the sentence
-        return (
-            <>
-                You are searching for {parts}
-            </>
-        );
+        return <>You are searching for {parts}</>;
     };
 
     const searchDescription = buildSearchDescription();
-    const hasActiveFilters = selectedFilters.length > 0 || searchQuery.trim() || selectedPriority || selectedDue;
+    const hasActiveFilters =
+        selectedFilters.length > 0 ||
+        searchQuery.trim() ||
+        selectedPriority ||
+        selectedDue;
 
     return (
         <div className="fixed left-1/2 transform -translate-x-1/2 top-20 w-[90vw] max-w-4xl h-[80vh] max-h-[700px] bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden flex flex-col">
@@ -109,7 +158,13 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                     <>
                         <div className="mb-3 flex items-center gap-3 px-3 py-3">
                             <InformationCircleIcon className="h-6 w-6 text-black/30 dark:text-white/30 flex-shrink-0" />
-                            <p className="text-xl text-black/40 dark:text-white/40 flex-1" style={{ fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic' }}>
+                            <p
+                                className="text-xl text-black/40 dark:text-white/40 flex-1"
+                                style={{
+                                    fontFamily: "'Lora', Georgia, serif",
+                                    fontStyle: 'italic',
+                                }}
+                            >
                                 {searchDescription}
                             </p>
                         </div>
@@ -120,7 +175,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 {/* Entity Type Badges */}
                 <div className="flex flex-wrap gap-2">
                     {filterTypes.map((filter) => {
-                        const isSelected = selectedFilters.includes(filter.name);
+                        const isSelected = selectedFilters.includes(
+                            filter.name
+                        );
                         return (
                             <FilterBadge
                                 key={filter.name}
@@ -152,8 +209,12 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                 <FilterBadge
                                     key={option.value}
                                     name={option.label}
-                                    isSelected={selectedPriority === option.value}
-                                    onToggle={() => handlePriorityToggle(option.value)}
+                                    isSelected={
+                                        selectedPriority === option.value
+                                    }
+                                    onToggle={() =>
+                                        handlePriorityToggle(option.value)
+                                    }
                                 />
                             ))}
                         </div>
@@ -170,7 +231,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                     key={option.value}
                                     name={option.label}
                                     isSelected={selectedDue === option.value}
-                                    onToggle={() => handleDueToggle(option.value)}
+                                    onToggle={() =>
+                                        handleDueToggle(option.value)
+                                    }
                                 />
                             ))}
                         </div>

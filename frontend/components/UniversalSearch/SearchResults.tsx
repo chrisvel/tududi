@@ -39,7 +39,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
     useEffect(() => {
         const fetchResults = async () => {
-            if (!searchQuery.trim() && selectedFilters.length === 0 && !selectedPriority && !selectedDue) {
+            if (
+                !searchQuery.trim() &&
+                selectedFilters.length === 0 &&
+                !selectedPriority &&
+                !selectedDue
+            ) {
                 setResults([]);
                 return;
             }
@@ -72,7 +77,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             case 'Project':
                 return <FolderIcon className="h-5 w-5 text-purple-500" />;
             case 'Area':
-                return <RectangleStackIcon className="h-5 w-5 text-green-500" />;
+                return (
+                    <RectangleStackIcon className="h-5 w-5 text-green-500" />
+                );
             case 'Note':
                 return <DocumentTextIcon className="h-5 w-5 text-yellow-500" />;
             case 'Tag':
@@ -111,7 +118,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         );
     }
 
-    if (!searchQuery.trim() && selectedFilters.length === 0 && !selectedPriority && !selectedDue) {
+    if (
+        !searchQuery.trim() &&
+        selectedFilters.length === 0 &&
+        !selectedPriority &&
+        !selectedDue
+    ) {
         return (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 <p className="text-sm">
@@ -144,7 +156,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     return (
         <div className="flex-1 overflow-y-auto">
             {Object.entries(groupedResults).map(([type, typeResults]) => (
-                <div key={type} className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                <div
+                    key={type}
+                    className="border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+                >
                     <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 text-xs font-semibold text-gray-600 dark:text-gray-400">
                         {type}s
                     </div>

@@ -14,7 +14,8 @@ const FilterBadge: React.FC<FilterBadgeProps> = ({
     onToggle,
 }) => {
     // Default colorless badge style
-    const defaultColor = 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
+    const defaultColor =
+        'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
     const badgeColor = color || defaultColor;
 
     // Map light background colors to darker border colors
