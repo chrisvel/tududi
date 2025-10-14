@@ -227,7 +227,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         // Add tags filter
         if (selectedTags.length > 0) {
             parts.push(', tagged with ');
-            const tagElements = selectedTags.map((tag, index) => (
+            const tagElements = selectedTags.map((tag) => (
                 <span
                     key={`tag-${tag}`}
                     style={{ fontWeight: 800, fontStyle: 'normal' }}
