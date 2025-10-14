@@ -14,6 +14,8 @@ interface SearchResultsProps {
     selectedFilters: string[];
     selectedPriority: string | null;
     selectedDue: string | null;
+    selectedTags: string[];
+    onClose: () => void;
 }
 
 interface SearchResult {
@@ -32,6 +34,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     selectedFilters,
     selectedPriority,
     selectedDue,
+    selectedTags,
+    onClose,
 }) => {
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +47,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 !searchQuery.trim() &&
                 selectedFilters.length === 0 &&
                 !selectedPriority &&
-                !selectedDue
+                !selectedDue &&
+                selectedTags.length === 0
             ) {
                 setResults([]);
                 return;
@@ -56,6 +61,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                     filters: selectedFilters,
                     priority: selectedPriority || undefined,
                     due: selectedDue || undefined,
+                    tags: selectedTags.length > 0 ? selectedTags : undefined,
                 });
                 setResults(data);
             } catch (error) {
@@ -68,7 +74,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
         const debounceTimer = setTimeout(fetchResults, 300);
         return () => clearTimeout(debounceTimer);
-    }, [searchQuery, selectedFilters, selectedPriority, selectedDue]);
+    }, [searchQuery, selectedFilters, selectedPriority, selectedDue, selectedTags]);
 
     const getIcon = (type: string) => {
         switch (type) {
@@ -91,9 +97,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
     const handleResultClick = (result: SearchResult) => {
         const identifier = result.uid || result.id;
+
+        // Close the dropdown before navigating
+        onClose();
+
         switch (result.type) {
             case 'Task':
-                navigate(`/tasks?task=${identifier}`);
+                navigate(`/task/${identifier}`);
                 break;
             case 'Project':
                 navigate(`/projects/${identifier}`);
@@ -122,7 +132,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         !searchQuery.trim() &&
         selectedFilters.length === 0 &&
         !selectedPriority &&
-        !selectedDue
+        !selectedDue &&
+        selectedTags.length === 0
     ) {
         return (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">

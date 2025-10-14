@@ -450,8 +450,7 @@ const ViewDetail: React.FC = () => {
                 {/* Tasks Section */}
                 {tasks.length > 0 && (
                     <div className="mb-8">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                            <CheckIcon className="h-5 w-5 mr-2" />
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                             {t('tasks.title')} ({tasks.length})
                         </h3>
                         <TaskList
@@ -468,8 +467,7 @@ const ViewDetail: React.FC = () => {
                 {/* Notes Section */}
                 {notes.length > 0 && (
                     <div className="mb-8">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                            <BookOpenIcon className="h-5 w-5 mr-2" />
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                             {t('notes.title')} ({notes.length})
                         </h3>
                         <ul className="space-y-1">
@@ -567,8 +565,7 @@ const ViewDetail: React.FC = () => {
                 {/* Projects Section */}
                 {projects.length > 0 && (
                     <div className="mb-8">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                            <FolderIcon className="h-5 w-5 mr-2" />
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                             {t('projects.title')} ({projects.length})
                         </h3>
                         <div className="flex flex-col space-y-1">

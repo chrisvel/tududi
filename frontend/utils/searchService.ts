@@ -3,6 +3,7 @@ interface SearchParams {
     filters?: string[];
     priority?: string;
     due?: string;
+    tags?: string[];
 }
 
 interface SearchResult {
@@ -36,6 +37,10 @@ export const searchUniversal = async (
 
         if (params.due) {
             queryParams.append('due', params.due);
+        }
+
+        if (params.tags && params.tags.length > 0) {
+            queryParams.append('tags', params.tags.join(','));
         }
 
         const response = await fetch(`/api/search?${queryParams.toString()}`, {
