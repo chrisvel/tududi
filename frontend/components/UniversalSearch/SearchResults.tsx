@@ -74,7 +74,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
         const debounceTimer = setTimeout(fetchResults, 300);
         return () => clearTimeout(debounceTimer);
-    }, [searchQuery, selectedFilters, selectedPriority, selectedDue, selectedTags]);
+    }, [
+        searchQuery,
+        selectedFilters,
+        selectedPriority,
+        selectedDue,
+        selectedTags,
+    ]);
 
     const getIcon = (type: string) => {
         switch (type) {
