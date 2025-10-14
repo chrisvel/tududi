@@ -123,6 +123,24 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         fetchTags();
     }, []);
 
+    // Fetch available tags
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const response = await fetch('/api/tags', {
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    const tags = await response.json();
+                    setAvailableTags(tags);
+                }
+            } catch (error) {
+                console.error('Error fetching tags:', error);
+            }
+        };
+        fetchTags();
+    }, []);
+
     const handlePriorityToggle = (priority: string) => {
         setSelectedPriority(selectedPriority === priority ? null : priority);
     };
@@ -716,6 +734,30 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                     ))}
                                 </div>
                             </div>
+
+                            {/* Tags Filters */}
+                            {availableTags.length > 0 && (
+                                <div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                                        Tags
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {availableTags.map((tag) => (
+                                            <FilterBadge
+                                                key={tag.id}
+                                                name={tag.name}
+                                                color="bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200"
+                                                isSelected={selectedTags.includes(
+                                                    tag.name
+                                                )}
+                                                onToggle={() =>
+                                                    handleTagToggle(tag.name)
+                                                }
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Save as Smart View Section */}
