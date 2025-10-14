@@ -174,7 +174,9 @@ const Views: React.FC = () => {
                                                 )}
                                                 {view.search_query && (
                                                     <p>
-                                                        • &quot;{view.search_query}&quot;
+                                                        • &quot;
+                                                        {view.search_query}
+                                                        &quot;
                                                     </p>
                                                 )}
                                                 {view.priority && (

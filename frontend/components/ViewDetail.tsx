@@ -386,60 +386,61 @@ const ViewDetail: React.FC = () => {
                     {showCriteria && (
                         <div className="px-6 pb-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {view.filters.length > 0 && (
-                            <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
-                                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
-                                    Entity Types
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                    {view.filters.map((filter) => (
-                                        <span
-                                            key={filter}
-                                            className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded text-xs font-medium"
-                                        >
-                                            {filter}
+                                {view.filters.length > 0 && (
+                                    <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
+                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+                                            Entity Types
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {view.filters.map((filter) => (
+                                                <span
+                                                    key={filter}
+                                                    className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded text-xs font-medium"
+                                                >
+                                                    {filter}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                {view.search_query && (
+                                    <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
+                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+                                            Search Text
+                                        </p>
+                                        <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                            &quot;{view.search_query}&quot;
+                                        </p>
+                                    </div>
+                                )}
+                                {view.priority && (
+                                    <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
+                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+                                            Priority
+                                        </p>
+                                        <span className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize">
+                                            {view.priority}
                                         </span>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                        {view.search_query && (
-                            <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
-                                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
-                                    Search Text
-                                </p>
-                                <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
-                                    &quot;{view.search_query}&quot;
-                                </p>
-                            </div>
-                        )}
-                        {view.priority && (
-                            <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
-                                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
-                                    Priority
-                                </p>
-                                <span className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize">
-                                    {view.priority}
-                                </span>
-                            </div>
-                        )}
-                        {view.due && (
-                            <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
-                                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
-                                    Due Date
-                                </p>
-                                <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs font-medium capitalize">
-                                    {view.due.replace(/_/g, ' ')}
-                                </span>
-                            </div>
-                        )}
+                                    </div>
+                                )}
+                                {view.due && (
+                                    <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
+                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+                                            Due Date
+                                        </p>
+                                        <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs font-medium capitalize">
+                                            {view.due.replace(/_/g, ' ')}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                             {!view.filters.length &&
                                 !view.search_query &&
                                 !view.priority &&
                                 !view.due && (
                                     <p className="text-sm text-gray-600 dark:text-gray-400 italic mt-4">
-                                        No specific criteria set - showing all items
+                                        No specific criteria set - showing all
+                                        items
                                     </p>
                                 )}
                         </div>

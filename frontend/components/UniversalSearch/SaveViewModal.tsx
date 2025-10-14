@@ -119,7 +119,9 @@ const SaveViewModal: React.FC<SaveViewModalProps> = ({
                             {filters.length > 0 && (
                                 <li>• Filters: {filters.join(', ')}</li>
                             )}
-                            {searchQuery && <li>• Search: &quot;{searchQuery}&quot;</li>}
+                            {searchQuery && (
+                                <li>• Search: &quot;{searchQuery}&quot;</li>
+                            )}
                             {priority && <li>• Priority: {priority}</li>}
                             {due && <li>• Due: {due}</li>}
                         </ul>
