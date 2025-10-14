@@ -49,6 +49,7 @@ const Layout: React.FC<LayoutProps> = ({
     const [isSidebarOpen, setIsSidebarOpen] = useState(
         window.innerWidth >= 1024
     );
+    const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -86,6 +87,23 @@ const Layout: React.FC<LayoutProps> = ({
         };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    useEffect(() => {
+        // Listen for mobile search toggle events from Navbar
+        const handleMobileSearchToggle = (event: CustomEvent) => {
+            setIsMobileSearchOpen(event.detail.isOpen);
+        };
+
+        window.addEventListener(
+            'mobileSearchToggle',
+            handleMobileSearchToggle as EventListener
+        );
+        return () =>
+            window.removeEventListener(
+                'mobileSearchToggle',
+                handleMobileSearchToggle as EventListener
+            );
     }, []);
 
     useEffect(() => {
@@ -439,7 +457,11 @@ const Layout: React.FC<LayoutProps> = ({
                     className={`transition-all duration-300 ease-in-out ${mainContentMarginLeft}`}
                 >
                     <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 min-h-screen overflow-y-auto">
-                        <div className="flex-grow py-6 px-2 md:px-6 pt-24">
+                        <div
+                            className={`flex-grow py-6 px-2 md:px-6 transition-all duration-300 ${
+                                isMobileSearchOpen ? 'pt-32' : 'pt-24'
+                            } md:pt-24`}
+                        >
                             <div className="w-full">{children}</div>
                         </div>
                     </div>

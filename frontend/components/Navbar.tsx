@@ -6,7 +6,7 @@ import {
     BoltIcon,
     InboxIcon,
 } from '@heroicons/react/24/solid';
-import { EnvelopeIcon } from '@heroicons/react/24/outline';
+import { EnvelopeIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import PomodoroTimer from './Shared/PomodoroTimer';
 import UniversalSearch from './UniversalSearch/UniversalSearch';
@@ -35,9 +35,19 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const [pomodoroEnabled, setPomodoroEnabled] = useState(true); // Default to true
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
+
+    // Dispatch event when mobile search state changes
+    useEffect(() => {
+        window.dispatchEvent(
+            new CustomEvent('mobileSearchToggle', {
+                detail: { isOpen: isMobileSearchOpen },
+            })
+        );
+    }, [isMobileSearchOpen]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -118,11 +128,12 @@ const Navbar: React.FC<NavbarProps> = ({
     };
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md h-16">
-            <div className="h-full flex items-center">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md">
+            {/* Main navbar row */}
+            <div className="h-16 flex items-center justify-between">
                 {/* Sidebar-width area with logo and hamburger */}
                 <div
-                    className={`${isSidebarOpen ? 'w-full sm:w-72' : 'w-16'} flex items-center ${isSidebarOpen ? 'sm:justify-center' : 'sm:justify-start'} transition-all duration-300 ease-in-out px-4 relative`}
+                    className={`${isSidebarOpen ? 'sm:w-72' : 'w-auto sm:w-16'} flex items-center ${isSidebarOpen ? 'sm:justify-center' : 'sm:justify-start'} transition-all duration-300 ease-in-out px-4 relative flex-shrink-0`}
                 >
                     <button
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -147,13 +158,23 @@ const Navbar: React.FC<NavbarProps> = ({
                     </Link>
                 </div>
 
-                {/* Center section - Universal Search */}
+                {/* Center section - Universal Search (hidden on mobile) */}
                 <div className="hidden md:flex flex-1 justify-center px-4">
                     <UniversalSearch isDarkMode={isDarkMode} />
                 </div>
 
                 {/* Right section - Actions and user menu */}
-                <div className="flex items-center justify-end space-x-4 px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-end space-x-2 sm:space-x-4 px-4 sm:px-6 lg:px-8 flex-shrink-0">
+                    {/* Mobile search toggle button */}
+                    <button
+                        onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+                        className="md:hidden flex items-center bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-full focus:outline-none transition-all duration-200 p-2"
+                        aria-label="Toggle Search"
+                        title="Search"
+                    >
+                        <MagnifyingGlassIcon className="h-5 w-5" />
+                    </button>
+
                     <button
                         onClick={() => openTaskModal('simplified')}
                         className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
@@ -234,6 +255,17 @@ const Navbar: React.FC<NavbarProps> = ({
                         )}
                     </div>
                 </div>
+            </div>
+
+            {/* Mobile search bar - toggleable on mobile with fade animation */}
+            <div
+                className={`md:hidden border-t border-gray-200 dark:border-gray-700 px-4 overflow-hidden transition-all duration-300 ease-in-out ${
+                    isMobileSearchOpen
+                        ? 'max-h-20 py-2 opacity-100'
+                        : 'max-h-0 py-0 opacity-0'
+                }`}
+            >
+                <UniversalSearch isDarkMode={isDarkMode} />
             </div>
         </nav>
     );
