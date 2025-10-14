@@ -13,6 +13,7 @@ interface SearchResultsProps {
     searchQuery: string;
     selectedFilters: string[];
     selectedPriority: string | null;
+    selectedDue: string | null;
 }
 
 interface SearchResult {
@@ -30,6 +31,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     searchQuery,
     selectedFilters,
     selectedPriority,
+    selectedDue,
 }) => {
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +39,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
     useEffect(() => {
         const fetchResults = async () => {
-            if (!searchQuery.trim() && selectedFilters.length === 0) {
+            if (!searchQuery.trim() && selectedFilters.length === 0 && !selectedPriority && !selectedDue) {
                 setResults([]);
                 return;
             }
@@ -48,6 +50,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                     query: searchQuery,
                     filters: selectedFilters,
                     priority: selectedPriority || undefined,
+                    due: selectedDue || undefined,
                 });
                 setResults(data);
             } catch (error) {
@@ -60,7 +63,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
         const debounceTimer = setTimeout(fetchResults, 300);
         return () => clearTimeout(debounceTimer);
-    }, [searchQuery, selectedFilters, selectedPriority]);
+    }, [searchQuery, selectedFilters, selectedPriority, selectedDue]);
 
     const getIcon = (type: string) => {
         switch (type) {
@@ -108,7 +111,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         );
     }
 
-    if (!searchQuery.trim() && selectedFilters.length === 0) {
+    if (!searchQuery.trim() && selectedFilters.length === 0 && !selectedPriority && !selectedDue) {
         return (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 <p className="text-sm">
@@ -150,9 +153,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                             <button
                                 key={`${result.type}-${result.id}`}
                                 onClick={() => handleResultClick(result)}
-                                className="w-full px-4 py-3 flex items-start hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                                className="w-full px-4 py-3 flex items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                             >
-                                <div className="flex-shrink-0 mt-0.5">
+                                <div className="flex-shrink-0">
                                     {getIcon(result.type)}
                                 </div>
                                 <div className="ml-3 flex-1 min-w-0">

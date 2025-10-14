@@ -1,6 +1,7 @@
 const express = require('express');
 const { Task, Tag, Project, Area, Note, sequelize } = require('../models');
 const { Op } = require('sequelize');
+const moment = require('moment-timezone');
 const router = express.Router();
 
 /**
@@ -10,6 +11,7 @@ const router = express.Router();
  *   - q: search query string
  *   - filters: comma-separated list of entity types (Task,Project,Area,Note,Tag)
  *   - priority: filter by priority (low,medium,high)
+ *   - due: filter by due date (today,tomorrow,next_week,next_month)
  */
 router.get('/', async (req, res) => {
     try {
@@ -18,13 +20,50 @@ router.get('/', async (req, res) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        const { q: query, filters, priority } = req.query;
+        const { q: query, filters, priority, due } = req.query;
         const searchQuery = query ? query.trim() : '';
         const filterTypes = filters
             ? filters.split(',').map((f) => f.trim())
             : ['Task', 'Project', 'Area', 'Note', 'Tag'];
 
         const results = [];
+
+        // Calculate due date range based on filter
+        let dueDateCondition = null;
+        if (due) {
+            const now = moment().startOf('day');
+            let startDate, endDate;
+
+            switch (due) {
+                case 'today':
+                    startDate = now.clone();
+                    endDate = now.clone().endOf('day');
+                    break;
+                case 'tomorrow':
+                    startDate = now.clone().add(1, 'day');
+                    endDate = now.clone().add(1, 'day').endOf('day');
+                    break;
+                case 'next_week':
+                    startDate = now.clone();
+                    endDate = now.clone().add(7, 'days').endOf('day');
+                    break;
+                case 'next_month':
+                    startDate = now.clone();
+                    endDate = now.clone().add(1, 'month').endOf('day');
+                    break;
+            }
+
+            if (startDate && endDate) {
+                dueDateCondition = {
+                    due_date: {
+                        [Op.between]: [
+                            startDate.toISOString(),
+                            endDate.toISOString(),
+                        ],
+                    },
+                };
+            }
+        }
 
         // Build search conditions
         const searchCondition = searchQuery
@@ -46,6 +85,11 @@ router.get('/', async (req, res) => {
             // Add priority filter if specified
             if (priority) {
                 taskConditions.priority = priority;
+            }
+
+            // Add due date filter if specified
+            if (dueDateCondition) {
+                Object.assign(taskConditions, dueDateCondition);
             }
 
             const tasks = await Task.findAll({
@@ -88,6 +132,14 @@ router.get('/', async (req, res) => {
 
             if (priority) {
                 projectConditions.priority = priority;
+            }
+
+            // Add due date filter if specified (projects use due_date_at field)
+            if (dueDateCondition) {
+                const projectDueCondition = {
+                    due_date_at: dueDateCondition.due_date,
+                };
+                Object.assign(projectConditions, projectDueCondition);
             }
 
             const projects = await Project.findAll({

@@ -2,6 +2,7 @@ interface SearchParams {
     query: string;
     filters?: string[];
     priority?: string;
+    due?: string;
 }
 
 interface SearchResult {
@@ -31,6 +32,10 @@ export const searchUniversal = async (
 
         if (params.priority) {
             queryParams.append('priority', params.priority);
+        }
+
+        if (params.due) {
+            queryParams.append('due', params.due);
         }
 
         const response = await fetch(`/api/search?${queryParams.toString()}`, {
