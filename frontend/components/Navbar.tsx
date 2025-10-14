@@ -9,6 +9,7 @@ import {
 import { EnvelopeIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import PomodoroTimer from './Shared/PomodoroTimer';
+import UniversalSearch from './UniversalSearch/UniversalSearch';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -25,6 +26,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({
+    isDarkMode,
     currentUser,
     setCurrentUser,
     isSidebarOpen,
@@ -145,8 +147,13 @@ const Navbar: React.FC<NavbarProps> = ({
                     </Link>
                 </div>
 
+                {/* Center section - Universal Search */}
+                <div className="hidden md:flex flex-1 justify-center px-4">
+                    <UniversalSearch isDarkMode={isDarkMode} />
+                </div>
+
                 {/* Right section - Actions and user menu */}
-                <div className="flex items-center justify-end space-x-4 flex-1 px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-end space-x-4 px-4 sm:px-6 lg:px-8">
                     <button
                         onClick={() => openTaskModal('simplified')}
                         className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
