@@ -52,7 +52,6 @@ const ViewDetail: React.FC = () => {
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
     const [, setProjectToDelete] = useState<Project | null>(null);
-    const [, setProjectConfirmDialogOpen] = useState<boolean>(false);
 
     useEffect(() => {
         fetchViewAndResults();
@@ -410,7 +409,7 @@ const ViewDetail: React.FC = () => {
                                     Search Text
                                 </p>
                                 <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
-                                    "{view.search_query}"
+                                    &quot;{view.search_query}&quot;
                                 </p>
                             </div>
                         )}
@@ -585,9 +584,7 @@ const ViewDetail: React.FC = () => {
                                         setActiveDropdown={setActiveDropdown}
                                         handleEditProject={handleEditProject}
                                         setProjectToDelete={setProjectToDelete}
-                                        setIsConfirmDialogOpen={
-                                            setIsConfirmDialogOpen
-                                        }
+                                        setIsConfirmDialogOpen={() => {}}
                                         onOpenShare={() => {
                                             /* noop in view detail */
                                         }}

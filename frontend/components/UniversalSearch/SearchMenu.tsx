@@ -160,7 +160,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                     key="query"
                     style={{ fontWeight: 800, fontStyle: 'normal' }}
                 >
-                    "{searchQuery.trim()}
+                    &quot;{searchQuery.trim()}&quot;
                 </span>
             );
         }
