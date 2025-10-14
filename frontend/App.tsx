@@ -233,7 +233,10 @@ const App: React.FC = () => {
                                 element={<TagDetails />}
                             />
                             <Route path="/views" element={<Views />} />
-                            <Route path="/views/:uid" element={<ViewDetail />} />
+                            <Route
+                                path="/views/:uid"
+                                element={<ViewDetail />}
+                            />
                             <Route path="/notes" element={<Notes />} />
                             <Route
                                 path="/note/:uidSlug"

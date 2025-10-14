@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { InformationCircleIcon, BookmarkIcon } from '@heroicons/react/24/outline';
+import {
+    InformationCircleIcon,
+    BookmarkIcon,
+} from '@heroicons/react/24/outline';
 import FilterBadge from './FilterBadge';
 import SearchResults from './SearchResults';
 
@@ -311,7 +314,8 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                         htmlFor="viewName"
                                         className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2"
                                     >
-                                        View Name <span className="text-red-500">*</span>
+                                        View Name{' '}
+                                        <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"

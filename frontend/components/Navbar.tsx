@@ -167,7 +167,9 @@ const Navbar: React.FC<NavbarProps> = ({
                 <div className="flex items-center justify-end space-x-2 sm:space-x-4 px-4 sm:px-6 lg:px-8 flex-shrink-0">
                     {/* Mobile search toggle button */}
                     <button
-                        onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+                        onClick={() =>
+                            setIsMobileSearchOpen(!isMobileSearchOpen)
+                        }
                         className="md:hidden flex items-center bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-full focus:outline-none transition-all duration-200 p-2"
                         aria-label="Toggle Search"
                         title="Search"
