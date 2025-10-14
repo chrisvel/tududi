@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
     TrashIcon,
     MagnifyingGlassIcon,
-    PencilSquareIcon,
     StarIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
@@ -142,7 +141,7 @@ const Views: React.FC = () => {
                 {filteredViews.length === 0 ? (
                     <p className="text-gray-700 dark:text-gray-300">
                         No views found. Create a view by performing a search and
-                        clicking "Save as Smart View".
+                        clicking &quot;Save as Smart View&quot;.
                     </p>
                 ) : (
                     <div className="space-y-4">
@@ -175,7 +174,7 @@ const Views: React.FC = () => {
                                                 )}
                                                 {view.search_query && (
                                                     <p>
-                                                        • "{view.search_query}"
+                                                        • &quot;{view.search_query}&quot;
                                                     </p>
                                                 )}
                                                 {view.priority && (
