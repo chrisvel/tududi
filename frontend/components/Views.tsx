@@ -141,7 +141,8 @@ const Views: React.FC = () => {
                 {/* Views List */}
                 {filteredViews.length === 0 ? (
                     <p className="text-gray-700 dark:text-gray-300">
-                        No views found. Create a view by performing a search and clicking "Save as Smart View".
+                        No views found. Create a view by performing a search and
+                        clicking "Save as Smart View".
                     </p>
                 ) : (
                     <div className="space-y-4">
@@ -150,9 +151,13 @@ const Views: React.FC = () => {
                                 <li
                                     key={view.uid}
                                     className="bg-white dark:bg-gray-900 shadow rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow"
-                                    onMouseEnter={() => setHoveredViewId(view.id)}
+                                    onMouseEnter={() =>
+                                        setHoveredViewId(view.id)
+                                    }
                                     onMouseLeave={() => setHoveredViewId(null)}
-                                    onClick={() => navigate(`/views/${view.uid}`)}
+                                    onClick={() =>
+                                        navigate(`/views/${view.uid}`)
+                                    }
                                 >
                                     <div className="flex items-start justify-between">
                                         <div className="flex-grow">
@@ -161,15 +166,27 @@ const Views: React.FC = () => {
                                             </h3>
                                             <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
                                                 {view.filters.length > 0 && (
-                                                    <p>• {view.filters.join(', ')}</p>
+                                                    <p>
+                                                        •{' '}
+                                                        {view.filters.join(
+                                                            ', '
+                                                        )}
+                                                    </p>
                                                 )}
                                                 {view.search_query && (
-                                                    <p>• "{view.search_query}"</p>
+                                                    <p>
+                                                        • "{view.search_query}"
+                                                    </p>
                                                 )}
                                                 {view.priority && (
-                                                    <p>• Priority: {view.priority}</p>
+                                                    <p>
+                                                        • Priority:{' '}
+                                                        {view.priority}
+                                                    </p>
                                                 )}
-                                                {view.due && <p>• Due: {view.due}</p>}
+                                                {view.due && (
+                                                    <p>• Due: {view.due}</p>
+                                                )}
                                             </div>
                                         </div>
 
@@ -182,7 +199,11 @@ const Views: React.FC = () => {
                                                 }}
                                                 className={`${view.is_pinned ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-600 focus:outline-none transition-opacity ${hoveredViewId === view.id || view.is_pinned ? 'opacity-100' : 'opacity-0'}`}
                                                 aria-label="Toggle pin"
-                                                title={view.is_pinned ? 'Unpin view' : 'Pin view'}
+                                                title={
+                                                    view.is_pinned
+                                                        ? 'Unpin view'
+                                                        : 'Pin view'
+                                                }
                                             >
                                                 {view.is_pinned ? (
                                                     <StarIconSolid className="h-5 w-5" />

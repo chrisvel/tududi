@@ -105,7 +105,8 @@ router.patch('/:identifier', async (req, res) => {
             return res.status(404).json({ error: 'View not found' });
         }
 
-        const { name, search_query, filters, priority, due, is_pinned } = req.body;
+        const { name, search_query, filters, priority, due, is_pinned } =
+            req.body;
 
         const updates = {};
         if (name !== undefined) updates.name = name.trim();

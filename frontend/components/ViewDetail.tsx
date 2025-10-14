@@ -143,9 +143,7 @@ const ViewDetail: React.FC = () => {
 
     const handleToggleToday = async (taskId: number) => {
         try {
-            const { toggleTaskToday } = await import(
-                '../utils/tasksService'
-            );
+            const { toggleTaskToday } = await import('../utils/tasksService');
             const updatedTask = await toggleTaskToday(taskId);
 
             setTasks((prevTasks) =>
@@ -301,7 +299,9 @@ const ViewDetail: React.FC = () => {
                                 <input
                                     type="text"
                                     value={editedName}
-                                    onChange={(e) => setEditedName(e.target.value)}
+                                    onChange={(e) =>
+                                        setEditedName(e.target.value)
+                                    }
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                             handleSaveName();
@@ -335,7 +335,9 @@ const ViewDetail: React.FC = () => {
                         <button
                             onClick={togglePin}
                             className={`p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${view.is_pinned ? 'text-yellow-500' : 'text-gray-400'}`}
-                            aria-label={view.is_pinned ? 'Unpin view' : 'Pin view'}
+                            aria-label={
+                                view.is_pinned ? 'Unpin view' : 'Pin view'
+                            }
                             title={view.is_pinned ? 'Unpin view' : 'Pin view'}
                         >
                             {view.is_pinned ? (
@@ -418,11 +420,14 @@ const ViewDetail: React.FC = () => {
                             </div>
                         )}
                     </div>
-                    {!view.filters.length && !view.search_query && !view.priority && !view.due && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                            No specific criteria set - showing all items
-                        </p>
-                    )}
+                    {!view.filters.length &&
+                        !view.search_query &&
+                        !view.priority &&
+                        !view.due && (
+                            <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+                                No specific criteria set - showing all items
+                            </p>
+                        )}
                 </div>
 
                 {/* Summary Stats */}
