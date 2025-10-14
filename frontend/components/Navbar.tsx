@@ -160,7 +160,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
                 {/* Center section - Universal Search (hidden on mobile) */}
                 <div className="hidden md:flex flex-1 justify-center px-4">
-                    <UniversalSearch isDarkMode={isDarkMode} />
+                    <UniversalSearch />
                 </div>
 
                 {/* Right section - Actions and user menu */}
@@ -267,7 +267,7 @@ const Navbar: React.FC<NavbarProps> = ({
                         : 'max-h-0 py-0 opacity-0'
                 }`}
             >
-                <UniversalSearch isDarkMode={isDarkMode} />
+                <UniversalSearch />
             </div>
         </nav>
     );
