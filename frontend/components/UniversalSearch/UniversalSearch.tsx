@@ -2,11 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SearchMenu from './SearchMenu';
 
-interface UniversalSearchProps {
-    isDarkMode: boolean;
-}
-
-const UniversalSearch: React.FC<UniversalSearchProps> = ({ isDarkMode }) => {
+const UniversalSearch: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
