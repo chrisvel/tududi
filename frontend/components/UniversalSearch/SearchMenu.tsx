@@ -62,15 +62,14 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 entitiesWithSeparators.push(entity);
             });
             parts.push(...entitiesWithSeparators);
+        } else {
+            // If no specific entities selected, show "all items"
+            parts.push(<span key="all" style={{ fontWeight: 800, fontStyle: 'normal' }}>all items</span>);
         }
 
         // Add search query
         if (searchQuery.trim()) {
-            if (parts.length > 0) {
-                parts.push(', containing the text ');
-            } else {
-                parts.push('Searching for items containing ');
-            }
+            parts.push(', containing the text ');
             parts.push(<span key="query" style={{ fontWeight: 800, fontStyle: 'normal' }}>"{searchQuery.trim()}"</span>);
         }
 
@@ -93,8 +92,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         // Construct the sentence
         return (
             <>
-                {selectedFilters.length > 0 ? 'You are searching for ' : ''}
-                {parts}
+                You are searching for {parts}
             </>
         );
     };
