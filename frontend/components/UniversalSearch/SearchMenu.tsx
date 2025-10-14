@@ -74,6 +74,13 @@ const extrasOptions = [
     },
 ];
 
+const dueOptions = [
+    { value: 'today', label: 'today' },
+    { value: 'tomorrow', label: 'tomorrow' },
+    { value: 'next_week', label: 'next week' },
+    { value: 'next_month', label: 'next month' },
+];
+
 const SearchMenu: React.FC<SearchMenuProps> = ({
     searchQuery,
     selectedFilters,
