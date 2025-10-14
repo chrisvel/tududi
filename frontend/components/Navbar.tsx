@@ -28,6 +28,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({
+    isDarkMode,
     currentUser,
     setCurrentUser,
     isSidebarOpen,
