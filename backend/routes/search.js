@@ -232,6 +232,11 @@ router.get('/', async (req, res) => {
                 });
             }
 
+            // Add due date filter if specified
+            if (dueDateCondition) {
+                Object.assign(taskConditions, dueDateCondition);
+            }
+
             const tasks = await Task.findAll({
                 where: taskConditions,
                 include: taskInclude,
