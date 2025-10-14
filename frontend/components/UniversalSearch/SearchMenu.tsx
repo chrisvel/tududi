@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { InformationCircleIcon, BookmarkIcon } from '@heroicons/react/24/outline';
 import FilterBadge from './FilterBadge';
 import SearchResults from './SearchResults';
 
@@ -54,6 +54,10 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         null
     );
     const [selectedDue, setSelectedDue] = useState<string | null>(null);
+    const [showSaveForm, setShowSaveForm] = useState(false);
+    const [viewName, setViewName] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+    const [saveError, setSaveError] = useState('');
 
     const handlePriorityToggle = (priority: string) => {
         setSelectedPriority(selectedPriority === priority ? null : priority);
@@ -61,6 +65,55 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
 
     const handleDueToggle = (due: string) => {
         setSelectedDue(selectedDue === due ? null : due);
+    };
+
+    const handleSaveView = async () => {
+        if (!viewName.trim()) {
+            setSaveError('View name is required');
+            return;
+        }
+
+        setIsSaving(true);
+        setSaveError('');
+
+        try {
+            const response = await fetch('/api/views', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    name: viewName.trim(),
+                    search_query: searchQuery || null,
+                    filters: selectedFilters,
+                    priority: selectedPriority || null,
+                    due: selectedDue || null,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save view');
+            }
+
+            // Reset form
+            setViewName('');
+            setShowSaveForm(false);
+            setSaveError('');
+            // Notify sidebar to refresh
+            window.dispatchEvent(new CustomEvent('viewUpdated'));
+        } catch (err) {
+            setSaveError('Failed to save view. Please try again.');
+            console.error('Error saving view:', err);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleCancelSave = () => {
+        setShowSaveForm(false);
+        setViewName('');
+        setSaveError('');
     };
 
     const buildSearchDescription = () => {
@@ -101,7 +154,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                     key="query"
                     style={{ fontWeight: 800, fontStyle: 'normal' }}
                 >
-                    "{searchQuery.trim()}"
+                    "{searchQuery.trim()}
                 </span>
             );
         }
@@ -150,7 +203,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         selectedDue;
 
     return (
-        <div className="fixed left-1/2 transform -translate-x-1/2 top-20 w-[90vw] max-w-4xl h-[80vh] max-h-[700px] bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden flex flex-col">
+        <div className="fixed left-1/2 transform -translate-x-1/2 top-32 md:top-20 w-[95vw] md:w-[90vw] max-w-full md:max-w-4xl h-[75vh] md:h-[80vh] max-h-[600px] md:max-h-[700px] bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden flex flex-col">
             {/* Filter Badges Section */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                 {/* Search Description */}
@@ -239,6 +292,74 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                         </div>
                     </div>
                 </div>
+
+                {/* Save as Smart View Section */}
+                {hasActiveFilters && (
+                    <div className="mt-4 pt-4 border-t border-gray-300 dark:border-gray-600">
+                        {!showSaveForm ? (
+                            <button
+                                onClick={() => setShowSaveForm(true)}
+                                className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                            >
+                                <BookmarkIcon className="h-4 w-4" />
+                                <span>Save as Smart View</span>
+                            </button>
+                        ) : (
+                            <div className="space-y-3">
+                                <div>
+                                    <label
+                                        htmlFor="viewName"
+                                        className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                    >
+                                        View Name <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="viewName"
+                                        value={viewName}
+                                        onChange={(e) => {
+                                            setViewName(e.target.value);
+                                            setSaveError('');
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                handleSaveView();
+                                            } else if (e.key === 'Escape') {
+                                                handleCancelSave();
+                                            }
+                                        }}
+                                        className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Enter view name"
+                                        autoFocus
+                                    />
+                                    {saveError && (
+                                        <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+                                            {saveError}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="flex gap-2 justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={handleCancelSave}
+                                        className="px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleSaveView}
+                                        disabled={isSaving}
+                                        className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-md transition-colors"
+                                    >
+                                        {isSaving ? 'Saving...' : 'Save View'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Search Results */}

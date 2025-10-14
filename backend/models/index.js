@@ -32,6 +32,7 @@ const TaskEvent = require('./task_event')(sequelize);
 const Role = require('./role')(sequelize);
 const Action = require('./action')(sequelize);
 const Permission = require('./permission')(sequelize);
+const View = require('./view')(sequelize);
 
 // Define associations
 User.hasMany(Area, { foreignKey: 'user_id' });
@@ -134,6 +135,10 @@ Permission.belongsTo(User, {
 Action.belongsTo(User, { foreignKey: 'actor_user_id', as: 'Actor' });
 Action.belongsTo(User, { foreignKey: 'target_user_id', as: 'Target' });
 
+// View associations
+User.hasMany(View, { foreignKey: 'user_id' });
+View.belongsTo(User, { foreignKey: 'user_id' });
+
 module.exports = {
     sequelize,
     User,
@@ -147,4 +152,5 @@ module.exports = {
     Role,
     Action,
     Permission,
+    View,
 };

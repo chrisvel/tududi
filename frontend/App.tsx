@@ -9,6 +9,8 @@ import AreaDetails from './components/Area/AreaDetails';
 import Areas from './components/Areas';
 import TagDetails from './components/Tag/TagDetails';
 import Tags from './components/Tags';
+import Views from './components/Views';
+import ViewDetail from './components/ViewDetail';
 import Notes from './components/Notes';
 import NoteDetails from './components/Note/NoteDetails';
 import Calendar from './components/Calendar';
@@ -230,6 +232,8 @@ const App: React.FC = () => {
                                 path="/tag/:uidSlug"
                                 element={<TagDetails />}
                             />
+                            <Route path="/views" element={<Views />} />
+                            <Route path="/views/:uid" element={<ViewDetail />} />
                             <Route path="/notes" element={<Notes />} />
                             <Route
                                 path="/note/:uidSlug"
