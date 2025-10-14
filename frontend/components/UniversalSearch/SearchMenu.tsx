@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import {
     InformationCircleIcon,
     BookmarkIcon,
+    ChevronDownIcon,
+    ChevronUpIcon,
 } from '@heroicons/react/24/outline';
 import FilterBadge from './FilterBadge';
 import SearchResults from './SearchResults';
@@ -61,6 +63,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
     const [viewName, setViewName] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
+    const [showCriteria, setShowCriteria] = useState(true);
 
     const handlePriorityToggle = (priority: string) => {
         setSelectedPriority(selectedPriority === priority ? null : priority);
@@ -208,11 +211,11 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
     return (
         <div className="fixed left-1/2 transform -translate-x-1/2 top-32 md:top-20 w-[95vw] md:w-[90vw] max-w-full md:max-w-4xl h-[75vh] md:h-[80vh] max-h-[600px] md:max-h-[700px] bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden flex flex-col">
             {/* Filter Badges Section */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="border-b border-gray-200 dark:border-gray-700">
                 {/* Search Description */}
                 {hasActiveFilters && searchDescription && (
                     <>
-                        <div className="mb-3 flex items-center gap-3 px-3 py-3">
+                        <div className="px-4 pt-4 pb-3 flex items-center gap-3">
                             <InformationCircleIcon className="h-6 w-6 text-black/30 dark:text-white/30 flex-shrink-0" />
                             <p
                                 className="text-xl text-black/40 dark:text-white/40 flex-1"
@@ -224,12 +227,30 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                 {searchDescription}
                             </p>
                         </div>
-                        <div className="mb-3 border-t border-gray-300 dark:border-gray-600"></div>
+                        <div className="border-t border-gray-300 dark:border-gray-600"></div>
                     </>
                 )}
 
-                {/* Entity Type Badges */}
-                <div className="flex flex-wrap gap-2">
+                {/* Toggle Criteria Button */}
+                <div className="px-4 py-3">
+                    <button
+                        onClick={() => setShowCriteria(!showCriteria)}
+                        className="flex items-center justify-between w-full text-left text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                    >
+                        <span>Search Criteria</span>
+                        {showCriteria ? (
+                            <ChevronUpIcon className="h-5 w-5" />
+                        ) : (
+                            <ChevronDownIcon className="h-5 w-5" />
+                        )}
+                    </button>
+                </div>
+
+                {/* Collapsible Criteria Section */}
+                {showCriteria && (
+                    <div className="px-4 pb-4">
+                        {/* Entity Type Badges */}
+                        <div className="flex flex-wrap gap-2">
                     {filterTypes.map((filter) => {
                         const isSelected = selectedFilters.includes(
                             filter.name
@@ -361,6 +382,8 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                     </button>
                                 </div>
                             </div>
+                        )}
+                    </div>
                         )}
                     </div>
                 )}

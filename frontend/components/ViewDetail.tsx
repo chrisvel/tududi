@@ -11,6 +11,8 @@ import {
     TagIcon,
     QueueListIcon,
     StarIcon,
+    ChevronDownIcon,
+    ChevronUpIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { Task } from '../entities/Task';
@@ -44,6 +46,7 @@ const ViewDetail: React.FC = () => {
     const [isEditingName, setIsEditingName] = useState(false);
     const [editedName, setEditedName] = useState('');
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+    const [showCriteria, setShowCriteria] = useState(false);
 
     // State for ProjectItem and Note components
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
@@ -366,12 +369,24 @@ const ViewDetail: React.FC = () => {
                 </div>
 
                 {/* View Criteria Section */}
-                <div className="mb-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-lg p-6 border border-blue-100 dark:border-gray-700">
-                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center">
-                        <QueueListIcon className="h-5 w-5 mr-2" />
-                        Search Criteria
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="mb-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-lg border border-blue-100 dark:border-gray-700">
+                    <button
+                        onClick={() => setShowCriteria(!showCriteria)}
+                        className="w-full p-6 flex items-center justify-between text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                    >
+                        <div className="flex items-center">
+                            <QueueListIcon className="h-5 w-5 mr-2" />
+                            <span>Search Criteria</span>
+                        </div>
+                        {showCriteria ? (
+                            <ChevronUpIcon className="h-5 w-5" />
+                        ) : (
+                            <ChevronDownIcon className="h-5 w-5" />
+                        )}
+                    </button>
+                    {showCriteria && (
+                        <div className="px-6 pb-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {view.filters.length > 0 && (
                             <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
                                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
@@ -419,58 +434,17 @@ const ViewDetail: React.FC = () => {
                                 </span>
                             </div>
                         )}
-                    </div>
-                    {!view.filters.length &&
-                        !view.search_query &&
-                        !view.priority &&
-                        !view.due && (
-                            <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                                No specific criteria set - showing all items
-                            </p>
-                        )}
-                </div>
-
-                {/* Summary Stats */}
-                <div className="grid grid-cols-3 gap-3 mb-6">
-                    <div className="bg-white dark:bg-gray-900 shadow rounded-lg p-3">
-                        <div className="flex items-center">
-                            <CheckIcon className="h-5 w-5 text-blue-500 mr-2" />
-                            <div>
-                                <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                                    {tasks.length}
-                                </p>
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                    {t('tasks.title')}
-                                </p>
                             </div>
+                            {!view.filters.length &&
+                                !view.search_query &&
+                                !view.priority &&
+                                !view.due && (
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 italic mt-4">
+                                        No specific criteria set - showing all items
+                                    </p>
+                                )}
                         </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-900 shadow rounded-lg p-3">
-                        <div className="flex items-center">
-                            <BookOpenIcon className="h-5 w-5 text-green-500 mr-2" />
-                            <div>
-                                <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                                    {notes.length}
-                                </p>
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                    {t('notes.title')}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white dark:bg-gray-900 shadow rounded-lg p-3">
-                        <div className="flex items-center">
-                            <FolderIcon className="h-5 w-5 text-purple-500 mr-2" />
-                            <div>
-                                <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                                    {projects.length}
-                                </p>
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                    {t('projects.title')}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    )}
                 </div>
 
                 {/* Tasks Section */}
