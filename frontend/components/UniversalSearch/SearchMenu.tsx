@@ -697,6 +697,8 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                             </div>
                         )}
                     </div>
+                        )}
+                    </div>
                 )}
             </div>
 
