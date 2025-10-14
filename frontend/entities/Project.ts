@@ -32,4 +32,6 @@ export interface Project {
     state?: ProjectState;
     created_at?: string;
     updated_at?: string;
+    share_count?: number;
+    is_shared?: boolean;
 }

@@ -2,6 +2,7 @@ const express = require('express');
 const https = require('https');
 const http = require('http');
 const { URL } = require('url');
+const { logError } = require('../services/logService');
 const router = express.Router();
 
 // Fast regex-based metadata extraction (much faster than cheerio for head content)
@@ -97,7 +98,7 @@ function extractMetadataFromHtml(html) {
             description,
         };
     } catch (error) {
-        console.error('Error parsing HTML:', error);
+        logError('Error parsing HTML:', error);
         return { title: null, image: null, description: null };
     }
 }
@@ -283,10 +284,6 @@ async function fetchUrlMetadata(url, maxRedirects = 5) {
 // GET /api/url/title
 router.get('/url/title', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const { url } = req.query;
 
         if (!url) {
@@ -312,7 +309,7 @@ router.get('/url/title', async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Error extracting URL title:', error);
+        logError('Error extracting URL title:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -320,10 +317,6 @@ router.get('/url/title', async (req, res) => {
 // POST /api/url/extract-from-text
 router.post('/url/extract-from-text', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const { text } = req.body;
 
         if (!text) {
@@ -375,7 +368,7 @@ router.post('/url/extract-from-text', async (req, res) => {
             res.json({ found: false });
         }
     } catch (error) {
-        console.error('Error extracting URL from text:', error);
+        logError('Error extracting URL from text:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

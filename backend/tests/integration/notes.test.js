@@ -169,8 +169,8 @@ describe('Notes Routes', () => {
 
             const response = await agent.get(`/api/note/${otherNote.uid}`);
 
-            expect(response.status).toBe(404);
-            expect(response.body.error).toBe('Note not found.');
+            expect(response.status).toBe(403);
+            expect(response.body.error).toBe('Forbidden');
         });
 
         it('should require authentication', async () => {
@@ -234,8 +234,8 @@ describe('Notes Routes', () => {
                 .patch(`/api/note/${otherNote.uid}`)
                 .send({ title: 'Updated' });
 
-            expect(response.status).toBe(404);
-            expect(response.body.error).toBe('Note not found.');
+            expect(response.status).toBe(403);
+            expect(response.body.error).toBe('Forbidden');
         });
 
         it('should require authentication', async () => {
@@ -290,8 +290,8 @@ describe('Notes Routes', () => {
 
             const response = await agent.delete(`/api/note/${otherNote.uid}`);
 
-            expect(response.status).toBe(404);
-            expect(response.body.error).toBe('Note not found.');
+            expect(response.status).toBe(403);
+            expect(response.body.error).toBe('Forbidden');
         });
 
         it('should require authentication', async () => {

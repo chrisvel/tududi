@@ -13,6 +13,7 @@ import {
     ClipboardDocumentListIcon,
     ExclamationTriangleIcon,
     CheckCircleIcon,
+    ShareIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
@@ -46,6 +47,7 @@ import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
 import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import { usePersistedModal } from '../../hooks/usePersistedModal';
+import BannerBadge from '../Shared/BannerBadge';
 
 const ProjectDetails: React.FC = () => {
     const { uidSlug } = useParams<{ uidSlug: string }>();
@@ -80,6 +82,7 @@ const ProjectDetails: React.FC = () => {
     const editButtonRef = useRef<HTMLButtonElement>(null);
 
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+
     const [showCompleted, setShowCompleted] = useState(false);
     const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
     const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(false);
@@ -793,30 +796,26 @@ const ProjectDetails: React.FC = () => {
                     </div>
 
                     {/* State, Tags and Area Display - Bottom Left */}
-                    <div className="absolute bottom-2 left-2 flex items-center space-x-2">
+                    <div className="absolute bottom-2 left-2 right-14 flex items-center flex-wrap gap-2">
                         {/* Project State Display */}
                         {project.state && (
-                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
+                            <BannerBadge>
                                 {getStateIcon(project.state)}
-                                <div className="flex items-center space-x-1">
-                                    <span>
-                                        <span className="text-xs text-white/90 font-medium">
-                                            {t(
-                                                `projects.states.${project.state}`
-                                            )}
-                                        </span>
-                                    </span>
-                                </div>
-                            </div>
+                                <span className="text-xs text-white/90 font-medium">
+                                    {t(`projects.states.${project.state}`)}
+                                </span>
+                            </BannerBadge>
                         )}
 
                         {/* Tags Display */}
                         {project.tags && project.tags.length > 0 && (
-                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
+                            <BannerBadge>
                                 <TagIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
-                                <div className="flex items-center space-x-1">
+                                <span className="text-xs text-white/90 font-medium">
                                     {project.tags.map((tag, index) => (
-                                        <span key={tag.uid || tag.id || index}>
+                                        <React.Fragment
+                                            key={tag.uid || tag.id || index}
+                                        >
                                             <button
                                                 onClick={() => {
                                                     // Navigate to tag details page
@@ -840,76 +839,75 @@ const ProjectDetails: React.FC = () => {
                                                         );
                                                     }
                                                 }}
-                                                className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
+                                                className="hover:text-blue-200 transition-colors cursor-pointer"
                                             >
                                                 {tag.name}
                                             </button>
                                             {index <
                                                 (project.tags?.length || 0) -
                                                     1 && (
-                                                <span className="text-white/60 text-xs">
+                                                <span className="text-white/60">
                                                     ,{' '}
                                                 </span>
                                             )}
-                                        </span>
+                                        </React.Fragment>
                                     ))}
-                                </div>
-                            </div>
+                                </span>
+                            </BannerBadge>
                         )}
 
                         {/* Area Display */}
                         {(project.area || (project as any).Area) && (
-                            <div className="flex items-center space-x-2 bg-black bg-opacity-40 backdrop-blur-sm rounded px-2 py-1">
+                            <BannerBadge>
                                 <Squares2X2Icon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
-                                <div className="flex items-center space-x-1">
-                                    <span>
-                                        <button
-                                            onClick={() => {
-                                                // Use the correct area property (Area or area)
-                                                const projectArea =
-                                                    project.area ||
-                                                    (project as any).Area;
+                                <button
+                                    onClick={() => {
+                                        // Use the correct area property (Area or area)
+                                        const projectArea =
+                                            project.area ||
+                                            (project as any).Area;
 
-                                                // Find the area in the areas store to get the uid
-                                                const area = areas.find(
-                                                    (a) =>
-                                                        a.id === projectArea.id
-                                                );
-                                                const areaUid = area?.uid;
+                                        // Find the area in the areas store to get the uid
+                                        const area = areas.find(
+                                            (a) => a.id === projectArea.id
+                                        );
+                                        const areaUid = area?.uid;
 
-                                                if (!areaUid) {
-                                                    console.warn(
-                                                        'Area uid not found for area id:',
-                                                        projectArea.id
-                                                    );
-                                                    return;
-                                                }
+                                        if (!areaUid) {
+                                            console.warn(
+                                                'Area uid not found for area id:',
+                                                projectArea.id
+                                            );
+                                            return;
+                                        }
 
-                                                // Navigate to projects filtered by this area (same as Areas page)
-                                                const areaSlug =
-                                                    projectArea.name
-                                                        .toLowerCase()
-                                                        .replace(
-                                                            /[^a-z0-9]+/g,
-                                                            '-'
-                                                        )
-                                                        .replace(/^-|-$/g, '');
-                                                navigate(
-                                                    `/projects?area=${areaUid}-${areaSlug}`
-                                                );
-                                            }}
-                                            className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
-                                        >
-                                            {
-                                                (
-                                                    project.area ||
-                                                    (project as any).Area
-                                                )?.name
-                                            }
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
+                                        // Navigate to projects filtered by this area (same as Areas page)
+                                        const areaSlug = projectArea.name
+                                            .toLowerCase()
+                                            .replace(/[^a-z0-9]+/g, '-')
+                                            .replace(/^-|-$/g, '');
+                                        navigate(
+                                            `/projects?area=${areaUid}-${areaSlug}`
+                                        );
+                                    }}
+                                    className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
+                                >
+                                    {
+                                        (project.area || (project as any).Area)
+                                            ?.name
+                                    }
+                                </button>
+                            </BannerBadge>
+                        )}
+
+                        {/* Shared Badge */}
+                        {project.is_shared && (
+                            <BannerBadge>
+                                <ShareIcon className="h-3 w-3 text-green-500 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                                <span className="text-xs text-white/90 font-medium">
+                                    {t('projects.shared', 'Shared')}
+                                </span>
+                            </BannerBadge>
                         )}
                     </div>
 

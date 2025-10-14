@@ -9,9 +9,12 @@ import {
     PlayIcon,
     StopIcon,
     CheckCircleIcon,
+    ShareIcon,
 } from '@heroicons/react/24/outline';
 import { Project, ProjectState } from '../../entities/Project';
 import { useTranslation } from 'react-i18next';
+import { useToast } from '../Shared/ToastContext';
+import { getCurrentUser } from '../../utils/userUtils';
 
 interface ProjectItemProps {
     project: Project;
@@ -22,6 +25,7 @@ interface ProjectItemProps {
     handleEditProject: (project: Project) => void;
     setProjectToDelete: React.Dispatch<React.SetStateAction<Project | null>>;
     setIsConfirmDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    onOpenShare: (project: Project) => void;
 }
 
 const getProjectInitials = (name: string, maxLetters?: number) => {
@@ -82,8 +86,13 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
     handleEditProject,
     setProjectToDelete,
     setIsConfirmDialogOpen,
+    onOpenShare,
 }) => {
     const { t } = useTranslation();
+    const { showErrorToast } = useToast();
+    const currentUser = getCurrentUser();
+    const isOwner =
+        currentUser && (project as any).user_uid === currentUser.uid;
     return (
         <div
             className={`${
@@ -126,17 +135,29 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             </span>
                         )}
 
-                        {/* State icon in top right corner of image area */}
-                        <div
-                            className="absolute top-2 right-2 z-10"
-                            title={getStateLabel(project.state, t)}
-                        >
+                        {/* Icons in top right corner of image area */}
+                        <div className="absolute top-2 right-2 z-10 flex items-center space-x-2">
+                            {/* Shared project icon */}
+                            {project.is_shared && (
+                                <ShareIcon
+                                    className="h-4 w-4 text-green-500 dark:text-green-400 opacity-70 drop-shadow-sm"
+                                    title={t(
+                                        'projectItem.sharedProject',
+                                        'Shared with team'
+                                    )}
+                                />
+                            )}
+
+                            {/* State icon */}
                             {(() => {
                                 const { icon: StateIcon } = getStateIcon(
                                     project.state
                                 );
                                 return (
-                                    <StateIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 opacity-70 drop-shadow-sm" />
+                                    <StateIcon
+                                        className="h-4 w-4 text-gray-500 dark:text-gray-400 opacity-70 drop-shadow-sm"
+                                        title={getStateLabel(project.state, t)}
+                                    />
                                 );
                             })()}
                         </div>
@@ -228,14 +249,40 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
+                                                if (!isOwner) {
+                                                    showErrorToast(
+                                                        t(
+                                                            'errors.permissionDenied',
+                                                            'Permission denied'
+                                                        )
+                                                    );
+                                                    setActiveDropdown(null);
+                                                    return;
+                                                }
                                                 handleEditProject(project);
                                                 setActiveDropdown(null);
                                             }}
-                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-t-md"
+                                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
                                             data-testid={`project-edit-${project.id}`}
                                         >
                                             {t('projectItem.edit')}
                                         </button>
+                                        {isOwner && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    onOpenShare(project);
+                                                    setActiveDropdown(null);
+                                                }}
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                            >
+                                                {t(
+                                                    'projectItem.share',
+                                                    'Share'
+                                                )}
+                                            </button>
+                                        )}
                                         <button
                                             onClick={(e) => {
                                                 e.preventDefault();
@@ -254,7 +301,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                                 setIsConfirmDialogOpen(true);
                                                 setActiveDropdown(null);
                                             }}
-                                            className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left rounded-b-md"
+                                            className="block px-4 py-2 text-sm text-red-500 dark:text-red-300 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
                                             data-testid={`project-delete-${project.id}`}
                                         >
                                             {t('projectItem.delete')}
@@ -263,11 +310,20 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                                 )}
                         </>
                     ) : (
-                        <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
+                                    if (!isOwner) {
+                                        showErrorToast(
+                                            t(
+                                                'errors.permissionDenied',
+                                                'Permission denied'
+                                            )
+                                        );
+                                        return;
+                                    }
                                     handleEditProject(project);
                                 }}
                                 className="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
@@ -275,6 +331,23 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
                             >
                                 <PencilSquareIcon className="h-5 w-5" />
                             </button>
+                            {isOwner && (
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onOpenShare(project);
+                                    }}
+                                    className={`transition-colors duration-200 ${
+                                        project.is_shared
+                                            ? 'text-green-500 dark:text-green-400 hover:text-green-600 dark:hover:text-green-500'
+                                            : 'text-gray-500 hover:text-green-600 dark:hover:text-green-400'
+                                    }`}
+                                    data-testid={`project-share-list-${project.id}`}
+                                >
+                                    <ShareIcon className="h-5 w-5" />
+                                </button>
+                            )}
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();

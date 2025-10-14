@@ -1,6 +1,7 @@
 const express = require('express');
 const { Area } = require('../models');
 const { isValidUid } = require('../utils/slug-utils');
+const { logError } = require('../services/logService');
 const _ = require('lodash');
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.get('/areas', async (req, res) => {
 
         res.json(areas);
     } catch (error) {
-        console.error('Error fetching areas:', error);
+        logError('Error fetching areas:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -38,7 +39,7 @@ router.get('/areas/:uid', async (req, res) => {
 
         res.json(area);
     } catch (error) {
-        console.error('Error fetching area:', error);
+        logError('Error fetching area:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -60,7 +61,7 @@ router.post('/areas', async (req, res) => {
 
         res.status(201).json(_.pick(area, ['uid', 'name', 'description']));
     } catch (error) {
-        console.error('Error creating area:', error);
+        logError('Error creating area:', error);
         res.status(400).json({
             error: 'There was a problem creating the area.',
             details: error.errors
@@ -92,7 +93,7 @@ router.patch('/areas/:uid', async (req, res) => {
         await area.update(updateData);
         res.json(_.pick(area, ['uid', 'name', 'description']));
     } catch (error) {
-        console.error('Error updating area:', error);
+        logError('Error updating area:', error);
         res.status(400).json({
             error: 'There was a problem updating the area.',
             details: error.errors
@@ -119,7 +120,7 @@ router.delete('/areas/:uid', async (req, res) => {
         await area.destroy();
         return res.status(204).send();
     } catch (error) {
-        console.error('Error deleting area:', error);
+        logError('Error deleting area:', error);
         res.status(400).json({
             error: 'There was a problem deleting the area.',
         });

@@ -930,4 +930,19 @@
     "license": "Licensed for personal use",
     "builtBy": "Built by"
   }
+  ,
+  "admin": {
+    "manageUsers": "Manage users",
+    "userManagement": "User Management",
+    "addUser": "Add user",
+    "remove": "Remove",
+    "email": "Email",
+    "created": "Created",
+    "role": "Role",
+    "loadingUsers": "Loading users...",
+    "noUsers": "No users",
+    "admin": "admin",
+    "user": "user",
+    "password": "Password"
+  }
 }

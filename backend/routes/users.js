@@ -1,5 +1,6 @@
 const express = require('express');
-const { User } = require('../models');
+const { User, Role } = require('../models');
+const { logError } = require('../services/logService');
 const taskSummaryService = require('../services/taskSummaryService');
 const router = express.Router();
 
@@ -14,17 +15,44 @@ const VALID_FREQUENCIES = [
     '12h',
 ];
 
+// GET /api/users - list all users for sharing purposes
+router.get('/users', async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: ['id', 'email', 'name', 'surname'],
+            order: [['email', 'ASC']],
+        });
+
+        // Fetch roles in bulk
+        const roles = await Role.findAll({
+            attributes: ['user_id', 'is_admin'],
+        });
+        const userIdToRole = new Map(roles.map((r) => [r.user_id, r.is_admin]));
+
+        const result = users.map((u) => ({
+            id: u.id,
+            email: u.email,
+            name: u.name,
+            surname: u.surname,
+            role: userIdToRole.get(u.id) ? 'admin' : 'user',
+        }));
+
+        res.json(result);
+    } catch (err) {
+        logError('Error listing users:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // GET /api/profile
 router.get('/profile', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId, {
             attributes: [
                 'uid',
                 'email',
+                'name',
+                'surname',
                 'appearance',
                 'language',
                 'timezone',
@@ -53,14 +81,14 @@ router.get('/profile', async (req, res) => {
             try {
                 user.today_settings = JSON.parse(user.today_settings);
             } catch (error) {
-                console.error('Error parsing today_settings:', error);
+                logError('Error parsing today_settings:', error);
                 user.today_settings = null;
             }
         }
 
         res.json(user);
     } catch (error) {
-        console.error('Error fetching profile:', error);
+        logError('Error fetching profile:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -68,16 +96,14 @@ router.get('/profile', async (req, res) => {
 // PATCH /api/profile
 router.patch('/profile', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'Profile not found.' });
         }
 
         const {
+            name,
+            surname,
             appearance,
             language,
             timezone,
@@ -97,6 +123,8 @@ router.patch('/profile', async (req, res) => {
         } = req.body;
 
         const allowedUpdates = {};
+        if (name !== undefined) allowedUpdates.name = name;
+        if (surname !== undefined) allowedUpdates.surname = surname;
         if (appearance !== undefined) allowedUpdates.appearance = appearance;
         if (language !== undefined) allowedUpdates.language = language;
         if (timezone !== undefined) allowedUpdates.timezone = timezone;
@@ -174,6 +202,8 @@ router.patch('/profile', async (req, res) => {
             attributes: [
                 'uid',
                 'email',
+                'name',
+                'surname',
                 'appearance',
                 'language',
                 'timezone',
@@ -193,7 +223,7 @@ router.patch('/profile', async (req, res) => {
 
         res.json(updatedUser);
     } catch (error) {
-        console.error('Error updating profile:', error);
+        logError('Error updating profile:', error);
         res.status(400).json({
             error: 'Failed to update profile.',
             details: error.errors
@@ -206,10 +236,6 @@ router.patch('/profile', async (req, res) => {
 // POST /api/profile/change-password
 router.post('/profile/change-password', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const { currentPassword, newPassword } = req.body;
 
         if (!currentPassword || !newPassword) {
@@ -248,7 +274,7 @@ router.post('/profile/change-password', async (req, res) => {
 
         res.json({ message: 'Password changed successfully' });
     } catch (error) {
-        console.error('Error changing password:', error);
+        logError('Error changing password:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -256,10 +282,6 @@ router.post('/profile/change-password', async (req, res) => {
 // POST /api/profile/task-summary/toggle
 router.post('/profile/task-summary/toggle', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
@@ -280,7 +302,7 @@ router.post('/profile/task-summary/toggle', async (req, res) => {
             message: message,
         });
     } catch (error) {
-        console.error('Error toggling task summary:', error);
+        logError('Error toggling task summary:', error);
         res.status(400).json({
             error: 'Failed to update task summary settings.',
             details: error.errors
@@ -293,10 +315,6 @@ router.post('/profile/task-summary/toggle', async (req, res) => {
 // POST /api/profile/task-summary/frequency
 router.post('/profile/task-summary/frequency', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const { frequency } = req.body;
 
         if (!frequency) {
@@ -320,7 +338,7 @@ router.post('/profile/task-summary/frequency', async (req, res) => {
             message: `Task summary frequency has been set to ${frequency}.`,
         });
     } catch (error) {
-        console.error('Error updating task summary frequency:', error);
+        logError('Error updating task summary frequency:', error);
         res.status(400).json({
             error: 'Failed to update task summary frequency.',
             details: error.errors
@@ -333,10 +351,6 @@ router.post('/profile/task-summary/frequency', async (req, res) => {
 // POST /api/profile/task-summary/send-now
 router.post('/profile/task-summary/send-now', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
@@ -362,7 +376,7 @@ router.post('/profile/task-summary/send-now', async (req, res) => {
             });
         }
     } catch (error) {
-        console.error('Error sending task summary:', error);
+        logError('Error sending task summary:', error);
         res.status(400).json({
             error: 'Error sending message to Telegram.',
             details: error.message,
@@ -373,10 +387,6 @@ router.post('/profile/task-summary/send-now', async (req, res) => {
 // GET /api/profile/task-summary/status
 router.get('/profile/task-summary/status', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
@@ -390,7 +400,7 @@ router.get('/profile/task-summary/status', async (req, res) => {
             next_run: user.task_summary_next_run,
         });
     } catch (error) {
-        console.error('Error fetching task summary status:', error);
+        logError('Error fetching task summary status:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -398,10 +408,6 @@ router.get('/profile/task-summary/status', async (req, res) => {
 // PUT /api/profile/today-settings
 router.put('/profile/today-settings', async (req, res) => {
     try {
-        if (!req.session || !req.session.userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
         const user = await User.findByPk(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
@@ -470,7 +476,7 @@ router.put('/profile/today-settings', async (req, res) => {
             today_settings: todaySettings,
         });
     } catch (error) {
-        console.error('Error updating today settings:', error);
+        logError('Error updating today settings:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

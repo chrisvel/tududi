@@ -22,9 +22,12 @@ import { SortOption } from './Shared/SortFilterButton';
 import { Project } from '../entities/Project';
 import { useSearchParams } from 'react-router-dom';
 import ProjectItem from './Project/ProjectItem';
+import ProjectShareModal from './Project/ProjectShareModal';
+import { useToast } from './Shared/ToastContext';
 
 const Projects: React.FC = () => {
     const { t } = useTranslation();
+    const { showErrorToast } = useToast();
     const {
         areas,
         setAreas,
@@ -52,6 +55,10 @@ const Projects: React.FC = () => {
     );
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
         useState<boolean>(false);
+    const [shareModal, setShareModal] = useState<{
+        isOpen: boolean;
+        project: Project | null;
+    }>({ isOpen: false, project: null });
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [viewMode, setViewMode] = useState<'cards' | 'list'>(() => {
@@ -213,9 +220,15 @@ const Projects: React.FC = () => {
             } else {
                 console.error('Cannot delete project: UID is undefined.');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting project:', error);
-            setProjectsError(true);
+            // Show permission denied if 403-like message, else generic
+            const msg =
+                typeof error?.message === 'string' &&
+                /403|Forbidden|permission/i.test(error.message)
+                    ? t('errors.permissionDenied', 'Permission denied')
+                    : t('projects.deleteError', 'Failed to delete project');
+            showErrorToast(msg);
         } finally {
             setProjectsLoading(false);
             setIsConfirmDialogOpen(false);
@@ -486,6 +499,9 @@ const Projects: React.FC = () => {
                                 handleEditProject={handleEditProject}
                                 setProjectToDelete={setProjectToDelete}
                                 setIsConfirmDialogOpen={setIsConfirmDialogOpen}
+                                onOpenShare={(p) =>
+                                    setShareModal({ isOpen: true, project: p })
+                                }
                             />
                         ))
                     )}
@@ -530,6 +546,16 @@ const Projects: React.FC = () => {
                     })}
                     onConfirm={handleDeleteProject}
                     onCancel={() => setIsConfirmDialogOpen(false)}
+                />
+            )}
+
+            {shareModal.isOpen && shareModal.project && (
+                <ProjectShareModal
+                    isOpen={shareModal.isOpen}
+                    onClose={() =>
+                        setShareModal({ isOpen: false, project: null })
+                    }
+                    project={shareModal.project}
                 />
             )}
         </div>

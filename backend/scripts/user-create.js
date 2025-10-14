@@ -4,7 +4,7 @@
  * User Creation Script
  * Creates a new user with email and password.
  * If user exists, updated password.
- * Usage: node user-create.js <email> <password>
+ * Usage: node user-create.js <email> <password> [is_admin]
  */
 
 require('dotenv').config();
@@ -13,14 +13,17 @@ const {
     validateEmail,
     validatePassword,
 } = require('../services/userService');
+const { Role } = require('../models');
 
 async function createUser() {
-    const [email, password] = process.argv.slice(2);
+    const [email, password, isAdminArg] = process.argv.slice(2);
 
     if (!email || password === undefined) {
-        console.error('Usage: npm run user:create <email> <password>');
         console.error(
-            'Example: npm run user:create admin@example.com mypassword123'
+            'Usage: npm run user:create <email> <password> [is_admin]'
+        );
+        console.error(
+            'Example: npm run user:create admin@example.com mypassword123 true'
         );
         process.exit(1);
     }
@@ -42,6 +45,15 @@ async function createUser() {
 
         const { user, created } = await createOrUpdateUser(email, password);
 
+        // Optionally grant admin role
+        const shouldBeAdmin = String(isAdminArg).toLowerCase() === 'true';
+        if (shouldBeAdmin) {
+            await Role.findOrCreate({
+                where: { user_id: user.id },
+                defaults: { user_id: user.id, is_admin: true },
+            });
+        }
+
         if (!created) {
             console.log('User exists, password updated');
         } else {
@@ -51,6 +63,9 @@ async function createUser() {
         console.log(`Email: ${user.email}`);
         console.log(`User ID: ${user.id}`);
         console.log(`Created: ${user.created_at}`);
+        if (isAdminArg !== undefined) {
+            console.log(`Admin: ${shouldBeAdmin ? 'yes' : 'no'}`);
+        }
 
         process.exit(0);
     } catch (error) {
