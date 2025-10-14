@@ -91,6 +91,7 @@ const UniversalSearch: React.FC = () => {
                         searchQuery={searchQuery}
                         selectedFilters={selectedFilters}
                         onFilterToggle={handleFilterToggle}
+                        onClose={() => setIsOpen(false)}
                     />
                 )}
             </div>

@@ -4,6 +4,18 @@ const { Op } = require('sequelize');
 const moment = require('moment-timezone');
 const router = express.Router();
 
+// Helper function to convert priority string to integer
+const priorityToInt = (priorityStr) => {
+    const priorityMap = {
+        low: 0,
+        medium: 1,
+        high: 2,
+    };
+    return priorityMap[priorityStr] !== undefined
+        ? priorityMap[priorityStr]
+        : null;
+};
+
 /**
  * Universal search endpoint
  * GET /api/search
@@ -12,6 +24,7 @@ const router = express.Router();
  *   - filters: comma-separated list of entity types (Task,Project,Area,Note,Tag)
  *   - priority: filter by priority (low,medium,high)
  *   - due: filter by due date (today,tomorrow,next_week,next_month)
+ *   - tags: comma-separated list of tag names to filter by
  */
 router.get('/', async (req, res) => {
     try {
@@ -20,13 +33,34 @@ router.get('/', async (req, res) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        const { q: query, filters, priority, due } = req.query;
+        const { q: query, filters, priority, due, tags: tagsParam } = req.query;
         const searchQuery = query ? query.trim() : '';
         const filterTypes = filters
             ? filters.split(',').map((f) => f.trim())
             : ['Task', 'Project', 'Area', 'Note', 'Tag'];
+        const tagNames = tagsParam
+            ? tagsParam.split(',').map((t) => t.trim())
+            : [];
 
         const results = [];
+
+        // If tags are specified, find their IDs first
+        let tagIds = [];
+        if (tagNames.length > 0) {
+            const tags = await Tag.findAll({
+                where: {
+                    user_id: userId,
+                    name: { [Op.in]: tagNames },
+                },
+                attributes: ['id'],
+            });
+            tagIds = tags.map((tag) => tag.id);
+
+            // If no matching tags found, return empty results
+            if (tagIds.length === 0) {
+                return res.json({ results: [] });
+            }
+        }
 
         // Calculate due date range based on filter
         let dueDateCondition = null;
@@ -65,26 +99,26 @@ router.get('/', async (req, res) => {
             }
         }
 
-        // Build search conditions
-        const searchCondition = searchQuery
-            ? {
-                  [Op.or]: [
-                      { name: { [Op.like]: `%${searchQuery}%` } },
-                      { description: { [Op.like]: `%${searchQuery}%` } },
-                  ],
-              }
-            : {};
-
         // Search Tasks
         if (filterTypes.includes('Task')) {
             const taskConditions = {
                 user_id: userId,
-                ...searchCondition,
             };
 
-            // Add priority filter if specified
+            // Add search query filter if specified
+            if (searchQuery) {
+                taskConditions[Op.or] = [
+                    { name: { [Op.like]: `%${searchQuery}%` } },
+                    { note: { [Op.like]: `%${searchQuery}%` } },
+                ];
+            }
+
+            // Add priority filter if specified (convert string to integer)
             if (priority) {
-                taskConditions.priority = priority;
+                const priorityInt = priorityToInt(priority);
+                if (priorityInt !== null) {
+                    taskConditions.priority = priorityInt;
+                }
             }
 
             // Add due date filter if specified
@@ -92,14 +126,29 @@ router.get('/', async (req, res) => {
                 Object.assign(taskConditions, dueDateCondition);
             }
 
+            const taskInclude = [
+                {
+                    model: Project,
+                    attributes: ['id', 'uid', 'name'],
+                },
+            ];
+
+            // Add tag filter if specified
+            if (tagIds.length > 0) {
+                taskInclude.push({
+                    model: Tag,
+                    where: {
+                        id: { [Op.in]: tagIds },
+                    },
+                    through: { attributes: [] },
+                    attributes: [],
+                    required: true,
+                });
+            }
+
             const tasks = await Task.findAll({
                 where: taskConditions,
-                include: [
-                    {
-                        model: Project,
-                        attributes: ['id', 'uid', 'name'],
-                    },
-                ],
+                include: taskInclude,
                 limit: 20,
                 order: [['updated_at', 'DESC']],
             });
@@ -142,8 +191,24 @@ router.get('/', async (req, res) => {
                 Object.assign(projectConditions, projectDueCondition);
             }
 
+            const projectInclude = [];
+
+            // Add tag filter if specified
+            if (tagIds.length > 0) {
+                projectInclude.push({
+                    model: Tag,
+                    where: {
+                        id: { [Op.in]: tagIds },
+                    },
+                    through: { attributes: [] },
+                    attributes: [],
+                    required: true,
+                });
+            }
+
             const projects = await Project.findAll({
                 where: projectConditions,
+                include: projectInclude.length > 0 ? projectInclude : undefined,
                 limit: 20,
                 order: [['updated_at', 'DESC']],
             });
@@ -204,8 +269,24 @@ router.get('/', async (req, res) => {
                 ];
             }
 
+            const noteInclude = [];
+
+            // Add tag filter if specified
+            if (tagIds.length > 0) {
+                noteInclude.push({
+                    model: Tag,
+                    where: {
+                        id: { [Op.in]: tagIds },
+                    },
+                    through: { attributes: [] },
+                    attributes: [],
+                    required: true,
+                });
+            }
+
             const notes = await Note.findAll({
                 where: noteConditions,
+                include: noteInclude.length > 0 ? noteInclude : undefined,
                 limit: 20,
                 order: [['updated_at', 'DESC']],
             });

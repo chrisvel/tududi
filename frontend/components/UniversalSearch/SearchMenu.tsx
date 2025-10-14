@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     InformationCircleIcon,
     BookmarkIcon,
@@ -12,6 +12,7 @@ interface SearchMenuProps {
     searchQuery: string;
     selectedFilters: string[];
     onFilterToggle: (filter: string) => void;
+    onClose: () => void;
 }
 
 const filterTypes = [
@@ -30,10 +31,6 @@ const filterTypes = [
     {
         name: 'Note',
         color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-    },
-    {
-        name: 'Tag',
-        color: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
     },
 ];
 
@@ -54,16 +51,39 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
     searchQuery,
     selectedFilters,
     onFilterToggle,
+    onClose,
 }) => {
     const [selectedPriority, setSelectedPriority] = useState<string | null>(
         null
     );
     const [selectedDue, setSelectedDue] = useState<string | null>(null);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [availableTags, setAvailableTags] = useState<
+        Array<{ id: number; name: string }>
+    >([]);
     const [showSaveForm, setShowSaveForm] = useState(false);
     const [viewName, setViewName] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
     const [showCriteria, setShowCriteria] = useState(true);
+
+    // Fetch available tags
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const response = await fetch('/api/tags', {
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    const tags = await response.json();
+                    setAvailableTags(tags);
+                }
+            } catch (error) {
+                console.error('Error fetching tags:', error);
+            }
+        };
+        fetchTags();
+    }, []);
 
     const handlePriorityToggle = (priority: string) => {
         setSelectedPriority(selectedPriority === priority ? null : priority);
@@ -71,6 +91,14 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
 
     const handleDueToggle = (due: string) => {
         setSelectedDue(selectedDue === due ? null : due);
+    };
+
+    const handleTagToggle = (tagName: string) => {
+        setSelectedTags((prev) =>
+            prev.includes(tagName)
+                ? prev.filter((t) => t !== tagName)
+                : [...prev, tagName]
+        );
     };
 
     const handleSaveView = async () => {
@@ -95,6 +123,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                     filters: selectedFilters,
                     priority: selectedPriority || null,
                     due: selectedDue || null,
+                    tags: selectedTags.length > 0 ? selectedTags : null,
                 }),
             });
 
@@ -195,6 +224,31 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
             );
         }
 
+        // Add tags filter
+        if (selectedTags.length > 0) {
+            parts.push(', tagged with ');
+            const tagElements = selectedTags.map((tag, index) => (
+                <span
+                    key={`tag-${tag}`}
+                    style={{ fontWeight: 800, fontStyle: 'normal' }}
+                >
+                    {tag}
+                </span>
+            ));
+            const tagsWithSeparators: React.ReactNode[] = [];
+            tagElements.forEach((tagEl, index) => {
+                if (index > 0) {
+                    if (index === tagElements.length - 1) {
+                        tagsWithSeparators.push(' and ');
+                    } else {
+                        tagsWithSeparators.push(', ');
+                    }
+                }
+                tagsWithSeparators.push(tagEl);
+            });
+            parts.push(...tagsWithSeparators);
+        }
+
         if (parts.length === 0) return null;
 
         // Construct the sentence
@@ -206,7 +260,8 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         selectedFilters.length > 0 ||
         searchQuery.trim() ||
         selectedPriority ||
-        selectedDue;
+        selectedDue ||
+        selectedTags.length > 0;
 
     return (
         <div className="fixed left-1/2 transform -translate-x-1/2 top-32 md:top-20 w-[95vw] md:w-[90vw] max-w-full md:max-w-4xl h-[75vh] md:h-[80vh] max-h-[600px] md:max-h-[700px] bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden flex flex-col">
@@ -322,6 +377,30 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                     ))}
                                 </div>
                             </div>
+
+                            {/* Tags Filters */}
+                            {availableTags.length > 0 && (
+                                <div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                                        Tags
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {availableTags.map((tag) => (
+                                            <FilterBadge
+                                                key={tag.id}
+                                                name={tag.name}
+                                                color="bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200"
+                                                isSelected={selectedTags.includes(
+                                                    tag.name
+                                                )}
+                                                onToggle={() =>
+                                                    handleTagToggle(tag.name)
+                                                }
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Save as Smart View Section */}
@@ -408,6 +487,8 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 selectedFilters={selectedFilters}
                 selectedPriority={selectedPriority}
                 selectedDue={selectedDue}
+                selectedTags={selectedTags}
+                onClose={onClose}
             />
         </div>
     );
