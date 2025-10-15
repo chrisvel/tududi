@@ -58,9 +58,12 @@ const UniversalSearch: React.FC = () => {
                 />
             )}
 
-            <div ref={searchRef} className={`relative flex-1 mx-4 transition-all duration-300 ${
-                isOpen ? 'max-w-5xl' : 'max-w-3xl'
-            }`}>
+            <div
+                ref={searchRef}
+                className={`relative flex-1 mx-4 transition-all duration-300 ${
+                    isOpen ? 'max-w-5xl' : 'max-w-3xl'
+                }`}
+            >
                 {/* Search Bar */}
                 <div
                     className={`flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2 transition-all ${
