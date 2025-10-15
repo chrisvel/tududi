@@ -955,7 +955,14 @@
     "failedToCreateUser": "Error al crear usuario",
     "badRequest": "Solicitud incorrecta",
     "userNotFound": "Usuario no encontrado",
-    "failedToDeleteUser": "Error al eliminar usuario"
+    "failedToDeleteUser": "Error al eliminar usuario",
+    "editUser": "Editar usuario",
+    "actions": "Acciones",
+    "passwordOptional": "Dejar en blanco para mantener el actual",
+    "failedToUpdateUser": "Error al actualizar el usuario",
+    "confirmDelete": "¿Está seguro de que desea eliminar este usuario?",
+    "deleteUser": "Eliminar usuario",
+    "confirmDeleteUser": "¿Está seguro de que desea eliminar {{email}}? Esta acción no se puede deshacer."
   },
   "shares": {
     "shareProject": "Compartir proyecto",

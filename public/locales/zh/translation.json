@@ -954,7 +954,14 @@
     "failedToCreateUser": "创建用户失败",
     "badRequest": "错误的请求",
     "userNotFound": "用户未找到",
-    "failedToDeleteUser": "删除用户失败"
+    "failedToDeleteUser": "删除用户失败",
+    "editUser": "编辑用户",
+    "actions": "操作",
+    "passwordOptional": "留空以保持当前密码",
+    "failedToUpdateUser": "更新用户失败",
+    "confirmDelete": "您确定要删除此用户吗？",
+    "deleteUser": "删除用户",
+    "confirmDeleteUser": "您确定要删除 {{email}} 吗？此操作无法撤销。"
   },
   "shares": {
     "shareProject": "分享项目",
