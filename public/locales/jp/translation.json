@@ -544,7 +544,9 @@
     "completion": "完了度",
     "completionPercentage": "{{percentage}}% 完了",
     "toggleDropdownMenu": "ドロップダウンメニューを切り替え",
-    "projectInitials": "プロジェクトの頭文字"
+    "projectInitials": "プロジェクトの頭文字",
+    "share": "共有",
+    "sharedProject": "チームと共有"
   },
   "areas": {
     "title": "エリア",
@@ -929,5 +931,45 @@
     "thursday": "木曜日",
     "friday": "金曜日",
     "saturday": "土曜日"
+  },
+  "admin": {
+    "manageUsers": "ユーザーを管理",
+    "userManagement": "ユーザー管理",
+    "addUser": "ユーザーを追加",
+    "remove": "削除",
+    "email": "メール",
+    "created": "作成日",
+    "role": "役割",
+    "loadingUsers": "ユーザーを読み込み中...",
+    "noUsers": "ユーザーがいません",
+    "admin": "管理者",
+    "user": "ユーザー",
+    "password": "パスワード",
+    "name": "名前",
+    "surname": "姓",
+    "authenticationRequired": "認証が必要です",
+    "forbidden": "禁止されています",
+    "failedToLoadUsers": "ユーザーの読み込みに失敗しました",
+    "emailAlreadyExists": "メールアドレスは既に存在します",
+    "failedToCreateUser": "ユーザーの作成に失敗しました",
+    "badRequest": "不正なリクエスト",
+    "userNotFound": "ユーザーが見つかりません",
+    "failedToDeleteUser": "ユーザーの削除に失敗しました"
+  },
+  "shares": {
+    "shareProject": "プロジェクトを共有",
+    "targetUser": "ユーザーを選択",
+    "selectUserPlaceholder": "ユーザーを選択...",
+    "permission": "権限",
+    "readOnly": "読み取り専用",
+    "readWrite": "読み書き",
+    "owner": "オーナー",
+    "share": "共有",
+    "revoke": "取り消す",
+    "currentShares": "アクセス権を持つユーザー",
+    "noShares": "まだ共有されていません",
+    "noAvailableUsers": "共有できるユーザーがいません",
+    "shared": "共有済み",
+    "sharedWithTeam": "チームと共有済み"
   }
 }

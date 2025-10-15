@@ -677,7 +677,9 @@
     "completion": "Fullføring",
     "completionPercentage": "{{percentage}}% fullført",
     "toggleDropdownMenu": "Veksle nedtrekksmeny",
-    "projectInitials": "Prosjektinitialer"
+    "projectInitials": "Prosjektinitialer",
+    "share": "Del",
+    "sharedProject": "Delt med teamet"
   },
   "areas": {
     "title": "Områder",
@@ -929,5 +931,45 @@
     "thursday": "Torsdag",
     "friday": "Fredag",
     "saturday": "Lørdag"
+  },
+  "admin": {
+    "manageUsers": "Administrer brukere",
+    "userManagement": "Brukeradministrasjon",
+    "addUser": "Legg til bruker",
+    "remove": "Fjern",
+    "email": "E-post",
+    "created": "Opprettet",
+    "role": "Rolle",
+    "loadingUsers": "Laster inn brukere...",
+    "noUsers": "Ingen brukere",
+    "admin": "administrator",
+    "user": "bruker",
+    "password": "Passord",
+    "name": "Navn",
+    "surname": "Etternavn",
+    "authenticationRequired": "Autentisering kreves",
+    "forbidden": "Forbudt",
+    "failedToLoadUsers": "Kunne ikke laste brukere",
+    "emailAlreadyExists": "E-post finnes allerede",
+    "failedToCreateUser": "Kunne ikke opprette bruker",
+    "badRequest": "Feil forespørsel",
+    "userNotFound": "Bruker ikke funnet",
+    "failedToDeleteUser": "Kunne ikke slette bruker"
+  },
+  "shares": {
+    "shareProject": "Del prosjekt",
+    "targetUser": "Velg bruker",
+    "selectUserPlaceholder": "Velg en bruker...",
+    "permission": "Tillatelse",
+    "readOnly": "Kun lesing",
+    "readWrite": "Les og skriv",
+    "owner": "Eier",
+    "share": "Del",
+    "revoke": "Tilbaketrekke",
+    "currentShares": "Brukere med tilgang",
+    "noShares": "Ikke delt ennå",
+    "noAvailableUsers": "Ingen brukere tilgjengelige for å dele med",
+    "shared": "Delt",
+    "sharedWithTeam": "Delt med teamet"
   }
 }

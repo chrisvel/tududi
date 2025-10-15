@@ -677,7 +677,9 @@
     "completion": "Hoàn thành",
     "completionPercentage": "{{percentage}}% đã hoàn thành",
     "toggleDropdownMenu": "Chuyển đổi menu thả xuống",
-    "projectInitials": "Chữ cái đầu của dự án"
+    "projectInitials": "Chữ cái đầu của dự án",
+    "share": "Chia sẻ",
+    "sharedProject": "Đã chia sẻ với nhóm"
   },
   "areas": {
     "title": "Khu vực",
@@ -929,5 +931,45 @@
     "thursday": "Thứ năm",
     "friday": "Thứ sáu",
     "saturday": "Thứ bảy"
+  },
+  "admin": {
+    "manageUsers": "Quản lý người dùng",
+    "userManagement": "Quản lý người dùng",
+    "addUser": "Thêm người dùng",
+    "remove": "Xóa",
+    "email": "Email",
+    "created": "Đã tạo",
+    "role": "Vai trò",
+    "loadingUsers": "Đang tải người dùng...",
+    "noUsers": "Không có người dùng",
+    "admin": "quản trị viên",
+    "user": "người dùng",
+    "password": "Mật khẩu",
+    "name": "Tên",
+    "surname": "Họ",
+    "authenticationRequired": "Cần xác thực",
+    "forbidden": "Bị cấm",
+    "failedToLoadUsers": "Không thể tải người dùng",
+    "emailAlreadyExists": "Email đã tồn tại",
+    "failedToCreateUser": "Không thể tạo người dùng",
+    "badRequest": "Yêu cầu không hợp lệ",
+    "userNotFound": "Không tìm thấy người dùng",
+    "failedToDeleteUser": "Không thể xóa người dùng"
+  },
+  "shares": {
+    "shareProject": "Chia sẻ dự án",
+    "targetUser": "Chọn người dùng",
+    "selectUserPlaceholder": "Chọn một người dùng...",
+    "permission": "Quyền",
+    "readOnly": "Chỉ đọc",
+    "readWrite": "Đọc & ghi",
+    "owner": "Chủ sở hữu",
+    "share": "Chia sẻ",
+    "revoke": "Thu hồi",
+    "currentShares": "Người dùng có quyền truy cập",
+    "noShares": "Chưa chia sẻ",
+    "noAvailableUsers": "Không có người dùng nào để chia sẻ",
+    "shared": "Đã chia sẻ",
+    "sharedWithTeam": "Đã chia sẻ với nhóm"
   }
 }

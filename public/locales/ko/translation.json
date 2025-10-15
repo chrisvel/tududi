@@ -677,7 +677,9 @@
     "completion": "완료",
     "completionPercentage": "{{percentage}}% 완료",
     "toggleDropdownMenu": "드롭다운 메뉴 전환",
-    "projectInitials": "프로젝트 약어"
+    "projectInitials": "프로젝트 약어",
+    "share": "공유",
+    "sharedProject": "팀과 공유됨"
   },
   "areas": {
     "title": "영역",
@@ -929,5 +931,45 @@
     "thursday": "목요일",
     "friday": "금요일",
     "saturday": "토요일"
+  },
+  "admin": {
+    "manageUsers": "사용자 관리",
+    "userManagement": "사용자 관리",
+    "addUser": "사용자 추가",
+    "remove": "제거",
+    "email": "이메일",
+    "created": "생성됨",
+    "role": "역할",
+    "loadingUsers": "사용자 로딩 중...",
+    "noUsers": "사용자가 없습니다",
+    "admin": "관리자",
+    "user": "사용자",
+    "password": "비밀번호",
+    "name": "이름",
+    "surname": "성",
+    "authenticationRequired": "인증 필요",
+    "forbidden": "금지됨",
+    "failedToLoadUsers": "사용자 로드 실패",
+    "emailAlreadyExists": "이메일이 이미 존재합니다",
+    "failedToCreateUser": "사용자 생성 실패",
+    "badRequest": "잘못된 요청",
+    "userNotFound": "사용자를 찾을 수 없습니다",
+    "failedToDeleteUser": "사용자 삭제 실패"
+  },
+  "shares": {
+    "shareProject": "프로젝트 공유",
+    "targetUser": "사용자 선택",
+    "selectUserPlaceholder": "사용자를 선택하세요...",
+    "permission": "권한",
+    "readOnly": "읽기 전용",
+    "readWrite": "읽기 및 쓰기",
+    "owner": "소유자",
+    "share": "공유",
+    "revoke": "철회",
+    "currentShares": "접근 권한이 있는 사용자",
+    "noShares": "아직 공유되지 않음",
+    "noAvailableUsers": "공유할 수 있는 사용자가 없습니다",
+    "shared": "공유됨",
+    "sharedWithTeam": "팀과 공유됨"
   }
 }

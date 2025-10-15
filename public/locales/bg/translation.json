@@ -677,7 +677,9 @@
     "completion": "Завършване",
     "completionPercentage": "{{percentage}}% завършено",
     "toggleDropdownMenu": "Превключи падащото меню",
-    "projectInitials": "Инициали на проекта"
+    "projectInitials": "Инициали на проекта",
+    "share": "Сподели",
+    "sharedProject": "Споделено с екипа"
   },
   "areas": {
     "title": "Области",
@@ -929,5 +931,45 @@
     "thursday": "Четвъртък",
     "friday": "Петък",
     "saturday": "Събота"
+  },
+  "admin": {
+    "manageUsers": "Управление на потребители",
+    "userManagement": "Управление на потребителите",
+    "addUser": "Добави потребител",
+    "remove": "Премахни",
+    "email": "Имейл",
+    "created": "Създадено",
+    "role": "Роля",
+    "loadingUsers": "Зареждане на потребители...",
+    "noUsers": "Няма потребители",
+    "admin": "администратор",
+    "user": "потребител",
+    "password": "Парола",
+    "name": "Име",
+    "surname": "Фамилия",
+    "authenticationRequired": "Изисква се удостоверяване",
+    "forbidden": "Забранено",
+    "failedToLoadUsers": "Неуспешно зареждане на потребители",
+    "emailAlreadyExists": "Имейлът вече съществува",
+    "failedToCreateUser": "Неуспешно създаване на потребител",
+    "badRequest": "Невалидна заявка",
+    "userNotFound": "Потребителят не е намерен",
+    "failedToDeleteUser": "Неуспешно изтриване на потребител"
+  },
+  "shares": {
+    "shareProject": "Сподели проект",
+    "targetUser": "Избери потребител",
+    "selectUserPlaceholder": "Избери потребител...",
+    "permission": "Разрешение",
+    "readOnly": "Само за четене",
+    "readWrite": "Четене и писане",
+    "owner": "Собственик",
+    "share": "Сподели",
+    "revoke": "Отмяна",
+    "currentShares": "Потребители с достъп",
+    "noShares": "Все още не е споделено",
+    "noAvailableUsers": "Няма налични потребители за споделяне",
+    "shared": "Споделено",
+    "sharedWithTeam": "Споделено с екипа"
   }
 }

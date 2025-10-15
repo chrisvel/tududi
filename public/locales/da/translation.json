@@ -677,7 +677,9 @@
     "completion": "Færdiggørelse",
     "completionPercentage": "{{percentage}}% færdig",
     "toggleDropdownMenu": "Skift dropdown-menu",
-    "projectInitials": "Projektinitialer"
+    "projectInitials": "Projektinitialer",
+    "share": "Del",
+    "sharedProject": "Delt med teamet"
   },
   "areas": {
     "title": "Områder",
@@ -929,5 +931,45 @@
     "thursday": "Torsdag",
     "friday": "Fredag",
     "saturday": "Lørdag"
+  },
+  "admin": {
+    "manageUsers": "Administrer brugere",
+    "userManagement": "Brugeradministration",
+    "addUser": "Tilføj bruger",
+    "remove": "Fjern",
+    "email": "Email",
+    "created": "Oprettet",
+    "role": "Rolle",
+    "loadingUsers": "Indlæser brugere...",
+    "noUsers": "Ingen brugere",
+    "admin": "administrator",
+    "user": "bruger",
+    "password": "Adgangskode",
+    "name": "Navn",
+    "surname": "Efternavn",
+    "authenticationRequired": "Godkendelse påkrævet",
+    "forbidden": "Forbudt",
+    "failedToLoadUsers": "Kunne ikke indlæse brugere",
+    "emailAlreadyExists": "E-mail eksisterer allerede",
+    "failedToCreateUser": "Kunne ikke oprette bruger",
+    "badRequest": "Ugyldig anmodning",
+    "userNotFound": "Bruger ikke fundet",
+    "failedToDeleteUser": "Kunne ikke slette bruger"
+  },
+  "shares": {
+    "shareProject": "Del projekt",
+    "targetUser": "Vælg bruger",
+    "selectUserPlaceholder": "Vælg en bruger...",
+    "permission": "Tilladelse",
+    "readOnly": "Kun læsning",
+    "readWrite": "Læs & skriv",
+    "owner": "Ejer",
+    "share": "Del",
+    "revoke": "Tilbagekald",
+    "currentShares": "Brugere med adgang",
+    "noShares": "Ikke delt endnu",
+    "noAvailableUsers": "Ingen brugere tilgængelige til at dele med",
+    "shared": "Delt",
+    "sharedWithTeam": "Delt med teamet"
   }
 }

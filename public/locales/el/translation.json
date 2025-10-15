@@ -397,7 +397,9 @@
     "completion": "Ολοκλήρωση",
     "completionPercentage": "{{percentage}}% ολοκληρωμένο",
     "toggleDropdownMenu": "Εναλλαγή αναπτυσσόμενου μενού",
-    "projectInitials": "Αρχικά έργου"
+    "projectInitials": "Αρχικά έργου",
+    "share": "Κοινή χρήση",
+    "sharedProject": "Μοιράστηκε με την ομάδα"
   },
   "sort": {
     "due_date": "Ημερομηνία Λήξης",
@@ -933,5 +935,45 @@
     "thursday": "Πέμπτη",
     "friday": "Παρασκευή",
     "saturday": "Σάββατο"
+  },
+  "admin": {
+    "manageUsers": "Διαχείριση χρηστών",
+    "userManagement": "Διαχείριση Χρηστών",
+    "addUser": "Προσθήκη χρήστη",
+    "remove": "Αφαίρεση",
+    "email": "Ηλεκτρονικό ταχυδρομείο",
+    "created": "Δημιουργήθηκε",
+    "role": "Ρόλος",
+    "loadingUsers": "Φόρτωση χρηστών...",
+    "noUsers": "Δεν υπάρχουν χρήστες",
+    "admin": "διαχειριστής",
+    "user": "χρήστης",
+    "password": "Κωδικός πρόσβασης",
+    "name": "Όνομα",
+    "surname": "Επώνυμο",
+    "authenticationRequired": "Απαιτείται αυθεντικοποίηση",
+    "forbidden": "Απαγορευμένο",
+    "failedToLoadUsers": "Αποτυχία φόρτωσης χρηστών",
+    "emailAlreadyExists": "Το email υπάρχει ήδη",
+    "failedToCreateUser": "Αποτυχία δημιουργίας χρήστη",
+    "badRequest": "Κακή αίτηση",
+    "userNotFound": "Ο χρήστης δεν βρέθηκε",
+    "failedToDeleteUser": "Αποτυχία διαγραφής χρήστη"
+  },
+  "shares": {
+    "shareProject": "Κοινή χρήση έργου",
+    "targetUser": "Επιλέξτε χρήστη",
+    "selectUserPlaceholder": "Επιλέξτε έναν χρήστη...",
+    "permission": "Άδεια",
+    "readOnly": "Μόνο ανάγνωση",
+    "readWrite": "Ανάγνωση & εγγραφή",
+    "owner": "Ιδιοκτήτης",
+    "share": "Κοινή χρήση",
+    "revoke": "Ανάκληση",
+    "currentShares": "Χρήστες με πρόσβαση",
+    "noShares": "Δεν έχει μοιραστεί ακόμα",
+    "noAvailableUsers": "Δεν υπάρχουν διαθέσιμοι χρήστες για να μοιραστείτε",
+    "shared": "Μοιρασμένο",
+    "sharedWithTeam": "Μοιρασμένο με την ομάδα"
   }
 }

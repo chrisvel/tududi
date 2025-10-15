@@ -677,7 +677,9 @@
     "completion": "Voltooiing",
     "completionPercentage": "{{percentage}}% voltooid",
     "toggleDropdownMenu": "Schakel dropdownmenu in",
-    "projectInitials": "Projectinitialen"
+    "projectInitials": "Projectinitialen",
+    "share": "Delen",
+    "sharedProject": "Gedeeld met team"
   },
   "areas": {
     "title": "Gebieden",
@@ -929,5 +931,45 @@
     "thursday": "Donderdag",
     "friday": "Vrijdag",
     "saturday": "Zaterdag"
+  },
+  "admin": {
+    "manageUsers": "Beheer gebruikers",
+    "userManagement": "Gebruikersbeheer",
+    "addUser": "Voeg gebruiker toe",
+    "remove": "Verwijderen",
+    "email": "E-mail",
+    "created": "Aangemaakt",
+    "role": "Rol",
+    "loadingUsers": "Gebruikers laden...",
+    "noUsers": "Geen gebruikers",
+    "admin": "beheerder",
+    "user": "gebruiker",
+    "password": "Wachtwoord",
+    "name": "Naam",
+    "surname": "Achternaam",
+    "authenticationRequired": "Authenticatie vereist",
+    "forbidden": "Verboden",
+    "failedToLoadUsers": "Kon gebruikers niet laden",
+    "emailAlreadyExists": "E-mail bestaat al",
+    "failedToCreateUser": "Kon gebruiker niet aanmaken",
+    "badRequest": "Ongeldig verzoek",
+    "userNotFound": "Gebruiker niet gevonden",
+    "failedToDeleteUser": "Kon gebruiker niet verwijderen"
+  },
+  "shares": {
+    "shareProject": "Project delen",
+    "targetUser": "Selecteer gebruiker",
+    "selectUserPlaceholder": "Selecteer een gebruiker...",
+    "permission": "Toestemming",
+    "readOnly": "Alleen lezen",
+    "readWrite": "Lezen & schrijven",
+    "owner": "Eigenaar",
+    "share": "Delen",
+    "revoke": "Intrekken",
+    "currentShares": "Gebruikers met toegang",
+    "noShares": "Nog niet gedeeld",
+    "noAvailableUsers": "Geen gebruikers beschikbaar om mee te delen",
+    "shared": "Gedeeld",
+    "sharedWithTeam": "Gedeeld met het team"
   }
 }

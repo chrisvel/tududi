@@ -674,6 +674,8 @@
   "projectItem": {
     "edit": "Edit",
     "delete": "Delete",
+    "share": "Share",
+    "sharedProject": "Shared with team",
     "completion": "Completion",
     "completionPercentage": "{{percentage}}% complete",
     "toggleDropdownMenu": "Toggle dropdown menu",
@@ -937,12 +939,38 @@
     "addUser": "Add user",
     "remove": "Remove",
     "email": "Email",
+    "name": "Name",
+    "surname": "Surname",
     "created": "Created",
     "role": "Role",
     "loadingUsers": "Loading users...",
     "noUsers": "No users",
     "admin": "admin",
     "user": "user",
-    "password": "Password"
+    "password": "Password",
+    "authenticationRequired": "Authentication required",
+    "forbidden": "Forbidden",
+    "failedToLoadUsers": "Failed to load users",
+    "emailAlreadyExists": "Email already exists",
+    "failedToCreateUser": "Failed to create user",
+    "badRequest": "Bad request",
+    "userNotFound": "User not found",
+    "failedToDeleteUser": "Failed to delete user"
+  },
+  "shares": {
+    "shareProject": "Share project",
+    "targetUser": "Select user",
+    "selectUserPlaceholder": "Select a user...",
+    "permission": "Permission",
+    "readOnly": "Read only",
+    "readWrite": "Read & write",
+    "owner": "Owner",
+    "share": "Share",
+    "revoke": "Revoke",
+    "currentShares": "Users with access",
+    "noShares": "Not shared yet",
+    "noAvailableUsers": "No users available to share with",
+    "shared": "Shared",
+    "sharedWithTeam": "Shared with the team"
   }
 }

@@ -190,7 +190,9 @@
     "completion": "Завершення",
     "completionPercentage": "{{percentage}}% завершено",
     "toggleDropdownMenu": "Перемкнути випадаюче меню",
-    "projectInitials": "Ініціали проекту"
+    "projectInitials": "Ініціали проекту",
+    "share": "Поділитися",
+    "sharedProject": "Поділено з командою"
   },
   "forms": {
     "noteTitle": "Заголовок нотатки",
@@ -929,5 +931,45 @@
     "thursday": "Четвер",
     "friday": "П'ятниця",
     "saturday": "Субота"
+  },
+  "admin": {
+    "manageUsers": "Керувати користувачами",
+    "userManagement": "Управління користувачами",
+    "addUser": "Додати користувача",
+    "remove": "Видалити",
+    "email": "Електронна пошта",
+    "created": "Створено",
+    "role": "Роль",
+    "loadingUsers": "Завантаження користувачів...",
+    "noUsers": "Немає користувачів",
+    "admin": "адміністратор",
+    "user": "користувач",
+    "password": "Пароль",
+    "name": "Ім'я",
+    "surname": "Прізвище",
+    "authenticationRequired": "Необхідна аутентифікація",
+    "forbidden": "Заборонено",
+    "failedToLoadUsers": "Не вдалося завантажити користувачів",
+    "emailAlreadyExists": "Електронна пошта вже існує",
+    "failedToCreateUser": "Не вдалося створити користувача",
+    "badRequest": "Неправильний запит",
+    "userNotFound": "Користувача не знайдено",
+    "failedToDeleteUser": "Не вдалося видалити користувача"
+  },
+  "shares": {
+    "shareProject": "Поділитися проектом",
+    "targetUser": "Вибрати користувача",
+    "selectUserPlaceholder": "Виберіть користувача...",
+    "permission": "Дозвіл",
+    "readOnly": "Тільки для читання",
+    "readWrite": "Читання та запис",
+    "owner": "Власник",
+    "share": "Поділитися",
+    "revoke": "Скасувати",
+    "currentShares": "Користувачі з доступом",
+    "noShares": "Ще не поділено",
+    "noAvailableUsers": "Немає користувачів для спільного використання",
+    "shared": "Поділено",
+    "sharedWithTeam": "Поділено з командою"
   }
 }
