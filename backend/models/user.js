@@ -158,6 +158,13 @@ module.exports = (sequelize) => {
                     showDailyQuote: true,
                 },
             },
+            sidebar_settings: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: {
+                    pinnedViewsOrder: [],
+                },
+            },
         },
         {
             tableName: 'users',

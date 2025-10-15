@@ -67,6 +67,7 @@ router.get('/profile', async (req, res) => {
                 'auto_suggest_next_actions_enabled',
                 'pomodoro_enabled',
                 'today_settings',
+                'sidebar_settings',
                 'productivity_assistant_enabled',
                 'next_task_suggestion_enabled',
             ],
@@ -477,6 +478,40 @@ router.put('/profile/today-settings', async (req, res) => {
         });
     } catch (error) {
         logError('Error updating today settings:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// PUT /api/profile/sidebar-settings
+router.put('/profile/sidebar-settings', async (req, res) => {
+    try {
+        const user = await User.findByPk(req.session.userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        const { pinnedViewsOrder } = req.body;
+
+        if (!Array.isArray(pinnedViewsOrder)) {
+            return res.status(400).json({
+                error: 'pinnedViewsOrder must be an array',
+            });
+        }
+
+        const sidebarSettings = {
+            pinnedViewsOrder,
+        };
+
+        await user.update({
+            sidebar_settings: sidebarSettings,
+        });
+
+        res.json({
+            success: true,
+            sidebar_settings: sidebarSettings,
+        });
+    } catch (error) {
+        logError('Error updating sidebar settings:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
