@@ -963,7 +963,14 @@
     "failedToCreateUser": "Benutzer konnte nicht erstellt werden",
     "badRequest": "Ungültige Anfrage",
     "userNotFound": "Benutzer nicht gefunden",
-    "failedToDeleteUser": "Benutzer konnte nicht gelöscht werden"
+    "failedToDeleteUser": "Benutzer konnte nicht gelöscht werden",
+    "editUser": "Benutzer bearbeiten",
+    "actions": "Aktionen",
+    "passwordOptional": "Feld leer lassen, um das aktuelle Passwort beizubehalten",
+    "failedToUpdateUser": "Fehler beim Aktualisieren des Benutzers",
+    "confirmDelete": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?",
+    "deleteUser": "Benutzer löschen",
+    "confirmDeleteUser": "Sind Sie sicher, dass Sie {{email}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
   },
   "shares": {
     "shareProject": "Projekt teilen",

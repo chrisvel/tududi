@@ -1,7 +1,13 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDownIcon, CheckIcon } from '@heroicons/react/24/outline';
+import {
+    ChevronDownIcon,
+    CheckIcon,
+    PencilIcon,
+    TrashIcon,
+} from '@heroicons/react/24/outline';
+import ConfirmDialog from '../Shared/ConfirmDialog';
 
 interface AdminUserItem {
     id: number;
@@ -64,6 +70,49 @@ const createAdminUser = async (
     return await res.json();
 };
 
+const updateAdminUser = async (
+    id: number,
+    email: string,
+    t: any,
+    name?: string,
+    surname?: string,
+    role?: 'admin' | 'user',
+    password?: string
+): Promise<AdminUserItem> => {
+    const body: any = { email, name, surname, role };
+    if (password) body.password = password;
+
+    const res = await fetch(`/api/admin/users/${id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        body: JSON.stringify(body),
+    });
+    if (res.status === 401)
+        throw new Error(
+            t('admin.authenticationRequired', 'Authentication required')
+        );
+    if (res.status === 403) throw new Error(t('admin.forbidden', 'Forbidden'));
+    if (res.status === 409)
+        throw new Error(t('admin.emailAlreadyExists', 'Email already exists'));
+    if (res.status === 404)
+        throw new Error(t('admin.userNotFound', 'User not found'));
+    if (!res.ok) {
+        let message = t('admin.failedToUpdateUser', 'Failed to update user');
+        try {
+            const body = await res.json();
+            if (body?.error) message = body.error;
+        } catch {
+            // ignore non-JSON error bodies
+        }
+        throw new Error(message);
+    }
+    return await res.json();
+};
+
 const deleteAdminUser = async (id: number, t: any): Promise<void> => {
     const res = await fetch(`/api/admin/users/${id}`, {
         method: 'DELETE',
@@ -91,7 +140,9 @@ const AddUserModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
     onCreated: (user: AdminUserItem) => void;
-}> = ({ isOpen, onClose, onCreated }) => {
+    onUpdated: (user: AdminUserItem) => void;
+    editingUser?: AdminUserItem | null;
+}> = ({ isOpen, onClose, onCreated, onUpdated, editingUser }) => {
     const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -110,15 +161,23 @@ const AddUserModal: React.FC<{
 
     useEffect(() => {
         if (isOpen) {
-            setEmail('');
-            setPassword('');
-            setName('');
-            setSurname('');
-            setRole('user');
+            if (editingUser) {
+                setEmail(editingUser.email);
+                setPassword('');
+                setName(editingUser.name || '');
+                setSurname(editingUser.surname || '');
+                setRole(editingUser.role);
+            } else {
+                setEmail('');
+                setPassword('');
+                setName('');
+                setSurname('');
+                setRole('user');
+            }
             setError(null);
             setIsRoleDropdownOpen(false);
         }
-    }, [isOpen]);
+    }, [isOpen, editingUser]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -144,7 +203,7 @@ const AddUserModal: React.FC<{
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-        if (!email || !password) {
+        if (!email) {
             setError(t('errors.required', 'This field is required'));
             return;
         }
@@ -152,22 +211,45 @@ const AddUserModal: React.FC<{
             setError(t('errors.invalidEmail', 'Invalid email address'));
             return;
         }
+        // Password is required for new users, optional for updates
+        if (!editingUser && !password) {
+            setError(t('errors.required', 'This field is required'));
+            return;
+        }
         setSubmitting(true);
         try {
-            const user = await createAdminUser(
-                email,
-                password,
-                t,
-                name,
-                surname,
-                role
-            );
-            onCreated(user);
+            if (editingUser) {
+                const user = await updateAdminUser(
+                    editingUser.id,
+                    email,
+                    t,
+                    name,
+                    surname,
+                    role,
+                    password || undefined
+                );
+                onUpdated(user);
+            } else {
+                const user = await createAdminUser(
+                    email,
+                    password,
+                    t,
+                    name,
+                    surname,
+                    role
+                );
+                onCreated(user);
+            }
             onClose();
         } catch (err: any) {
             setError(
                 err.message ||
-                    t('admin.failedToCreateUser', 'Failed to create user')
+                    (editingUser
+                        ? t('admin.failedToUpdateUser', 'Failed to update user')
+                        : t(
+                              'admin.failedToCreateUser',
+                              'Failed to create user'
+                          ))
             );
         } finally {
             setSubmitting(false);
@@ -184,7 +266,9 @@ const AddUserModal: React.FC<{
                 onClick={(e) => e.stopPropagation()}
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    {t('admin.addUser', 'Add user')}
+                    {editingUser
+                        ? t('admin.editUser', 'Edit user')
+                        : t('admin.addUser', 'Add user')}
                 </h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -224,13 +308,23 @@ const AddUserModal: React.FC<{
                     <div>
                         <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">
                             {t('admin.password', 'Password')}
+                            {editingUser && (
+                                <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                                    (
+                                    {t(
+                                        'admin.passwordOptional',
+                                        'Leave blank to keep current'
+                                    )}
+                                    )
+                                </span>
+                            )}
                         </label>
                         <input
                             type="password"
                             className="w-full rounded border px-3 py-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            required
+                            required={!editingUser}
                             minLength={6}
                         />
                     </div>
@@ -321,7 +415,9 @@ const AddUserModal: React.FC<{
                         >
                             {submitting
                                 ? t('common.saving', 'Saving...')
-                                : t('common.create', 'Create')}
+                                : editingUser
+                                  ? t('common.save', 'Save')
+                                  : t('common.create', 'Create')}
                         </button>
                     </div>
                 </form>
@@ -335,11 +431,12 @@ const AdminUsersPage: React.FC = () => {
     const [users, setUsers] = useState<AdminUserItem[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
     const [addOpen, setAddOpen] = useState(false);
+    const [editingUser, setEditingUser] = useState<AdminUserItem | null>(null);
+    const [userToDelete, setUserToDelete] = useState<AdminUserItem | null>(
+        null
+    );
     const navigate = useNavigate();
-
-    const selectedCount = selectedIds.size;
 
     const load = async () => {
         setLoading(true);
@@ -363,56 +460,23 @@ const AdminUsersPage: React.FC = () => {
         load();
     }, []);
 
-    const toggleSelect = (id: number) => {
-        setSelectedIds((prev) => {
-            const next = new Set(prev);
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
-            return next;
-        });
-    };
+    const handleDeleteUser = async () => {
+        if (!userToDelete) return;
 
-    const toggleSelectAll = () => {
-        if (!users) return;
-        setSelectedIds((prev) => {
-            if (prev.size === users.length) return new Set();
-            return new Set(users.map((u) => u.id));
-        });
-    };
-
-    const removeSelected = async () => {
-        if (!users || selectedIds.size === 0) return;
-        const toDelete = Array.from(selectedIds);
-        const remaining: AdminUserItem[] = [];
-        const byId = new Map(users.map((u) => [u.id, u] as const));
-        for (const id of toDelete) {
-            try {
-                await deleteAdminUser(id, t);
-            } catch (err: any) {
-                // Keep the user if deletion failed and surface error inline later
-                console.error(
-                    t('admin.failedToDeleteUser', 'Failed to delete user'),
-                    id,
-                    err?.message
-                );
-                remaining.push(byId.get(id)!);
-            }
+        try {
+            await deleteAdminUser(userToDelete.id, t);
+            setUsers((prev) =>
+                prev ? prev.filter((u) => u.id !== userToDelete.id) : null
+            );
+            setUserToDelete(null);
+        } catch (err: any) {
+            setError(
+                err.message ||
+                    t('admin.failedToDeleteUser', 'Failed to delete user')
+            );
+            setUserToDelete(null);
         }
-        const next = users.filter((u) => !toDelete.includes(u.id));
-        // If any failed, keep them
-        const nextWithFailures = remaining.length
-            ? next.concat(
-                  remaining.filter((r) => !next.find((n) => n.id === r.id))
-              )
-            : next;
-        setUsers(nextWithFailures);
-        setSelectedIds(new Set());
     };
-
-    const headerCheckboxChecked = useMemo(() => {
-        if (!users || users.length === 0) return false;
-        return selectedIds.size === users.length;
-    }, [users, selectedIds]);
 
     return (
         <div className="flex justify-center px-4 lg:px-2">
@@ -421,21 +485,15 @@ const AdminUsersPage: React.FC = () => {
                     <h2 className="text-2xl font-light">
                         {t('admin.userManagement', 'User Management')}
                     </h2>
-                    <div className="flex items-center space-x-2">
-                        <button
-                            onClick={() => setAddOpen(true)}
-                            className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm"
-                        >
-                            {t('admin.addUser', 'Add user')}
-                        </button>
-                        <button
-                            onClick={removeSelected}
-                            disabled={selectedCount === 0}
-                            className="px-4 py-2 rounded-md border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none transition duration-150 ease-in-out text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {t('admin.remove', 'Remove')}
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => {
+                            setEditingUser(null);
+                            setAddOpen(true);
+                        }}
+                        className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm"
+                    >
+                        {t('admin.addUser', 'Add user')}
+                    </button>
                 </div>
 
                 {error && (
@@ -448,14 +506,6 @@ const AdminUsersPage: React.FC = () => {
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead className="bg-gray-50 dark:bg-gray-900">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    <input
-                                        type="checkbox"
-                                        checked={headerCheckboxChecked}
-                                        onChange={toggleSelectAll}
-                                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-2 bg-white dark:bg-gray-700"
-                                    />
-                                </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     {t('admin.email', 'Email')}
                                 </th>
@@ -470,6 +520,9 @@ const AdminUsersPage: React.FC = () => {
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     {t('admin.role', 'Role')}
+                                </th>
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    {t('admin.actions', 'Actions')}
                                 </th>
                             </tr>
                         </thead>
@@ -504,16 +557,6 @@ const AdminUsersPage: React.FC = () => {
                                         key={u.id}
                                         className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-150"
                                     >
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedIds.has(u.id)}
-                                                onChange={() =>
-                                                    toggleSelect(u.id)
-                                                }
-                                                className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-2 bg-white dark:bg-gray-700"
-                                            />
-                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                             {u.email}
                                         </td>
@@ -537,6 +580,35 @@ const AdminUsersPage: React.FC = () => {
                                                     : t('admin.user', 'user')}
                                             </span>
                                         </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <div className="flex items-center justify-end space-x-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingUser(u);
+                                                        setAddOpen(true);
+                                                    }}
+                                                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                                                    title={t(
+                                                        'common.edit',
+                                                        'Edit'
+                                                    )}
+                                                >
+                                                    <PencilIcon className="h-5 w-5" />
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        setUserToDelete(u)
+                                                    }
+                                                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                    title={t(
+                                                        'common.delete',
+                                                        'Delete'
+                                                    )}
+                                                >
+                                                    <TrashIcon className="h-5 w-5" />
+                                                </button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))}
                         </tbody>
@@ -545,11 +617,35 @@ const AdminUsersPage: React.FC = () => {
 
                 <AddUserModal
                     isOpen={addOpen}
-                    onClose={() => setAddOpen(false)}
+                    onClose={() => {
+                        setAddOpen(false);
+                        setEditingUser(null);
+                    }}
                     onCreated={(user) =>
                         setUsers((prev) => (prev ? [user, ...prev] : [user]))
                     }
+                    onUpdated={(user) =>
+                        setUsers((prev) =>
+                            prev
+                                ? prev.map((u) => (u.id === user.id ? user : u))
+                                : [user]
+                        )
+                    }
+                    editingUser={editingUser}
                 />
+
+                {userToDelete && (
+                    <ConfirmDialog
+                        title={t('admin.deleteUser', 'Delete User')}
+                        message={t(
+                            'admin.confirmDeleteUser',
+                            'Are you sure you want to delete {{email}}? This action cannot be undone.',
+                            { email: userToDelete.email }
+                        )}
+                        onConfirm={handleDeleteUser}
+                        onCancel={() => setUserToDelete(null)}
+                    />
+                )}
             </div>
         </div>
     );

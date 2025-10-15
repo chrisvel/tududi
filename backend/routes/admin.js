@@ -153,6 +153,78 @@ router.post('/admin/users', requireAdmin, async (req, res) => {
     }
 });
 
+// PUT /api/admin/users/:id - update a user
+router.put('/admin/users/:id', requireAdmin, async (req, res) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+        if (!Number.isFinite(id))
+            return res.status(400).json({ error: 'Invalid user id' });
+
+        const user = await User.findByPk(id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        const { email, password, name, surname, role } = req.body || {};
+
+        // Update email if provided
+        if (email !== undefined && email !== null) {
+            if (typeof email !== 'string' || !email.includes('@')) {
+                return res.status(400).json({ error: 'Invalid email' });
+            }
+            user.email = email;
+        }
+
+        // Update password if provided
+        if (password && password.trim() !== '') {
+            if (typeof password !== 'string' || password.length < 6) {
+                return res
+                    .status(400)
+                    .json({ error: 'Password must be at least 6 characters' });
+            }
+            user.password = password;
+        }
+
+        // Update name and surname - handle empty strings properly
+        if (name !== undefined) user.name = name || null;
+        if (surname !== undefined) user.surname = surname || null;
+
+        await user.save();
+
+        // Update role if provided
+        if (role !== undefined) {
+            const makeAdmin = role === 'admin';
+            const [userRole] = await Role.findOrCreate({
+                where: { user_id: user.id },
+                defaults: { user_id: user.id, is_admin: makeAdmin },
+            });
+            if (userRole.is_admin !== makeAdmin) {
+                userRole.is_admin = makeAdmin;
+                await userRole.save();
+            }
+        }
+
+        // Fetch updated role
+        const userRole = await Role.findOne({ where: { user_id: user.id } });
+
+        res.json({
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            surname: user.surname,
+            created_at: user.created_at,
+            role: userRole?.is_admin ? 'admin' : 'user',
+        });
+    } catch (err) {
+        logError('Error updating user:', err);
+        // Unique constraint
+        if (err?.name === 'SequelizeUniqueConstraintError') {
+            return res.status(409).json({ error: 'Email already exists' });
+        }
+        res.status(400).json({
+            error: 'There was a problem updating the user.',
+        });
+    }
+});
+
 // DELETE /api/admin/users/:id - delete a user, prevent self-delete
 router.delete('/admin/users/:id', requireAdmin, async (req, res) => {
     try {

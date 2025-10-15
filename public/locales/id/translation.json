@@ -954,7 +954,14 @@
     "failedToCreateUser": "Gagal membuat pengguna",
     "badRequest": "Permintaan tidak valid",
     "userNotFound": "Pengguna tidak ditemukan",
-    "failedToDeleteUser": "Gagal menghapus pengguna"
+    "failedToDeleteUser": "Gagal menghapus pengguna",
+    "editUser": "Edit pengguna",
+    "actions": "Tindakan",
+    "passwordOptional": "Biarkan kosong untuk mempertahankan yang sekarang",
+    "failedToUpdateUser": "Gagal memperbarui pengguna",
+    "confirmDelete": "Apakah Anda yakin ingin menghapus pengguna ini?",
+    "deleteUser": "Hapus Pengguna",
+    "confirmDeleteUser": "Apakah Anda yakin ingin menghapus {{email}}? Tindakan ini tidak dapat dibatalkan."
   },
   "shares": {
     "shareProject": "Bagikan proyek",

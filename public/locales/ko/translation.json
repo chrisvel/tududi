@@ -954,7 +954,14 @@
     "failedToCreateUser": "사용자 생성 실패",
     "badRequest": "잘못된 요청",
     "userNotFound": "사용자를 찾을 수 없습니다",
-    "failedToDeleteUser": "사용자 삭제 실패"
+    "failedToDeleteUser": "사용자 삭제 실패",
+    "editUser": "사용자 편집",
+    "actions": "작업",
+    "passwordOptional": "현재 비밀번호를 유지하려면 비워 두세요",
+    "failedToUpdateUser": "사용자 업데이트에 실패했습니다",
+    "confirmDelete": "이 사용자를 삭제하시겠습니까?",
+    "deleteUser": "사용자 삭제",
+    "confirmDeleteUser": "{{email}}을(를) 삭제하시겠습니까? 이 작업은 취소할 수 없습니다."
   },
   "shares": {
     "shareProject": "프로젝트 공유",

@@ -954,7 +954,14 @@
     "failedToCreateUser": "Crearea utilizatorului a eșuat",
     "badRequest": "Cerere incorectă",
     "userNotFound": "Utilizatorul nu a fost găsit",
-    "failedToDeleteUser": "Ștergerea utilizatorului a eșuat"
+    "failedToDeleteUser": "Ștergerea utilizatorului a eșuat",
+    "editUser": "Editează utilizator",
+    "actions": "Acțiuni",
+    "passwordOptional": "Lăsați gol pentru a păstra actual",
+    "failedToUpdateUser": "Actualizarea utilizatorului a eșuat",
+    "confirmDelete": "Ești sigur că vrei să ștergi acest utilizator?",
+    "deleteUser": "Șterge utilizator",
+    "confirmDeleteUser": "Ești sigur că vrei să ștergi {{email}}? Această acțiune nu poate fi anulată."
   },
   "shares": {
     "shareProject": "Partajați proiectul",

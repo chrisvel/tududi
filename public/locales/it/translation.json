@@ -954,7 +954,14 @@
     "failedToCreateUser": "Impossibile creare l'utente",
     "badRequest": "Richiesta non valida",
     "userNotFound": "Utente non trovato",
-    "failedToDeleteUser": "Impossibile eliminare l'utente"
+    "failedToDeleteUser": "Impossibile eliminare l'utente",
+    "editUser": "Modifica utente",
+    "actions": "Azioni",
+    "passwordOptional": "Lascia vuoto per mantenere quello attuale",
+    "failedToUpdateUser": "Impossibile aggiornare l'utente",
+    "confirmDelete": "Sei sicuro di voler eliminare questo utente?",
+    "deleteUser": "Elimina utente",
+    "confirmDeleteUser": "Sei sicuro di voler eliminare {{email}}? Questa azione non può essere annullata."
   },
   "shares": {
     "shareProject": "Condividi progetto",

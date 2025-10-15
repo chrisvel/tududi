@@ -954,7 +954,14 @@
     "failedToCreateUser": "Kunne ikke opprette bruker",
     "badRequest": "Feil forespørsel",
     "userNotFound": "Bruker ikke funnet",
-    "failedToDeleteUser": "Kunne ikke slette bruker"
+    "failedToDeleteUser": "Kunne ikke slette bruker",
+    "editUser": "Rediger bruker",
+    "actions": "Handlinger",
+    "passwordOptional": "La stå blankt for å beholde nåværende",
+    "failedToUpdateUser": "Kunne ikke oppdatere bruker",
+    "confirmDelete": "Er du sikker på at du vil slette denne brukeren?",
+    "deleteUser": "Slett bruker",
+    "confirmDeleteUser": "Er du sikker på at du vil slette {{email}}? Denne handlingen kan ikke angres."
   },
   "shares": {
     "shareProject": "Del prosjekt",

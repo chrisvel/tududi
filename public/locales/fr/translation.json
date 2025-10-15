@@ -954,7 +954,14 @@
     "failedToCreateUser": "Échec de la création de l'utilisateur",
     "badRequest": "Mauvaise requête",
     "userNotFound": "Utilisateur non trouvé",
-    "failedToDeleteUser": "Échec de la suppression de l'utilisateur"
+    "failedToDeleteUser": "Échec de la suppression de l'utilisateur",
+    "editUser": "Modifier l'utilisateur",
+    "actions": "Actions",
+    "passwordOptional": "Laissez vide pour conserver l'actuel",
+    "failedToUpdateUser": "Échec de la mise à jour de l'utilisateur",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
+    "deleteUser": "Supprimer l'utilisateur",
+    "confirmDeleteUser": "Êtes-vous sûr de vouloir supprimer {{email}} ? Cette action ne peut pas être annulée."
   },
   "shares": {
     "shareProject": "Partager le projet",

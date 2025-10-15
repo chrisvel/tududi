@@ -954,7 +954,14 @@
     "failedToCreateUser": "فشل في إنشاء المستخدم",
     "badRequest": "طلب غير صحيح",
     "userNotFound": "المستخدم غير موجود",
-    "failedToDeleteUser": "فشل في حذف المستخدم"
+    "failedToDeleteUser": "فشل في حذف المستخدم",
+    "editUser": "تعديل المستخدم",
+    "actions": "الإجراءات",
+    "passwordOptional": "اتركه فارغًا للاحتفاظ بالحالي",
+    "failedToUpdateUser": "فشل في تحديث المستخدم",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا المستخدم؟",
+    "deleteUser": "حذف المستخدم",
+    "confirmDeleteUser": "هل أنت متأكد أنك تريد حذف {{email}}؟ لا يمكن التراجع عن هذا الإجراء."
   },
   "shares": {
     "shareProject": "مشاركة المشروع",
