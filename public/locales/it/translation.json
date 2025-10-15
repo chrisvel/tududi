@@ -677,7 +677,9 @@
     "completion": "Completamento",
     "completionPercentage": "{{percentage}}% completato",
     "toggleDropdownMenu": "Attiva/disattiva menu a discesa",
-    "projectInitials": "Iniziali progetto"
+    "projectInitials": "Iniziali progetto",
+    "share": "Condividi",
+    "sharedProject": "Condiviso con il team"
   },
   "areas": {
     "title": "Aree",
@@ -929,5 +931,45 @@
     "thursday": "Giovedì",
     "friday": "Venerdì",
     "saturday": "Sabato"
+  },
+  "admin": {
+    "manageUsers": "Gestisci utenti",
+    "userManagement": "Gestione utenti",
+    "addUser": "Aggiungi utente",
+    "remove": "Rimuovi",
+    "email": "Email",
+    "created": "Creato",
+    "role": "Ruolo",
+    "loadingUsers": "Caricamento utenti...",
+    "noUsers": "Nessun utente",
+    "admin": "amministratore",
+    "user": "utente",
+    "password": "Password",
+    "name": "Nome",
+    "surname": "Cognome",
+    "authenticationRequired": "Autenticazione richiesta",
+    "forbidden": "Vietato",
+    "failedToLoadUsers": "Impossibile caricare gli utenti",
+    "emailAlreadyExists": "L'email esiste già",
+    "failedToCreateUser": "Impossibile creare l'utente",
+    "badRequest": "Richiesta non valida",
+    "userNotFound": "Utente non trovato",
+    "failedToDeleteUser": "Impossibile eliminare l'utente"
+  },
+  "shares": {
+    "shareProject": "Condividi progetto",
+    "targetUser": "Seleziona utente",
+    "selectUserPlaceholder": "Seleziona un utente...",
+    "permission": "Permesso",
+    "readOnly": "Solo lettura",
+    "readWrite": "Lettura e scrittura",
+    "owner": "Proprietario",
+    "share": "Condividi",
+    "revoke": "Revoca",
+    "currentShares": "Utenti con accesso",
+    "noShares": "Non ancora condiviso",
+    "noAvailableUsers": "Nessun utente disponibile con cui condividere",
+    "shared": "Condiviso",
+    "sharedWithTeam": "Condiviso con il team"
   }
 }

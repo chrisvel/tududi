@@ -677,7 +677,9 @@
     "completion": "Valmistuminen",
     "completionPercentage": "{{percentage}}% valmis",
     "toggleDropdownMenu": "Vaihda avattavaa valikkoa",
-    "projectInitials": "Projektin lyhenteet"
+    "projectInitials": "Projektin lyhenteet",
+    "share": "Jaa",
+    "sharedProject": "Jaettu tiimille"
   },
   "areas": {
     "title": "Alueet",
@@ -929,5 +931,45 @@
     "thursday": "Torstai",
     "friday": "Perjantai",
     "saturday": "Lauantai"
+  },
+  "admin": {
+    "manageUsers": "Hallitse käyttäjiä",
+    "userManagement": "Käyttäjähallinta",
+    "addUser": "Lisää käyttäjä",
+    "remove": "Poista",
+    "email": "Sähköposti",
+    "created": "Luotu",
+    "role": "Rooli",
+    "loadingUsers": "Ladataan käyttäjiä...",
+    "noUsers": "Ei käyttäjiä",
+    "admin": "ylläpitäjä",
+    "user": "käyttäjä",
+    "password": "Salasana",
+    "name": "Nimi",
+    "surname": "Sukunimi",
+    "authenticationRequired": "Todennus vaaditaan",
+    "forbidden": "Kielletty",
+    "failedToLoadUsers": "Käyttäjien lataaminen epäonnistui",
+    "emailAlreadyExists": "Sähköposti on jo käytössä",
+    "failedToCreateUser": "Käyttäjän luominen epäonnistui",
+    "badRequest": "Virheellinen pyyntö",
+    "userNotFound": "Käyttäjää ei löytynyt",
+    "failedToDeleteUser": "Käyttäjän poistaminen epäonnistui"
+  },
+  "shares": {
+    "shareProject": "Jaa projekti",
+    "targetUser": "Valitse käyttäjä",
+    "selectUserPlaceholder": "Valitse käyttäjä...",
+    "permission": "Oikeus",
+    "readOnly": "Vain luku",
+    "readWrite": "Luku & kirjoitus",
+    "owner": "Omistaja",
+    "share": "Jaa",
+    "revoke": "Peruuta",
+    "currentShares": "Käyttäjät, joilla on pääsy",
+    "noShares": "Ei vielä jaettu",
+    "noAvailableUsers": "Ei käyttäjiä, joille jakaa",
+    "shared": "Jaettu",
+    "sharedWithTeam": "Jaettu tiimin kanssa"
   }
 }

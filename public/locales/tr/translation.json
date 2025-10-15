@@ -677,7 +677,9 @@
     "completion": "Tamamlanma",
     "completionPercentage": "{{percentage}}% tamamlandı",
     "toggleDropdownMenu": "Açılır menüyü aç/kapa",
-    "projectInitials": "Proje kısaltmaları"
+    "projectInitials": "Proje kısaltmaları",
+    "share": "Paylaş",
+    "sharedProject": "Takımla paylaşıldı"
   },
   "areas": {
     "title": "Alanlar",
@@ -929,5 +931,45 @@
     "thursday": "Perşembe",
     "friday": "Cuma",
     "saturday": "Cumartesi"
+  },
+  "admin": {
+    "manageUsers": "Kullanıcıları yönet",
+    "userManagement": "Kullanıcı Yönetimi",
+    "addUser": "Kullanıcı ekle",
+    "remove": "Kaldır",
+    "email": "E-posta",
+    "created": "Oluşturuldu",
+    "role": "Rol",
+    "loadingUsers": "Kullanıcılar yükleniyor...",
+    "noUsers": "Hiç kullanıcı yok",
+    "admin": "yönetici",
+    "user": "kullanıcı",
+    "password": "Şifre",
+    "name": "Ad",
+    "surname": "Soyad",
+    "authenticationRequired": "Kimlik doğrulama gerekli",
+    "forbidden": "Yasak",
+    "failedToLoadUsers": "Kullanıcılar yüklenemedi",
+    "emailAlreadyExists": "E-posta zaten mevcut",
+    "failedToCreateUser": "Kullanıcı oluşturulamadı",
+    "badRequest": "Geçersiz istek",
+    "userNotFound": "Kullanıcı bulunamadı",
+    "failedToDeleteUser": "Kullanıcı silinemedi"
+  },
+  "shares": {
+    "shareProject": "Projeyi paylaş",
+    "targetUser": "Kullanıcı seç",
+    "selectUserPlaceholder": "Bir kullanıcı seçin...",
+    "permission": "İzin",
+    "readOnly": "Sadece okunur",
+    "readWrite": "Oku ve yaz",
+    "owner": "Sahibi",
+    "share": "Paylaş",
+    "revoke": "Geri al",
+    "currentShares": "Erişimi olan kullanıcılar",
+    "noShares": "Henüz paylaşılmadı",
+    "noAvailableUsers": "Paylaşılacak kullanıcı yok",
+    "shared": "Paylaşıldı",
+    "sharedWithTeam": "Takımla paylaşıldı"
   }
 }

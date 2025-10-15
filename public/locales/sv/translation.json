@@ -677,7 +677,9 @@
     "completion": "Slutförande",
     "completionPercentage": "{{percentage}} % slutfört",
     "toggleDropdownMenu": "Toggla rullgardinsmeny",
-    "projectInitials": "Projektinitialer"
+    "projectInitials": "Projektinitialer",
+    "share": "Dela",
+    "sharedProject": "Delad med teamet"
   },
   "areas": {
     "title": "Områden",
@@ -929,5 +931,45 @@
     "thursday": "Torsdag",
     "friday": "Fredag",
     "saturday": "Lördag"
+  },
+  "admin": {
+    "manageUsers": "Hantera användare",
+    "userManagement": "Användarhantering",
+    "addUser": "Lägg till användare",
+    "remove": "Ta bort",
+    "email": "E-post",
+    "created": "Skapad",
+    "role": "Roll",
+    "loadingUsers": "Laddar användare...",
+    "noUsers": "Inga användare",
+    "admin": "admin",
+    "user": "användare",
+    "password": "Lösenord",
+    "name": "Namn",
+    "surname": "Efternamn",
+    "authenticationRequired": "Autentisering krävs",
+    "forbidden": "Förbjuden",
+    "failedToLoadUsers": "Misslyckades med att ladda användare",
+    "emailAlreadyExists": "E-postadress finns redan",
+    "failedToCreateUser": "Misslyckades med att skapa användare",
+    "badRequest": "Felaktig begäran",
+    "userNotFound": "Användare hittades inte",
+    "failedToDeleteUser": "Misslyckades med att ta bort användare"
+  },
+  "shares": {
+    "shareProject": "Dela projekt",
+    "targetUser": "Välj användare",
+    "selectUserPlaceholder": "Välj en användare...",
+    "permission": "Behörighet",
+    "readOnly": "Endast läsning",
+    "readWrite": "Läsa & skriva",
+    "owner": "Ägare",
+    "share": "Dela",
+    "revoke": "Återkalla",
+    "currentShares": "Användare med åtkomst",
+    "noShares": "Inte delad än",
+    "noAvailableUsers": "Inga användare tillgängliga att dela med",
+    "shared": "Delad",
+    "sharedWithTeam": "Delad med teamet"
   }
 }

@@ -12,20 +12,25 @@ interface AdminUserItem {
     role: 'admin' | 'user';
 }
 
-const fetchAdminUsers = async (): Promise<AdminUserItem[]> => {
+const fetchAdminUsers = async (t: any): Promise<AdminUserItem[]> => {
     const res = await fetch('/api/admin/users', {
         credentials: 'include',
         headers: { Accept: 'application/json' },
     });
-    if (res.status === 401) throw new Error('Authentication required');
-    if (res.status === 403) throw new Error('Forbidden');
-    if (!res.ok) throw new Error('Failed to load users');
+    if (res.status === 401)
+        throw new Error(
+            t('admin.authenticationRequired', 'Authentication required')
+        );
+    if (res.status === 403) throw new Error(t('admin.forbidden', 'Forbidden'));
+    if (!res.ok)
+        throw new Error(t('admin.failedToLoadUsers', 'Failed to load users'));
     return await res.json();
 };
 
 const createAdminUser = async (
     email: string,
     password: string,
+    t: any,
     name?: string,
     surname?: string,
     role?: 'admin' | 'user'
@@ -39,11 +44,15 @@ const createAdminUser = async (
         },
         body: JSON.stringify({ email, password, name, surname, role }),
     });
-    if (res.status === 401) throw new Error('Authentication required');
-    if (res.status === 403) throw new Error('Forbidden');
-    if (res.status === 409) throw new Error('Email already exists');
+    if (res.status === 401)
+        throw new Error(
+            t('admin.authenticationRequired', 'Authentication required')
+        );
+    if (res.status === 403) throw new Error(t('admin.forbidden', 'Forbidden'));
+    if (res.status === 409)
+        throw new Error(t('admin.emailAlreadyExists', 'Email already exists'));
     if (!res.ok) {
-        let message = 'Failed to create user';
+        let message = t('admin.failedToCreateUser', 'Failed to create user');
         try {
             const body = await res.json();
             if (body?.error) message = body.error;
@@ -55,20 +64,27 @@ const createAdminUser = async (
     return await res.json();
 };
 
-const deleteAdminUser = async (id: number): Promise<void> => {
+const deleteAdminUser = async (id: number, t: any): Promise<void> => {
     const res = await fetch(`/api/admin/users/${id}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: { Accept: 'application/json' },
     });
-    if (res.status === 401) throw new Error('Authentication required');
-    if (res.status === 403) throw new Error('Forbidden');
+    if (res.status === 401)
+        throw new Error(
+            t('admin.authenticationRequired', 'Authentication required')
+        );
+    if (res.status === 403) throw new Error(t('admin.forbidden', 'Forbidden'));
     if (res.status === 400) {
-        const body = await res.json().catch(() => ({ error: 'Bad request' }));
-        throw new Error(body.error || 'Bad request');
+        const body = await res
+            .json()
+            .catch(() => ({ error: t('admin.badRequest', 'Bad request') }));
+        throw new Error(body.error || t('admin.badRequest', 'Bad request'));
     }
-    if (res.status === 404) throw new Error('User not found');
-    if (!res.ok && res.status !== 204) throw new Error('Failed to delete user');
+    if (res.status === 404)
+        throw new Error(t('admin.userNotFound', 'User not found'));
+    if (!res.ok && res.status !== 204)
+        throw new Error(t('admin.failedToDeleteUser', 'Failed to delete user'));
 };
 
 const AddUserModal: React.FC<{
@@ -141,6 +157,7 @@ const AddUserModal: React.FC<{
             const user = await createAdminUser(
                 email,
                 password,
+                t,
                 name,
                 surname,
                 role
@@ -148,7 +165,10 @@ const AddUserModal: React.FC<{
             onCreated(user);
             onClose();
         } catch (err: any) {
-            setError(err.message || 'Failed to create user');
+            setError(
+                err.message ||
+                    t('admin.failedToCreateUser', 'Failed to create user')
+            );
         } finally {
             setSubmitting(false);
         }
@@ -325,11 +345,15 @@ const AdminUsersPage: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            const data = await fetchAdminUsers();
+            const data = await fetchAdminUsers(t);
             setUsers(data);
         } catch (err: any) {
-            setError(err.message || 'Failed to load users');
-            if (err.message === 'Forbidden') navigate('/today');
+            setError(
+                err.message ||
+                    t('admin.failedToLoadUsers', 'Failed to load users')
+            );
+            if (err.message === t('admin.forbidden', 'Forbidden'))
+                navigate('/today');
         } finally {
             setLoading(false);
         }
@@ -363,10 +387,14 @@ const AdminUsersPage: React.FC = () => {
         const byId = new Map(users.map((u) => [u.id, u] as const));
         for (const id of toDelete) {
             try {
-                await deleteAdminUser(id);
+                await deleteAdminUser(id, t);
             } catch (err: any) {
                 // Keep the user if deletion failed and surface error inline later
-                console.error('Failed to delete user', id, err?.message);
+                console.error(
+                    t('admin.failedToDeleteUser', 'Failed to delete user'),
+                    id,
+                    err?.message
+                );
                 remaining.push(byId.get(id)!);
             }
         }

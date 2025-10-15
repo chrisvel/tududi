@@ -677,7 +677,9 @@
     "completion": "الإنجاز",
     "completionPercentage": "{{percentage}}% مكتمل",
     "toggleDropdownMenu": "تبديل قائمة السحب",
-    "projectInitials": "اختصارات المشروع"
+    "projectInitials": "اختصارات المشروع",
+    "share": "مشاركة",
+    "sharedProject": "مشاركة مع الفريق"
   },
   "areas": {
     "title": "المناطق",
@@ -929,5 +931,45 @@
     "thursday": "الخميس",
     "friday": "الجمعة",
     "saturday": "السبت"
+  },
+  "admin": {
+    "manageUsers": "إدارة المستخدمين",
+    "userManagement": "إدارة المستخدمين",
+    "addUser": "إضافة مستخدم",
+    "remove": "إزالة",
+    "email": "البريد الإلكتروني",
+    "created": "تم الإنشاء",
+    "role": "الدور",
+    "loadingUsers": "جارٍ تحميل المستخدمين...",
+    "noUsers": "لا يوجد مستخدمون",
+    "admin": "مدير",
+    "user": "مستخدم",
+    "password": "كلمة المرور",
+    "name": "الاسم",
+    "surname": "اللقب",
+    "authenticationRequired": "المصادقة مطلوبة",
+    "forbidden": "ممنوع",
+    "failedToLoadUsers": "فشل في تحميل المستخدمين",
+    "emailAlreadyExists": "البريد الإلكتروني موجود بالفعل",
+    "failedToCreateUser": "فشل في إنشاء المستخدم",
+    "badRequest": "طلب غير صحيح",
+    "userNotFound": "المستخدم غير موجود",
+    "failedToDeleteUser": "فشل في حذف المستخدم"
+  },
+  "shares": {
+    "shareProject": "مشاركة المشروع",
+    "targetUser": "اختر مستخدمًا",
+    "selectUserPlaceholder": "اختر مستخدمًا...",
+    "permission": "إذن",
+    "readOnly": "للقراءة فقط",
+    "readWrite": "قراءة وكتابة",
+    "owner": "المالك",
+    "share": "مشاركة",
+    "revoke": "إلغاء",
+    "currentShares": "المستخدمون الذين لديهم وصول",
+    "noShares": "لم يتم المشاركة بعد",
+    "noAvailableUsers": "لا يوجد مستخدمون متاحون للمشاركة معهم",
+    "shared": "تمت المشاركة",
+    "sharedWithTeam": "تمت المشاركة مع الفريق"
   }
 }

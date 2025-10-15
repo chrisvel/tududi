@@ -677,7 +677,9 @@
     "completion": "Finalizare",
     "completionPercentage": "{{percentage}}% complet",
     "toggleDropdownMenu": "Comută meniul derulant",
-    "projectInitials": "Inițialele proiectului"
+    "projectInitials": "Inițialele proiectului",
+    "share": "Partajează",
+    "sharedProject": "Partajat cu echipa"
   },
   "areas": {
     "title": "Arii",
@@ -929,5 +931,45 @@
     "thursday": "Joi",
     "friday": "Vineri",
     "saturday": "Sâmbătă"
+  },
+  "admin": {
+    "manageUsers": "Gestionați utilizatorii",
+    "userManagement": "Gestionarea utilizatorilor",
+    "addUser": "Adăugați utilizator",
+    "remove": "Eliminare",
+    "email": "Email",
+    "created": "Creat",
+    "role": "Rol",
+    "loadingUsers": "Se încarcă utilizatorii...",
+    "noUsers": "Nu sunt utilizatori",
+    "admin": "admin",
+    "user": "utilizator",
+    "password": "Parolă",
+    "name": "Nume",
+    "surname": "Prenume",
+    "authenticationRequired": "Autentificare necesară",
+    "forbidden": "Interzis",
+    "failedToLoadUsers": "Încărcarea utilizatorilor a eșuat",
+    "emailAlreadyExists": "Emailul există deja",
+    "failedToCreateUser": "Crearea utilizatorului a eșuat",
+    "badRequest": "Cerere incorectă",
+    "userNotFound": "Utilizatorul nu a fost găsit",
+    "failedToDeleteUser": "Ștergerea utilizatorului a eșuat"
+  },
+  "shares": {
+    "shareProject": "Partajați proiectul",
+    "targetUser": "Selectați utilizator",
+    "selectUserPlaceholder": "Selectați un utilizator...",
+    "permission": "Permisiune",
+    "readOnly": "Numai citire",
+    "readWrite": "Citire și scriere",
+    "owner": "Proprietar",
+    "share": "Partajați",
+    "revoke": "Revocare",
+    "currentShares": "Utilizatori cu acces",
+    "noShares": "Încă nu a fost partajat",
+    "noAvailableUsers": "Nu sunt utilizatori disponibili pentru a partaja",
+    "shared": "Partajat",
+    "sharedWithTeam": "Partajat cu echipa"
   }
 }

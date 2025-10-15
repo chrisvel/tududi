@@ -677,7 +677,9 @@
     "completion": "Zakończenie",
     "completionPercentage": "{{percentage}}% ukończone",
     "toggleDropdownMenu": "Przełącz menu rozwijane",
-    "projectInitials": "Inicjały projektu"
+    "projectInitials": "Inicjały projektu",
+    "share": "Udostępnij",
+    "sharedProject": "Udostępnione zespołowi"
   },
   "areas": {
     "title": "Obszary",
@@ -929,5 +931,45 @@
     "thursday": "Czwartek",
     "friday": "Piątek",
     "saturday": "Sobota"
+  },
+  "admin": {
+    "manageUsers": "Zarządzaj użytkownikami",
+    "userManagement": "Zarządzanie użytkownikami",
+    "addUser": "Dodaj użytkownika",
+    "remove": "Usuń",
+    "email": "Email",
+    "created": "Utworzono",
+    "role": "Rola",
+    "loadingUsers": "Ładowanie użytkowników...",
+    "noUsers": "Brak użytkowników",
+    "admin": "administrator",
+    "user": "użytkownik",
+    "password": "Hasło",
+    "name": "Imię",
+    "surname": "Nazwisko",
+    "authenticationRequired": "Wymagana autoryzacja",
+    "forbidden": "Zabronione",
+    "failedToLoadUsers": "Nie udało się załadować użytkowników",
+    "emailAlreadyExists": "Email już istnieje",
+    "failedToCreateUser": "Nie udało się utworzyć użytkownika",
+    "badRequest": "Złe żądanie",
+    "userNotFound": "Użytkownik nie znaleziony",
+    "failedToDeleteUser": "Nie udało się usunąć użytkownika"
+  },
+  "shares": {
+    "shareProject": "Udostępnij projekt",
+    "targetUser": "Wybierz użytkownika",
+    "selectUserPlaceholder": "Wybierz użytkownika...",
+    "permission": "Uprawnienia",
+    "readOnly": "Tylko do odczytu",
+    "readWrite": "Odczyt i zapis",
+    "owner": "Właściciel",
+    "share": "Udostępnij",
+    "revoke": "Cofnij",
+    "currentShares": "Użytkownicy z dostępem",
+    "noShares": "Jeszcze nie udostępniono",
+    "noAvailableUsers": "Brak użytkowników do udostępnienia",
+    "shared": "Udostępnione",
+    "sharedWithTeam": "Udostępnione zespołowi"
   }
 }

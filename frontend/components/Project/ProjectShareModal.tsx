@@ -202,7 +202,7 @@ const ProjectShareModal: React.FC<ProjectShareModalProps> = ({
             >
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {t('projects.shareProject', 'Share project')}
+                        {t('shares.shareProject', 'Share project')}
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
                         {project?.name}

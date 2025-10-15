@@ -677,7 +677,9 @@
     "completion": "Dokončanje",
     "completionPercentage": "{{percentage}}% končano",
     "toggleDropdownMenu": "Preklopi spustni meni",
-    "projectInitials": "Inicialke projekta"
+    "projectInitials": "Inicialke projekta",
+    "share": "Deli",
+    "sharedProject": "Deli z ekipo"
   },
   "areas": {
     "title": "Območja",
@@ -929,5 +931,45 @@
     "thursday": "Četrtek",
     "friday": "Petek",
     "saturday": "Sobota"
+  },
+  "admin": {
+    "manageUsers": "Upravljanje uporabnikov",
+    "userManagement": "Upravljanje uporabnikov",
+    "addUser": "Dodaj uporabnika",
+    "remove": "Odstrani",
+    "email": "E-pošta",
+    "created": "Ustvarjeno",
+    "role": "Vloga",
+    "loadingUsers": "Nalagam uporabnike...",
+    "noUsers": "Brez uporabnikov",
+    "admin": "skrbnik",
+    "user": "uporabnik",
+    "password": "Geslo",
+    "name": "Ime",
+    "surname": "Priimek",
+    "authenticationRequired": "Zahtevana avtentikacija",
+    "forbidden": "Prepovedano",
+    "failedToLoadUsers": "Nalaganje uporabnikov je spodletelo",
+    "emailAlreadyExists": "E-pošta že obstaja",
+    "failedToCreateUser": "Ustvarjanje uporabnika je spodletelo",
+    "badRequest": "Neveljavna zahteva",
+    "userNotFound": "Uporabnik ni bil najden",
+    "failedToDeleteUser": "Brisanje uporabnika je spodletelo"
+  },
+  "shares": {
+    "shareProject": "Deli projekt",
+    "targetUser": "Izberi uporabnika",
+    "selectUserPlaceholder": "Izberi uporabnika...",
+    "permission": "Dovoljenje",
+    "readOnly": "Samo za branje",
+    "readWrite": "Branje in pisanje",
+    "owner": "Lastnik",
+    "share": "Deli",
+    "revoke": "Prekliči",
+    "currentShares": "Uporabniki z dostopom",
+    "noShares": "Še ni deljeno",
+    "noAvailableUsers": "Ni uporabnikov, s katerimi bi delili",
+    "shared": "Deljeno",
+    "sharedWithTeam": "Deljeno s timom"
   }
 }

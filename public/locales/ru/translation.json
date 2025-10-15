@@ -677,7 +677,9 @@
     "completion": "Завершение",
     "completionPercentage": "{{percentage}}% завершено",
     "toggleDropdownMenu": "Переключить выпадающее меню",
-    "projectInitials": "Инициалы проекта"
+    "projectInitials": "Инициалы проекта",
+    "share": "Поделиться",
+    "sharedProject": "Поделено с командой"
   },
   "areas": {
     "title": "Области",
@@ -929,5 +931,45 @@
     "thursday": "Четверг",
     "friday": "Пятница",
     "saturday": "Суббота"
+  },
+  "admin": {
+    "manageUsers": "Управление пользователями",
+    "userManagement": "Управление пользователями",
+    "addUser": "Добавить пользователя",
+    "remove": "Удалить",
+    "email": "Электронная почта",
+    "created": "Создано",
+    "role": "Роль",
+    "loadingUsers": "Загрузка пользователей...",
+    "noUsers": "Нет пользователей",
+    "admin": "администратор",
+    "user": "пользователь",
+    "password": "Пароль",
+    "name": "Имя",
+    "surname": "Фамилия",
+    "authenticationRequired": "Требуется аутентификация",
+    "forbidden": "Запрещено",
+    "failedToLoadUsers": "Не удалось загрузить пользователей",
+    "emailAlreadyExists": "Электронная почта уже существует",
+    "failedToCreateUser": "Не удалось создать пользователя",
+    "badRequest": "Неверный запрос",
+    "userNotFound": "Пользователь не найден",
+    "failedToDeleteUser": "Не удалось удалить пользователя"
+  },
+  "shares": {
+    "shareProject": "Поделиться проектом",
+    "targetUser": "Выбрать пользователя",
+    "selectUserPlaceholder": "Выберите пользователя...",
+    "permission": "Разрешение",
+    "readOnly": "Только для чтения",
+    "readWrite": "Чтение и запись",
+    "owner": "Владелец",
+    "share": "Поделиться",
+    "revoke": "Отозвать",
+    "currentShares": "Пользователи с доступом",
+    "noShares": "Еще не поделено",
+    "noAvailableUsers": "Нет пользователей, с которыми можно поделиться",
+    "shared": "Поделено",
+    "sharedWithTeam": "Поделено с командой"
   }
 }

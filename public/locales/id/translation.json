@@ -677,7 +677,9 @@
     "completion": "Penyelesaian",
     "completionPercentage": "{{percentage}}% selesai",
     "toggleDropdownMenu": "Alihkan menu dropdown",
-    "projectInitials": "Inisial proyek"
+    "projectInitials": "Inisial proyek",
+    "share": "Bagikan",
+    "sharedProject": "Dibagikan dengan tim"
   },
   "areas": {
     "title": "Area",
@@ -929,5 +931,45 @@
     "thursday": "Kamis",
     "friday": "Jumat",
     "saturday": "Sabtu"
+  },
+  "admin": {
+    "manageUsers": "Kelola pengguna",
+    "userManagement": "Manajemen Pengguna",
+    "addUser": "Tambah pengguna",
+    "remove": "Hapus",
+    "email": "Email",
+    "created": "Dibuat",
+    "role": "Peran",
+    "loadingUsers": "Memuat pengguna...",
+    "noUsers": "Tidak ada pengguna",
+    "admin": "admin",
+    "user": "pengguna",
+    "password": "Kata Sandi",
+    "name": "Nama",
+    "surname": "Nama Belakang",
+    "authenticationRequired": "Autentikasi diperlukan",
+    "forbidden": "Dilarang",
+    "failedToLoadUsers": "Gagal memuat pengguna",
+    "emailAlreadyExists": "Email sudah ada",
+    "failedToCreateUser": "Gagal membuat pengguna",
+    "badRequest": "Permintaan tidak valid",
+    "userNotFound": "Pengguna tidak ditemukan",
+    "failedToDeleteUser": "Gagal menghapus pengguna"
+  },
+  "shares": {
+    "shareProject": "Bagikan proyek",
+    "targetUser": "Pilih pengguna",
+    "selectUserPlaceholder": "Pilih pengguna...",
+    "permission": "Izin",
+    "readOnly": "Hanya baca",
+    "readWrite": "Baca & tulis",
+    "owner": "Pemilik",
+    "share": "Bagikan",
+    "revoke": "Cabut",
+    "currentShares": "Pengguna dengan akses",
+    "noShares": "Belum dibagikan",
+    "noAvailableUsers": "Tidak ada pengguna yang tersedia untuk dibagikan",
+    "shared": "Dibagikan",
+    "sharedWithTeam": "Dibagikan dengan tim"
   }
 }

@@ -677,7 +677,9 @@
     "completion": "完成",
     "completionPercentage": "{{percentage}}% 完成",
     "toggleDropdownMenu": "切换下拉菜单",
-    "projectInitials": "项目首字母"
+    "projectInitials": "项目首字母",
+    "share": "分享",
+    "sharedProject": "与团队共享"
   },
   "areas": {
     "title": "区域",
@@ -929,5 +931,45 @@
     "thursday": "星期四",
     "friday": "星期五",
     "saturday": "星期六"
+  },
+  "admin": {
+    "manageUsers": "管理用户",
+    "userManagement": "用户管理",
+    "addUser": "添加用户",
+    "remove": "移除",
+    "email": "电子邮件",
+    "created": "创建时间",
+    "role": "角色",
+    "loadingUsers": "正在加载用户...",
+    "noUsers": "没有用户",
+    "admin": "管理员",
+    "user": "用户",
+    "password": "密码",
+    "name": "姓名",
+    "surname": "姓氏",
+    "authenticationRequired": "需要身份验证",
+    "forbidden": "禁止",
+    "failedToLoadUsers": "加载用户失败",
+    "emailAlreadyExists": "电子邮件已存在",
+    "failedToCreateUser": "创建用户失败",
+    "badRequest": "错误的请求",
+    "userNotFound": "用户未找到",
+    "failedToDeleteUser": "删除用户失败"
+  },
+  "shares": {
+    "shareProject": "分享项目",
+    "targetUser": "选择用户",
+    "selectUserPlaceholder": "选择一个用户...",
+    "permission": "权限",
+    "readOnly": "只读",
+    "readWrite": "读写",
+    "owner": "所有者",
+    "share": "分享",
+    "revoke": "撤销",
+    "currentShares": "有访问权限的用户",
+    "noShares": "尚未共享",
+    "noAvailableUsers": "没有可共享的用户",
+    "shared": "已共享",
+    "sharedWithTeam": "与团队共享"
   }
 }
