@@ -10,11 +10,10 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
 } from '@heroicons/react/24/outline';
-import { Task, PriorityType, StatusType } from '../../entities/Task';
-import { Project, ProjectState } from '../../entities/Project';
+import { Task, PriorityType } from '../../entities/Task';
+import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
 import { Tag } from '../../entities/Tag';
-import { Area } from '../../entities/Area';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
 import { createInboxItemWithStore } from '../../utils/inboxService';
@@ -24,7 +23,6 @@ import { createProject } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
 import { Link } from 'react-router-dom';
 import { isUrl } from '../../utils/urlService';
-import PriorityDropdown from '../Shared/PriorityDropdown';
 
 type EntityType = 'inbox' | 'task' | 'project' | 'note' | 'area' | 'tag';
 
@@ -157,7 +155,6 @@ const UniversalInputModal: React.FC<UniversalInputModalProps> = ({
         suggested_type: 'task' | 'note' | null;
         suggested_reason: string | null;
     } | null>(null);
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
     const analysisTimeoutRef = useRef<NodeJS.Timeout>();
 
     // Helper function to parse hashtags from text
@@ -706,7 +703,6 @@ const UniversalInputModal: React.FC<UniversalInputModalProps> = ({
             }
 
             try {
-                setIsAnalyzing(true);
                 const response = await fetch('/api/inbox/analyze-text', {
                     method: 'POST',
                     headers: {
@@ -742,8 +738,6 @@ const UniversalInputModal: React.FC<UniversalInputModalProps> = ({
             } catch (error) {
                 console.error('Error analyzing text:', error);
                 setAnalysisResult(null);
-            } finally {
-                setIsAnalyzing(false);
             }
         },
         [selectedEntityType]
@@ -1495,10 +1489,6 @@ const UniversalInputModal: React.FC<UniversalInputModalProps> = ({
                                                         0,
                                                         cursorPosition
                                                     );
-                                                const afterCursor =
-                                                    inputText.substring(
-                                                        cursorPosition
-                                                    );
                                                 const priorityStart =
                                                     beforeCursor.lastIndexOf(
                                                         '!'
@@ -1536,10 +1526,6 @@ const UniversalInputModal: React.FC<UniversalInputModalProps> = ({
                                                 const beforeCursor =
                                                     inputText.substring(
                                                         0,
-                                                        cursorPosition
-                                                    );
-                                                const afterCursor =
-                                                    inputText.substring(
                                                         cursorPosition
                                                     );
                                                 const dateStart =
@@ -1619,10 +1605,6 @@ const UniversalInputModal: React.FC<UniversalInputModalProps> = ({
                                                 const beforeCursor =
                                                     inputText.substring(
                                                         0,
-                                                        cursorPosition
-                                                    );
-                                                const afterCursor =
-                                                    inputText.substring(
                                                         cursorPosition
                                                     );
                                                 const slashStart =
