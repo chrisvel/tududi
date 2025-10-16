@@ -65,7 +65,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
     const [viewName, setViewName] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState('');
-    const [showCriteria, setShowCriteria] = useState(true);
+    const [showCriteria, setShowCriteria] = useState(false);
 
     // Fetch available tags
     useEffect(() => {
