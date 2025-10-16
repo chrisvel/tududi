@@ -11,6 +11,7 @@ import AreaModal from './components/Area/AreaModal';
 import TagModal from './components/Tag/TagModal';
 import InboxModal from './components/Inbox/InboxModal';
 import TaskModal from './components/Task/TaskModal';
+import UniversalInputModal from './components/UniversalInput/UniversalInputModal';
 import { Note } from './entities/Note';
 import { Area } from './entities/Area';
 import { Tag } from './entities/Tag';
@@ -55,6 +56,8 @@ const Layout: React.FC<LayoutProps> = ({
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+    const [isUniversalInputModalOpen, setIsUniversalInputModalOpen] =
+        useState(false);
     const [taskModalType, setTaskModalType] = useState<'simplified' | 'full'>(
         'simplified'
     );
@@ -77,8 +80,18 @@ const Layout: React.FC<LayoutProps> = ({
     } = useStore();
 
     const openTaskModal = (type: 'simplified' | 'full' = 'simplified') => {
-        setIsTaskModalOpen(true);
-        setTaskModalType(type);
+        if (type === 'simplified') {
+            // Use the new UniversalInputModal for quick capture
+            setIsUniversalInputModalOpen(true);
+        } else {
+            // Use the full TaskModal for detailed editing
+            setIsTaskModalOpen(true);
+            setTaskModalType(type);
+        }
+    };
+
+    const closeUniversalInputModal = () => {
+        setIsUniversalInputModalOpen(false);
     };
 
     useEffect(() => {
@@ -563,6 +576,17 @@ const Layout: React.FC<LayoutProps> = ({
                         onClose={closeTagModal}
                         onSave={handleSaveTag}
                         tag={selectedTag}
+                    />
+                )}
+
+                {isUniversalInputModalOpen && (
+                    <UniversalInputModal
+                        isOpen={isUniversalInputModalOpen}
+                        onClose={closeUniversalInputModal}
+                        onSaveTask={handleSaveTask}
+                        onSaveNote={handleSaveNote}
+                        onSaveProject={handleSaveProject}
+                        projects={projects}
                     />
                 )}
             </div>
