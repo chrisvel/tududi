@@ -268,12 +268,12 @@ class ProductivityMetricsService {
      */
     formatMetricsForDisplay(metrics) {
         return {
-            overview: `Over the last ${metrics.period_days} days:`,
+            overview: `Over the last ${metrics.period_days} days`,
             stats: [
-                `✅ Completed: ${metrics.completed_tasks}/${metrics.total_tasks} tasks (${metrics.completion_rate}%)`,
-                `⏰ Overdue: ${metrics.overdue_tasks} tasks (${metrics.overdue_rate}%)`,
-                `📅 Average task age: ${metrics.task_age} days`,
-                `➕ Created vs Done ratio: ${metrics.created_done_ratio}:1`,
+                `Completed: ${metrics.completed_tasks}/${metrics.total_tasks} tasks (${metrics.completion_rate}%)`,
+                `Overdue: ${metrics.overdue_tasks} tasks (${metrics.overdue_rate}%)`,
+                `Average task age: ${metrics.task_age} days`,
+                `Created vs Done ratio: ${metrics.created_done_ratio}:1`,
             ],
             insights: metrics.insights,
         };

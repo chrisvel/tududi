@@ -156,24 +156,77 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({ content }) => {
     // If no items found, render as regular markdown
     if (segments.every((s) => s.type === 'text')) {
         return (
-            <ReactMarkdown
-                rehypePlugins={[rehypeHighlight]}
-                remarkPlugins={[remarkGfm]}
-                components={{
-                    code: ({ className, children }) => {
-                        const isInline = !className?.includes('language-');
-                        return isInline ? (
-                            <code className="bg-gray-100 dark:bg-gray-900 px-1 py-0.5 rounded text-sm">
+            <div className="prose prose-sm dark:prose-invert max-w-none">
+                <ReactMarkdown
+                    rehypePlugins={[rehypeHighlight]}
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                        h1: ({ children }) => (
+                            <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
                                 {children}
-                            </code>
-                        ) : (
-                            <code className={className}>{children}</code>
-                        );
-                    },
-                }}
-            >
-                {content}
-            </ReactMarkdown>
+                            </h1>
+                        ),
+                        h2: ({ children }) => (
+                            <h2 className="text-xl font-bold mb-3 text-gray-900 dark:text-gray-100">
+                                {children}
+                            </h2>
+                        ),
+                        h3: ({ children }) => (
+                            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                                {children}
+                            </h3>
+                        ),
+                        p: ({ children }) => (
+                            <p className="mb-4 text-gray-800 dark:text-gray-200 leading-relaxed">
+                                {children}
+                            </p>
+                        ),
+                        ul: ({ children }) => (
+                            <ul className="list-disc list-inside mb-4 space-y-2 text-gray-800 dark:text-gray-200">
+                                {children}
+                            </ul>
+                        ),
+                        ol: ({ children }) => (
+                            <ol className="list-decimal list-inside mb-4 space-y-2 text-gray-800 dark:text-gray-200">
+                                {children}
+                            </ol>
+                        ),
+                        li: ({ children }) => (
+                            <li className="ml-4 leading-relaxed">{children}</li>
+                        ),
+                        strong: ({ children }) => (
+                            <strong className="font-semibold text-gray-900 dark:text-gray-100">
+                                {children}
+                            </strong>
+                        ),
+                        hr: () => (
+                            <hr className="my-6 border-gray-300 dark:border-gray-700" />
+                        ),
+                        blockquote: ({ children }) => (
+                            <blockquote className="border-l-4 border-blue-500 pl-4 italic my-4 text-gray-700 dark:text-gray-300">
+                                {children}
+                            </blockquote>
+                        ),
+                        code: ({ className, children }) => {
+                            const isInline = !className?.includes('language-');
+                            return isInline ? (
+                                <code className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-gray-900 dark:text-gray-100">
+                                    {children}
+                                </code>
+                            ) : (
+                                <code className={className}>{children}</code>
+                            );
+                        },
+                        pre: ({ children }) => (
+                            <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto mb-4">
+                                {children}
+                            </pre>
+                        ),
+                    }}
+                >
+                    {content}
+                </ReactMarkdown>
+            </div>
         );
     }
 
@@ -183,16 +236,62 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({ content }) => {
             {segments.map((segment, index) => {
                 if (segment.type === 'text' && segment.content.trim()) {
                     return (
-                        <div key={index}>
+                        <div key={index} className="prose prose-sm dark:prose-invert max-w-none">
                             <ReactMarkdown
                                 rehypePlugins={[rehypeHighlight]}
                                 remarkPlugins={[remarkGfm]}
                                 components={{
+                                    h1: ({ children }) => (
+                                        <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+                                            {children}
+                                        </h1>
+                                    ),
+                                    h2: ({ children }) => (
+                                        <h2 className="text-xl font-bold mb-3 text-gray-900 dark:text-gray-100">
+                                            {children}
+                                        </h2>
+                                    ),
+                                    h3: ({ children }) => (
+                                        <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                                            {children}
+                                        </h3>
+                                    ),
+                                    p: ({ children }) => (
+                                        <p className="mb-4 text-gray-800 dark:text-gray-200 leading-relaxed">
+                                            {children}
+                                        </p>
+                                    ),
+                                    ul: ({ children }) => (
+                                        <ul className="list-disc list-inside mb-4 space-y-2 text-gray-800 dark:text-gray-200">
+                                            {children}
+                                        </ul>
+                                    ),
+                                    ol: ({ children }) => (
+                                        <ol className="list-decimal list-inside mb-4 space-y-2 text-gray-800 dark:text-gray-200">
+                                            {children}
+                                        </ol>
+                                    ),
+                                    li: ({ children }) => (
+                                        <li className="ml-4 leading-relaxed">{children}</li>
+                                    ),
+                                    strong: ({ children }) => (
+                                        <strong className="font-semibold text-gray-900 dark:text-gray-100">
+                                            {children}
+                                        </strong>
+                                    ),
+                                    hr: () => (
+                                        <hr className="my-6 border-gray-300 dark:border-gray-700" />
+                                    ),
+                                    blockquote: ({ children }) => (
+                                        <blockquote className="border-l-4 border-blue-500 pl-4 italic my-4 text-gray-700 dark:text-gray-300">
+                                            {children}
+                                        </blockquote>
+                                    ),
                                     code: ({ className, children }) => {
                                         const isInline =
                                             !className?.includes('language-');
                                         return isInline ? (
-                                            <code className="bg-gray-100 dark:bg-gray-900 px-1 py-0.5 rounded text-sm">
+                                            <code className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-gray-900 dark:text-gray-100">
                                                 {children}
                                             </code>
                                         ) : (
@@ -201,6 +300,11 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({ content }) => {
                                             </code>
                                         );
                                     },
+                                    pre: ({ children }) => (
+                                        <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto mb-4">
+                                            {children}
+                                        </pre>
+                                    ),
                                 }}
                             >
                                 {segment.content}

@@ -18,6 +18,9 @@ class QueryHandlerService {
                 case 'list_projects':
                     return await this.handleListProjects(userId, query);
 
+                case 'list_notes':
+                    return await this.handleListNotes(userId, query);
+
                 case 'productivity':
                     return await this.handleProductivity(userId, query);
 
@@ -51,14 +54,14 @@ class QueryHandlerService {
             where.priority = filters.priority;
         }
 
+        // Always exclude completed tasks unless specifically requested
+        where.status = { [Op.ne]: 'completed' };
+
         if (filters.timePeriod) {
             const timeFilter = this.buildTimeFilter(filters.timePeriod);
             if (timeFilter) {
                 where.due_date = timeFilter;
             }
-        } else {
-            // Default to active tasks
-            where.status = { [Op.ne]: 'completed' };
         }
 
         const tasks = await Task.findAll({
@@ -94,6 +97,20 @@ class QueryHandlerService {
         });
 
         return this.formatProjectListResponse(projects);
+    }
+
+    /**
+     * Handle list notes query
+     */
+    async handleListNotes(userId, query) {
+        const notes = await Note.findAll({
+            where: { user_id: userId },
+            order: [['updated_at', 'DESC']],
+            limit: 20,
+            attributes: ['uid', 'title', 'content', 'updated_at'],
+        });
+
+        return this.formatNoteListResponse(notes);
     }
 
     /**
@@ -324,33 +341,61 @@ class QueryHandlerService {
     }
 
     /**
+     * Format note list response
+     */
+    formatNoteListResponse(notes) {
+        if (notes.length === 0) {
+            return {
+                response: '**Your Notes**\n\nNo notes found.',
+                notes: [],
+            };
+        }
+
+        const noteList = notes
+            .map((n) => `[NOTE:${n.uid}] ${n.title}`)
+            .join('\n\n');
+
+        return {
+            response: `**Your Notes**\n\n${noteList}`,
+            notes: notes.map((n) => ({
+                id: n.uid,
+                title: n.title,
+            })),
+        };
+    }
+
+    /**
      * Format productivity response
      */
     formatProductivityResponse(metrics, recommendations) {
         const formatted =
             productivityMetricsService.formatMetricsForDisplay(metrics);
 
-        let response = `**Productivity Report**\n${formatted.overview}\n\n`;
-        response += formatted.stats.join('\n\n') + '\n\n';
+        let response = `**Productivity Report**\n\n`;
+        response += `${formatted.overview}\n\n`;
+        response += `━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+        // Stats section
+        response += `**Key Metrics**\n\n`;
+        formatted.stats.forEach((stat) => {
+            response += `${stat}\n\n`;
+        });
+
+        response += `━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
 
         if (formatted.insights.length > 0) {
-            response += '**Insights:**\n\n';
+            response += `**Insights**\n\n`;
             formatted.insights.forEach((insight) => {
-                const emoji =
-                    insight.type === 'positive'
-                        ? '🎉'
-                        : insight.type === 'warning'
-                          ? '⚠️'
-                          : 'ℹ️';
-                response += `${emoji} ${insight.message}\n\n`;
+                response += `${insight.message}\n\n`;
             });
+            response += `━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
         }
 
         if (recommendations.length > 0) {
-            response += '**Recommendations:**\n\n';
+            response += `**Recommendations**\n\n`;
             recommendations.forEach((rec) => {
-                const emoji = rec.priority === 'high' ? '🔴' : '🟡';
-                response += `${emoji} **${rec.action}**: ${rec.details}\n\n`;
+                response += `${rec.action}\n\n`;
+                response += `${rec.details}\n\n`;
             });
         }
 
@@ -365,16 +410,16 @@ class QueryHandlerService {
      * Format summary response
      */
     formatSummaryResponse(stats) {
-        let response = '**Daily Summary**\n\n';
-        response += `✅ Completed today: ${stats.completedToday}\n\n`;
-        response += `📋 Active tasks: ${stats.activeTasks}\n\n`;
+        let response = '# Daily Summary\n\n';
+        response += `**Completed today:** ${stats.completedToday}\n\n`;
+        response += `**Active tasks:** ${stats.activeTasks}\n\n`;
 
         if (stats.overdueTasks > 0) {
-            response += `⚠️ Overdue: ${stats.overdueTasks}\n\n`;
+            response += `**Overdue:** ${stats.overdueTasks}\n\n`;
         }
 
-        response += `📅 Due today: ${stats.dueToday}\n\n`;
-        response += `📁 Active projects: ${stats.activeProjects}`;
+        response += `**Due today:** ${stats.dueToday}\n\n`;
+        response += `**Active projects:** ${stats.activeProjects}`;
 
         return {
             response,

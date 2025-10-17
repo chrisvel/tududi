@@ -28,6 +28,14 @@ class IntentParserService {
                 'my active projects',
                 'all projects',
             ],
+            list_notes: [
+                'show my notes',
+                'list notes',
+                'what are my notes',
+                'my notes',
+                'all notes',
+                'what are my notes about',
+            ],
             search: [
                 'find task about meeting',
                 'search for project',
@@ -376,6 +384,7 @@ class IntentParserService {
         const localIntents = [
             'list_tasks',
             'list_projects',
+            'list_notes',
             'search',
             'productivity',
             'summary',
