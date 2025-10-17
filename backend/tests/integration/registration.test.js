@@ -4,10 +4,13 @@ const session = require('express-session');
 const { User, sequelize } = require('../../models');
 const authRoutes = require('../../routes/auth');
 const { getConfig } = require('../../config/config');
-const { sendEmail } = require('../../services/emailService');
+const { sendEmail, isEmailEnabled } = require('../../services/emailService');
 
 jest.mock('../../config/config');
-jest.mock('../../services/emailService');
+jest.mock('../../services/emailService', () => ({
+    sendEmail: jest.fn(),
+    isEmailEnabled: jest.fn(),
+}));
 jest.mock('../../services/logService', () => ({
     logError: jest.fn(),
     logInfo: jest.fn(),
@@ -38,13 +41,18 @@ describe('Registration Integration Tests', () => {
 
         getConfig.mockReturnValue({
             frontendUrl: 'http://localhost:3000',
+            backendUrl: 'http://localhost:3002',
             registrationConfig: {
                 enabled: true,
                 tokenExpiryHours: 24,
             },
+            emailConfig: {
+                enabled: true,
+            },
         });
 
         sendEmail.mockResolvedValue({ success: true });
+        isEmailEnabled.mockReturnValue(true);
     });
 
     afterAll(async () => {

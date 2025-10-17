@@ -50,7 +50,10 @@ router.post('/register', async (req, res) => {
             transaction
         );
 
-        const emailResult = await sendVerificationEmail(user, verificationToken);
+        const emailResult = await sendVerificationEmail(
+            user,
+            verificationToken
+        );
 
         if (!emailResult.success) {
             await transaction.rollback();
