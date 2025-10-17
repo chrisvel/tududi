@@ -281,6 +281,19 @@ Guidelines:
 - If you don't have enough information, ask clarifying questions
 - Don't make up data - only use what's provided in context
 
+⚠️ CRITICAL: ALWAYS USE USER DATA IN RESPONSES
+When users ask generic questions like "how to be more productive", "what should I focus on", or "give me advice":
+- NEVER give generic advice
+- ALWAYS analyze their actual tasks, projects, and overdue items shown above
+- Reference specific tasks by ID using [TASK:id] format
+- Provide personalized recommendations based on their data
+- Point out overdue tasks, upcoming deadlines, or high-priority items
+- Base all suggestions on their actual workload and patterns
+
+Example for "how to be more productive":
+❌ WRONG: "1. Prioritize tasks, 2. Set goals, 3. Take breaks" (generic advice)
+✅ CORRECT: "Based on your current workload, I recommend: 1. Address your ${stats.overdue_tasks} overdue tasks first, especially [TASK:id] Task name. 2. Focus on high-priority items like [TASK:id] Task name before they become overdue..."
+
 ⚠️ CRITICAL FORMATTING RULES - MANDATORY - NO EXCEPTIONS:
 
 When referencing ANY task, project, or note, you MUST use this EXACT format:
@@ -546,19 +559,17 @@ Each line MUST start with the bracket format. Do not add bullets, numbers, or ma
         // Format confidence percentage
         const confidencePercent = Math.round(confidence * 100);
 
-        // Confidence emoji
-        const confidenceEmoji = confidencePercent >= 80 ? '🟢' : confidencePercent >= 60 ? '🟡' : '🔴';
-
         // Processing method
-        const processingMethod = usedAI ? '🤖 OpenAI API' : '⚡ Local Processing';
+        const processingMethod = usedAI ? 'OpenAI API' : 'Local Processing';
 
         // Cost indicator
-        const costIndicator = usedAI ? '💰 API Cost' : '💸 $0 Cost';
+        const costIndicator = usedAI ? 'API Cost' : '$0';
 
-        let analysis = `**📊 Query Analysis**\n\n`;
-        analysis += `${confidenceEmoji} **Intent:** \`${intent}\` (${confidencePercent}% confidence)\n\n`;
-        analysis += `${processingMethod}\n\n`;
-        analysis += `${costIndicator}`;
+        let analysis = `### Query Analysis\n\n`;
+        analysis += `- **Intent:** ${intent}\n`;
+        analysis += `- **Confidence:** ${confidencePercent}%\n`;
+        analysis += `- **Processing:** ${processingMethod}\n`;
+        analysis += `- **Cost:** ${costIndicator}`;
 
         // Add entity information if present
         if (entities) {
@@ -570,7 +581,7 @@ Each line MUST start with the bracket format. Do not add bullets, numbers, or ma
             }
 
             if (entityInfo.length > 0) {
-                analysis += `\n\n**Detected:** ${entityInfo.join(' • ')}`;
+                analysis += `\n- **Detected:** ${entityInfo.join(', ')}`;
             }
         }
 
