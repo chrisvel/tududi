@@ -1,7 +1,8 @@
 const express = require('express');
 const { User, Permission, Project, Task, Note } = require('../models');
 const { execAction } = require('../services/execAction');
-const { logError } = require('../services/logService');
+const { logError, logInfo } = require('../services/logService');
+const { sendEmail } = require('../services/emailService');
 const router = express.Router();
 
 const permissionsService = require('../services/permissionsService');
@@ -32,6 +33,81 @@ async function isResourceOwner(userId, resourceType, resourceUid) {
     }
 
     return resource && resource.user_id === userId;
+}
+
+// Helper function to get resource details for email notifications
+async function getResourceDetails(resourceType, resourceUid) {
+    if (resourceType === 'project') {
+        const project = await Project.findOne({
+            where: { uid: resourceUid },
+            attributes: ['name', 'description', 'user_id'],
+        });
+        return project
+            ? {
+                  name: project.name,
+                  description: project.description,
+                  ownerId: project.user_id,
+              }
+            : null;
+    } else if (resourceType === 'task') {
+        const task = await Task.findOne({
+            where: { uid: resourceUid },
+            attributes: ['name', 'description', 'user_id'],
+        });
+        return task
+            ? {
+                  name: task.name,
+                  description: task.description,
+                  ownerId: task.user_id,
+              }
+            : null;
+    } else if (resourceType === 'note') {
+        const note = await Note.findOne({
+            where: { uid: resourceUid },
+            attributes: ['title', 'user_id'],
+        });
+        return note
+            ? { name: note.title, description: null, ownerId: note.user_id }
+            : null;
+    }
+    return null;
+}
+
+// Helper function to send share notification email
+async function sendShareNotificationEmail(
+    targetUser,
+    ownerUser,
+    resourceType,
+    resourceDetails,
+    accessLevel,
+    isRevoke = false
+) {
+    if (!targetUser.email) {
+        logInfo(
+            `Cannot send share notification to user ${targetUser.id}: no email address`
+        );
+        return;
+    }
+
+    const action = isRevoke ? 'revoked' : 'granted';
+    const subject = isRevoke
+        ? `Access removed: ${resourceType} "${resourceDetails.name}"`
+        : `Shared with you: ${resourceType} "${resourceDetails.name}"`;
+
+    const text = isRevoke
+        ? `Hello,\n\n${ownerUser.email} has removed your access to the ${resourceType} "${resourceDetails.name}".\n\nYou will no longer be able to view or edit this ${resourceType}.\n\nBest regards,\nTududi`
+        : `Hello,\n\n${ownerUser.email} has shared a ${resourceType} with you.\n\nResource: ${resourceDetails.name}\nAccess level: ${accessLevel}\n${resourceDetails.description ? `\nDescription: ${resourceDetails.description}` : ''}\n\nYou can now view and collaborate on this ${resourceType} in your Tududi account.\n\nBest regards,\nTududi`;
+
+    const html = isRevoke
+        ? `<p>Hello,</p><p><strong>${ownerUser.email}</strong> has removed your access to the ${resourceType} <strong>"${resourceDetails.name}"</strong>.</p><p>You will no longer be able to view or edit this ${resourceType}.</p><p>Best regards,<br>Tududi</p>`
+        : `<p>Hello,</p><p><strong>${ownerUser.email}</strong> has shared a ${resourceType} with you.</p><p><strong>Resource:</strong> ${resourceDetails.name}<br><strong>Access level:</strong> ${accessLevel}${resourceDetails.description ? `<br><strong>Description:</strong> ${resourceDetails.description}` : ''}</p><p>You can now view and collaborate on this ${resourceType} in your Tududi account.</p><p>Best regards,<br>Tududi</p>`;
+
+    await sendEmail({
+        to: targetUser.email,
+        subject,
+        text,
+        html,
+    });
 }
 
 // POST /api/shares
@@ -102,6 +178,32 @@ router.post('/shares', async (req, res) => {
             resourceUid: resource_uid,
             accessLevel: access_level,
         });
+
+        // Send email notification to the target user
+        try {
+            const resourceDetails = await getResourceDetails(
+                resource_type,
+                resource_uid
+            );
+            if (resourceDetails) {
+                const ownerUser = await User.findByPk(req.session.userId, {
+                    attributes: ['email'],
+                });
+                if (ownerUser) {
+                    await sendShareNotificationEmail(
+                        target,
+                        ownerUser,
+                        resource_type,
+                        resourceDetails,
+                        access_level,
+                        false
+                    );
+                }
+            }
+        } catch (emailError) {
+            logError(emailError, 'Failed to send share notification email');
+        }
+
         res.status(204).end();
     } catch (err) {
         logError('Error sharing resource:', err);
@@ -161,6 +263,35 @@ router.delete('/shares', async (req, res) => {
             resourceType: resource_type,
             resourceUid: resource_uid,
         });
+
+        // Send email notification to the target user
+        try {
+            const resourceDetails = await getResourceDetails(
+                resource_type,
+                resource_uid
+            );
+            if (resourceDetails) {
+                const targetUser = await User.findByPk(Number(target_user_id), {
+                    attributes: ['email', 'id'],
+                });
+                const ownerUser = await User.findByPk(req.session.userId, {
+                    attributes: ['email'],
+                });
+                if (targetUser && ownerUser) {
+                    await sendShareNotificationEmail(
+                        targetUser,
+                        ownerUser,
+                        resource_type,
+                        resourceDetails,
+                        null,
+                        true
+                    );
+                }
+            }
+        } catch (emailError) {
+            logError(emailError, 'Failed to send share revocation email');
+        }
+
         res.status(204).end();
     } catch (err) {
         logError('Error revoking share:', err);
