@@ -39,7 +39,9 @@ const Register: React.FC = () => {
             if (response.ok) {
                 setSuccess(true);
             } else {
-                setError(data.error || 'Registration failed. Please try again.');
+                setError(
+                    data.error || 'Registration failed. Please try again.'
+                );
             }
         } catch (err) {
             setError('An error occurred. Please try again.');
@@ -50,12 +52,17 @@ const Register: React.FC = () => {
     if (success) {
         return (
             <div className="bg-gray-100 flex flex-col items-center justify-center min-h-screen px-4">
-                <h1 className="text-5xl font-bold text-gray-300 mb-6">tududi</h1>
+                <h1 className="text-5xl font-bold text-gray-300 mb-6">
+                    tududi
+                </h1>
                 <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
                     <div className="text-center">
                         <div className="mb-4 text-green-600 text-5xl">✓</div>
                         <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                            {t('auth.registration_successful', 'Check Your Email')}
+                            {t(
+                                'auth.registration_successful',
+                                'Check Your Email'
+                            )}
                         </h2>
                         <p className="text-gray-600 mb-6">
                             {t(
@@ -146,7 +153,10 @@ const Register: React.FC = () => {
                         {t('auth.sign_up', 'Sign Up')}
                     </button>
                     <div className="text-center text-gray-600">
-                        {t('auth.already_have_account', 'Already have an account?')}{' '}
+                        {t(
+                            'auth.already_have_account',
+                            'Already have an account?'
+                        )}{' '}
                         <Link
                             to="/login"
                             className="text-blue-500 hover:text-blue-600"

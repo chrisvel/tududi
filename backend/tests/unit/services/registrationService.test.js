@@ -73,7 +73,10 @@ describe('registrationService', () => {
                 registrationConfig: { tokenExpiryHours: 24 },
             });
 
-            const result = await createUnverifiedUser('test@example.com', 'password123');
+            const result = await createUnverifiedUser(
+                'test@example.com',
+                'password123'
+            );
 
             expect(result.user).toEqual(mockUser);
             expect(result.verificationToken).toHaveLength(64);
@@ -90,19 +93,21 @@ describe('registrationService', () => {
         });
 
         it('should throw error for invalid email', async () => {
-            await expect(createUnverifiedUser('invalid-email', 'password123')).rejects.toThrow(
-                'Invalid email format'
-            );
+            await expect(
+                createUnverifiedUser('invalid-email', 'password123')
+            ).rejects.toThrow('Invalid email format');
         });
 
         it('should throw error for short password', async () => {
-            await expect(createUnverifiedUser('test@example.com', '12345')).rejects.toThrow(
-                'Password must be at least 6 characters long'
-            );
+            await expect(
+                createUnverifiedUser('test@example.com', '12345')
+            ).rejects.toThrow('Password must be at least 6 characters long');
         });
 
         it('should throw error for existing email', async () => {
-            User.findOne = jest.fn().mockResolvedValue({ email: 'test@example.com' });
+            User.findOne = jest
+                .fn()
+                .mockResolvedValue({ email: 'test@example.com' });
 
             await expect(
                 createUnverifiedUser('test@example.com', 'password123')
@@ -140,7 +145,9 @@ describe('registrationService', () => {
                 id: 1,
                 email_verified: false,
                 email_verification_token: 'valid-token',
-                email_verification_token_expires_at: new Date(Date.now() + 3600000),
+                email_verification_token_expires_at: new Date(
+                    Date.now() + 3600000
+                ),
                 save: jest.fn().mockResolvedValue(true),
             };
 
@@ -155,7 +162,9 @@ describe('registrationService', () => {
         });
 
         it('should throw error for missing token', async () => {
-            await expect(verifyUserEmail(null)).rejects.toThrow('Verification token is required');
+            await expect(verifyUserEmail(null)).rejects.toThrow(
+                'Verification token is required'
+            );
         });
 
         it('should throw error for invalid token', async () => {
@@ -173,14 +182,18 @@ describe('registrationService', () => {
 
             User.findOne = jest.fn().mockResolvedValue(mockUser);
 
-            await expect(verifyUserEmail('token')).rejects.toThrow('Email already verified');
+            await expect(verifyUserEmail('token')).rejects.toThrow(
+                'Email already verified'
+            );
         });
 
         it('should throw error for expired token', async () => {
             const mockUser = {
                 email_verified: false,
                 email_verification_token: 'token',
-                email_verification_token_expires_at: new Date(Date.now() - 3600000),
+                email_verification_token_expires_at: new Date(
+                    Date.now() - 3600000
+                ),
             };
 
             User.findOne = jest.fn().mockResolvedValue(mockUser);
@@ -209,8 +222,12 @@ describe('registrationService', () => {
             expect(sendEmail).toHaveBeenCalledWith({
                 to: 'test@example.com',
                 subject: 'Welcome to Tududi - Verify your email',
-                text: expect.stringContaining('http://localhost:3000/verify-email?token=verification-token'),
-                html: expect.stringContaining('http://localhost:3000/verify-email?token=verification-token'),
+                text: expect.stringContaining(
+                    'http://localhost:3000/verify-email?token=verification-token'
+                ),
+                html: expect.stringContaining(
+                    'http://localhost:3000/verify-email?token=verification-token'
+                ),
             });
         });
 
@@ -264,7 +281,9 @@ describe('registrationService', () => {
         });
 
         it('should handle errors gracefully', async () => {
-            User.update = jest.fn().mockRejectedValue(new Error('Database error'));
+            User.update = jest
+                .fn()
+                .mockRejectedValue(new Error('Database error'));
 
             const result = await cleanupExpiredTokens();
 

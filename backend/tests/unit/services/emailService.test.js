@@ -21,7 +21,9 @@ describe('emailService', () => {
     describe('isEmailEnabled', () => {
         it('should return false when email is disabled', () => {
             const { getConfig } = require('../../../config/config');
-            const { isEmailEnabled } = require('../../../services/emailService');
+            const {
+                isEmailEnabled,
+            } = require('../../../services/emailService');
             const config = getConfig();
             expect(config.emailConfig.enabled).toBe(false);
             expect(isEmailEnabled()).toBe(false);
@@ -30,7 +32,9 @@ describe('emailService', () => {
         it('should return true when email is enabled', () => {
             process.env.ENABLE_EMAIL = 'true';
             const { getConfig } = require('../../../config/config');
-            const { isEmailEnabled } = require('../../../services/emailService');
+            const {
+                isEmailEnabled,
+            } = require('../../../services/emailService');
             const config = getConfig();
             expect(config.emailConfig.enabled).toBe(true);
             expect(isEmailEnabled()).toBe(true);
@@ -39,7 +43,9 @@ describe('emailService', () => {
 
     describe('hasValidEmailConfig', () => {
         it('should return false when required config is missing', () => {
-            const { hasValidEmailConfig } = require('../../../services/emailService');
+            const {
+                hasValidEmailConfig,
+            } = require('../../../services/emailService');
             expect(hasValidEmailConfig()).toBe(false);
         });
 
@@ -49,7 +55,9 @@ describe('emailService', () => {
             process.env.EMAIL_SMTP_USERNAME = 'user@example.com';
             process.env.EMAIL_SMTP_PASSWORD = 'password123';
             process.env.EMAIL_FROM_ADDRESS = 'noreply@example.com';
-            const { hasValidEmailConfig } = require('../../../services/emailService');
+            const {
+                hasValidEmailConfig,
+            } = require('../../../services/emailService');
             expect(hasValidEmailConfig()).toBe(true);
         });
     });
@@ -85,7 +93,10 @@ describe('emailService', () => {
             const nodemailer = require('nodemailer');
             nodemailer.createTransport.mockReturnValue(mockTransporter);
 
-            const { sendEmail, initializeEmailService } = require('../../../services/emailService');
+            const {
+                sendEmail,
+                initializeEmailService,
+            } = require('../../../services/emailService');
             initializeEmailService();
 
             const resultNoTo = await sendEmail({
@@ -117,7 +128,10 @@ describe('emailService', () => {
             const nodemailer = require('nodemailer');
             nodemailer.createTransport.mockReturnValue(mockTransporter);
 
-            const { sendEmail, initializeEmailService } = require('../../../services/emailService');
+            const {
+                sendEmail,
+                initializeEmailService,
+            } = require('../../../services/emailService');
             initializeEmailService();
 
             const result = await sendEmail({
@@ -146,7 +160,10 @@ describe('emailService', () => {
             const nodemailer = require('nodemailer');
             nodemailer.createTransport.mockReturnValue(mockTransporter);
 
-            const { initializeEmailService, sendEmail } = require('../../../services/emailService');
+            const {
+                initializeEmailService,
+                sendEmail,
+            } = require('../../../services/emailService');
             initializeEmailService();
 
             const result = await sendEmail({
@@ -183,7 +200,10 @@ describe('emailService', () => {
             const nodemailer = require('nodemailer');
             nodemailer.createTransport.mockReturnValue(mockTransporter);
 
-            const { initializeEmailService, sendEmail } = require('../../../services/emailService');
+            const {
+                initializeEmailService,
+                sendEmail,
+            } = require('../../../services/emailService');
             initializeEmailService();
 
             const result = await sendEmail({
@@ -210,7 +230,9 @@ describe('emailService', () => {
             process.env.EMAIL_SMTP_PASSWORD = 'password123';
             process.env.EMAIL_FROM_ADDRESS = 'noreply@example.com';
 
-            const mockSendMail = jest.fn().mockRejectedValue(new Error('SMTP error'));
+            const mockSendMail = jest
+                .fn()
+                .mockRejectedValue(new Error('SMTP error'));
             const mockTransporter = {
                 sendMail: mockSendMail,
                 verify: jest.fn().mockResolvedValue(true),
@@ -218,7 +240,10 @@ describe('emailService', () => {
             const nodemailer = require('nodemailer');
             nodemailer.createTransport.mockReturnValue(mockTransporter);
 
-            const { initializeEmailService, sendEmail } = require('../../../services/emailService');
+            const {
+                initializeEmailService,
+                sendEmail,
+            } = require('../../../services/emailService');
             initializeEmailService();
 
             const result = await sendEmail({
@@ -235,7 +260,9 @@ describe('emailService', () => {
     describe('initializeEmailService', () => {
         it('should not initialize when email is disabled', () => {
             const { logInfo } = require('../../../services/logService');
-            const { initializeEmailService } = require('../../../services/emailService');
+            const {
+                initializeEmailService,
+            } = require('../../../services/emailService');
 
             initializeEmailService();
 
@@ -257,11 +284,15 @@ describe('emailService', () => {
             nodemailer.createTransport.mockReturnValue(mockTransporter);
 
             const { logInfo } = require('../../../services/logService');
-            const { initializeEmailService } = require('../../../services/emailService');
+            const {
+                initializeEmailService,
+            } = require('../../../services/emailService');
             initializeEmailService();
 
             expect(nodemailer.createTransport).toHaveBeenCalled();
-            expect(logInfo).toHaveBeenCalledWith('Email service initialized successfully');
+            expect(logInfo).toHaveBeenCalledWith(
+                'Email service initialized successfully'
+            );
         });
 
         it('should log error when config is incomplete', () => {
@@ -269,18 +300,24 @@ describe('emailService', () => {
             process.env.EMAIL_SMTP_HOST = 'smtp.example.com';
 
             const { logError } = require('../../../services/logService');
-            const { initializeEmailService } = require('../../../services/emailService');
+            const {
+                initializeEmailService,
+            } = require('../../../services/emailService');
             initializeEmailService();
 
             expect(logError).toHaveBeenCalledWith(
-                new Error('Email is enabled but configuration is incomplete. Email service will not function.')
+                new Error(
+                    'Email is enabled but configuration is incomplete. Email service will not function.'
+                )
             );
         });
     });
 
     describe('verifyEmailConnection', () => {
         it('should return failure when email is disabled', async () => {
-            const { verifyEmailConnection } = require('../../../services/emailService');
+            const {
+                verifyEmailConnection,
+            } = require('../../../services/emailService');
             const result = await verifyEmailConnection();
 
             expect(result.success).toBe(false);
@@ -302,7 +339,10 @@ describe('emailService', () => {
             const nodemailer = require('nodemailer');
             nodemailer.createTransport.mockReturnValue(mockTransporter);
 
-            const { initializeEmailService, verifyEmailConnection } = require('../../../services/emailService');
+            const {
+                initializeEmailService,
+                verifyEmailConnection,
+            } = require('../../../services/emailService');
             initializeEmailService();
 
             const result = await verifyEmailConnection();
@@ -318,7 +358,9 @@ describe('emailService', () => {
             process.env.EMAIL_SMTP_PASSWORD = 'password123';
             process.env.EMAIL_FROM_ADDRESS = 'noreply@example.com';
 
-            const mockVerify = jest.fn().mockRejectedValue(new Error('Connection failed'));
+            const mockVerify = jest
+                .fn()
+                .mockRejectedValue(new Error('Connection failed'));
             const mockTransporter = {
                 sendMail: jest.fn(),
                 verify: mockVerify,
@@ -326,7 +368,10 @@ describe('emailService', () => {
             const nodemailer = require('nodemailer');
             nodemailer.createTransport.mockReturnValue(mockTransporter);
 
-            const { initializeEmailService, verifyEmailConnection } = require('../../../services/emailService');
+            const {
+                initializeEmailService,
+                verifyEmailConnection,
+            } = require('../../../services/emailService');
             initializeEmailService();
 
             const result = await verifyEmailConnection();
