@@ -47,6 +47,25 @@ const config = {
 
     email: process.env.TUDUDI_USER_EMAIL,
 
+    emailConfig: {
+        enabled: process.env.ENABLE_EMAIL === 'true',
+        smtp: {
+            host: process.env.EMAIL_SMTP_HOST,
+            port: process.env.EMAIL_SMTP_PORT
+                ? parseInt(process.env.EMAIL_SMTP_PORT, 10)
+                : 587,
+            secure: process.env.EMAIL_SMTP_SECURE === 'true',
+            auth: {
+                user: process.env.EMAIL_SMTP_USERNAME,
+                pass: process.env.EMAIL_SMTP_PASSWORD,
+            },
+        },
+        from: {
+            address: process.env.EMAIL_FROM_ADDRESS,
+            name: process.env.EMAIL_FROM_NAME || 'Tududi',
+        },
+    },
+
     environment,
 
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',

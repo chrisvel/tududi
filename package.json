@@ -140,6 +140,7 @@
     "multer": "~2.0.1",
     "nanoid": "^5.1.5",
     "node-cron": "~4.1.0",
+    "nodemailer": "^7.0.9",
     "prettier": "^3.6.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
