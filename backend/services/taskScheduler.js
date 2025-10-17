@@ -35,6 +35,7 @@ const getCronExpression = (frequency) => {
         '8h': '0 */8 * * *',
         '12h': '0 */12 * * *',
         recurring_tasks: '0 6 * * *', // Daily at 6 AM for recurring task generation
+        cleanup_tokens: '0 2 * * *', // Daily at 2 AM for cleaning up expired tokens
     };
     return expressions[frequency];
 };
@@ -43,6 +44,8 @@ const getCronExpression = (frequency) => {
 const createJobHandler = (frequency) => async () => {
     if (frequency === 'recurring_tasks') {
         await processRecurringTasks();
+    } else if (frequency === 'cleanup_tokens') {
+        await cleanupExpiredTokens();
     } else {
         await processSummariesForFrequency(frequency);
     }
@@ -60,6 +63,7 @@ const createJobEntries = () => {
         '8h',
         '12h',
         'recurring_tasks',
+        'cleanup_tokens',
     ];
 
     return frequencies.map((frequency) => {
@@ -134,6 +138,17 @@ const processRecurringTasks = async () => {
     }
 };
 
+// Function to cleanup expired verification tokens (contains side effects)
+const cleanupExpiredTokens = async () => {
+    try {
+        const { cleanupExpiredTokens } = require('./registrationService');
+        const count = await cleanupExpiredTokens();
+        return count;
+    } catch (error) {
+        throw error;
+    }
+};
+
 // Function to initialize scheduler (contains side effects)
 const initialize = async () => {
     if (schedulerState.isInitialized) {
@@ -196,6 +211,7 @@ module.exports = {
     getStatus,
     processSummariesForFrequency,
     processRecurringTasks,
+    cleanupExpiredTokens,
     // For testing
     _createSchedulerState: createSchedulerState,
     _shouldDisableScheduler: shouldDisableScheduler,
