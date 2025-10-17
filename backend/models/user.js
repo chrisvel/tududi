@@ -165,6 +165,19 @@ module.exports = (sequelize) => {
                     pinnedViewsOrder: [],
                 },
             },
+            email_verified: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: true,
+            },
+            email_verification_token: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            email_verification_token_expires_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             tableName: 'users',

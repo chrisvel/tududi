@@ -66,6 +66,13 @@ const config = {
         },
     },
 
+    registrationConfig: {
+        enabled: process.env.ENABLE_REGISTRATION === 'true',
+        tokenExpiryHours: process.env.REGISTRATION_TOKEN_EXPIRY_HOURS
+            ? parseInt(process.env.REGISTRATION_TOKEN_EXPIRY_HOURS, 10)
+            : 24,
+    },
+
     environment,
 
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
