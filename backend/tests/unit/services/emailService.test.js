@@ -1,6 +1,7 @@
 jest.mock('nodemailer');
 jest.mock('../../../services/logService', () => ({
     logError: jest.fn(),
+    logInfo: jest.fn(),
 }));
 
 describe('emailService', () => {
@@ -229,18 +230,15 @@ describe('emailService', () => {
 
     describe('initializeEmailService', () => {
         it('should not initialize when email is disabled', () => {
-            const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+            const { logInfo } = require('../../../services/logService');
             const { initializeEmailService } = require('../../../services/emailService');
 
             initializeEmailService();
 
-            expect(consoleLogSpy).toHaveBeenCalledWith('Email service is disabled');
-            consoleLogSpy.mockRestore();
+            expect(logInfo).toHaveBeenCalledWith('Email service is disabled');
         });
 
         it('should initialize successfully with valid config', () => {
-            const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
-
             process.env.ENABLE_EMAIL = 'true';
             process.env.EMAIL_SMTP_HOST = 'smtp.example.com';
             process.env.EMAIL_SMTP_USERNAME = 'user@example.com';
@@ -254,27 +252,25 @@ describe('emailService', () => {
             const nodemailer = require('nodemailer');
             nodemailer.createTransport.mockReturnValue(mockTransporter);
 
+            const { logInfo } = require('../../../services/logService');
             const { initializeEmailService } = require('../../../services/emailService');
             initializeEmailService();
 
             expect(nodemailer.createTransport).toHaveBeenCalled();
-            expect(consoleLogSpy).toHaveBeenCalledWith('Email service initialized successfully');
-            consoleLogSpy.mockRestore();
+            expect(logInfo).toHaveBeenCalledWith('Email service initialized successfully');
         });
 
-        it('should warn when config is incomplete', () => {
-            const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
-
+        it('should log error when config is incomplete', () => {
             process.env.ENABLE_EMAIL = 'true';
             process.env.EMAIL_SMTP_HOST = 'smtp.example.com';
 
+            const { logError } = require('../../../services/logService');
             const { initializeEmailService } = require('../../../services/emailService');
             initializeEmailService();
 
-            expect(consoleWarnSpy).toHaveBeenCalledWith(
-                'Email is enabled but configuration is incomplete. Email service will not function.'
+            expect(logError).toHaveBeenCalledWith(
+                new Error('Email is enabled but configuration is incomplete. Email service will not function.')
             );
-            consoleWarnSpy.mockRestore();
         });
     });
 
