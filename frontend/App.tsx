@@ -23,6 +23,7 @@ import TasksToday from './components/Task/TasksToday';
 import TaskDetails from './components/Task/TaskDetails';
 import LoadingScreen from './components/Shared/LoadingScreen';
 import InboxItems from './components/Inbox/InboxItems';
+import ChatPage from './components/Chat/ChatPage';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import { getApiPath, getLocalesPath } from './config/paths';
 // Lazy load Tasks component to prevent issues with tags loading
@@ -246,6 +247,7 @@ const App: React.FC = () => {
                                 element={<NoteDetails />}
                             />
                             <Route path="/calendar" element={<Calendar />} />
+                            <Route path="/chat" element={<ChatPage />} />
                             <Route
                                 path="/profile"
                                 element={
