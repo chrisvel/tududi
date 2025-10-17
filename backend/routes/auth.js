@@ -26,7 +26,9 @@ router.get('/registration-status', (req, res) => {
 router.post('/register', async (req, res) => {
     try {
         if (!isRegistrationEnabled()) {
-            return res.status(404).json({ error: 'Registration is not enabled' });
+            return res
+                .status(404)
+                .json({ error: 'Registration is not enabled' });
         }
 
         const { email, password } = req.body;
@@ -42,7 +44,14 @@ router.post('/register', async (req, res) => {
             password
         );
 
-        await sendVerificationEmail(user, verificationToken);
+        const emailResult = await sendVerificationEmail(user, verificationToken);
+
+        if (!emailResult.success) {
+            logError(
+                new Error(emailResult.reason),
+                'Email sending failed during registration'
+            );
+        }
 
         res.status(201).json({
             message:
@@ -59,7 +68,9 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ error: error.message });
         }
         logError('Registration error:', error);
-        res.status(500).json({ error: 'Registration failed. Please try again.' });
+        res.status(500).json({
+            error: 'Registration failed. Please try again.',
+        });
     }
 });
 
@@ -69,7 +80,9 @@ router.get('/verify-email', async (req, res) => {
         const { token } = req.query;
 
         if (!token) {
-            return res.status(400).json({ error: 'Verification token is required' });
+            return res
+                .status(400)
+                .json({ error: 'Verification token is required' });
         }
 
         await verifyUserEmail(token);
@@ -87,7 +100,9 @@ router.get('/verify-email', async (req, res) => {
         }
 
         logError('Email verification error:', error);
-        res.redirect(`${config.frontendUrl}/login?verified=false&error=${errorParam}`);
+        res.redirect(
+            `${config.frontendUrl}/login?verified=false&error=${errorParam}`
+        );
     }
 });
 

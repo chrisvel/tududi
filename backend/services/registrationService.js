@@ -81,7 +81,12 @@ const verifyUserEmail = async (token) => {
         throw new Error('Email already verified');
     }
 
-    if (!isVerificationTokenValid(token, user.email_verification_token_expires_at)) {
+    if (
+        !isVerificationTokenValid(
+            token,
+            user.email_verification_token_expires_at
+        )
+    ) {
         throw new Error('Verification token has expired');
     }
 
@@ -95,6 +100,15 @@ const verifyUserEmail = async (token) => {
 
 const sendVerificationEmail = async (user, verificationToken) => {
     const config = getConfig();
+    const { isEmailEnabled } = require('./emailService');
+
+    if (!isEmailEnabled()) {
+        logInfo(
+            `Email service is disabled. Verification email for ${user.email} not sent. User must be verified manually.`
+        );
+        return { success: false, reason: 'Email service is disabled' };
+    }
+
     const verificationUrl = `${config.frontendUrl}/verify-email?token=${verificationToken}`;
     const tokenExpiryHours = config.registrationConfig.tokenExpiryHours;
 
@@ -146,17 +160,22 @@ The Tududi Team`;
 <p>Best regards,<br>The Tududi Team</p>
 `;
 
-    try {
-        await sendEmail({
-            to: user.email,
-            subject,
-            text,
-            html,
-        });
+    const result = await sendEmail({
+        to: user.email,
+        subject,
+        text,
+        html,
+    });
+
+    if (result.success) {
         logInfo(`Verification email sent to ${user.email}`);
-    } catch (error) {
-        logError(error, `Failed to send verification email to ${user.email}`);
-        throw new Error('Failed to send verification email');
+        return result;
+    } else {
+        logError(
+            new Error(result.reason),
+            `Failed to send verification email to ${user.email}`
+        );
+        return result;
     }
 };
 
