@@ -1,6 +1,6 @@
 import React from 'react';
 import { Location } from 'react-router-dom';
-import { TagIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { TagIcon, PlusCircleIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { Tag } from '../../entities/Tag';
 import { useTranslation } from 'react-i18next';
 
@@ -57,6 +57,27 @@ const SidebarTags: React.FC<SidebarTagsProps> = ({
                     >
                         <PlusCircleIcon className="h-5 w-5" />
                     </button>
+                </li>
+
+                {/* AI ASSISTANT */}
+                <li
+                    className={`flex justify-between items-center rounded-md px-4 py-2 uppercase text-xs tracking-wider cursor-pointer mb-4 ${
+                        isActiveTag('/chat').includes('bg-gray-200')
+                            ? 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300'
+                            : 'text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300'
+                    }`}
+                    onClick={() =>
+                        handleNavClick(
+                            '/chat',
+                            t('sidebar.aiAssistant'),
+                            <SparklesIcon className="h-5 w-5 mr-2" />
+                        )
+                    }
+                >
+                    <span className="flex items-center">
+                        <SparklesIcon className="h-5 w-5 mr-2" />
+                        {t('sidebar.aiAssistant')}
+                    </span>
                 </li>
             </ul>
         </>

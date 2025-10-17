@@ -65,6 +65,15 @@ const Layout: React.FC<LayoutProps> = ({
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [selectedArea, setSelectedArea] = useState<Area | null>(null);
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+    const [prefilledTask, setPrefilledTask] = useState<Partial<Task> | null>(
+        null
+    );
+    const [prefilledProject, setPrefilledProject] = useState<Partial<Project> | null>(
+        null
+    );
+    const [prefilledNote, setPrefilledNote] = useState<Partial<Note> | null>(
+        null
+    );
 
     const {
         notesStore: { notes, isLoading: isNotesLoading, isError: isNotesError },
@@ -125,6 +134,56 @@ const Layout: React.FC<LayoutProps> = ({
         loadProjects();
     }, [projects.length, isProjectsLoading, setProjects]);
 
+    // Listen for chat item creation events
+    useEffect(() => {
+        const handleOpenTaskModal = (event: CustomEvent) => {
+            const { name, type } = event.detail;
+            setPrefilledTask({ name, status: 'not_started', completed_at: null });
+            setTaskModalType(type || 'full');
+            setIsTaskModalOpen(true);
+        };
+
+        const handleOpenProjectModal = (event: CustomEvent) => {
+            const { name } = event.detail;
+            setPrefilledProject({ name, state: 'planned' });
+            setIsProjectModalOpen(true);
+        };
+
+        const handleOpenNoteModal = (event: CustomEvent) => {
+            const { title } = event.detail;
+            setPrefilledNote({ title, content: '' });
+            setIsNoteModalOpen(true);
+        };
+
+        window.addEventListener(
+            'openTaskModal',
+            handleOpenTaskModal as EventListener
+        );
+        window.addEventListener(
+            'openProjectModal',
+            handleOpenProjectModal as EventListener
+        );
+        window.addEventListener(
+            'openNoteModal',
+            handleOpenNoteModal as EventListener
+        );
+
+        return () => {
+            window.removeEventListener(
+                'openTaskModal',
+                handleOpenTaskModal as EventListener
+            );
+            window.removeEventListener(
+                'openProjectModal',
+                handleOpenProjectModal as EventListener
+            );
+            window.removeEventListener(
+                'openNoteModal',
+                handleOpenNoteModal as EventListener
+            );
+        };
+    }, []);
+
     const openNoteModal = (note: Note | null = null) => {
         setSelectedNote(note);
         setIsNoteModalOpen(true);
@@ -133,10 +192,12 @@ const Layout: React.FC<LayoutProps> = ({
     const closeNoteModal = () => {
         setIsNoteModalOpen(false);
         setSelectedNote(null);
+        setPrefilledNote(null);
     };
 
     const closeTaskModal = () => {
         setIsTaskModalOpen(false);
+        setPrefilledTask(null);
     };
 
     const openProjectModal = () => {
@@ -145,6 +206,7 @@ const Layout: React.FC<LayoutProps> = ({
 
     const closeProjectModal = () => {
         setIsProjectModalOpen(false);
+        setPrefilledProject(null);
     };
 
     const openAreaModal = (area: Area | null = null) => {
@@ -484,9 +546,9 @@ const Layout: React.FC<LayoutProps> = ({
                             isOpen={isTaskModalOpen}
                             onClose={closeTaskModal}
                             task={{
-                                name: '',
-                                status: 'not_started',
-                                completed_at: null,
+                                name: prefilledTask?.name || '',
+                                status: prefilledTask?.status || 'not_started',
+                                completed_at: prefilledTask?.completed_at || null,
                             }}
                             onSave={handleSaveTask}
                             onDelete={async () => {}}
@@ -523,6 +585,7 @@ const Layout: React.FC<LayoutProps> = ({
                                 console.error('Error deleting project:', error);
                             }
                         }}
+                        project={prefilledProject ? { name: prefilledProject.name || '', state: prefilledProject.state || 'planned' } : undefined}
                         areas={areas}
                     />
                 )}
@@ -546,7 +609,7 @@ const Layout: React.FC<LayoutProps> = ({
                                 console.error('Error deleting note:', error);
                             }
                         }}
-                        note={selectedNote}
+                        note={selectedNote || (prefilledNote ? { title: prefilledNote.title || '', content: prefilledNote.content || '' } : null)}
                         projects={projects}
                         onCreateProject={handleCreateProject}
                     />
