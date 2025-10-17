@@ -124,7 +124,10 @@ class QueryHandlerService {
         );
 
         const recommendations =
-            await productivityMetricsService.getRecommendations(userId, metrics);
+            await productivityMetricsService.getRecommendations(
+                userId,
+                metrics
+            );
 
         return this.formatProductivityResponse(metrics, recommendations);
     }
@@ -321,7 +324,8 @@ class QueryHandlerService {
     formatProjectListResponse(projects) {
         if (projects.length === 0) {
             return {
-                response: '**Your Active Projects**\n\nNo active projects found.',
+                response:
+                    '**Your Active Projects**\n\nNo active projects found.',
                 projects: [],
             };
         }
@@ -459,14 +463,17 @@ class QueryHandlerService {
 
         if (tasks.length > 0) {
             response += '**Tasks:**\n\n';
-            response += tasks.map((t) => `[TASK:${t.uid}] ${t.name}`).join('\n\n');
+            response += tasks
+                .map((t) => `[TASK:${t.uid}] ${t.name}`)
+                .join('\n\n');
             response += '\n\n';
         }
 
         if (projects.length > 0) {
             response += '**Projects:**\n\n';
-            response +=
-                projects.map((p) => `[PROJECT:${p.uid}] ${p.name}`).join('\n\n');
+            response += projects
+                .map((p) => `[PROJECT:${p.uid}] ${p.name}`)
+                .join('\n\n');
         }
 
         return {

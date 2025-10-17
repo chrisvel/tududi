@@ -1,6 +1,10 @@
 import React from 'react';
 import { Location } from 'react-router-dom';
-import { TagIcon, PlusCircleIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import {
+    TagIcon,
+    PlusCircleIcon,
+    SparklesIcon,
+} from '@heroicons/react/24/outline';
 import { Tag } from '../../entities/Tag';
 import { useTranslation } from 'react-i18next';
 
