@@ -235,7 +235,10 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({ content }) => {
             {segments.map((segment, index) => {
                 if (segment.type === 'text' && segment.content.trim()) {
                     return (
-                        <div key={index} className="prose prose-sm dark:prose-invert max-w-none">
+                        <div
+                            key={index}
+                            className="prose prose-sm dark:prose-invert max-w-none"
+                        >
                             <ReactMarkdown
                                 rehypePlugins={[rehypeHighlight]}
                                 remarkPlugins={[remarkGfm]}
@@ -271,7 +274,9 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({ content }) => {
                                         </ol>
                                     ),
                                     li: ({ children }) => (
-                                        <li className="ml-4 leading-relaxed">{children}</li>
+                                        <li className="ml-4 leading-relaxed">
+                                            {children}
+                                        </li>
                                     ),
                                     strong: ({ children }) => (
                                         <strong className="font-semibold text-gray-900 dark:text-gray-100">

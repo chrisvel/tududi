@@ -22,7 +22,9 @@ const ChatPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const conversationIdRef = useRef<string>(`conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+    const conversationIdRef = useRef<string>(
+        `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    );
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -207,7 +209,13 @@ const ChatPage: React.FC = () => {
                                         {message.cost && (
                                             <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
                                                 <span className="font-mono">
-                                                    ${message.cost.total_cost.toFixed(6)} • {message.cost.total_tokens} tokens
+                                                    $
+                                                    {message.cost.total_cost.toFixed(
+                                                        6
+                                                    )}{' '}
+                                                    •{' '}
+                                                    {message.cost.total_tokens}{' '}
+                                                    tokens
                                                 </span>
                                             </div>
                                         )}
@@ -261,7 +269,10 @@ const ChatPage: React.FC = () => {
                                 className="w-full resize-none rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-3 pr-12 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 rows={1}
                                 disabled={isLoading || !isEnabled}
-                                style={{ minHeight: '50px', maxHeight: '200px' }}
+                                style={{
+                                    minHeight: '50px',
+                                    maxHeight: '200px',
+                                }}
                             />
                         </div>
                         <button
