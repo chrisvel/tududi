@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
@@ -20,11 +20,10 @@ const ChatItemRenderer: React.FC<ChatItemRendererProps> = ({ content }) => {
     const parseContent = (text: string) => {
         // Pattern: [TYPE:id] Item name
         const pattern = /\[(TASK|PROJECT|NOTE):([^\]]+)\]\s*([^\n]+)/g;
-        const parts: Array<{ type: string; id: string; name: string }> = [];
         let lastIndex = 0;
         const segments: Array<{ type: 'text' | 'item'; content: any }> = [];
 
-        let match;
+        let match: RegExpExecArray | null;
         while ((match = pattern.exec(text)) !== null) {
             // Add text before the match
             if (match.index > lastIndex) {
