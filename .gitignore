@@ -8,6 +8,7 @@ certs/
 AGENTS.md
 CLAUDE.md
 CLAUDE.local.md
+AGENTS-CONTEXT.json
 
 .byebug_history
 node_modules
