@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const { getConfig } = require('../config/config');
-const { logError } = require('./logService');
+const { logError, logInfo } = require('./logService');
 
 let transporter = null;
 
@@ -26,7 +26,7 @@ const createTransporter = () => {
     }
 
     if (!hasValidEmailConfig()) {
-        console.warn('Email is enabled but configuration is incomplete. Email service will not function.');
+        logError(new Error('Email is enabled but configuration is incomplete. Email service will not function.'));
         return null;
     }
 
@@ -51,14 +51,14 @@ const createTransporter = () => {
 
 const initializeEmailService = () => {
     if (!isEmailEnabled()) {
-        console.log('Email service is disabled');
+        logInfo('Email service is disabled');
         return;
     }
 
     transporter = createTransporter();
 
     if (transporter) {
-        console.log('Email service initialized successfully');
+        logInfo('Email service initialized successfully');
     }
 };
 
