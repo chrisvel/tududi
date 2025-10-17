@@ -1,6 +1,6 @@
 const { User } = require('../../../models');
 const { getConfig } = require('../../../config/config');
-const { sendEmail } = require('../../../services/emailService');
+const { sendEmail, isEmailEnabled } = require('../../../services/emailService');
 const {
     isRegistrationEnabled,
     generateVerificationToken,
@@ -12,7 +12,10 @@ const {
 } = require('../../../services/registrationService');
 
 jest.mock('../../../config/config');
-jest.mock('../../../services/emailService');
+jest.mock('../../../services/emailService', () => ({
+    sendEmail: jest.fn(),
+    isEmailEnabled: jest.fn(),
+}));
 jest.mock('../../../services/logService', () => ({
     logError: jest.fn(),
     logInfo: jest.fn(),
@@ -88,7 +91,8 @@ describe('registrationService', () => {
                     email_verified: false,
                     email_verification_token: expect.any(String),
                     email_verification_token_expires_at: expect.any(Date),
-                })
+                }),
+                { transaction: null }
             );
         });
 
@@ -211,10 +215,11 @@ describe('registrationService', () => {
             };
 
             getConfig.mockReturnValue({
-                frontendUrl: 'http://localhost:3000',
+                backendUrl: 'http://localhost:3002',
                 registrationConfig: { tokenExpiryHours: 24 },
             });
 
+            isEmailEnabled.mockReturnValue(true);
             sendEmail.mockResolvedValue({ success: true });
 
             await sendVerificationEmail(mockUser, 'verification-token');
@@ -223,29 +228,48 @@ describe('registrationService', () => {
                 to: 'test@example.com',
                 subject: 'Welcome to Tududi - Verify your email',
                 text: expect.stringContaining(
-                    'http://localhost:3000/verify-email?token=verification-token'
+                    'http://localhost:3002/api/verify-email?token=verification-token'
                 ),
                 html: expect.stringContaining(
-                    'http://localhost:3000/verify-email?token=verification-token'
+                    'http://localhost:3002/api/verify-email?token=verification-token'
                 ),
             });
         });
 
-        it('should throw error when email fails', async () => {
+        it('should return error object when email fails', async () => {
             const mockUser = {
                 email: 'test@example.com',
             };
 
             getConfig.mockReturnValue({
-                frontendUrl: 'http://localhost:3000',
+                backendUrl: 'http://localhost:3002',
                 registrationConfig: { tokenExpiryHours: 24 },
             });
 
-            sendEmail.mockRejectedValue(new Error('SMTP error'));
+            isEmailEnabled.mockReturnValue(true);
+            sendEmail.mockResolvedValue({
+                success: false,
+                reason: 'SMTP error',
+            });
 
-            await expect(
-                sendVerificationEmail(mockUser, 'token')
-            ).rejects.toThrow('Failed to send verification email');
+            const result = await sendVerificationEmail(mockUser, 'token');
+
+            expect(result.success).toBe(false);
+            expect(result.reason).toBe('SMTP error');
+        });
+
+        it('should return error when email service disabled', async () => {
+            const mockUser = {
+                email: 'test@example.com',
+            };
+
+            isEmailEnabled.mockReturnValue(false);
+
+            const result = await sendVerificationEmail(mockUser, 'token');
+
+            expect(result.success).toBe(false);
+            expect(result.reason).toBe('Email service is disabled');
+            expect(sendEmail).not.toHaveBeenCalled();
         });
     });
 
