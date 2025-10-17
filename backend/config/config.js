@@ -77,6 +77,8 @@ const config = {
 
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
 
+    backendUrl: process.env.BACKEND_URL || 'http://localhost:3002',
+
     host: process.env.HOST || '0.0.0.0',
 
     port: process.env.PORT || 3002,

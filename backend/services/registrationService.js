@@ -115,7 +115,7 @@ const sendVerificationEmail = async (user, verificationToken) => {
         return { success: false, reason: 'Email service is disabled' };
     }
 
-    const verificationUrl = `${config.frontendUrl}/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${config.backendUrl}/api/verify-email?token=${verificationToken}`;
     const tokenExpiryHours = config.registrationConfig.tokenExpiryHours;
 
     const subject = 'Welcome to Tududi - Verify your email';
