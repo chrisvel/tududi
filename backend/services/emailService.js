@@ -64,6 +64,7 @@ const initializeEmailService = () => {
 
 const sendEmail = async ({ to, subject, text, html }) => {
     if (!isEmailEnabled()) {
+        logInfo(`Email would be sent to ${to} with subject: "${subject}" (email service is disabled)`);
         return { success: false, reason: 'Email service is disabled' };
     }
 

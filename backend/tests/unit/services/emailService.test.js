@@ -56,6 +56,7 @@ describe('emailService', () => {
 
     describe('sendEmail', () => {
         it('should return failure when email is disabled', async () => {
+            const { logInfo } = require('../../../services/logService');
             const { sendEmail } = require('../../../services/emailService');
             const result = await sendEmail({
                 to: 'user@example.com',
@@ -65,6 +66,9 @@ describe('emailService', () => {
 
             expect(result.success).toBe(false);
             expect(result.reason).toBe('Email service is disabled');
+            expect(logInfo).toHaveBeenCalledWith(
+                'Email would be sent to user@example.com with subject: "Test" (email service is disabled)'
+            );
         });
 
         it('should return failure when required fields are missing', async () => {
