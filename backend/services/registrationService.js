@@ -22,7 +22,7 @@ const getTokenExpirationDate = () => {
     return expirationDate;
 };
 
-const createUnverifiedUser = async (email, password) => {
+const createUnverifiedUser = async (email, password, transaction = null) => {
     if (!validateEmail(email)) {
         throw new Error('Invalid email format');
     }
@@ -31,7 +31,10 @@ const createUnverifiedUser = async (email, password) => {
         throw new Error('Password must be at least 6 characters long');
     }
 
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await User.findOne({
+        where: { email },
+        transaction,
+    });
     if (existingUser) {
         throw new Error('Email already registered');
     }
@@ -39,13 +42,16 @@ const createUnverifiedUser = async (email, password) => {
     const verificationToken = generateVerificationToken();
     const tokenExpiresAt = getTokenExpirationDate();
 
-    const user = await User.create({
-        email,
-        password,
-        email_verified: false,
-        email_verification_token: verificationToken,
-        email_verification_token_expires_at: tokenExpiresAt,
-    });
+    const user = await User.create(
+        {
+            email,
+            password,
+            email_verified: false,
+            email_verification_token: verificationToken,
+            email_verification_token_expires_at: tokenExpiresAt,
+        },
+        { transaction }
+    );
 
     return {
         user,

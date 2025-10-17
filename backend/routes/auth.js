@@ -24,8 +24,12 @@ router.get('/registration-status', (req, res) => {
 
 // Register new user
 router.post('/register', async (req, res) => {
+    const { sequelize } = require('../models');
+    const transaction = await sequelize.transaction();
+
     try {
         if (!isRegistrationEnabled()) {
+            await transaction.rollback();
             return res
                 .status(404)
                 .json({ error: 'Registration is not enabled' });
@@ -34,6 +38,7 @@ router.post('/register', async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
+            await transaction.rollback();
             return res
                 .status(400)
                 .json({ error: 'Email and password are required' });
@@ -41,23 +46,32 @@ router.post('/register', async (req, res) => {
 
         const { user, verificationToken } = await createUnverifiedUser(
             email,
-            password
+            password,
+            transaction
         );
 
         const emailResult = await sendVerificationEmail(user, verificationToken);
 
         if (!emailResult.success) {
+            await transaction.rollback();
             logError(
                 new Error(emailResult.reason),
-                'Email sending failed during registration'
+                'Email sending failed during registration, rolling back user creation'
             );
+            return res.status(500).json({
+                error: 'Failed to send verification email. Please try again later.',
+            });
         }
+
+        await transaction.commit();
 
         res.status(201).json({
             message:
                 'Registration successful. Please check your email to verify your account.',
         });
     } catch (error) {
+        await transaction.rollback();
+
         if (error.message === 'Email already registered') {
             return res.status(400).json({ error: error.message });
         }
