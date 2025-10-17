@@ -36,7 +36,9 @@ const calculateAverageTaskAge = (tasksInPeriod) => {
     const now = new Date();
     const totalAge = activeTasks.reduce((sum, task) => {
         const createdDate = new Date(task.created_at);
-        const ageInDays = Math.floor((now - createdDate) / (1000 * 60 * 60 * 24));
+        const ageInDays = Math.floor(
+            (now - createdDate) / (1000 * 60 * 60 * 24)
+        );
         return sum + ageInDays;
     }, 0);
 
@@ -182,10 +184,16 @@ const calculateMetrics = async (userId, period = '30d') => {
 
         // Calculate metrics
         const metrics = {
-            completion_rate: calculateCompletionRate(tasksInPeriod, completedTasks),
+            completion_rate: calculateCompletionRate(
+                tasksInPeriod,
+                completedTasks
+            ),
             overdue_rate: await calculateOverdueRate(userId, overdueTasks),
             task_age: calculateAverageTaskAge(tasksInPeriod),
-            created_done_ratio: calculateCreatedDoneRatio(tasksInPeriod, completedTasks),
+            created_done_ratio: calculateCreatedDoneRatio(
+                tasksInPeriod,
+                completedTasks
+            ),
             total_tasks: tasksInPeriod.length,
             completed_tasks: completedTasks.length,
             overdue_tasks: overdueTasks.length,

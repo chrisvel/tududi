@@ -85,13 +85,7 @@ const intentExamples = {
         'recommend what to do',
         'what should I focus on',
     ],
-    conversational: [
-        'hello',
-        'hi there',
-        'thanks',
-        'thank you',
-        'how are you',
-    ],
+    conversational: ['hello', 'hi there', 'thanks', 'thank you', 'how are you'],
 };
 
 // Entity extraction patterns
@@ -196,7 +190,9 @@ const extractEntities = (text) => {
     };
 
     // Detect priority
-    for (const [priority, keywords] of Object.entries(entityPatterns.priority)) {
+    for (const [priority, keywords] of Object.entries(
+        entityPatterns.priority
+    )) {
         for (const keyword of keywords) {
             if (text.includes(keyword)) {
                 entities.priority = priority;
@@ -207,7 +203,9 @@ const extractEntities = (text) => {
     }
 
     // Detect time period
-    for (const [period, keywords] of Object.entries(entityPatterns.timePeriod)) {
+    for (const [period, keywords] of Object.entries(
+        entityPatterns.timePeriod
+    )) {
         for (const keyword of keywords) {
             if (text.includes(keyword)) {
                 entities.timePeriod = period;
@@ -333,7 +331,10 @@ const fallbackParse = (message) => {
     let intent = 'conversational';
 
     // Simple keyword matching
-    if (text.includes('task') && (text.includes('show') || text.includes('list'))) {
+    if (
+        text.includes('task') &&
+        (text.includes('show') || text.includes('list'))
+    ) {
         intent = 'list_tasks';
     } else if (
         text.includes('project') &&
@@ -385,9 +386,14 @@ const parse = async (message) => {
         let bestIntent = 'conversational';
         let bestScore = 0;
 
-        for (const [intent, exampleEmbeddings] of Object.entries(intentEmbeddings)) {
+        for (const [intent, exampleEmbeddings] of Object.entries(
+            intentEmbeddings
+        )) {
             for (const exampleVector of exampleEmbeddings) {
-                const similarity = cosineSimilarity(messageVector, exampleVector);
+                const similarity = cosineSimilarity(
+                    messageVector,
+                    exampleVector
+                );
                 if (similarity > bestScore) {
                     bestScore = similarity;
                     bestIntent = intent;

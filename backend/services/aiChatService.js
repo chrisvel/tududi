@@ -22,7 +22,8 @@ class AIChatService {
 
         // Context caching
         this.contextCache = new Map(); // conversationId -> {context, timestamp}
-        this.cacheExpiry = parseInt(process.env.AI_CACHE_EXPIRY_MS) || 5 * 60 * 1000; // 5 minutes default
+        this.cacheExpiry =
+            parseInt(process.env.AI_CACHE_EXPIRY_MS) || 5 * 60 * 1000; // 5 minutes default
 
         // Configurable limits
         this.limits = {
@@ -41,7 +42,9 @@ class AIChatService {
         let modelPricing = this.pricing[model];
         if (!modelPricing) {
             // Try to match by prefix (e.g., gpt-4-0125-preview -> gpt-4)
-            const modelPrefix = Object.keys(this.pricing).find(key => model.startsWith(key));
+            const modelPrefix = Object.keys(this.pricing).find((key) =>
+                model.startsWith(key)
+            );
             modelPricing = modelPrefix ? this.pricing[modelPrefix] : null;
         }
 
@@ -51,7 +54,8 @@ class AIChatService {
 
         // Calculate cost (pricing is per 1M tokens)
         const inputCost = (usage.prompt_tokens / 1000000) * modelPricing.input;
-        const outputCost = (usage.completion_tokens / 1000000) * modelPricing.output;
+        const outputCost =
+            (usage.completion_tokens / 1000000) * modelPricing.output;
         const totalCost = inputCost + outputCost;
 
         return {
@@ -104,8 +108,18 @@ class AIChatService {
                     due_date: { [Op.lt]: now },
                 },
                 limit: Math.floor(this.limits.maxTasks * 0.4), // 40% for overdue
-                order: [['due_date', 'ASC'], ['priority', 'DESC']],
-                attributes: ['uid', 'name', 'status', 'priority', 'due_date', 'description'],
+                order: [
+                    ['due_date', 'ASC'],
+                    ['priority', 'DESC'],
+                ],
+                attributes: [
+                    'uid',
+                    'name',
+                    'status',
+                    'priority',
+                    'due_date',
+                    'description',
+                ],
                 include: [{ model: Project, attributes: ['name'] }],
             });
 
@@ -116,8 +130,18 @@ class AIChatService {
                     due_date: { [Op.between]: [now, nextWeek] },
                 },
                 limit: Math.floor(this.limits.maxTasks * 0.4), // 40% for upcoming
-                order: [['due_date', 'ASC'], ['priority', 'DESC']],
-                attributes: ['uid', 'name', 'status', 'priority', 'due_date', 'description'],
+                order: [
+                    ['due_date', 'ASC'],
+                    ['priority', 'DESC'],
+                ],
+                attributes: [
+                    'uid',
+                    'name',
+                    'status',
+                    'priority',
+                    'due_date',
+                    'description',
+                ],
                 include: [{ model: Project, attributes: ['name'] }],
             });
 
@@ -133,14 +157,25 @@ class AIChatService {
                 },
                 limit: Math.floor(this.limits.maxTasks * 0.2), // 20% for high priority
                 order: [['updated_at', 'DESC']],
-                attributes: ['uid', 'name', 'status', 'priority', 'due_date', 'description'],
+                attributes: [
+                    'uid',
+                    'name',
+                    'status',
+                    'priority',
+                    'due_date',
+                    'description',
+                ],
                 include: [{ model: Project, attributes: ['name'] }],
             });
 
             // Combine and deduplicate tasks
             const taskIds = new Set();
-            const tasks = [...overdueTasks, ...upcomingTasks, ...highPriorityTasks]
-                .filter(task => {
+            const tasks = [
+                ...overdueTasks,
+                ...upcomingTasks,
+                ...highPriorityTasks,
+            ]
+                .filter((task) => {
                     if (taskIds.has(task.uid)) return false;
                     taskIds.add(task.uid);
                     return true;
@@ -336,7 +371,12 @@ Here are your most important tasks:
 Each line MUST start with the bracket format. Do not add bullets, numbers, or markdown formatting before the brackets.`;
     }
 
-    async chat(userId, message, conversationHistory = [], conversationId = null) {
+    async chat(
+        userId,
+        message,
+        conversationHistory = [],
+        conversationId = null
+    ) {
         try {
             // Step 1: Parse intent using TensorFlow
             console.log('Parsing intent for:', message);
@@ -405,11 +445,13 @@ Each line MUST start with the bracket format. Do not add bullets, numbers, or ma
             const formattingReminder = [
                 {
                     role: 'user',
-                    content: 'Remember: when listing tasks, projects, or notes, always use [TASK:id] format, correct?'
+                    content:
+                        'Remember: when listing tasks, projects, or notes, always use [TASK:id] format, correct?',
                 },
                 {
                     role: 'assistant',
-                    content: 'Absolutely! I will ALWAYS use the exact format: [TASK:id] Task name, [PROJECT:id] Project name, [NOTE:id] Note title. Never bold, bullets, or other formatting. Only the square bracket format.'
+                    content:
+                        'Absolutely! I will ALWAYS use the exact format: [TASK:id] Task name, [PROJECT:id] Project name, [NOTE:id] Note title. Never bold, bullets, or other formatting. Only the square bracket format.',
                 },
             ];
 
@@ -469,7 +511,12 @@ Each line MUST start with the bracket format. Do not add bullets, numbers, or ma
         }
     }
 
-    async *chatStream(userId, message, conversationHistory = [], conversationId = null) {
+    async *chatStream(
+        userId,
+        message,
+        conversationHistory = [],
+        conversationId = null
+    ) {
         if (!this.client) {
             throw new Error('AI client not initialized. Check API key.');
         }
@@ -575,8 +622,12 @@ Each line MUST start with the bracket format. Do not add bullets, numbers, or ma
         // Add entity information if present
         if (entities) {
             const entityInfo = [];
-            if (entities.priority) entityInfo.push(`Priority: ${entities.priority}`);
-            if (entities.timePeriod) entityInfo.push(`Time: ${entities.timePeriod.replace('_', ' ')}`);
+            if (entities.priority)
+                entityInfo.push(`Priority: ${entities.priority}`);
+            if (entities.timePeriod)
+                entityInfo.push(
+                    `Time: ${entities.timePeriod.replace('_', ' ')}`
+                );
             if (entities.metrics && entities.metrics.length > 0) {
                 entityInfo.push(`Metrics: ${entities.metrics.join(', ')}`);
             }

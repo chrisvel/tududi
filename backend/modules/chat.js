@@ -47,9 +47,9 @@ router.post('/chat/message', async (req, res) => {
         }
 
         if (error.code === 'rate_limit_exceeded') {
-            return res
-                .status(429)
-                .json({ error: 'Rate limit exceeded. Please try again later.' });
+            return res.status(429).json({
+                error: 'Rate limit exceeded. Please try again later.',
+            });
         }
 
         res.status(500).json({

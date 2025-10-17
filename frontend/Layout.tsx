@@ -67,9 +67,8 @@ const Layout: React.FC<LayoutProps> = ({
     const [prefilledTask, setPrefilledTask] = useState<Partial<Task> | null>(
         null
     );
-    const [prefilledProject, setPrefilledProject] = useState<Partial<Project> | null>(
-        null
-    );
+    const [prefilledProject, setPrefilledProject] =
+        useState<Partial<Project> | null>(null);
     const [prefilledNote, setPrefilledNote] = useState<Partial<Note> | null>(
         null
     );
@@ -179,7 +178,11 @@ const Layout: React.FC<LayoutProps> = ({
     useEffect(() => {
         const handleOpenTaskModal = (event: CustomEvent) => {
             const { name, type } = event.detail;
-            setPrefilledTask({ name, status: 'not_started', completed_at: null });
+            setPrefilledTask({
+                name,
+                status: 'not_started',
+                completed_at: null,
+            });
             setTaskModalType(type || 'full');
             setIsTaskModalOpen(true);
         };
@@ -571,7 +574,8 @@ const Layout: React.FC<LayoutProps> = ({
                             task={{
                                 name: prefilledTask?.name || '',
                                 status: prefilledTask?.status || 'not_started',
-                                completed_at: prefilledTask?.completed_at || null,
+                                completed_at:
+                                    prefilledTask?.completed_at || null,
                             }}
                             onSave={handleSaveTask}
                             onDelete={async () => {}}
@@ -608,7 +612,15 @@ const Layout: React.FC<LayoutProps> = ({
                                 console.error('Error deleting project:', error);
                             }
                         }}
-                        project={prefilledProject ? { name: prefilledProject.name || '', state: prefilledProject.state || 'planned' } : undefined}
+                        project={
+                            prefilledProject
+                                ? {
+                                      name: prefilledProject.name || '',
+                                      state:
+                                          prefilledProject.state || 'planned',
+                                  }
+                                : undefined
+                        }
                         areas={areas}
                     />
                 )}
@@ -632,7 +644,15 @@ const Layout: React.FC<LayoutProps> = ({
                                 console.error('Error deleting note:', error);
                             }
                         }}
-                        note={selectedNote || (prefilledNote ? { title: prefilledNote.title || '', content: prefilledNote.content || '' } : null)}
+                        note={
+                            selectedNote ||
+                            (prefilledNote
+                                ? {
+                                      title: prefilledNote.title || '',
+                                      content: prefilledNote.content || '',
+                                  }
+                                : null)
+                        }
                         projects={projects}
                         onCreateProject={handleCreateProject}
                     />
