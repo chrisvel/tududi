@@ -12,12 +12,7 @@ const isEmailEnabled = () => {
 const hasValidEmailConfig = () => {
     const config = getConfig();
     const { smtp, from } = config.emailConfig;
-    return !!(
-        smtp.host &&
-        smtp.auth.user &&
-        smtp.auth.pass &&
-        from.address
-    );
+    return !!(smtp.host && smtp.auth.user && smtp.auth.pass && from.address);
 };
 
 const createTransporter = () => {
@@ -26,7 +21,11 @@ const createTransporter = () => {
     }
 
     if (!hasValidEmailConfig()) {
-        logError(new Error('Email is enabled but configuration is incomplete. Email service will not function.'));
+        logError(
+            new Error(
+                'Email is enabled but configuration is incomplete. Email service will not function.'
+            )
+        );
         return null;
     }
 
@@ -64,7 +63,9 @@ const initializeEmailService = () => {
 
 const sendEmail = async ({ to, subject, text, html }) => {
     if (!isEmailEnabled()) {
-        logInfo(`Email would be sent to ${to} with subject: "${subject}" (email service is disabled)`);
+        logInfo(
+            `Email would be sent to ${to} with subject: "${subject}" (email service is disabled)`
+        );
         return { success: false, reason: 'Email service is disabled' };
     }
 
@@ -73,11 +74,17 @@ const sendEmail = async ({ to, subject, text, html }) => {
     }
 
     if (!to || !subject) {
-        return { success: false, reason: 'Missing required fields: to, subject' };
+        return {
+            success: false,
+            reason: 'Missing required fields: to, subject',
+        };
     }
 
     if (!text && !html) {
-        return { success: false, reason: 'Either text or html content is required' };
+        return {
+            success: false,
+            reason: 'Either text or html content is required',
+        };
     }
 
     const config = getConfig();

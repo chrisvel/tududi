@@ -46,7 +46,10 @@ const Login: React.FC = () => {
                 );
             } else if (verificationError === 'already_verified') {
                 setSuccessMessage(
-                    t('auth.email_already_verified', 'Email already verified. Please log in.')
+                    t(
+                        'auth.email_already_verified',
+                        'Email already verified. Please log in.'
+                    )
                 );
             } else {
                 setError(
@@ -87,7 +90,11 @@ const Login: React.FC = () => {
 
                 navigate('/today');
             } else {
-                setError(data.error || data.errors?.[0] || 'Login failed. Please try again.');
+                setError(
+                    data.error ||
+                        data.errors?.[0] ||
+                        'Login failed. Please try again.'
+                );
             }
         } catch (err) {
             setError('An error occurred. Please try again.');

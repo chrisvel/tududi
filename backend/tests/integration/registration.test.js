@@ -115,7 +115,9 @@ describe('Registration Integration Tests', () => {
             });
 
             expect(response.status).toBe(400);
-            expect(response.body.error).toContain('Email and password are required');
+            expect(response.body.error).toContain(
+                'Email and password are required'
+            );
         });
 
         it('should return 400 for missing password', async () => {
@@ -124,7 +126,9 @@ describe('Registration Integration Tests', () => {
             });
 
             expect(response.status).toBe(400);
-            expect(response.body.error).toContain('Email and password are required');
+            expect(response.body.error).toContain(
+                'Email and password are required'
+            );
         });
 
         it('should return 400 for invalid email format', async () => {
@@ -144,7 +148,9 @@ describe('Registration Integration Tests', () => {
             });
 
             expect(response.status).toBe(400);
-            expect(response.body.error).toBe('Password must be at least 6 characters long');
+            expect(response.body.error).toBe(
+                'Password must be at least 6 characters long'
+            );
         });
 
         it('should return 400 for existing email', async () => {
@@ -171,10 +177,14 @@ describe('Registration Integration Tests', () => {
                 password: 'password123',
                 email_verified: false,
                 email_verification_token: 'valid-token',
-                email_verification_token_expires_at: new Date(Date.now() + 3600000),
+                email_verification_token_expires_at: new Date(
+                    Date.now() + 3600000
+                ),
             });
 
-            const response = await request(app).get('/api/verify-email?token=valid-token');
+            const response = await request(app).get(
+                '/api/verify-email?token=valid-token'
+            );
 
             expect(response.status).toBe(302);
             expect(response.header.location).toBe(
@@ -194,7 +204,9 @@ describe('Registration Integration Tests', () => {
         });
 
         it('should redirect with error for invalid token', async () => {
-            const response = await request(app).get('/api/verify-email?token=invalid-token');
+            const response = await request(app).get(
+                '/api/verify-email?token=invalid-token'
+            );
 
             expect(response.status).toBe(302);
             expect(response.header.location).toBe(
@@ -208,10 +220,14 @@ describe('Registration Integration Tests', () => {
                 password: 'password123',
                 email_verified: true,
                 email_verification_token: 'token',
-                email_verification_token_expires_at: new Date(Date.now() + 3600000),
+                email_verification_token_expires_at: new Date(
+                    Date.now() + 3600000
+                ),
             });
 
-            const response = await request(app).get('/api/verify-email?token=token');
+            const response = await request(app).get(
+                '/api/verify-email?token=token'
+            );
 
             expect(response.status).toBe(302);
             expect(response.header.location).toBe(
@@ -225,10 +241,14 @@ describe('Registration Integration Tests', () => {
                 password: 'password123',
                 email_verified: false,
                 email_verification_token: 'expired-token',
-                email_verification_token_expires_at: new Date(Date.now() - 3600000),
+                email_verification_token_expires_at: new Date(
+                    Date.now() - 3600000
+                ),
             });
 
-            const response = await request(app).get('/api/verify-email?token=expired-token');
+            const response = await request(app).get(
+                '/api/verify-email?token=expired-token'
+            );
 
             expect(response.status).toBe(302);
             expect(response.header.location).toBe(
@@ -276,10 +296,12 @@ describe('Registration Integration Tests', () => {
     describe('Full Registration Flow', () => {
         it('should complete full registration and login flow', async () => {
             // Step 1: Register
-            const registerResponse = await request(app).post('/api/register').send({
-                email: 'flow@example.com',
-                password: 'password123',
-            });
+            const registerResponse = await request(app)
+                .post('/api/register')
+                .send({
+                    email: 'flow@example.com',
+                    password: 'password123',
+                });
 
             expect(registerResponse.status).toBe(201);
 
@@ -290,25 +312,31 @@ describe('Registration Integration Tests', () => {
             const token = user.email_verification_token;
 
             // Step 3: Try to login before verification
-            const loginBeforeResponse = await request(app).post('/api/login').send({
-                email: 'flow@example.com',
-                password: 'password123',
-            });
+            const loginBeforeResponse = await request(app)
+                .post('/api/login')
+                .send({
+                    email: 'flow@example.com',
+                    password: 'password123',
+                });
 
             expect(loginBeforeResponse.status).toBe(403);
             expect(loginBeforeResponse.body.email_not_verified).toBe(true);
 
             // Step 4: Verify email
-            const verifyResponse = await request(app).get(`/api/verify-email?token=${token}`);
+            const verifyResponse = await request(app).get(
+                `/api/verify-email?token=${token}`
+            );
 
             expect(verifyResponse.status).toBe(302);
             expect(verifyResponse.header.location).toContain('verified=true');
 
             // Step 5: Login after verification
-            const loginAfterResponse = await request(app).post('/api/login').send({
-                email: 'flow@example.com',
-                password: 'password123',
-            });
+            const loginAfterResponse = await request(app)
+                .post('/api/login')
+                .send({
+                    email: 'flow@example.com',
+                    password: 'password123',
+                });
 
             expect(loginAfterResponse.status).toBe(200);
             expect(loginAfterResponse.body.user.email).toBe('flow@example.com');
