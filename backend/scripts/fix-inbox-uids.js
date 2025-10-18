@@ -61,7 +61,9 @@ async function fixInboxItemUIDs() {
         console.log('Items to fix:');
         items.forEach((item) => {
             const preview = item.content.substring(0, 50);
-            console.log(`  - ID: ${item.id}, Content: ${preview}${item.content.length > 50 ? '...' : ''}`);
+            console.log(
+                `  - ID: ${item.id}, Content: ${preview}${item.content.length > 50 ? '...' : ''}`
+            );
         });
 
         console.log('\nGenerating and assigning UIDs...\n');
@@ -79,9 +81,10 @@ async function fixInboxItemUIDs() {
         if (remainingItems.length === 0) {
             console.log('✓ Verification passed: All items now have UIDs\n');
         } else {
-            console.log(`⚠ Warning: ${remainingItems.length} item(s) still without UIDs\n`);
+            console.log(
+                `⚠ Warning: ${remainingItems.length} item(s) still without UIDs\n`
+            );
         }
-
     } catch (error) {
         console.error('Error fixing inbox item UIDs:', error);
         process.exit(1);
