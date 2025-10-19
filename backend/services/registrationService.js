@@ -1,13 +1,24 @@
 const crypto = require('crypto');
-const { User } = require('../models');
+const { User, Setting } = require('../models');
 const { getConfig } = require('../config/config');
 const { logError, logInfo } = require('./logService');
 const { sendEmail } = require('./emailService');
 const { validateEmail, validatePassword } = require('./userService');
 
-const isRegistrationEnabled = () => {
-    const config = getConfig();
-    return config.registrationConfig.enabled;
+const isRegistrationEnabled = async () => {
+    const setting = await Setting.findOne({
+        where: { key: 'registration_enabled' },
+    });
+    // Default to false if setting doesn't exist
+    return setting ? setting.value === 'true' : false;
+};
+
+const setRegistrationEnabled = async (enabled) => {
+    await Setting.upsert({
+        key: 'registration_enabled',
+        value: String(enabled),
+    });
+    logInfo(`Registration ${enabled ? 'enabled' : 'disabled'} by admin`);
 };
 
 const generateVerificationToken = () => {
@@ -217,6 +228,7 @@ const cleanupExpiredTokens = async () => {
 
 module.exports = {
     isRegistrationEnabled,
+    setRegistrationEnabled,
     generateVerificationToken,
     createUnverifiedUser,
     verifyUserEmail,

@@ -18,8 +18,8 @@ router.get('/version', (req, res) => {
 });
 
 // Get registration status
-router.get('/registration-status', (req, res) => {
-    res.json({ enabled: isRegistrationEnabled() });
+router.get('/registration-status', async (req, res) => {
+    res.json({ enabled: await isRegistrationEnabled() });
 });
 
 // Register new user
@@ -28,7 +28,7 @@ router.post('/register', async (req, res) => {
     const transaction = await sequelize.transaction();
 
     try {
-        if (!isRegistrationEnabled()) {
+        if (!(await isRegistrationEnabled())) {
             await transaction.rollback();
             return res
                 .status(404)

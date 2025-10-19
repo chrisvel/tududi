@@ -8,6 +8,7 @@ import {
     TrashIcon,
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import { useToast } from '../Shared/ToastContext';
 
 interface AdminUserItem {
     id: number;
@@ -428,6 +429,7 @@ const AddUserModal: React.FC<{
 
 const AdminUsersPage: React.FC = () => {
     const { t } = useTranslation();
+    const { showSuccessToast, showErrorToast } = useToast();
     const [users, setUsers] = useState<AdminUserItem[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -436,6 +438,8 @@ const AdminUsersPage: React.FC = () => {
     const [userToDelete, setUserToDelete] = useState<AdminUserItem | null>(
         null
     );
+    const [registrationEnabled, setRegistrationEnabled] = useState(false);
+    const [togglingRegistration, setTogglingRegistration] = useState(false);
     const navigate = useNavigate();
 
     const load = async () => {
@@ -456,8 +460,70 @@ const AdminUsersPage: React.FC = () => {
         }
     };
 
+    const fetchRegistrationStatus = async () => {
+        try {
+            const response = await fetch('/api/registration-status');
+            const data = await response.json();
+            setRegistrationEnabled(data.enabled);
+        } catch (err) {
+            console.error('Error fetching registration status:', err);
+        }
+    };
+
+    const toggleRegistration = async () => {
+        setTogglingRegistration(true);
+        const previousStatus = registrationEnabled;
+        try {
+            const newStatus = !registrationEnabled;
+            const response = await fetch('/api/admin/toggle-registration', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ enabled: newStatus }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(
+                    errorData.error || 'Failed to toggle registration'
+                );
+            }
+
+            const data = await response.json();
+            setRegistrationEnabled(data.enabled);
+
+            // Show success toast
+            if (data.enabled) {
+                showSuccessToast(
+                    t(
+                        'admin.registrationEnabledSuccess',
+                        'Registration has been enabled'
+                    )
+                );
+            } else {
+                showSuccessToast(
+                    t(
+                        'admin.registrationDisabledSuccess',
+                        'Registration has been disabled'
+                    )
+                );
+            }
+        } catch (err: any) {
+            // Revert state on error
+            setRegistrationEnabled(previousStatus);
+            const errorMessage = err.message || 'Failed to toggle registration';
+            setError(errorMessage);
+            showErrorToast(errorMessage);
+        } finally {
+            setTogglingRegistration(false);
+        }
+    };
+
     useEffect(() => {
         load();
+        fetchRegistrationStatus();
     }, []);
 
     const handleDeleteUser = async () => {
@@ -485,15 +551,49 @@ const AdminUsersPage: React.FC = () => {
                     <h2 className="text-2xl font-light">
                         {t('admin.userManagement', 'User Management')}
                     </h2>
-                    <button
-                        onClick={() => {
-                            setEditingUser(null);
-                            setAddOpen(true);
-                        }}
-                        className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm"
-                    >
-                        {t('admin.addUser', 'Add user')}
-                    </button>
+                    <div className="flex items-center space-x-2">
+                        <button
+                            onClick={toggleRegistration}
+                            disabled={togglingRegistration}
+                            className={`px-4 py-2 rounded-md focus:outline-none transition duration-150 ease-in-out text-sm disabled:opacity-60 disabled:cursor-not-allowed ${
+                                registrationEnabled
+                                    ? 'bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600'
+                                    : 'bg-gray-600 text-white hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600'
+                            }`}
+                            title={
+                                registrationEnabled
+                                    ? t(
+                                          'admin.registrationEnabled',
+                                          'Registration is enabled. Click to disable.'
+                                      )
+                                    : t(
+                                          'admin.registrationDisabled',
+                                          'Registration is disabled. Click to enable.'
+                                      )
+                            }
+                        >
+                            {togglingRegistration
+                                ? t('common.loading', 'Loading...')
+                                : registrationEnabled
+                                  ? t(
+                                        'admin.disableRegistration',
+                                        'Disable Registration'
+                                    )
+                                  : t(
+                                        'admin.enableRegistration',
+                                        'Enable Registration'
+                                    )}
+                        </button>
+                        <button
+                            onClick={() => {
+                                setEditingUser(null);
+                                setAddOpen(true);
+                            }}
+                            className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 focus:outline-none transition duration-150 ease-in-out text-sm"
+                        >
+                            {t('admin.addUser', 'Add user')}
+                        </button>
+                    </div>
                 </div>
 
                 {error && (

@@ -33,6 +33,7 @@ const Role = require('./role')(sequelize);
 const Action = require('./action')(sequelize);
 const Permission = require('./permission')(sequelize);
 const View = require('./view')(sequelize);
+const Setting = require('./setting')(sequelize);
 
 // Define associations
 User.hasMany(Area, { foreignKey: 'user_id' });
@@ -153,4 +154,5 @@ module.exports = {
     Action,
     Permission,
     View,
+    Setting,
 };
