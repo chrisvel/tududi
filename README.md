@@ -28,6 +28,7 @@ For the thinking behind tududi, read:
   - **Direct Parent Editing**: Edit recurrence settings directly from any generated task instance
   - **Flexible Scheduling**: Set custom intervals (every 2 weeks, every 3 months, etc.)
   - **End Date Control**: Optional end dates for recurring series
+- **Project Sharing & Collaboration**: Share projects with team members and collaborate effectively
 - **Quick Notes**: Create, update, delete, or assign text notes to projects.
 - **Tags**: Create tags for tasks and notes to enhance organization.
 - **Project Tracking**: Organize tasks into projects. Each project can contain multiple tasks and/or multiple notes.
