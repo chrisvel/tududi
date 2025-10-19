@@ -1,8 +1,9 @@
-const { User } = require('../../../models');
+const { User, Setting } = require('../../../models');
 const { getConfig } = require('../../../config/config');
 const { sendEmail, isEmailEnabled } = require('../../../services/emailService');
 const {
     isRegistrationEnabled,
+    setRegistrationEnabled,
     generateVerificationToken,
     createUnverifiedUser,
     verifyUserEmail,
@@ -28,20 +29,52 @@ describe('registrationService', () => {
     });
 
     describe('isRegistrationEnabled', () => {
-        it('should return true when registration is enabled', () => {
-            getConfig.mockReturnValue({
-                registrationConfig: { enabled: true },
+        it('should return true when registration is enabled in database', async () => {
+            Setting.findOne = jest.fn().mockResolvedValue({
+                key: 'registration_enabled',
+                value: 'true',
             });
 
-            expect(isRegistrationEnabled()).toBe(true);
+            expect(await isRegistrationEnabled()).toBe(true);
         });
 
-        it('should return false when registration is disabled', () => {
-            getConfig.mockReturnValue({
-                registrationConfig: { enabled: false },
+        it('should return false when registration is disabled in database', async () => {
+            Setting.findOne = jest.fn().mockResolvedValue({
+                key: 'registration_enabled',
+                value: 'false',
             });
 
-            expect(isRegistrationEnabled()).toBe(false);
+            expect(await isRegistrationEnabled()).toBe(false);
+        });
+
+        it('should return false when setting does not exist', async () => {
+            Setting.findOne = jest.fn().mockResolvedValue(null);
+
+            expect(await isRegistrationEnabled()).toBe(false);
+        });
+    });
+
+    describe('setRegistrationEnabled', () => {
+        it('should set registration to enabled', async () => {
+            Setting.upsert = jest.fn().mockResolvedValue([{}, true]);
+
+            await setRegistrationEnabled(true);
+
+            expect(Setting.upsert).toHaveBeenCalledWith({
+                key: 'registration_enabled',
+                value: 'true',
+            });
+        });
+
+        it('should set registration to disabled', async () => {
+            Setting.upsert = jest.fn().mockResolvedValue([{}, true]);
+
+            await setRegistrationEnabled(false);
+
+            expect(Setting.upsert).toHaveBeenCalledWith({
+                key: 'registration_enabled',
+                value: 'false',
+            });
         });
     });
 

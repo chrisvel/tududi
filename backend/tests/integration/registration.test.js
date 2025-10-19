@@ -1,7 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const session = require('express-session');
-const { User, sequelize } = require('../../models');
+const { User, Setting, sequelize } = require('../../models');
 const authRoutes = require('../../routes/auth');
 const { getConfig } = require('../../config/config');
 const { sendEmail, isEmailEnabled } = require('../../services/emailService');
@@ -43,12 +43,17 @@ describe('Registration Integration Tests', () => {
             frontendUrl: 'http://localhost:3000',
             backendUrl: 'http://localhost:3002',
             registrationConfig: {
-                enabled: true,
                 tokenExpiryHours: 24,
             },
             emailConfig: {
                 enabled: true,
             },
+        });
+
+        // Enable registration in database for tests
+        await Setting.upsert({
+            key: 'registration_enabled',
+            value: 'true',
         });
 
         sendEmail.mockResolvedValue({ success: true });
@@ -68,8 +73,9 @@ describe('Registration Integration Tests', () => {
         });
 
         it('should return disabled status', async () => {
-            getConfig.mockReturnValue({
-                registrationConfig: { enabled: false },
+            await Setting.upsert({
+                key: 'registration_enabled',
+                value: 'false',
             });
 
             const response = await request(app).get('/api/registration-status');
@@ -104,8 +110,9 @@ describe('Registration Integration Tests', () => {
         });
 
         it('should return 404 when registration disabled', async () => {
-            getConfig.mockReturnValue({
-                registrationConfig: { enabled: false },
+            await Setting.upsert({
+                key: 'registration_enabled',
+                value: 'false',
             });
 
             const response = await request(app).post('/api/register').send({
