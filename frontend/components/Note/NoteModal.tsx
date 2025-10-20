@@ -404,7 +404,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
                             isClosing ? 'scale-95' : 'scale-100'
                         } h-full sm:h-auto sm:my-4`}
                     >
-                        <div className="flex flex-col h-full sm:min-h-[800px] sm:max-h-[90vh]">
+                        <div className="flex flex-col h-full sm:min-h-[600px] sm:max-h-[90vh]">
                             {/* Main Form Section */}
                             <div className="flex-1 flex flex-col transition-all duration-300 bg-white dark:bg-gray-800 sm:rounded-lg">
                                 <div className="flex-1 relative">
