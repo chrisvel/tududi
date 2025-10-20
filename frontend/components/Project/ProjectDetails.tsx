@@ -1179,6 +1179,34 @@ const ProjectDetails: React.FC = () => {
                 {/* Notes Content */}
                 {activeTab === 'notes' && (
                     <div className="transition-all duration-300 ease-in-out">
+                        {/* Create New Note Button - Always visible */}
+                        <div className="mb-4">
+                            <button
+                                type="button"
+                                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                onClick={() => {
+                                    if (!project?.id || !project.name) return;
+                                    setSelectedNote({
+                                        title: '',
+                                        content: '',
+                                        tags: [],
+                                        project_id: project.id,
+                                        project: {
+                                            id: project.id,
+                                            name: project.name,
+                                            uid: project.uid,
+                                        },
+                                        project_uid: project.uid,
+                                    });
+                                    setIsNoteModalOpen(true);
+                                }}
+                            >
+                                <PlusCircleIcon className="h-5 w-5" />
+                                {t('noteCreation', 'Create New Note')}
+                            </button>
+                        </div>
+
+                        {/* Notes Grid or Empty State */}
                         {notes.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {notes.map((note) => (
@@ -1203,30 +1231,6 @@ const ProjectDetails: React.FC = () => {
                                         'No notes for this project.'
                                     )}
                                 </p>
-                                <button
-                                    type="button"
-                                    className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                                    onClick={() => {
-                                        if (!project?.id || !project.name)
-                                            return;
-                                        setSelectedNote({
-                                            title: '',
-                                            content: '',
-                                            tags: [],
-                                            project_id: project.id,
-                                            project: {
-                                                id: project.id,
-                                                name: project.name,
-                                                uid: project.uid,
-                                            },
-                                            project_uid: project.uid,
-                                        });
-                                        setIsNoteModalOpen(true);
-                                    }}
-                                >
-                                    <PlusCircleIcon className="h-5 w-5" />
-                                    {t('noteCreation', 'Create New Note')}
-                                </button>
                             </div>
                         )}
                     </div>
