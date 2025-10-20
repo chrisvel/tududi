@@ -48,3 +48,6 @@ test-results/
 
 # Temporary files
 tmp/
+
+# Git commit hash file (generated during Docker build)
+.git-commit-hash
