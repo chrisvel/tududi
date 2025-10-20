@@ -14,6 +14,7 @@ import { Tag } from '../../entities/Tag';
 import { useStore } from '../../store/useStore';
 import { useTranslation } from 'react-i18next';
 import ProjectDropdown from '../Shared/ProjectDropdown';
+import ConfirmDialog from '../Shared/ConfirmDialog';
 import {
     EyeIcon,
     PencilIcon,
@@ -61,6 +62,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [isClosing, setIsClosing] = useState(false);
     const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
     // Project-related state
     const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
@@ -670,7 +672,9 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                         {note && note.uid && onDelete && (
                                             <button
                                                 type="button"
-                                                onClick={handleDeleteNote}
+                                                onClick={() =>
+                                                    setShowConfirmDialog(true)
+                                                }
                                                 className="p-2 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none transition duration-150 ease-in-out"
                                                 title={t(
                                                     'common.delete',
@@ -713,6 +717,24 @@ const NoteModal: React.FC<NoteModalProps> = ({
                     </div>
                 </div>
             </div>
+
+            {/* Confirmation Dialog for Delete */}
+            {showConfirmDialog && (
+                <ConfirmDialog
+                    title={t('modals.deleteNote.title', 'Delete Note')}
+                    message={
+                        t('modals.deleteNote.message', {
+                            noteTitle: formData.title,
+                        }) ||
+                        `Are you sure you want to delete the note "${formData.title}"?`
+                    }
+                    onConfirm={async () => {
+                        await handleDeleteNote();
+                        setShowConfirmDialog(false);
+                    }}
+                    onCancel={() => setShowConfirmDialog(false)}
+                />
+            )}
         </>
     );
 };
