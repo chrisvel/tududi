@@ -179,12 +179,11 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         }
     };
 
-
     // Check if task has metadata (project, tags, due_date, recurrence_type, or recurring_parent_id)
     const hasMetadata =
         (project && !hideProjectName) ||
         (task.tags && task.tags.length > 0) ||
-        (task.due_date) ||
+        task.due_date ||
         (task.recurrence_type && task.recurrence_type !== 'none') ||
         task.recurring_parent_id;
 
