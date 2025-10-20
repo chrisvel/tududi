@@ -23,8 +23,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     const { t } = useTranslation();
     const store = useStore();
 
-    // Get inbox items count for badge
-    const inboxItemsCount = store.inboxStore.inboxItems.length;
+    // Get inbox items count for badge - use pagination.total for accurate count
+    const inboxItemsCount = store.inboxStore.pagination.total;
 
     // Load inbox items when component mounts to ensure badge shows correct count
     useEffect(() => {
