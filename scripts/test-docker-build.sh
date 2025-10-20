@@ -8,11 +8,18 @@ IMAGE_NAME="tududi-test:$VERSION"
 CONTAINER_NAME="tududi-test-$VERSION"
 TEST_PORT="3003"
 
+# Get git commit hash
+GIT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+
 echo "🐳 Testing Docker build for version: $VERSION"
+echo "📝 Git commit: $GIT_COMMIT"
 
 # Cleanup existing
 docker stop "$CONTAINER_NAME" 2>/dev/null || true
 docker rm "$CONTAINER_NAME" 2>/dev/null || true
+
+# Create .git-commit-hash file for Docker build
+echo "$GIT_COMMIT" > .git-commit-hash
 
 # Build image with version tag
 echo "📦 Building image: $IMAGE_NAME"

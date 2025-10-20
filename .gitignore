@@ -45,3 +45,6 @@ public/assets/
 # Playwright test results
 test-results/
 .last-run.json
+
+# Git commit hash file (generated during Docker build)
+.git-commit-hash

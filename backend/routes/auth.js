@@ -1,4 +1,6 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const { User } = require('../models');
 const { isAdmin } = require('../services/rolesService');
 const { logError } = require('../services/logService');
@@ -12,9 +14,31 @@ const {
 const packageJson = require('../../package.json');
 const router = express.Router();
 
+// Get git commit hash
+function getGitCommitHash() {
+    try {
+        // Try to read from .git-commit-hash file (created during Docker build)
+        const commitHashPath = path.join(__dirname, '../../.git-commit-hash');
+        if (fs.existsSync(commitHashPath)) {
+            return fs.readFileSync(commitHashPath, 'utf8').trim();
+        }
+
+        // Fall back to reading from .git directory (development environment)
+        const { execSync } = require('child_process');
+        return execSync('git rev-parse --short HEAD', {
+            encoding: 'utf8',
+        }).trim();
+    } catch (error) {
+        return 'unknown';
+    }
+}
+
 // Get version
 router.get('/version', (req, res) => {
-    res.json({ version: packageJson.version });
+    res.json({
+        version: packageJson.version,
+        commit: getGitCommitHash(),
+    });
 });
 
 // Get registration status

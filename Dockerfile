@@ -24,6 +24,9 @@ RUN npm install --no-audit --no-fund
 # Copy source code
 COPY . ./
 
+# Create .git-commit-hash file if it doesn't exist (defaults to 'unknown')
+RUN if [ ! -f .git-commit-hash ]; then echo 'unknown' > .git-commit-hash; fi
+
 # Build frontend
 RUN NODE_ENV=production npm run frontend:build
 
@@ -85,6 +88,7 @@ COPY --from=builder --chown=app:app /app/public/manifest.json ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
 COPY --from=builder --chown=app:app /app/node_modules ./node_modules
 COPY --from=builder --chown=app:app /app/package.json /app/
+COPY --from=builder --chown=app:app /app/.git-commit-hash /app/.git-commit-hash
 
 # Create necessary directories
 RUN mkdir -p /app/backend/db /app/backend/certs /app/backend/uploads

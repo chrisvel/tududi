@@ -5,6 +5,7 @@ import { HeartIcon } from '@heroicons/react/24/outline';
 const About: React.FC = () => {
     const { t } = useTranslation();
     const [version, setVersion] = useState<string>('0.3');
+    const [commit, setCommit] = useState<string>('');
 
     useEffect(() => {
         // Fetch version from the deployed app
@@ -13,6 +14,9 @@ const About: React.FC = () => {
             .then((data) => {
                 if (data.version) {
                     setVersion(data.version);
+                }
+                if (data.commit) {
+                    setCommit(data.commit);
                 }
             })
             .catch((error) => {
@@ -39,6 +43,11 @@ const About: React.FC = () => {
                         <p className="text-lg text-gray-600 dark:text-gray-400">
                             {t('about.version', 'Version')} {version}
                         </p>
+                        {commit && commit !== 'unknown' && (
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                {commit}
+                            </p>
+                        )}
                     </div>
 
                     {/* Description */}
