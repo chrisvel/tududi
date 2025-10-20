@@ -17,15 +17,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+COPY .git-commit-hash ./
 
 # Install all dependencies (frontend and backend)
 RUN npm install --no-audit --no-fund
 
 # Copy source code
 COPY . ./
-
-# Create .git-commit-hash file if it doesn't exist (defaults to 'unknown')
-RUN if [ ! -f .git-commit-hash ]; then echo 'unknown' > .git-commit-hash; fi
 
 # Build frontend
 RUN NODE_ENV=production npm run frontend:build
