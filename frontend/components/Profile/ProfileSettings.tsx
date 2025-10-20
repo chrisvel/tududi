@@ -98,7 +98,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         return getTimezonesByRegion();
     }, []);
 
-
     // Password visibility state
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);

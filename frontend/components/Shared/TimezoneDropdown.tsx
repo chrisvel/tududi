@@ -56,7 +56,10 @@ const TimezoneDropdown: React.FC<TimezoneDropdownProps> = ({
 
     // Group filtered timezones by region
     const groupedFilteredTimezones = useMemo(() => {
-        const grouped: Record<string, (TimezoneOption & { regionName: string })[]> = {};
+        const grouped: Record<
+            string,
+            (TimezoneOption & { regionName: string })[]
+        > = {};
         filteredTimezones.forEach((tz) => {
             if (!grouped[tz.regionName]) {
                 grouped[tz.regionName] = [];
@@ -134,7 +137,8 @@ const TimezoneDropdown: React.FC<TimezoneDropdownProps> = ({
                     {/* Timezone list */}
                     <div className="overflow-y-auto max-h-80">
                         {/* UTC option */}
-                        {(!searchQuery || 'utc'.includes(searchQuery.toLowerCase())) && (
+                        {(!searchQuery ||
+                            'utc'.includes(searchQuery.toLowerCase())) && (
                             <button
                                 type="button"
                                 onClick={() => handleSelect('UTC')}

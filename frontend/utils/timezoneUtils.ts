@@ -128,10 +128,7 @@ const getTimezoneOffset = (tz: string): string => {
  * Get all available timezones grouped by region
  * @returns Object with region names as keys and timezone arrays as values
  */
-export const getTimezonesByRegion = (): Record<
-    string,
-    TimezoneOption[]
-> => {
+export const getTimezonesByRegion = (): Record<string, TimezoneOption[]> => {
     const timezones = getAllTimezones();
     const grouped: Record<string, TimezoneOption[]> = {};
 
