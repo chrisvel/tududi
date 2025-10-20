@@ -179,13 +179,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         }
     };
 
-    // Check if task has metadata (project, tags, due_date, recurrence_type, or recurring_parent_id)
-    const hasMetadata =
-        (project && !hideProjectName) ||
-        (task.tags && task.tags.length > 0) ||
-        task.due_date ||
-        (task.recurrence_type && task.recurrence_type !== 'none') ||
-        task.recurring_parent_id;
 
     // Check if task has task metadata (similar but with upcoming view check for due_date)
     const hasTaskMetadata =
@@ -197,7 +190,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 
     return (
         <div
-            className={`${hasMetadata ? 'py-2' : 'py-3'} px-4 cursor-pointer group`}
+            className={`${hasTaskMetadata ? 'py-2' : 'py-3'} px-4 cursor-pointer group`}
             role="button"
             tabIndex={0}
             onClick={(e) => {
