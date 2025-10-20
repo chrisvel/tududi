@@ -461,8 +461,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 className={`fixed top-16 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-80 z-40 transition-opacity duration-300 overflow-hidden sm:overflow-y-auto ${
                     isClosing ? 'opacity-0' : 'opacity-100'
                 }`}
-                onClick={(e) => {
+                onMouseDown={(e) => {
                     // Close modal when clicking on backdrop, but not on the modal content
+                    // Use mousedown instead of onClick to prevent issues with text selection dragging
                     if (e.target === e.currentTarget) {
                         handleClose();
                     }
@@ -470,8 +471,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
             >
                 <div
                     className="h-full flex items-start justify-center sm:px-4 sm:py-4"
-                    onClick={(e) => {
+                    onMouseDown={(e) => {
                         // Close modal when clicking on centering container, but not on the modal content
+                        // Use mousedown instead of onClick to prevent issues with text selection dragging
                         if (e.target === e.currentTarget) {
                             handleClose();
                         }
