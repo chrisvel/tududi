@@ -622,7 +622,9 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                         </div>
 
                         {/* Project, tags, due date, and recurrence */}
-                        <div className="flex flex-col text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-1">
+                        <div
+                            className={`flex flex-col text-xs text-gray-500 dark:text-gray-400 space-y-1 ${hasMetadata ? 'mt-1' : 'hidden'}`}
+                        >
                             {project && !hideProjectName && (
                                 <div className="flex items-center">
                                     <FolderIcon className="h-3 w-3 mr-1" />
