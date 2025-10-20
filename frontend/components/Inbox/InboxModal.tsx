@@ -1276,7 +1276,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     <XMarkIcon className="h-6 w-6" />
                 </button>
 
-                <div className="flex-1 flex items-center justify-center sm:block sm:flex-none">
+                <div className="flex-1 flex items-start justify-center sm:block sm:flex-none pt-4 sm:pt-0">
                     <div className="w-full p-6 px-8">
                         <div className="flex flex-col sm:flex-row sm:items-center relative">
                             <div className="relative flex-1">
