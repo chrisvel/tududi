@@ -547,43 +547,11 @@ const AdminUsersPage: React.FC = () => {
     return (
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl space-y-6">
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-light">
-                        {t('admin.userManagement', 'User Management')}
-                    </h2>
-                    <div className="flex items-center space-x-2">
-                        <button
-                            onClick={toggleRegistration}
-                            disabled={togglingRegistration}
-                            className={`px-4 py-2 rounded-md focus:outline-none transition duration-150 ease-in-out text-sm disabled:opacity-60 disabled:cursor-not-allowed ${
-                                registrationEnabled
-                                    ? 'bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600'
-                                    : 'bg-gray-600 text-white hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600'
-                            }`}
-                            title={
-                                registrationEnabled
-                                    ? t(
-                                          'admin.registrationEnabled',
-                                          'Registration is enabled. Click to disable.'
-                                      )
-                                    : t(
-                                          'admin.registrationDisabled',
-                                          'Registration is disabled. Click to enable.'
-                                      )
-                            }
-                        >
-                            {togglingRegistration
-                                ? t('common.loading', 'Loading...')
-                                : registrationEnabled
-                                  ? t(
-                                        'admin.disableRegistration',
-                                        'Disable Registration'
-                                    )
-                                  : t(
-                                        'admin.enableRegistration',
-                                        'Enable Registration'
-                                    )}
-                        </button>
+                <div className="mb-8">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-2xl font-light">
+                            {t('admin.userManagement', 'User Management')}
+                        </h2>
                         <button
                             onClick={() => {
                                 setEditingUser(null);
@@ -594,6 +562,38 @@ const AdminUsersPage: React.FC = () => {
                             {t('admin.addUser', 'Add user')}
                         </button>
                     </div>
+                    <button
+                        onClick={toggleRegistration}
+                        disabled={togglingRegistration}
+                        className={`px-4 py-2 rounded-md focus:outline-none transition duration-150 ease-in-out text-sm disabled:opacity-60 disabled:cursor-not-allowed ${
+                            registrationEnabled
+                                ? 'bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600'
+                                : 'bg-gray-600 text-white hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600'
+                        }`}
+                        title={
+                            registrationEnabled
+                                ? t(
+                                      'admin.registrationEnabled',
+                                      'Registration is enabled. Click to disable.'
+                                  )
+                                : t(
+                                      'admin.registrationDisabled',
+                                      'Registration is disabled. Click to enable.'
+                                  )
+                        }
+                    >
+                        {togglingRegistration
+                            ? t('common.loading', 'Loading...')
+                            : registrationEnabled
+                              ? t(
+                                    'admin.disableRegistration',
+                                    'Disable Registration'
+                                )
+                              : t(
+                                    'admin.enableRegistration',
+                                    'Enable Registration'
+                                )}
+                    </button>
                 </div>
 
                 {error && (
