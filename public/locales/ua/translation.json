@@ -45,7 +45,10 @@
     "addProjectTitle": "Додати проект",
     "addNoteAriaLabel": "Додати нотатку",
     "addNoteTitle": "Додати нотатку",
-    "createNew": "Створити новий"
+    "createNew": "Створити новий",
+    "views": "Перегляди",
+    "unpinView": "Відкріпити перегляд",
+    "pinView": "Закріпити перегляд"
   },
   "navigation": {
     "home": "Головна",
@@ -572,7 +575,11 @@
     "polish": "Польська",
     "slovenian": "Словенська",
     "swedish": "Шведська",
-    "firstDayOfWeek": "Перший день тижня"
+    "firstDayOfWeek": "Перший день тижня",
+    "name": "Ім'я",
+    "surname": "Прізвище",
+    "enterName": "Введіть ваше ім'я",
+    "enterSurname": "Введіть ваше прізвище"
   },
   "task": {
     "suggestions": {
@@ -738,7 +745,9 @@
   "dateIndicators": {
     "today": "СЬОГОДНІ",
     "tomorrow": "ЗАВТРА",
-    "yesterday": "ВЧОРА"
+    "yesterday": "ВЧОРА",
+    "nextWeek": "наступного тижня",
+    "nextMonth": "наступного місяця"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,49 @@
     "noAvailableUsers": "Немає користувачів для спільного використання",
     "shared": "Поділено",
     "sharedWithTeam": "Поділено з командою"
+  },
+  "views": {
+    "title": "Розумні перегляди",
+    "loading": "Завантаження переглядів...",
+    "searchPlaceholder": "Пошук переглядів...",
+    "noViewsFound": "Переглядів не знайдено. Створіть перегляд, виконавши пошук і натиснувши \"Зберегти як розумний перегляд\".",
+    "deleteView": "Видалити перегляд",
+    "confirmDelete": "Ви впевнені, що хочете видалити перегляд \"{{viewName}}\"?",
+    "pinView": "Закріпити перегляд",
+    "unpinView": "Відкріпити перегляд",
+    "searchCriteria": "Критерії пошуку",
+    "entityTypes": "Типи сутностей",
+    "searchText": "Текст пошуку",
+    "priority": "Пріоритет",
+    "dueDate": "Термін виконання",
+    "noCriteriaSet": "Не встановлено жодних конкретних критеріїв",
+    "priorityLabel": "Пріоритет:",
+    "dueLabel": "Термін:"
+  },
+  "search": {
+    "placeholder": "Шукати завдання, проекти, нотатки...",
+    "searchingFor": "Ви шукаєте",
+    "allItems": "всі елементи",
+    "containingText": ", що містять текст",
+    "withPriority": ", з",
+    "priority": "пріоритетом",
+    "due": ", термін",
+    "taggedWith": ", помічені тегом",
+    "and": "і",
+    "criteria": "Критерії пошуку",
+    "metadataFilters": "Фільтри метаданих",
+    "priorityFilter": "Пріоритет",
+    "dueFilter": "Термін",
+    "tagsFilter": "Теги",
+    "saveAsSmartView": "Зберегти як Розумний перегляд",
+    "viewName": "Назва перегляду",
+    "viewNameRequired": "Назва перегляду є обов'язковою",
+    "viewNamePlaceholder": "Введіть назву перегляду",
+    "failedToSave": "Не вдалося зберегти вигляд. Будь ласка, спробуйте ще раз.",
+    "cancel": "Скасувати",
+    "saving": "Зберігається...",
+    "saveView": "Зберегти вигляд",
+    "startTyping": "Почніть вводити для пошуку або виберіть фільтри вище",
+    "noResults": "Не знайдено жодного результату"
   }
 }

@@ -45,7 +45,10 @@
     "addProjectTitle": "Legg til prosjekt",
     "addNoteAriaLabel": "Legg til notat",
     "addNoteTitle": "Legg til notat",
-    "createNew": "Opprett ny"
+    "createNew": "Opprett ny",
+    "views": "Visninger",
+    "unpinView": "Fjern feste fra visning",
+    "pinView": "Fest visning"
   },
   "navigation": {
     "home": "Hjem",
@@ -294,7 +297,11 @@
     "botSetup": "Botoppsett",
     "passwordChangeNote": "Endringer i passordet vil bli lagret når du klikker på \"Lagre endringer\" nederst i skjemaet.",
     "passwordChangeOptional": "La passordfeltene stå tomme for å oppdatere andre innstillinger uten å endre passordet ditt.",
-    "firstDayOfWeek": "Første dag i uken"
+    "firstDayOfWeek": "Første dag i uken",
+    "name": "Navn",
+    "surname": "Etternavn",
+    "enterName": "Skriv inn navnet ditt",
+    "enterSurname": "Skriv inn etternavnet ditt"
   },
   "productivity": {
     "stalledProjects": "Stagnerte prosjekter",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "I DAG",
     "tomorrow": "I MORGEN",
-    "yesterday": "I GÅR"
+    "yesterday": "I GÅR",
+    "nextWeek": "neste uke",
+    "nextMonth": "neste måned"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,49 @@
     "noAvailableUsers": "Ingen brukere tilgjengelige for å dele med",
     "shared": "Delt",
     "sharedWithTeam": "Delt med teamet"
+  },
+  "views": {
+    "title": "Smarte Visninger",
+    "loading": "Laster visninger...",
+    "searchPlaceholder": "Søk etter visninger...",
+    "noViewsFound": "Ingen visninger funnet. Opprett en visning ved å utføre et søk og klikke \"Lagre som Smart Visning\".",
+    "deleteView": "Slett Visning",
+    "confirmDelete": "Er du sikker på at du vil slette visningen \"{{viewName}}\"?",
+    "pinView": "Fest visning",
+    "unpinView": "Fjern feste fra visning",
+    "searchCriteria": "Søke Kriterier",
+    "entityTypes": "Enhetstyper",
+    "searchText": "Søk Tekst",
+    "priority": "Prioritet",
+    "dueDate": "Forfallsdato",
+    "noCriteriaSet": "Ingen spesifikke kriterier satt",
+    "priorityLabel": "Prioritet:",
+    "dueLabel": "Forfall:"
+  },
+  "search": {
+    "placeholder": "Søk etter oppgaver, prosjekter, notater...",
+    "searchingFor": "Du søker etter",
+    "allItems": "alle elementer",
+    "containingText": ", som inneholder teksten",
+    "withPriority": ", med",
+    "priority": "prioritet",
+    "due": ", forfall",
+    "taggedWith": ", merket med",
+    "and": "og",
+    "criteria": "Søker kriterier",
+    "metadataFilters": "Metadata Filtre",
+    "priorityFilter": "Prioritet",
+    "dueFilter": "Forfall",
+    "tagsFilter": "Tags",
+    "saveAsSmartView": "Lagre som Smart Visning",
+    "viewName": "Visningsnavn",
+    "viewNameRequired": "Visningsnavn er påkrevd",
+    "viewNamePlaceholder": "Skriv inn visningsnavn",
+    "failedToSave": "Kunne ikke lagre visning. Vennligst prøv igjen.",
+    "cancel": "Avbryt",
+    "saving": "Lagrer...",
+    "saveView": "Lagre visning",
+    "startTyping": "Begynn å skrive for å søke eller velg filtre ovenfor",
+    "noResults": "Ingen resultater funnet"
   }
 }

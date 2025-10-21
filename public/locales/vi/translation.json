@@ -45,7 +45,10 @@
     "addProjectTitle": "Thêm Dự án",
     "addNoteAriaLabel": "Thêm Ghi chú",
     "addNoteTitle": "Thêm Ghi chú",
-    "createNew": "Tạo mới"
+    "createNew": "Tạo mới",
+    "views": "Chế độ xem",
+    "unpinView": "Bỏ ghim chế độ xem",
+    "pinView": "Ghim chế độ xem"
   },
   "navigation": {
     "home": "Trang chủ",
@@ -294,7 +297,11 @@
     "polish": "Tiếng Ba Lan",
     "slovenian": "Tiếng Slovenia",
     "swedish": "Thụy Điển",
-    "firstDayOfWeek": "Ngày đầu tiên của tuần"
+    "firstDayOfWeek": "Ngày đầu tiên của tuần",
+    "name": "Tên",
+    "surname": "Họ",
+    "enterName": "Nhập tên của bạn",
+    "enterSurname": "Nhập họ của bạn"
   },
   "productivity": {
     "stalledProjects": "Dự án Đang Tạm Dừng",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "HÔM NAY",
     "tomorrow": "NGÀY MAI",
-    "yesterday": "HÔM QUÁ"
+    "yesterday": "HÔM QUÁ",
+    "nextWeek": "tuần tới",
+    "nextMonth": "tháng tới"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,49 @@
     "noAvailableUsers": "Không có người dùng nào để chia sẻ",
     "shared": "Đã chia sẻ",
     "sharedWithTeam": "Đã chia sẻ với nhóm"
+  },
+  "views": {
+    "title": "Chế độ xem thông minh",
+    "loading": "Đang tải chế độ xem...",
+    "searchPlaceholder": "Tìm kiếm chế độ xem...",
+    "noViewsFound": "Không tìm thấy chế độ xem nào. Tạo một chế độ xem bằng cách thực hiện tìm kiếm và nhấp vào \"Lưu dưới dạng Chế độ xem Thông minh\".",
+    "deleteView": "Xóa Chế độ xem",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa chế độ xem \"{{viewName}}\" không?",
+    "pinView": "Ghim chế độ xem",
+    "unpinView": "Bỏ ghim chế độ xem",
+    "searchCriteria": "Tiêu chí tìm kiếm",
+    "entityTypes": "Loại thực thể",
+    "searchText": "Văn bản tìm kiếm",
+    "priority": "Độ ưu tiên",
+    "dueDate": "Ngày đến hạn",
+    "noCriteriaSet": "Không có tiêu chí cụ thể nào được thiết lập",
+    "priorityLabel": "Độ ưu tiên:",
+    "dueLabel": "Đến hạn:"
+  },
+  "search": {
+    "placeholder": "Tìm kiếm nhiệm vụ, dự án, ghi chú...",
+    "searchingFor": "Bạn đang tìm kiếm",
+    "allItems": "tất cả các mục",
+    "containingText": ", chứa văn bản",
+    "withPriority": ", với",
+    "priority": "độ ưu tiên",
+    "due": ", hạn chót",
+    "taggedWith": ", được gán thẻ với",
+    "and": "và",
+    "criteria": "Tiêu chí tìm kiếm",
+    "metadataFilters": "Bộ lọc siêu dữ liệu",
+    "priorityFilter": "Độ ưu tiên",
+    "dueFilter": "Hạn chót",
+    "tagsFilter": "Thẻ",
+    "saveAsSmartView": "Lưu dưới dạng Smart View",
+    "viewName": "Tên chế độ xem",
+    "viewNameRequired": "Tên chế độ xem là bắt buộc",
+    "viewNamePlaceholder": "Nhập tên chế độ xem",
+    "failedToSave": "Không thể lưu chế độ xem. Vui lòng thử lại.",
+    "cancel": "Hủy",
+    "saving": "Đang lưu...",
+    "saveView": "Lưu chế độ xem",
+    "startTyping": "Bắt đầu gõ để tìm kiếm hoặc chọn bộ lọc ở trên",
+    "noResults": "Không tìm thấy kết quả nào"
   }
 }

@@ -45,7 +45,10 @@
     "addProjectTitle": "프로젝트 추가",
     "addNoteAriaLabel": "메모 추가",
     "addNoteTitle": "메모 추가",
-    "createNew": "새로 만들기"
+    "createNew": "새로 만들기",
+    "views": "뷰",
+    "unpinView": "뷰 고정 해제",
+    "pinView": "뷰 고정"
   },
   "navigation": {
     "home": "홈",
@@ -294,7 +297,11 @@
     "polish": "폴란드어",
     "slovenian": "슬로베니아어",
     "swedish": "스웨덴어",
-    "firstDayOfWeek": "주간의 첫 번째 날"
+    "firstDayOfWeek": "주간의 첫 번째 날",
+    "name": "이름",
+    "surname": "성",
+    "enterName": "이름을 입력하세요",
+    "enterSurname": "성을 입력하세요"
   },
   "productivity": {
     "stalledProjects": "정체된 프로젝트",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "오늘",
     "tomorrow": "내일",
-    "yesterday": "어제"
+    "yesterday": "어제",
+    "nextWeek": "다음 주",
+    "nextMonth": "다음 달"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,49 @@
     "noAvailableUsers": "공유할 수 있는 사용자가 없습니다",
     "shared": "공유됨",
     "sharedWithTeam": "팀과 공유됨"
+  },
+  "views": {
+    "title": "스마트 뷰",
+    "loading": "뷰 로딩 중...",
+    "searchPlaceholder": "뷰 검색...",
+    "noViewsFound": "찾을 수 있는 뷰가 없습니다. 검색을 수행하고 \"스마트 뷰로 저장\"을 클릭하여 뷰를 생성하세요.",
+    "deleteView": "뷰 삭제",
+    "confirmDelete": "뷰 \"{{viewName}}\"를 삭제하시겠습니까?",
+    "pinView": "뷰 고정",
+    "unpinView": "뷰 고정 해제",
+    "searchCriteria": "검색 기준",
+    "entityTypes": "엔티티 유형",
+    "searchText": "검색 텍스트",
+    "priority": "우선순위",
+    "dueDate": "마감일",
+    "noCriteriaSet": "특정 기준이 설정되지 않음",
+    "priorityLabel": "우선순위:",
+    "dueLabel": "마감:"
+  },
+  "search": {
+    "placeholder": "작업, 프로젝트, 노트 검색...",
+    "searchingFor": "검색 중입니다",
+    "allItems": "모든 항목",
+    "containingText": ", 텍스트 포함",
+    "withPriority": ", 우선순위가",
+    "priority": "우선순위",
+    "due": ", 기한",
+    "taggedWith": ", 태그가",
+    "and": "그리고",
+    "criteria": "검색 기준",
+    "metadataFilters": "메타데이터 필터",
+    "priorityFilter": "우선순위",
+    "dueFilter": "기한",
+    "tagsFilter": "태그",
+    "saveAsSmartView": "스마트 뷰로 저장",
+    "viewName": "뷰 이름",
+    "viewNameRequired": "뷰 이름은 필수입니다",
+    "viewNamePlaceholder": "뷰 이름 입력",
+    "failedToSave": "뷰를 저장하지 못했습니다. 다시 시도해 주세요.",
+    "cancel": "취소",
+    "saving": "저장 중...",
+    "saveView": "뷰 저장",
+    "startTyping": "검색하거나 위의 필터를 선택하려면 입력을 시작하세요.",
+    "noResults": "결과를 찾을 수 없습니다."
   }
 }

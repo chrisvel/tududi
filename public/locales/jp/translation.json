@@ -45,7 +45,10 @@
     "addProjectTitle": "プロジェクトを追加",
     "addNoteAriaLabel": "ノートを追加",
     "addNoteTitle": "ノートを追加",
-    "createNew": "新規作成"
+    "createNew": "新規作成",
+    "views": "ビュー",
+    "unpinView": "ピン留めを外す",
+    "pinView": "ピン留めする"
   },
   "navigation": {
     "home": "ホーム",
@@ -294,7 +297,11 @@
     "polish": "ポーランド語",
     "slovenian": "スロベニア語",
     "swedish": "スウェーデン語",
-    "firstDayOfWeek": "週の最初の日"
+    "firstDayOfWeek": "週の最初の日",
+    "name": "名前",
+    "surname": "姓",
+    "enterName": "名前を入力してください",
+    "enterSurname": "姓を入力してください"
   },
   "nextTask": {
     "suggestion": "進行中のものがないので、こちらから始めてみませんか",
@@ -785,7 +792,9 @@
   "dateIndicators": {
     "today": "今日",
     "tomorrow": "明日",
-    "yesterday": "昨日"
+    "yesterday": "昨日",
+    "nextWeek": "来週",
+    "nextMonth": "来月"
   },
   "note": {
     "title": "タイトル",
@@ -978,5 +987,49 @@
     "noAvailableUsers": "共有できるユーザーがいません",
     "shared": "共有済み",
     "sharedWithTeam": "チームと共有済み"
+  },
+  "views": {
+    "title": "スマートビュー",
+    "loading": "ビューを読み込んでいます...",
+    "searchPlaceholder": "ビューを検索...",
+    "noViewsFound": "ビューが見つかりませんでした。検索を行い、「スマートビューとして保存」をクリックしてビューを作成してください。",
+    "deleteView": "ビューを削除",
+    "confirmDelete": "ビュー「{{viewName}}」を削除してもよろしいですか？",
+    "pinView": "ピン留めする",
+    "unpinView": "ピン留めを外す",
+    "searchCriteria": "検索条件",
+    "entityTypes": "エンティティタイプ",
+    "searchText": "検索テキスト",
+    "priority": "優先度",
+    "dueDate": "期限",
+    "noCriteriaSet": "特定の条件は設定されていません",
+    "priorityLabel": "優先度:",
+    "dueLabel": "期限:"
+  },
+  "search": {
+    "placeholder": "タスク、プロジェクト、ノートを検索...",
+    "searchingFor": "検索中",
+    "allItems": "すべてのアイテム",
+    "containingText": "、テキストを含む",
+    "withPriority": "、優先度",
+    "priority": "優先度",
+    "due": "、期限",
+    "taggedWith": "、タグ付けされた",
+    "and": "と",
+    "criteria": "検索条件",
+    "metadataFilters": "メタデータフィルター",
+    "priorityFilter": "優先度",
+    "dueFilter": "期限",
+    "tagsFilter": "タグ",
+    "saveAsSmartView": "スマートビューとして保存",
+    "viewName": "ビュー名",
+    "viewNameRequired": "ビュー名は必須です",
+    "viewNamePlaceholder": "ビュー名を入力",
+    "failedToSave": "ビューの保存に失敗しました。もう一度お試しください。",
+    "cancel": "キャンセル",
+    "saving": "保存中...",
+    "saveView": "ビューを保存",
+    "startTyping": "検索するには入力を開始するか、上のフィルターを選択してください",
+    "noResults": "結果が見つかりませんでした"
   }
 }

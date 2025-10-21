@@ -45,7 +45,10 @@
     "addProjectTitle": "Aggiungi progetto",
     "addNoteAriaLabel": "Aggiungi nota",
     "addNoteTitle": "Aggiungi nota",
-    "createNew": "Crea nuovo"
+    "createNew": "Crea nuovo",
+    "views": "Visualizzazioni",
+    "unpinView": "Sblocca visualizzazione",
+    "pinView": "Fissa visualizzazione"
   },
   "navigation": {
     "home": "Home",
@@ -294,7 +297,11 @@
     "polish": "Polacco",
     "slovenian": "Sloveno",
     "swedish": "Svedese",
-    "firstDayOfWeek": "Primo giorno della settimana"
+    "firstDayOfWeek": "Primo giorno della settimana",
+    "name": "Nome",
+    "surname": "Cognome",
+    "enterName": "Inserisci il tuo nome",
+    "enterSurname": "Inserisci il tuo cognome"
   },
   "productivity": {
     "stalledProjects": "Progetti Bloccati",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "OGGI",
     "tomorrow": "DOMANI",
-    "yesterday": "IERI"
+    "yesterday": "IERI",
+    "nextWeek": "prossima settimana",
+    "nextMonth": "prossimo mese"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,49 @@
     "noAvailableUsers": "Nessun utente disponibile con cui condividere",
     "shared": "Condiviso",
     "sharedWithTeam": "Condiviso con il team"
+  },
+  "views": {
+    "title": "Visualizzazioni Intelligenti",
+    "loading": "Caricamento visualizzazioni...",
+    "searchPlaceholder": "Cerca visualizzazioni...",
+    "noViewsFound": "Nessuna visualizzazione trovata. Crea una visualizzazione eseguendo una ricerca e cliccando su \"Salva come Visualizzazione Intelligente\".",
+    "deleteView": "Elimina Visualizzazione",
+    "confirmDelete": "Sei sicuro di voler eliminare la visualizzazione \"{{viewName}}\"?",
+    "pinView": "Fissa visualizzazione",
+    "unpinView": "Sblocca visualizzazione",
+    "searchCriteria": "Criteri di Ricerca",
+    "entityTypes": "Tipi di Entità",
+    "searchText": "Testo di Ricerca",
+    "priority": "Priorità",
+    "dueDate": "Data di Scadenza",
+    "noCriteriaSet": "Nessun criterio specifico impostato",
+    "priorityLabel": "Priorità:",
+    "dueLabel": "Scadenza:"
+  },
+  "search": {
+    "placeholder": "Cerca attività, progetti, note...",
+    "searchingFor": "Stai cercando",
+    "allItems": "tutti gli elementi",
+    "containingText": ", contenente il testo",
+    "withPriority": ", con",
+    "priority": "priorità",
+    "due": ", scadenza",
+    "taggedWith": ", contrassegnato con",
+    "and": "e",
+    "criteria": "Criteri di Ricerca",
+    "metadataFilters": "Filtri Metadati",
+    "priorityFilter": "Priorità",
+    "dueFilter": "Scadenza",
+    "tagsFilter": "Tag",
+    "saveAsSmartView": "Salva come Vista Intelligente",
+    "viewName": "Nome Vista",
+    "viewNameRequired": "Il nome della vista è obbligatorio",
+    "viewNamePlaceholder": "Inserisci il nome della vista",
+    "failedToSave": "Impossibile salvare la vista. Riprova.",
+    "cancel": "Annulla",
+    "saving": "Salvataggio...",
+    "saveView": "Salva Vista",
+    "startTyping": "Inizia a digitare per cercare o seleziona i filtri sopra",
+    "noResults": "Nessun risultato trovato"
   }
 }

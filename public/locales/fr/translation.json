@@ -45,7 +45,10 @@
     "addProjectTitle": "Ajouter un projet",
     "addNoteAriaLabel": "Ajouter une note",
     "addNoteTitle": "Ajouter une note",
-    "createNew": "Créer nouveau"
+    "createNew": "Créer nouveau",
+    "views": "Vues",
+    "unpinView": "Détacher la vue",
+    "pinView": "Épingler la vue"
   },
   "navigation": {
     "home": "Accueil",
@@ -294,7 +297,11 @@
     "polish": "Polonais",
     "slovenian": "Slovène",
     "swedish": "Suédois",
-    "firstDayOfWeek": "Premier jour de la semaine"
+    "firstDayOfWeek": "Premier jour de la semaine",
+    "name": "Nom",
+    "surname": "Prénom",
+    "enterName": "Entrez votre nom",
+    "enterSurname": "Entrez votre prénom"
   },
   "productivity": {
     "stalledProjects": "Projets Bloqués",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "AUJOURD'HUI",
     "tomorrow": "DEMAIN",
-    "yesterday": "HIER"
+    "yesterday": "HIER",
+    "nextWeek": "la semaine prochaine",
+    "nextMonth": "le mois prochain"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,49 @@
     "noAvailableUsers": "Aucun utilisateur disponible pour partager",
     "shared": "Partagé",
     "sharedWithTeam": "Partagé avec l'équipe"
+  },
+  "views": {
+    "title": "Vues intelligentes",
+    "loading": "Chargement des vues...",
+    "searchPlaceholder": "Rechercher des vues...",
+    "noViewsFound": "Aucune vue trouvée. Créez une vue en effectuant une recherche et en cliquant sur \"Enregistrer en tant que vue intelligente\".",
+    "deleteView": "Supprimer la vue",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer la vue \"{{viewName}}\" ?",
+    "pinView": "Épingler la vue",
+    "unpinView": "Détacher la vue",
+    "searchCriteria": "Critères de recherche",
+    "entityTypes": "Types d'entités",
+    "searchText": "Texte de recherche",
+    "priority": "Priorité",
+    "dueDate": "Date d'échéance",
+    "noCriteriaSet": "Aucun critère spécifique défini",
+    "priorityLabel": "Priorité :",
+    "dueLabel": "Échéance :"
+  },
+  "search": {
+    "placeholder": "Rechercher des tâches, des projets, des notes...",
+    "searchingFor": "Vous recherchez",
+    "allItems": "tous les éléments",
+    "containingText": ", contenant le texte",
+    "withPriority": ", avec",
+    "priority": "priorité",
+    "due": ", dû",
+    "taggedWith": ", étiqueté avec",
+    "and": "et",
+    "criteria": "Critères de recherche",
+    "metadataFilters": "Filtres de métadonnées",
+    "priorityFilter": "Priorité",
+    "dueFilter": "Dû",
+    "tagsFilter": "Étiquettes",
+    "saveAsSmartView": "Enregistrer en tant que vue intelligente",
+    "viewName": "Nom de la vue",
+    "viewNameRequired": "Le nom de la vue est requis",
+    "viewNamePlaceholder": "Entrez le nom de la vue",
+    "failedToSave": "Échec de l'enregistrement de la vue. Veuillez réessayer.",
+    "cancel": "Annuler",
+    "saving": "Enregistrement...",
+    "saveView": "Enregistrer la vue",
+    "startTyping": "Commencez à taper pour rechercher ou sélectionnez des filtres ci-dessus",
+    "noResults": "Aucun résultat trouvé"
   }
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     CheckCircleIcon,
     FolderIcon,
@@ -37,6 +38,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     selectedTags,
     onClose,
 }) => {
+    const { t } = useTranslation();
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
@@ -144,7 +146,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         return (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                 <p className="text-sm">
-                    Start typing to search or select filters above
+                    {t('search.startTyping')}
                 </p>
             </div>
         );
@@ -153,7 +155,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     if (results.length === 0) {
         return (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                <p className="text-sm">No results found</p>
+                <p className="text-sm">{t('search.noResults')}</p>
             </div>
         );
     }

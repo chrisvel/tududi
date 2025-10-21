@@ -45,7 +45,10 @@
     "addProjectTitle": "Proje Ekle",
     "addNoteAriaLabel": "Not Ekle",
     "addNoteTitle": "Not Ekle",
-    "createNew": "Yeni Oluştur"
+    "createNew": "Yeni Oluştur",
+    "views": "Görünümler",
+    "unpinView": "Görünümü sabitlemeyi kaldır",
+    "pinView": "Görünümü sabitle"
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -294,7 +297,11 @@
     "polish": "Lehçe",
     "slovenian": "Slovence",
     "swedish": "İsveççe",
-    "firstDayOfWeek": "Haftanın ilk günü"
+    "firstDayOfWeek": "Haftanın ilk günü",
+    "name": "İsim",
+    "surname": "Soyisim",
+    "enterName": "İsminizi girin",
+    "enterSurname": "Soyisminizi girin"
   },
   "productivity": {
     "stalledProjects": "Duraklayan Projeler",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "BUGÜN",
     "tomorrow": "YARIN",
-    "yesterday": "DÜN"
+    "yesterday": "DÜN",
+    "nextWeek": "gelecek hafta",
+    "nextMonth": "gelecek ay"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,49 @@
     "noAvailableUsers": "Paylaşılacak kullanıcı yok",
     "shared": "Paylaşıldı",
     "sharedWithTeam": "Takımla paylaşıldı"
+  },
+  "views": {
+    "title": "Akıllı Görünümler",
+    "loading": "Görünümler yükleniyor...",
+    "searchPlaceholder": "Görünümleri ara...",
+    "noViewsFound": "Hiçbir görünüm bulunamadı. Bir arama yaparak ve \"Akıllı Görünüm Olarak Kaydet\" butonuna tıklayarak bir görünüm oluşturun.",
+    "deleteView": "Görünümü Sil",
+    "confirmDelete": "\"{{viewName}}\" görünümünü silmek istediğinizden emin misiniz?",
+    "pinView": "Görünümü sabitle",
+    "unpinView": "Görünümü sabitlemeyi kaldır",
+    "searchCriteria": "Arama Kriterleri",
+    "entityTypes": "Varlık Türleri",
+    "searchText": "Arama Metni",
+    "priority": "Öncelik",
+    "dueDate": "Son Tarih",
+    "noCriteriaSet": "Belirli bir kriter ayarlanmamış",
+    "priorityLabel": "Öncelik:",
+    "dueLabel": "Son Tarih:"
+  },
+  "search": {
+    "placeholder": "Görevleri, projeleri, notları ara...",
+    "searchingFor": "Aradığınız",
+    "allItems": "tüm öğeler",
+    "containingText": ", içeren metin",
+    "withPriority": ", öncelikle",
+    "priority": "öncelik",
+    "due": ", son tarih",
+    "taggedWith": ", etiketli",
+    "and": "ve",
+    "criteria": "Arama Kriterleri",
+    "metadataFilters": "Meta Veriler Filtreleri",
+    "priorityFilter": "Öncelik",
+    "dueFilter": "Son Tarih",
+    "tagsFilter": "Etiketler",
+    "saveAsSmartView": "Akıllı Görünüm Olarak Kaydet",
+    "viewName": "Görünüm Adı",
+    "viewNameRequired": "Görünüm adı gereklidir",
+    "viewNamePlaceholder": "Görünüm adını girin",
+    "failedToSave": "Görünümü kaydetme başarısız oldu. Lütfen tekrar deneyin.",
+    "cancel": "İptal",
+    "saving": "Kaydediliyor...",
+    "saveView": "Görünümü Kaydet",
+    "startTyping": "Aramak için yazmaya başlayın veya yukarıdaki filtreleri seçin",
+    "noResults": "Sonuç bulunamadı"
   }
 }

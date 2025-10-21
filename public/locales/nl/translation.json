@@ -45,7 +45,10 @@
     "addProjectTitle": "Voeg Project toe",
     "addNoteAriaLabel": "Voeg Notitie toe",
     "addNoteTitle": "Voeg Notitie toe",
-    "createNew": "Maak Nieuw"
+    "createNew": "Maak Nieuw",
+    "views": "Weergaven",
+    "unpinView": "Weergave losmaken",
+    "pinView": "Weergave vastzetten"
   },
   "navigation": {
     "home": "Home",
@@ -294,7 +297,11 @@
     "polish": "Pools",
     "slovenian": "Sloveens",
     "swedish": "Zweeds",
-    "firstDayOfWeek": "Eerste dag van de week"
+    "firstDayOfWeek": "Eerste dag van de week",
+    "name": "Naam",
+    "surname": "Achternaam",
+    "enterName": "Voer uw naam in",
+    "enterSurname": "Voer uw achternaam in"
   },
   "productivity": {
     "stalledProjects": "Stagnerende Projecten",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "VANDAAG",
     "tomorrow": "MORGEN",
-    "yesterday": "GISTEREN"
+    "yesterday": "GISTEREN",
+    "nextWeek": "volgende week",
+    "nextMonth": "volgende maand"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,49 @@
     "noAvailableUsers": "Geen gebruikers beschikbaar om mee te delen",
     "shared": "Gedeeld",
     "sharedWithTeam": "Gedeeld met het team"
+  },
+  "views": {
+    "title": "Slimme Weergaven",
+    "loading": "Weergaven laden...",
+    "searchPlaceholder": "Zoek weergaven...",
+    "noViewsFound": "Geen weergaven gevonden. Maak een weergave door een zoekopdracht uit te voeren en op \"Opslaan als Slimme Weergave\" te klikken.",
+    "deleteView": "Weergave Verwijderen",
+    "confirmDelete": "Weet je zeker dat je de weergave \"{{viewName}}\" wilt verwijderen?",
+    "pinView": "Weergave vastzetten",
+    "unpinView": "Weergave losmaken",
+    "searchCriteria": "Zoekcriteria",
+    "entityTypes": "Entiteitstypen",
+    "searchText": "Zoektekst",
+    "priority": "Prioriteit",
+    "dueDate": "Vervaldatum",
+    "noCriteriaSet": "Geen specifieke criteria ingesteld",
+    "priorityLabel": "Prioriteit:",
+    "dueLabel": "Vervaldatum:"
+  },
+  "search": {
+    "placeholder": "Zoek taken, projecten, notities...",
+    "searchingFor": "Je bent op zoek naar",
+    "allItems": "alle items",
+    "containingText": ", met de tekst",
+    "withPriority": ", met",
+    "priority": "prioriteit",
+    "due": ", vervaldatum",
+    "taggedWith": ", getagd met",
+    "and": "en",
+    "criteria": "Zoekcriteria",
+    "metadataFilters": "Metadatafilters",
+    "priorityFilter": "Prioriteit",
+    "dueFilter": "Vervaldatum",
+    "tagsFilter": "Tags",
+    "saveAsSmartView": "Opslaan als Slimme Weergave",
+    "viewName": "Weergavenaam",
+    "viewNameRequired": "Weergavenaam is verplicht",
+    "viewNamePlaceholder": "Voer weergavenaam in",
+    "failedToSave": "Opslaan van weergave is mislukt. Probeer het opnieuw.",
+    "cancel": "Annuleren",
+    "saving": "Opslaan...",
+    "saveView": "Opslaan Weergave",
+    "startTyping": "Begin met typen om te zoeken of selecteer filters hierboven",
+    "noResults": "Geen resultaten gevonden"
   }
 }

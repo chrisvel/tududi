@@ -361,13 +361,13 @@ const ViewDetail: React.FC = () => {
                                     <div className="p-4">
                                         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
                                             <InformationCircleIcon className="h-4 w-4 mr-2 text-blue-500" />
-                                            Search Criteria
+                                            {t('views.searchCriteria')}
                                         </h3>
                                         <div className="space-y-3">
                                             {view.filters.length > 0 && (
                                                 <div>
                                                     <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                        Entity Types
+                                                        {t('views.entityTypes')}
                                                     </p>
                                                     <div className="flex flex-wrap gap-2">
                                                         {view.filters.map(
@@ -386,7 +386,7 @@ const ViewDetail: React.FC = () => {
                                             {view.search_query && (
                                                 <div>
                                                     <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                        Search Text
+                                                        {t('views.searchText')}
                                                     </p>
                                                     <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
                                                         &quot;
@@ -398,7 +398,7 @@ const ViewDetail: React.FC = () => {
                                             {view.priority && (
                                                 <div>
                                                     <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                        Priority
+                                                        {t('views.priority')}
                                                     </p>
                                                     <span className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize">
                                                         {view.priority}
@@ -408,7 +408,7 @@ const ViewDetail: React.FC = () => {
                                             {view.due && (
                                                 <div>
                                                     <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
-                                                        Due Date
+                                                        {t('views.dueDate')}
                                                     </p>
                                                     <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs font-medium capitalize">
                                                         {view.due.replace(
@@ -423,8 +423,7 @@ const ViewDetail: React.FC = () => {
                                                 !view.priority &&
                                                 !view.due && (
                                                     <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                                                        No specific criteria
-                                                        set
+                                                        {t('views.noCriteriaSet')}
                                                     </p>
                                                 )}
                                         </div>
@@ -626,8 +625,8 @@ const ViewDetail: React.FC = () => {
                 {/* Confirm Delete Dialog */}
                 {isConfirmDialogOpen && (
                     <ConfirmDialog
-                        title="Delete View"
-                        message={`Are you sure you want to delete the view "${view.name}"?`}
+                        title={t('views.deleteView')}
+                        message={t('views.confirmDelete', { viewName: view.name })}
                         onConfirm={handleDeleteView}
                         onCancel={closeConfirmDialog}
                     />

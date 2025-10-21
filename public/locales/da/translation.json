@@ -45,7 +45,10 @@
     "addProjectTitle": "Tilføj projekt",
     "addNoteAriaLabel": "Tilføj note",
     "addNoteTitle": "Tilføj note",
-    "createNew": "Opret ny"
+    "createNew": "Opret ny",
+    "views": "Visninger",
+    "unpinView": "Fjern fastgørelse af visning",
+    "pinView": "Fastgør visning"
   },
   "navigation": {
     "home": "Hjem",
@@ -294,7 +297,11 @@
     "botSetup": "Bot Opsætning",
     "passwordChangeNote": "Ændringer af adgangskode gemmes, når du klikker på \"Gem ændringer\" nederst i formularen.",
     "passwordChangeOptional": "Lad adgangskodefelterne stå tomme for at opdatere andre indstillinger uden at ændre din adgangskode.",
-    "firstDayOfWeek": "Første dag i ugen"
+    "firstDayOfWeek": "Første dag i ugen",
+    "name": "Navn",
+    "surname": "Efternavn",
+    "enterName": "Indtast dit navn",
+    "enterSurname": "Indtast dit efternavn"
   },
   "productivity": {
     "stalledProjects": "Stagnerede Projekter",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "I DAG",
     "tomorrow": "I MORGEN",
-    "yesterday": "I GÅR"
+    "yesterday": "I GÅR",
+    "nextWeek": "næste uge",
+    "nextMonth": "næste måned"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,49 @@
     "noAvailableUsers": "Ingen brugere tilgængelige til at dele med",
     "shared": "Delt",
     "sharedWithTeam": "Delt med teamet"
+  },
+  "views": {
+    "title": "Smarte Visninger",
+    "loading": "Indlæser visninger...",
+    "searchPlaceholder": "Søg visninger...",
+    "noViewsFound": "Ingen visninger fundet. Opret en visning ved at udføre en søgning og klikke på \"Gem som Smart Visning\".",
+    "deleteView": "Slet Visning",
+    "confirmDelete": "Er du sikker på, at du vil slette visningen \"{{viewName}}\"?",
+    "pinView": "Fastgør visning",
+    "unpinView": "Fjern fastgørelse af visning",
+    "searchCriteria": "Søgekriterier",
+    "entityTypes": "Enhedstyper",
+    "searchText": "Søgetekst",
+    "priority": "Prioritet",
+    "dueDate": "Forfaldsdato",
+    "noCriteriaSet": "Ingen specifikke kriterier sat",
+    "priorityLabel": "Prioritet:",
+    "dueLabel": "Forfalder:"
+  },
+  "search": {
+    "placeholder": "Søg opgaver, projekter, noter...",
+    "searchingFor": "Du søger efter",
+    "allItems": "alle elementer",
+    "containingText": ", der indeholder teksten",
+    "withPriority": ", med",
+    "priority": "prioritet",
+    "due": ", forfald",
+    "taggedWith": ", mærket med",
+    "and": "og",
+    "criteria": "Søgekriterier",
+    "metadataFilters": "Metadata Filtre",
+    "priorityFilter": "Prioritet",
+    "dueFilter": "Forfald",
+    "tagsFilter": "Tags",
+    "saveAsSmartView": "Gem som Smart Visning",
+    "viewName": "Visningsnavn",
+    "viewNameRequired": "Visningsnavn er påkrævet",
+    "viewNamePlaceholder": "Indtast visningsnavn",
+    "failedToSave": "Kunne ikke gemme visningen. Prøv venligst igen.",
+    "cancel": "Annuller",
+    "saving": "Gemer...",
+    "saveView": "Gem visning",
+    "startTyping": "Begynd at skrive for at søge eller vælg filtre ovenfor",
+    "noResults": "Ingen resultater fundet"
   }
 }

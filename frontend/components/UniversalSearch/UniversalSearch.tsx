@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import SearchMenu from './SearchMenu';
 
 const UniversalSearch: React.FC = () => {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
@@ -74,7 +76,7 @@ const UniversalSearch: React.FC = () => {
                     <input
                         ref={inputRef}
                         type="text"
-                        placeholder="Search tasks, projects, notes..."
+                        placeholder={t('search.placeholder')}
                         className="flex-1 ml-2 bg-transparent border-none outline-none text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}

@@ -29,6 +29,7 @@
     "settings": "Settings",
     "areas": "Areas",
     "tags": "Tags",
+    "views": "Views",
     "addAreaAriaLabel": "Add Area",
     "addAreaTitle": "Add Area",
     "addTagAriaLabel": "Add Tag",
@@ -45,7 +46,9 @@
     "nextActions": "Next Actions",
     "inbox": "Inbox",
     "completed": "Completed",
-    "allTasks": "All Tasks"
+    "allTasks": "All Tasks",
+    "unpinView": "Unpin view",
+    "pinView": "Pin view"
   },
   "navigation": {
     "home": "Home",
@@ -154,6 +157,10 @@
   },
   "profile": {
     "settings": "Profile Settings",
+    "name": "Name",
+    "surname": "Surname",
+    "enterName": "Enter your name",
+    "enterSurname": "Enter your surname",
     "language": "Language",
     "theme": "Theme",
     "notifications": "Notifications",
@@ -462,9 +469,9 @@
     "created_at": "Created At"
   },
   "priority": {
-    "low": "Low",
-    "medium": "Medium",
-    "high": "High"
+    "low": "low",
+    "medium": "medium",
+    "high": "high"
   },
   "status": {
     "notStarted": "Not Started",
@@ -554,9 +561,11 @@
     "todayHeader": "dddd, MMMM do, yyyy"
   },
   "dateIndicators": {
-    "today": "Today",
-    "tomorrow": "Tomorrow",
-    "yesterday": "Yesterday"
+    "today": "today",
+    "tomorrow": "tomorrow",
+    "yesterday": "yesterday",
+    "nextWeek": "next week",
+    "nextMonth": "next month"
   },
   "taskViews": {
     "project": {
@@ -808,9 +817,9 @@
     "created": "Created",
     "completed": "Completed",
     "pending": "Pending",
-    "high": "High",
-    "medium": "Medium",
-    "low": "Low",
+    "high": "high",
+    "medium": "medium",
+    "low": "low",
     "time": "Time",
     "allDay": "All day"
   },
@@ -979,5 +988,49 @@
     "noAvailableUsers": "No users available to share with",
     "shared": "Shared",
     "sharedWithTeam": "Shared with the team"
+  },
+  "views": {
+    "title": "Smart Views",
+    "loading": "Loading views...",
+    "searchPlaceholder": "Search views...",
+    "noViewsFound": "No views found. Create a view by performing a search and clicking \"Save as Smart View\".",
+    "deleteView": "Delete View",
+    "confirmDelete": "Are you sure you want to delete the view \"{{viewName}}\"?",
+    "pinView": "Pin view",
+    "unpinView": "Unpin view",
+    "searchCriteria": "Search Criteria",
+    "entityTypes": "Entity Types",
+    "searchText": "Search Text",
+    "priority": "Priority",
+    "dueDate": "Due Date",
+    "noCriteriaSet": "No specific criteria set",
+    "priorityLabel": "Priority:",
+    "dueLabel": "Due:"
+  },
+  "search": {
+    "placeholder": "Search tasks, projects, notes...",
+    "searchingFor": "You are searching for",
+    "allItems": "all items",
+    "containingText": ", containing the text",
+    "withPriority": ", with",
+    "priority": "priority",
+    "due": ", due",
+    "taggedWith": ", tagged with",
+    "and": "and",
+    "criteria": "Search Criteria",
+    "metadataFilters": "Metadata Filters",
+    "priorityFilter": "Priority",
+    "dueFilter": "Due",
+    "tagsFilter": "Tags",
+    "saveAsSmartView": "Save as Smart View",
+    "viewName": "View Name",
+    "viewNameRequired": "View name is required",
+    "viewNamePlaceholder": "Enter view name",
+    "failedToSave": "Failed to save view. Please try again.",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "saveView": "Save View",
+    "startTyping": "Start typing to search or select filters above",
+    "noResults": "No results found"
   }
 }

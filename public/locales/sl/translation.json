@@ -45,7 +45,10 @@
     "nextActions": "Naslednje akcije",
     "inbox": "Prejeto",
     "completed": "Dokončano",
-    "allTasks": "Vse naloge"
+    "allTasks": "Vse naloge",
+    "views": "Pogledi",
+    "unpinView": "Odpravi pripenjanje pogleda",
+    "pinView": "Pripni pogled"
   },
   "navigation": {
     "home": "Domov",
@@ -294,7 +297,11 @@
     "botSetup": "Nastavitev bota",
     "passwordChangeNote": "Spremembe gesla bodo shranjene, ko kliknete \"Shrani spremembe\" na dnu obrazca.",
     "passwordChangeOptional": "Pustite polja za geslo prazna, da posodobite druge nastavitve brez spreminjanja gesla.",
-    "firstDayOfWeek": "Prvi dan v tednu"
+    "firstDayOfWeek": "Prvi dan v tednu",
+    "name": "Ime",
+    "surname": "Priimek",
+    "enterName": "Vnesite svoje ime",
+    "enterSurname": "Vnesite svoj priimek"
   },
   "productivity": {
     "stalledProjects": "Zastali projekti",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "DANES",
     "tomorrow": "JUTRI",
-    "yesterday": "VČERAJ"
+    "yesterday": "VČERAJ",
+    "nextWeek": "naslednji teden",
+    "nextMonth": "naslednji mesec"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,49 @@
     "noAvailableUsers": "Ni uporabnikov, s katerimi bi delili",
     "shared": "Deljeno",
     "sharedWithTeam": "Deljeno s timom"
+  },
+  "views": {
+    "title": "Pametni pogledi",
+    "loading": "Nalagam poglede...",
+    "searchPlaceholder": "Išči poglede...",
+    "noViewsFound": "Noben pogled ni bil najden. Ustvarite pogled tako, da izvedete iskanje in kliknete \"Shrani kot pameten pogled\".",
+    "deleteView": "Izbriši pogled",
+    "confirmDelete": "Ali ste prepričani, da želite izbrisati pogled \"{{viewName}}\"?",
+    "pinView": "Pripni pogled",
+    "unpinView": "Odpravi pripenjanje pogleda",
+    "searchCriteria": "Iskalna merila",
+    "entityTypes": "Vrste entitet",
+    "searchText": "Iskalno besedilo",
+    "priority": "Prioriteta",
+    "dueDate": "Rok",
+    "noCriteriaSet": "Nobena specifična merila niso nastavljena",
+    "priorityLabel": "Prioriteta:",
+    "dueLabel": "Rok:"
+  },
+  "search": {
+    "placeholder": "Išči naloge, projekte, zapiske...",
+    "searchingFor": "Iščete",
+    "allItems": "vse elemente",
+    "containingText": ", ki vsebuje besedilo",
+    "withPriority": ", z",
+    "priority": "prioriteto",
+    "due": ", zapadlo",
+    "taggedWith": ", označeno z",
+    "and": "in",
+    "criteria": "Merila iskanja",
+    "metadataFilters": "Filtri metapodatkov",
+    "priorityFilter": "Prioriteta",
+    "dueFilter": "Zapadlo",
+    "tagsFilter": "Oznake",
+    "saveAsSmartView": "Shrani kot pametni pogled",
+    "viewName": "Ime pogleda",
+    "viewNameRequired": "Ime pogleda je obvezno",
+    "viewNamePlaceholder": "Vnesite ime pogleda",
+    "failedToSave": "Shranjevanje pogleda ni uspelo. Poskusite znova.",
+    "cancel": "Prekliči",
+    "saving": "Shranjujem...",
+    "saveView": "Shrani pogled",
+    "startTyping": "Začnite tipkati za iskanje ali izberite filtre zgoraj",
+    "noResults": "Ni najdenih rezultatov"
   }
 }

@@ -45,7 +45,10 @@
     "addProjectTitle": "Agregar proyecto",
     "addNoteAriaLabel": "Agregar nota",
     "addNoteTitle": "Agregar nota",
-    "createNew": "Crear nuevo"
+    "createNew": "Crear nuevo",
+    "views": "Vistas",
+    "unpinView": "Desanclar vista",
+    "pinView": "Anclar vista"
   },
   "navigation": {
     "home": "Inicio",
@@ -248,7 +251,11 @@
     "polish": "Polaco",
     "slovenian": "Esloveno",
     "swedish": "Sueco",
-    "firstDayOfWeek": "Primer día de la semana"
+    "firstDayOfWeek": "Primer día de la semana",
+    "name": "Nombre",
+    "surname": "Apellido",
+    "enterName": "Introduce tu nombre",
+    "enterSurname": "Introduce tu apellido"
   },
   "errors": {
     "required": "Este campo es obligatorio",
@@ -606,7 +613,9 @@
   "dateIndicators": {
     "today": "HOY",
     "tomorrow": "MAÑANA",
-    "yesterday": "AYER"
+    "yesterday": "AYER",
+    "nextWeek": "la próxima semana",
+    "nextMonth": "el próximo mes"
   },
   "inbox": {
     "title": "Bandeja de Entrada",
@@ -979,5 +988,49 @@
     "noAvailableUsers": "No hay usuarios disponibles para compartir",
     "shared": "Compartido",
     "sharedWithTeam": "Compartido con el equipo"
+  },
+  "views": {
+    "title": "Vistas Inteligentes",
+    "loading": "Cargando vistas...",
+    "searchPlaceholder": "Buscar vistas...",
+    "noViewsFound": "No se encontraron vistas. Crea una vista realizando una búsqueda y haciendo clic en \"Guardar como Vista Inteligente\".",
+    "deleteView": "Eliminar Vista",
+    "confirmDelete": "¿Estás seguro de que deseas eliminar la vista \"{{viewName}}\"?",
+    "pinView": "Anclar vista",
+    "unpinView": "Desanclar vista",
+    "searchCriteria": "Criterios de Búsqueda",
+    "entityTypes": "Tipos de Entidad",
+    "searchText": "Texto de Búsqueda",
+    "priority": "Prioridad",
+    "dueDate": "Fecha de Vencimiento",
+    "noCriteriaSet": "No se han establecido criterios específicos",
+    "priorityLabel": "Prioridad:",
+    "dueLabel": "Vence:"
+  },
+  "search": {
+    "placeholder": "Buscar tareas, proyectos, notas...",
+    "searchingFor": "Estás buscando",
+    "allItems": "todos los elementos",
+    "containingText": ", que contiene el texto",
+    "withPriority": ", con",
+    "priority": "prioridad",
+    "due": ", vencido",
+    "taggedWith": ", etiquetado con",
+    "and": "y",
+    "criteria": "Criterios de Búsqueda",
+    "metadataFilters": "Filtros de Metadatos",
+    "priorityFilter": "Prioridad",
+    "dueFilter": "Vencido",
+    "tagsFilter": "Etiquetas",
+    "saveAsSmartView": "Guardar como Vista Inteligente",
+    "viewName": "Nombre de la Vista",
+    "viewNameRequired": "El nombre de la vista es obligatorio",
+    "viewNamePlaceholder": "Ingresa el nombre de la vista",
+    "failedToSave": "Error al guardar la vista. Por favor, inténtalo de nuevo.",
+    "cancel": "Cancelar",
+    "saving": "Guardando...",
+    "saveView": "Guardar Vista",
+    "startTyping": "Comienza a escribir para buscar o seleccionar filtros arriba",
+    "noResults": "No se encontraron resultados"
   }
 }

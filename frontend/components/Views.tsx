@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     TrashIcon,
     MagnifyingGlassIcon,
@@ -20,6 +21,7 @@ interface View {
 }
 
 const Views: React.FC = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [views, setViews] = useState<View[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -109,7 +111,7 @@ const Views: React.FC = () => {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                    Loading views...
+                    {t('views.loading')}
                 </div>
             </div>
         );
@@ -120,7 +122,7 @@ const Views: React.FC = () => {
             <div className="w-full max-w-5xl">
                 {/* Views Header */}
                 <div className="flex items-center mb-8">
-                    <h2 className="text-2xl font-light">Smart Views</h2>
+                    <h2 className="text-2xl font-light">{t('views.title')}</h2>
                 </div>
 
                 {/* Search Bar */}
@@ -129,7 +131,7 @@ const Views: React.FC = () => {
                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
                         <input
                             type="text"
-                            placeholder="Search views..."
+                            placeholder={t('views.searchPlaceholder')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
@@ -140,8 +142,7 @@ const Views: React.FC = () => {
                 {/* Views List */}
                 {filteredViews.length === 0 ? (
                     <p className="text-gray-700 dark:text-gray-300">
-                        No views found. Create a view by performing a search and
-                        clicking &quot;Save as Smart View&quot;.
+                        {t('views.noViewsFound')}
                     </p>
                 ) : (
                     <div className="space-y-4">
@@ -181,12 +182,12 @@ const Views: React.FC = () => {
                                                 )}
                                                 {view.priority && (
                                                     <p>
-                                                        • Priority:{' '}
+                                                        • {t('views.priorityLabel')}{' '}
                                                         {view.priority}
                                                     </p>
                                                 )}
                                                 {view.due && (
-                                                    <p>• Due: {view.due}</p>
+                                                    <p>• {t('views.dueLabel')} {view.due}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -199,11 +200,11 @@ const Views: React.FC = () => {
                                                     togglePin(view);
                                                 }}
                                                 className={`${view.is_pinned ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-600 focus:outline-none transition-opacity ${hoveredViewId === view.id || view.is_pinned ? 'opacity-100' : 'opacity-0'}`}
-                                                aria-label="Toggle pin"
+                                                aria-label={t('common.togglePin', 'Toggle pin')}
                                                 title={
                                                     view.is_pinned
-                                                        ? 'Unpin view'
-                                                        : 'Pin view'
+                                                        ? t('views.unpinView')
+                                                        : t('views.pinView')
                                                 }
                                             >
                                                 {view.is_pinned ? (
@@ -234,8 +235,8 @@ const Views: React.FC = () => {
                 {/* ConfirmDialog */}
                 {isConfirmDialogOpen && viewToDelete && (
                     <ConfirmDialog
-                        title="Delete View"
-                        message={`Are you sure you want to delete the view "${viewToDelete.name}"?`}
+                        title={t('views.deleteView')}
+                        message={t('views.confirmDelete', { viewName: viewToDelete.name })}
                         onConfirm={handleDeleteView}
                         onCancel={closeConfirmDialog}
                     />
