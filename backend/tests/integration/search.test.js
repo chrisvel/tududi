@@ -63,15 +63,15 @@ describe('Universal Search Routes', () => {
             });
 
             it('should search across all entity types by default', async () => {
-                const response = await agent.get('/api/search').query({ q: '' });
+                const response = await agent
+                    .get('/api/search')
+                    .query({ q: '' });
 
                 expect(response.status).toBe(200);
                 expect(response.body.results).toBeDefined();
                 expect(response.body.results.length).toBeGreaterThan(0);
 
-                const types = new Set(
-                    response.body.results.map((r) => r.type)
-                );
+                const types = new Set(response.body.results.map((r) => r.type));
                 expect(types.has('Task')).toBe(true);
                 expect(types.has('Project')).toBe(true);
                 expect(types.has('Note')).toBe(true);
@@ -141,7 +141,9 @@ describe('Universal Search Routes', () => {
             });
 
             it('should handle empty search query', async () => {
-                const response = await agent.get('/api/search').query({ q: '' });
+                const response = await agent
+                    .get('/api/search')
+                    .query({ q: '' });
 
                 expect(response.status).toBe(200);
                 expect(response.body.results).toBeDefined();
@@ -187,9 +189,7 @@ describe('Universal Search Routes', () => {
                 });
 
                 expect(response.status).toBe(200);
-                const types = new Set(
-                    response.body.results.map((r) => r.type)
-                );
+                const types = new Set(response.body.results.map((r) => r.type));
                 expect(types.has('Task')).toBe(true);
                 expect(types.has('Project')).toBe(false);
                 expect(types.has('Note')).toBe(false);
@@ -202,9 +202,7 @@ describe('Universal Search Routes', () => {
                 });
 
                 expect(response.status).toBe(200);
-                const types = new Set(
-                    response.body.results.map((r) => r.type)
-                );
+                const types = new Set(response.body.results.map((r) => r.type));
                 expect(types.has('Task')).toBe(true);
                 expect(types.has('Project')).toBe(true);
                 expect(types.has('Note')).toBe(false);
@@ -218,9 +216,7 @@ describe('Universal Search Routes', () => {
                 });
 
                 expect(response.status).toBe(200);
-                const types = new Set(
-                    response.body.results.map((r) => r.type)
-                );
+                const types = new Set(response.body.results.map((r) => r.type));
                 expect(types.has('Note')).toBe(true);
                 expect(types.has('Task')).toBe(false);
             });
@@ -232,9 +228,7 @@ describe('Universal Search Routes', () => {
                 });
 
                 expect(response.status).toBe(200);
-                const types = new Set(
-                    response.body.results.map((r) => r.type)
-                );
+                const types = new Set(response.body.results.map((r) => r.type));
                 expect(types.has('Area')).toBe(true);
                 expect(types.has('Task')).toBe(false);
             });
@@ -246,9 +240,7 @@ describe('Universal Search Routes', () => {
                 });
 
                 expect(response.status).toBe(200);
-                const types = new Set(
-                    response.body.results.map((r) => r.type)
-                );
+                const types = new Set(response.body.results.map((r) => r.type));
                 expect(types.has('Tag')).toBe(true);
                 expect(types.has('Task')).toBe(false);
             });
@@ -358,7 +350,10 @@ describe('Universal Search Routes', () => {
                 await Task.create({
                     user_id: user.id,
                     name: 'Task due tomorrow',
-                    due_date: now.clone().add(1, 'day').format('YYYY-MM-DD HH:mm:ss'),
+                    due_date: now
+                        .clone()
+                        .add(1, 'day')
+                        .format('YYYY-MM-DD HH:mm:ss'),
                     status: 0,
                 });
 
@@ -366,7 +361,10 @@ describe('Universal Search Routes', () => {
                 await Task.create({
                     user_id: user.id,
                     name: 'Task due next week',
-                    due_date: now.clone().add(5, 'days').format('YYYY-MM-DD HH:mm:ss'),
+                    due_date: now
+                        .clone()
+                        .add(5, 'days')
+                        .format('YYYY-MM-DD HH:mm:ss'),
                     status: 0,
                 });
 
@@ -374,7 +372,10 @@ describe('Universal Search Routes', () => {
                 await Task.create({
                     user_id: user.id,
                     name: 'Task due next month',
-                    due_date: now.clone().add(20, 'days').format('YYYY-MM-DD HH:mm:ss'),
+                    due_date: now
+                        .clone()
+                        .add(20, 'days')
+                        .format('YYYY-MM-DD HH:mm:ss'),
                     status: 0,
                 });
             });
@@ -390,9 +391,9 @@ describe('Universal Search Routes', () => {
                     (r) => r.type === 'Task'
                 );
                 expect(tasks.length).toBeGreaterThanOrEqual(1);
-                expect(
-                    tasks.some((t) => t.name === 'Task due today')
-                ).toBe(true);
+                expect(tasks.some((t) => t.name === 'Task due today')).toBe(
+                    true
+                );
             });
 
             it('should filter tasks due tomorrow', async () => {
@@ -406,9 +407,9 @@ describe('Universal Search Routes', () => {
                     (r) => r.type === 'Task'
                 );
                 expect(tasks.length).toBeGreaterThanOrEqual(1);
-                expect(
-                    tasks.some((t) => t.name === 'Task due tomorrow')
-                ).toBe(true);
+                expect(tasks.some((t) => t.name === 'Task due tomorrow')).toBe(
+                    true
+                );
             });
 
             it('should filter tasks due next week', async () => {
@@ -739,7 +740,9 @@ describe('Universal Search Routes', () => {
                 });
 
                 expect(response.status).toBe(200);
-                const task = response.body.results.find((r) => r.type === 'Task');
+                const task = response.body.results.find(
+                    (r) => r.type === 'Task'
+                );
                 expect(task).toBeDefined();
                 expect(task.type).toBe('Task');
                 expect(task.id).toBeDefined();
@@ -777,7 +780,9 @@ describe('Universal Search Routes', () => {
                 });
 
                 expect(response.status).toBe(200);
-                const note = response.body.results.find((r) => r.type === 'Note');
+                const note = response.body.results.find(
+                    (r) => r.type === 'Note'
+                );
                 expect(note).toBeDefined();
                 expect(note.type).toBe('Note');
                 expect(note.id).toBeDefined();

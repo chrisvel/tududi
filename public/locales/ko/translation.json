@@ -1030,6 +1030,12 @@
     "saving": "저장 중...",
     "saveView": "뷰 저장",
     "startTyping": "검색하거나 위의 필터를 선택하려면 입력을 시작하세요.",
-    "noResults": "결과를 찾을 수 없습니다."
+    "noResults": "결과를 찾을 수 없습니다.",
+    "entityTypes": {
+      "task": "작업",
+      "project": "프로젝트",
+      "area": "영역",
+      "note": "노트"
+    }
   }
 }

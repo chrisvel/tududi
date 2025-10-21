@@ -1030,6 +1030,12 @@
     "saving": "Kaydediliyor...",
     "saveView": "Görünümü Kaydet",
     "startTyping": "Aramak için yazmaya başlayın veya yukarıdaki filtreleri seçin",
-    "noResults": "Sonuç bulunamadı"
+    "noResults": "Sonuç bulunamadı",
+    "entityTypes": {
+      "task": "görev",
+      "project": "proje",
+      "area": "alan",
+      "note": "not"
+    }
   }
 }

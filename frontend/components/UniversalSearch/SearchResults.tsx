@@ -145,9 +145,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     ) {
         return (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                <p className="text-sm">
-                    {t('search.startTyping')}
-                </p>
+                <p className="text-sm">{t('search.startTyping')}</p>
             </div>
         );
     }

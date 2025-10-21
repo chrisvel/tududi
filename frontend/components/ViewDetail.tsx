@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-    PencilSquareIcon,
     TrashIcon,
     TagIcon,
     QueueListIcon,
     StarIcon,
     InformationCircleIcon,
+    PencilSquareIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { Task } from '../entities/Task';
@@ -48,8 +48,9 @@ const ViewDetail: React.FC = () => {
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
     const [, setProjectToDelete] = useState<Project | null>(null);
 
-    // Ref for dropdown
+    // Ref for dropdown and title edit
     const criteriaDropdownRef = useRef<HTMLDivElement>(null);
+    const titleInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         fetchViewAndResults();
@@ -73,6 +74,25 @@ const ViewDetail: React.FC = () => {
             };
         }
     }, [showCriteriaDropdown]);
+
+    // Save title when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                titleInputRef.current &&
+                !titleInputRef.current.contains(event.target as Node)
+            ) {
+                handleSaveName();
+            }
+        };
+
+        if (isEditingName) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [isEditingName, editedName]);
 
     const fetchViewAndResults = async () => {
         if (!uid) return;
@@ -307,38 +327,28 @@ const ViewDetail: React.FC = () => {
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center flex-1">
                         {isEditingName ? (
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="text"
-                                    value={editedName}
-                                    onChange={(e) =>
-                                        setEditedName(e.target.value)
+                            <input
+                                ref={titleInputRef}
+                                type="text"
+                                value={editedName}
+                                onChange={(e) =>
+                                    setEditedName(e.target.value)
+                                }
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSaveName();
+                                    } else if (e.key === 'Escape') {
+                                        handleCancelEdit();
                                     }
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            handleSaveName();
-                                        } else if (e.key === 'Escape') {
-                                            handleCancelEdit();
-                                        }
-                                    }}
-                                    className="text-2xl font-light text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    autoFocus
-                                />
-                                <button
-                                    onClick={handleSaveName}
-                                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                >
-                                    Save
-                                </button>
-                                <button
-                                    onClick={handleCancelEdit}
-                                    className="px-3 py-1 text-sm bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
+                                }}
+                                className="text-2xl font-light text-gray-900 dark:text-white bg-transparent border-b-2 border-blue-500 focus:outline-none w-full max-w-2xl"
+                                autoFocus
+                            />
                         ) : (
-                            <h2 className="text-2xl font-light text-gray-900 dark:text-white">
+                            <h2
+                                onClick={handleEditName}
+                                className="text-2xl font-light text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            >
                                 {view.name}
                             </h2>
                         )}
@@ -347,12 +357,18 @@ const ViewDetail: React.FC = () => {
                         <div className="relative" ref={criteriaDropdownRef}>
                             <button
                                 onClick={() =>
-                                    setShowCriteriaDropdown(!showCriteriaDropdown)
+                                    setShowCriteriaDropdown(
+                                        !showCriteriaDropdown
+                                    )
                                 }
                                 className={`flex items-center hover:bg-blue-100/50 dark:hover:bg-blue-800/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg${showCriteriaDropdown ? ' bg-blue-50/70 dark:bg-blue-900/20' : ''} p-2`}
                                 aria-expanded={showCriteriaDropdown}
                                 aria-label="View search criteria"
-                                title={showCriteriaDropdown ? 'Hide criteria' : 'View search criteria'}
+                                title={
+                                    showCriteriaDropdown
+                                        ? 'Hide criteria'
+                                        : 'View search criteria'
+                                }
                             >
                                 <InformationCircleIcon className="h-5 w-5 text-blue-500" />
                             </button>
@@ -423,7 +439,9 @@ const ViewDetail: React.FC = () => {
                                                 !view.priority &&
                                                 !view.due && (
                                                     <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                                                        {t('views.noCriteriaSet')}
+                                                        {t(
+                                                            'views.noCriteriaSet'
+                                                        )}
                                                     </p>
                                                 )}
                                         </div>
@@ -444,14 +462,6 @@ const ViewDetail: React.FC = () => {
                             ) : (
                                 <StarIcon className="h-5 w-5" />
                             )}
-                        </button>
-                        <button
-                            onClick={handleEditName}
-                            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
-                            aria-label="Edit view name"
-                            title="Edit view name"
-                        >
-                            <PencilSquareIcon className="h-5 w-5" />
                         </button>
                         <button
                             onClick={openConfirmDialog}
@@ -626,7 +636,9 @@ const ViewDetail: React.FC = () => {
                 {isConfirmDialogOpen && (
                     <ConfirmDialog
                         title={t('views.deleteView')}
-                        message={t('views.confirmDelete', { viewName: view.name })}
+                        message={t('views.confirmDelete', {
+                            viewName: view.name,
+                        })}
                         onConfirm={handleDeleteView}
                         onCancel={closeConfirmDialog}
                     />

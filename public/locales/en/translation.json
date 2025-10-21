@@ -1031,6 +1031,12 @@
     "saving": "Saving...",
     "saveView": "Save View",
     "startTyping": "Start typing to search or select filters above",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "entityTypes": {
+      "task": "task",
+      "project": "project",
+      "area": "area",
+      "note": "note"
+    }
   }
 }

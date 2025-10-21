@@ -1030,6 +1030,12 @@
     "saving": "保存中...",
     "saveView": "保存视图",
     "startTyping": "开始输入以搜索或选择上面的过滤器",
-    "noResults": "未找到结果"
+    "noResults": "未找到结果",
+    "entityTypes": {
+      "task": "任务",
+      "project": "项目",
+      "area": "区域",
+      "note": "笔记"
+    }
   }
 }

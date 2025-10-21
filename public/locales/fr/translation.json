@@ -1030,6 +1030,12 @@
     "saving": "Enregistrement...",
     "saveView": "Enregistrer la vue",
     "startTyping": "Commencez à taper pour rechercher ou sélectionnez des filtres ci-dessus",
-    "noResults": "Aucun résultat trouvé"
+    "noResults": "Aucun résultat trouvé",
+    "entityTypes": {
+      "task": "tâche",
+      "project": "projet",
+      "area": "zone",
+      "note": "note"
+    }
   }
 }

@@ -1030,6 +1030,12 @@
     "saving": "Tallennetaan...",
     "saveView": "Tallenna näkymä",
     "startTyping": "Aloita kirjoittaminen etsiäksesi tai valitaksesi suodattimia yllä",
-    "noResults": "Ei tuloksia löytynyt"
+    "noResults": "Ei tuloksia löytynyt",
+    "entityTypes": {
+      "task": "tehtävä",
+      "project": "projekti",
+      "area": "alue",
+      "note": "muistio"
+    }
   }
 }

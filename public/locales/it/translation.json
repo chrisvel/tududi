@@ -1030,6 +1030,12 @@
     "saving": "Salvataggio...",
     "saveView": "Salva Vista",
     "startTyping": "Inizia a digitare per cercare o seleziona i filtri sopra",
-    "noResults": "Nessun risultato trovato"
+    "noResults": "Nessun risultato trovato",
+    "entityTypes": {
+      "task": "compito",
+      "project": "progetto",
+      "area": "area",
+      "note": "nota"
+    }
   }
 }

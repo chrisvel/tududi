@@ -1030,6 +1030,12 @@
     "saving": "Đang lưu...",
     "saveView": "Lưu chế độ xem",
     "startTyping": "Bắt đầu gõ để tìm kiếm hoặc chọn bộ lọc ở trên",
-    "noResults": "Không tìm thấy kết quả nào"
+    "noResults": "Không tìm thấy kết quả nào",
+    "entityTypes": {
+      "task": "công việc",
+      "project": "dự án",
+      "area": "khu vực",
+      "note": "ghi chú"
+    }
   }
 }

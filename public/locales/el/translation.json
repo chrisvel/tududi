@@ -619,11 +619,11 @@
     "todayHeader": "dddd, d MMMM yyyy"
   },
   "dateIndicators": {
-    "today": "ΣΗΜΕΡΑ",
-    "tomorrow": "ΑΥΡΙΟ",
-    "yesterday": "ΧΘΕΣ",
-    "nextWeek": "επόμενη εβδομάδα",
-    "nextMonth": "επόμενος μήνας"
+    "today": "Σήμερα",
+    "tomorrow": "Αύριο",
+    "yesterday": "Χθες",
+    "nextWeek": "Επόμενη εβδομάδα",
+    "nextMonth": "Επόμενος μήνας"
   },
   "taskViews": {
     "project": {
@@ -1034,6 +1034,12 @@
     "saving": "Αποθήκευση...",
     "saveView": "Αποθήκευση Προβολής",
     "startTyping": "Αρχίστε να πληκτρολογείτε για να αναζητήσετε ή να επιλέξετε φίλτρα παραπάνω",
-    "noResults": "Δεν βρέθηκαν αποτελέσματα"
+    "noResults": "Δεν βρέθηκαν αποτελέσματα",
+    "entityTypes": {
+      "task": "εργασία",
+      "project": "έργο",
+      "area": "περιοχή",
+      "note": "σημείωση"
+    }
   }
 }

@@ -1030,6 +1030,12 @@
     "saving": "Opslaan...",
     "saveView": "Opslaan Weergave",
     "startTyping": "Begin met typen om te zoeken of selecteer filters hierboven",
-    "noResults": "Geen resultaten gevonden"
+    "noResults": "Geen resultaten gevonden",
+    "entityTypes": {
+      "task": "taak",
+      "project": "project",
+      "area": "gebied",
+      "note": "notitie"
+    }
   }
 }

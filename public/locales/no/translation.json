@@ -1030,6 +1030,12 @@
     "saving": "Lagrer...",
     "saveView": "Lagre visning",
     "startTyping": "Begynn å skrive for å søke eller velg filtre ovenfor",
-    "noResults": "Ingen resultater funnet"
+    "noResults": "Ingen resultater funnet",
+    "entityTypes": {
+      "task": "oppgave",
+      "project": "prosjekt",
+      "area": "område",
+      "note": "notat"
+    }
   }
 }

@@ -1030,6 +1030,12 @@
     "saving": "Sparar...",
     "saveView": "Spara vy",
     "startTyping": "Börja skriva för att söka eller välj filter ovan",
-    "noResults": "Inga resultat hittades"
+    "noResults": "Inga resultat hittades",
+    "entityTypes": {
+      "task": "uppgift",
+      "project": "projekt",
+      "area": "område",
+      "note": "anteckning"
+    }
   }
 }

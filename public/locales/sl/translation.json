@@ -1030,6 +1030,12 @@
     "saving": "Shranjujem...",
     "saveView": "Shrani pogled",
     "startTyping": "Začnite tipkati za iskanje ali izberite filtre zgoraj",
-    "noResults": "Ni najdenih rezultatov"
+    "noResults": "Ni najdenih rezultatov",
+    "entityTypes": {
+      "task": "naloga",
+      "project": "projekt",
+      "area": "območje",
+      "note": "opomba"
+    }
   }
 }

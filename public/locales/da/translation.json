@@ -1030,6 +1030,12 @@
     "saving": "Gemer...",
     "saveView": "Gem visning",
     "startTyping": "Begynd at skrive for at søge eller vælg filtre ovenfor",
-    "noResults": "Ingen resultater fundet"
+    "noResults": "Ingen resultater fundet",
+    "entityTypes": {
+      "task": "opgave",
+      "project": "projekt",
+      "area": "område",
+      "note": "note"
+    }
   }
 }

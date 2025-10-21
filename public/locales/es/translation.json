@@ -1031,6 +1031,12 @@
     "saving": "Guardando...",
     "saveView": "Guardar Vista",
     "startTyping": "Comienza a escribir para buscar o seleccionar filtros arriba",
-    "noResults": "No se encontraron resultados"
+    "noResults": "No se encontraron resultados",
+    "entityTypes": {
+      "task": "tarea",
+      "project": "proyecto",
+      "area": "área",
+      "note": "nota"
+    }
   }
 }

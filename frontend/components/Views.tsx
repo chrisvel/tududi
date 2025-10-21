@@ -182,12 +182,18 @@ const Views: React.FC = () => {
                                                 )}
                                                 {view.priority && (
                                                     <p>
-                                                        • {t('views.priorityLabel')}{' '}
+                                                        •{' '}
+                                                        {t(
+                                                            'views.priorityLabel'
+                                                        )}{' '}
                                                         {view.priority}
                                                     </p>
                                                 )}
                                                 {view.due && (
-                                                    <p>• {t('views.dueLabel')} {view.due}</p>
+                                                    <p>
+                                                        • {t('views.dueLabel')}{' '}
+                                                        {view.due}
+                                                    </p>
                                                 )}
                                             </div>
                                         </div>
@@ -200,7 +206,10 @@ const Views: React.FC = () => {
                                                     togglePin(view);
                                                 }}
                                                 className={`${view.is_pinned ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-600 focus:outline-none transition-opacity ${hoveredViewId === view.id || view.is_pinned ? 'opacity-100' : 'opacity-0'}`}
-                                                aria-label={t('common.togglePin', 'Toggle pin')}
+                                                aria-label={t(
+                                                    'common.togglePin',
+                                                    'Toggle pin'
+                                                )}
                                                 title={
                                                     view.is_pinned
                                                         ? t('views.unpinView')
@@ -236,7 +245,9 @@ const Views: React.FC = () => {
                 {isConfirmDialogOpen && viewToDelete && (
                     <ConfirmDialog
                         title={t('views.deleteView')}
-                        message={t('views.confirmDelete', { viewName: viewToDelete.name })}
+                        message={t('views.confirmDelete', {
+                            viewName: viewToDelete.name,
+                        })}
                         onConfirm={handleDeleteView}
                         onCancel={closeConfirmDialog}
                     />

@@ -1039,6 +1039,12 @@
     "saving": "Wird gespeichert...",
     "saveView": "Ansicht speichern",
     "startTyping": "Beginnen Sie mit der Eingabe, um zu suchen oder wählen Sie die Filter oben aus",
-    "noResults": "Keine Ergebnisse gefunden"
+    "noResults": "Keine Ergebnisse gefunden",
+    "entityTypes": {
+      "task": "Aufgabe",
+      "project": "Projekt",
+      "area": "Bereich",
+      "note": "Notiz"
+    }
   }
 }

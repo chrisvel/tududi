@@ -1030,6 +1030,12 @@
     "saving": "Menyimpan...",
     "saveView": "Simpan Tampilan",
     "startTyping": "Mulai mengetik untuk mencari atau pilih filter di atas",
-    "noResults": "Tidak ada hasil yang ditemukan"
+    "noResults": "Tidak ada hasil yang ditemukan",
+    "entityTypes": {
+      "task": "tugas",
+      "project": "proyek",
+      "area": "area",
+      "note": "catatan"
+    }
   }
 }

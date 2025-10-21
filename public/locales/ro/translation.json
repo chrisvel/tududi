@@ -1030,6 +1030,12 @@
     "saving": "Se salvează...",
     "saveView": "Salvează Vederea",
     "startTyping": "Începeți să tastați pentru a căuta sau selectați filtrele de mai sus",
-    "noResults": "Nu au fost găsite rezultate"
+    "noResults": "Nu au fost găsite rezultate",
+    "entityTypes": {
+      "task": "task",
+      "project": "proiect",
+      "area": "zonă",
+      "note": "notă"
+    }
   }
 }

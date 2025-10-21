@@ -18,19 +18,23 @@ interface SearchMenuProps {
 
 const filterTypes = [
     {
-        name: 'Task',
+        value: 'Task',
+        labelKey: 'search.entityTypes.task',
         color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
     },
     {
-        name: 'Project',
+        value: 'Project',
+        labelKey: 'search.entityTypes.project',
         color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
     },
     {
-        name: 'Area',
+        value: 'Area',
+        labelKey: 'search.entityTypes.area',
         color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     },
     {
-        name: 'Note',
+        value: 'Note',
+        labelKey: 'search.entityTypes.note',
         color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
     },
 ];
@@ -212,7 +216,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
 
         // Add due date filter
         if (selectedDue) {
-            const dueOption = dueOptions.find((opt) => opt.value === selectedDue);
+            const dueOption = dueOptions.find(
+                (opt) => opt.value === selectedDue
+            );
             const dueLabel = dueOption ? t(dueOption.labelKey) : selectedDue;
             parts.push(t('search.due') + ' ');
             parts.push(
@@ -253,7 +259,11 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         if (parts.length === 0) return null;
 
         // Construct the sentence
-        return <>{t('search.searchingFor')} {parts}</>;
+        return (
+            <>
+                {t('search.searchingFor')} {parts}
+            </>
+        );
     };
 
     const searchDescription = buildSearchDescription();
@@ -309,16 +319,16 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                         <div className="flex flex-wrap gap-2">
                             {filterTypes.map((filter) => {
                                 const isSelected = selectedFilters.includes(
-                                    filter.name
+                                    filter.value
                                 );
                                 return (
                                     <FilterBadge
-                                        key={filter.name}
-                                        name={filter.name}
+                                        key={filter.value}
+                                        name={t(filter.labelKey)}
                                         color={filter.color}
                                         isSelected={isSelected}
                                         onToggle={() =>
-                                            onFilterToggle(filter.name)
+                                            onFilterToggle(filter.value)
                                         }
                                     />
                                 );
@@ -413,7 +423,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                         className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                                     >
                                         <BookmarkIcon className="h-4 w-4" />
-                                        <span>{t('search.saveAsSmartView')}</span>
+                                        <span>
+                                            {t('search.saveAsSmartView')}
+                                        </span>
                                     </button>
                                 ) : (
                                     <div className="space-y-3">
@@ -445,7 +457,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                                     }
                                                 }}
                                                 className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                placeholder={t('search.viewNamePlaceholder')}
+                                                placeholder={t(
+                                                    'search.viewNamePlaceholder'
+                                                )}
                                                 autoFocus
                                             />
                                             {saveError && (
