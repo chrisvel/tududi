@@ -331,9 +331,7 @@ const ViewDetail: React.FC = () => {
                                 ref={titleInputRef}
                                 type="text"
                                 value={editedName}
-                                onChange={(e) =>
-                                    setEditedName(e.target.value)
-                                }
+                                onChange={(e) => setEditedName(e.target.value)}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         handleSaveName();
