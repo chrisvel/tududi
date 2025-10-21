@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-    ArrowLeftIcon,
     PencilSquareIcon,
     TrashIcon,
     TagIcon,
     QueueListIcon,
     StarIcon,
-    ChevronDownIcon,
-    ChevronUpIcon,
+    InformationCircleIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { Task } from '../entities/Task';
@@ -43,16 +41,38 @@ const ViewDetail: React.FC = () => {
     const [isEditingName, setIsEditingName] = useState(false);
     const [editedName, setEditedName] = useState('');
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-    const [showCriteria, setShowCriteria] = useState(false);
+    const [showCriteriaDropdown, setShowCriteriaDropdown] = useState(false);
 
     // State for ProjectItem and Note components
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
     const [, setProjectToDelete] = useState<Project | null>(null);
 
+    // Ref for dropdown
+    const criteriaDropdownRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         fetchViewAndResults();
     }, [uid]);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                criteriaDropdownRef.current &&
+                !criteriaDropdownRef.current.contains(event.target as Node)
+            ) {
+                setShowCriteriaDropdown(false);
+            }
+        };
+
+        if (showCriteriaDropdown) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [showCriteriaDropdown]);
 
     const fetchViewAndResults = async () => {
         if (!uid) return;
@@ -286,13 +306,6 @@ const ViewDetail: React.FC = () => {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center flex-1">
-                        <button
-                            onClick={() => navigate('/views')}
-                            className="mr-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-                            aria-label="Back to views"
-                        >
-                            <ArrowLeftIcon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                        </button>
                         {isEditingName ? (
                             <div className="flex items-center gap-2">
                                 <input
@@ -330,7 +343,95 @@ const ViewDetail: React.FC = () => {
                             </h2>
                         )}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center">
+                        <div className="relative" ref={criteriaDropdownRef}>
+                            <button
+                                onClick={() =>
+                                    setShowCriteriaDropdown(!showCriteriaDropdown)
+                                }
+                                className={`flex items-center hover:bg-blue-100/50 dark:hover:bg-blue-800/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg${showCriteriaDropdown ? ' bg-blue-50/70 dark:bg-blue-900/20' : ''} p-2`}
+                                aria-expanded={showCriteriaDropdown}
+                                aria-label="View search criteria"
+                                title={showCriteriaDropdown ? 'Hide criteria' : 'View search criteria'}
+                            >
+                                <InformationCircleIcon className="h-5 w-5 text-blue-500" />
+                            </button>
+                            {showCriteriaDropdown && (
+                                <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+                                    <div className="p-4">
+                                        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                                            <InformationCircleIcon className="h-4 w-4 mr-2 text-blue-500" />
+                                            Search Criteria
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {view.filters.length > 0 && (
+                                                <div>
+                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                                        Entity Types
+                                                    </p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {view.filters.map(
+                                                            (filter) => (
+                                                                <span
+                                                                    key={filter}
+                                                                    className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded text-xs font-medium"
+                                                                >
+                                                                    {filter}
+                                                                </span>
+                                                            )
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {view.search_query && (
+                                                <div>
+                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                                        Search Text
+                                                    </p>
+                                                    <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
+                                                        &quot;
+                                                        {view.search_query}
+                                                        &quot;
+                                                    </p>
+                                                </div>
+                                            )}
+                                            {view.priority && (
+                                                <div>
+                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                                        Priority
+                                                    </p>
+                                                    <span className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize">
+                                                        {view.priority}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {view.due && (
+                                                <div>
+                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                                        Due Date
+                                                    </p>
+                                                    <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs font-medium capitalize">
+                                                        {view.due.replace(
+                                                            /_/g,
+                                                            ' '
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {!view.filters.length &&
+                                                !view.search_query &&
+                                                !view.priority &&
+                                                !view.due && (
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+                                                        No specific criteria
+                                                        set
+                                                    </p>
+                                                )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                         <button
                             onClick={togglePin}
                             className={`p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${view.is_pinned ? 'text-yellow-500' : 'text-gray-400'}`}
@@ -340,9 +441,9 @@ const ViewDetail: React.FC = () => {
                             title={view.is_pinned ? 'Unpin view' : 'Pin view'}
                         >
                             {view.is_pinned ? (
-                                <StarIconSolid className="h-6 w-6" />
+                                <StarIconSolid className="h-5 w-5" />
                             ) : (
-                                <StarIcon className="h-6 w-6" />
+                                <StarIcon className="h-5 w-5" />
                             )}
                         </button>
                         <button
@@ -351,7 +452,7 @@ const ViewDetail: React.FC = () => {
                             aria-label="Edit view name"
                             title="Edit view name"
                         >
-                            <PencilSquareIcon className="h-6 w-6" />
+                            <PencilSquareIcon className="h-5 w-5" />
                         </button>
                         <button
                             onClick={openConfirmDialog}
@@ -359,95 +460,15 @@ const ViewDetail: React.FC = () => {
                             aria-label="Delete view"
                             title="Delete view"
                         >
-                            <TrashIcon className="h-6 w-6" />
+                            <TrashIcon className="h-5 w-5" />
                         </button>
                     </div>
-                </div>
-
-                {/* View Criteria Section */}
-                <div className="mb-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-lg border border-blue-100 dark:border-gray-700">
-                    <button
-                        onClick={() => setShowCriteria(!showCriteria)}
-                        className="w-full p-6 flex items-center justify-between text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-                    >
-                        <div className="flex items-center">
-                            <QueueListIcon className="h-5 w-5 mr-2" />
-                            <span>Search Criteria</span>
-                        </div>
-                        {showCriteria ? (
-                            <ChevronUpIcon className="h-5 w-5" />
-                        ) : (
-                            <ChevronDownIcon className="h-5 w-5" />
-                        )}
-                    </button>
-                    {showCriteria && (
-                        <div className="px-6 pb-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {view.filters.length > 0 && (
-                                    <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
-                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
-                                            Entity Types
-                                        </p>
-                                        <div className="flex flex-wrap gap-2">
-                                            {view.filters.map((filter) => (
-                                                <span
-                                                    key={filter}
-                                                    className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded text-xs font-medium"
-                                                >
-                                                    {filter}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                                {view.search_query && (
-                                    <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
-                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
-                                            Search Text
-                                        </p>
-                                        <p className="text-sm text-gray-900 dark:text-gray-100 font-medium">
-                                            &quot;{view.search_query}&quot;
-                                        </p>
-                                    </div>
-                                )}
-                                {view.priority && (
-                                    <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
-                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
-                                            Priority
-                                        </p>
-                                        <span className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize">
-                                            {view.priority}
-                                        </span>
-                                    </div>
-                                )}
-                                {view.due && (
-                                    <div className="bg-white dark:bg-gray-800 rounded-md p-3 shadow-sm">
-                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
-                                            Due Date
-                                        </p>
-                                        <span className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded text-xs font-medium capitalize">
-                                            {view.due.replace(/_/g, ' ')}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                            {!view.filters.length &&
-                                !view.search_query &&
-                                !view.priority &&
-                                !view.due && (
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 italic mt-4">
-                                        No specific criteria set - showing all
-                                        items
-                                    </p>
-                                )}
-                        </div>
-                    )}
                 </div>
 
                 {/* Tasks Section */}
                 {tasks.length > 0 && (
                     <div className="mb-8">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        <h3 className="text-lg font-light text-gray-900 dark:text-white mb-4">
                             {t('tasks.title')} ({tasks.length})
                         </h3>
                         <TaskList
@@ -464,7 +485,7 @@ const ViewDetail: React.FC = () => {
                 {/* Notes Section */}
                 {notes.length > 0 && (
                     <div className="mb-8">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        <h3 className="text-lg font-light text-gray-900 dark:text-white mb-4">
                             {t('notes.title')} ({notes.length})
                         </h3>
                         <ul className="space-y-1">
@@ -562,7 +583,7 @@ const ViewDetail: React.FC = () => {
                 {/* Projects Section */}
                 {projects.length > 0 && (
                     <div className="mb-8">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        <h3 className="text-lg font-light text-gray-900 dark:text-white mb-4">
                             {t('projects.title')} ({projects.length})
                         </h3>
                         <div className="flex flex-col space-y-1">
