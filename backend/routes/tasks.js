@@ -1952,30 +1952,36 @@ router.patch(
             }
 
             // Handle project assignment
-            if (project_id && project_id.toString().trim()) {
-                const project = await Project.findOne({
-                    where: { id: project_id },
-                });
-                if (!project) {
-                    return res.status(400).json({ error: 'Invalid project.' });
+            if (project_id !== undefined) {
+                if (project_id && project_id.toString().trim()) {
+                    const project = await Project.findOne({
+                        where: { id: project_id },
+                    });
+                    if (!project) {
+                        return res
+                            .status(400)
+                            .json({ error: 'Invalid project.' });
+                    }
+                    const projectAccess = await permissionsService.getAccess(
+                        req.currentUser.id,
+                        'project',
+                        project.uid
+                    );
+                    const isOwner = project.user_id === req.currentUser.id;
+                    const canWrite =
+                        isOwner ||
+                        projectAccess === 'rw' ||
+                        projectAccess === 'admin';
+                    if (!canWrite) {
+                        return res.status(403).json({ error: 'Forbidden' });
+                    }
+                    taskAttributes.project_id = project_id;
+                } else {
+                    // Only set to null if explicitly provided as null or empty string
+                    taskAttributes.project_id = null;
                 }
-                const projectAccess = await permissionsService.getAccess(
-                    req.currentUser.id,
-                    'project',
-                    project.uid
-                );
-                const isOwner = project.user_id === req.currentUser.id;
-                const canWrite =
-                    isOwner ||
-                    projectAccess === 'rw' ||
-                    projectAccess === 'admin';
-                if (!canWrite) {
-                    return res.status(403).json({ error: 'Forbidden' });
-                }
-                taskAttributes.project_id = project_id;
-            } else {
-                taskAttributes.project_id = null;
             }
+            // If project_id is undefined (not in request body), don't modify it
 
             // Handle parent task assignment
             if (parent_task_id && parent_task_id.toString().trim()) {
