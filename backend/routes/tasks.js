@@ -838,24 +838,28 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
 
     const tasksDueToday = await Task.findAll({
         where: {
-            ...visibleTasksWhere,
-            status: {
-                [Op.notIn]: [
-                    Task.STATUS.DONE,
-                    Task.STATUS.ARCHIVED,
-                    'done',
-                    'archived',
-                ],
-            },
-            parent_task_id: null, // Exclude subtasks
-            recurring_parent_id: null, // Exclude recurring instances
-            [Op.or]: [
-                { due_date: { [Op.lte]: todayBounds.end } },
-                sequelize.literal(`EXISTS (
-          SELECT 1 FROM projects 
-          WHERE projects.id = Task.project_id 
+            [Op.and]: [
+                visibleTasksWhere,
+                {
+                    status: {
+                        [Op.notIn]: [
+                            Task.STATUS.DONE,
+                            Task.STATUS.ARCHIVED,
+                            'done',
+                            'archived',
+                        ],
+                    },
+                    parent_task_id: null, // Exclude subtasks
+                    recurring_parent_id: null, // Exclude recurring instances
+                    [Op.or]: [
+                        { due_date: { [Op.lte]: todayBounds.end } },
+                        sequelize.literal(`EXISTS (
+          SELECT 1 FROM projects
+          WHERE projects.id = Task.project_id
           AND projects.due_date_at <= '${todayBounds.end.toISOString()}'
         )`),
+                    ],
+                },
             ],
         },
         include: [

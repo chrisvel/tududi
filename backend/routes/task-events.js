@@ -16,8 +16,21 @@ router.get('/task/:uid/timeline', async (req, res) => {
         if (!isValidUid(req.params.uid))
             return res.status(400).json({ error: 'Invalid UID' });
 
+        const permissionsService = require('../services/permissionsService');
+
+        // Check if user has access to the task (either owns it or has access through shared project)
+        const access = await permissionsService.getAccess(
+            req.currentUser.id,
+            'task',
+            req.params.uid
+        );
+
+        if (access === 'none') {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
         const task = await Task.findOne({
-            where: { uid: req.params.uid, user_id: req.currentUser.id },
+            where: { uid: req.params.uid },
         });
 
         if (!task) {
@@ -39,8 +52,21 @@ router.get('/task/:uid/completion-time', async (req, res) => {
         if (!isValidUid(req.params.uid))
             return res.status(400).json({ error: 'Invalid UID' });
 
+        const permissionsService = require('../services/permissionsService');
+
+        // Check if user has access to the task (either owns it or has access through shared project)
+        const access = await permissionsService.getAccess(
+            req.currentUser.id,
+            'task',
+            req.params.uid
+        );
+
+        if (access === 'none') {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
         const task = await Task.findOne({
-            where: { uid: req.params.uid, user_id: req.currentUser.id },
+            where: { uid: req.params.uid },
         });
 
         if (!task) {
