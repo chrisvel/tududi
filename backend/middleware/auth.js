@@ -18,6 +18,13 @@ const requireAuth = async (req, res, next) => {
             return res.status(401).json({ error: 'User not found' });
         }
 
+        // Debug logging to verify correct user is authenticated
+        if (req.path.includes('/tasks') && req.method === 'GET') {
+            console.log(
+                `[AUTH DEBUG] ${req.method} ${req.path} - User: ${user.email} (ID: ${user.id})`
+            );
+        }
+
         req.currentUser = user;
         next();
     } catch (error) {
