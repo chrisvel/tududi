@@ -47,7 +47,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
     const [isClosing, setIsClosing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const { showSuccessToast, showErrorToast } = useToast();
-    const nameInputRef = useRef<HTMLInputElement>(null);
+    const nameInputRef = useRef<HTMLTextAreaElement>(null);
     const [saveMode, setSaveMode] = useState<'task' | 'inbox'>('inbox');
     const { tagsStore } = useStore();
     const tags = tagsStore.getTags();
@@ -356,7 +356,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
     // Helper function to calculate dropdown position based on cursor
     const calculateDropdownPosition = (
-        input: HTMLInputElement,
+        input: HTMLElement,
         cursorPos: number
     ) => {
         // Create a temporary element to measure text width
@@ -507,7 +507,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
         };
     }, [isOpen]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newText = e.target.value;
         const newCursorPosition = e.target.selectionStart || 0;
 
@@ -1276,13 +1276,12 @@ const InboxModal: React.FC<InboxModalProps> = ({
                     <XMarkIcon className="h-6 w-6" />
                 </button>
 
-                <div className="flex-1 flex items-center justify-center sm:block sm:flex-none">
+                <div className="flex-1 flex items-start justify-center sm:block sm:flex-none pt-12 sm:pt-0">
                     <div className="w-full p-6 px-8">
                         <div className="flex flex-col sm:flex-row sm:items-center relative">
                             <div className="relative flex-1">
-                                <input
+                                <textarea
                                     ref={nameInputRef}
-                                    type="text"
                                     name="text"
                                     value={inputText}
                                     onChange={handleChange}
@@ -1338,7 +1337,8 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                         }
                                     }}
                                     required
-                                    className="w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white focus:outline-none shadow-sm py-2"
+                                    rows={1}
+                                    className="w-full text-xl font-semibold dark:bg-gray-800 text-black dark:text-white focus:outline-none shadow-sm py-2 resize-none overflow-hidden"
                                     placeholder={t('inbox.captureThought')}
                                     onKeyDown={(e) => {
                                         // Handle dropdown navigation
