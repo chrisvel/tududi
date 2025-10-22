@@ -466,13 +466,13 @@ describe('Parent-Child Relationship Functionality', () => {
             const uniqueDueDates = [...new Set(dueDates)];
             expect(uniqueDueDates.length).toBe(dueDates.length);
 
-            // Verify children have sequential due dates (within tolerance for floating point)
+            // Verify children have sequential due dates (within tolerance for DST transitions)
             const sortedDueDates = dueDates.sort();
             for (let i = 1; i < sortedDueDates.length; i++) {
                 const dayDiff =
                     (sortedDueDates[i] - sortedDueDates[i - 1]) /
                     (24 * 60 * 60 * 1000);
-                expect(Math.abs(dayDiff - 1)).toBeLessThan(0.001); // Each task should be ~1 day apart
+                expect(Math.abs(dayDiff - 1)).toBeLessThan(0.05); // Each task should be ~1 day apart (allowing for DST)
             }
         });
 

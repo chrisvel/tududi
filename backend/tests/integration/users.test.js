@@ -8,13 +8,13 @@ describe('Users Routes', () => {
 
     beforeEach(async () => {
         user = await createTestUser({
-            email: 'test@example.com',
+            email: `test_${Date.now()}@example.com`,
         });
 
         // Create authenticated agent
         agent = request.agent(app);
         await agent.post('/api/login').send({
-            email: 'test@example.com',
+            email: user.email,
             password: 'password123',
         });
     });
