@@ -9,6 +9,7 @@ import SidebarNav from './Sidebar/SidebarNav';
 import SidebarNotes from './Sidebar/SidebarNotes';
 import SidebarProjects from './Sidebar/SidebarProjects';
 import SidebarTags from './Sidebar/SidebarTags';
+import SidebarViews from './Sidebar/SidebarViews';
 
 interface SidebarProps {
     isSidebarOpen: boolean;
@@ -100,6 +101,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                             isDarkMode={isDarkMode}
                             openTagModal={openTagModal}
                             tags={tags}
+                        />
+                        <SidebarViews
+                            handleNavClick={handleNavClick}
+                            location={location}
+                            isDarkMode={isDarkMode}
                         />
                     </div>
 

@@ -45,7 +45,10 @@
     "addProjectTitle": "إضافة مشروع",
     "addNoteAriaLabel": "إضافة ملاحظة",
     "addNoteTitle": "إضافة ملاحظة",
-    "createNew": "إنشاء جديد"
+    "createNew": "إنشاء جديد",
+    "views": "عرض",
+    "unpinView": "إلغاء تثبيت العرض",
+    "pinView": "تثبيت العرض"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -294,7 +297,11 @@
     "polish": "بولندي",
     "slovenian": "سلوفيني",
     "swedish": "السويدية",
-    "firstDayOfWeek": "أول يوم في الأسبوع"
+    "firstDayOfWeek": "أول يوم في الأسبوع",
+    "name": "الاسم",
+    "surname": "الكنية",
+    "enterName": "أدخل اسمك",
+    "enterSurname": "أدخل كنيتك"
   },
   "productivity": {
     "stalledProjects": "المشاريع المتوقفة",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "اليوم",
     "tomorrow": "غداً",
-    "yesterday": "أمس"
+    "yesterday": "أمس",
+    "nextWeek": "الأسبوع المقبل",
+    "nextMonth": "الشهر المقبل"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,55 @@
     "noAvailableUsers": "لا يوجد مستخدمون متاحون للمشاركة معهم",
     "shared": "تمت المشاركة",
     "sharedWithTeam": "تمت المشاركة مع الفريق"
+  },
+  "views": {
+    "title": "عرض ذكي",
+    "loading": "جارٍ تحميل العروض...",
+    "searchPlaceholder": "ابحث عن العروض...",
+    "noViewsFound": "لم يتم العثور على أي عروض. أنشئ عرضًا من خلال إجراء بحث والنقر على \"حفظ كعرض ذكي\".",
+    "deleteView": "حذف العرض",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف العرض \"{{viewName}}\"؟",
+    "pinView": "تثبيت العرض",
+    "unpinView": "إلغاء تثبيت العرض",
+    "searchCriteria": "معايير البحث",
+    "entityTypes": "أنواع الكيانات",
+    "searchText": "نص البحث",
+    "priority": "الأولوية",
+    "dueDate": "تاريخ الاستحقاق",
+    "noCriteriaSet": "لم يتم تعيين أي معايير محددة",
+    "priorityLabel": "الأولوية:",
+    "dueLabel": "استحقاق:"
+  },
+  "search": {
+    "placeholder": "ابحث عن المهام، المشاريع، الملاحظات...",
+    "searchingFor": "أنت تبحث عن",
+    "allItems": "جميع العناصر",
+    "containingText": "، التي تحتوي على النص",
+    "withPriority": "، مع",
+    "priority": "الأولوية",
+    "due": "، المستحقة",
+    "taggedWith": "، الموسومة بـ",
+    "and": "و",
+    "criteria": "معايير البحث",
+    "metadataFilters": "مرشحات البيانات الوصفية",
+    "priorityFilter": "الأولوية",
+    "dueFilter": "المستحقة",
+    "tagsFilter": "الوسوم",
+    "saveAsSmartView": "احفظ كعرض ذكي",
+    "viewName": "اسم العرض",
+    "viewNameRequired": "اسم العرض مطلوب",
+    "viewNamePlaceholder": "أدخل اسم العرض",
+    "failedToSave": "فشل في حفظ العرض. يرجى المحاولة مرة أخرى.",
+    "cancel": "إلغاء",
+    "saving": "جارٍ الحفظ...",
+    "saveView": "حفظ العرض",
+    "startTyping": "ابدأ الكتابة للبحث أو اختر الفلاتر أعلاه",
+    "noResults": "لم يتم العثور على نتائج",
+    "entityTypes": {
+      "task": "مهمة",
+      "project": "مشروع",
+      "area": "منطقة",
+      "note": "ملاحظة"
+    }
   }
 }

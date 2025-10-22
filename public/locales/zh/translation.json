@@ -45,7 +45,10 @@
     "addProjectTitle": "添加项目",
     "addNoteAriaLabel": "添加备注",
     "addNoteTitle": "添加备注",
-    "createNew": "创建新项目"
+    "createNew": "创建新项目",
+    "views": "视图",
+    "unpinView": "取消固定视图",
+    "pinView": "固定视图"
   },
   "navigation": {
     "home": "首页",
@@ -294,7 +297,11 @@
     "polish": "波兰语",
     "slovenian": "斯洛文尼亚语",
     "swedish": "瑞典语",
-    "firstDayOfWeek": "一周的第一天"
+    "firstDayOfWeek": "一周的第一天",
+    "name": "姓名",
+    "surname": "姓氏",
+    "enterName": "输入您的姓名",
+    "enterSurname": "输入您的姓氏"
   },
   "productivity": {
     "stalledProjects": "停滞项目",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "今天",
     "tomorrow": "明天",
-    "yesterday": "昨天"
+    "yesterday": "昨天",
+    "nextWeek": "下周",
+    "nextMonth": "下个月"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,55 @@
     "noAvailableUsers": "没有可共享的用户",
     "shared": "已共享",
     "sharedWithTeam": "与团队共享"
+  },
+  "views": {
+    "title": "智能视图",
+    "loading": "加载视图中...",
+    "searchPlaceholder": "搜索视图...",
+    "noViewsFound": "未找到视图。通过执行搜索并点击 \"保存为智能视图\" 来创建视图。",
+    "deleteView": "删除视图",
+    "confirmDelete": "您确定要删除视图 \"{{viewName}}\" 吗？",
+    "pinView": "固定视图",
+    "unpinView": "取消固定视图",
+    "searchCriteria": "搜索条件",
+    "entityTypes": "实体类型",
+    "searchText": "搜索文本",
+    "priority": "优先级",
+    "dueDate": "到期日期",
+    "noCriteriaSet": "未设置特定条件",
+    "priorityLabel": "优先级：",
+    "dueLabel": "到期："
+  },
+  "search": {
+    "placeholder": "搜索任务、项目、笔记...",
+    "searchingFor": "您正在搜索",
+    "allItems": "所有项目",
+    "containingText": "，包含文本",
+    "withPriority": "，优先级为",
+    "priority": "优先级",
+    "due": "，到期",
+    "taggedWith": "，标记为",
+    "and": "和",
+    "criteria": "搜索条件",
+    "metadataFilters": "元数据过滤器",
+    "priorityFilter": "优先级",
+    "dueFilter": "到期",
+    "tagsFilter": "标签",
+    "saveAsSmartView": "保存为智能视图",
+    "viewName": "视图名称",
+    "viewNameRequired": "视图名称是必填项",
+    "viewNamePlaceholder": "输入视图名称",
+    "failedToSave": "保存视图失败。请再试一次。",
+    "cancel": "取消",
+    "saving": "保存中...",
+    "saveView": "保存视图",
+    "startTyping": "开始输入以搜索或选择上面的过滤器",
+    "noResults": "未找到结果",
+    "entityTypes": {
+      "task": "任务",
+      "project": "项目",
+      "area": "区域",
+      "note": "笔记"
+    }
   }
 }

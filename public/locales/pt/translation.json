@@ -45,7 +45,10 @@
     "addProjectTitle": "Adicionar Projeto",
     "addNoteAriaLabel": "Adicionar Nota",
     "addNoteTitle": "Adicionar Nota",
-    "createNew": "Criar Novo"
+    "createNew": "Criar Novo",
+    "views": "Visões",
+    "unpinView": "Desafixar visão",
+    "pinView": "Fixar visão"
   },
   "navigation": {
     "home": "Início",
@@ -294,7 +297,11 @@
     "polish": "Polonês",
     "slovenian": "Esloveno",
     "swedish": "Sueco",
-    "firstDayOfWeek": "Primeiro dia da semana"
+    "firstDayOfWeek": "Primeiro dia da semana",
+    "name": "Nome",
+    "surname": "Sobrenome",
+    "enterName": "Digite seu nome",
+    "enterSurname": "Digite seu sobrenome"
   },
   "productivity": {
     "stalledProjects": "Projetos Parados",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "HOJE",
     "tomorrow": "AMANHÃ",
-    "yesterday": "ONTEM"
+    "yesterday": "ONTEM",
+    "nextWeek": "próxima semana",
+    "nextMonth": "próximo mês"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,55 @@
     "noAvailableUsers": "Nenhum usuário disponível para compartilhar",
     "shared": "Compartilhado",
     "sharedWithTeam": "Compartilhado com a equipe"
+  },
+  "views": {
+    "title": "Visões Inteligentes",
+    "loading": "Carregando visões...",
+    "searchPlaceholder": "Pesquisar visões...",
+    "noViewsFound": "Nenhuma visão encontrada. Crie uma visão realizando uma pesquisa e clicando em \"Salvar como Visão Inteligente\".",
+    "deleteView": "Excluir Visão",
+    "confirmDelete": "Você tem certeza de que deseja excluir a visão \"{{viewName}}\"?",
+    "pinView": "Fixar visão",
+    "unpinView": "Desafixar visão",
+    "searchCriteria": "Critérios de Pesquisa",
+    "entityTypes": "Tipos de Entidade",
+    "searchText": "Texto de Pesquisa",
+    "priority": "Prioridade",
+    "dueDate": "Data de Vencimento",
+    "noCriteriaSet": "Nenhum critério específico definido",
+    "priorityLabel": "Prioridade:",
+    "dueLabel": "Vencimento:"
+  },
+  "search": {
+    "placeholder": "Pesquisar tarefas, projetos, notas...",
+    "searchingFor": "Você está buscando por",
+    "allItems": "todos os itens",
+    "containingText": ", contendo o texto",
+    "withPriority": ", com",
+    "priority": "prioridade",
+    "due": ", vencido",
+    "taggedWith": ", marcado com",
+    "and": "e",
+    "criteria": "Critérios de Pesquisa",
+    "metadataFilters": "Filtros de Metadados",
+    "priorityFilter": "Prioridade",
+    "dueFilter": "Vencimento",
+    "tagsFilter": "Tags",
+    "saveAsSmartView": "Salvar como Visualização Inteligente",
+    "viewName": "Nome da Visualização",
+    "viewNameRequired": "O nome da visualização é obrigatório",
+    "viewNamePlaceholder": "Digite o nome da visualização",
+    "failedToSave": "Falha ao salvar a visualização. Por favor, tente novamente.",
+    "cancel": "Cancelar",
+    "saving": "Salvando...",
+    "saveView": "Salvar Visualização",
+    "startTyping": "Comece a digitar para buscar ou selecione filtros acima",
+    "noResults": "Nenhum resultado encontrado",
+    "entityTypes": {
+      "task": "tarefa",
+      "project": "projeto",
+      "area": "área",
+      "note": "nota"
+    }
   }
 }

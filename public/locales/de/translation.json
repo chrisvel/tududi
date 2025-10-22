@@ -45,7 +45,10 @@
     "addProjectTitle": "Projekt hinzufügen",
     "addNoteAriaLabel": "Notiz hinzufügen",
     "addNoteTitle": "Notiz hinzufügen",
-    "createNew": "Neu erstellen"
+    "createNew": "Neu erstellen",
+    "views": "Ansichten",
+    "unpinView": "Ansicht lösen",
+    "pinView": "Ansicht anheften"
   },
   "navigation": {
     "home": "Startseite",
@@ -520,7 +523,11 @@
     "polish": "Polnisch",
     "slovenian": "Slowenisch",
     "swedish": "Schwedisch",
-    "firstDayOfWeek": "Erster Tag der Woche"
+    "firstDayOfWeek": "Erster Tag der Woche",
+    "name": "Name",
+    "surname": "Nachname",
+    "enterName": "Geben Sie Ihren Namen ein",
+    "enterSurname": "Geben Sie Ihren Nachnamen ein"
   },
   "nextTask": {
     "suggestion": "Da nichts in Bearbeitung ist, wie wäre es, mit diesem zu beginnen",
@@ -705,7 +712,9 @@
   "dateIndicators": {
     "today": "HEUTE",
     "tomorrow": "MORGEN",
-    "yesterday": "GESTERN"
+    "yesterday": "GESTERN",
+    "nextWeek": "nächste Woche",
+    "nextMonth": "nächster Monat"
   },
   "taskViews": {
     "project": {
@@ -987,5 +996,55 @@
     "noAvailableUsers": "Keine Benutzer verfügbar, um zu teilen",
     "shared": "Geteilt",
     "sharedWithTeam": "Mit dem Team geteilt"
+  },
+  "views": {
+    "title": "Intelligente Ansichten",
+    "loading": "Ansichten werden geladen...",
+    "searchPlaceholder": "Ansichten suchen...",
+    "noViewsFound": "Keine Ansichten gefunden. Erstellen Sie eine Ansicht, indem Sie eine Suche durchführen und auf \"Als intelligente Ansicht speichern\" klicken.",
+    "deleteView": "Ansicht löschen",
+    "confirmDelete": "Sind Sie sicher, dass Sie die Ansicht \"{{viewName}}\" löschen möchten?",
+    "pinView": "Ansicht anheften",
+    "unpinView": "Ansicht lösen",
+    "searchCriteria": "Suchkriterien",
+    "entityTypes": "Entitätstypen",
+    "searchText": "Suchtext",
+    "priority": "Priorität",
+    "dueDate": "Fälligkeitsdatum",
+    "noCriteriaSet": "Keine spezifischen Kriterien festgelegt",
+    "priorityLabel": "Priorität:",
+    "dueLabel": "Fällig:"
+  },
+  "search": {
+    "placeholder": "Aufgaben, Projekte, Notizen suchen...",
+    "searchingFor": "Sie suchen nach",
+    "allItems": "alle Elemente",
+    "containingText": ", die den Text enthalten",
+    "withPriority": ", mit",
+    "priority": "Priorität",
+    "due": ", fällig",
+    "taggedWith": ", getaggt mit",
+    "and": "und",
+    "criteria": "Suchkriterien",
+    "metadataFilters": "Metadatenfilter",
+    "priorityFilter": "Priorität",
+    "dueFilter": "Fällig",
+    "tagsFilter": "Tags",
+    "saveAsSmartView": "Als Smart View speichern",
+    "viewName": "Ansichtsname",
+    "viewNameRequired": "Ansichtsname ist erforderlich",
+    "viewNamePlaceholder": "Ansichtsname eingeben",
+    "failedToSave": "Speichern der Ansicht fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "cancel": "Abbrechen",
+    "saving": "Wird gespeichert...",
+    "saveView": "Ansicht speichern",
+    "startTyping": "Beginnen Sie mit der Eingabe, um zu suchen oder wählen Sie die Filter oben aus",
+    "noResults": "Keine Ergebnisse gefunden",
+    "entityTypes": {
+      "task": "Aufgabe",
+      "project": "Projekt",
+      "area": "Bereich",
+      "note": "Notiz"
+    }
   }
 }

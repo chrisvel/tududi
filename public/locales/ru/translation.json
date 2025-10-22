@@ -45,7 +45,10 @@
     "addProjectTitle": "Добавить проект",
     "addNoteAriaLabel": "Добавить заметку",
     "addNoteTitle": "Добавить заметку",
-    "createNew": "Создать новый"
+    "createNew": "Создать новый",
+    "views": "Представления",
+    "unpinView": "Открепить представление",
+    "pinView": "Закрепить представление"
   },
   "navigation": {
     "home": "Главная",
@@ -294,7 +297,11 @@
     "polish": "Польский",
     "slovenian": "Словенский",
     "swedish": "Шведский",
-    "firstDayOfWeek": "Первый день недели"
+    "firstDayOfWeek": "Первый день недели",
+    "name": "Имя",
+    "surname": "Фамилия",
+    "enterName": "Введите ваше имя",
+    "enterSurname": "Введите вашу фамилию"
   },
   "productivity": {
     "stalledProjects": "Приостановленные проекты",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "СЕГОДНЯ",
     "tomorrow": "ЗАВТРА",
-    "yesterday": "ВЧЕРА"
+    "yesterday": "ВЧЕРА",
+    "nextWeek": "следующая неделя",
+    "nextMonth": "следующий месяц"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,55 @@
     "noAvailableUsers": "Нет пользователей, с которыми можно поделиться",
     "shared": "Поделено",
     "sharedWithTeam": "Поделено с командой"
+  },
+  "views": {
+    "title": "Умные представления",
+    "loading": "Загрузка представлений...",
+    "searchPlaceholder": "Поиск представлений...",
+    "noViewsFound": "Представления не найдены. Создайте представление, выполнив поиск и нажав \"Сохранить как умное представление\".",
+    "deleteView": "Удалить представление",
+    "confirmDelete": "Вы уверены, что хотите удалить представление \"{{viewName}}\"?",
+    "pinView": "Закрепить представление",
+    "unpinView": "Открепить представление",
+    "searchCriteria": "Критерии поиска",
+    "entityTypes": "Типы сущностей",
+    "searchText": "Текст поиска",
+    "priority": "Приоритет",
+    "dueDate": "Срок выполнения",
+    "noCriteriaSet": "Не установлены конкретные критерии",
+    "priorityLabel": "Приоритет:",
+    "dueLabel": "Срок:"
+  },
+  "search": {
+    "placeholder": "Поиск задач, проектов, заметок...",
+    "searchingFor": "Вы ищете",
+    "allItems": "все элементы",
+    "containingText": ", содержащие текст",
+    "withPriority": ", с",
+    "priority": "приоритетом",
+    "due": ", срок",
+    "taggedWith": ", помеченные",
+    "and": "и",
+    "criteria": "Критерии поиска",
+    "metadataFilters": "Фильтры метаданных",
+    "priorityFilter": "Приоритет",
+    "dueFilter": "Срок",
+    "tagsFilter": "Теги",
+    "saveAsSmartView": "Сохранить как Умный вид",
+    "viewName": "Название вида",
+    "viewNameRequired": "Название вида обязательно",
+    "viewNamePlaceholder": "Введите название вида",
+    "failedToSave": "Не удалось сохранить представление. Пожалуйста, попробуйте снова.",
+    "cancel": "Отмена",
+    "saving": "Сохранение...",
+    "saveView": "Сохранить представление",
+    "startTyping": "Начните вводить текст для поиска или выберите фильтры выше",
+    "noResults": "Результатов не найдено",
+    "entityTypes": {
+      "task": "задача",
+      "project": "проект",
+      "area": "область",
+      "note": "заметка"
+    }
   }
 }

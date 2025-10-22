@@ -45,7 +45,10 @@
     "nextActions": "Nästa åtgärder",
     "inbox": "Inkorg",
     "completed": "Slutförda",
-    "allTasks": "Alla uppgifter"
+    "allTasks": "Alla uppgifter",
+    "views": "Vy",
+    "unpinView": "Ta bort fästning av vy",
+    "pinView": "Fäst vy"
   },
   "navigation": {
     "home": "Hem",
@@ -294,7 +297,11 @@
     "botSetup": "Bot-inställningar",
     "passwordChangeNote": "Ändringar av lösenordet sparas när du klickar på \"Spara ändringar\" längst ner i formuläret.",
     "passwordChangeOptional": "Lämna lösenordsfälten tomma för att uppdatera andra inställningar utan att ändra ditt lösenord.",
-    "firstDayOfWeek": "Första dagen i veckan"
+    "firstDayOfWeek": "Första dagen i veckan",
+    "name": "Namn",
+    "surname": "Efternamn",
+    "enterName": "Ange ditt namn",
+    "enterSurname": "Ange ditt efternamn"
   },
   "productivity": {
     "stalledProjects": "Stagnerade projekt",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "IDAG",
     "tomorrow": "IMORGON",
-    "yesterday": "IGÅR"
+    "yesterday": "IGÅR",
+    "nextWeek": "nästa vecka",
+    "nextMonth": "nästa månad"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,55 @@
     "noAvailableUsers": "Inga användare tillgängliga att dela med",
     "shared": "Delad",
     "sharedWithTeam": "Delad med teamet"
+  },
+  "views": {
+    "title": "Smart Vyer",
+    "loading": "Laddar vyer...",
+    "searchPlaceholder": "Sök vyer...",
+    "noViewsFound": "Inga vyer hittades. Skapa en vy genom att utföra en sökning och klicka på \"Spara som Smart Vy\".",
+    "deleteView": "Ta bort vy",
+    "confirmDelete": "Är du säker på att du vill ta bort vyn \"{{viewName}}\"?",
+    "pinView": "Fäst vy",
+    "unpinView": "Ta bort fästning av vy",
+    "searchCriteria": "Sök Kriterier",
+    "entityTypes": "Entitetstyper",
+    "searchText": "Söktext",
+    "priority": "Prioritet",
+    "dueDate": "Förfallodatum",
+    "noCriteriaSet": "Inga specifika kriterier angivna",
+    "priorityLabel": "Prioritet:",
+    "dueLabel": "Förfall:"
+  },
+  "search": {
+    "placeholder": "Sök uppgifter, projekt, anteckningar...",
+    "searchingFor": "Du söker efter",
+    "allItems": "alla objekt",
+    "containingText": ", som innehåller texten",
+    "withPriority": ", med",
+    "priority": "prioritet",
+    "due": ", förfallodag",
+    "taggedWith": ", taggad med",
+    "and": "och",
+    "criteria": "Sök Kriterier",
+    "metadataFilters": "Metadatafilter",
+    "priorityFilter": "Prioritet",
+    "dueFilter": "Förfallodag",
+    "tagsFilter": "Taggar",
+    "saveAsSmartView": "Spara som Smart View",
+    "viewName": "Visningsnamn",
+    "viewNameRequired": "Visningsnamn krävs",
+    "viewNamePlaceholder": "Ange visningsnamn",
+    "failedToSave": "Misslyckades med att spara vy. Vänligen försök igen.",
+    "cancel": "Avbryt",
+    "saving": "Sparar...",
+    "saveView": "Spara vy",
+    "startTyping": "Börja skriva för att söka eller välj filter ovan",
+    "noResults": "Inga resultat hittades",
+    "entityTypes": {
+      "task": "uppgift",
+      "project": "projekt",
+      "area": "område",
+      "note": "anteckning"
+    }
   }
 }

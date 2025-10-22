@@ -45,7 +45,10 @@
     "addProjectTitle": "Dodaj projekt",
     "addNoteAriaLabel": "Dodaj notatkę",
     "addNoteTitle": "Dodaj notatkę",
-    "createNew": "Utwórz nowy"
+    "createNew": "Utwórz nowy",
+    "views": "Widoki",
+    "unpinView": "Odprzypnij widok",
+    "pinView": "Przypnij widok"
   },
   "navigation": {
     "home": "Strona główna",
@@ -294,7 +297,11 @@
     "botSetup": "Konfiguracja bota",
     "passwordChangeNote": "Zmiany hasła zostaną zapisane po kliknięciu \"Zapisz zmiany\" na dole formularza.",
     "passwordChangeOptional": "Pozostaw puste pola hasła, aby zaktualizować inne ustawienia bez zmiany hasła.",
-    "firstDayOfWeek": "Pierwszy dzień tygodnia"
+    "firstDayOfWeek": "Pierwszy dzień tygodnia",
+    "name": "Imię",
+    "surname": "Nazwisko",
+    "enterName": "Wprowadź swoje imię",
+    "enterSurname": "Wprowadź swoje nazwisko"
   },
   "productivity": {
     "stalledProjects": "Zatrzymane projekty",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "DZIŚ",
     "tomorrow": "JUTRO",
-    "yesterday": "Wczoraj"
+    "yesterday": "Wczoraj",
+    "nextWeek": "w przyszłym tygodniu",
+    "nextMonth": "w przyszłym miesiącu"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,55 @@
     "noAvailableUsers": "Brak użytkowników do udostępnienia",
     "shared": "Udostępnione",
     "sharedWithTeam": "Udostępnione zespołowi"
+  },
+  "views": {
+    "title": "Inteligentne Widoki",
+    "loading": "Ładowanie widoków...",
+    "searchPlaceholder": "Szukaj widoków...",
+    "noViewsFound": "Nie znaleziono widoków. Utwórz widok, wykonując wyszukiwanie i klikając \"Zapisz jako Inteligentny Widok\".",
+    "deleteView": "Usuń Widok",
+    "confirmDelete": "Czy na pewno chcesz usunąć widok \"{{viewName}}\"?",
+    "pinView": "Przypnij widok",
+    "unpinView": "Odprzypnij widok",
+    "searchCriteria": "Kryteria Wyszukiwania",
+    "entityTypes": "Typy Encji",
+    "searchText": "Tekst Wyszukiwania",
+    "priority": "Priorytet",
+    "dueDate": "Termin",
+    "noCriteriaSet": "Nie ustawiono konkretnych kryteriów",
+    "priorityLabel": "Priorytet:",
+    "dueLabel": "Termin:"
+  },
+  "search": {
+    "placeholder": "Szukaj zadań, projektów, notatek...",
+    "searchingFor": "Szukasz",
+    "allItems": "wszystkich elementów",
+    "containingText": ", zawierających tekst",
+    "withPriority": ", z",
+    "priority": "priorytetem",
+    "due": ", termin",
+    "taggedWith": ", oznaczone tagiem",
+    "and": "i",
+    "criteria": "Kryteria wyszukiwania",
+    "metadataFilters": "Filtry metadanych",
+    "priorityFilter": "Priorytet",
+    "dueFilter": "Termin",
+    "tagsFilter": "Tagi",
+    "saveAsSmartView": "Zapisz jako widok inteligentny",
+    "viewName": "Nazwa widoku",
+    "viewNameRequired": "Nazwa widoku jest wymagana",
+    "viewNamePlaceholder": "Wprowadź nazwę widoku",
+    "failedToSave": "Nie udało się zapisać widoku. Proszę spróbować ponownie.",
+    "cancel": "Anuluj",
+    "saving": "Zapisywanie...",
+    "saveView": "Zapisz widok",
+    "startTyping": "Zacznij pisać, aby wyszukać lub wybierz filtry powyżej",
+    "noResults": "Nie znaleziono wyników",
+    "entityTypes": {
+      "task": "zadanie",
+      "project": "projekt",
+      "area": "obszar",
+      "note": "notatka"
+    }
   }
 }

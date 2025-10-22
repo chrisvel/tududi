@@ -45,7 +45,10 @@
     "addProjectTitle": "Lisää projekti",
     "addNoteAriaLabel": "Lisää muistiinpano",
     "addNoteTitle": "Lisää muistiinpano",
-    "createNew": "Luo uusi"
+    "createNew": "Luo uusi",
+    "views": "Näkymät",
+    "unpinView": "Irrota näkymä",
+    "pinView": "Kiinnitä näkymä"
   },
   "navigation": {
     "home": "Koti",
@@ -294,7 +297,11 @@
     "botSetup": "Botti-asetukset",
     "passwordChangeNote": "Salasanan muutokset tallennetaan, kun napsautat \"Tallenna muutokset\" lomakkeen alareunassa.",
     "passwordChangeOptional": "Jätä salasanakentät tyhjiksi päivittääksesi muita asetuksia ilman salasanan vaihtamista.",
-    "firstDayOfWeek": "Viikon ensimmäinen päivä"
+    "firstDayOfWeek": "Viikon ensimmäinen päivä",
+    "name": "Nimi",
+    "surname": "Sukunimi",
+    "enterName": "Syötä nimesi",
+    "enterSurname": "Syötä sukunimesi"
   },
   "productivity": {
     "stalledProjects": "Jumiutuneet projektit",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "TÄNÄÄN",
     "tomorrow": "HUOMENNA",
-    "yesterday": "EILEN"
+    "yesterday": "EILEN",
+    "nextWeek": "ensi viikolla",
+    "nextMonth": "ensi kuussa"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,55 @@
     "noAvailableUsers": "Ei käyttäjiä, joille jakaa",
     "shared": "Jaettu",
     "sharedWithTeam": "Jaettu tiimin kanssa"
+  },
+  "views": {
+    "title": "Älykkäät näkymät",
+    "loading": "Ladataan näkymiä...",
+    "searchPlaceholder": "Etsi näkymiä...",
+    "noViewsFound": "Näkymiä ei löytynyt. Luo näkymä suorittamalla haku ja napsauttamalla \"Tallenna älykkäänä näkymänä\".",
+    "deleteView": "Poista näkymä",
+    "confirmDelete": "Oletko varma, että haluat poistaa näkymän \"{{viewName}}\"?",
+    "pinView": "Kiinnitä näkymä",
+    "unpinView": "Irrota näkymä",
+    "searchCriteria": "Hakukriteerit",
+    "entityTypes": "Entiteettityypit",
+    "searchText": "Hakuteksti",
+    "priority": "Prioriteetti",
+    "dueDate": "Eräpäivä",
+    "noCriteriaSet": "Ei erityisiä kriteereitä asetettu",
+    "priorityLabel": "Prioriteetti:",
+    "dueLabel": "Eräpäivä:"
+  },
+  "search": {
+    "placeholder": "Hae tehtäviä, projekteja, muistiinpanoja...",
+    "searchingFor": "Etsit",
+    "allItems": "kaikkia kohteita",
+    "containingText": ", joka sisältää tekstin",
+    "withPriority": ", prioriteetilla",
+    "priority": "prioriteetti",
+    "due": ", eräpäivä",
+    "taggedWith": ", merkitty",
+    "and": "ja",
+    "criteria": "Hakukriteerit",
+    "metadataFilters": "Metatietosuodattimet",
+    "priorityFilter": "Prioriteetti",
+    "dueFilter": "Eräpäivä",
+    "tagsFilter": "Tunnisteet",
+    "saveAsSmartView": "Tallenna älynäkymänä",
+    "viewName": "Näkymän nimi",
+    "viewNameRequired": "Näkymän nimi on pakollinen",
+    "viewNamePlaceholder": "Syötä näkymän nimi",
+    "failedToSave": "Näytön tallentaminen epäonnistui. Yritä uudelleen.",
+    "cancel": "Peruuta",
+    "saving": "Tallennetaan...",
+    "saveView": "Tallenna näkymä",
+    "startTyping": "Aloita kirjoittaminen etsiäksesi tai valitaksesi suodattimia yllä",
+    "noResults": "Ei tuloksia löytynyt",
+    "entityTypes": {
+      "task": "tehtävä",
+      "project": "projekti",
+      "area": "alue",
+      "note": "muistio"
+    }
   }
 }

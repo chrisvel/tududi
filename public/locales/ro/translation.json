@@ -45,7 +45,10 @@
     "addProjectTitle": "Adaugă Proiect",
     "addNoteAriaLabel": "Adaugă Notă",
     "addNoteTitle": "Adaugă Notă",
-    "createNew": "Creează Nou"
+    "createNew": "Creează Nou",
+    "views": "Vizualizări",
+    "unpinView": "Deblochează vizualizarea",
+    "pinView": "Fixează vizualizarea"
   },
   "navigation": {
     "home": "Acasă",
@@ -294,7 +297,11 @@
     "polish": "Poloneză",
     "slovenian": "Slovenă",
     "swedish": "Suedeză",
-    "firstDayOfWeek": "Prima zi a săptămânii"
+    "firstDayOfWeek": "Prima zi a săptămânii",
+    "name": "Nume",
+    "surname": "Prenume",
+    "enterName": "Introduceți numele dvs.",
+    "enterSurname": "Introduceți prenumele dvs."
   },
   "productivity": {
     "stalledProjects": "Proiecte Blocate",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "ASTĂZI",
     "tomorrow": "MÂINE",
-    "yesterday": "IERI"
+    "yesterday": "IERI",
+    "nextWeek": "săptămâna viitoare",
+    "nextMonth": "luna viitoare"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,55 @@
     "noAvailableUsers": "Nu sunt utilizatori disponibili pentru a partaja",
     "shared": "Partajat",
     "sharedWithTeam": "Partajat cu echipa"
+  },
+  "views": {
+    "title": "Vizualizări inteligente",
+    "loading": "Se încarcă vizualizările...",
+    "searchPlaceholder": "Caută vizualizări...",
+    "noViewsFound": "Nu au fost găsite vizualizări. Creează o vizualizare efectuând o căutare și făcând clic pe \"Salvează ca Vizualizare Inteligentă\".",
+    "deleteView": "Șterge Vizualizarea",
+    "confirmDelete": "Ești sigur că vrei să ștergi vizualizarea \"{{viewName}}\"?",
+    "pinView": "Fixează vizualizarea",
+    "unpinView": "Deblochează vizualizarea",
+    "searchCriteria": "Criterii de căutare",
+    "entityTypes": "Tipuri de entitate",
+    "searchText": "Text de căutare",
+    "priority": "Prioritate",
+    "dueDate": "Data limită",
+    "noCriteriaSet": "Niciun criteriu specific setat",
+    "priorityLabel": "Prioritate:",
+    "dueLabel": "Termen:"
+  },
+  "search": {
+    "placeholder": "Caută sarcini, proiecte, note...",
+    "searchingFor": "Cauți",
+    "allItems": "toate elementele",
+    "containingText": ", conținând textul",
+    "withPriority": ", cu",
+    "priority": "prioritate",
+    "due": ", scadent",
+    "taggedWith": ", etichetat cu",
+    "and": "și",
+    "criteria": "Criterii de căutare",
+    "metadataFilters": "Filtre de metadate",
+    "priorityFilter": "Prioritate",
+    "dueFilter": "Scadent",
+    "tagsFilter": "Etichete",
+    "saveAsSmartView": "Salvează ca Vedere Inteligentă",
+    "viewName": "Numele Vederii",
+    "viewNameRequired": "Numele vederii este necesar",
+    "viewNamePlaceholder": "Introdu numele vederii",
+    "failedToSave": "Salvarea vederii a eșuat. Vă rugăm să încercați din nou.",
+    "cancel": "Anulare",
+    "saving": "Se salvează...",
+    "saveView": "Salvează Vederea",
+    "startTyping": "Începeți să tastați pentru a căuta sau selectați filtrele de mai sus",
+    "noResults": "Nu au fost găsite rezultate",
+    "entityTypes": {
+      "task": "task",
+      "project": "proiect",
+      "area": "zonă",
+      "note": "notă"
+    }
   }
 }

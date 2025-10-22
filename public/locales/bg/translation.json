@@ -45,7 +45,10 @@
     "addProjectTitle": "Добави проект",
     "addNoteAriaLabel": "Добави бележка",
     "addNoteTitle": "Добави бележка",
-    "createNew": "Създай ново"
+    "createNew": "Създай ново",
+    "views": "Прегледи",
+    "unpinView": "Отпинване на преглед",
+    "pinView": "Прикрепяне на преглед"
   },
   "navigation": {
     "home": "Начало",
@@ -294,7 +297,11 @@
     "polish": "Полски",
     "slovenian": "Словенски",
     "swedish": "Шведски",
-    "firstDayOfWeek": "Първи ден от седмицата"
+    "firstDayOfWeek": "Първи ден от седмицата",
+    "name": "Име",
+    "surname": "Фамилия",
+    "enterName": "Въведете вашето име",
+    "enterSurname": "Въведете вашата фамилия"
   },
   "productivity": {
     "stalledProjects": "Забавени проекти",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "ДНЕС",
     "tomorrow": "УТРЕ",
-    "yesterday": "ВЧЕРА"
+    "yesterday": "ВЧЕРА",
+    "nextWeek": "следващата седмица",
+    "nextMonth": "следващия месец"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,55 @@
     "noAvailableUsers": "Няма налични потребители за споделяне",
     "shared": "Споделено",
     "sharedWithTeam": "Споделено с екипа"
+  },
+  "views": {
+    "title": "Умни прегледи",
+    "loading": "Зареждане на прегледи...",
+    "searchPlaceholder": "Търсене на прегледи...",
+    "noViewsFound": "Не са намерени прегледи. Създайте преглед, като извършите търсене и кликнете \"Запази като Умен преглед\".",
+    "deleteView": "Изтриване на преглед",
+    "confirmDelete": "Сигурни ли сте, че искате да изтриете прегледа \"{{viewName}}\"?",
+    "pinView": "Прикрепяне на преглед",
+    "unpinView": "Отпинване на преглед",
+    "searchCriteria": "Критерии за търсене",
+    "entityTypes": "Типове единици",
+    "searchText": "Текст за търсене",
+    "priority": "Приоритет",
+    "dueDate": "Срок",
+    "noCriteriaSet": "Не са зададени конкретни критерии",
+    "priorityLabel": "Приоритет:",
+    "dueLabel": "Срок:"
+  },
+  "search": {
+    "placeholder": "Търсене на задачи, проекти, бележки...",
+    "searchingFor": "Търсите",
+    "allItems": "всички елементи",
+    "containingText": ", съдържащ текста",
+    "withPriority": ", с",
+    "priority": "приоритет",
+    "due": ", срок",
+    "taggedWith": ", маркиран с",
+    "and": "и",
+    "criteria": "Критерии за търсене",
+    "metadataFilters": "Филтри за метаданни",
+    "priorityFilter": "Приоритет",
+    "dueFilter": "Срок",
+    "tagsFilter": "Тагове",
+    "saveAsSmartView": "Запази като Умен изглед",
+    "viewName": "Име на изгледа",
+    "viewNameRequired": "Името на изгледа е задължително",
+    "viewNamePlaceholder": "Въведете име на изгледа",
+    "failedToSave": "Неуспешно запазване на изгледа. Моля, опитайте отново.",
+    "cancel": "Отказ",
+    "saving": "Запазване...",
+    "saveView": "Запази изгледа",
+    "startTyping": "Започнете да пишете, за да търсите или изберете филтри по-горе",
+    "noResults": "Не са намерени резултати",
+    "entityTypes": {
+      "task": "задача",
+      "project": "проект",
+      "area": "област",
+      "note": "бележка"
+    }
   }
 }

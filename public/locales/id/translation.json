@@ -45,7 +45,10 @@
     "addProjectTitle": "Tambahkan Proyek",
     "addNoteAriaLabel": "Tambahkan Catatan",
     "addNoteTitle": "Tambahkan Catatan",
-    "createNew": "Buat Baru"
+    "createNew": "Buat Baru",
+    "views": "Tampilan",
+    "unpinView": "Lepaskan tampilan",
+    "pinView": "Sematkan tampilan"
   },
   "navigation": {
     "home": "Beranda",
@@ -294,7 +297,11 @@
     "polish": "Polandia",
     "slovenian": "Slovenia",
     "swedish": "Swedia",
-    "firstDayOfWeek": "Hari pertama dalam minggu"
+    "firstDayOfWeek": "Hari pertama dalam minggu",
+    "name": "Nama",
+    "surname": "Nama Belakang",
+    "enterName": "Masukkan nama Anda",
+    "enterSurname": "Masukkan nama belakang Anda"
   },
   "productivity": {
     "stalledProjects": "Proyek Terhenti",
@@ -556,7 +563,9 @@
   "dateIndicators": {
     "today": "HARI INI",
     "tomorrow": "ESOK",
-    "yesterday": "KEMARIN"
+    "yesterday": "KEMARIN",
+    "nextWeek": "minggu depan",
+    "nextMonth": "bulan depan"
   },
   "taskViews": {
     "project": {
@@ -978,5 +987,55 @@
     "noAvailableUsers": "Tidak ada pengguna yang tersedia untuk dibagikan",
     "shared": "Dibagikan",
     "sharedWithTeam": "Dibagikan dengan tim"
+  },
+  "views": {
+    "title": "Tampilan Cerdas",
+    "loading": "Memuat tampilan...",
+    "searchPlaceholder": "Cari tampilan...",
+    "noViewsFound": "Tidak ada tampilan yang ditemukan. Buat tampilan dengan melakukan pencarian dan mengklik \"Simpan sebagai Tampilan Cerdas\".",
+    "deleteView": "Hapus Tampilan",
+    "confirmDelete": "Apakah Anda yakin ingin menghapus tampilan \"{{viewName}}\"?",
+    "pinView": "Sematkan tampilan",
+    "unpinView": "Lepaskan tampilan",
+    "searchCriteria": "Kriteria Pencarian",
+    "entityTypes": "Jenis Entitas",
+    "searchText": "Teks Pencarian",
+    "priority": "Prioritas",
+    "dueDate": "Tanggal Jatuh Tempo",
+    "noCriteriaSet": "Tidak ada kriteria spesifik yang ditetapkan",
+    "priorityLabel": "Prioritas:",
+    "dueLabel": "Jatuh Tempo:"
+  },
+  "search": {
+    "placeholder": "Cari tugas, proyek, catatan...",
+    "searchingFor": "Anda sedang mencari",
+    "allItems": "semua item",
+    "containingText": ", yang mengandung teks",
+    "withPriority": ", dengan",
+    "priority": "prioritas",
+    "due": ", jatuh tempo",
+    "taggedWith": ", ditandai dengan",
+    "and": "dan",
+    "criteria": "Kriteria Pencarian",
+    "metadataFilters": "Filter Metadata",
+    "priorityFilter": "Prioritas",
+    "dueFilter": "Jatuh Tempo",
+    "tagsFilter": "Tag",
+    "saveAsSmartView": "Simpan sebagai Tampilan Cerdas",
+    "viewName": "Nama Tampilan",
+    "viewNameRequired": "Nama tampilan diperlukan",
+    "viewNamePlaceholder": "Masukkan nama tampilan",
+    "failedToSave": "Gagal menyimpan tampilan. Silakan coba lagi.",
+    "cancel": "Batal",
+    "saving": "Menyimpan...",
+    "saveView": "Simpan Tampilan",
+    "startTyping": "Mulai mengetik untuk mencari atau pilih filter di atas",
+    "noResults": "Tidak ada hasil yang ditemukan",
+    "entityTypes": {
+      "task": "tugas",
+      "project": "proyek",
+      "area": "area",
+      "note": "catatan"
+    }
   }
 }
