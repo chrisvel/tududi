@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import {
     InformationCircleIcon,
     BookmarkIcon,
@@ -8,6 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import FilterBadge from './FilterBadge';
 import SearchResults from './SearchResults';
+import { useToast } from '../Shared/ToastContext';
 
 interface SearchMenuProps {
     searchQuery: string;
@@ -59,6 +61,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
     onClose,
 }) => {
     const { t } = useTranslation();
+    const { showSuccessToast, showErrorToast } = useToast();
     const [selectedPriority, setSelectedPriority] = useState<string | null>(
         null
     );
@@ -137,14 +140,32 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 throw new Error('Failed to save view');
             }
 
+            const savedView = await response.json();
+
             // Reset form
             setViewName('');
             setShowSaveForm(false);
             setSaveError('');
+
+            // Show success toast with link to the view
+            showSuccessToast(
+                <div className="flex items-center gap-2">
+                    <span>View saved successfully!</span>
+                    <Link
+                        to={`/views/${savedView.uid}`}
+                        className="underline font-semibold hover:text-green-100"
+                        onClick={onClose}
+                    >
+                        View now
+                    </Link>
+                </div>
+            );
+
             // Notify sidebar to refresh
             window.dispatchEvent(new CustomEvent('viewUpdated'));
         } catch (err) {
             setSaveError(t('search.failedToSave'));
+            showErrorToast('Failed to save view. Please try again.');
             console.error('Error saving view:', err);
         } finally {
             setIsSaving(false);
