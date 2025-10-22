@@ -1,6 +1,13 @@
 const request = require('supertest');
 const app = require('../../app');
-const { User, Project, Task, Note, Permission, sequelize } = require('../../models');
+const {
+    User,
+    Project,
+    Task,
+    Note,
+    Permission,
+    sequelize,
+} = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Project Sharing Integration Tests', () => {
@@ -35,23 +42,19 @@ describe('Project Sharing Integration Tests', () => {
             .send({ email: sharedUser.email, password: 'password123' });
 
         // Create a project as owner
-        const projectResponse = await ownerAgent
-            .post('/api/project')
-            .send({
-                name: 'Shared Test Project',
-                description: 'Project for sharing tests',
-            });
+        const projectResponse = await ownerAgent.post('/api/project').send({
+            name: 'Shared Test Project',
+            description: 'Project for sharing tests',
+        });
         project = projectResponse.body;
 
         // Share the project with read-write access
-        await ownerAgent
-            .post('/api/shares')
-            .send({
-                resource_type: 'project',
-                resource_uid: project.uid,
-                target_user_email: sharedUser.email,
-                access_level: 'rw',
-            });
+        await ownerAgent.post('/api/shares').send({
+            resource_type: 'project',
+            resource_uid: project.uid,
+            target_user_email: sharedUser.email,
+            access_level: 'rw',
+        });
     });
 
     afterAll(async () => {
@@ -61,19 +64,16 @@ describe('Project Sharing Integration Tests', () => {
     describe('Issue 1: Task and Note Visibility in Shared Projects', () => {
         test('shared user should see tasks in shared project', async () => {
             // Owner creates a task in the shared project
-            const taskResponse = await ownerAgent
-                .post('/api/task')
-                .send({
-                    name: 'Task by owner in shared project',
-                    project_id: project.id,
-                    priority: 1,
-                    status: 0,
-                });
+            const taskResponse = await ownerAgent.post('/api/task').send({
+                name: 'Task by owner in shared project',
+                project_id: project.id,
+                priority: 1,
+                status: 0,
+            });
             const taskInSharedProject = taskResponse.body;
 
             // Shared user should see this task
-            const response = await sharedUserAgent
-                .get('/api/tasks');
+            const response = await sharedUserAgent.get('/api/tasks');
 
             expect(response.status).toBe(200);
             expect(response.body.tasks).toBeDefined();
@@ -87,18 +87,15 @@ describe('Project Sharing Integration Tests', () => {
 
         test('shared user should see notes in shared project', async () => {
             // Owner creates a note in the shared project
-            const noteResponse = await ownerAgent
-                .post('/api/note')
-                .send({
-                    title: 'Note by owner in shared project',
-                    content: 'This note should be visible to shared user',
-                    project_uid: project.uid,
-                });
+            const noteResponse = await ownerAgent.post('/api/note').send({
+                title: 'Note by owner in shared project',
+                content: 'This note should be visible to shared user',
+                project_uid: project.uid,
+            });
             const noteInSharedProject = noteResponse.body;
 
             // Shared user should see this note
-            const response = await sharedUserAgent
-                .get('/api/notes');
+            const response = await sharedUserAgent.get('/api/notes');
 
             expect(response.status).toBe(200);
             expect(response.body).toBeDefined();
@@ -132,8 +129,7 @@ describe('Project Sharing Integration Tests', () => {
             const privateTask = privateTaskResponse.body;
 
             // Shared user should NOT see this task
-            const response = await sharedUserAgent
-                .get('/api/tasks');
+            const response = await sharedUserAgent.get('/api/tasks');
 
             expect(response.status).toBe(200);
             const foundTask = response.body.tasks.find(
@@ -157,8 +153,7 @@ describe('Project Sharing Integration Tests', () => {
             const taskDueToday = taskDueTodayResponse.body;
 
             // Fetch today's tasks as shared user
-            const response = await sharedUserAgent
-                .get('/api/tasks?type=today');
+            const response = await sharedUserAgent.get('/api/tasks?type=today');
 
             expect(response.status).toBe(200);
             expect(response.body.tasks).toBeDefined();
@@ -177,14 +172,12 @@ describe('Project Sharing Integration Tests', () => {
 
     describe('Issue 2: Task and Note Creation in Shared Projects', () => {
         test('shared user with RW access can create tasks in shared project', async () => {
-            const response = await sharedUserAgent
-                .post('/api/task')
-                .send({
-                    name: 'Task created by shared user',
-                    project_id: project.id,
-                    priority: 1,
-                    status: 0,
-                });
+            const response = await sharedUserAgent.post('/api/task').send({
+                name: 'Task created by shared user',
+                project_id: project.id,
+                priority: 1,
+                status: 0,
+            });
 
             expect(response.status).toBe(201);
             expect(response.body).toBeDefined();
@@ -193,13 +186,11 @@ describe('Project Sharing Integration Tests', () => {
         });
 
         test('shared user with RW access can create notes in shared project', async () => {
-            const response = await sharedUserAgent
-                .post('/api/note')
-                .send({
-                    title: 'Note created by shared user',
-                    content: 'Content of the note',
-                    project_uid: project.uid,
-                });
+            const response = await sharedUserAgent.post('/api/note').send({
+                title: 'Note created by shared user',
+                content: 'Content of the note',
+                project_uid: project.uid,
+            });
 
             expect(response.status).toBe(201);
             expect(response.body).toBeDefined();
@@ -218,14 +209,12 @@ describe('Project Sharing Integration Tests', () => {
                 }
             );
 
-            const response = await sharedUserAgent
-                .post('/api/task')
-                .send({
-                    name: 'Task that should fail',
-                    project_id: project.id,
-                    priority: 1,
-                    status: 0,
-                });
+            const response = await sharedUserAgent.post('/api/task').send({
+                name: 'Task that should fail',
+                project_id: project.id,
+                priority: 1,
+                status: 0,
+            });
 
             expect(response.status).toBe(403);
             expect(response.body.error).toBe('Forbidden');
@@ -243,13 +232,11 @@ describe('Project Sharing Integration Tests', () => {
                 }
             );
 
-            const response = await sharedUserAgent
-                .post('/api/note')
-                .send({
-                    title: 'Note that should fail',
-                    content: 'Content',
-                    project_uid: project.uid,
-                });
+            const response = await sharedUserAgent.post('/api/note').send({
+                title: 'Note that should fail',
+                content: 'Content',
+                project_uid: project.uid,
+            });
 
             expect(response.status).toBe(403);
             expect(response.body.error).toBe('Forbidden');
@@ -259,19 +246,18 @@ describe('Project Sharing Integration Tests', () => {
     describe('Task Timeline Access', () => {
         test('shared user can access task timeline in shared project', async () => {
             // Create a task in the shared project
-            const taskResponse = await ownerAgent
-                .post('/api/task')
-                .send({
-                    name: 'Task with timeline',
-                    project_id: project.id,
-                    priority: 1,
-                    status: 0,
-                });
+            const taskResponse = await ownerAgent.post('/api/task').send({
+                name: 'Task with timeline',
+                project_id: project.id,
+                priority: 1,
+                status: 0,
+            });
             const taskInSharedProject = taskResponse.body;
 
             // Shared user should be able to access the timeline
-            const response = await sharedUserAgent
-                .get(`/api/task/${taskInSharedProject.uid}/timeline`);
+            const response = await sharedUserAgent.get(
+                `/api/task/${taskInSharedProject.uid}/timeline`
+            );
 
             expect(response.status).toBe(200);
             expect(Array.isArray(response.body)).toBe(true);
@@ -297,26 +283,26 @@ describe('Project Sharing Integration Tests', () => {
             const privateTask = privateTaskResponse.body;
 
             // Shared user should NOT access this timeline
-            const response = await sharedUserAgent
-                .get(`/api/task/${privateTask.uid}/timeline`);
+            const response = await sharedUserAgent.get(
+                `/api/task/${privateTask.uid}/timeline`
+            );
 
             expect(response.status).toBe(404);
         });
 
         test('shared user can access completion time analytics', async () => {
             // Create a task in the shared project
-            const taskResponse = await ownerAgent
-                .post('/api/task')
-                .send({
-                    name: 'Task for completion analytics',
-                    project_id: project.id,
-                    priority: 1,
-                    status: 0,
-                });
+            const taskResponse = await ownerAgent.post('/api/task').send({
+                name: 'Task for completion analytics',
+                project_id: project.id,
+                priority: 1,
+                status: 0,
+            });
             const taskInSharedProject = taskResponse.body;
 
-            const response = await sharedUserAgent
-                .get(`/api/task/${taskInSharedProject.uid}/completion-time`);
+            const response = await sharedUserAgent.get(
+                `/api/task/${taskInSharedProject.uid}/completion-time`
+            );
 
             // Should return 404 if not completed, or 200 with data if completed
             expect([200, 404]).toContain(response.status);
@@ -326,17 +312,14 @@ describe('Project Sharing Integration Tests', () => {
     describe('Owner sees their own tasks correctly', () => {
         test('owner should see all their tasks including those in shared projects', async () => {
             // Create a task in the shared project
-            await ownerAgent
-                .post('/api/task')
-                .send({
-                    name: 'Owner task in shared project',
-                    project_id: project.id,
-                    priority: 1,
-                    status: 0,
-                });
+            await ownerAgent.post('/api/task').send({
+                name: 'Owner task in shared project',
+                project_id: project.id,
+                priority: 1,
+                status: 0,
+            });
 
-            const response = await ownerAgent
-                .get('/api/tasks');
+            const response = await ownerAgent.get('/api/tasks');
 
             expect(response.status).toBe(200);
             expect(response.body.tasks).toBeDefined();
@@ -346,18 +329,15 @@ describe('Project Sharing Integration Tests', () => {
         test('owner should see tasks due today including shared project tasks', async () => {
             const today = new Date().toISOString().split('T')[0];
 
-            await ownerAgent
-                .post('/api/task')
-                .send({
-                    name: 'Owner task due today',
-                    project_id: project.id,
-                    due_date: today,
-                    priority: 1,
-                    status: 0,
-                });
+            await ownerAgent.post('/api/task').send({
+                name: 'Owner task due today',
+                project_id: project.id,
+                due_date: today,
+                priority: 1,
+                status: 0,
+            });
 
-            const response = await ownerAgent
-                .get('/api/tasks?type=today');
+            const response = await ownerAgent.get('/api/tasks?type=today');
 
             expect(response.status).toBe(200);
             expect(response.body.tasks).toBeDefined();
