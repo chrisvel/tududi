@@ -614,13 +614,10 @@ const TaskDetails: React.FC = () => {
                                 <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
                                     {task.today_move_count &&
                                     task.today_move_count > 1
-                                        ? t(
-                                              'task.overdueMultipleDays',
-                                              {
-                                                  count: task.today_move_count,
-                                                  defaultValue: `This task has been postponed ${task.today_move_count} times.`,
-                                              }
-                                          )
+                                        ? t('task.overdueMultipleDays', {
+                                              count: task.today_move_count,
+                                              defaultValue: `This task has been postponed ${task.today_move_count} times.`,
+                                          })
                                         : t(
                                               'task.overdueYesterday',
                                               'Consider prioritizing this task or breaking it into smaller steps.'
