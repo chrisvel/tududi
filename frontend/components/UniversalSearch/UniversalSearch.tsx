@@ -72,11 +72,18 @@ const UniversalSearch: React.FC = () => {
         } else {
             // Re-enable body scroll
             document.body.style.overflow = '';
+            // Hide soft keyboard on mobile when modal closes
+            if (window.innerWidth < 768 && inputRef.current) {
+                inputRef.current.blur();
+            }
         }
 
         // Cleanup function to ensure scroll is re-enabled when component unmounts
         return () => {
             document.body.style.overflow = '';
+            if (inputRef.current) {
+                inputRef.current.blur();
+            }
         };
     }, [isOpen, isMobileSearchOpen]);
 
