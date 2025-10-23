@@ -212,7 +212,11 @@ describe('Views Routes', () => {
             });
 
             expect(response.status).toBe(200);
-            expect(response.body.tags).toEqual(['work', 'urgent', 'high-priority']);
+            expect(response.body.tags).toEqual([
+                'work',
+                'urgent',
+                'high-priority',
+            ]);
         });
 
         it('should clear tags when set to empty array', async () => {
