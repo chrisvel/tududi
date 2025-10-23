@@ -44,11 +44,19 @@ fi
 # Start backend and frontend
 cd "$ROOT_DIR"
 
-yellow "Starting backend..."
+# Remove old test database to start fresh
+yellow "Removing old test database..."
+rm -f backend/db/test.sqlite3
+
+yellow "Starting backend with test database..."
+(cd backend && \
+NODE_ENV=test \
+PORT=3002 \
+DB_FILE=db/test.sqlite3 \
 TUDUDI_USER_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
 TUDUDI_USER_PASSWORD="${E2E_PASSWORD:-password123}" \
 SEQUELIZE_LOGGING=false \
-npm run backend:start >/dev/null 2>&1 &
+./cmd/start.sh) >/dev/null 2>&1 &
 BACKEND_PID=$!
 
 cleanup() {
@@ -68,6 +76,10 @@ cleanup() {
   # Fallback direct kill
   if [ -n "${FRONTEND_PID:-}" ] && ps -p $FRONTEND_PID >/dev/null 2>&1; then kill $FRONTEND_PID || true; fi
   if [ -n "${BACKEND_PID:-}" ] && ps -p $BACKEND_PID >/dev/null 2>&1; then kill $BACKEND_PID || true; fi
+
+  # Remove test database
+  yellow "Cleaning up test database..."
+  rm -f "$ROOT_DIR/backend/db/test.sqlite3"
 }
 trap cleanup EXIT INT TERM
 
