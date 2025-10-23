@@ -28,12 +28,6 @@ async function createUser() {
         process.exit(1);
     }
 
-    // Validate password
-    if (!validatePassword(password)) {
-        console.error('Password must be at least 6 characters long');
-        process.exit(1);
-    }
-
     // Validate email
     if (!validateEmail(email)) {
         console.error('Invalid email format');
@@ -41,6 +35,17 @@ async function createUser() {
     }
 
     try {
+        const { User } = require('../models');
+
+        // Check if user exists to determine if we should validate password
+        const existingUser = await User.findOne({ where: { email } });
+
+        // Only validate password for new users
+        if (!existingUser && !validatePassword(password)) {
+            console.error('Password must be at least 6 characters long');
+            process.exit(1);
+        }
+
         console.log(`Creating user with email: ${email}`);
 
         const { user, created } = await createOrUpdateUser(email, password);
