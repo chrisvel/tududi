@@ -98,7 +98,9 @@ describe('Tags Routes', () => {
             expect(firstResponse.body.name).toBe('work');
 
             // Attempt to create duplicate tag
-            const duplicateResponse = await agent.post('/api/tag').send(tagData);
+            const duplicateResponse = await agent
+                .post('/api/tag')
+                .send(tagData);
             expect(duplicateResponse.status).toBe(409);
             expect(duplicateResponse.body.error).toContain(
                 'A tag with the name "work" already exists'

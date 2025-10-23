@@ -168,82 +168,80 @@ const Tags: React.FC = () => {
                                 {/* Tags in this group */}
                                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {groupedTags[letter].map((tag) => (
-                                            <li
-                                                key={tag.uid || tag.id}
-                                                className="bg-white dark:bg-gray-900 shadow rounded-lg p-4"
-                                                onMouseEnter={() =>
-                                                    setHoveredTagUid(
-                                                        tag.uid || null
-                                                    )
-                                                }
-                                                onMouseLeave={() =>
-                                                    setHoveredTagUid(null)
-                                                }
-                                            >
-                                                <div className="flex items-center justify-between gap-2">
-                                                    {/* Tag Name - truncated */}
-                                                    <Link
-                                                        to={
-                                                            tag.uid
-                                                                ? `/tag/${tag.uid}-${tag.name
-                                                                      .toLowerCase()
-                                                                      .replace(
-                                                                          /[^a-z0-9]+/g,
-                                                                          '-'
-                                                                      )
-                                                                      .replace(
-                                                                          /^-|-$/g,
-                                                                          ''
-                                                                      )}`
-                                                                : `/tag/${encodeURIComponent(tag.name)}`
-                                                        }
-                                                        className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate min-w-0 flex-1"
-                                                        title={tag.name}
-                                                    >
-                                                        {tag.name}
-                                                    </Link>
+                                        <li
+                                            key={tag.uid || tag.id}
+                                            className="bg-white dark:bg-gray-900 shadow rounded-lg p-4"
+                                            onMouseEnter={() =>
+                                                setHoveredTagUid(
+                                                    tag.uid || null
+                                                )
+                                            }
+                                            onMouseLeave={() =>
+                                                setHoveredTagUid(null)
+                                            }
+                                        >
+                                            <div className="flex items-center justify-between gap-2">
+                                                {/* Tag Name - truncated */}
+                                                <Link
+                                                    to={
+                                                        tag.uid
+                                                            ? `/tag/${tag.uid}-${tag.name
+                                                                  .toLowerCase()
+                                                                  .replace(
+                                                                      /[^a-z0-9]+/g,
+                                                                      '-'
+                                                                  )
+                                                                  .replace(
+                                                                      /^-|-$/g,
+                                                                      ''
+                                                                  )}`
+                                                            : `/tag/${encodeURIComponent(tag.name)}`
+                                                    }
+                                                    className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate min-w-0 flex-1"
+                                                    title={tag.name}
+                                                >
+                                                    {tag.name}
+                                                </Link>
 
-                                                    {/* Action buttons */}
-                                                    <div className="flex space-x-2 flex-shrink-0">
-                                                        <button
-                                                            onClick={() =>
-                                                                handleEditTag(
-                                                                    tag
-                                                                )
-                                                            }
-                                                            className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity duration-200 ${
-                                                                hoveredTagUid ===
-                                                                tag.uid
-                                                                    ? 'opacity-100'
-                                                                    : 'opacity-0 pointer-events-none'
-                                                            }`}
-                                                            aria-label={`Edit ${tag.name}`}
-                                                            title={`Edit ${tag.name}`}
-                                                            data-testid={`tag-edit-${tag.uid || tag.id}`}
-                                                        >
-                                                            <PencilSquareIcon className="h-4 w-4" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() =>
-                                                                openConfirmDialog(
-                                                                    tag
-                                                                )
-                                                            }
-                                                            className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity duration-200 ${
-                                                                hoveredTagUid ===
-                                                                tag.uid
-                                                                    ? 'opacity-100'
-                                                                    : 'opacity-0 pointer-events-none'
-                                                            }`}
-                                                            aria-label={`Delete ${tag.name}`}
-                                                            title={`Delete ${tag.name}`}
-                                                            data-testid={`tag-delete-${tag.uid || tag.id}`}
-                                                        >
-                                                            <TrashIcon className="h-4 w-4" />
-                                                        </button>
-                                                    </div>
+                                                {/* Action buttons */}
+                                                <div className="flex space-x-2 flex-shrink-0">
+                                                    <button
+                                                        onClick={() =>
+                                                            handleEditTag(tag)
+                                                        }
+                                                        className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity duration-200 ${
+                                                            hoveredTagUid ===
+                                                            tag.uid
+                                                                ? 'opacity-100'
+                                                                : 'opacity-0 pointer-events-none'
+                                                        }`}
+                                                        aria-label={`Edit ${tag.name}`}
+                                                        title={`Edit ${tag.name}`}
+                                                        data-testid={`tag-edit-${tag.uid || tag.id}`}
+                                                    >
+                                                        <PencilSquareIcon className="h-4 w-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            openConfirmDialog(
+                                                                tag
+                                                            )
+                                                        }
+                                                        className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity duration-200 ${
+                                                            hoveredTagUid ===
+                                                            tag.uid
+                                                                ? 'opacity-100'
+                                                                : 'opacity-0 pointer-events-none'
+                                                        }`}
+                                                        aria-label={`Delete ${tag.name}`}
+                                                        title={`Delete ${tag.name}`}
+                                                        data-testid={`tag-delete-${tag.uid || tag.id}`}
+                                                    >
+                                                        <TrashIcon className="h-4 w-4" />
+                                                    </button>
                                                 </div>
-                                            </li>
+                                            </div>
+                                        </li>
                                     ))}
                                 </ul>
                             </div>
