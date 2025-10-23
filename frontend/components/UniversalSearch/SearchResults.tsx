@@ -109,6 +109,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         // Close the dropdown before navigating
         onClose();
 
+        // Also close mobile search bar if on mobile
+        if (window.innerWidth < 768) {
+            window.dispatchEvent(new CustomEvent('closeMobileSearch'));
+        }
+
         switch (result.type) {
             case 'Task':
                 navigate(`/task/${identifier}`);

@@ -48,6 +48,22 @@ const Navbar: React.FC<NavbarProps> = ({
         );
     }, [isMobileSearchOpen]);
 
+    // Listen for close mobile search events
+    useEffect(() => {
+        const handleCloseMobileSearch = () => {
+            setIsMobileSearchOpen(false);
+        };
+
+        window.addEventListener('closeMobileSearch', handleCloseMobileSearch);
+
+        return () => {
+            window.removeEventListener(
+                'closeMobileSearch',
+                handleCloseMobileSearch
+            );
+        };
+    }, []);
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (

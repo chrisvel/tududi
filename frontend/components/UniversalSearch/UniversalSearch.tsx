@@ -8,8 +8,32 @@ const UniversalSearch: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+    const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    // Listen for mobile search toggle events
+    useEffect(() => {
+        const handleMobileSearchToggle = (event: CustomEvent) => {
+            setIsMobileSearchOpen(event.detail.isOpen);
+            // On mobile, automatically open/close the search menu when mobile search is toggled
+            if (window.innerWidth < 768) {
+                setIsOpen(event.detail.isOpen);
+            }
+        };
+
+        window.addEventListener(
+            'mobileSearchToggle',
+            handleMobileSearchToggle as EventListener
+        );
+
+        return () => {
+            window.removeEventListener(
+                'mobileSearchToggle',
+                handleMobileSearchToggle as EventListener
+            );
+        };
+    }, []);
 
     // Close on clicking outside
     useEffect(() => {
@@ -31,12 +55,30 @@ const UniversalSearch: React.FC = () => {
         };
     }, [isOpen]);
 
-    // Focus input when opening
+    // Focus input when opening or when mobile search opens
     useEffect(() => {
-        if (isOpen && inputRef.current) {
+        if ((isOpen || isMobileSearchOpen) && inputRef.current) {
             inputRef.current.focus();
         }
-    }, [isOpen]);
+    }, [isOpen, isMobileSearchOpen]);
+
+    // Disable/enable body scroll when modal is open/closed
+    useEffect(() => {
+        const isModalOpen = isOpen || isMobileSearchOpen;
+
+        if (isModalOpen) {
+            // Disable body scroll
+            document.body.style.overflow = 'hidden';
+        } else {
+            // Re-enable body scroll
+            document.body.style.overflow = '';
+        }
+
+        // Cleanup function to ensure scroll is re-enabled when component unmounts
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen, isMobileSearchOpen]);
 
     const handleInputClick = () => {
         setIsOpen(true);
@@ -81,6 +123,19 @@ const UniversalSearch: React.FC = () => {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onClick={handleInputClick}
+                        onBlur={() => {
+                            // On mobile, hide search when input loses focus
+                            if (window.innerWidth < 768) {
+                                // md breakpoint
+                                setIsOpen(false);
+                                setSearchQuery(''); // Clear search query
+                                setSelectedFilters([]); // Clear filters
+                                // Dispatch event to close mobile search bar
+                                window.dispatchEvent(
+                                    new CustomEvent('closeMobileSearch')
+                                );
+                            }
+                        }}
                     />
                     {searchQuery && (
                         <button
