@@ -26,6 +26,7 @@ interface View {
     filters: string[];
     priority: string | null;
     due: string | null;
+    tags: string[];
     is_pinned: boolean;
 }
 
@@ -115,6 +116,10 @@ const ViewDetail: React.FC = () => {
                 filters: viewData.filters,
                 priority: viewData.priority || undefined,
                 due: viewData.due || undefined,
+                tags:
+                    viewData.tags && viewData.tags.length > 0
+                        ? viewData.tags
+                        : undefined,
             });
 
             // Separate results by type
@@ -432,10 +437,34 @@ const ViewDetail: React.FC = () => {
                                                     </span>
                                                 </div>
                                             )}
+                                            {view.tags &&
+                                                view.tags.length > 0 && (
+                                                    <div>
+                                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                                            {t('views.tags')}
+                                                        </p>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {view.tags.map(
+                                                                (tag) => (
+                                                                    <span
+                                                                        key={
+                                                                            tag
+                                                                        }
+                                                                        className="px-2 py-1 bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200 rounded text-xs font-medium"
+                                                                    >
+                                                                        {tag}
+                                                                    </span>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             {!view.filters.length &&
                                                 !view.search_query &&
                                                 !view.priority &&
-                                                !view.due && (
+                                                !view.due &&
+                                                (!view.tags ||
+                                                    view.tags.length === 0) && (
                                                     <p className="text-sm text-gray-600 dark:text-gray-400 italic">
                                                         {t(
                                                             'views.noCriteriaSet'

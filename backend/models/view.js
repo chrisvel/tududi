@@ -51,6 +51,17 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: true,
             },
+            tags: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+                get() {
+                    const rawValue = this.getDataValue('tags');
+                    return rawValue ? JSON.parse(rawValue) : [];
+                },
+                set(value) {
+                    this.setDataValue('tags', JSON.stringify(value));
+                },
+            },
             is_pinned: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
