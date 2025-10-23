@@ -1,25 +1,22 @@
 import { test, expect } from '@playwright/test';
+import {
+  login,
+  navigateAndWait,
+  clickAndWaitForModal,
+  fillInputReliably,
+  waitForElement,
+  hoverAndWaitForVisible,
+  confirmDialog,
+  createUniqueEntity,
+  waitForNetworkIdle
+} from '../helpers/testHelpers';
 
-// Shared login function
+// Navigate to notes page after login
 async function loginAndNavigateToNotes(page, baseURL) {
-  const appUrl = baseURL ?? process.env.APP_URL ?? 'http://localhost:8080';
-  
-  // Go directly to login page first
-  await page.goto(appUrl + '/login');
-
-  // Fill credentials and login
-  const email = process.env.E2E_EMAIL || 'test@tududi.com';
-  const password = process.env.E2E_PASSWORD || 'password123';
-
-  await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Password').fill(password);
-  await page.getByRole('button', { name: /login/i }).click();
-
-  // Wait for redirect to Today view
-  await expect(page).toHaveURL(/\/today$/);
+  const appUrl = await login(page, baseURL);
 
   // Navigate to notes page
-  await page.goto(appUrl + '/notes');
+  await navigateAndWait(page, appUrl + '/notes');
   await expect(page).toHaveURL(/\/notes/);
 
   return appUrl;
@@ -27,18 +24,13 @@ async function loginAndNavigateToNotes(page, baseURL) {
 
 // Shared function to create a note via the sidebar button
 async function createNote(page, noteTitle, noteContent = '') {
-  // Find the "Add Note" button in the sidebar
+  // Find and click the "Add Note" button in the sidebar
   const addNoteButton = page.locator('[data-testid="add-note-button"]');
-  await expect(addNoteButton).toBeVisible();
-  
-  // Click the Add Note button
-  await addNoteButton.click();
-
-  // Wait for the Note Modal to appear
-  await expect(page.locator('[data-testid="note-title-input"]')).toBeVisible({ timeout: 10000 });
-
-  // Fill in the note title - focus first, clear, then type
   const titleInput = page.locator('[data-testid="note-title-input"]');
+
+  await clickAndWaitForModal(addNoteButton, titleInput);
+
+  // Fill in the note title
   await titleInput.click();
   await titleInput.clear();
   await titleInput.type(noteTitle, { delay: 50 });
@@ -53,67 +45,61 @@ async function createNote(page, noteTitle, noteContent = '') {
   // Save the note using the specific test ID
   await page.locator('[data-testid="note-save-button"]').click();
 
-  // Wait for the modal to close - wait for it to become not visible
-  await expect(page.locator('[data-testid="note-title-input"]')).not.toBeVisible({ timeout: 10000 });
+  // Wait for the modal to close
+  await waitForElement(titleInput, { state: 'hidden' });
 
   // Wait for note creation to complete
-  await page.waitForTimeout(2000);
+  await waitForNetworkIdle(page);
 }
 
 test('user can create a new note and verify it appears in the notes list', async ({ page, baseURL }) => {
   await loginAndNavigateToNotes(page, baseURL);
 
   // Create a unique test note
-  const timestamp = Date.now();
-  const noteTitle = `Test Note ${timestamp}`;
-  const noteContent = `This is test content for note ${timestamp}`;
+  const noteTitle = createUniqueEntity('Test Note');
+  const noteContent = 'This is test content for note';
   await createNote(page, noteTitle, noteContent);
 
   // Verify the note appears in the notes list
-  await expect(page.getByText(noteTitle)).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText(noteTitle)).toBeVisible();
 });
 
 test('user can update an existing note', async ({ page, baseURL }) => {
   await loginAndNavigateToNotes(page, baseURL);
 
   // Create an initial note
-  const timestamp = Date.now();
-  const originalNoteTitle = `Test note to edit ${timestamp}`;
-  const originalNoteContent = `Original content ${timestamp}`;
+  const originalNoteTitle = createUniqueEntity('Test note to edit');
+  const originalNoteContent = 'Original content';
   await createNote(page, originalNoteTitle, originalNoteContent);
 
   // Find the specific note card by title text
   const noteCard = page.locator('a').filter({ hasText: originalNoteTitle });
   await expect(noteCard).toBeVisible();
-  
-  // Hover over the note card to show the dropdown button
-  await noteCard.hover();
-  
-  // Wait a moment for any transitions
-  await page.waitForTimeout(1000);
 
-  // Find the dropdown button within this specific note card's parent container
+  // Hover over the note card and wait for dropdown button to be visible
   const dropdownButton = noteCard.locator('..').locator('button[data-testid^="note-dropdown-"]');
-  await dropdownButton.click({ force: true });
+  await hoverAndWaitForVisible(noteCard, dropdownButton);
+
+  // Click dropdown button
+  await dropdownButton.click();
 
   // Wait for dropdown menu to appear and click Edit
   const editButton = page.locator('button[data-testid^="note-edit-"]').first();
-  await expect(editButton).toBeVisible({ timeout: 10000 });
+  await waitForElement(editButton);
   await editButton.click();
 
   // Wait for the Note Modal to appear with the note data
-  await expect(page.locator('[data-testid="note-title-input"]')).toBeVisible();
+  const noteTitleInput = page.locator('[data-testid="note-title-input"]');
+  await waitForElement(noteTitleInput);
 
   // Verify the note title field is pre-filled
-  const noteTitleInput = page.locator('[data-testid="note-title-input"]');
   await expect(noteTitleInput).toHaveValue(originalNoteTitle);
 
   // Edit the note title and content
-  const editedNoteTitle = `Edited test note ${timestamp}`;
-  const editedNoteContent = `Edited content ${timestamp}`;
-  await noteTitleInput.clear();
-  await noteTitleInput.fill(editedNoteTitle);
-  
+  const editedNoteTitle = createUniqueEntity('Edited test note');
+  const editedNoteContent = 'Edited content';
+  await fillInputReliably(noteTitleInput, editedNoteTitle);
+
   const noteContentTextarea = page.locator('[data-testid="note-content-textarea"]');
   await noteContentTextarea.clear();
   await noteContentTextarea.fill(editedNoteContent);
@@ -122,7 +108,7 @@ test('user can update an existing note', async ({ page, baseURL }) => {
   await page.locator('[data-testid="note-save-button"]').click();
 
   // Wait for the modal to close
-  await expect(page.locator('[data-testid="note-title-input"]')).not.toBeVisible();
+  await waitForElement(noteTitleInput, { state: 'hidden' });
 
   // Verify the edited note appears in the notes list
   await expect(page.getByText(editedNoteTitle)).toBeVisible();
@@ -135,35 +121,29 @@ test('user can delete an existing note', async ({ page, baseURL }) => {
   await loginAndNavigateToNotes(page, baseURL);
 
   // Create an initial note
-  const timestamp = Date.now();
-  const noteTitle = `Test note to delete ${timestamp}`;
-  const noteContent = `Content to delete ${timestamp}`;
+  const noteTitle = createUniqueEntity('Test note to delete');
+  const noteContent = 'Content to delete';
   await createNote(page, noteTitle, noteContent);
 
   // Find the specific note card by title text
   const noteCard = page.locator('a').filter({ hasText: noteTitle });
   await expect(noteCard).toBeVisible();
-  
-  // Hover over the note card to show the dropdown button
-  await noteCard.hover();
-  
-  // Wait a moment for any transitions
-  await page.waitForTimeout(1000);
 
-  // Find the dropdown button within this specific note card's parent container
+  // Hover over the note card and wait for dropdown button to be visible
   const dropdownButton = noteCard.locator('..').locator('button[data-testid^="note-dropdown-"]');
-  await dropdownButton.click({ force: true });
+  await hoverAndWaitForVisible(noteCard, dropdownButton);
+
+  // Click dropdown button
+  await dropdownButton.click();
 
   // Wait for dropdown menu to appear and click Delete
   const deleteButton = page.locator('button[data-testid^="note-delete-"]').first();
-  await expect(deleteButton).toBeVisible({ timeout: 10000 });
+  await waitForElement(deleteButton);
   await deleteButton.click();
 
   // Wait for and handle the confirmation dialog
-  await expect(page.locator('text=Delete Note')).toBeVisible();
-  // Click the red "Delete" button in the confirmation dialog
-  await page.locator('[data-testid="confirm-dialog-confirm"]').click();
+  await confirmDialog(page, 'Delete Note');
 
-  // Verify the note is no longer visible in the notes list (use specific role selector)
+  // Verify the note is no longer visible in the notes list
   await expect(page.getByRole('link', { name: new RegExp(noteTitle) })).not.toBeVisible();
 });

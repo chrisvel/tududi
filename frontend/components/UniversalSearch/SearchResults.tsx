@@ -135,7 +135,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
     if (isLoading) {
         return (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400" data-testid="search-loading">
                 <div className="animate-pulse">Searching...</div>
             </div>
         );
@@ -149,7 +149,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         selectedTags.length === 0
     ) {
         return (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400" data-testid="search-empty">
                 <p className="text-sm">{t('search.startTyping')}</p>
             </div>
         );
@@ -157,7 +157,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
     if (results.length === 0) {
         return (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400" data-testid="search-no-results">
                 <p className="text-sm">{t('search.noResults')}</p>
             </div>
         );
@@ -176,11 +176,12 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     );
 
     return (
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto" data-testid="search-results">
             {Object.entries(groupedResults).map(([type, typeResults]) => (
                 <div
                     key={type}
                     className="border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+                    data-testid={`search-results-${type.toLowerCase()}`}
                 >
                     <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 text-xs font-semibold text-gray-600 dark:text-gray-400">
                         {type}s
@@ -191,6 +192,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                                 key={`${result.type}-${result.id}`}
                                 onClick={() => handleResultClick(result)}
                                 className="w-full px-4 py-3 flex items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                                data-testid={`search-result-${result.type.toLowerCase()}-${result.id}`}
                             >
                                 <div className="flex-shrink-0">
                                     {getIcon(result.type)}
