@@ -616,7 +616,10 @@ const TaskDetails: React.FC = () => {
                                     task.today_move_count > 1
                                         ? t(
                                               'task.overdueMultipleDays',
-                                              `This task has been postponed ${task.today_move_count} times.`
+                                              {
+                                                  count: task.today_move_count,
+                                                  defaultValue: `This task has been postponed ${task.today_move_count} times.`,
+                                              }
                                           )
                                         : t(
                                               'task.overdueYesterday',
