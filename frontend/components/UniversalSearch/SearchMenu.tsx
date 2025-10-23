@@ -170,7 +170,11 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
             const entitiesWithSeparators: React.ReactNode[] = [];
             entities.forEach((entity, index) => {
                 if (index > 0) {
-                    entitiesWithSeparators.push(' ' + t('search.and') + ' ');
+                    entitiesWithSeparators.push(
+                        <span key={`sep-entity-${index}`}>
+                            {' ' + t('search.and') + ' '}
+                        </span>
+                    );
                 }
                 entitiesWithSeparators.push(entity);
             });
@@ -189,7 +193,11 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
 
         // Add search query
         if (searchQuery.trim()) {
-            parts.push(t('search.containingText') + ' ');
+            parts.push(
+                <span key="query-label">
+                    {t('search.containingText') + ' '}
+                </span>
+            );
             parts.push(
                 <span
                     key="query"
@@ -202,7 +210,11 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
 
         // Add priority filter
         if (selectedPriority) {
-            parts.push(t('search.withPriority') + ' ');
+            parts.push(
+                <span key="priority-label">
+                    {t('search.withPriority') + ' '}
+                </span>
+            );
             parts.push(
                 <span
                     key="priority"
@@ -211,7 +223,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                     {selectedPriority}
                 </span>
             );
-            parts.push(' ' + t('search.priority'));
+            parts.push(
+                <span key="priority-suffix">{' ' + t('search.priority')}</span>
+            );
         }
 
         // Add due date filter
@@ -220,7 +234,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 (opt) => opt.value === selectedDue
             );
             const dueLabel = dueOption ? t(dueOption.labelKey) : selectedDue;
-            parts.push(t('search.due') + ' ');
+            parts.push(<span key="due-label">{t('search.due') + ' '}</span>);
             parts.push(
                 <span
                     key="due"
@@ -233,7 +247,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
 
         // Add tags filter
         if (selectedTags.length > 0) {
-            parts.push(t('search.taggedWith') + ' ');
+            parts.push(
+                <span key="tags-label">{t('search.taggedWith') + ' '}</span>
+            );
             const tagElements = selectedTags.map((tag) => (
                 <span
                     key={`tag-${tag}`}
@@ -246,9 +262,15 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
             tagElements.forEach((tagEl, index) => {
                 if (index > 0) {
                     if (index === tagElements.length - 1) {
-                        tagsWithSeparators.push(' ' + t('search.and') + ' ');
+                        tagsWithSeparators.push(
+                            <span key={`sep-tag-and-${index}`}>
+                                {' ' + t('search.and') + ' '}
+                            </span>
+                        );
                     } else {
-                        tagsWithSeparators.push(', ');
+                        tagsWithSeparators.push(
+                            <span key={`sep-tag-comma-${index}`}>{', '}</span>
+                        );
                     }
                 }
                 tagsWithSeparators.push(tagEl);
@@ -275,7 +297,13 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         selectedTags.length > 0;
 
     return (
-        <div className="fixed left-1/2 transform -translate-x-1/2 top-32 md:top-20 w-[95vw] md:w-[90vw] max-w-full md:max-w-4xl h-[75vh] md:h-[80vh] max-h-[600px] md:max-h-[700px] bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 flex flex-col">
+        <div
+            className="fixed left-1/2 transform -translate-x-1/2 top-32 md:top-20 w-[95vw] md:w-[90vw] max-w-full md:max-w-4xl h-[75vh] md:h-[80vh] max-h-[600px] md:max-h-[700px] bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 flex flex-col"
+            onMouseDown={(e) => {
+                // Prevent input blur on mobile when clicking inside the search menu
+                e.preventDefault();
+            }}
+        >
             {/* Filter Badges Section */}
             <div className="border-b border-gray-200 dark:border-gray-700 overflow-y-auto max-h-[40vh] md:max-h-none">
                 {/* Search Description */}
