@@ -11,8 +11,15 @@ PGID=${PGID:-${APP_GID:-1001}}
 # Get current app user/group info.
 # Assuming the current user/group is app:app
 # as created in our Dockerfile.
-CURRENT_UID=$(id -u app)
-CURRENT_GID=$(id -g app)
+# Check if app user exists first
+if id app >/dev/null 2>&1; then
+    CURRENT_UID=$(id -u app)
+    CURRENT_GID=$(id -g app)
+else
+    # If app user doesn't exist, use build-time defaults
+    CURRENT_UID=${APP_UID:-1001}
+    CURRENT_GID=${APP_GID:-1001}
+fi
 
 echo "Runtime UID/GID Configuration"
 echo "Current: $CURRENT_UID:$CURRENT_GID"
