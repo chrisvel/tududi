@@ -35,6 +35,11 @@ module.exports = (sequelize) => {
                 {
                     fields: ['user_id'],
                 },
+                {
+                    unique: true,
+                    fields: ['user_id', 'name'],
+                    name: 'tags_user_id_name_unique',
+                },
             ],
         }
     );

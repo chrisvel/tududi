@@ -4,9 +4,6 @@ import { useTranslation } from 'react-i18next';
 import {
     TrashIcon,
     MagnifyingGlassIcon,
-    CheckIcon,
-    BookOpenIcon,
-    FolderIcon,
     PencilSquareIcon,
 } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
@@ -29,14 +26,9 @@ const Tags: React.FC = () => {
         useState<boolean>(false);
     const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [hoveredTagId, setHoveredTagId] = useState<number | null>(null);
+    const [hoveredTagUid, setHoveredTagUid] = useState<string | null>(null);
     const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
     const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
-    const [tagMetrics, setTagMetrics] = useState<
-        Record<string, { tasks: number; notes: number; projects: number }>
-    >({});
-    const [metricsLoaded, setMetricsLoaded] = useState<boolean>(false);
-    const [, setCachedProjects] = useState<any[]>([]);
 
     // Load tags when component mounts
     useEffect(() => {
@@ -45,102 +37,11 @@ const Tags: React.FC = () => {
         }
     }, [hasLoaded, isLoading, isError, loadTags]);
 
-    useEffect(() => {
-        const loadMetrics = async () => {
-            if (tags.length === 0) {
-                // Tags not loaded yet, wait for them to be loaded
-                return;
-            }
-
-            try {
-                // Load all data at once for better performance
-                const [projectsResponse, tasksResponse, notesResponse] =
-                    await Promise.all([
-                        fetch('/api/projects'),
-                        fetch('/api/tasks'),
-                        fetch('/api/notes'),
-                    ]);
-
-                let allProjects: any[] = [];
-                let allTasks: any[] = [];
-                let allNotes: any[] = [];
-
-                if (projectsResponse.ok) {
-                    const projectsData = await projectsResponse.json();
-                    allProjects = projectsData.projects || projectsData || [];
-                    setCachedProjects(allProjects);
-                }
-
-                if (tasksResponse.ok) {
-                    const tasksData = await tasksResponse.json();
-                    allTasks = tasksData.tasks || tasksData || [];
-                }
-
-                if (notesResponse.ok) {
-                    const notesData = await notesResponse.json();
-                    allNotes = notesData || [];
-                }
-
-                // Calculate metrics for all tags at once
-                const metricsMap: Record<
-                    string,
-                    { tasks: number; notes: number; projects: number }
-                > = {};
-
-                tags.forEach((tag) => {
-                    const tasksCount = allTasks.filter(
-                        (task: any) =>
-                            task.tags &&
-                            task.tags.some(
-                                (taskTag: any) => taskTag.name === tag.name
-                            )
-                    ).length;
-
-                    const notesCount = allNotes.filter(
-                        (note: any) =>
-                            note.tags &&
-                            note.tags.some(
-                                (noteTag: any) => noteTag.name === tag.name
-                            )
-                    ).length;
-
-                    const projectsCount = allProjects.filter(
-                        (project: any) =>
-                            project.tags &&
-                            project.tags.some(
-                                (projectTag: any) =>
-                                    projectTag.name === tag.name
-                            )
-                    ).length;
-
-                    metricsMap[tag.name] = {
-                        tasks: tasksCount,
-                        notes: notesCount,
-                        projects: projectsCount,
-                    };
-                });
-
-                setTagMetrics(metricsMap);
-                setMetricsLoaded(true);
-            } catch (error) {
-                console.error('Failed to fetch metrics:', error);
-            }
-        };
-
-        loadMetrics();
-    }, [tags]); // Only run when tags change
-
     const handleDeleteTag = async () => {
         if (!tagToDelete) return;
         try {
             await apiDeleteTag(tagToDelete.uid!);
             setTags(tags.filter((tag) => tag.uid !== tagToDelete.uid));
-            // Remove the deleted tag from metrics as well
-            setTagMetrics((prev) => {
-                const newMetrics = { ...prev };
-                delete newMetrics[tagToDelete.name];
-                return newMetrics;
-            });
             setIsConfirmDialogOpen(false);
             setTagToDelete(null);
         } catch (err) {
@@ -266,134 +167,82 @@ const Tags: React.FC = () => {
 
                                 {/* Tags in this group */}
                                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {groupedTags[letter].map((tag) => {
-                                        const metrics = tagMetrics[
-                                            tag.name
-                                        ] || {
-                                            tasks: 0,
-                                            notes: 0,
-                                            projects: 0,
-                                        };
-                                        const hasItems =
-                                            metrics.tasks > 0 ||
-                                            metrics.notes > 0 ||
-                                            metrics.projects > 0;
+                                    {groupedTags[letter].map((tag) => (
+                                        <li
+                                            key={tag.uid || tag.id}
+                                            className="bg-white dark:bg-gray-900 shadow rounded-lg p-4"
+                                            onMouseEnter={() =>
+                                                setHoveredTagUid(
+                                                    tag.uid || null
+                                                )
+                                            }
+                                            onMouseLeave={() =>
+                                                setHoveredTagUid(null)
+                                            }
+                                        >
+                                            <div className="flex items-center justify-between gap-2">
+                                                {/* Tag Name - truncated */}
+                                                <Link
+                                                    to={
+                                                        tag.uid
+                                                            ? `/tag/${tag.uid}-${tag.name
+                                                                  .toLowerCase()
+                                                                  .replace(
+                                                                      /[^a-z0-9]+/g,
+                                                                      '-'
+                                                                  )
+                                                                  .replace(
+                                                                      /^-|-$/g,
+                                                                      ''
+                                                                  )}`
+                                                            : `/tag/${encodeURIComponent(tag.name)}`
+                                                    }
+                                                    className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline truncate min-w-0 flex-1"
+                                                    title={tag.name}
+                                                >
+                                                    {tag.name}
+                                                </Link>
 
-                                        return (
-                                            <li
-                                                key={tag.uid || tag.id}
-                                                className="bg-white dark:bg-gray-900 shadow rounded-lg p-4"
-                                                onMouseEnter={() =>
-                                                    setHoveredTagId(
-                                                        tag.id || null
-                                                    )
-                                                }
-                                                onMouseLeave={() =>
-                                                    setHoveredTagId(null)
-                                                }
-                                            >
-                                                <div className="flex items-center justify-between">
-                                                    {/* Tag Name and Metrics - inline */}
-                                                    <div className="flex items-center space-x-3 flex-grow">
-                                                        <Link
-                                                            to={
-                                                                tag.uid
-                                                                    ? `/tag/${tag.uid}-${tag.name
-                                                                          .toLowerCase()
-                                                                          .replace(
-                                                                              /[^a-z0-9]+/g,
-                                                                              '-'
-                                                                          )
-                                                                          .replace(
-                                                                              /^-|-$/g,
-                                                                              ''
-                                                                          )}`
-                                                                    : `/tag/${encodeURIComponent(tag.name)}`
-                                                            }
-                                                            className="text-md font-semibold text-gray-900 dark:text-gray-100 hover:underline"
-                                                        >
-                                                            {tag.name}
-                                                        </Link>
-
-                                                        {/* Metrics - inline with tag name */}
-                                                        {!metricsLoaded && (
-                                                            <div className="flex items-center text-sm text-gray-400 dark:text-gray-500">
-                                                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-blue-500"></div>
-                                                            </div>
-                                                        )}
-                                                        {metricsLoaded &&
-                                                            hasItems && (
-                                                                <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
-                                                                    {metrics.projects >
-                                                                        0 && (
-                                                                        <div className="flex items-center space-x-1">
-                                                                            <FolderIcon className="h-4 w-4 text-purple-500" />
-                                                                            <span>
-                                                                                {
-                                                                                    metrics.projects
-                                                                                }
-                                                                            </span>
-                                                                        </div>
-                                                                    )}
-                                                                    {metrics.tasks >
-                                                                        0 && (
-                                                                        <div className="flex items-center space-x-1">
-                                                                            <CheckIcon className="h-4 w-4 text-blue-500" />
-                                                                            <span>
-                                                                                {
-                                                                                    metrics.tasks
-                                                                                }
-                                                                            </span>
-                                                                        </div>
-                                                                    )}
-                                                                    {metrics.notes >
-                                                                        0 && (
-                                                                        <div className="flex items-center space-x-1">
-                                                                            <BookOpenIcon className="h-4 w-4 text-green-500" />
-                                                                            <span>
-                                                                                {
-                                                                                    metrics.notes
-                                                                                }
-                                                                            </span>
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            )}
-                                                    </div>
-
-                                                    {/* Action buttons */}
-                                                    <div className="flex space-x-2 ml-2">
-                                                        <button
-                                                            onClick={() =>
-                                                                handleEditTag(
-                                                                    tag
-                                                                )
-                                                            }
-                                                            className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity ${hoveredTagId === tag.id ? 'opacity-100' : 'opacity-0'}`}
-                                                            aria-label={`Edit ${tag.name}`}
-                                                            title={`Edit ${tag.name}`}
-                                                            data-testid={`tag-edit-${tag.uid || tag.id}`}
-                                                        >
-                                                            <PencilSquareIcon className="h-4 w-4" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() =>
-                                                                openConfirmDialog(
-                                                                    tag
-                                                                )
-                                                            }
-                                                            className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity ${hoveredTagId === tag.id ? 'opacity-100' : 'opacity-0'}`}
-                                                            aria-label={`Delete ${tag.name}`}
-                                                            title={`Delete ${tag.name}`}
-                                                            data-testid={`tag-delete-${tag.uid || tag.id}`}
-                                                        >
-                                                            <TrashIcon className="h-4 w-4" />
-                                                        </button>
-                                                    </div>
+                                                {/* Action buttons */}
+                                                <div className="flex space-x-2 flex-shrink-0">
+                                                    <button
+                                                        onClick={() =>
+                                                            handleEditTag(tag)
+                                                        }
+                                                        className={`text-gray-500 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none transition-opacity duration-200 ${
+                                                            hoveredTagUid ===
+                                                            tag.uid
+                                                                ? 'opacity-100'
+                                                                : 'opacity-0 pointer-events-none'
+                                                        }`}
+                                                        aria-label={`Edit ${tag.name}`}
+                                                        title={`Edit ${tag.name}`}
+                                                        data-testid={`tag-edit-${tag.uid || tag.id}`}
+                                                    >
+                                                        <PencilSquareIcon className="h-4 w-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            openConfirmDialog(
+                                                                tag
+                                                            )
+                                                        }
+                                                        className={`text-gray-500 hover:text-red-700 dark:hover:text-red-300 focus:outline-none transition-opacity duration-200 ${
+                                                            hoveredTagUid ===
+                                                            tag.uid
+                                                                ? 'opacity-100'
+                                                                : 'opacity-0 pointer-events-none'
+                                                        }`}
+                                                        aria-label={`Delete ${tag.name}`}
+                                                        title={`Delete ${tag.name}`}
+                                                        data-testid={`tag-delete-${tag.uid || tag.id}`}
+                                                    >
+                                                        <TrashIcon className="h-4 w-4" />
+                                                    </button>
                                                 </div>
-                                            </li>
-                                        );
-                                    })}
+                                            </div>
+                                        </li>
+                                    ))}
                                 </ul>
                             </div>
                         ))}
@@ -415,16 +264,6 @@ const Tags: React.FC = () => {
                                 setTags(
                                     tags.filter((tag) => tag.uid !== tagUid)
                                 );
-                                setTagMetrics((prev) => {
-                                    const newMetrics = { ...prev };
-                                    const deletedTag = tags.find(
-                                        (t) => t.uid === tagUid
-                                    );
-                                    if (deletedTag) {
-                                        delete newMetrics[deletedTag.name];
-                                    }
-                                    return newMetrics;
-                                });
                                 setIsTagModalOpen(false);
                                 setSelectedTag(null);
                             } catch (error) {

@@ -86,6 +86,87 @@ describe('Tags Routes', () => {
             expect(response.status).toBe(400);
             expect(response.body.error).toContain('invalid characters');
         });
+
+        it('should prevent creating duplicate tags with same name', async () => {
+            const tagData = {
+                name: 'work',
+            };
+
+            // Create first tag
+            const firstResponse = await agent.post('/api/tag').send(tagData);
+            expect(firstResponse.status).toBe(201);
+            expect(firstResponse.body.name).toBe('work');
+
+            // Attempt to create duplicate tag
+            const duplicateResponse = await agent
+                .post('/api/tag')
+                .send(tagData);
+            expect(duplicateResponse.status).toBe(409);
+            expect(duplicateResponse.body.error).toContain(
+                'A tag with the name "work" already exists'
+            );
+        });
+
+        it('should allow creating tags with same name but different case', async () => {
+            // Create tag with lowercase
+            const firstResponse = await agent
+                .post('/api/tag')
+                .send({ name: 'work' });
+            expect(firstResponse.status).toBe(201);
+
+            // Tags are case-sensitive, so uppercase version should be allowed
+            const upperResponse = await agent
+                .post('/api/tag')
+                .send({ name: 'WORK' });
+            expect(upperResponse.status).toBe(201);
+            expect(upperResponse.body.name).toBe('WORK');
+        });
+
+        it('should allow different users to have tags with same name', async () => {
+            const bcrypt = require('bcrypt');
+
+            // Create first user's tag
+            const tagData = { name: 'work' };
+            const firstResponse = await agent.post('/api/tag').send(tagData);
+            expect(firstResponse.status).toBe(201);
+
+            // Create second user
+            const otherUser = await User.create({
+                email: 'other@example.com',
+                password_digest: await bcrypt.hash('password123', 10),
+            });
+
+            // Login as second user
+            const otherAgent = request.agent(app);
+            await otherAgent.post('/api/login').send({
+                email: 'other@example.com',
+                password: 'password123',
+            });
+
+            // Second user should be able to create tag with same name
+            const secondResponse = await otherAgent
+                .post('/api/tag')
+                .send(tagData);
+            expect(secondResponse.status).toBe(201);
+            expect(secondResponse.body.name).toBe('work');
+        });
+
+        it('should handle database unique constraint violation', async () => {
+            // Create first tag
+            await Tag.create({
+                name: 'existing',
+                user_id: user.id,
+            });
+
+            // Try to create duplicate (this should be caught by our explicit check,
+            // but if it somehow passes, the database constraint should catch it)
+            const response = await agent
+                .post('/api/tag')
+                .send({ name: 'existing' });
+
+            expect(response.status).toBe(409);
+            expect(response.body.error).toContain('already exists');
+        });
     });
 
     describe('GET /api/tags', () => {
@@ -237,6 +318,83 @@ describe('Tags Routes', () => {
 
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');
+        });
+
+        it('should prevent updating tag to duplicate name', async () => {
+            // Create an additional tag (note: beforeEach already created 'work' tag)
+            const tag2 = await Tag.create({
+                name: 'personal',
+                user_id: user.id,
+            });
+
+            // Try to rename tag2 to the same name as the existing 'work' tag
+            const response = await agent
+                .patch(`/api/tag/${tag2.uid}`)
+                .send({ name: 'work' });
+
+            expect(response.status).toBe(409);
+            expect(response.body.error).toContain(
+                'A tag with the name "work" already exists'
+            );
+
+            // Verify tag2 was not updated
+            const unchangedTag = await Tag.findByPk(tag2.id);
+            expect(unchangedTag.name).toBe('personal');
+        });
+
+        it('should allow updating tag to same name (no change)', async () => {
+            // This should succeed because we're not actually changing the name
+            const response = await agent
+                .patch(`/api/tag/${tag.uid}`)
+                .send({ name: 'work' });
+
+            expect(response.status).toBe(200);
+            expect(response.body.name).toBe('work');
+        });
+
+        it('should allow updating tag to new unique name', async () => {
+            const response = await agent
+                .patch(`/api/tag/${tag.uid}`)
+                .send({ name: 'new-unique-name' });
+
+            expect(response.status).toBe(200);
+            expect(response.body.name).toBe('new-unique-name');
+
+            // Verify the update persisted
+            const updatedTag = await Tag.findByPk(tag.id);
+            expect(updatedTag.name).toBe('new-unique-name');
+        });
+
+        it('should allow updating to same name with different case', async () => {
+            // Create an additional tag (note: beforeEach already created 'work' tag)
+            const tag2 = await Tag.create({
+                name: 'personal',
+                user_id: user.id,
+            });
+
+            // Tags are case-sensitive, so uppercase version should be allowed
+            const response = await agent
+                .patch(`/api/tag/${tag2.uid}`)
+                .send({ name: 'WORK' });
+
+            expect(response.status).toBe(200);
+            expect(response.body.name).toBe('WORK');
+        });
+
+        it('should handle database unique constraint on update', async () => {
+            // Create an additional tag (note: beforeEach already created 'work' tag)
+            const tag2 = await Tag.create({
+                name: 'other',
+                user_id: user.id,
+            });
+
+            // Try to update tag2 to have same name as the existing 'work' tag
+            const response = await agent
+                .patch(`/api/tag/${tag2.uid}`)
+                .send({ name: 'work' });
+
+            expect(response.status).toBe(409);
+            expect(response.body.error).toContain('already exists');
         });
     });
 

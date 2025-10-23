@@ -63,6 +63,20 @@ router.post('/tag', async (req, res) => {
             return res.status(400).json({ error: validation.error });
         }
 
+        // Check if tag already exists for this user
+        const existingTag = await Tag.findOne({
+            where: {
+                name: validation.name,
+                user_id: req.currentUser.id,
+            },
+        });
+
+        if (existingTag) {
+            return res.status(409).json({
+                error: `A tag with the name "${validation.name}" already exists.`,
+            });
+        }
+
         const tag = await Tag.create({
             name: validation.name,
             user_id: req.currentUser.id,
@@ -74,6 +88,12 @@ router.post('/tag', async (req, res) => {
         });
     } catch (error) {
         logError('Error creating tag:', error);
+        // Check if it's a unique constraint violation
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(409).json({
+                error: 'A tag with this name already exists.',
+            });
+        }
         res.status(400).json({
             error: 'There was a problem creating the tag.',
         });
@@ -105,6 +125,23 @@ router.patch('/tag/:identifier', async (req, res) => {
             return res.status(400).json({ error: validation.error });
         }
 
+        // Check if another tag with the same name already exists
+        if (validation.name !== tag.name) {
+            const existingTag = await Tag.findOne({
+                where: {
+                    name: validation.name,
+                    user_id: req.currentUser.id,
+                    id: { [Op.ne]: tag.id },
+                },
+            });
+
+            if (existingTag) {
+                return res.status(409).json({
+                    error: `A tag with the name "${validation.name}" already exists.`,
+                });
+            }
+        }
+
         await tag.update({ name: validation.name });
 
         res.json({
@@ -113,6 +150,12 @@ router.patch('/tag/:identifier', async (req, res) => {
         });
     } catch (error) {
         logError('Error updating tag:', error);
+        // Check if it's a unique constraint violation
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(409).json({
+                error: 'A tag with this name already exists.',
+            });
+        }
         res.status(400).json({
             error: 'There was a problem updating the tag.',
         });
