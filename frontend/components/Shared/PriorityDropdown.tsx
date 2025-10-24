@@ -114,6 +114,8 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
     return (
         <div
             ref={dropdownRef}
+            data-testid="priority-dropdown"
+            data-state={isOpen ? 'open' : 'closed'}
             className="relative inline-block text-left w-full"
         >
             <button

@@ -135,7 +135,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
     if (isLoading) {
         return (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400" data-testid="search-loading">
+            <div
+                className="p-8 text-center text-gray-500 dark:text-gray-400"
+                data-testid="search-loading"
+            >
                 <div className="animate-pulse">Searching...</div>
             </div>
         );
@@ -149,7 +152,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         selectedTags.length === 0
     ) {
         return (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400" data-testid="search-empty">
+            <div
+                className="p-8 text-center text-gray-500 dark:text-gray-400"
+                data-testid="search-empty"
+            >
                 <p className="text-sm">{t('search.startTyping')}</p>
             </div>
         );
@@ -157,7 +163,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
     if (results.length === 0) {
         return (
-            <div className="p-8 text-center text-gray-500 dark:text-gray-400" data-testid="search-no-results">
+            <div
+                className="p-8 text-center text-gray-500 dark:text-gray-400"
+                data-testid="search-no-results"
+            >
                 <p className="text-sm">{t('search.noResults')}</p>
             </div>
         );

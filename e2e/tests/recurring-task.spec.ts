@@ -69,7 +69,7 @@ test('recurring task displays actual name (not "Weekly") after page refresh', as
 
   // Wait for the task modal/details page to open
   // The task modal should show the task name input or a heading with the task name
-  await page.waitForTimeout(1000);
+  await page.waitForLoadState('networkidle');
 
   // Check if we're on the task detail page (URL-based) or modal (overlay)
   const currentUrl = page.url();
@@ -117,7 +117,7 @@ test('monthly recurring task displays actual name (not "Monthly") after page ref
   await taskInList.click();
 
   // Wait for the task modal/details page to open
-  await page.waitForTimeout(1000);
+  await page.waitForLoadState('networkidle');
 
   // Check if we're on the task detail page (URL-based) or modal (overlay)
   const currentUrl = page.url();
@@ -164,7 +164,7 @@ test('daily recurring task displays actual name (not "Daily") after page refresh
   await taskInList.click();
 
   // Wait for the task modal/details page to open
-  await page.waitForTimeout(1000);
+  await page.waitForLoadState('networkidle');
 
   // Check if we're on the task detail page (URL-based) or modal (overlay)
   const currentUrl = page.url();

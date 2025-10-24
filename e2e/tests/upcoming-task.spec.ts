@@ -29,7 +29,7 @@ test('upcoming view loads and displays upcoming section', async ({ page, baseURL
   await expect(page.getByRole('heading', { name: 'Upcoming' })).toBeVisible();
 
   // Wait for content to load
-  await page.waitForTimeout(1000);
+  await page.waitForLoadState('networkidle');
 
   // Verify we don't have the task creation input (upcoming view is read-only)
   const taskInput = page.locator('[data-testid="new-task-input"]');

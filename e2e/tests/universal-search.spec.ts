@@ -120,16 +120,10 @@ test('user can filter search results by type', async ({ page, baseURL }) => {
   await navigateAndWait(page, appUrl + '/projects');
   await createProjectForSearch(page, projectName);
 
-  // Open universal search
-  await page.keyboard.press('Meta+K');
-  await page.waitForTimeout(500);
-
-  const searchInput = page.locator('input[placeholder*="search" i], input[type="search"]').first();
-
-  if (!(await searchInput.isVisible().catch(() => false))) {
-    await page.keyboard.press('Control+K');
-    await page.waitForTimeout(500);
-  }
+  // Open universal search by clicking on the search input
+  const searchInput = page.locator('input[placeholder*="Search" i]').first();
+  await expect(searchInput).toBeVisible();
+  await searchInput.click();
 
   await waitForElement(searchInput);
   await searchInput.fill(searchTerm);
@@ -140,7 +134,7 @@ test('user can filter search results by type', async ({ page, baseURL }) => {
 
   if (await taskFilter.isVisible().catch(() => false)) {
     await taskFilter.click();
-    await page.waitForTimeout(500);
+    await waitForNetworkIdle(page);
 
     // After filtering, only task should be visible
     await expect(page.getByText(taskName)).toBeVisible();
@@ -159,16 +153,10 @@ test('user can navigate to search result by clicking on it', async ({ page, base
   await navigateAndWait(page, appUrl + '/tasks');
   await createTaskForSearch(page, taskName);
 
-  // Open universal search
-  await page.keyboard.press('Meta+K');
-  await page.waitForTimeout(500);
-
-  const searchInput = page.locator('input[placeholder*="search" i], input[type="search"]').first();
-
-  if (!(await searchInput.isVisible().catch(() => false))) {
-    await page.keyboard.press('Control+K');
-    await page.waitForTimeout(500);
-  }
+  // Open universal search by clicking on the search input
+  const searchInput = page.locator('input[placeholder*="Search" i]').first();
+  await expect(searchInput).toBeVisible();
+  await searchInput.click();
 
   await waitForElement(searchInput);
   await searchInput.fill(taskName);
@@ -181,7 +169,7 @@ test('user can navigate to search result by clicking on it', async ({ page, base
   // Should navigate to the task detail page or close search and show task
   // The exact behavior depends on the implementation
   // We can verify the URL changed or the search closed
-  await page.waitForTimeout(1000);
+  await waitForNetworkIdle(page);
 
   // Search modal should close after clicking a result
   const searchInputAfterClick = page.locator('input[placeholder*="search" i], input[type="search"]').first();

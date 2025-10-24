@@ -44,9 +44,9 @@ async function createTask(page, taskName) {
   // Verify task creation by checking that the input field is cleared
   // (this is simpler and more reliable than trying to find the created task in the UI)
   await expect(taskInput).toHaveValue('');
-  
-  // Wait for the task creation API call to complete
-  await page.waitForTimeout(2000);
+
+  // Wait for network to be idle after creation
+  await page.waitForLoadState('networkidle');
 }
 
 test('user can create a new task and verify it appears in the task list', async ({ page, baseURL }) => {
@@ -150,7 +150,7 @@ test('user can mark a task as complete', async ({ page, baseURL }) => {
   const showCompletedButton = page.locator('button:has-text("Show completed")').first();
   if (await showCompletedButton.isVisible()) {
     await showCompletedButton.click();
-    await page.waitForTimeout(1000);
+    await page.waitForLoadState('networkidle');
   }
 
   // Verify the task was created and is visible
@@ -165,15 +165,15 @@ test('user can mark a task as complete', async ({ page, baseURL }) => {
   // Ensure the checkbox is visible and clickable
   await expect(completionCheckbox).toBeVisible();
   await completionCheckbox.click();
-  
-  // Wait a moment for the state change to propagate
-  await page.waitForTimeout(3000);
-  
+
+  // Wait for network idle after completing the task
+  await page.waitForLoadState('networkidle');
+
   // Click the "Show completed" toggle to make completed tasks visible
   const showCompletedToggle = page.getByText('Show completed');
   await expect(showCompletedToggle).toBeVisible({ timeout: 5000 });
   await showCompletedToggle.click();
-  await page.waitForTimeout(1000);
+  await page.waitForLoadState('networkidle');
   
   // Look for ANY completed task with aria-checked="true" 
   const anyCompletedCheckbox = page.locator('[data-testid^="task-completion-checkbox"][aria-checked="true"]');
