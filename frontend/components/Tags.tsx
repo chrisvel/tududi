@@ -57,9 +57,11 @@ const Tags: React.FC = () => {
     const handleSaveTag = async (tagData: Tag) => {
         try {
             if (tagData.uid) {
-                await updateTag(tagData.uid, tagData);
+                const updatedTag = await updateTag(tagData.uid, tagData);
                 setTags(
-                    tags.map((tag) => (tag.uid === tagData.uid ? tagData : tag))
+                    tags.map((tag) =>
+                        tag.uid === tagData.uid ? updatedTag : tag
+                    )
                 );
             } else {
                 const newTag = await createTag(tagData);
