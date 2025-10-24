@@ -73,6 +73,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
     const [isClosing, setIsClosing] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [parentTaskLoading, setParentTaskLoading] = useState(false);
@@ -331,6 +332,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     };
 
     const handleSubmit = async () => {
+        setIsSaving(true);
         try {
             // Add new tags to the global store
             const existingTagNames = availableTags.map((tag: any) => tag.name);
@@ -371,6 +373,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
         } catch (error) {
             console.error('Error saving task:', error);
             // Don't close modal on error so user can retry
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -481,6 +485,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 >
                     <div
                         ref={modalRef}
+                        data-testid="task-modal"
+                        data-state={isSaving ? 'saving' : 'idle'}
                         className={`bg-white dark:bg-gray-800 border-0 w-full sm:max-w-2xl transform transition-transform duration-300 ${
                             isClosing ? 'scale-95' : 'scale-100'
                         } h-full sm:h-auto sm:my-4`}
@@ -584,7 +590,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 )}
 
                                                 {expandedSections.priority && (
-                                                    <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4">
+                                                    <div
+                                                        data-testid="priority-section"
+                                                        data-state="expanded"
+                                                        className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4"
+                                                    >
                                                         <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                                             {t(
                                                                 'forms.task.labels.priority',
@@ -609,7 +619,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 )}
 
                                                 {expandedSections.dueDate && (
-                                                    <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 overflow-visible">
+                                                    <div
+                                                        data-testid="duedate-section"
+                                                        data-state="expanded"
+                                                        className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 px-4 overflow-visible"
+                                                    >
                                                         <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                                             {t(
                                                                 'forms.task.labels.dueDate',

@@ -192,8 +192,8 @@ test('user can create project from inbox item', async ({ page, baseURL }) => {
   await page.goto(appUrl + '/projects');
   await expect(page).toHaveURL(/\/projects$/);
 
-  // Wait a moment for the page to load
-  await page.waitForTimeout(2000);
+  // Wait for the page to load
+  await page.waitForLoadState('networkidle');
 
   // Verify the created project appears - use a more specific selector
   await expect(page.getByRole('link', { name: new RegExp(testContent) }).first()).toBeVisible({ timeout: 10000 });
@@ -232,7 +232,7 @@ test('user can create note from inbox item', async ({ page, baseURL }) => {
   await page.waitForLoadState('networkidle');
 
   // Verify the original inbox item is no longer in the inbox (successfully converted to note)
-  await expect(page.locator('.rounded-lg.shadow-sm').filter({ hasText: testContent })).not.toBeVisible();
+  await expect(page.locator('.rounded-lg.shadow-sm').filter({ hasText: testContent })).not.toBeVisible({ timeout: 10000 });
 
   // Navigate to notes page - just verify we can get there successfully
   await page.goto(appUrl + '/notes');

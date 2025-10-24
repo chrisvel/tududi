@@ -83,12 +83,8 @@ async function createProject(page: Page, projectName: string) {
   // Save the project
   await saveButton.click();
 
-  // Wait for the save request to complete and modal to close
-  await page.waitForLoadState('networkidle');
-  await expect(page.locator('[data-testid="project-name-input"]')).not.toBeVisible({ timeout: 15000 });
-
-  // Wait for project creation to complete and appear in list
-  await page.waitForTimeout(3000);
+  // Wait for modal to close (saving state may be too fast to catch)
+  await expect(page.locator('[data-testid="project-modal"]')).not.toBeVisible({ timeout: 15000 });
 }
 
 test('user can create a new project and verify it appears in the projects list', async ({ page, baseURL }) => {
@@ -121,13 +117,11 @@ test('user can update an existing project', async ({ page, baseURL }) => {
   
   // Hover over the project card to show the dropdown button
   await projectCard.hover();
-  
-  // Wait a moment for any transitions  
-  await page.waitForTimeout(1000);
 
-  // Find the dropdown button specifically within this project's container
+  // Find the dropdown button and wait for it to be visible
   const dropdownButton = projectCard.locator('button[data-testid^="project-dropdown-"]');
-  await dropdownButton.click({ force: true });
+  await expect(dropdownButton).toBeVisible();
+  await dropdownButton.click();
 
   // Wait for dropdown menu to appear and click Edit
   const editButton = page.locator('button[data-testid^="project-edit-"]').first();
@@ -163,8 +157,8 @@ test('user can update an existing project', async ({ page, baseURL }) => {
   // Save the changes
   await page.locator('[data-testid="project-save-button"]').click();
 
-  // Wait for the modal to close
-  await expect(page.locator('[data-testid="project-name-input"]')).not.toBeVisible();
+  // Wait for modal to close (saving state may be too fast to catch)
+  await expect(page.locator('[data-testid="project-modal"]')).not.toBeVisible({ timeout: 15000 });
 
   // Verify the edited project appears in the projects list - still contains timestamp
   await expect(page.getByText(timestampStr)).toBeVisible();
@@ -188,13 +182,11 @@ test('user can delete an existing project', async ({ page, baseURL }) => {
   
   // Hover over the project card to show the dropdown button
   await projectCard.hover();
-  
-  // Wait a moment for any transitions  
-  await page.waitForTimeout(1000);
 
-  // Find the dropdown button specifically within this project's container
+  // Find the dropdown button and wait for it to be visible
   const dropdownButton = projectCard.locator('button[data-testid^="project-dropdown-"]');
-  await dropdownButton.click({ force: true });
+  await expect(dropdownButton).toBeVisible();
+  await dropdownButton.click();
 
   // Wait for dropdown menu to appear and click Delete
   const deleteButton = page.locator('button[data-testid^="project-delete-"]').first();
@@ -238,9 +230,6 @@ test('user can add a task to a project via ProjectDetails view', async ({ page, 
   // Verify task creation by checking that the input field is cleared
   await expect(taskInput).toHaveValue('');
 
-  // Wait for the task to be created and appear in the project's task list
-  await page.waitForTimeout(2000);
-
   // Verify the task appears in the project's task list (use first link to avoid strict mode)
   await expect(page.getByRole('link', { name: new RegExp(taskName) }).first()).toBeVisible({ timeout: 10000 });
 });
@@ -268,7 +257,7 @@ test('user can delete a project with tasks - tasks should survive', async ({ pag
   await taskInput.fill(taskName);
   await taskInput.press('Enter');
   await expect(taskInput).toHaveValue('');
-  await page.waitForTimeout(2000);
+  await page.waitForLoadState('networkidle');
 
   // Navigate back to projects list
   await page.goto(appUrl + '/projects');
@@ -281,13 +270,11 @@ test('user can delete a project with tasks - tasks should survive', async ({ pag
   
   // Hover over the project card to show the dropdown button
   await projectCard.hover();
-  
-  // Wait a moment for any transitions  
-  await page.waitForTimeout(1000);
 
-  // Find the dropdown button specifically within this project's container
+  // Find the dropdown button and wait for it to be visible
   const dropdownButton = projectCard.locator('button[data-testid^="project-dropdown-"]');
-  await dropdownButton.click({ force: true });
+  await expect(dropdownButton).toBeVisible();
+  await dropdownButton.click();
 
   // Wait for dropdown menu to appear and click Delete
   const deleteButton = page.locator('button[data-testid^="project-delete-"]').first();
@@ -304,9 +291,6 @@ test('user can delete a project with tasks - tasks should survive', async ({ pag
   // Verify the task still exists - navigate to tasks page
   await page.goto(appUrl + '/tasks');
   await expect(page).toHaveURL(/\/tasks/);
-
-  // Wait for tasks to load
-  await page.waitForTimeout(2000);
 
   // The task should still exist but without the project association
   // This is the expected behavior based on backend implementation:
@@ -334,10 +318,7 @@ test('user can create a note from project details page and view it in project no
   await expect(notesTab).toBeVisible({ timeout: 5000 });
   await notesTab.click();
 
-  // Wait for the notes tab to be active
-  await page.waitForTimeout(500);
-
-  // Find and click the "Create New Note" button
+  // Find and click the "Create New Note" button (waiting for it ensures tab is active)
   const createNoteButton = page.getByRole('button', { name: /create new note/i });
   await expect(createNoteButton).toBeVisible({ timeout: 5000 });
   await createNoteButton.click();
@@ -364,9 +345,6 @@ test('user can create a note from project details page and view it in project no
 
   // Wait for the modal to close
   await expect(noteTitleInput).not.toBeVisible({ timeout: 5000 });
-
-  // Wait for the note to be created
-  await page.waitForTimeout(2000);
 
   // Verify the note appears in the project's notes section
   // Look for the note title as a heading (more specific than just text)

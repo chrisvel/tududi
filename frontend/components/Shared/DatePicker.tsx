@@ -264,6 +264,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
     return (
         <div
             ref={dropdownRef}
+            data-testid="datepicker"
+            data-state={isOpen ? 'open' : 'closed'}
             className={`relative inline-block text-left w-full ${className}`}
         >
             <div className="relative">

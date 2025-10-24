@@ -61,6 +61,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         project?.image_url || ''
     );
     const [isUploading, setIsUploading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const { tagsStore } = useStore();
     // Avoid calling getTags() during component initialization to prevent remounting
@@ -319,6 +320,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             return;
         }
 
+        setIsSaving(true);
         try {
             // Add new tags to the global store
             const existingTagNames = availableTags.map((tag: any) => tag.name);
@@ -358,6 +360,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         } catch (error) {
             console.error('Error saving project:', error);
             setError(t('errors.projectSaveFailed', 'Failed to save project'));
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -450,6 +454,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             >
                 <div
                     ref={modalRef}
+                    data-testid="project-modal"
+                    data-state={isSaving ? 'saving' : 'idle'}
                     className={`bg-white dark:bg-gray-800 border-0 sm:border sm:border-gray-200 sm:dark:border-gray-800 sm:rounded-lg sm:shadow-2xl w-full sm:max-w-2xl transform transition-transform duration-300 ${
                         isClosing ? 'scale-95' : 'scale-100'
                     } h-full sm:h-auto sm:my-4`}
