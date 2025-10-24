@@ -61,7 +61,8 @@
     "lint:fix": "npm run frontend:lint:fix && npm run backend:lint:fix",
     "format": "npm run frontend:format && npm run backend:format",
     "format:fix": "npm run frontend:format:fix && npm run backend:format:fix",
-    "docker:test-build": "bash scripts/test-docker-build.sh"
+    "docker:test-build": "bash scripts/test-docker-build.sh",
+    "docker:build": "echo \"$(git rev-parse --short HEAD)\" >.git-commit-hash && docker build -t tududi ."
   },
   "keywords": [],
   "author": "",
