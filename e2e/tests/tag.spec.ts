@@ -1,118 +1,137 @@
 import { test, expect } from '@playwright/test';
 import {
-  login,
-  navigateAndWait,
-  clickAndWaitForModal,
-  fillInputReliably,
-  waitForElement,
-  hoverAndWaitForVisible,
-  confirmDialog,
-  createUniqueEntity,
-  waitForNetworkIdle
+    login,
+    navigateAndWait,
+    clickAndWaitForModal,
+    fillInputReliably,
+    waitForElement,
+    hoverAndWaitForVisible,
+    confirmDialog,
+    createUniqueEntity,
+    waitForNetworkIdle,
 } from '../helpers/testHelpers';
 
 // Navigate to tags page after login
 async function loginAndNavigateToTags(page, baseURL) {
-  const appUrl = await login(page, baseURL);
+    const appUrl = await login(page, baseURL);
 
-  // Navigate to tags page
-  await navigateAndWait(page, appUrl + '/tags');
-  await expect(page).toHaveURL(/\/tags/);
+    // Navigate to tags page
+    await navigateAndWait(page, appUrl + '/tags');
+    await expect(page).toHaveURL(/\/tags/);
 
-  return appUrl;
+    return appUrl;
 }
 
 // Shared function to create a tag via the sidebar button
 async function createTag(page, tagName) {
-  // Find and click the "Add Tag" button in the sidebar
-  const addTagButton = page.locator('[data-testid="add-tag-button"]');
-  const nameInput = page.locator('[data-testid="tag-name-input"]');
+    // Find and click the "Add Tag" button in the sidebar
+    const addTagButton = page.locator('[data-testid="add-tag-button"]');
+    const nameInput = page.locator('[data-testid="tag-name-input"]');
 
-  await clickAndWaitForModal(addTagButton, nameInput);
+    await clickAndWaitForModal(addTagButton, nameInput);
 
-  // Fill in the tag name
-  await fillInputReliably(nameInput, tagName);
+    // Fill in the tag name
+    await fillInputReliably(nameInput, tagName);
 
-  // Save the tag
-  await page.locator('[data-testid="tag-save-button"]').click();
+    // Save the tag
+    await page.locator('[data-testid="tag-save-button"]').click();
 
-  // Wait for the modal to close
-  await waitForElement(nameInput, { state: 'hidden' });
+    // Wait for the modal to close
+    await waitForElement(nameInput, { state: 'hidden' });
 
-  // Wait for tag creation to complete
-  await waitForNetworkIdle(page);
+    // Wait for tag creation to complete
+    await waitForNetworkIdle(page);
+    await page.waitForTimeout(500);
 }
 
-test('user can create a new tag and verify it appears in the tags list', async ({ page, baseURL }) => {
-  await loginAndNavigateToTags(page, baseURL);
+test('user can create a new tag and verify it appears in the tags list', async ({
+    page,
+    baseURL,
+}) => {
+    await loginAndNavigateToTags(page, baseURL);
 
-  // Create a unique test tag
-  const tagName = createUniqueEntity('TestTag');
-  await createTag(page, tagName);
+    // Create a unique test tag
+    const tagName = createUniqueEntity('TestTag');
+    await createTag(page, tagName);
 
-  // Verify the tag appears in the tags list
-  await expect(page.getByText(tagName)).toBeVisible();
+    // Verify the tag appears in the tags list
+    await expect(page.getByText(tagName)).toBeVisible();
 });
 
 test('user can update an existing tag', async ({ page, baseURL }) => {
-  await loginAndNavigateToTags(page, baseURL);
+    await loginAndNavigateToTags(page, baseURL);
 
-  // Create an initial tag
-  const originalTagName = createUniqueEntity('TestTagEdit');
-  await createTag(page, originalTagName);
+    // Create an initial tag
+    const originalTagName = createUniqueEntity('TestTagEdit');
+    await createTag(page, originalTagName);
 
-  // Find the tag container and hover to show edit button
-  const tagContainer = page.getByText(originalTagName).locator('../..');
-  const editButton = tagContainer.locator('[data-testid*="tag-edit"]');
+    // Reload to ensure the list reflects the newly created tag
+    await waitForNetworkIdle(page);
+    await page.reload();
+    await waitForNetworkIdle(page);
 
-  await hoverAndWaitForVisible(tagContainer, editButton);
+    // Verify the tag is visible after reload
+    await expect(page.getByText(originalTagName)).toBeVisible();
 
-  // Click the edit button
-  await editButton.click();
+    // Find the tag container and hover to show edit button
+    const tagContainer = page.getByText(originalTagName).locator('../..');
+    const editButton = tagContainer.locator('[data-testid*="tag-edit"]');
 
-  // Wait for the Tag Modal to appear with the tag data
-  const tagNameInput = page.locator('[data-testid="tag-name-input"]');
-  await waitForElement(tagNameInput);
+    await hoverAndWaitForVisible(tagContainer, editButton);
 
-  // Verify the tag name field is pre-filled
-  await expect(tagNameInput).toHaveValue(originalTagName);
+    // Click the edit button
+    await editButton.click();
 
-  // Edit the tag name
-  const editedTagName = createUniqueEntity('EditedTestTag');
-  await fillInputReliably(tagNameInput, editedTagName);
+    // Wait for the Tag Modal to appear with the tag data
+    const tagNameInput = page.locator('[data-testid="tag-name-input"]');
+    await waitForElement(tagNameInput);
 
-  // Save the changes
-  await page.locator('[data-testid="tag-save-button"]').click();
+    // Verify the tag name field is pre-filled
+    await expect(tagNameInput).toHaveValue(originalTagName);
 
-  // Wait for the modal to close
-  await waitForElement(tagNameInput, { state: 'hidden' });
+    // Edit the tag name
+    const editedTagName = createUniqueEntity('EditedTestTag');
+    await fillInputReliably(tagNameInput, editedTagName);
 
-  // Verify the edited tag appears in the tags list
-  await expect(page.getByText(editedTagName)).toBeVisible();
+    // Save the changes
+    await page.locator('[data-testid="tag-save-button"]').click();
 
-  // Verify the original tag name is no longer visible
-  await expect(page.getByText(originalTagName)).not.toBeVisible();
+    // Wait for the modal to close
+    await waitForElement(tagNameInput, { state: 'hidden' });
+
+    // Verify the edited tag appears in the tags list
+    await expect(page.getByText(editedTagName)).toBeVisible();
+
+    // Verify the original tag name is no longer visible
+    await expect(page.getByText(originalTagName)).not.toBeVisible();
 });
 
 test('user can delete an existing tag', async ({ page, baseURL }) => {
-  await loginAndNavigateToTags(page, baseURL);
+    await loginAndNavigateToTags(page, baseURL);
 
-  // Create an initial tag
-  const tagName = createUniqueEntity('TestTagDelete');
-  await createTag(page, tagName);
+    // Create an initial tag
+    const tagName = createUniqueEntity('TestTagDelete');
+    await createTag(page, tagName);
 
-  // Find the tag container and hover to show delete button
-  const tagContainer = page.getByText(tagName).locator('../..');
-  const deleteButton = tagContainer.locator('[data-testid*="tag-delete"]');
+    // Reload to ensure the list reflects the newly created tag
+    await waitForNetworkIdle(page);
+    await page.reload();
+    await waitForNetworkIdle(page);
 
-  await hoverAndWaitForVisible(tagContainer, deleteButton);
+    await expect(page.getByText(tagName)).toBeVisible();
 
-  // Click the delete button
-  await deleteButton.click();
+    // Find the tag container and hover to show delete button
+    const tagContainer = page.getByText(tagName).locator('../..');
+    const deleteButton = tagContainer.locator('[data-testid*="tag-delete"]');
 
-  // Wait for and handle the confirmation dialog
-  await confirmDialog(page, 'Delete Tag');
+    await hoverAndWaitForVisible(tagContainer, deleteButton);
 
-  // Verify the tag is no longer visible in the tags list
-  await expect(page.getByRole('link', { name: tagName })).not.toBeVisible();
+    // Click the delete button
+    await deleteButton.click();
+
+    // Wait for and handle the confirmation dialog
+    await confirmDialog(page, 'Delete Tag');
+
+    // Verify the tag is no longer visible in the tags list
+    await expect(page.getByRole('link', { name: tagName })).not.toBeVisible();
 });

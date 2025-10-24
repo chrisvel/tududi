@@ -145,7 +145,7 @@ router.patch('/tag/:identifier', async (req, res) => {
         await tag.update({ name: validation.name });
 
         res.json({
-            id: tag.id,
+            uid: tag.uid,
             name: tag.name,
         });
     } catch (error) {
