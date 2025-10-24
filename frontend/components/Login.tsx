@@ -34,6 +34,9 @@ const Login: React.FC = () => {
                     new CustomEvent('userLoggedIn', { detail: data.user })
                 );
 
+                // Small delay to ensure event handlers complete and session is fully established
+                await new Promise((resolve) => setTimeout(resolve, 50));
+
                 navigate('/today');
             } else {
                 setError(data.errors[0] || 'Login failed. Please try again.');

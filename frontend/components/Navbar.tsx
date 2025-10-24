@@ -10,6 +10,7 @@ import { EnvelopeIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import PomodoroTimer from './Shared/PomodoroTimer';
 import UniversalSearch from './UniversalSearch/UniversalSearch';
+import { resetAllStores } from '../store/useStore';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -134,6 +135,11 @@ const Navbar: React.FC<NavbarProps> = ({
             if (response.ok) {
                 setCurrentUser(null);
                 navigate('/login');
+                // Clear stores AFTER navigation to avoid triggering data loads while logged out
+                // Use setTimeout to ensure navigation completes first
+                setTimeout(() => {
+                    resetAllStores();
+                }, 0);
             } else {
                 console.error('Logout failed:', await response.json());
             }

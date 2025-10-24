@@ -125,6 +125,34 @@ describe('Notes Routes', () => {
             expect(response.status).toBe(401);
             expect(response.body.error).toBe('Authentication required');
         });
+
+        it('should only return notes for the authenticated user', async () => {
+            const bcrypt = require('bcrypt');
+            // Create another user with their own note
+            const otherUser = await User.create({
+                email: 'other@example.com',
+                password_digest: await bcrypt.hash('password123', 10),
+            });
+
+            const otherNote = await Note.create({
+                title: 'Other User Note',
+                content: 'This belongs to another user',
+                user_id: otherUser.id,
+            });
+
+            // Get notes as the first user
+            const response = await agent.get('/api/notes');
+
+            expect(response.status).toBe(200);
+            expect(Array.isArray(response.body)).toBe(true);
+            // Should only return the 2 notes from beforeEach (note1, note2)
+            expect(response.body.length).toBe(2);
+            // Should NOT include the other user's note
+            expect(response.body.map((n) => n.id)).not.toContain(otherNote.id);
+            // Should include the current user's notes
+            expect(response.body.map((n) => n.id)).toContain(note1.id);
+            expect(response.body.map((n) => n.id)).toContain(note2.id);
+        });
     });
 
     describe('GET /api/note/:id', () => {

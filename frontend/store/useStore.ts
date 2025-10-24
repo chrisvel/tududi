@@ -706,3 +706,68 @@ export const useStore = create<StoreState>((set: any) => ({
         },
     },
 }));
+
+// Function to reset all stores on logout
+export const resetAllStores = () => {
+    const currentState = useStore.getState();
+
+    // Helper to reset a store while preserving its methods
+    const resetStore = (store: any) => {
+        const resetData: any = {};
+
+        for (const key in store) {
+            const value = store[key];
+
+            // If it's a function, keep it
+            if (typeof value === 'function') {
+                resetData[key] = value;
+            }
+            // If it's an array, reset to empty
+            else if (Array.isArray(value)) {
+                resetData[key] = [];
+            }
+            // If it's an object (like pagination), reset to default
+            else if (typeof value === 'object' && value !== null) {
+                if (key === 'pagination') {
+                    resetData[key] = {
+                        total: 0,
+                        limit: 50,
+                        offset: 0,
+                        hasMore: false,
+                    };
+                } else {
+                    resetData[key] = null;
+                }
+            }
+            // If it's a boolean
+            else if (typeof value === 'boolean') {
+                // Keep hasLoaded as false to trigger reload with new user
+                // Reset loading and error states
+                if (key === 'hasLoaded') {
+                    resetData[key] = false;
+                } else if (key === 'isLoading' || key === 'isError') {
+                    resetData[key] = false;
+                } else {
+                    resetData[key] = false;
+                }
+            }
+            // For anything else (numbers, strings, null), reset to appropriate default
+            else {
+                resetData[key] = value === null ? null : typeof value === 'number' ? 0 : false;
+            }
+        }
+
+        return resetData;
+    };
+
+    // Reset all stores
+    useStore.setState({
+        notesStore: resetStore(currentState.notesStore),
+        areasStore: resetStore(currentState.areasStore),
+        projectsStore: resetStore(currentState.projectsStore),
+        tagsStore: resetStore(currentState.tagsStore),
+        tasksStore: resetStore(currentState.tasksStore),
+        inboxStore: resetStore(currentState.inboxStore),
+        modalStore: resetStore(currentState.modalStore),
+    });
+};
