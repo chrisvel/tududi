@@ -122,4 +122,30 @@ yellow "Running Playwright tests matching: ${TEST_PATTERN} on ${BROWSER}..."
 APP_URL="$FRONTEND_URL" \
 E2E_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
 E2E_PASSWORD="${E2E_PASSWORD:-password123}" \
-npx playwright test --grep "$TEST_PATTERN" --project="$BROWSER"
+bash -c '
+  set -euo pipefail
+  TARGET="$0"
+  BROWSER="$1"
+  MODE="${E2E_MODE:-}"
+
+  declare -a ARGS
+  TARGET_IS_FILE=0
+
+  if [ -f "$TARGET" ]; then
+    TARGET_IS_FILE=1
+    ARGS+=("$TARGET")
+  else
+    ARGS+=(--grep "$TARGET")
+  fi
+
+  ARGS+=(--project="$BROWSER")
+
+  if [ "$MODE" = "headed" ]; then
+    ARGS+=(--headed --workers=1)
+  elif [ "$TARGET_IS_FILE" -eq 1 ]; then
+    # Ensure single-file runs stay sequential to avoid duplicate executions
+    ARGS+=(--workers=1)
+  fi
+
+  npx playwright test "${ARGS[@]}"
+' "$TEST_PATTERN" "$BROWSER"

@@ -341,8 +341,11 @@ To run tests:
 # Backend tests
 npm run backend:test
 
-# Frontend tests  
-npm run frontend:test
+# Frontend E2E tests
+npm run test:ui
+
+# Run specific E2E test in headed mode:
+npm run test:ui:headed:single -- tests/tag.spec.ts
 ```
 
 #### Test Coverage
