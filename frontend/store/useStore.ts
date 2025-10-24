@@ -753,7 +753,12 @@ export const resetAllStores = () => {
             }
             // For anything else (numbers, strings, null), reset to appropriate default
             else {
-                resetData[key] = value === null ? null : typeof value === 'number' ? 0 : false;
+                resetData[key] =
+                    value === null
+                        ? null
+                        : typeof value === 'number'
+                          ? 0
+                          : false;
             }
         }
 
