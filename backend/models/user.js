@@ -177,6 +177,27 @@ module.exports = (sequelize) => {
                         );
                     }
                 },
+                afterCreate: async (user, options) => {
+                    // Automatically create a role for every new user
+                    const { Role } = require('./index');
+
+                    // Check if any admin users exist
+                    const adminCount = await Role.count({
+                        where: { is_admin: true },
+                        transaction: options.transaction,
+                    });
+
+                    // First user becomes admin
+                    const isFirstUser = adminCount === 0;
+
+                    await Role.create(
+                        {
+                            user_id: user.id,
+                            is_admin: isFirstUser,
+                        },
+                        { transaction: options.transaction }
+                    );
+                },
             },
         }
     );
