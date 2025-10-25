@@ -111,8 +111,16 @@ const TagModal: React.FC<TagModalProps> = ({
                 );
             }
             handleClose();
-        } catch {
-            showErrorToast(t('errors.failedToSaveTag', 'Failed to save tag.'));
+        } catch (error: any) {
+            // Extract error message from the API response if available
+            let errorMessage = t(
+                'errors.failedToSaveTag',
+                'Failed to save tag.'
+            );
+            if (error?.message) {
+                errorMessage = error.message;
+            }
+            showErrorToast(errorMessage);
         } finally {
             setIsSubmitting(false);
         }

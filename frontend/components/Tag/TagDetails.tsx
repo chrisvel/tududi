@@ -14,9 +14,12 @@ import { Note } from '../../entities/Note';
 import { Project } from '../../entities/Project';
 import TaskList from '../Task/TaskList';
 import ProjectItem from '../Project/ProjectItem';
+import TagModal from './TagModal';
+import ConfirmDialog from '../Shared/ConfirmDialog';
 
 import { Tag } from '../../entities/Tag';
 import { useStore } from '../../store/useStore';
+import { updateTag, deleteTag } from '../../utils/tagsService';
 
 const TagDetails: React.FC = () => {
     const { t } = useTranslation();
@@ -41,7 +44,11 @@ const TagDetails: React.FC = () => {
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
     const [, setProjectToDelete] = useState<Project | null>(null);
-    const [, setIsConfirmDialogOpen] = useState<boolean>(false);
+
+    // State for tag edit/delete
+    const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+        useState<boolean>(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -157,6 +164,35 @@ const TagDetails: React.FC = () => {
         }
     };
 
+    // Tag handlers
+    const handleEditTag = () => {
+        setIsTagModalOpen(true);
+    };
+
+    const handleSaveTag = async (tagData: Tag) => {
+        try {
+            if (tag && tag.uid) {
+                const updatedTag = await updateTag(tag.uid, tagData);
+                setTag(updatedTag);
+            }
+            setIsTagModalOpen(false);
+        } catch (error) {
+            console.error('Error updating tag:', error);
+            throw error;
+        }
+    };
+
+    const handleDeleteTag = async () => {
+        try {
+            if (tag && tag.uid) {
+                await deleteTag(tag.uid);
+                navigate('/tags');
+            }
+        } catch (error) {
+            console.error('Error deleting tag:', error);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
@@ -183,10 +219,28 @@ const TagDetails: React.FC = () => {
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
                 {/* Tag Header */}
-                <div className="flex items-center mb-8">
+                <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-light text-gray-900 dark:text-white">
                         Tag: {tag.name}
                     </h2>
+                    <div className="flex items-center">
+                        <button
+                            onClick={handleEditTag}
+                            className="px-1 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            aria-label="Edit tag"
+                            title="Edit tag"
+                        >
+                            <PencilSquareIcon className="h-5 w-5" />
+                        </button>
+                        <button
+                            onClick={() => setIsConfirmDialogOpen(true)}
+                            className="px-1 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                            aria-label="Delete tag"
+                            title="Delete tag"
+                        >
+                            <TrashIcon className="h-5 w-5" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Summary Stats */}
@@ -398,6 +452,29 @@ const TagDetails: React.FC = () => {
                         </div>
                     )}
             </div>
+
+            {/* Tag Modal */}
+            {isTagModalOpen && tag && (
+                <TagModal
+                    isOpen={isTagModalOpen}
+                    onClose={() => setIsTagModalOpen(false)}
+                    onSave={handleSaveTag}
+                    tag={tag}
+                />
+            )}
+
+            {/* Confirm Dialog */}
+            {isConfirmDialogOpen && tag && (
+                <ConfirmDialog
+                    title={t('tags.deleteTag', 'Delete Tag')}
+                    message={t(
+                        'tags.deleteTagConfirm',
+                        `Are you sure you want to delete the tag "${tag.name}"?`
+                    )}
+                    onConfirm={handleDeleteTag}
+                    onCancel={() => setIsConfirmDialogOpen(false)}
+                />
+            )}
         </div>
     );
 };
