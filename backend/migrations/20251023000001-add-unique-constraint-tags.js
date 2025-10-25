@@ -102,7 +102,9 @@ module.exports = {
                 );
             }
 
-            console.log('✅ Data verification passed - all tags copied correctly');
+            console.log(
+                '✅ Data verification passed - all tags copied correctly'
+            );
 
             // Step 4: Drop old table
             await queryInterface.sequelize.query('DROP TABLE tags;', {

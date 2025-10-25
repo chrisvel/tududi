@@ -44,11 +44,11 @@ const TagDetails: React.FC = () => {
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
     const [, setProjectToDelete] = useState<Project | null>(null);
-    const [, setIsProjectConfirmDialogOpen] = useState<boolean>(false);
 
     // State for tag edit/delete
     const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
-    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+        useState<boolean>(false);
     const navigate = useNavigate();
 
     useEffect(() => {
