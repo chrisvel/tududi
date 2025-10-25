@@ -128,10 +128,17 @@ router.post('/admin/users', requireAdmin, async (req, res) => {
         // Optionally assign admin role if requested and allowed
         const makeAdmin = role === 'admin';
         if (makeAdmin) {
-            await Role.findOrCreate({
+            // Find or create role, and ensure is_admin is true
+            const [userRole, roleCreated] = await Role.findOrCreate({
                 where: { user_id: user.id },
                 defaults: { user_id: user.id, is_admin: true },
             });
+
+            // Update to admin if role exists but is not admin
+            if (!roleCreated && !userRole.is_admin) {
+                userRole.is_admin = true;
+                await userRole.save();
+            }
         }
         res.status(201).json({
             id: user.id,
