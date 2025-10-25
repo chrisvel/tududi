@@ -6,6 +6,7 @@ const {
     Tag,
     Note,
     InboxItem,
+    Role,
 } = require('../models');
 const bcrypt = require('bcrypt');
 const { createMassiveTaskData } = require('./massive-tasks');
@@ -40,6 +41,23 @@ async function seedDatabase() {
             await Tag.destroy({ where: { user_id: testUser.id } });
             await Note.destroy({ where: { user_id: testUser.id } });
             await InboxItem.destroy({ where: { user_id: testUser.id } });
+        }
+
+        // Ensure test user has an admin role
+        console.log('👑 Ensuring test user has admin role...');
+        const [role, roleCreated] = await Role.findOrCreate({
+            where: { user_id: testUser.id },
+            defaults: { user_id: testUser.id, is_admin: true },
+        });
+        if (roleCreated) {
+            console.log('✅ Created admin role for test user');
+        } else if (role.is_admin) {
+            console.log('✅ Test user already has admin role');
+        } else {
+            // Update existing role to be admin
+            role.is_admin = true;
+            await role.save();
+            console.log('✅ Updated test user role to admin');
         }
 
         // Create areas
