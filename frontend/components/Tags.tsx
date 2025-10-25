@@ -69,6 +69,8 @@ const Tags: React.FC = () => {
             setSelectedTag(null);
         } catch (error) {
             console.error('Error saving tag:', error);
+            // Re-throw the error so TagModal knows the operation failed
+            throw error;
         }
     };
 

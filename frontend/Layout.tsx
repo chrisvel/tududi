@@ -330,7 +330,8 @@ const Layout: React.FC<LayoutProps> = ({
             if (isAuthError(error)) {
                 return;
             }
-            closeTagModal();
+            // Re-throw error so TagModal can handle it
+            throw error;
         }
     };
 

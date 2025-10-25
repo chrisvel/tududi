@@ -31,7 +31,24 @@ export const createTag = async (tagData: Tag): Promise<Tag> => {
         body: JSON.stringify(tagData),
     });
 
-    await handleAuthResponse(response, 'Failed to create tag.');
+    if (!response.ok) {
+        // Handle authentication errors first
+        if (response.status === 401) {
+            await handleAuthResponse(response, 'Failed to create tag.');
+            return Promise.reject(new Error('Authentication required'));
+        }
+
+        // Try to get the specific error message from the response
+        let errorMessage = 'Failed to create tag.';
+        try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+        } catch {
+            // If parsing fails, use default message
+        }
+        throw new Error(errorMessage);
+    }
+
     return await response.json();
 };
 
@@ -46,7 +63,23 @@ export const updateTag = async (tagUid: string, tagData: Tag): Promise<Tag> => {
         body: JSON.stringify(tagData),
     });
 
-    await handleAuthResponse(response, 'Failed to update tag.');
+    if (!response.ok) {
+        // Handle authentication errors first
+        if (response.status === 401) {
+            await handleAuthResponse(response, 'Failed to update tag.');
+        }
+
+        // Try to get the specific error message from the response
+        let errorMessage = 'Failed to update tag.';
+        try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+        } catch {
+            // If parsing fails, use default message
+        }
+        throw new Error(errorMessage);
+    }
+
     return await response.json();
 };
 
