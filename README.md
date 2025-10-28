@@ -78,12 +78,6 @@ For detailed setup instructions, configuration options, and getting started guid
 - **[First Steps](https://docs.tududi.com/first-steps)** - Learn the basics and get productive
 - **[Project Sharing](https://docs.tududi.com/project-sharing)** - Collaborate with your team
 
-## 📱 Telegram Integration
-
-Tududi includes built-in Telegram integration that allows you to create tasks directly from Telegram messages. This feature is optional and can be configured after installation through the web interface.
-
-For detailed setup instructions, see the **[Telegram Integration Guide](https://docs.tududi.com/telegram)** at [docs.tududi.com](https://docs.tududi.com)
-
 ## 🚧 Development
 
 Want to contribute or run Tududi from source? Check out our comprehensive development guide:
