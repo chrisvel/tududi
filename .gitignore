@@ -44,3 +44,6 @@ public/assets/
 # Playwright test results
 test-results/
 .last-run.json
+
+# Temporary files
+tmp/
