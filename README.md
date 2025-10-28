@@ -5,7 +5,7 @@ smart recurring tasks, and seamless Telegram integration. Get focused, stay prod
 
 ![Light Mode Screenshot](screenshots/all-light.png)
 
-More screenshots [here](#screenshots).
+More screenshots are [available here](#screenshots).
 
 ## 🚀 How It Works
 
@@ -14,6 +14,7 @@ This app allows users to manage their tasks, projects, areas, notes, and tags in
 ## 🧠 Philosophy
 
 For the thinking behind tududi, read:
+
 - [Designing a Life Management System That Doesn't Fight Back](https://medium.com/@chrisveleris/designing-a-life-management-system-that-doesnt-fight-back-2fd58773e857)
 - [From Task to Table: How I Finally Got to the Korean Burger](https://medium.com/@chrisveleris/from-task-to-table-how-i-finally-got-to-the-korean-burger-01245a14d491)
 
@@ -41,8 +42,6 @@ For the thinking behind tududi, read:
   - Receive daily digests of your tasks
   - Quick capture of ideas and todos on the go
 
-
-
 ## 🗺️ Roadmap
 
 Check out our [GitHub Project](https://github.com/users/chrisvel/projects/2) for planned features and progress.
@@ -52,6 +51,7 @@ Check out our [GitHub Project](https://github.com/users/chrisvel/projects/2) for
 Get up and running quickly with our comprehensive documentation:
 
 ### Quick Start
+
 ```bash
 docker pull chrisvel/tududi:latest
 
@@ -73,18 +73,19 @@ For detailed setup instructions, configuration options, and getting started guid
 
 **[docs.tududi.com](https://docs.tududi.com)**
 
-- **[Installation Guide](https://docs.tududi.com/installation)** - Docker, development setup, and deployment
-- **[Configuration](https://docs.tududi.com/configuration)** - Environment variables and advanced settings
+- **[Installation Guide](https://docs.tududi.com/getting-started/installation)** - Docker, development setup, and deployment
+- **[Configuration](https://docs.tududi.com/getting-started/configuration)** - Environment variables and advanced settings
 - **[First Steps](https://docs.tududi.com/first-steps)** - Learn the basics and get productive
-- **[Project Sharing](https://docs.tududi.com/project-sharing)** - Collaborate with your team
+- **[Project Sharing](https://docs.tududi.com/features/project-sharing)** - Collaborate with your team
 
 ## 🚧 Development
 
 Want to contribute or run Tududi from source? Check out our comprehensive development guide:
 
-**[Development Setup Guide](https://docs.tududi.com/installation#development-installation)**
+**[Development Setup Guide](https://docs.tududi.com/#-development-setup)**
 
 Quick overview:
+
 ```bash
 # Clone and install
 git clone https://github.com/chrisvel/tududi.git
@@ -103,6 +104,7 @@ For database management, testing, and detailed development instructions, see [do
 Contributions to Tududi are welcome! Whether it's bug fixes, new features, documentation improvements, or translations, we appreciate your help.
 
 **Quick Start:**
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
 3. Make your changes
@@ -112,7 +114,6 @@ Contributions to Tududi are welcome! Whether it's bug fixes, new features, docum
 7. Open a Pull Request
 
 For detailed contribution guidelines, development setup, and coding standards, see [docs.tududi.com/contributing](https://docs.tududi.com/contributing)
-
 
 ## 📜 License
 
@@ -142,6 +143,7 @@ Join the tududi community:
 ![Light Mobile Screenshot](screenshots/mobile-all-light.png)
 
 ![Dark Mobile Screenshot](screenshots/mobile-all-dark.png)
+
 ---
 
 README created by [Chris Veleris](https://github.com/chrisvel) for `tududi`.
