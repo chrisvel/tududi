@@ -2,6 +2,10 @@
 
 module.exports = {
     up: async (queryInterface, Sequelize) => {
+        // CRITICAL: Disable foreign keys BEFORE starting transaction
+        // (SQLite requires this to be set outside of a transaction)
+        await queryInterface.sequelize.query('PRAGMA foreign_keys = OFF;');
+
         const transaction = await queryInterface.sequelize.transaction();
 
         try {
@@ -106,6 +110,36 @@ module.exports = {
                 '✅ Data verification passed - all tags copied correctly'
             );
 
+            // Step 3.7: Save junction table data before dropping old tags table
+            await queryInterface.sequelize.query(
+                `
+                CREATE TABLE projects_tags_backup AS
+                SELECT * FROM projects_tags;
+            `,
+                { transaction }
+            );
+
+            await queryInterface.sequelize.query(
+                `
+                CREATE TABLE tasks_tags_backup AS
+                SELECT * FROM tasks_tags;
+            `,
+                { transaction }
+            );
+
+            const [projectsTagsBackupCount] =
+                await queryInterface.sequelize.query(
+                    'SELECT COUNT(*) as count FROM projects_tags_backup;',
+                    { transaction, type: Sequelize.QueryTypes.SELECT }
+                );
+            const [tasksTagsBackupCount] = await queryInterface.sequelize.query(
+                'SELECT COUNT(*) as count FROM tasks_tags_backup;',
+                { transaction, type: Sequelize.QueryTypes.SELECT }
+            );
+            console.log(
+                `📦 Backed up junction tables: ${projectsTagsBackupCount.count} project tags, ${tasksTagsBackupCount.count} task tags`
+            );
+
             // Step 4: Drop old table
             await queryInterface.sequelize.query('DROP TABLE tags;', {
                 transaction,
@@ -130,6 +164,52 @@ module.exports = {
                 transaction,
             });
 
+            // Step 7.5: Restore junction table data
+            await queryInterface.sequelize.query(
+                `
+                DELETE FROM projects_tags;
+            `,
+                { transaction }
+            );
+
+            await queryInterface.sequelize.query(
+                `
+                INSERT INTO projects_tags (project_id, tag_id, created_at, updated_at)
+                SELECT project_id, tag_id, created_at, updated_at
+                FROM projects_tags_backup;
+            `,
+                { transaction }
+            );
+
+            await queryInterface.sequelize.query(
+                `
+                DELETE FROM tasks_tags;
+            `,
+                { transaction }
+            );
+
+            await queryInterface.sequelize.query(
+                `
+                INSERT INTO tasks_tags (task_id, tag_id, created_at, updated_at)
+                SELECT task_id, tag_id, created_at, updated_at
+                FROM tasks_tags_backup;
+            `,
+                { transaction }
+            );
+
+            // Step 7.6: Drop backup tables
+            await queryInterface.sequelize.query(
+                'DROP TABLE projects_tags_backup;',
+                { transaction }
+            );
+
+            await queryInterface.sequelize.query(
+                'DROP TABLE tasks_tags_backup;',
+                { transaction }
+            );
+
+            console.log('✅ Restored junction table data');
+
             // Step 8: Final verification
             const [finalCount] = await queryInterface.sequelize.query(
                 'SELECT COUNT(*) as count FROM tags;',
@@ -143,13 +223,40 @@ module.exports = {
                 );
             }
 
+            // Step 9: Verify junction tables still have their data
+            const [projectsTagsCount] = await queryInterface.sequelize.query(
+                'SELECT COUNT(*) as count FROM projects_tags;',
+                { transaction, type: Sequelize.QueryTypes.SELECT }
+            );
+            const [tasksTagsCount] = await queryInterface.sequelize.query(
+                'SELECT COUNT(*) as count FROM tasks_tags;',
+                { transaction, type: Sequelize.QueryTypes.SELECT }
+            );
+            console.log(
+                `📊 Junction tables preserved: ${projectsTagsCount.count} project tags, ${tasksTagsCount.count} task tags`
+            );
+
             await transaction.commit();
+
+            // Re-enable foreign keys AFTER committing transaction
+            await queryInterface.sequelize.query('PRAGMA foreign_keys = ON;');
+
             console.log('✅ Successfully fixed tags table unique constraints');
             console.log(
                 `✅ All ${finalCount.count} tags preserved (${duplicatesResult.count} duplicates removed)`
             );
         } catch (error) {
             await transaction.rollback();
+
+            // Re-enable foreign keys even on error (must be done after rollback)
+            try {
+                await queryInterface.sequelize.query(
+                    'PRAGMA foreign_keys = ON;'
+                );
+            } catch (pragmaError) {
+                console.error('Failed to re-enable foreign keys:', pragmaError);
+            }
+
             console.error('❌ Error fixing tags table:', error);
             console.error(
                 '❌ Transaction rolled back - no changes were made to the database'
