@@ -103,9 +103,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         }
     };
 
-    const handleResultClick = (result: SearchResult) => {
-        const identifier = result.uid || result.id;
+    const createSlug = (name: string): string => {
+        return name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
+    };
 
+    const handleResultClick = (result: SearchResult) => {
         // Close the dropdown before navigating
         onClose();
 
@@ -116,20 +121,44 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
         switch (result.type) {
             case 'Task':
-                navigate(`/task/${identifier}`);
+                // Tasks use uid directly
+                if (result.uid) {
+                    navigate(`/task/${result.uid}`);
+                }
                 break;
-            case 'Project':
-                navigate(`/projects/${identifier}`);
+            case 'Project': {
+                // Projects need uid-slug format
+                if (result.uid) {
+                    const slug = createSlug(result.name);
+                    navigate(`/project/${result.uid}-${slug}`);
+                }
                 break;
-            case 'Area':
-                navigate(`/areas/${identifier}`);
+            }
+            case 'Area': {
+                // Areas navigate to projects page with area filter
+                if (result.uid) {
+                    const slug = createSlug(result.name);
+                    navigate(`/projects?area=${result.uid}-${slug}`);
+                }
                 break;
-            case 'Note':
-                navigate(`/notes/${identifier}`);
+            }
+            case 'Note': {
+                // Notes need uid-slug format
+                const noteName = result.title || result.name;
+                if (result.uid && noteName) {
+                    const slug = createSlug(noteName);
+                    navigate(`/note/${result.uid}-${slug}`);
+                }
                 break;
-            case 'Tag':
-                navigate(`/tags/${identifier}`);
+            }
+            case 'Tag': {
+                // Tags use uid-slug format
+                if (result.uid) {
+                    const slug = createSlug(result.name);
+                    navigate(`/tag/${result.uid}-${slug}`);
+                }
                 break;
+            }
         }
     };
 

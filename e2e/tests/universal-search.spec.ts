@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import {
   login,
   navigateAndWait,
@@ -10,7 +10,7 @@ import {
 } from '../helpers/testHelpers';
 
 // Helper to create a task for search testing
-async function createTaskForSearch(page, taskName) {
+async function createTaskForSearch(page: Page, taskName: string) {
   const taskInput = page.locator('[data-testid="new-task-input"]');
   await taskInput.fill(taskName);
   await taskInput.press('Enter');
@@ -18,7 +18,7 @@ async function createTaskForSearch(page, taskName) {
 }
 
 // Helper to create a project for search testing
-async function createProjectForSearch(page, projectName) {
+async function createProjectForSearch(page: Page, projectName: string) {
   const addProjectButton = page.locator('button[aria-label="Add Project"]');
   const nameInput = page.locator('[data-testid="project-name-input"]');
 
@@ -32,7 +32,7 @@ async function createProjectForSearch(page, projectName) {
 }
 
 // Helper to create a note for search testing
-async function createNoteForSearch(page, noteTitle, noteContent = '') {
+async function createNoteForSearch(page: Page, noteTitle: string, noteContent: string = '') {
   const addNoteButton = page.locator('[data-testid="add-note-button"]');
   const titleInput = page.locator('[data-testid="note-title-input"]');
 
@@ -177,4 +177,99 @@ test('user can navigate to search result by clicking on it', async ({ page, base
 
   // Either the search closed, or we navigated away, or both
   expect(isStillVisible || page.url().includes('/task/')).toBeTruthy();
+});
+
+test('user can navigate to different entity types from search results using correct URLs', async ({ page, baseURL }) => {
+  const appUrl = await login(page, baseURL);
+
+  // Create unique test data for different entity types
+  const searchTerm = createUniqueEntity('NavTest');
+  const taskName = `${searchTerm} Task`;
+  const projectName = `${searchTerm} Project`;
+  const noteName = `${searchTerm} Note`;
+  const tagName = `${searchTerm}-tag`;
+
+  // Create a task
+  await navigateAndWait(page, appUrl + '/tasks');
+  await createTaskForSearch(page, taskName);
+
+  // Create a project
+  await navigateAndWait(page, appUrl + '/projects');
+  await createProjectForSearch(page, projectName);
+
+  // Create a note
+  await createNoteForSearch(page, noteName, 'Test note content');
+
+  // Create a tag via sidebar
+  const addTagButton = page.locator('[data-testid="add-tag-button"]');
+  const tagNameInput = page.locator('[data-testid="tag-name-input"]');
+  await clickAndWaitForModal(addTagButton, tagNameInput);
+  await fillInputReliably(tagNameInput, tagName);
+  await page.locator('[data-testid="tag-save-button"]').click();
+  await waitForElement(tagNameInput, { state: 'hidden' });
+  await waitForNetworkIdle(page);
+
+  // Navigate to a neutral page
+  await navigateAndWait(page, appUrl + '/tasks');
+
+  // Open universal search
+  const searchInput = page.locator('input[placeholder*="Search" i]').first();
+  await expect(searchInput).toBeVisible();
+  await searchInput.click();
+  await waitForElement(searchInput);
+  await searchInput.fill(searchTerm);
+  await waitForNetworkIdle(page);
+
+  // Wait for search results
+  const searchResults = page.locator('[data-testid="search-results"]');
+  await expect(searchResults).toBeVisible({ timeout: 10000 });
+
+  // Test Task navigation
+  const taskResult = searchResults.locator('[data-testid^="search-result-task-"]').first();
+  await expect(taskResult).toBeVisible();
+  await taskResult.click();
+  await page.waitForURL(/\/task\/[a-zA-Z0-9-]+$/);
+  expect(page.url()).toMatch(/\/task\/[a-zA-Z0-9-]+$/);
+
+  // Go back and search again for project
+  await navigateAndWait(page, appUrl + '/tasks');
+  await searchInput.click();
+  await waitForElement(searchInput);
+  await searchInput.fill(searchTerm);
+  await waitForNetworkIdle(page);
+  await expect(searchResults).toBeVisible();
+
+  const projectResult = searchResults.locator('[data-testid^="search-result-project-"]').first();
+  await expect(projectResult).toBeVisible();
+  await projectResult.click();
+  await page.waitForURL(/\/project\/[a-zA-Z0-9-]+/);
+  expect(page.url()).toMatch(/\/project\/[a-zA-Z0-9-]+/);
+
+  // Go back and search again for note
+  await navigateAndWait(page, appUrl + '/tasks');
+  await searchInput.click();
+  await waitForElement(searchInput);
+  await searchInput.fill(searchTerm);
+  await waitForNetworkIdle(page);
+  await expect(searchResults).toBeVisible();
+
+  const noteResult = searchResults.locator('[data-testid^="search-result-note-"]').first();
+  await expect(noteResult).toBeVisible();
+  await noteResult.click();
+  await page.waitForURL(/\/note\/[a-zA-Z0-9-]+/);
+  expect(page.url()).toMatch(/\/note\/[a-zA-Z0-9-]+/);
+
+  // Go back and search again for tag
+  await navigateAndWait(page, appUrl + '/tasks');
+  await searchInput.click();
+  await waitForElement(searchInput);
+  await searchInput.fill(searchTerm);
+  await waitForNetworkIdle(page);
+  await expect(searchResults).toBeVisible();
+
+  const tagResult = searchResults.locator('[data-testid^="search-result-tag-"]').first();
+  await expect(tagResult).toBeVisible();
+  await tagResult.click();
+  await page.waitForURL(/\/tag\/[a-zA-Z0-9-]+/);
+  expect(page.url()).toMatch(/\/tag\/[a-zA-Z0-9-]+/);
 });
