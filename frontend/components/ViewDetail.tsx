@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -94,6 +94,18 @@ const ViewDetail: React.FC = () => {
             };
         }
     }, [isEditingName, editedName]);
+
+    // Filter out completed tasks for display count
+    const activeTasks = useMemo(() => {
+        return tasks.filter((task) => {
+            const isCompleted =
+                task.status === 'done' ||
+                task.status === 'archived' ||
+                task.status === 2 ||
+                task.status === 3;
+            return !isCompleted;
+        });
+    }, [tasks]);
 
     const fetchViewAndResults = async () => {
         if (!uid) return;
@@ -505,7 +517,7 @@ const ViewDetail: React.FC = () => {
                 {tasks.length > 0 && (
                     <div className="mb-8">
                         <h3 className="text-lg font-light text-gray-900 dark:text-white mb-4">
-                            {t('tasks.title')} ({tasks.length})
+                            {t('tasks.title')} ({activeTasks.length})
                         </h3>
                         <TaskList
                             tasks={tasks}

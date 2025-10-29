@@ -313,18 +313,18 @@ describe('Views Routes', () => {
                 name: 'personal',
             });
 
-            // Create tasks with tags
+            // Create tasks with tags (mix of active and completed)
             const task1 = await Task.create({
                 user_id: user.id,
                 name: 'Work task 1',
-                status: 0,
+                status: 0, // active
             });
             await task1.addTag(workTag);
 
             const task2 = await Task.create({
                 user_id: user.id,
                 name: 'Urgent work task',
-                status: 0,
+                status: 0, // active
             });
             await task2.addTag(workTag);
             await task2.addTag(urgentTag);
@@ -332,9 +332,17 @@ describe('Views Routes', () => {
             const task3 = await Task.create({
                 user_id: user.id,
                 name: 'Personal task',
-                status: 0,
+                status: 0, // active
             });
             await task3.addTag(personalTag);
+
+            // Add completed task with work tag
+            const task4 = await Task.create({
+                user_id: user.id,
+                name: 'Completed work task',
+                status: 2, // completed (done)
+            });
+            await task4.addTag(workTag);
         });
 
         it('should create view with tags and retrieve matching results', async () => {
@@ -365,8 +373,9 @@ describe('Views Routes', () => {
             const tasks = searchResponse.body.results.filter(
                 (r) => r.type === 'Task'
             );
-            expect(tasks.length).toBe(2);
-            // Both tasks should have 'work' in their name (case-insensitive)
+            // Should now return 3 tasks (2 active + 1 completed)
+            expect(tasks.length).toBe(3);
+            // All tasks should have 'work' in their name (case-insensitive)
             expect(
                 tasks.every((t) => t.name.toLowerCase().includes('work'))
             ).toBe(true);
@@ -421,6 +430,83 @@ describe('Views Routes', () => {
             const getResponse = await agent.get(`/api/views/${viewUid}`);
             expect(getResponse.status).toBe(200);
             expect(getResponse.body.tags).toEqual(['personal']);
+        });
+
+        it('should return both active and completed tasks in search results', async () => {
+            // Create a view with work tag
+            const createResponse = await agent.post('/api/views').send({
+                name: 'All Work Tasks View',
+                filters: ['Task'],
+                tags: ['work'],
+            });
+
+            expect(createResponse.status).toBe(201);
+
+            // Search for work tasks
+            const searchResponse = await agent.get('/api/search').query({
+                tags: 'work',
+                filters: 'Task',
+            });
+
+            expect(searchResponse.status).toBe(200);
+            const tasks = searchResponse.body.results.filter(
+                (r) => r.type === 'Task'
+            );
+
+            // Should return 3 tasks: 2 active + 1 completed
+            expect(tasks.length).toBe(3);
+
+            // Verify we have both active and completed tasks
+            const activeTasks = tasks.filter(
+                (t) => t.status === 0 || t.status === 'active'
+            );
+            const completedTasks = tasks.filter(
+                (t) => t.status === 2 || t.status === 'done'
+            );
+
+            expect(activeTasks.length).toBe(2);
+            expect(completedTasks.length).toBe(1);
+
+            // Verify the completed task is included
+            const completedTask = tasks.find(
+                (t) => t.name === 'Completed work task'
+            );
+            expect(completedTask).toBeDefined();
+            expect(completedTask.status).toBe(2); // done status
+        });
+
+        it('should include completed tasks with correct status values', async () => {
+            // Create tasks with different completion statuses
+            const archivedTask = await Task.create({
+                user_id: user.id,
+                name: 'Archived work task',
+                status: 3, // archived
+            });
+            await archivedTask.addTag(workTag);
+
+            // Search for all work tasks
+            const searchResponse = await agent.get('/api/search').query({
+                tags: 'work',
+                filters: 'Task',
+            });
+
+            expect(searchResponse.status).toBe(200);
+            const tasks = searchResponse.body.results.filter(
+                (r) => r.type === 'Task'
+            );
+
+            // Should now have 4 tasks (2 active, 1 done, 1 archived)
+            expect(tasks.length).toBe(4);
+
+            // Verify different status types are present
+            const statusTypes = tasks.map((t) => t.status);
+            expect(statusTypes).toContain(0); // active
+            expect(statusTypes).toContain(2); // done
+            expect(statusTypes).toContain(3); // archived
+
+            // Frontend will filter these out, but backend should provide them all
+            const nonActiveTasks = tasks.filter((t) => t.status >= 2);
+            expect(nonActiveTasks.length).toBe(2); // done + archived
         });
     });
 
