@@ -58,7 +58,11 @@ const Login: React.FC = () => {
         <div className="bg-gray-100 dark:bg-gray-900 flex flex-col items-center justify-center min-h-screen px-4">
             <div className="mb-8">
                 <img
-                    src={isDarkMode ? '/wide-logo-light.png' : '/wide-logo-dark.png'}
+                    src={
+                        isDarkMode
+                            ? '/wide-logo-light.png'
+                            : '/wide-logo-dark.png'
+                    }
                     alt="tududi"
                     className="h-24 w-auto opacity-10"
                 />

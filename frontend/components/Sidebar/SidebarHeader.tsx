@@ -12,7 +12,11 @@ const SidebarHeader: React.FC<SidebarHeaderProps> = ({ isDarkMode }) => {
                 className="flex justify-center items-center mb-2 no-underline"
             >
                 <img
-                    src={isDarkMode ? '/wide-logo-light.png' : '/wide-logo-dark.png'}
+                    src={
+                        isDarkMode
+                            ? '/wide-logo-light.png'
+                            : '/wide-logo-dark.png'
+                    }
                     alt="tududi"
                     className="h-12 w-auto"
                 />

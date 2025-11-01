@@ -168,7 +168,11 @@ const Navbar: React.FC<NavbarProps> = ({
                         className={`flex items-center no-underline ml-2 ${isSidebarOpen ? 'sm:ml-0' : 'sm:ml-2'}`}
                     >
                         <img
-                            src={isDarkMode ? '/wide-logo-light.png' : '/wide-logo-dark.png'}
+                            src={
+                                isDarkMode
+                                    ? '/wide-logo-light.png'
+                                    : '/wide-logo-dark.png'
+                            }
                             alt="tududi"
                             className="h-9 w-auto"
                         />

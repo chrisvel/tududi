@@ -39,7 +39,11 @@ const About: React.FC<AboutProps> = ({ isDarkMode = false }) => {
                     <div className="text-center mb-8">
                         <div className="flex justify-center mb-4">
                             <img
-                                src={isDarkMode ? '/wide-logo-light.png' : '/wide-logo-dark.png'}
+                                src={
+                                    isDarkMode
+                                        ? '/wide-logo-light.png'
+                                        : '/wide-logo-dark.png'
+                                }
                                 alt="tududi"
                                 className="h-16 w-auto"
                             />
