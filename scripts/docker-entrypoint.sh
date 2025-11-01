@@ -3,6 +3,7 @@ set -eu
 
 # Runtime UID/GID Configuration
 # This script allows setting the user ID and group ID at runtime using PUID and PGID environment variables
+# Alpine-compatible version (uses su-exec instead of gosu, Alpine user management commands)
 
 # Get runtime UID/GID from environment variables, fallback to build-time defaults
 PUID=${PUID:-${APP_UID:-1001}}
@@ -39,25 +40,28 @@ set_db_file_permissions() {
 if [ "$CURRENT_UID" != "$PUID" ] || [ "$CURRENT_GID" != "$PGID" ]; then
     echo "Configuring user permissions..."
 
-    userdel app 2>/dev/null || true
-    groupdel app 2>/dev/null || true
+    # Alpine uses deluser/delgroup instead of userdel/groupdel
+    deluser app 2>/dev/null || true
+    delgroup app 2>/dev/null || true
 
     if getent group "$PGID" >/dev/null 2>&1; then
         TARGET_GROUP=$(getent group "$PGID" | cut -d: -f1)
         echo "Using existing group '$TARGET_GROUP' with GUID $PGID"
     else
         # Create group "app" with our target group id
-        groupadd -g "$PGID" app
+        # Alpine: addgroup -g GID name
+        addgroup -g "$PGID" app
         TARGET_GROUP="app"
         echo "Created 'app' group with GID: $PGID"
     fi
 
-    TARGET_USER=$(getent passwd "$PUID" | cut -d: -f1)
+    TARGET_USER=$(getent passwd "$PUID" | cut -d: -f1 2>/dev/null || echo "")
     if [ -n "$TARGET_USER" ]; then
         echo "Using existing user '$TARGET_USER' with UID $PUID"
     else
         # Create user "app" with our target user id
-        useradd -m -u "$PUID" -g "$TARGET_GROUP" app
+        # Alpine: adduser -D -u UID -G GROUP name
+        adduser -D -u "$PUID" -G "$TARGET_GROUP" app
         echo "Created 'app' user with UID: $PUID"
         TARGET_USER=app
     fi
@@ -75,5 +79,6 @@ chmod 770 /app/backend/db /app/backend/certs /app/backend/uploads
 set_db_file_permissions
 
 # Drop privileges and execute the original start script
+# Alpine uses su-exec instead of gosu
 echo "Starting application as user $TARGET_USER"
-exec gosu "$TARGET_USER" dumb-init -- /app/backend/cmd/start.sh
+exec su-exec "$TARGET_USER" dumb-init -- /app/backend/cmd/start.sh

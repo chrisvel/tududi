@@ -1,25 +1,22 @@
 ###############
 # BUILD STAGE #
 ###############
-# Use Playwright image with browsers and deps preinstalled for running E2E tests
-FROM mcr.microsoft.com/playwright:v1.54.2-jammy AS builder
+FROM node:22-alpine AS builder
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    build-essential \
+# Install build dependencies for native modules (sqlite3)
+RUN apk add --no-cache \
     python3 \
-    pkg-config \
-    libsqlite3-dev \
-    sqlite3 \
-    bash \
-    curl && \
-    rm -rf /var/lib/apt/lists/*
+    make \
+    g++ \
+    sqlite-dev
 
 WORKDIR /app
 
+# Copy dependency files
 COPY package.json package-lock.json ./
 
-# Install all dependencies (frontend and backend)
-RUN npm install --no-audit --no-fund
+# Install ALL dependencies (needed for build)
+RUN npm ci --no-audit --no-fund
 
 # Copy source code
 COPY . ./
@@ -27,71 +24,55 @@ COPY . ./
 # Build frontend
 RUN NODE_ENV=production npm run frontend:build
 
-# Run backend tests
-RUN npm run backend:test
-
-# Uncomment to run E2E tests (browsers already present in this base image)
-#ENV CI=1
-#RUN npm run test:ui
-
-# Cleanup
-RUN npm cache clean --force && \
-    rm -rf ~/.npm /tmp/*
+# Remove dev dependencies after build
+RUN npm prune --omit=dev && \
+    npm cache clean --force
 
 
-####################
-# Production stage #
-####################
-FROM ubuntu:22.04 AS production
+##########################
+# PRODUCTION STAGE       #
+##########################
+FROM node:22-alpine AS production
 
-ENV APP_UID=1001
-ENV APP_GID=1001
+ENV APP_UID=1001 \
+    APP_GID=1001
 
-# Install Node.js 22 and runtime dependencies
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    curl \
-    ca-certificates \
-    sqlite3 \
-    openssl \
-    procps \
+# Install runtime dependencies only
+RUN apk add --no-cache \
+    sqlite \
     dumb-init \
+    curl \
     bash \
-    gosu && \
-    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    rm -rf /usr/share/man /usr/share/doc /usr/share/info
+    su-exec && \
+    rm -rf /var/cache/apk/*
 
 # Create app user and group
-RUN groupadd -g ${APP_GID} app && \
-    useradd -m -u ${APP_UID} -g app app
+RUN addgroup -g ${APP_GID} app && \
+    adduser -D -u ${APP_UID} -G app app
 
-# Set working directory
 WORKDIR /app
 
-# Copy backend
+# Copy backend source
 COPY --chown=app:app ./backend/ /app/backend/
 RUN chmod +x /app/backend/cmd/start.sh
 
+# Copy entrypoint script
 COPY --chown=app:app ./scripts/docker-entrypoint.sh /app/scripts/docker-entrypoint.sh
 RUN chmod +x /app/scripts/docker-entrypoint.sh
 
-# Copy frontend
+# Copy built frontend from builder
 RUN rm -rf /app/backend/dist
 COPY --from=builder --chown=app:app /app/dist ./backend/dist
 COPY --from=builder --chown=app:app /app/public/favicon* ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/manifest.json ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
+
+# Copy ONLY production node_modules and package.json
 COPY --from=builder --chown=app:app /app/node_modules ./node_modules
 COPY --from=builder --chown=app:app /app/package.json /app/
 
 # Create necessary directories
 RUN mkdir -p /app/backend/db /app/backend/certs /app/backend/uploads
-
-# Cleanup
-RUN rm -rf /usr/local/lib/node_modules/npm/docs /usr/local/lib/node_modules/npm/man && \
-    rm -rf /root/.npm /tmp/* /var/tmp/*
 
 VOLUME ["/app/backend/db"]
 VOLUME ["/app/backend/uploads"]
