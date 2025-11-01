@@ -9,7 +9,7 @@ const Login: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    const [isDarkMode] = useState<boolean>(() => {
         const storedPreference = localStorage.getItem('isDarkMode');
         return storedPreference !== null
             ? storedPreference === 'true'
