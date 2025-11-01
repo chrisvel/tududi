@@ -101,19 +101,30 @@ For database management, testing, and detailed development instructions, see [do
 
 ## 🤝 Contributing
 
-Contributions to Tududi are welcome! Whether it's bug fixes, new features, documentation improvements, or translations, we appreciate your help.
+Contributions to tududi are welcome! Whether it's bug fixes, new features, documentation improvements, or translations, we appreciate your help.
 
-**Quick Start:**
+**Before you start:**
+
+- Check [existing issues](https://github.com/chrisvel/tududi/issues) and [discussions](https://github.com/chrisvel/tududi/discussions) to avoid duplicate work
+- For bugs, [open an issue](https://github.com/chrisvel/tududi/issues/new/choose) with the bug report template
+- For feature requests, start a [discussion](https://github.com/chrisvel/tududi/discussions/categories/feature-requests)
+
+**Quick contribution workflow:**
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Make your changes
-4. Run tests (`npm run backend:test && npm run frontend:test`)
-5. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-6. Push to your fork (`git push origin feature/AmazingFeature`)
-7. Open a Pull Request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes following our [code standards](.github/CONTRIBUTING.md#code-standards)
+4. Run linting and tests: `npm run pre-push`
+5. Commit your changes with a clear message
+6. Push to your fork and open a Pull Request
 
-For detailed contribution guidelines, development setup, and coding standards, see [docs.tududi.com/contributing](https://docs.tududi.com/contributing)
+**Read our [Contributing Guide](.github/CONTRIBUTING.md) for:**
+- Development setup and workflow
+- Code standards and best practices
+- Testing requirements
+- Database migrations
+- Translation guidelines
+- Pull request checklist
 
 ## 📜 License
 
