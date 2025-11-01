@@ -253,7 +253,10 @@ const App: React.FC = () => {
                                     />
                                 }
                             />
-                            <Route path="/about" element={<About />} />
+                            <Route
+                                path="/about"
+                                element={<About isDarkMode={isDarkMode} />}
+                            />
                             <Route
                                 path="/admin/users"
                                 element={

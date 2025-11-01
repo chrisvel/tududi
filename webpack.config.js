@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -66,6 +67,17 @@ module.exports = {
       title: 'tududi',
       filename: 'index.html',
       template: 'public/index.html'
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'public',
+          to: '',
+          globOptions: {
+            ignore: ['**/index.html'],
+          },
+        },
+      ],
     }),
   ].filter(Boolean),
   module: {

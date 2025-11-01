@@ -150,34 +150,33 @@
         .logo {
             display: flex;
             align-items: center;
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: #1e293b;
             text-decoration: none;
             transition: all 0.3s ease;
-        }
-
-        [data-theme="dark"] .logo {
-            color: white;
         }
 
         .logo:hover {
             transform: translateY(-1px);
         }
 
-        .logo-icon {
-            margin-right: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .logo-image {
+            height: 36px;
+            width: auto;
         }
 
-        .logo-icon svg {
-            color: #1e293b;
+        .logo-light {
+            display: block;
         }
 
-        [data-theme="dark"] .logo-icon svg {
-            color: white;
+        .logo-dark {
+            display: none;
+        }
+
+        [data-theme="dark"] .logo-light {
+            display: none;
+        }
+
+        [data-theme="dark"] .logo-dark {
+            display: block;
         }
 
         .nav-links {
@@ -1002,13 +1001,8 @@
                 padding: 15px 0;
             }
 
-            .logo {
-                font-size: 1.5rem;
-            }
-
-            .logo-icon svg {
-                width: 24px;
-                height: 24px;
+            .logo-image {
+                height: 28px;
             }
 
             .nav-links {
@@ -1292,13 +1286,8 @@
         <div class="container">
             <nav>
                 <a href="/" class="logo">
-                    <div class="logo-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="28" height="28">
-                            <circle cx="16" cy="16" r="13" stroke="currentColor" stroke-width="3.5" fill="none"/>
-                            <path d="M10 16l4 4 8-8" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                        </svg>
-                    </div>
-                    <span>tududi</span>
+                    <img src="public/wide-logo-dark.png" alt="tududi" class="logo-image logo-light">
+                    <img src="public/wide-logo-light.png" alt="tududi" class="logo-image logo-dark">
                 </a>
                 <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
                     <i class="fas fa-bars"></i>

@@ -1,7 +1,14 @@
-# 📝 tududi
+<p align="center">
+  <img src="public/wide-logo-light.png" alt="tududi" width="400">
+</p>
 
-`tududi` is the self-hosted task management tool that puts you in control. Organize your life and projects with a clear, hierarchical structure,
-smart recurring tasks, and seamless Telegram integration. Get focused, stay productive, and keep your data private.
+<p align="center">
+  <h2 align="center">Productivity made simple</p></h2>
+  <p align="center">Organize your life and projects with a clear, hierarchical structure,<br>
+  smart recurring tasks, and seamless Telegram integration.<br>
+  Get focused, stay productive, and keep your data private.
+  </p>
+</p>
 
 ![Light Mode Screenshot](screenshots/all-light.png)
 
@@ -23,12 +30,12 @@ For the thinking behind tududi, read:
 - **Task Management**: Create, update, and delete tasks. Mark tasks as completed and view them by different filters (Today, Upcoming, Someday). Order them by Name, Due Date, Date Created, or Priority.
 - **Subtasks**: Break down complex tasks into smaller, manageable subtasks with progress tracking and seamless navigation.
 - **Recurring Tasks**: Comprehensive recurring task system with intelligent parent-child relationships:
-  - **Multiple Recurrence Patterns**: Daily, weekly, monthly, monthly on specific weekdays, and monthly last day
-  - **Completion-Based Recurrence**: Option to repeat based on completion date rather than due date
-  - **Smart Parent-Child Linking**: Generated task instances maintain connection to their original recurring pattern
-  - **Direct Parent Editing**: Edit recurrence settings directly from any generated task instance
-  - **Flexible Scheduling**: Set custom intervals (every 2 weeks, every 3 months, etc.)
-  - **End Date Control**: Optional end dates for recurring series
+    - **Multiple Recurrence Patterns**: Daily, weekly, monthly, monthly on specific weekdays, and monthly last day
+    - **Completion-Based Recurrence**: Option to repeat based on completion date rather than due date
+    - **Smart Parent-Child Linking**: Generated task instances maintain connection to their original recurring pattern
+    - **Direct Parent Editing**: Edit recurrence settings directly from any generated task instance
+    - **Flexible Scheduling**: Set custom intervals (every 2 weeks, every 3 months, etc.)
+    - **End Date Control**: Optional end dates for recurring series
 - **Project Sharing & Collaboration**: Share projects with team members and collaborate effectively
 - **Quick Notes**: Create, update, delete, or assign text notes to projects.
 - **Tags**: Create tags for tasks and notes to enhance organization.
@@ -38,9 +45,9 @@ For the thinking behind tududi, read:
 - **Responsive Design**: Accessible from various devices, ensuring a consistent experience across desktops, tablets, and mobile phones.
 - **Multi-Language Support**: Available in 24 languages with full localization support for a truly global productivity experience.
 - **Telegram Integration**:
-  - Create tasks directly through Telegram messages
-  - Receive daily digests of your tasks
-  - Quick capture of ideas and todos on the go
+    - Create tasks directly through Telegram messages
+    - Receive daily digests of your tasks
+    - Quick capture of ideas and todos on the go
 
 ## 🗺️ Roadmap
 
@@ -119,6 +126,7 @@ Contributions to tududi are welcome! Whether it's bug fixes, new features, docum
 6. Push to your fork and open a Pull Request
 
 **Read our [Contributing Guide](.github/CONTRIBUTING.md) for:**
+
 - Development setup and workflow
 - Code standards and best practices
 - Testing requirements
@@ -142,7 +150,7 @@ Join the tududi community:
 ## 🌟 Please check my other projects!
 
 - **[Reconya](https://reconya.com)** - Network reconnaissance and asset discovery tool
-- **[BreachHarbor](https://breachharbor.com)** - Cybersecurity suite for digital asset protection  
+- **[BreachHarbor](https://breachharbor.com)** - Cybersecurity suite for digital asset protection
 - **[Hevetra](https://hevetra.com)** - Digital tracking for child health milestones
 
 # Screenshots
