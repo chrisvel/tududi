@@ -31,6 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({
     isSidebarOpen,
     setIsSidebarOpen,
     openTaskModal,
+    isDarkMode,
 }) => {
     const { t } = useTranslation();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -164,12 +165,13 @@ const Navbar: React.FC<NavbarProps> = ({
 
                     <Link
                         to="/"
-                        className={`flex items-center no-underline text-gray-900 dark:text-white ml-2 ${isSidebarOpen ? 'sm:ml-0' : 'sm:ml-2'}`}
+                        className={`flex items-center no-underline ml-2 ${isSidebarOpen ? 'sm:ml-0' : 'sm:ml-2'}`}
                     >
-                        <span className="text-2xl font-bold">
-                            <span className="sm:hidden">t</span>
-                            <span className="hidden sm:inline">tududi</span>
-                        </span>
+                        <img
+                            src={isDarkMode ? '/wide-logo-light.png' : '/wide-logo-dark.png'}
+                            alt="tududi"
+                            className="h-9 w-auto"
+                        />
                     </Link>
                 </div>
 
