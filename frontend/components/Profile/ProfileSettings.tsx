@@ -1710,7 +1710,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 <p>
                                     {t(
                                         'profile.taskIntelligenceDescription',
-                                        'Get helpful suggestions to make your task names more descriptive and actionable.'
+                                        'Show popup alerts while typing task names that suggest improvements like "Make it more descriptive!", "Be more specific!", or "Add an action verb!". Disable this if you prefer typing in your own shorthand without suggestions.'
                                     )}
                                 </p>
                             </div>
