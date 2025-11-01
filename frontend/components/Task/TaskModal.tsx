@@ -79,7 +79,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [parentTaskLoading, setParentTaskLoading] = useState(false);
     const [taskAnalysis, setTaskAnalysis] = useState<TaskAnalysis | null>(null);
-    const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] = useState(false);
+    const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] =
+        useState(false);
     const [subtasks, setSubtasks] = useState<Task[]>([]);
 
     // Collapsible section states - subtasks is derived from autoFocusSubtasks
@@ -213,7 +214,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 const enabled = await getTaskIntelligenceEnabled();
                 setTaskIntelligenceEnabled(enabled);
             } catch (error) {
-                console.error('Error fetching task intelligence setting:', error);
+                console.error(
+                    'Error fetching task intelligence setting:',
+                    error
+                );
                 setTaskIntelligenceEnabled(false); // Default to disabled on error
             }
         };

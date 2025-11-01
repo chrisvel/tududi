@@ -121,8 +121,12 @@ describe('Users Routes', () => {
                 const response = await agent.get('/api/profile');
 
                 expect(response.status).toBe(200);
-                expect(response.body).toHaveProperty('task_intelligence_enabled');
-                expect(typeof response.body.task_intelligence_enabled).toBe('boolean');
+                expect(response.body).toHaveProperty(
+                    'task_intelligence_enabled'
+                );
+                expect(typeof response.body.task_intelligence_enabled).toBe(
+                    'boolean'
+                );
             });
 
             it('should default to true for new users', async () => {
@@ -166,13 +170,11 @@ describe('Users Routes', () => {
             });
 
             it('should allow updating task intelligence with other fields', async () => {
-                const response = await agent
-                    .patch('/api/profile')
-                    .send({
-                        task_intelligence_enabled: false,
-                        appearance: 'dark',
-                        language: 'es'
-                    });
+                const response = await agent.patch('/api/profile').send({
+                    task_intelligence_enabled: false,
+                    appearance: 'dark',
+                    language: 'es',
+                });
 
                 expect(response.status).toBe(200);
                 expect(response.body.task_intelligence_enabled).toBe(false);
@@ -188,7 +190,9 @@ describe('Users Routes', () => {
 
                 expect(response.status).toBe(200);
                 // Should handle string to boolean conversion
-                expect([false, 'false']).toContain(response.body.task_intelligence_enabled);
+                expect([false, 'false']).toContain(
+                    response.body.task_intelligence_enabled
+                );
             });
         });
 

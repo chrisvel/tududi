@@ -174,9 +174,7 @@ describe('TaskTitleSection - Task Intelligence Settings', () => {
                 />
             );
 
-            expect(
-                screen.getByText('Add an action verb!')
-            ).toBeInTheDocument();
+            expect(screen.getByText('Add an action verb!')).toBeInTheDocument();
         });
 
         it('should show "Be more specific!" for vague patterns', () => {
