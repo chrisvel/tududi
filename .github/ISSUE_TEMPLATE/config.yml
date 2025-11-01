@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Feature Request or Enhancement
+    url: https://github.com/chrisvel/tududi/discussions/categories/feature-requests
+    about: Please use Discussions to suggest new features or enhancements
+  - name: Questions & Support
+    url: https://github.com/chrisvel/tududi/discussions
+    about: Ask questions and get help from the community
