@@ -17,6 +17,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+COPY .git-commit-hash ./
 
 # Install all dependencies (frontend and backend)
 RUN npm install --no-audit --no-fund
@@ -85,6 +86,7 @@ COPY --from=builder --chown=app:app /app/public/manifest.json ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
 COPY --from=builder --chown=app:app /app/node_modules ./node_modules
 COPY --from=builder --chown=app:app /app/package.json /app/
+COPY --from=builder --chown=app:app /app/.git-commit-hash /app/.git-commit-hash
 
 # Create necessary directories
 RUN mkdir -p /app/backend/db /app/backend/certs /app/backend/uploads

@@ -267,3 +267,25 @@ router.delete('/admin/users/:id', requireAdmin, async (req, res) => {
         });
     }
 });
+
+// POST /api/admin/toggle-registration - toggle registration setting
+router.post('/admin/toggle-registration', requireAdmin, async (req, res) => {
+    try {
+        const { enabled } = req.body;
+        if (typeof enabled !== 'boolean') {
+            return res
+                .status(400)
+                .json({ error: 'enabled must be a boolean value' });
+        }
+
+        const {
+            setRegistrationEnabled,
+        } = require('../services/registrationService');
+        await setRegistrationEnabled(enabled);
+
+        res.json({ enabled });
+    } catch (err) {
+        logError('Error toggling registration:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});

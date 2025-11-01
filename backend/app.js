@@ -9,6 +9,7 @@ const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { sequelize } = require('./models');
 const { initializeTelegramPolling } = require('./services/telegramInitializer');
+const { initializeEmailService } = require('./services/emailService');
 const taskScheduler = require('./services/taskScheduler');
 const { setConfig, getConfig } = require('./config/config');
 const config = getConfig();
@@ -156,6 +157,9 @@ async function startServer() {
     try {
         // Create session store table
         await sessionStore.sync();
+
+        // Initialize email service
+        initializeEmailService();
 
         // Initialize Telegram polling after database is ready
         await initializeTelegramPolling();
