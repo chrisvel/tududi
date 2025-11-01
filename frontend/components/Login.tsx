@@ -98,7 +98,9 @@ const Login: React.FC = () => {
                                         id="email"
                                         name="email"
                                         value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
+                                        onChange={(e) =>
+                                            setEmail(e.target.value)
+                                        }
                                         className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                         required
                                     />
@@ -115,7 +117,9 @@ const Login: React.FC = () => {
                                         id="password"
                                         name="password"
                                         value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        onChange={(e) =>
+                                            setPassword(e.target.value)
+                                        }
                                         className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                         required
                                     />
@@ -130,14 +134,14 @@ const Login: React.FC = () => {
                         </div>
                     </div>
 
-                {/* Right side - Graphic */}
-                <div className="hidden lg:flex items-center justify-center">
-                    <img
-                        src="/login-gfx.png"
-                        alt="Login illustration"
-                        className="max-w-md w-full h-auto"
-                    />
-                </div>
+                    {/* Right side - Graphic */}
+                    <div className="hidden lg:flex items-center justify-center">
+                        <img
+                            src="/login-gfx.png"
+                            alt="Login illustration"
+                            className="max-w-md w-full h-auto"
+                        />
+                    </div>
                 </div>
             </div>
         </>
