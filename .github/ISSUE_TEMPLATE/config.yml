@@ -6,3 +6,6 @@ contact_links:
   - name: Questions & Support
     url: https://github.com/chrisvel/tududi/discussions
     about: Ask questions and get help from the community
+  - name: Contributing Guide
+    url: https://github.com/chrisvel/tududi/blob/main/.github/CONTRIBUTING.md
+    about: Learn how to contribute to tududi
