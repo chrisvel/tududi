@@ -270,10 +270,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
         priority: PriorityType | number | undefined
     ): PriorityType => {
         if (typeof priority === 'number') {
-            const priorityNames: PriorityType[] = ['low', 'medium', 'high'];
-            return priorityNames[priority] || 'low';
+            const priorityNames: ('low' | 'medium' | 'high')[] = ['low', 'medium', 'high'];
+            return priorityNames[priority] || null;
         }
-        return priority || 'low';
+        return priority ?? null;
     };
 
     const handleChange = (
@@ -820,9 +820,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 )}
                                             >
                                                 <ExclamationTriangleIcon className="h-5 w-5" />
-                                                {getPriorityString(
-                                                    formData.priority
-                                                ) !== 'medium' && (
+                                                {formData.priority != null && (
                                                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                 )}
                                             </button>

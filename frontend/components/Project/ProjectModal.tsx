@@ -47,7 +47,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             area_id: null,
             state: 'idea',
             tags: [],
-            priority: 'low',
+            priority: null,
             due_date_at: null,
             image_url: '',
         }
@@ -139,7 +139,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 area_id: null,
                 state: 'idea',
                 tags: [],
-                priority: 'low',
+                priority: null,
                 due_date_at: null,
                 image_url: '',
             });
@@ -688,8 +688,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     </h3>
                                                     <PriorityDropdown
                                                         value={
-                                                            formData.priority ||
-                                                            'medium'
+                                                            formData.priority ?? null
                                                         }
                                                         onChange={(
                                                             value: PriorityType
@@ -836,7 +835,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                             )}
                                         >
                                             <ExclamationTriangleIcon className="h-5 w-5" />
-                                            {formData.priority !== 'medium' && (
+                                            {formData.priority != null && (
                                                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                             )}
                                         </button>

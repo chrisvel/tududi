@@ -55,7 +55,7 @@ test('user can set task priority to high', async ({ page, baseURL }) => {
   await expect(page.locator('[data-testid="priority-section"][data-state="expanded"]')).toBeVisible();
 
   // Wait for priority dropdown to be ready, then click it
-  const priorityDropdown = page.locator('.inline-flex.justify-between').filter({ hasText: /low|medium|high/i }).first();
+  const priorityDropdown = page.locator('[data-testid="priority-dropdown"]');
   await expect(priorityDropdown).toBeVisible();
   await priorityDropdown.click();
 
@@ -63,7 +63,7 @@ test('user can set task priority to high', async ({ page, baseURL }) => {
   await expect(page.locator('[data-testid="priority-dropdown"][data-state="open"]')).toBeVisible();
 
   // Select "High" priority from the portal dropdown
-  const highPriorityOption = page.locator('button').filter({ hasText: /high/i }).first();
+  const highPriorityOption = page.locator('[data-testid="priority-option-high"]');
   await expect(highPriorityOption).toBeVisible();
   await highPriorityOption.click();
 
@@ -103,12 +103,12 @@ test('user can set task priority to medium and low', async ({ page, baseURL }) =
   await expect(page.locator('[data-testid="priority-section"][data-state="expanded"]')).toBeVisible();
 
   // Set to medium priority
-  const priorityDropdown = page.locator('.inline-flex.justify-between').filter({ hasText: /low|medium|high/i }).first();
+  const priorityDropdown = page.locator('[data-testid="priority-dropdown"]');
   await expect(priorityDropdown).toBeVisible();
   await priorityDropdown.click();
   await expect(page.locator('[data-testid="priority-dropdown"][data-state="open"]')).toBeVisible();
 
-  const mediumPriorityOption = page.locator('button').filter({ hasText: /medium/i }).first();
+  const mediumPriorityOption = page.locator('[data-testid="priority-option-medium"]');
   await expect(mediumPriorityOption).toBeVisible();
   await mediumPriorityOption.click();
   await expect(page.locator('[data-testid="priority-dropdown"][data-state="closed"]')).toBeVisible();
@@ -127,7 +127,7 @@ test('user can set task priority to medium and low', async ({ page, baseURL }) =
   await expect(page.locator('[data-testid="task-modal"][data-state="idle"]')).toBeVisible();
 
   // Check if priority section is already expanded (it should be for non-default priority)
-  const priorityDropdown2 = page.locator('.inline-flex.justify-between').filter({ hasText: /low|medium|high/i }).first();
+  const priorityDropdown2 = page.locator('[data-testid="priority-dropdown"]');
   const isAlreadyExpanded = await priorityDropdown2.isVisible().catch(() => false);
 
   if (!isAlreadyExpanded) {
@@ -140,7 +140,7 @@ test('user can set task priority to medium and low', async ({ page, baseURL }) =
   await priorityDropdown2.click();
   await expect(page.locator('[data-testid="priority-dropdown"][data-state="open"]')).toBeVisible();
 
-  const lowPriorityOption = page.locator('button').filter({ hasText: /low/i }).first();
+  const lowPriorityOption = page.locator('[data-testid="priority-option-low"]');
   await expect(lowPriorityOption).toBeVisible();
   await lowPriorityOption.click();
   await expect(page.locator('[data-testid="priority-dropdown"][data-state="closed"]')).toBeVisible();

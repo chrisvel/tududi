@@ -45,7 +45,7 @@ Fixes #
 
 ## Checklist
 
-- [ ] This is not an AI slop crap0'/|, I know what I am doing
+- [ ] This is not an AI slop crap, I know what I am doing
 - [ ] Code follows project style guidelines
 - [ ] Self-reviewed my own code
 - [ ] Added/updated tests (if applicable)

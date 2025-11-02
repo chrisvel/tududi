@@ -5,6 +5,7 @@ import {
     ArrowDownIcon,
     ArrowUpIcon,
     FireIcon,
+    XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { PriorityType } from '../../entities/Task';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +22,13 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
     const { t } = useTranslation();
 
     const priorities = [
+        {
+            value: null,
+            label: t('priority.none', 'None'),
+            icon: (
+                <XMarkIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+            ),
+        },
         {
             value: 'low',
             label: t('priority.low', 'Low'),
@@ -102,13 +110,14 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
     }, [isOpen]);
 
     // Convert numeric priority to string if needed
+    // Don't default to any value - allow null/undefined
     const normalizedValue =
         typeof value === 'number'
-            ? ['low', 'medium', 'high'][value] || 'medium'
+            ? (['low', 'medium', 'high'][value] as PriorityType)
             : value;
 
     const selectedPriority = priorities.find(
-        (p) => p.value === normalizedValue
+        (p) => p.value === (normalizedValue || null)
     );
 
     return (
@@ -152,6 +161,7 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({
                                     handleSelect(priority.value as PriorityType)
                                 }
                                 className="flex items-center justify-between px-4 py-2 text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 w-full first:rounded-t-md last:rounded-b-md"
+                                data-testid={`priority-option-${priority.value || 'none'}`}
                             >
                                 <span className="flex items-center space-x-2">
                                     {priority.icon}{' '}
