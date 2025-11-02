@@ -19,7 +19,7 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
         let priorityStr = priority;
         if (typeof priority === 'number') {
             const priorityNames = ['low', 'medium', 'high'];
-            priorityStr = priorityNames[priority] || 'low';
+            priorityStr = priorityNames[priority];
         }
 
         switch (priorityStr) {
@@ -31,8 +31,13 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
                 return 'Medium priority';
             case 'low':
             case 0:
-            default:
                 return 'Low priority';
+            case null:
+            case undefined:
+            case '':
+                return ''; // No priority set
+            default:
+                return ''; // Default to no priority text
         }
     };
 
@@ -49,7 +54,7 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
         let priorityStr = priority;
         if (typeof priority === 'number') {
             const priorityNames = ['low', 'medium', 'high'];
-            priorityStr = priorityNames[priority] || 'low';
+            priorityStr = priorityNames[priority];
         }
 
         switch (priorityStr) {
@@ -61,12 +66,17 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
                 return 'text-yellow-500';
             case 'low':
             case 0:
-            default:
                 return 'text-gray-300';
+            case null:
+            case undefined:
+            case '':
+            default:
+                return 'text-gray-300'; // No priority - use gray
         }
     };
 
     const colorClass = getIconColor();
+    const priorityText = getPriorityText();
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent triggering TaskHeader onClick
@@ -89,7 +99,7 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
                     marginRight: '-2px',
                 }}
                 onClick={handleClick}
-                title={getPriorityText()}
+                {...(priorityText && { title: priorityText })}
                 role="checkbox"
                 aria-checked="true"
                 data-testid={`task-completion-checkbox${testIdSuffix}`}
@@ -100,7 +110,7 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
             <div
                 className={`${colorClass} cursor-pointer border-2 border-current rounded-full flex-shrink-0 transition-all duration-300 ease-in-out hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 w-5 h-5 md:w-4 md:h-4`}
                 onClick={handleClick}
-                title={getPriorityText()}
+                {...(priorityText && { title: priorityText })}
                 role="checkbox"
                 aria-checked="false"
                 data-testid={`task-completion-checkbox${testIdSuffix}`}

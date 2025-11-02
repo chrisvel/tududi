@@ -469,9 +469,10 @@
     "created_at": "Created At"
   },
   "priority": {
-    "low": "low",
-    "medium": "medium",
-    "high": "high"
+    "none": "None",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
   },
   "status": {
     "notStarted": "Not Started",

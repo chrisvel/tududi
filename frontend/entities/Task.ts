@@ -39,7 +39,7 @@ export type StatusType =
     | 'done'
     | 'archived'
     | 'waiting';
-export type PriorityType = 'low' | 'medium' | 'high';
+export type PriorityType = 'low' | 'medium' | 'high' | null | undefined;
 export type RecurrenceType =
     | 'none'
     | 'daily'

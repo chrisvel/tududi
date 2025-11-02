@@ -1560,7 +1560,7 @@ router.post('/task', async (req, res) => {
                     ? typeof priority === 'string'
                         ? Task.getPriorityValue(priority)
                         : priority
-                    : Task.PRIORITY.LOW,
+                    : null,
             due_date: processDueDateForStorage(
                 due_date,
                 getSafeTimezone(req.currentUser.timezone)
