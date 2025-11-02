@@ -688,7 +688,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     </h3>
                                                     <PriorityDropdown
                                                         value={
-                                                            formData.priority ?? null
+                                                            formData.priority ??
+                                                            null
                                                         }
                                                         onChange={(
                                                             value: PriorityType
