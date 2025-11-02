@@ -15,6 +15,8 @@ interface ProjectDropdownProps {
     allProjects: Project[];
     placeholder?: string;
     disabled?: boolean;
+    selectedProject?: Project | null;
+    onClearProject?: () => void;
 }
 
 const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
@@ -29,6 +31,8 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
     allProjects,
     placeholder,
     disabled = false,
+    selectedProject,
+    onClearProject,
 }) => {
     const { t } = useTranslation();
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -144,17 +148,26 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
             setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : prev));
         } else if (event.key === 'Enter') {
             event.preventDefault();
-            if (
+
+            // Check for exact match first (case-insensitive)
+            const exactMatch = projectsToShow.find(
+                (project) => project.name.toLowerCase() === projectName.trim().toLowerCase()
+            );
+
+            if (exactMatch) {
+                // Exact match found - auto-select it
+                onProjectSelection(exactMatch);
+            } else if (
                 highlightedIndex >= 0 &&
                 highlightedIndex < projectsToShow.length
             ) {
-                // Select the highlighted project (only works after using arrow keys)
+                // Select the highlighted project (after using arrow keys)
                 onProjectSelection(projectsToShow[highlightedIndex]);
             } else if (projectName.trim() && projectsToShow.length === 0) {
                 // No matches - create new project
                 onCreateProject();
             }
-            // Note: Enter does nothing if user hasn't navigated with arrows
+            // Note: Enter does nothing if no exact match and user hasn't navigated with arrows
         } else if (event.key === 'Escape') {
             event.preventDefault();
             setHighlightedIndex(-1);
@@ -163,40 +176,60 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
 
     return (
         <div className="relative">
-            <div className="relative">
-                <input
-                    type="text"
-                    placeholder={
-                        placeholder ||
-                        t(
-                            'forms.task.projectSearchPlaceholder',
-                            'Search or create a project...'
-                        )
-                    }
-                    value={projectName}
-                    onChange={onProjectSearch}
-                    onKeyDown={handleKeyDown}
-                    disabled={disabled}
-                    className="block w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm px-3 py-2 pr-10 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 disabled:dark:bg-gray-800 disabled:cursor-not-allowed"
-                    autoComplete="off"
-                />
-                <button
-                    type="button"
-                    onClick={onShowAllProjects}
-                    disabled={disabled}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label={
-                        dropdownOpen ? 'Hide projects' : 'Show all projects'
-                    }
-                >
-                    {dropdownOpen ? (
-                        <ChevronUpIcon className="h-5 w-5" />
-                    ) : (
-                        <ChevronDownIcon className="h-5 w-5" />
-                    )}
-                </button>
+            <div className="flex flex-wrap items-center border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 rounded-md p-2 min-h-[40px]">
+                {selectedProject ? (
+                    // Only show badge when project is selected - no input allowed
+                    <span className="flex items-center bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm font-medium px-2.5 py-1 rounded">
+                        {selectedProject.name}
+                        {onClearProject && !disabled && (
+                            <button
+                                type="button"
+                                onClick={onClearProject}
+                                className="ml-1.5 text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100 focus:outline-none"
+                                aria-label={`Remove project ${selectedProject.name}`}
+                            >
+                                &times;
+                            </button>
+                        )}
+                    </span>
+                ) : (
+                    // Only show input when no project is selected
+                    <div className="flex-grow relative min-w-[150px]">
+                        <input
+                            type="text"
+                            placeholder={
+                                placeholder ||
+                                t(
+                                    'forms.task.projectSearchPlaceholder',
+                                    'Search or create a project...'
+                                )
+                            }
+                            value={projectName}
+                            onChange={onProjectSearch}
+                            onKeyDown={handleKeyDown}
+                            disabled={disabled}
+                            className="w-full bg-transparent border-none outline-none text-sm text-gray-900 dark:text-gray-100 disabled:cursor-not-allowed pr-8"
+                            autoComplete="off"
+                        />
+                        <button
+                            type="button"
+                            onClick={onShowAllProjects}
+                            disabled={disabled}
+                            className="absolute inset-y-0 right-0 flex items-center pr-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                            aria-label={
+                                dropdownOpen ? 'Hide projects' : 'Show all projects'
+                            }
+                        >
+                            {dropdownOpen ? (
+                                <ChevronUpIcon className="h-5 w-5" />
+                            ) : (
+                                <ChevronDownIcon className="h-5 w-5" />
+                            )}
+                        </button>
+                    </div>
+                )}
             </div>
-            {dropdownOpen && (
+            {dropdownOpen && !selectedProject && (
                 <div
                     ref={dropdownRef}
                     className="absolute mt-1 bg-white dark:bg-gray-800 shadow-lg rounded-md w-full z-50 border border-gray-200 dark:border-gray-700"
