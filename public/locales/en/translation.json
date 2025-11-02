@@ -256,7 +256,7 @@
     },
     "frequencyHelp": "Choose how often you want to receive task summaries",
     "taskIntelligence": "Task Intelligence",
-    "taskIntelligenceDescription": "Get helpful suggestions to make your task names more descriptive and actionable.",
+    "taskIntelligenceDescription": "Show popup alerts while typing task names that suggest improvements like \"Make it more descriptive!\", \"Be more specific!\", or \"Add an action verb!\". Disable this if you prefer typing in your own shorthand without suggestions.",
     "enableTaskIntelligence": "Enable Task Intelligence Assistant",
     "autoSuggestNextActions": "Auto-Suggest Next Actions",
     "autoSuggestNextActionsDescription": "When creating a project, automatically prompt for the very next physical action to take.",

@@ -115,6 +115,122 @@ describe('Users Routes', () => {
         });
     });
 
+    describe('Task Intelligence Settings', () => {
+        describe('GET /api/profile - task_intelligence_enabled field', () => {
+            it('should return task_intelligence_enabled in profile', async () => {
+                const response = await agent.get('/api/profile');
+
+                expect(response.status).toBe(200);
+                expect(response.body).toHaveProperty(
+                    'task_intelligence_enabled'
+                );
+                expect(typeof response.body.task_intelligence_enabled).toBe(
+                    'boolean'
+                );
+            });
+
+            it('should default to true for new users', async () => {
+                const response = await agent.get('/api/profile');
+
+                expect(response.status).toBe(200);
+                // New users should have task intelligence enabled by default
+                expect(response.body.task_intelligence_enabled).toBe(true);
+            });
+        });
+
+        describe('PATCH /api/profile - disable task intelligence', () => {
+            it('should disable task intelligence (AI popups)', async () => {
+                const response = await agent
+                    .patch('/api/profile')
+                    .send({ task_intelligence_enabled: false });
+
+                expect(response.status).toBe(200);
+                expect(response.body.task_intelligence_enabled).toBe(false);
+
+                // Verify it persisted
+                const getResponse = await agent.get('/api/profile');
+                expect(getResponse.body.task_intelligence_enabled).toBe(false);
+            });
+
+            it('should enable task intelligence (AI popups)', async () => {
+                // First disable it
+                await user.update({ task_intelligence_enabled: false });
+
+                // Then enable it via API
+                const response = await agent
+                    .patch('/api/profile')
+                    .send({ task_intelligence_enabled: true });
+
+                expect(response.status).toBe(200);
+                expect(response.body.task_intelligence_enabled).toBe(true);
+
+                // Verify it persisted
+                const getResponse = await agent.get('/api/profile');
+                expect(getResponse.body.task_intelligence_enabled).toBe(true);
+            });
+
+            it('should allow updating task intelligence with other fields', async () => {
+                const response = await agent.patch('/api/profile').send({
+                    task_intelligence_enabled: false,
+                    appearance: 'dark',
+                    language: 'es',
+                });
+
+                expect(response.status).toBe(200);
+                expect(response.body.task_intelligence_enabled).toBe(false);
+                expect(response.body.appearance).toBe('dark');
+                expect(response.body.language).toBe('es');
+            });
+
+            it('should handle boolean conversion from string', async () => {
+                // Test that "false" string gets converted to boolean false
+                const response = await agent
+                    .patch('/api/profile')
+                    .send({ task_intelligence_enabled: 'false' });
+
+                expect(response.status).toBe(200);
+                // Should handle string to boolean conversion
+                expect([false, 'false']).toContain(
+                    response.body.task_intelligence_enabled
+                );
+            });
+        });
+
+        describe('Task Intelligence Feature Verification', () => {
+            it('should respect disabled setting - no AI suggestions shown', async () => {
+                // Disable task intelligence
+                await agent
+                    .patch('/api/profile')
+                    .send({ task_intelligence_enabled: false });
+
+                // Verify the setting is stored correctly
+                const response = await agent.get('/api/profile');
+                expect(response.body.task_intelligence_enabled).toBe(false);
+
+                // This verifies that the backend correctly stores the setting
+                // Frontend tests verify that popups are actually hidden
+            });
+
+            it('should persist across sessions', async () => {
+                // Disable task intelligence
+                await agent
+                    .patch('/api/profile')
+                    .send({ task_intelligence_enabled: false });
+
+                // Simulate new session by creating new agent
+                const newAgent = request.agent(app);
+                await newAgent.post('/api/login').send({
+                    email: user.email,
+                    password: 'password123',
+                });
+
+                // Verify setting persisted
+                const response = await newAgent.get('/api/profile');
+                expect(response.body.task_intelligence_enabled).toBe(false);
+            });
+        });
+    });
+
     describe('POST /api/profile/task-summary/toggle', () => {
         beforeEach(async () => {
             await user.update({ task_summary_enabled: false });

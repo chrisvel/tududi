@@ -11,6 +11,7 @@ import {
     TaskAnalysis,
 } from '../../utils/taskIntelligenceService';
 import { useTranslation } from 'react-i18next';
+import { getTaskIntelligenceEnabled } from '../../utils/profileService';
 import {
     TagIcon,
     FolderIcon,
@@ -78,7 +79,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [parentTaskLoading, setParentTaskLoading] = useState(false);
     const [taskAnalysis, setTaskAnalysis] = useState<TaskAnalysis | null>(null);
-    const [taskIntelligenceEnabled] = useState(true);
+    const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] =
+        useState(false);
     const [subtasks, setSubtasks] = useState<Task[]>([]);
 
     // Collapsible section states - subtasks is derived from autoFocusSubtasks
@@ -205,8 +207,25 @@ const TaskModal: React.FC<TaskModalProps> = ({
         fetchParentTask();
     }, [task.recurring_parent_id, isOpen]);
 
-    // Don't fetch task intelligence setting - use default enabled state
-    // This prevents unnecessary API calls when opening the modal
+    // Fetch task intelligence setting from user profile
+    useEffect(() => {
+        const fetchIntelligenceSetting = async () => {
+            try {
+                const enabled = await getTaskIntelligenceEnabled();
+                setTaskIntelligenceEnabled(enabled);
+            } catch (error) {
+                console.error(
+                    'Error fetching task intelligence setting:',
+                    error
+                );
+                setTaskIntelligenceEnabled(false); // Default to disabled on error
+            }
+        };
+
+        if (isOpen) {
+            fetchIntelligenceSetting();
+        }
+    }, [isOpen]);
 
     // Auto-scroll to subtasks section when modal opens with autoFocusSubtasks
     useEffect(() => {

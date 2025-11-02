@@ -12,7 +12,7 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
     const [taskName, setTaskName] = useState<string>('');
     const [showNameLengthHelper, setShowNameLengthHelper] = useState(false);
     const [taskIntelligenceEnabled, setTaskIntelligenceEnabled] =
-        useState(true);
+        useState(false);
     const { showErrorToast } = useToast();
     const { t } = useTranslation();
 
@@ -35,10 +35,10 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
                     JSON.stringify(enabled)
                 );
             } catch {
-                setTaskIntelligenceEnabled(true); // Default to enabled
+                setTaskIntelligenceEnabled(false); // Default to disabled on error
                 localStorage.setItem(
                     'taskIntelligenceEnabled',
-                    JSON.stringify(true)
+                    JSON.stringify(false)
                 );
             }
         };
