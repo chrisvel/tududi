@@ -151,7 +151,9 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
 
             // Check for exact match first (case-insensitive)
             const exactMatch = projectsToShow.find(
-                (project) => project.name.toLowerCase() === projectName.trim().toLowerCase()
+                (project) =>
+                    project.name.toLowerCase() ===
+                    projectName.trim().toLowerCase()
             );
 
             if (exactMatch) {
@@ -217,7 +219,9 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                             disabled={disabled}
                             className="absolute inset-y-0 right-0 flex items-center pr-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                             aria-label={
-                                dropdownOpen ? 'Hide projects' : 'Show all projects'
+                                dropdownOpen
+                                    ? 'Hide projects'
+                                    : 'Show all projects'
                             }
                         >
                             {dropdownOpen ? (
