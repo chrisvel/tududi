@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Project } from '../../entities/Project';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
@@ -32,6 +32,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
 }) => {
     const { t } = useTranslation();
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
 
     // Scroll to dropdown when it opens, keeping input visible
     useEffect(() => {
@@ -123,6 +124,43 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
         }
     }, [dropdownOpen]);
 
+    // Reset highlighted index when dropdown state changes or projects change
+    useEffect(() => {
+        setHighlightedIndex(-1);
+    }, [dropdownOpen, filteredProjects, allProjects]);
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (!dropdownOpen) return;
+
+        const projectsToShow = projectName ? filteredProjects : allProjects;
+
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            setHighlightedIndex((prev) =>
+                prev < projectsToShow.length - 1 ? prev + 1 : prev
+            );
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+            if (
+                highlightedIndex >= 0 &&
+                highlightedIndex < projectsToShow.length
+            ) {
+                // Select the highlighted project (only works after using arrow keys)
+                onProjectSelection(projectsToShow[highlightedIndex]);
+            } else if (projectName.trim() && projectsToShow.length === 0) {
+                // No matches - create new project
+                onCreateProject();
+            }
+            // Note: Enter does nothing if user hasn't navigated with arrows
+        } else if (event.key === 'Escape') {
+            event.preventDefault();
+            setHighlightedIndex(-1);
+        }
+    };
+
     return (
         <div className="relative">
             <div className="relative">
@@ -137,6 +175,7 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                     }
                     value={projectName}
                     onChange={onProjectSearch}
+                    onKeyDown={handleKeyDown}
                     disabled={disabled}
                     className="block w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm px-3 py-2 pr-10 text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 disabled:dark:bg-gray-800 disabled:cursor-not-allowed"
                     autoComplete="off"
@@ -169,12 +208,16 @@ const ProjectDropdown: React.FC<ProjectDropdownProps> = ({
                             : allProjects;
 
                         return projectsToShow.length > 0 ? (
-                            projectsToShow.map((project) => (
+                            projectsToShow.map((project, index) => (
                                 <button
                                     key={project.id}
                                     type="button"
                                     onClick={() => onProjectSelection(project)}
-                                    className="block w-full text-gray-700 dark:text-gray-300 text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    className={`block w-full text-gray-700 dark:text-gray-300 text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                                        index === highlightedIndex
+                                            ? 'bg-blue-50 dark:bg-blue-900/30'
+                                            : ''
+                                    }`}
                                 >
                                     {project.name}
                                 </button>
