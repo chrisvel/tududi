@@ -18,7 +18,11 @@
     "status": "Status",
     "saving": "Shranjevanje...",
     "settings": "Nastavitve",
-    "none": "Nič"
+    "none": "Nič",
+    "discardChanges": "Zavrzite spremembe?",
+    "discardChangesMessage": "Imate neshranjene spremembe. Ste prepričani, da jih želite zavreči?",
+    "no": "Ne, nadaljuj z urejanjem",
+    "yesDiscard": "Da, zavrzi"
   },
   "sidebar": {
     "dashboard": "Nadzorna plošča",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Nizka",
     "medium": "Srednja",
-    "high": "Visoka"
+    "high": "Visoka",
+    "none": "Noben"
   },
   "status": {
     "notStarted": "Ni začeto",

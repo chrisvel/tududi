@@ -18,7 +18,11 @@
     "status": "Statut",
     "saving": "Enregistrement...",
     "settings": "Paramètres",
-    "none": "Aucun"
+    "none": "Aucun",
+    "discardChanges": "Abandonner les modifications ?",
+    "discardChangesMessage": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir les abandonner ?",
+    "no": "Non, continuer à éditer",
+    "yesDiscard": "Oui, abandonner"
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Faible",
     "medium": "Moyenne",
-    "high": "Élevée"
+    "high": "Élevée",
+    "none": "Aucun"
   },
   "status": {
     "notStarted": "Non commencé",

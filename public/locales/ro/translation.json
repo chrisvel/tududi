@@ -18,7 +18,11 @@
     "status": "Stare",
     "saving": "Se salvează...",
     "settings": "Setări",
-    "none": "Niciunul"
+    "none": "Niciunul",
+    "discardChanges": "Renunți la modificări?",
+    "discardChangesMessage": "Ai modificări nesalvate. Ești sigur că vrei să le renunți?",
+    "no": "Nu, continuă editarea",
+    "yesDiscard": "Da, renunță"
   },
   "sidebar": {
     "dashboard": "Tabloul de bord",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Scăzut",
     "medium": "Medie",
-    "high": "Ridicat"
+    "high": "Ridicat",
+    "none": "Niciuna"
   },
   "status": {
     "notStarted": "Nefăcut",

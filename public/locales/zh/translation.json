@@ -18,7 +18,11 @@
     "status": "状态",
     "saving": "保存中...",
     "settings": "设置",
-    "none": "无"
+    "none": "无",
+    "discardChanges": "放弃更改？",
+    "discardChangesMessage": "您有未保存的更改。您确定要放弃它们吗？",
+    "no": "不，继续编辑",
+    "yesDiscard": "是的，放弃"
   },
   "sidebar": {
     "dashboard": "仪表板",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "低",
     "medium": "中",
-    "high": "高"
+    "high": "高",
+    "none": "无"
   },
   "status": {
     "notStarted": "未开始",

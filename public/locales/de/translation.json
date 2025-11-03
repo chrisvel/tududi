@@ -18,7 +18,11 @@
     "status": "Status",
     "saving": "Speichern...",
     "settings": "Einstellungen",
-    "none": "Keine"
+    "none": "Keine",
+    "discardChanges": "Änderungen verwerfen?",
+    "discardChangesMessage": "Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie diese verwerfen möchten?",
+    "no": "Nein, weiter bearbeiten",
+    "yesDiscard": "Ja, verwerfen"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -696,7 +700,8 @@
   "priority": {
     "low": "Niedrig",
     "medium": "Mittel",
-    "high": "Hoch"
+    "high": "Hoch",
+    "none": "Keine"
   },
   "status": {
     "notStarted": "Nicht begonnen",

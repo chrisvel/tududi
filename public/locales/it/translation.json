@@ -18,7 +18,11 @@
     "status": "Stato",
     "saving": "Salvataggio...",
     "settings": "Impostazioni",
-    "none": "Nessuno"
+    "none": "Nessuno",
+    "discardChanges": "Scartare le modifiche?",
+    "discardChangesMessage": "Hai modifiche non salvate. Sei sicuro di volerle scartare?",
+    "no": "No, continua a modificare",
+    "yesDiscard": "Sì, scarta"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Bassa",
     "medium": "Media",
-    "high": "Alta"
+    "high": "Alta",
+    "none": "Nessuno"
   },
   "status": {
     "notStarted": "Non Iniziata",

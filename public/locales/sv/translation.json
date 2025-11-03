@@ -18,7 +18,11 @@
     "status": "Status",
     "saving": "Sparar...",
     "settings": "Inställningar",
-    "none": "Ingen"
+    "none": "Ingen",
+    "discardChanges": "Kasta bort ändringar?",
+    "discardChangesMessage": "Du har osparade ändringar. Är du säker på att du vill kasta bort dem?",
+    "no": "Nej, fortsätt redigera",
+    "yesDiscard": "Ja, kasta bort"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Låg",
     "medium": "Medel",
-    "high": "Hög"
+    "high": "Hög",
+    "none": "Ingen"
   },
   "status": {
     "notStarted": "Ej påbörjad",

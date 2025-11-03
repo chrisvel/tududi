@@ -18,7 +18,11 @@
     "status": "Durum",
     "saving": "Kaydediliyor...",
     "settings": "Ayarlar",
-    "none": "Yok"
+    "none": "Yok",
+    "discardChanges": "Değişiklikleri iptal et?",
+    "discardChangesMessage": "Kaydedilmemiş değişiklikleriniz var. Onları iptal etmek istediğinizden emin misiniz?",
+    "no": "Hayır, düzenlemeye devam et",
+    "yesDiscard": "Evet, iptal et"
   },
   "sidebar": {
     "dashboard": "Gösterge Paneli",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Düşük",
     "medium": "Orta",
-    "high": "Yüksek"
+    "high": "Yüksek",
+    "none": "Yok"
   },
   "status": {
     "notStarted": "Başlamadı",

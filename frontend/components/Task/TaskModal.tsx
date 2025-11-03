@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { PriorityType, Task } from '../../entities/Task';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
 import { useToast } from '../Shared/ToastContext';
 import { Project } from '../../entities/Project';
 import { useStore } from '../../store/useStore';
@@ -76,6 +77,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const [isClosing, setIsClosing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [showDiscardDialog, setShowDiscardDialog] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [parentTaskLoading, setParentTaskLoading] = useState(false);
     const [taskAnalysis, setTaskAnalysis] = useState<TaskAnalysis | null>(null);
@@ -433,12 +435,49 @@ const TaskModal: React.FC<TaskModalProps> = ({
         }
     };
 
+    // Check if there are unsaved changes
+    const hasUnsavedChanges = () => {
+        // Compare formData with original task
+        const formChanged =
+            formData.name !== task.name ||
+            formData.note !== task.note ||
+            formData.priority !== task.priority ||
+            formData.due_date !== task.due_date ||
+            formData.project_id !== task.project_id ||
+            formData.recurrence_type !== task.recurrence_type ||
+            formData.recurrence_interval !== task.recurrence_interval ||
+            formData.recurrence_weekday !== task.recurrence_weekday ||
+            formData.recurrence_end_date !== task.recurrence_end_date;
+
+        // Compare tags
+        const originalTags = task.tags?.map((tag) => tag.name) || [];
+        const tagsChanged =
+            tags.length !== originalTags.length ||
+            tags.some((tag, index) => tag !== originalTags[index]);
+
+        // Compare subtasks (check if any were added or modified)
+        const subtasksChanged =
+            subtasks.length !== (initialSubtasks?.length || 0);
+
+        return formChanged || tagsChanged || subtasksChanged;
+    };
+
     const handleClose = () => {
         setIsClosing(true);
         setTimeout(() => {
             onClose();
             setIsClosing(false);
+            setShowDiscardDialog(false);
         }, 300);
+    };
+
+    const handleDiscardChanges = () => {
+        setShowDiscardDialog(false);
+        handleClose();
+    };
+
+    const handleCancelDiscard = () => {
+        setShowDiscardDialog(false);
     };
 
     // Handle body scroll when modal opens/closes
@@ -457,10 +496,30 @@ const TaskModal: React.FC<TaskModalProps> = ({
         };
     }, [isOpen]);
 
+    // Use ref to store hasUnsavedChanges so it's always current in the event handler
+    const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
+    useEffect(() => {
+        hasUnsavedChangesRef.current = hasUnsavedChanges;
+    });
+
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                handleClose();
+                // Don't show discard dialog if already showing a dialog
+                if (showConfirmDialog || showDiscardDialog) {
+                    // Let the dialog handle its own Escape
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                // Check for unsaved changes using ref to get current value
+                if (hasUnsavedChangesRef.current()) {
+                    setShowDiscardDialog(true);
+                } else {
+                    handleClose();
+                }
             }
         };
         if (isOpen) {
@@ -469,7 +528,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [isOpen]);
+    }, [isOpen, showConfirmDialog, showDiscardDialog]);
 
     // Load existing subtasks when modal opens - use initialSubtasks if provided, no fetching
     useEffect(() => {
@@ -954,6 +1013,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     )}
                     onConfirm={handleDeleteConfirm}
                     onCancel={() => setShowConfirmDialog(false)}
+                />
+            )}
+            {showDiscardDialog && (
+                <DiscardChangesDialog
+                    onDiscard={handleDiscardChanges}
+                    onCancel={handleCancelDiscard}
                 />
             )}
         </>,

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Area } from '../../entities/Area';
 import { Project } from '../../entities/Project';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
 import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
 import PriorityDropdown from '../Shared/PriorityDropdown';
@@ -73,6 +74,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     const nameInputRef = useRef<HTMLInputElement>(null);
     const [isClosing, setIsClosing] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [showDiscardDialog, setShowDiscardDialog] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     // Collapsible sections state
@@ -185,7 +187,21 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                handleClose();
+                // Don't show discard dialog if already showing a dialog
+                if (showConfirmDialog || showDiscardDialog) {
+                    // Let the dialog handle its own Escape
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                // Check for unsaved changes using ref to get current value
+                if (hasUnsavedChangesRef.current()) {
+                    setShowDiscardDialog(true);
+                } else {
+                    handleClose();
+                }
             }
         };
         if (isOpen) {
@@ -194,7 +210,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [isOpen]);
+    }, [isOpen, showConfirmDialog, showDiscardDialog]);
 
     const handleChange = (
         e: React.ChangeEvent<
@@ -383,12 +399,64 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         }
     };
 
+    // Check if there are unsaved changes
+    const hasUnsavedChanges = () => {
+        if (!project) {
+            // New project - check if any field has been filled
+            return (
+                formData.name.trim() !== '' ||
+                formData.description?.trim() !== '' ||
+                formData.area_id !== null ||
+                formData.state !== 'idea' ||
+                tags.length > 0 ||
+                formData.priority !== null ||
+                formData.due_date_at !== null ||
+                imageFile !== null ||
+                imagePreview !== ''
+            );
+        }
+
+        // Existing project - compare with original
+        const formChanged =
+            formData.name !== project.name ||
+            formData.description !== project.description ||
+            formData.area_id !== project.area_id ||
+            formData.state !== project.state ||
+            formData.priority !== project.priority ||
+            formData.due_date_at !== project.due_date_at ||
+            imageFile !== null;
+
+        // Compare tags
+        const originalTags = project.tags?.map((tag) => tag.name) || [];
+        const tagsChanged =
+            tags.length !== originalTags.length ||
+            tags.some((tag, index) => tag !== originalTags[index]);
+
+        return formChanged || tagsChanged;
+    };
+
+    // Use ref to store hasUnsavedChanges so it's always current in the event handler
+    const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
+    useEffect(() => {
+        hasUnsavedChangesRef.current = hasUnsavedChanges;
+    });
+
     const handleClose = () => {
         setIsClosing(true);
         setTimeout(() => {
             onClose();
             setIsClosing(false);
+            setShowDiscardDialog(false);
         }, 300);
+    };
+
+    const handleDiscardChanges = () => {
+        setShowDiscardDialog(false);
+        handleClose();
+    };
+
+    const handleCancelDiscard = () => {
+        setShowDiscardDialog(false);
     };
 
     const toggleSection = useCallback(
@@ -927,6 +995,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                     )}
                     onConfirm={handleDeleteConfirm}
                     onCancel={() => setShowConfirmDialog(false)}
+                />
+            )}
+            {showDiscardDialog && (
+                <DiscardChangesDialog
+                    onDiscard={handleDiscardChanges}
+                    onCancel={handleCancelDiscard}
                 />
             )}
         </>,

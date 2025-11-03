@@ -18,7 +18,11 @@
     "status": "Status",
     "saving": "Lagrer...",
     "settings": "Innstillinger",
-    "none": "Ingen"
+    "none": "Ingen",
+    "discardChanges": "Forkaste endringer?",
+    "discardChangesMessage": "Du har usikrede endringer. Er du sikker på at du vil forkaste dem?",
+    "no": "Nei, fortsett å redigere",
+    "yesDiscard": "Ja, forkast"
   },
   "sidebar": {
     "dashboard": "Dashbord",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Lav",
     "medium": "Moderat",
-    "high": "Høy"
+    "high": "Høy",
+    "none": "Ingen"
   },
   "status": {
     "notStarted": "Ikke Startet",

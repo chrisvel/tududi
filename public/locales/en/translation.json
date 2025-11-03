@@ -18,7 +18,11 @@
     "status": "Status",
     "saving": "Saving...",
     "settings": "Settings",
-    "none": "None"
+    "none": "None",
+    "discardChanges": "Discard changes?",
+    "discardChangesMessage": "You have unsaved changes. Are you sure you want to discard them?",
+    "no": "No, keep editing",
+    "yesDiscard": "Yes, discard"
   },
   "sidebar": {
     "dashboard": "Dashboard",

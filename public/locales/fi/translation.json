@@ -18,7 +18,11 @@
     "status": "Tila",
     "saving": "Tallennetaan...",
     "settings": "Asetukset",
-    "none": "Ei mitään"
+    "none": "Ei mitään",
+    "discardChanges": "Hylkää muutokset?",
+    "discardChangesMessage": "Sinulla on tallentamattomia muutoksia. Oletko varma, että haluat hylätä ne?",
+    "no": "Ei, jatka muokkaamista",
+    "yesDiscard": "Kyllä, hylkää"
   },
   "sidebar": {
     "dashboard": "Ohjauspaneeli",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Matala",
     "medium": "Keskitaso",
-    "high": "Korkea"
+    "high": "Korkea",
+    "none": "Ei mitään"
   },
   "status": {
     "notStarted": "Ei aloitettu",

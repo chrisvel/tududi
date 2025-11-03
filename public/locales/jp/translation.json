@@ -18,7 +18,11 @@
     "status": "ステータス",
     "saving": "保存中...",
     "settings": "設定",
-    "none": "なし"
+    "none": "なし",
+    "discardChanges": "変更を破棄しますか？",
+    "discardChangesMessage": "保存されていない変更があります。破棄してもよろしいですか？",
+    "no": "いいえ、編集を続ける",
+    "yesDiscard": "はい、破棄する"
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
@@ -776,7 +780,8 @@
   "priority": {
     "low": "低",
     "medium": "中",
-    "high": "高"
+    "high": "高",
+    "none": "なし"
   },
   "status": {
     "notStarted": "未開始",

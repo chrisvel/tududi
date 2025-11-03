@@ -18,7 +18,11 @@
     "status": "Status",
     "saving": "Menyimpan...",
     "settings": "Pengaturan",
-    "none": "Tidak ada"
+    "none": "Tidak ada",
+    "discardChanges": "Buang perubahan?",
+    "discardChangesMessage": "Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin membuangnya?",
+    "no": "Tidak, lanjutkan mengedit",
+    "yesDiscard": "Ya, buang"
   },
   "sidebar": {
     "dashboard": "Dasbor",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Rendah",
     "medium": "Sedang",
-    "high": "Tinggi"
+    "high": "Tinggi",
+    "none": "Tidak ada"
   },
   "status": {
     "notStarted": "Belum Dimulai",
