@@ -15,9 +15,7 @@ describe('Admin Permissions - Resource Visibility', () => {
 
     async function loginAgent(email) {
         const agent = request.agent(app);
-        await agent
-            .post('/api/login')
-            .send({ email, password: 'password123' });
+        await agent.post('/api/login').send({ email, password: 'password123' });
         return agent;
     }
 
