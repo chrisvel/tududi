@@ -18,7 +18,11 @@
     "status": "Status",
     "saving": "Gemmer...",
     "settings": "Indstillinger",
-    "none": "Ingen"
+    "none": "Ingen",
+    "discardChanges": "Forkast ændringer?",
+    "discardChangesMessage": "Du har ikke gemte ændringer. Er du sikker på, at du vil forkaste dem?",
+    "no": "Nej, fortsæt med at redigere",
+    "yesDiscard": "Ja, forkast"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Lav",
     "medium": "Medium",
-    "high": "Høj"
+    "high": "Høj",
+    "none": "Ingen"
   },
   "status": {
     "notStarted": "Ikke Startet",

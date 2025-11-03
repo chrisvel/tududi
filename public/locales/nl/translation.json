@@ -18,7 +18,11 @@
     "status": "Status",
     "saving": "Opslaan...",
     "settings": "Instellingen",
-    "none": "Geen"
+    "none": "Geen",
+    "discardChanges": "Wijzigingen negeren?",
+    "discardChangesMessage": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je ze wilt negeren?",
+    "no": "Nee, blijf bewerken",
+    "yesDiscard": "Ja, negeren"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Laag",
     "medium": "Gemiddeld",
-    "high": "Hoog"
+    "high": "Hoog",
+    "none": "Geen"
   },
   "status": {
     "notStarted": "Niet Begonnen",

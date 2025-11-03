@@ -18,7 +18,11 @@
     "status": "Status",
     "saving": "Zapisywanie...",
     "settings": "Ustawienia",
-    "none": "Brak"
+    "none": "Brak",
+    "discardChanges": "Porzucić zmiany?",
+    "discardChangesMessage": "Masz niezapisane zmiany. Czy na pewno chcesz je porzucić?",
+    "no": "Nie, kontynuuj edytowanie",
+    "yesDiscard": "Tak, porzuć"
   },
   "sidebar": {
     "dashboard": "Panel sterowania",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Niski",
     "medium": "Średni",
-    "high": "Wysoki"
+    "high": "Wysoki",
+    "none": "Brak"
   },
   "status": {
     "notStarted": "Nie rozpoczęto",

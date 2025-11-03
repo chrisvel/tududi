@@ -18,7 +18,11 @@
     "status": "Status",
     "saving": "Salvando...",
     "settings": "Configurações",
-    "none": "Nenhum"
+    "none": "Nenhum",
+    "discardChanges": "Descartar alterações?",
+    "discardChangesMessage": "Você tem alterações não salvas. Tem certeza de que deseja descartá-las?",
+    "no": "Não, continuar editando",
+    "yesDiscard": "Sim, descartar"
   },
   "sidebar": {
     "dashboard": "Painel",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Baixa",
     "medium": "Média",
-    "high": "Alta"
+    "high": "Alta",
+    "none": "Nenhum"
   },
   "status": {
     "notStarted": "Não Iniciado",

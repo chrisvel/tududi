@@ -18,7 +18,11 @@
     "status": "Estado",
     "saving": "Guardando...",
     "none": "Ninguno",
-    "settings": "Configuraciones"
+    "settings": "Configuraciones",
+    "discardChanges": "¿Descartar cambios?",
+    "discardChangesMessage": "Tienes cambios no guardados. ¿Estás seguro de que quieres descartarlos?",
+    "no": "No, seguir editando",
+    "yesDiscard": "Sí, descartar"
   },
   "sidebar": {
     "dashboard": "Tablero",
@@ -543,7 +547,8 @@
   "priority": {
     "low": "Baja",
     "medium": "Media",
-    "high": "Alta"
+    "high": "Alta",
+    "none": "Ninguno"
   },
   "status": {
     "notStarted": "No Iniciado",

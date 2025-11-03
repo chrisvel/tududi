@@ -18,7 +18,11 @@
     "status": "Trạng thái",
     "saving": "Đang lưu...",
     "settings": "Cài đặt",
-    "none": "Không có"
+    "none": "Không có",
+    "discardChanges": "Bỏ qua thay đổi?",
+    "discardChangesMessage": "Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn bỏ qua chúng không?",
+    "no": "Không, tiếp tục chỉnh sửa",
+    "yesDiscard": "Có, bỏ qua"
   },
   "sidebar": {
     "dashboard": "Bảng điều khiển",
@@ -471,7 +475,8 @@
   "priority": {
     "low": "Thấp",
     "medium": "Trung bình",
-    "high": "Cao"
+    "high": "Cao",
+    "none": "Không có"
   },
   "status": {
     "notStarted": "Chưa bắt đầu",
