@@ -76,7 +76,7 @@ const Login: React.FC = () => {
                 <div className="w-full max-w-7xl flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-16">
                     {/* Left side - Login Form */}
                     <div className="w-full lg:w-auto flex flex-col items-center">
-                        <div className="bg-white dark:bg-gray-800 p-10 rounded-lg shadow-md w-full max-w-2xl">
+                        <div className="p-10 rounded-lg w-full max-w-2xl">
                             <h2 className="text-center text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-12">
                                 {t('auth.login', 'Login')}
                             </h2>
