@@ -12,6 +12,8 @@ interface TaskProjectSectionProps {
     isCreatingProject: boolean;
     onShowAllProjects: () => void;
     allProjects: Project[];
+    selectedProject?: Project | null;
+    onClearProject?: () => void;
 }
 
 const TaskProjectSection: React.FC<TaskProjectSectionProps> = ({
@@ -24,6 +26,8 @@ const TaskProjectSection: React.FC<TaskProjectSectionProps> = ({
     isCreatingProject,
     onShowAllProjects,
     allProjects,
+    selectedProject,
+    onClearProject,
 }) => {
     return (
         <ProjectDropdown
@@ -36,6 +40,8 @@ const TaskProjectSection: React.FC<TaskProjectSectionProps> = ({
             isCreatingProject={isCreatingProject}
             onShowAllProjects={onShowAllProjects}
             allProjects={allProjects}
+            selectedProject={selectedProject}
+            onClearProject={onClearProject}
         />
     );
 };

@@ -160,17 +160,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
         setFormData(task);
         setTags(task.tags?.map((tag) => tag.name) || []);
 
-        // Initialize project name from task data
-        if (task.project_id) {
-            const currentProject = projects.find(
-                (p) => p.id === task.project_id
-            );
-            if (currentProject) {
-                setNewProjectName(currentProject.name);
-            }
-        } else {
-            setNewProjectName('');
-        }
+        // Clear project name - selected project will show as badge
+        setNewProjectName('');
     }, [task.id, task.project_id, projects]);
 
     // Handle task analysis separately
@@ -325,7 +316,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
     const handleProjectSelection = (project: Project) => {
         setFormData({ ...formData, project_id: project.id });
-        setNewProjectName(project.name);
+        setNewProjectName(''); // Clear input after selection (badge will show the project)
+        setDropdownOpen(false);
+    };
+
+    const handleClearProject = () => {
+        setFormData({ ...formData, project_id: null });
+        setNewProjectName('');
         setDropdownOpen(false);
     };
 
@@ -335,6 +332,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
         setDropdownOpen(!dropdownOpen);
     };
 
+    // Get the selected project object from the project_id
+    const selectedProject = formData.project_id
+        ? projects.find((p) => p.id === formData.project_id) || null
+        : null;
+
     const handleCreateProject = async () => {
         if (newProjectName.trim() !== '') {
             setIsCreatingProject(true);
@@ -342,7 +344,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 const newProject = await onCreateProject(newProjectName);
                 setFormData({ ...formData, project_id: newProject.id });
                 setFilteredProjects([...filteredProjects, newProject]);
-                setNewProjectName(newProject.name);
+                setNewProjectName(''); // Clear input after creation (badge will show the project)
                 setDropdownOpen(false);
                 showSuccessToast(t('success.projectCreated'));
             } catch (error) {
@@ -607,6 +609,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                             }
                                                             allProjects={
                                                                 projects
+                                                            }
+                                                            selectedProject={
+                                                                selectedProject
+                                                            }
+                                                            onClearProject={
+                                                                handleClearProject
                                                             }
                                                         />
                                                     </div>
