@@ -3,6 +3,7 @@ import { Tag } from '../../entities/Tag';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import { useTranslation } from 'react-i18next';
+import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
 
 interface TagModalProps {
     isOpen: boolean;
@@ -29,6 +30,7 @@ const TagModal: React.FC<TagModalProps> = ({
     const nameInputRef = useRef<HTMLInputElement>(null);
     const [isClosing, setIsClosing] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showDiscardDialog, setShowDiscardDialog] = useState(false);
     const { showSuccessToast, showErrorToast } = useToast();
     const { t } = useTranslation();
 
@@ -70,7 +72,21 @@ const TagModal: React.FC<TagModalProps> = ({
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                handleClose();
+                // Don't show discard dialog if already showing
+                if (showDiscardDialog) {
+                    // Let the dialog handle its own Escape
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                // Check for unsaved changes using ref to get current value
+                if (hasUnsavedChangesRef.current()) {
+                    setShowDiscardDialog(true);
+                } else {
+                    handleClose();
+                }
             }
         };
         if (isOpen) {
@@ -79,7 +95,7 @@ const TagModal: React.FC<TagModalProps> = ({
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [isOpen]);
+    }, [isOpen, showDiscardDialog]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -126,12 +142,39 @@ const TagModal: React.FC<TagModalProps> = ({
         }
     };
 
+    // Check if there are unsaved changes
+    const hasUnsavedChanges = () => {
+        if (!tag) {
+            // New tag - check if name has been filled
+            return formData.name.trim() !== '';
+        }
+
+        // Existing tag - compare with original
+        return formData.name !== tag.name;
+    };
+
+    // Use ref to store hasUnsavedChanges so it's always current in the event handler
+    const hasUnsavedChangesRef = useRef(hasUnsavedChanges);
+    useEffect(() => {
+        hasUnsavedChangesRef.current = hasUnsavedChanges;
+    });
+
     const handleClose = () => {
         setIsClosing(true);
         setTimeout(() => {
             onClose();
             setIsClosing(false);
+            setShowDiscardDialog(false);
         }, 300);
+    };
+
+    const handleDiscardChanges = () => {
+        setShowDiscardDialog(false);
+        handleClose();
+    };
+
+    const handleCancelDiscard = () => {
+        setShowDiscardDialog(false);
     };
 
     const handleDeleteTag = async () => {
@@ -242,6 +285,12 @@ const TagModal: React.FC<TagModalProps> = ({
                     </div>
                 </div>
             </div>
+            {showDiscardDialog && (
+                <DiscardChangesDialog
+                    onDiscard={handleDiscardChanges}
+                    onCancel={handleCancelDiscard}
+                />
+            )}
         </>
     );
 };

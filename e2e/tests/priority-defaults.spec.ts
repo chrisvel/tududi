@@ -151,6 +151,12 @@ test('project created without priority selection defaults to None', async ({ pag
 
   // Close modal without saving
   await page.keyboard.press('Escape');
+
+  // Handle discard changes dialog (appears because we filled in the project name)
+  const discardButton = page.locator('[data-testid="discard-dialog-confirm"]');
+  await expect(discardButton).toBeVisible({ timeout: 5000 });
+  await discardButton.click();
+
   await expect(page.locator('[data-testid="project-modal"]')).not.toBeVisible({ timeout: 5000 });
 });
 
@@ -257,5 +263,11 @@ test('project priority can be set to None after being set to Medium', async ({ p
 
   // Close modal without saving
   await page.keyboard.press('Escape');
+
+  // Handle discard changes dialog (appears because we filled in the project name)
+  const discardButton = page.locator('[data-testid="discard-dialog-confirm"]');
+  await expect(discardButton).toBeVisible({ timeout: 5000 });
+  await discardButton.click();
+
   await expect(page.locator('[data-testid="project-modal"]')).not.toBeVisible({ timeout: 5000 });
 });
