@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/wide-logo-light.png" alt="tududi" width="400">
+  <img src="public/wide-logo-dark.png" alt="tududi" width="400">
 </p>
 
 <p align="center">
