@@ -96,7 +96,7 @@ async function getAccess(userId, resourceType, resourceUid) {
 }
 
 async function ownershipOrPermissionWhere(resourceType, userId) {
-    // Admin users can see all resources
+    // Build WHERE clause for resource queries based on ownership and sharing permissions
     // Note: isAdmin expects a UID, but we might receive a numeric ID
     // Get the user's UID if we received a numeric ID
     let userUid = userId;
@@ -118,12 +118,15 @@ async function ownershipOrPermissionWhere(resourceType, userId) {
         `[PERMISSIONS DEBUG] Resource: ${resourceType}, UserId: ${userId}, IsAdmin: ${isUserAdmin}`
     );
 
-    if (isUserAdmin) {
-        console.log(
-            `[PERMISSIONS DEBUG] User is admin, returning empty where clause (all resources visible)`
-        );
-        return {}; // empty where clause = no restriction
-    }
+    // Admin users should NOT see all resources automatically
+    // They should only see their own resources and shared resources, like regular users
+    // If admin-level system-wide visibility is needed, it should be via dedicated admin endpoints
+    // if (isUserAdmin) {
+    //     console.log(
+    //         `[PERMISSIONS DEBUG] User is admin, returning empty where clause (all resources visible)`
+    //     );
+    //     return {}; // empty where clause = no restriction
+    // }
 
     const sharedUids = await getSharedUidsForUser(resourceType, userId);
     console.log(
