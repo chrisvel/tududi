@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { usePersistedModal } from '../../hooks/usePersistedModal';
 import {
     CheckIcon,
     BookOpenIcon,
@@ -14,6 +15,7 @@ import { Note } from '../../entities/Note';
 import { Project } from '../../entities/Project';
 import TaskList from '../Task/TaskList';
 import ProjectItem from '../Project/ProjectItem';
+import ProjectShareModal from '../Project/ProjectShareModal';
 import TagModal from './TagModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 
@@ -45,10 +47,22 @@ const TagDetails: React.FC = () => {
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
     const [, setProjectToDelete] = useState<Project | null>(null);
 
-    // State for tag edit/delete
-    const [isTagModalOpen, setIsTagModalOpen] = useState<boolean>(false);
+    // State for tag edit/delete - use persisted modal state that survives component remounts
+    const {
+        isOpen: isTagModalOpen,
+        openModal: openTagModal,
+        closeModal: closeTagModal,
+    } = usePersistedModal(tag?.id);
+    const editButtonRef = useRef<HTMLButtonElement>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
         useState<boolean>(false);
+
+    // State for project sharing
+    const [shareModal, setShareModal] = useState<{
+        isOpen: boolean;
+        project: Project | null;
+    }>({ isOpen: false, project: null });
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -86,6 +100,23 @@ const TagDetails: React.FC = () => {
         };
         fetchTagData();
     }, [uidSlug, t]);
+
+    // Setup native event listener for edit button to avoid React event system conflicts
+    useEffect(() => {
+        const button = editButtonRef.current;
+        if (button) {
+            const handleClick = (e: Event) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openTagModal();
+            };
+
+            button.addEventListener('click', handleClick);
+            return () => {
+                button.removeEventListener('click', handleClick);
+            };
+        }
+    }, [openTagModal]);
 
     // Task handlers
     const handleTaskUpdate = async (updatedTask: Task) => {
@@ -165,17 +196,13 @@ const TagDetails: React.FC = () => {
     };
 
     // Tag handlers
-    const handleEditTag = () => {
-        setIsTagModalOpen(true);
-    };
-
     const handleSaveTag = async (tagData: Tag) => {
         try {
             if (tag && tag.uid) {
                 const updatedTag = await updateTag(tag.uid, tagData);
                 setTag(updatedTag);
             }
-            setIsTagModalOpen(false);
+            closeTagModal();
         } catch (error) {
             console.error('Error updating tag:', error);
             throw error;
@@ -225,7 +252,8 @@ const TagDetails: React.FC = () => {
                     </h2>
                     <div className="flex items-center">
                         <button
-                            onClick={handleEditTag}
+                            ref={editButtonRef}
+                            type="button"
                             className="px-1 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                             aria-label="Edit tag"
                             title="Edit tag"
@@ -411,7 +439,7 @@ const TagDetails: React.FC = () => {
                             {t('projects.title')} ({projects.length})
                         </h3>
                         <div className="flex flex-col space-y-1">
-                            {projects.map((project) => {
+                            {projects.map((project: Project) => {
                                 return (
                                     <ProjectItem
                                         key={project.id}
@@ -427,9 +455,12 @@ const TagDetails: React.FC = () => {
                                         setIsConfirmDialogOpen={
                                             setIsConfirmDialogOpen
                                         }
-                                        onOpenShare={() => {
-                                            /* noop in tag view */
-                                        }}
+                                        onOpenShare={(p) =>
+                                            setShareModal({
+                                                isOpen: true,
+                                                project: p,
+                                            })
+                                        }
                                     />
                                 );
                             })}
@@ -457,9 +488,20 @@ const TagDetails: React.FC = () => {
             {isTagModalOpen && tag && (
                 <TagModal
                     isOpen={isTagModalOpen}
-                    onClose={() => setIsTagModalOpen(false)}
+                    onClose={closeTagModal}
                     onSave={handleSaveTag}
                     tag={tag}
+                />
+            )}
+
+            {/* Project Share Modal */}
+            {shareModal.isOpen && shareModal.project && (
+                <ProjectShareModal
+                    isOpen={shareModal.isOpen}
+                    onClose={() =>
+                        setShareModal({ isOpen: false, project: null })
+                    }
+                    project={shareModal.project}
                 />
             )}
 
