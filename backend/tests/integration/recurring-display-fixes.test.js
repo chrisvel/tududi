@@ -286,9 +286,7 @@ describe('Recurring Task Display Fixes', () => {
                 priority: Task.PRIORITY.MEDIUM,
             });
 
-            const response = await agent.get(
-                `/api/task?uid=${recurringTask.uid}`
-            );
+            const response = await agent.get(`/api/task/${recurringTask.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.name).toBe('My Weekly Review');
@@ -306,9 +304,7 @@ describe('Recurring Task Display Fixes', () => {
                 priority: Task.PRIORITY.MEDIUM,
             });
 
-            const response = await agent.get(
-                `/api/task?uid=${monthlyTask.uid}`
-            );
+            const response = await agent.get(`/api/task/${monthlyTask.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.name).toBe('Monthly Budget Review');
