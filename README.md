@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="public/wide-logo-light.png" alt="tududi" width="400">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/wide-logo-light.png">
+    <source media="(prefers-color-scheme: light)" srcset="public/wide-logo-dark.png">
+    <img src="public/wide-logo-light.png" alt="tududi" width="400">
+  </picture>
 </p>
 
 <p align="center">
