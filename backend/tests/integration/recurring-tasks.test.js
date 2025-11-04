@@ -545,7 +545,7 @@ describe('Recurring Tasks API', () => {
         });
 
         it('should return recurring task with all recurrence fields', async () => {
-            const response = await agent.get(`/api/task/${recurringTask.id}`);
+            const response = await agent.get(`/api/task/${recurringTask.uid}`);
 
             expect(response.status).toBe(200);
             expect(response.body.name).toBe('Test Recurring Task');

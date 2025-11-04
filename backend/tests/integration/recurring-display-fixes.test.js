@@ -287,7 +287,7 @@ describe('Recurring Task Display Fixes', () => {
             });
 
             const response = await agent.get(
-                `/api/task?uid=${recurringTask.uid}`
+                `/api/task/${recurringTask.uid}`
             );
 
             expect(response.status).toBe(200);
@@ -307,7 +307,7 @@ describe('Recurring Task Display Fixes', () => {
             });
 
             const response = await agent.get(
-                `/api/task?uid=${monthlyTask.uid}`
+                `/api/task/${monthlyTask.uid}`
             );
 
             expect(response.status).toBe(200);

@@ -1342,93 +1342,24 @@ router.get('/tasks', async (req, res) => {
     }
 });
 
-// GET /api/task?uid=...
-router.get('/task', async (req, res) => {
-    try {
-        const { uid } = req.query;
-
-        if (_.isEmpty(uid)) {
-            return res
-                .status(400)
-                .json({ error: 'uid query parameter is required' });
-        }
-
-        const task = await Task.findOne({
-            where: {
-                uid: uid,
-            },
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                },
-                {
-                    model: Project,
-                    attributes: ['id', 'name', 'uid'],
-                    required: false,
-                },
-                {
-                    model: Task,
-                    as: 'Subtasks',
-                    required: false,
-                    include: [
-                        {
-                            model: Tag,
-                            attributes: ['id', 'name', 'uid'],
-                            through: { attributes: [] },
-                        },
-                    ],
-                },
-            ],
-        });
-
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found.' });
-        }
-
-        // Ensure read access to the task
-        const access = await permissionsService.getAccess(
-            req.currentUser.id,
-            'task',
-            task.uid
-        );
-        if (access === 'none') {
-            return res.status(403).json({ error: 'Forbidden' });
-        }
-
-        const serializedTask = await serializeTask(
-            task,
-            req.currentUser.timezone,
-            { skipDisplayNameTransform: true }
-        );
-
-        res.json(serializedTask);
-    } catch (error) {
-        logError('Error fetching task by UID:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// GET /api/task/:id
+// GET /api/task/:uid - fetch task by UID only
 router.get(
-    '/task/:id',
+    '/task/:uid',
     hasAccess(
         'ro',
         'task',
         async (req) => {
-            const t = await Task.findOne({
-                where: { id: req.params.id },
-                attributes: ['uid'],
-            });
-            return t?.uid;
+            // Return the UID directly for permission checking
+            return req.params.uid;
         },
         { notFoundMessage: 'Task not found.' }
     ),
     async (req, res) => {
         try {
+            const { uid } = req.params;
+
             const task = await Task.findOne({
-                where: { id: req.params.id },
+                where: { uid },
                 include: [
                     {
                         model: Tag,
@@ -1443,6 +1374,7 @@ router.get(
                     {
                         model: Task,
                         as: 'Subtasks',
+                        required: false,
                         include: [
                             {
                                 model: Tag,

@@ -100,7 +100,7 @@ export const fetchTaskById = async (taskId: number): Promise<Task> => {
 };
 
 export const fetchTaskByUid = async (uid: string): Promise<Task> => {
-    const response = await fetch(`/api/task?uid=${encodeURIComponent(uid)}`, {
+    const response = await fetch(`/api/task/${encodeURIComponent(uid)}`, {
         credentials: 'include',
         headers: getDefaultHeaders(),
     });

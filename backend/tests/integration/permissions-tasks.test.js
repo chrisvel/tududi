@@ -31,13 +31,13 @@ describe('Tasks Permissions', () => {
         expect(res.body.error).toBe('Forbidden');
     });
 
-    it("GET /api/task?uid=... should return 403 for other user's task", async () => {
+    it("GET /api/task/:uid should return 403 for other user's task", async () => {
         const otherTask = await Task.create({
             name: 'Other Task',
             user_id: otherUser.id,
         });
 
-        const res = await agent.get(`/api/task?uid=${otherTask.uid}`);
+        const res = await agent.get(`/api/task/${otherTask.uid}`);
         expect(res.status).toBe(403);
         expect(res.body.error).toBe('Forbidden');
     });
