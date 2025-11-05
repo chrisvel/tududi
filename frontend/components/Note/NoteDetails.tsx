@@ -229,7 +229,38 @@ const NoteDetails: React.FC = () => {
                 </div>
                 {/* Note Content */}
                 <div className="mb-6 bg-white dark:bg-gray-900 shadow-md rounded-lg p-6">
-                    <MarkdownRenderer content={note.content} />
+                    <MarkdownRenderer
+                        content={note.content}
+                        onContentChange={async (newContent) => {
+                            // Update local state immediately
+                            const updatedNote = {
+                                ...note,
+                                content: newContent,
+                            };
+                            setNote(updatedNote);
+
+                            // Auto-save
+                            try {
+                                const noteIdentifier =
+                                    note.uid ??
+                                    (note.id !== undefined
+                                        ? String(note.id)
+                                        : null);
+
+                                if (noteIdentifier) {
+                                    await apiUpdateNote(
+                                        noteIdentifier,
+                                        updatedNote
+                                    );
+                                }
+                            } catch (err) {
+                                console.error(
+                                    'Error auto-saving checkbox:',
+                                    err
+                                );
+                            }
+                        }}
+                    />
                 </div>
                 {/* NoteModal for editing */}
                 {isNoteModalOpen && (
