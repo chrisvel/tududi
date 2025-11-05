@@ -20,7 +20,10 @@ jest.mock('react-markdown', () => {
                             const InputComponent = components?.input || 'input';
                             return (
                                 <li key={idx}>
-                                    <InputComponent type="checkbox" checked={checked} />
+                                    <InputComponent
+                                        type="checkbox"
+                                        checked={checked}
+                                    />
                                     {text}
                                 </li>
                             );
@@ -52,7 +55,8 @@ describe('MarkdownRenderer - Checkbox Functionality', () => {
     });
 
     it('renders nested checkboxes with proper indentation', () => {
-        const content = '- [ ] Parent task\n  - [ ] Nested task\n    - [ ] Deep nested task';
+        const content =
+            '- [ ] Parent task\n  - [ ] Nested task\n    - [ ] Deep nested task';
         render(<MarkdownRenderer content={content} />);
 
         const checkboxes = screen.getAllByRole('checkbox');
@@ -70,7 +74,12 @@ describe('MarkdownRenderer - Checkbox Functionality', () => {
     it('enables checkboxes when onContentChange callback is provided', () => {
         const content = '- [ ] Task one';
         const mockOnContentChange = jest.fn();
-        render(<MarkdownRenderer content={content} onContentChange={mockOnContentChange} />);
+        render(
+            <MarkdownRenderer
+                content={content}
+                onContentChange={mockOnContentChange}
+            />
+        );
 
         const checkbox = screen.getByRole('checkbox');
         expect(checkbox).not.toBeDisabled();
@@ -79,7 +88,12 @@ describe('MarkdownRenderer - Checkbox Functionality', () => {
     it('toggles checkbox state when clicked', () => {
         const content = '- [ ] Task one';
         const mockOnContentChange = jest.fn();
-        render(<MarkdownRenderer content={content} onContentChange={mockOnContentChange} />);
+        render(
+            <MarkdownRenderer
+                content={content}
+                onContentChange={mockOnContentChange}
+            />
+        );
 
         const checkbox = screen.getByRole('checkbox');
         fireEvent.click(checkbox);
@@ -91,7 +105,12 @@ describe('MarkdownRenderer - Checkbox Functionality', () => {
     it('toggles checked checkbox to unchecked', () => {
         const content = '- [x] Task one';
         const mockOnContentChange = jest.fn();
-        render(<MarkdownRenderer content={content} onContentChange={mockOnContentChange} />);
+        render(
+            <MarkdownRenderer
+                content={content}
+                onContentChange={mockOnContentChange}
+            />
+        );
 
         const checkbox = screen.getByRole('checkbox');
         fireEvent.click(checkbox);
@@ -102,22 +121,36 @@ describe('MarkdownRenderer - Checkbox Functionality', () => {
     it('toggles the correct checkbox in a list', () => {
         const content = '- [ ] Task one\n- [ ] Task two\n- [ ] Task three';
         const mockOnContentChange = jest.fn();
-        render(<MarkdownRenderer content={content} onContentChange={mockOnContentChange} />);
+        render(
+            <MarkdownRenderer
+                content={content}
+                onContentChange={mockOnContentChange}
+            />
+        );
 
         const checkboxes = screen.getAllByRole('checkbox');
         fireEvent.click(checkboxes[1]); // Click second checkbox
 
-        expect(mockOnContentChange).toHaveBeenCalledWith('- [ ] Task one\n- [x] Task two\n- [ ] Task three');
+        expect(mockOnContentChange).toHaveBeenCalledWith(
+            '- [ ] Task one\n- [x] Task two\n- [ ] Task three'
+        );
     });
 
     it('preserves indentation when toggling nested checkboxes', () => {
         const content = '- [ ] Parent\n  - [ ] Nested';
         const mockOnContentChange = jest.fn();
-        render(<MarkdownRenderer content={content} onContentChange={mockOnContentChange} />);
+        render(
+            <MarkdownRenderer
+                content={content}
+                onContentChange={mockOnContentChange}
+            />
+        );
 
         const checkboxes = screen.getAllByRole('checkbox');
         fireEvent.click(checkboxes[1]); // Click nested checkbox
 
-        expect(mockOnContentChange).toHaveBeenCalledWith('- [ ] Parent\n  - [x] Nested');
+        expect(mockOnContentChange).toHaveBeenCalledWith(
+            '- [ ] Parent\n  - [x] Nested'
+        );
     });
 });

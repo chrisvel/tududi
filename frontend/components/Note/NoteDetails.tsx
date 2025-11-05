@@ -233,7 +233,10 @@ const NoteDetails: React.FC = () => {
                         content={note.content}
                         onContentChange={async (newContent) => {
                             // Update local state immediately
-                            const updatedNote = { ...note, content: newContent };
+                            const updatedNote = {
+                                ...note,
+                                content: newContent,
+                            };
                             setNote(updatedNote);
 
                             // Auto-save
