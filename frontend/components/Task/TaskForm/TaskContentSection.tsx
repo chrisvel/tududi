@@ -64,7 +64,19 @@ const TaskContentSection: React.FC<TaskContentSectionProps> = ({
                 ) : (
                     <div className="block w-full sm:border sm:border-gray-300 sm:dark:border-gray-600 sm:rounded-md shadow-sm py-2 px-3 pr-20 sm:py-3 sm:px-3 sm:pr-20 text-sm bg-gray-50 dark:bg-gray-800 flex-1 min-h-0 overflow-y-auto">
                         {value ? (
-                            <MarkdownRenderer content={value} />
+                            <MarkdownRenderer
+                                content={value}
+                                onContentChange={(newContent) => {
+                                    // Create synthetic event
+                                    const syntheticEvent = {
+                                        target: {
+                                            name: 'note',
+                                            value: newContent,
+                                        },
+                                    } as React.ChangeEvent<HTMLTextAreaElement>;
+                                    onChange(syntheticEvent);
+                                }}
+                            />
                         ) : (
                             <p className="text-gray-500 dark:text-gray-400 italic">
                                 No content to preview. Switch to Edit mode to

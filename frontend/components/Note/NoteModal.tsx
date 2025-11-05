@@ -213,7 +213,15 @@ const NoteModal: React.FC<NoteModalProps> = ({
         };
 
         if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
+            // Add a small delay to prevent the opening click from closing the modal
+            const timer = setTimeout(() => {
+                document.addEventListener('mousedown', handleClickOutside);
+            }, 100);
+
+            return () => {
+                clearTimeout(timer);
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
         }
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -591,6 +599,19 @@ const NoteModal: React.FC<NoteModalProps> = ({
                                                                     content={
                                                                         formData.content
                                                                     }
+                                                                    onContentChange={(
+                                                                        newContent
+                                                                    ) => {
+                                                                        setFormData(
+                                                                            (
+                                                                                prev
+                                                                            ) => ({
+                                                                                ...prev,
+                                                                                content:
+                                                                                    newContent,
+                                                                            })
+                                                                        );
+                                                                    }}
                                                                 />
                                                             ) : (
                                                                 <p className="text-gray-500 dark:text-gray-400 italic">

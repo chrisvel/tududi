@@ -8,12 +8,14 @@ interface MarkdownRendererProps {
     content: string;
     className?: string;
     summaryMode?: boolean;
+    onContentChange?: (newContent: string) => void;
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     content,
     className = '',
     summaryMode = false,
+    onContentChange,
 }) => {
     useEffect(() => {
         // Configure highlight.js
@@ -46,6 +48,37 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
         return () => clearTimeout(timer);
     }, [content]);
+
+    // Track checkbox index for toggling
+    const checkboxIndexRef = React.useRef(-1);
+
+    // Reset on each render
+    checkboxIndexRef.current = -1;
+
+    // Function to toggle checkbox at a specific index
+    const toggleCheckbox = (checkboxIndex: number) => {
+        if (!onContentChange) return;
+
+        const lines = content.split('\n');
+        let currentCheckboxIndex = -1;
+
+        const newLines = lines.map((line) => {
+            // Match task list items: - [ ] or - [x] or - [X]
+            const match = line.match(/^(\s*-\s*)\[([ xX])\](.*)$/);
+            if (match) {
+                currentCheckboxIndex++;
+                if (currentCheckboxIndex === checkboxIndex) {
+                    const indent = match[1];
+                    const isChecked = match[2].toLowerCase() === 'x';
+                    const rest = match[3];
+                    return `${indent}[${isChecked ? ' ' : 'x'}]${rest}`;
+                }
+            }
+            return line;
+        });
+
+        onContentChange(newLines.join('\n'));
+    };
 
     return (
         <div className={`markdown-content ${className}`}>
@@ -272,6 +305,33 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             {...props}
                         />
                     ),
+
+                    // Customize checkboxes for task lists with Tailwind styling
+                    input: ({ type, checked, ...props }) => {
+                        if (type === 'checkbox') {
+                            checkboxIndexRef.current++;
+                            const currentIndex = checkboxIndexRef.current;
+
+                            return (
+                                <input
+                                    {...props}
+                                    type="checkbox"
+                                    checked={checked}
+                                    disabled={!onContentChange}
+                                    onChange={(e) => {
+                                        e.preventDefault();
+                                        toggleCheckbox(currentIndex);
+                                    }}
+                                    className={`w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 ${
+                                        onContentChange
+                                            ? 'cursor-pointer'
+                                            : 'cursor-not-allowed'
+                                    }`}
+                                />
+                            );
+                        }
+                        return <input type={type} {...props} />;
+                    },
                 }}
             >
                 {content}
