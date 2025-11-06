@@ -1240,18 +1240,26 @@ const Notes: React.FC = () => {
                                             // Save to backend
                                             if (previewNote.uid) {
                                                 try {
-                                                    const savedNote = await updateNote(
-                                                        previewNote.uid,
-                                                        updatedNote
-                                                    );
+                                                    const savedNote =
+                                                        await updateNote(
+                                                            previewNote.uid,
+                                                            updatedNote
+                                                        );
                                                     // Update notes list
-                                                    const updatedNotes = notes.map((n) =>
-                                                        n.uid === previewNote.uid ? savedNote : n
-                                                    );
+                                                    const updatedNotes =
+                                                        notes.map((n) =>
+                                                            n.uid ===
+                                                            previewNote.uid
+                                                                ? savedNote
+                                                                : n
+                                                        );
                                                     setNotes(updatedNotes);
                                                     setPreviewNote(savedNote);
                                                 } catch (err) {
-                                                    console.error('Error updating note:', err);
+                                                    console.error(
+                                                        'Error updating note:',
+                                                        err
+                                                    );
                                                 }
                                             }
                                         }}
