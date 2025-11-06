@@ -184,7 +184,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                         />
                     ),
                     li: ({ ...props }) => (
-                        <li className="text-gray-700 dark:text-gray-300" {...props} />
+                        <li
+                            className="text-gray-700 dark:text-gray-300"
+                            {...props}
+                        />
                     ),
 
                     // Customize link styles

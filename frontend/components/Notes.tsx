@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/solid';
-import { PencilIcon, TrashIcon, FolderIcon, TagIcon as TagIconOutline, FunnelIcon, ClockIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import {
+    PencilIcon,
+    TrashIcon,
+    FolderIcon,
+    TagIcon as TagIconOutline,
+    FunnelIcon,
+    ClockIcon,
+    EllipsisVerticalIcon,
+} from '@heroicons/react/24/outline';
 import { useToast } from './Shared/ToastContext';
 import { Link } from 'react-router-dom';
 import { SortOption } from './Shared/SortFilterButton';
@@ -32,7 +40,8 @@ const Notes: React.FC = () => {
     const [showTagsInput, setShowTagsInput] = useState(false);
     const [showDiscardDialog, setShowDiscardDialog] = useState(false);
     const [showSortDropdown, setShowSortDropdown] = useState(false);
-    const [showNoteOptionsDropdown, setShowNoteOptionsDropdown] = useState(false);
+    const [showNoteOptionsDropdown, setShowNoteOptionsDropdown] =
+        useState(false);
     const hasAutoSelected = useRef(false);
     const sortDropdownRef = useRef<HTMLDivElement>(null);
     const noteOptionsDropdownRef = useRef<HTMLDivElement>(null);
@@ -82,7 +91,7 @@ const Notes: React.FC = () => {
             ...note,
             project_uid: project?.uid || note.project_uid,
             project: project,
-            tags: tags
+            tags: tags,
         });
         setIsEditing(true);
         setPreviewNote(null);
@@ -105,11 +114,14 @@ const Notes: React.FC = () => {
             // Add new tags to store if they don't exist
             if (editingNote.tags && editingNote.tags.length > 0) {
                 const { tagsStore } = useStore.getState();
-                tagsStore.addNewTags(editingNote.tags.map(t => t.name));
+                tagsStore.addNewTags(editingNote.tags.map((t) => t.name));
             }
 
             if (editingNote.uid) {
-                const savedNote = await updateNote(editingNote.uid, editingNote);
+                const savedNote = await updateNote(
+                    editingNote.uid,
+                    editingNote
+                );
                 const updatedNotes = notes.map((note) =>
                     note.uid === editingNote.uid ? savedNote : note
                 );
@@ -195,13 +207,21 @@ const Notes: React.FC = () => {
                     valueB = b.title?.toLowerCase() || '';
                     break;
                 case 'updated_at':
-                    valueA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
-                    valueB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+                    valueA = a.updated_at
+                        ? new Date(a.updated_at).getTime()
+                        : 0;
+                    valueB = b.updated_at
+                        ? new Date(b.updated_at).getTime()
+                        : 0;
                     break;
                 case 'created_at':
                 default:
-                    valueA = a.created_at ? new Date(a.created_at).getTime() : 0;
-                    valueB = b.created_at ? new Date(b.created_at).getTime() : 0;
+                    valueA = a.created_at
+                        ? new Date(a.created_at).getTime()
+                        : 0;
+                    valueB = b.created_at
+                        ? new Date(b.created_at).getTime()
+                        : 0;
                     break;
             }
 
@@ -213,7 +233,11 @@ const Notes: React.FC = () => {
 
     // Auto-select first note when notes are loaded (only on desktop)
     useEffect(() => {
-        if (sortedNotes.length > 0 && !previewNote && !hasAutoSelected.current) {
+        if (
+            sortedNotes.length > 0 &&
+            !previewNote &&
+            !hasAutoSelected.current
+        ) {
             // Check if we're on desktop (md breakpoint is 768px)
             const isDesktop = window.innerWidth >= 768;
             if (isDesktop) {
@@ -226,16 +250,23 @@ const Notes: React.FC = () => {
     // Handle clicking outside sort dropdown to close it
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+            if (
+                sortDropdownRef.current &&
+                !sortDropdownRef.current.contains(event.target as Node)
+            ) {
                 setShowSortDropdown(false);
             }
-            if (noteOptionsDropdownRef.current && !noteOptionsDropdownRef.current.contains(event.target as Node)) {
+            if (
+                noteOptionsDropdownRef.current &&
+                !noteOptionsDropdownRef.current.contains(event.target as Node)
+            ) {
                 setShowNoteOptionsDropdown(false);
             }
         };
 
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     // Handle Escape key to save and close editor
@@ -274,419 +305,618 @@ const Notes: React.FC = () => {
     return (
         <div className="flex flex-col px-2 lg:px-4 h-[calc(100vh-6rem)] overflow-hidden">
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden pt-2">
-
                 {/* Two-Column Layout */}
                 <div className="flex flex-col md:flex-row gap-4 flex-1 min-h-0 overflow-hidden">
-                        {/* Left Column - Notes List */}
-                        <div className={`${previewNote || isEditing ? 'hidden md:flex' : 'flex'} flex-col md:w-80 w-full h-full md:h-auto flex-shrink-0 md:border-r border-gray-200 dark:border-gray-700 md:pr-4 min-h-0`}>
-                            {/* Notes Column Header */}
-                            <div className="flex items-center justify-between mb-2 flex-shrink-0">
-                                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t('notes.title')}</h3>
-                                <div className="flex items-center gap-2">
-                                    {/* Sort Filter Dropdown */}
-                                    <div className="relative" ref={sortDropdownRef}>
-                                        <button
-                                            onClick={() => setShowSortDropdown(!showSortDropdown)}
-                                            className="p-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
-                                            aria-label="Sort notes"
-                                        >
-                                            <FunnelIcon className="h-5 w-5" />
-                                        </button>
-                                        {showSortDropdown && (
-                                            <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                                                <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                                                    Sort by
-                                                </div>
-                                                <div className="py-1">
-                                                    {sortOptions.map((option) => (
-                                                        <button
-                                                            key={option.value}
-                                                            onClick={() => {
-                                                                handleSortChange(option.value);
-                                                                setShowSortDropdown(false);
-                                                            }}
-                                                            className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-                                                                orderBy === option.value
-                                                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                            }`}
-                                                        >
-                                                            {option.label}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
+                    {/* Left Column - Notes List */}
+                    <div
+                        className={`${previewNote || isEditing ? 'hidden md:flex' : 'flex'} flex-col md:w-80 w-full h-full md:h-auto flex-shrink-0 md:border-r border-gray-200 dark:border-gray-700 md:pr-4 min-h-0`}
+                    >
+                        {/* Notes Column Header */}
+                        <div className="flex items-center justify-between mb-2 flex-shrink-0">
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                {t('notes.title')}
+                            </h3>
+                            <div className="flex items-center gap-2">
+                                {/* Sort Filter Dropdown */}
+                                <div className="relative" ref={sortDropdownRef}>
                                     <button
-                                        onClick={handleNewNote}
+                                        onClick={() =>
+                                            setShowSortDropdown(
+                                                !showSortDropdown
+                                            )
+                                        }
                                         className="p-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
-                                        aria-label={t('notes.addNote', 'Add Note')}
+                                        aria-label="Sort notes"
                                     >
-                                        <PlusIcon className="h-5 w-5" />
+                                        <FunnelIcon className="h-5 w-5" />
                                     </button>
-                                </div>
-                            </div>
-
-                            {/* Search Bar inside notes list */}
-                            <div className="mb-2 flex-shrink-0">
-                                <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md p-2">
-                                    <MagnifyingGlassIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
-                                    <input
-                                        type="text"
-                                        placeholder={t('notes.searchPlaceholder')}
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white text-sm"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-0 overflow-y-auto flex-1 min-h-0">
-                                {sortedNotes.length === 0 ? (
-                                    <div className="flex items-center justify-center h-full p-4">
-                                        <p className="text-gray-500 dark:text-gray-400 text-sm text-center">
-                                            {t('notes.noNotesFound')}
-                                        </p>
-                                    </div>
-                                ) : (
-                                    sortedNotes.map((note, index) => (
-                                        <div
-                                            key={note.uid}
-                                            onClick={() => setPreviewNote(note)}
-                                            className={`p-3 cursor-pointer transition-colors rounded-md ${
-                                                previewNote?.uid === note.uid
-                                                    ? 'border border-blue-300 dark:border-blue-700 mb-1 bg-blue-50/30 dark:bg-blue-900/10'
-                                                    : index !== sortedNotes.length - 1
-                                                        ? 'border-b border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                                        : 'hover:bg-gray-50 dark:hover:bg-gray-800'
-                                            }`}
-                                        >
-                                            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-                                                {note.title || t('notes.untitled', 'Untitled Note')}
-                                            </h3>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                                                {note.content.substring(0, 100)}
-                                                {note.content.length > 100 ? '...' : ''}
-                                            </p>
-                                            <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-                                                {new Date(note.updated_at || note.created_at || '').toLocaleDateString()}
+                                    {showSortDropdown && (
+                                        <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                                            <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                                                Sort by
+                                            </div>
+                                            <div className="py-1">
+                                                {sortOptions.map((option) => (
+                                                    <button
+                                                        key={option.value}
+                                                        onClick={() => {
+                                                            handleSortChange(
+                                                                option.value
+                                                            );
+                                                            setShowSortDropdown(
+                                                                false
+                                                            );
+                                                        }}
+                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                                                            orderBy ===
+                                                            option.value
+                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        {option.label}
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
-                                    ))
-                                )}
+                                    )}
+                                </div>
+                                <button
+                                    onClick={handleNewNote}
+                                    className="p-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
+                                    aria-label={t('notes.addNote', 'Add Note')}
+                                >
+                                    <PlusIcon className="h-5 w-5" />
+                                </button>
                             </div>
                         </div>
 
-                        {/* Right Column - Preview or Editor */}
-                        <div className={`${(previewNote || isEditing) ? 'flex' : 'hidden md:flex'} flex-1 flex-col overflow-hidden h-full md:h-auto bg-white dark:bg-gray-900 rounded-md`}>
-                            {isEditing && editingNote ? (
-                                <div className="flex-1 flex flex-col overflow-hidden">
-                                    {/* Editor Header - matches preview structure */}
-                                    <div className="flex items-start justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 p-4">
-                                        <div className="flex-1">
-                                            {/* Back button for mobile */}
-                                            <button
-                                                onClick={() => {
-                                                    if (editingNote.title) {
-                                                        handleSaveInlineNote();
-                                                    } else {
-                                                        setShowDiscardDialog(true);
-                                                    }
-                                                }}
-                                                className="md:hidden mb-2 text-blue-600 dark:text-blue-400 hover:underline text-sm"
-                                            >
-                                                ← {t('common.back', 'Back to list')}
-                                            </button>
-                                            <input
-                                                type="text"
-                                                value={editingNote.title || ''}
-                                                onChange={(e) => setEditingNote({ ...editingNote, title: e.target.value })}
-                                                onClick={(e) => e.stopPropagation()}
-                                                placeholder="Note title..."
-                                                className="w-full text-xl md:text-2xl font-bold bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 p-0 mb-1"
-                                                autoFocus
-                                            />
-                                            <div className="flex flex-col md:flex-row md:flex-wrap md:items-center text-xs text-gray-500 dark:text-gray-400 space-y-1 md:space-y-0 md:gap-3 mb-2">
-                                                <div className="flex items-center">
-                                                    <ClockIcon className="h-3 w-3 mr-1" />
-                                                    <span>
-                                                        {editingNote.updated_at ? new Date(editingNote.updated_at).toLocaleDateString() : 'New'}
-                                                    </span>
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setShowProjectDropdown(!showProjectDropdown);
-                                                        setShowTagsInput(false);
-                                                    }}
-                                                    className="flex items-center hover:underline text-left"
-                                                    title={editingNote.project ? "Change project" : "Add project"}
-                                                >
-                                                    <FolderIcon className="h-3 w-3 mr-1" />
-                                                    {editingNote.project ? editingNote.project.name : 'Add project'}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setShowTagsInput(!showTagsInput);
-                                                        setShowProjectDropdown(false);
-                                                    }}
-                                                    className="flex items-center hover:underline text-left"
-                                                    title={editingNote.tags && editingNote.tags.length > 0 ? "Change tags" : "Add tags"}
-                                                >
-                                                    <TagIconOutline className="h-3 w-3 mr-1" />
-                                                    <span>
-                                                        {editingNote.tags && editingNote.tags.length > 0 ? (
-                                                            editingNote.tags.map((tag, idx) => (
-                                                                <React.Fragment key={idx}>
-                                                                    {idx > 0 && ', '}
-                                                                    {tag.name}
-                                                                </React.Fragment>
-                                                            ))
-                                                        ) : (
-                                                            'Add tags'
-                                                        )}
-                                                    </span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="relative" ref={noteOptionsDropdownRef}>
-                                            <button
-                                                onClick={() => setShowNoteOptionsDropdown(!showNoteOptionsDropdown)}
-                                                className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                                aria-label="Note options"
-                                            >
-                                                <EllipsisVerticalIcon className="h-5 w-5" />
-                                            </button>
-                                            {showNoteOptionsDropdown && (
-                                                <div className="absolute right-0 mt-1 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                                                    <div className="py-1">
-                                                        <button
-                                                            onClick={() => {
-                                                                if (editingNote.title) {
-                                                                    handleSaveInlineNote();
-                                                                } else {
-                                                                    setShowDiscardDialog(true);
-                                                                }
-                                                                setShowNoteOptionsDropdown(false);
-                                                            }}
-                                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                                                        >
-                                                            <PencilIcon className="h-4 w-4" />
-                                                            {t('notes.save', 'Save')}
-                                                        </button>
-                                                        {editingNote.uid && (
-                                                            <button
-                                                                onClick={() => {
-                                                                    setNoteToDelete(editingNote);
-                                                                    setIsConfirmDialogOpen(true);
-                                                                    setShowNoteOptionsDropdown(false);
-                                                                }}
-                                                                className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                                                            >
-                                                                <TrashIcon className="h-4 w-4" />
-                                                                {t('notes.delete', 'Delete')}
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
+                        {/* Search Bar inside notes list */}
+                        <div className="mb-2 flex-shrink-0">
+                            <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md p-2">
+                                <MagnifyingGlassIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
+                                <input
+                                    type="text"
+                                    placeholder={t('notes.searchPlaceholder')}
+                                    value={searchQuery}
+                                    onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                    }
+                                    className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white text-sm"
+                                />
+                            </div>
+                        </div>
 
-                                    {/* Project Dropdown */}
-                                    {showProjectDropdown && (
-                                        <div className="mb-3 mx-4 p-3 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 flex-shrink-0">
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                Select Project
-                                            </label>
-                                            <select
-                                                value={editingNote.project_uid || ''}
-                                                onChange={(e) => {
-                                                    const projectUid = e.target.value || null;
-                                                    const selectedProject = projectUid ? projects.find(p => p.uid === projectUid) : undefined;
-                                                    setEditingNote({
-                                                        ...editingNote,
-                                                        project_uid: projectUid,
-                                                        project: selectedProject as any
-                                                    });
-                                                    setShowProjectDropdown(false);
-                                                }}
-                                                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                            >
-                                                <option value="">No Project</option>
-                                                {projects.map((project) => (
-                                                    <option key={project.uid} value={project.uid}>
-                                                        {project.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    )}
-
-                                    {/* Tags Input */}
-                                    {showTagsInput && (
-                                        <div className="mb-3 mx-4 p-3 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 flex-shrink-0">
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                Tags
-                                            </label>
-                                            <TagInput
-                                                initialTags={(editingNote.tags || editingNote.Tags || []).map((t: any) => t.name)}
-                                                onTagsChange={(tagNames: string[]) => {
-                                                    setEditingNote({
-                                                        ...editingNote,
-                                                        tags: tagNames.map((name: string) => ({ name }))
-                                                    });
-                                                }}
-                                                availableTags={useStore.getState().tagsStore.getTags()}
-                                            />
-                                        </div>
-                                    )}
-
-                                    {/* Content Editor */}
-                                    <div className="flex-1 overflow-y-auto px-6 md:px-8">
-                                        <textarea
-                                            value={editingNote.content || ''}
-                                            onChange={(e) => setEditingNote({ ...editingNote, content: e.target.value })}
-                                            onClick={(e) => e.stopPropagation()}
-                                            placeholder="Write your note content here... (Markdown supported)"
-                                            className="w-full h-full min-h-[300px] bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 resize-none py-4"
-                                        />
-                                    </div>
+                        <div className="space-y-0 overflow-y-auto flex-1 min-h-0">
+                            {sortedNotes.length === 0 ? (
+                                <div className="flex items-center justify-center h-full p-4">
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm text-center">
+                                        {t('notes.noNotesFound')}
+                                    </p>
                                 </div>
-                            ) : previewNote ? (
-                                <div className="flex-1 flex flex-col overflow-hidden">
-                                    {/* Preview Header */}
-                                    <div className="flex items-start justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 p-4">
-                                        <div className="flex-1">
-                                            {/* Back button for mobile */}
-                                            <button
-                                                onClick={() => setPreviewNote(null)}
-                                                className="md:hidden mb-2 text-blue-600 dark:text-blue-400 hover:underline text-sm"
-                                            >
-                                                ← {t('common.back', 'Back to list')}
-                                            </button>
-                                            <h1
-                                                onClick={() => handleEditNote(previewNote)}
-                                                className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                                title="Click to edit"
-                                            >
-                                                {previewNote.title || t('notes.untitled', 'Untitled Note')}
-                                            </h1>
-                                            <div className="flex flex-col md:flex-row md:flex-wrap md:items-center text-xs text-gray-500 dark:text-gray-400 space-y-1 md:space-y-0 md:gap-3 mb-2">
-                                                <div className="flex items-center">
-                                                    <ClockIcon className="h-3 w-3 mr-1" />
-                                                    <span>
-                                                        {new Date(previewNote.updated_at || previewNote.created_at || '').toLocaleDateString()}
-                                                    </span>
-                                                </div>
-                                                {(previewNote.project || previewNote.Project) && (
-                                                    <div className="flex items-center">
-                                                        <FolderIcon className="h-3 w-3 mr-1" />
-                                                        <Link
-                                                            to={
-                                                                (previewNote.project || previewNote.Project)?.uid
-                                                                    ? `/project/${(previewNote.project || previewNote.Project).uid}-${(previewNote.project || previewNote.Project)?.name
-                                                                          .toLowerCase()
-                                                                          .replace(/[^a-z0-9]+/g, '-')
-                                                                          .replace(/^-|-$/g, '')}`
-                                                                    : `/project/${(previewNote.project || previewNote.Project)?.id}`
-                                                            }
-                                                            className="hover:underline"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                        >
-                                                            {(previewNote.project || previewNote.Project)?.name}
-                                                        </Link>
-                                                    </div>
+                            ) : (
+                                sortedNotes.map((note, index) => (
+                                    <div
+                                        key={note.uid}
+                                        onClick={() => setPreviewNote(note)}
+                                        className={`p-3 cursor-pointer transition-colors rounded-md ${
+                                            previewNote?.uid === note.uid
+                                                ? 'border border-blue-300 dark:border-blue-700 mb-1 bg-blue-50/30 dark:bg-blue-900/10'
+                                                : index !==
+                                                    sortedNotes.length - 1
+                                                  ? 'border-b border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                  : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                                        }`}
+                                    >
+                                        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                                            {note.title ||
+                                                t(
+                                                    'notes.untitled',
+                                                    'Untitled Note'
                                                 )}
-                                                {((previewNote.tags && previewNote.tags.length > 0) || (previewNote.Tags && previewNote.Tags.length > 0)) && (
-                                                    <div className="flex items-center">
-                                                        <TagIconOutline className="h-3 w-3 mr-1" />
-                                                        <span>
-                                                            {(previewNote.tags || previewNote.Tags || []).map((tag, idx) => (
-                                                                <React.Fragment key={tag.name}>
-                                                                    {idx > 0 && ', '}
-                                                                    <Link
-                                                                        to={
-                                                                            tag.uid
-                                                                                ? `/tag/${tag.uid}-${tag.name
-                                                                                      .toLowerCase()
-                                                                                      .replace(/[^a-z0-9]+/g, '-')
-                                                                                      .replace(/^-|-$/g, '')}`
-                                                                                : `/tag/${tag.name
-                                                                                      .toLowerCase()
-                                                                                      .replace(/[^a-z0-9]+/g, '-')
-                                                                                      .replace(/^-|-$/g, '')}`
-                                                                        }
-                                                                        className="hover:underline"
-                                                                        onClick={(e) => e.stopPropagation()}
-                                                                    >
-                                                                        {tag.name}
-                                                                    </Link>
-                                                                </React.Fragment>
-                                                            ))}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                            </div>
+                                        </h3>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                                            {note.content.substring(0, 100)}
+                                            {note.content.length > 100
+                                                ? '...'
+                                                : ''}
+                                        </p>
+                                        <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                                            {new Date(
+                                                note.updated_at ||
+                                                    note.created_at ||
+                                                    ''
+                                            ).toLocaleDateString()}
                                         </div>
-                                        <div className="relative" ref={noteOptionsDropdownRef}>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Right Column - Preview or Editor */}
+                    <div
+                        className={`${previewNote || isEditing ? 'flex' : 'hidden md:flex'} flex-1 flex-col overflow-hidden h-full md:h-auto bg-white dark:bg-gray-900 rounded-md`}
+                    >
+                        {isEditing && editingNote ? (
+                            <div className="flex-1 flex flex-col overflow-hidden">
+                                {/* Editor Header - matches preview structure */}
+                                <div className="flex items-start justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 p-4">
+                                    <div className="flex-1">
+                                        {/* Back button for mobile */}
+                                        <button
+                                            onClick={() => {
+                                                if (editingNote.title) {
+                                                    handleSaveInlineNote();
+                                                } else {
+                                                    setShowDiscardDialog(true);
+                                                }
+                                            }}
+                                            className="md:hidden mb-2 text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                                        >
+                                            ← {t('common.back', 'Back to list')}
+                                        </button>
+                                        <input
+                                            type="text"
+                                            value={editingNote.title || ''}
+                                            onChange={(e) =>
+                                                setEditingNote({
+                                                    ...editingNote,
+                                                    title: e.target.value,
+                                                })
+                                            }
+                                            onClick={(e) => e.stopPropagation()}
+                                            placeholder="Note title..."
+                                            className="w-full text-xl md:text-2xl font-bold bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 p-0 mb-1"
+                                            autoFocus
+                                        />
+                                        <div className="flex flex-col md:flex-row md:flex-wrap md:items-center text-xs text-gray-500 dark:text-gray-400 space-y-1 md:space-y-0 md:gap-3 mb-2">
+                                            <div className="flex items-center">
+                                                <ClockIcon className="h-3 w-3 mr-1" />
+                                                <span>
+                                                    {editingNote.updated_at
+                                                        ? new Date(
+                                                              editingNote.updated_at
+                                                          ).toLocaleDateString()
+                                                        : 'New'}
+                                                </span>
+                                            </div>
                                             <button
-                                                onClick={() => setShowNoteOptionsDropdown(!showNoteOptionsDropdown)}
-                                                className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                                aria-label="Note options"
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setShowProjectDropdown(
+                                                        !showProjectDropdown
+                                                    );
+                                                    setShowTagsInput(false);
+                                                }}
+                                                className="flex items-center hover:underline text-left"
+                                                title={
+                                                    editingNote.project
+                                                        ? 'Change project'
+                                                        : 'Add project'
+                                                }
                                             >
-                                                <EllipsisVerticalIcon className="h-5 w-5" />
+                                                <FolderIcon className="h-3 w-3 mr-1" />
+                                                {editingNote.project
+                                                    ? editingNote.project.name
+                                                    : 'Add project'}
                                             </button>
-                                            {showNoteOptionsDropdown && (
-                                                <div className="absolute right-0 mt-1 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                                                    <div className="py-1">
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setShowTagsInput(
+                                                        !showTagsInput
+                                                    );
+                                                    setShowProjectDropdown(
+                                                        false
+                                                    );
+                                                }}
+                                                className="flex items-center hover:underline text-left"
+                                                title={
+                                                    editingNote.tags &&
+                                                    editingNote.tags.length > 0
+                                                        ? 'Change tags'
+                                                        : 'Add tags'
+                                                }
+                                            >
+                                                <TagIconOutline className="h-3 w-3 mr-1" />
+                                                <span>
+                                                    {editingNote.tags &&
+                                                    editingNote.tags.length > 0
+                                                        ? editingNote.tags.map(
+                                                              (tag, idx) => (
+                                                                  <React.Fragment
+                                                                      key={idx}
+                                                                  >
+                                                                      {idx >
+                                                                          0 &&
+                                                                          ', '}
+                                                                      {tag.name}
+                                                                  </React.Fragment>
+                                                              )
+                                                          )
+                                                        : 'Add tags'}
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div
+                                        className="relative"
+                                        ref={noteOptionsDropdownRef}
+                                    >
+                                        <button
+                                            onClick={() =>
+                                                setShowNoteOptionsDropdown(
+                                                    !showNoteOptionsDropdown
+                                                )
+                                            }
+                                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                            aria-label="Note options"
+                                        >
+                                            <EllipsisVerticalIcon className="h-5 w-5" />
+                                        </button>
+                                        {showNoteOptionsDropdown && (
+                                            <div className="absolute right-0 mt-1 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                                                <div className="py-1">
+                                                    <button
+                                                        onClick={() => {
+                                                            if (
+                                                                editingNote.title
+                                                            ) {
+                                                                handleSaveInlineNote();
+                                                            } else {
+                                                                setShowDiscardDialog(
+                                                                    true
+                                                                );
+                                                            }
+                                                            setShowNoteOptionsDropdown(
+                                                                false
+                                                            );
+                                                        }}
+                                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                                    >
+                                                        <PencilIcon className="h-4 w-4" />
+                                                        {t(
+                                                            'notes.save',
+                                                            'Save'
+                                                        )}
+                                                    </button>
+                                                    {editingNote.uid && (
                                                         <button
                                                             onClick={() => {
-                                                                handleEditNote(previewNote);
-                                                                setShowNoteOptionsDropdown(false);
-                                                            }}
-                                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                                                        >
-                                                            <PencilIcon className="h-4 w-4" />
-                                                            {t('notes.edit', 'Edit')}
-                                                        </button>
-                                                        <button
-                                                            onClick={() => {
-                                                                setNoteToDelete(previewNote);
-                                                                setIsConfirmDialogOpen(true);
-                                                                setShowNoteOptionsDropdown(false);
+                                                                setNoteToDelete(
+                                                                    editingNote
+                                                                );
+                                                                setIsConfirmDialogOpen(
+                                                                    true
+                                                                );
+                                                                setShowNoteOptionsDropdown(
+                                                                    false
+                                                                );
                                                             }}
                                                             className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
                                                         >
                                                             <TrashIcon className="h-4 w-4" />
-                                                            {t('notes.delete', 'Delete')}
+                                                            {t(
+                                                                'notes.delete',
+                                                                'Delete'
+                                                            )}
                                                         </button>
-                                                    </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Project Dropdown */}
+                                {showProjectDropdown && (
+                                    <div className="mb-3 mx-4 p-3 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 flex-shrink-0">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Select Project
+                                        </label>
+                                        <select
+                                            value={
+                                                editingNote.project_uid || ''
+                                            }
+                                            onChange={(e) => {
+                                                const projectUid =
+                                                    e.target.value || null;
+                                                const selectedProject =
+                                                    projectUid
+                                                        ? projects.find(
+                                                              (p) =>
+                                                                  p.uid ===
+                                                                  projectUid
+                                                          )
+                                                        : undefined;
+                                                setEditingNote({
+                                                    ...editingNote,
+                                                    project_uid: projectUid,
+                                                    project:
+                                                        selectedProject as any,
+                                                });
+                                                setShowProjectDropdown(false);
+                                            }}
+                                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        >
+                                            <option value="">No Project</option>
+                                            {projects.map((project) => (
+                                                <option
+                                                    key={project.uid}
+                                                    value={project.uid}
+                                                >
+                                                    {project.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {/* Tags Input */}
+                                {showTagsInput && (
+                                    <div className="mb-3 mx-4 p-3 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 flex-shrink-0">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Tags
+                                        </label>
+                                        <TagInput
+                                            initialTags={(
+                                                editingNote.tags ||
+                                                editingNote.Tags ||
+                                                []
+                                            ).map((t: any) => t.name)}
+                                            onTagsChange={(
+                                                tagNames: string[]
+                                            ) => {
+                                                setEditingNote({
+                                                    ...editingNote,
+                                                    tags: tagNames.map(
+                                                        (name: string) => ({
+                                                            name,
+                                                        })
+                                                    ),
+                                                });
+                                            }}
+                                            availableTags={useStore
+                                                .getState()
+                                                .tagsStore.getTags()}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Content Editor */}
+                                <div className="flex-1 overflow-y-auto px-6 md:px-8">
+                                    <textarea
+                                        value={editingNote.content || ''}
+                                        onChange={(e) =>
+                                            setEditingNote({
+                                                ...editingNote,
+                                                content: e.target.value,
+                                            })
+                                        }
+                                        onClick={(e) => e.stopPropagation()}
+                                        placeholder="Write your note content here... (Markdown supported)"
+                                        className="w-full h-full min-h-[300px] bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 resize-none py-4"
+                                    />
+                                </div>
+                            </div>
+                        ) : previewNote ? (
+                            <div className="flex-1 flex flex-col overflow-hidden">
+                                {/* Preview Header */}
+                                <div className="flex items-start justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 p-4">
+                                    <div className="flex-1">
+                                        {/* Back button for mobile */}
+                                        <button
+                                            onClick={() => setPreviewNote(null)}
+                                            className="md:hidden mb-2 text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                                        >
+                                            ← {t('common.back', 'Back to list')}
+                                        </button>
+                                        <h1
+                                            onClick={() =>
+                                                handleEditNote(previewNote)
+                                            }
+                                            className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                            title="Click to edit"
+                                        >
+                                            {previewNote.title ||
+                                                t(
+                                                    'notes.untitled',
+                                                    'Untitled Note'
+                                                )}
+                                        </h1>
+                                        <div className="flex flex-col md:flex-row md:flex-wrap md:items-center text-xs text-gray-500 dark:text-gray-400 space-y-1 md:space-y-0 md:gap-3 mb-2">
+                                            <div className="flex items-center">
+                                                <ClockIcon className="h-3 w-3 mr-1" />
+                                                <span>
+                                                    {new Date(
+                                                        previewNote.updated_at ||
+                                                            previewNote.created_at ||
+                                                            ''
+                                                    ).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                            {(previewNote.project ||
+                                                previewNote.Project) && (
+                                                <div className="flex items-center">
+                                                    <FolderIcon className="h-3 w-3 mr-1" />
+                                                    <Link
+                                                        to={
+                                                            (
+                                                                previewNote.project ||
+                                                                previewNote.Project
+                                                            )?.uid
+                                                                ? `/project/${(previewNote.project || previewNote.Project).uid}-${(
+                                                                      previewNote.project ||
+                                                                      previewNote.Project
+                                                                  )?.name
+                                                                      .toLowerCase()
+                                                                      .replace(
+                                                                          /[^a-z0-9]+/g,
+                                                                          '-'
+                                                                      )
+                                                                      .replace(
+                                                                          /^-|-$/g,
+                                                                          ''
+                                                                      )}`
+                                                                : `/project/${(previewNote.project || previewNote.Project)?.id}`
+                                                        }
+                                                        className="hover:underline"
+                                                        onClick={(e) =>
+                                                            e.stopPropagation()
+                                                        }
+                                                    >
+                                                        {
+                                                            (
+                                                                previewNote.project ||
+                                                                previewNote.Project
+                                                            )?.name
+                                                        }
+                                                    </Link>
+                                                </div>
+                                            )}
+                                            {((previewNote.tags &&
+                                                previewNote.tags.length > 0) ||
+                                                (previewNote.Tags &&
+                                                    previewNote.Tags.length >
+                                                        0)) && (
+                                                <div className="flex items-center">
+                                                    <TagIconOutline className="h-3 w-3 mr-1" />
+                                                    <span>
+                                                        {(
+                                                            previewNote.tags ||
+                                                            previewNote.Tags ||
+                                                            []
+                                                        ).map((tag, idx) => (
+                                                            <React.Fragment
+                                                                key={tag.name}
+                                                            >
+                                                                {idx > 0 &&
+                                                                    ', '}
+                                                                <Link
+                                                                    to={
+                                                                        tag.uid
+                                                                            ? `/tag/${tag.uid}-${tag.name
+                                                                                  .toLowerCase()
+                                                                                  .replace(
+                                                                                      /[^a-z0-9]+/g,
+                                                                                      '-'
+                                                                                  )
+                                                                                  .replace(
+                                                                                      /^-|-$/g,
+                                                                                      ''
+                                                                                  )}`
+                                                                            : `/tag/${tag.name
+                                                                                  .toLowerCase()
+                                                                                  .replace(
+                                                                                      /[^a-z0-9]+/g,
+                                                                                      '-'
+                                                                                  )
+                                                                                  .replace(
+                                                                                      /^-|-$/g,
+                                                                                      ''
+                                                                                  )}`
+                                                                    }
+                                                                    className="hover:underline"
+                                                                    onClick={(
+                                                                        e
+                                                                    ) =>
+                                                                        e.stopPropagation()
+                                                                    }
+                                                                >
+                                                                    {tag.name}
+                                                                </Link>
+                                                            </React.Fragment>
+                                                        ))}
+                                                    </span>
                                                 </div>
                                             )}
                                         </div>
                                     </div>
-
-                                    {/* Preview Content */}
                                     <div
-                                        onClick={() => handleEditNote(previewNote)}
-                                        className="text-sm md:text-base flex-1 overflow-y-auto cursor-pointer px-6 md:px-8 py-4"
-                                        title="Click to edit"
+                                        className="relative"
+                                        ref={noteOptionsDropdownRef}
                                     >
-                                        <MarkdownRenderer content={previewNote.content} />
+                                        <button
+                                            onClick={() =>
+                                                setShowNoteOptionsDropdown(
+                                                    !showNoteOptionsDropdown
+                                                )
+                                            }
+                                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                            aria-label="Note options"
+                                        >
+                                            <EllipsisVerticalIcon className="h-5 w-5" />
+                                        </button>
+                                        {showNoteOptionsDropdown && (
+                                            <div className="absolute right-0 mt-1 w-40 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                                                <div className="py-1">
+                                                    <button
+                                                        onClick={() => {
+                                                            handleEditNote(
+                                                                previewNote
+                                                            );
+                                                            setShowNoteOptionsDropdown(
+                                                                false
+                                                            );
+                                                        }}
+                                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                                    >
+                                                        <PencilIcon className="h-4 w-4" />
+                                                        {t(
+                                                            'notes.edit',
+                                                            'Edit'
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setNoteToDelete(
+                                                                previewNote
+                                                            );
+                                                            setIsConfirmDialogOpen(
+                                                                true
+                                                            );
+                                                            setShowNoteOptionsDropdown(
+                                                                false
+                                                            );
+                                                        }}
+                                                        className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                                                    >
+                                                        <TrashIcon className="h-4 w-4" />
+                                                        {t(
+                                                            'notes.delete',
+                                                            'Delete'
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                            ) : (
-                                <div className="flex items-center justify-center flex-1 text-gray-500 dark:text-gray-400">
-                                    {t('notes.selectNote', 'Select a note to preview')}
+
+                                {/* Preview Content */}
+                                <div
+                                    onClick={() => handleEditNote(previewNote)}
+                                    className="text-sm md:text-base flex-1 overflow-y-auto cursor-pointer px-6 md:px-8 py-4"
+                                    title="Click to edit"
+                                >
+                                    <MarkdownRenderer
+                                        content={previewNote.content}
+                                    />
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center flex-1 text-gray-500 dark:text-gray-400">
+                                {t(
+                                    'notes.selectNote',
+                                    'Select a note to preview'
+                                )}
+                            </div>
+                        )}
                     </div>
+                </div>
 
                 {/* NoteModal */}
                 {isNoteModalOpen && (
