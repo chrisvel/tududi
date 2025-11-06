@@ -1229,6 +1229,32 @@ const Notes: React.FC = () => {
                                     <MarkdownRenderer
                                         content={previewNote.content}
                                         noteColor={previewNoteColor}
+                                        onContentChange={async (newContent) => {
+                                            // Update local state immediately
+                                            const updatedNote = {
+                                                ...previewNote,
+                                                content: newContent,
+                                            };
+                                            setPreviewNote(updatedNote);
+
+                                            // Save to backend
+                                            if (previewNote.uid) {
+                                                try {
+                                                    const savedNote = await updateNote(
+                                                        previewNote.uid,
+                                                        updatedNote
+                                                    );
+                                                    // Update notes list
+                                                    const updatedNotes = notes.map((n) =>
+                                                        n.uid === previewNote.uid ? savedNote : n
+                                                    );
+                                                    setNotes(updatedNotes);
+                                                    setPreviewNote(savedNote);
+                                                } catch (err) {
+                                                    console.error('Error updating note:', err);
+                                                }
+                                            }
+                                        }}
                                     />
                                 </div>
                             </div>
