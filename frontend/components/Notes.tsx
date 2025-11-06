@@ -115,9 +115,37 @@ const Notes: React.FC = () => {
     };
 
     // Function to set preview note and update URL
-    const handleSelectNote = (note: Note | null) => {
-        // If we're editing a new unsaved note, discard it
-        if (isEditing && editingNote && !editingNote.uid) {
+    const handleSelectNote = async (note: Note | null) => {
+        // If we're editing a note, save it first
+        if (isEditing && editingNote) {
+            // If the note has a title, save it
+            if (editingNote.title) {
+                try {
+                    // Add new tags to store if they don't exist
+                    if (editingNote.tags && editingNote.tags.length > 0) {
+                        const { tagsStore } = useStore.getState();
+                        tagsStore.addNewTags(editingNote.tags.map((t) => t.name));
+                    }
+
+                    if (editingNote.uid) {
+                        const savedNote = await updateNote(
+                            editingNote.uid,
+                            editingNote
+                        );
+                        const updatedNotes = notes.map((n) =>
+                            n.uid === editingNote.uid ? savedNote : n
+                        );
+                        setNotes(updatedNotes);
+                    } else {
+                        const newNote = await createNote(editingNote);
+                        setNotes([newNote, ...notes]);
+                    }
+                } catch (err) {
+                    console.error('Error saving note:', err);
+                }
+            }
+
+            // Exit edit mode
             setIsEditing(false);
             setEditingNote(null);
             setShowProjectDropdown(false);
