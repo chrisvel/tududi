@@ -124,7 +124,9 @@ const Notes: React.FC = () => {
                     // Add new tags to store if they don't exist
                     if (editingNote.tags && editingNote.tags.length > 0) {
                         const { tagsStore } = useStore.getState();
-                        tagsStore.addNewTags(editingNote.tags.map((t) => t.name));
+                        tagsStore.addNewTags(
+                            editingNote.tags.map((t) => t.name)
+                        );
                     }
 
                     if (editingNote.uid) {
