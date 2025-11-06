@@ -142,13 +142,19 @@ router.get(
 // POST /api/note
 router.post('/note', async (req, res) => {
     try {
-        const { title, content, project_uid, project_id, tags } = req.body;
+        const { title, content, project_uid, project_id, tags, color } =
+            req.body;
 
         const noteAttributes = {
             title,
             content,
             user_id: req.session.userId,
         };
+
+        // Add color if provided
+        if (color !== undefined) {
+            noteAttributes.color = color;
+        }
 
         // Support both project_uid (new) and project_id (legacy)
         const projectIdentifier = project_uid || project_id;
@@ -262,11 +268,13 @@ router.patch(
                 where: { uid: req.params.uid },
             });
 
-            const { title, content, project_uid, project_id, tags } = req.body;
+            const { title, content, project_uid, project_id, tags, color } =
+                req.body;
 
             const updateData = {};
             if (title !== undefined) updateData.title = title;
             if (content !== undefined) updateData.content = content;
+            if (color !== undefined) updateData.color = color;
 
             // Handle project assignment - support both project_uid (new) and project_id (legacy)
             const projectIdentifier =

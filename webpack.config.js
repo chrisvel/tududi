@@ -1,8 +1,8 @@
 const path = require('path');
-const webpack = require('webpack');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -63,6 +63,16 @@ module.exports = {
   plugins: [
     isDevelopment && new ReactRefreshWebpackPlugin(),
     isDevelopment && new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin(
+      Object.fromEntries(
+        Object.entries({
+          ENABLE_NOTE_COLOR: process.env.ENABLE_NOTE_COLOR,
+        }).map(([key, value]) => [
+          `process.env.${key}`,
+          JSON.stringify(value),
+        ])
+      )
+    ),
     new HtmlWebpackPlugin({
       title: 'tududi',
       filename: 'index.html',

@@ -40,6 +40,10 @@ module.exports = (sequelize) => {
                     key: 'id',
                 },
             },
+            color: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
         },
         {
             tableName: 'notes',

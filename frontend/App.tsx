@@ -238,6 +238,7 @@ const App: React.FC = () => {
                                 element={<ViewDetail />}
                             />
                             <Route path="/notes" element={<Notes />} />
+                            <Route path="/notes/:uid" element={<Notes />} />
                             <Route
                                 path="/note/:uidSlug"
                                 element={<NoteDetails />}

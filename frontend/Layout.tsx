@@ -459,9 +459,9 @@ const Layout: React.FC<LayoutProps> = ({
                 >
                     <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 min-h-screen overflow-y-auto">
                         <div
-                            className={`flex-grow py-6 px-2 md:px-6 transition-all duration-300 ${
-                                isMobileSearchOpen ? 'pt-32' : 'pt-24'
-                            } md:pt-24`}
+                            className={`flex-grow py-0 px-0 md:px-4 transition-all duration-300 ${
+                                isMobileSearchOpen ? 'pt-32' : 'pt-20'
+                            } md:pt-20`}
                         >
                             <div className="w-full">{children}</div>
                         </div>

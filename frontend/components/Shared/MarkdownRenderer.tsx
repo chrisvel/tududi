@@ -9,6 +9,7 @@ interface MarkdownRendererProps {
     className?: string;
     summaryMode?: boolean;
     onContentChange?: (newContent: string) => void;
+    noteColor?: string;
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
@@ -16,7 +17,22 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     className = '',
     summaryMode = false,
     onContentChange,
+    noteColor,
 }) => {
+    // Determine text color based on background
+    const getTextColor = () => {
+        if (!noteColor) return undefined;
+
+        const hex = noteColor.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+        return luminance < 0.4 ? '#ffffff' : '#333333';
+    };
+
+    const textColor = getTextColor();
     useEffect(() => {
         // Configure highlight.js
         hljs.configure({
@@ -92,72 +108,108 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     h1: ({ ...props }) =>
                         summaryMode ? (
                             <strong
-                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                className={`font-semibold ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ) : (
                             <h1
-                                className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100"
+                                className={`text-3xl font-bold mb-4 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ),
                     h2: ({ ...props }) =>
                         summaryMode ? (
                             <strong
-                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                className={`font-semibold ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ) : (
                             <h2
-                                className="text-2xl font-semibold mb-3 text-gray-900 dark:text-gray-100"
+                                className={`text-2xl font-semibold mb-3 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ),
                     h3: ({ ...props }) =>
                         summaryMode ? (
                             <strong
-                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                className={`font-semibold ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ) : (
                             <h3
-                                className="text-xl font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                className={`text-xl font-medium mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ),
                     h4: ({ ...props }) =>
                         summaryMode ? (
                             <strong
-                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                className={`font-semibold ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ) : (
                             <h4
-                                className="text-lg font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                className={`text-lg font-medium mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ),
                     h5: ({ ...props }) =>
                         summaryMode ? (
                             <strong
-                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                className={`font-semibold ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ) : (
                             <h5
-                                className="text-base font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                className={`text-base font-medium mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ),
                     h6: ({ ...props }) =>
                         summaryMode ? (
                             <strong
-                                className="font-semibold text-gray-900 dark:text-gray-100"
+                                className={`font-semibold ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ) : (
                             <h6
-                                className="text-sm font-medium mb-2 text-gray-900 dark:text-gray-100"
+                                className={`text-sm font-medium mb-2 ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                                style={{
+                                    color: textColor,
+                                }}
                                 {...props}
                             />
                         ),
@@ -165,7 +217,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     // Customize paragraph styles
                     p: ({ ...props }) => (
                         <p
-                            className="mb-3 text-gray-700 dark:text-gray-300 leading-relaxed"
+                            className={`mb-3 leading-relaxed ${!noteColor ? 'text-gray-700 dark:text-gray-300' : ''}`}
+                            style={{
+                                color: textColor,
+                            }}
                             {...props}
                         />
                     ),
@@ -173,17 +228,35 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     // Customize list styles
                     ul: ({ ...props }) => (
                         <ul
-                            className="mb-3 list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300"
+                            className={`mb-3 list-disc ml-4 pl-5 space-y-1 ${!noteColor ? 'text-gray-700 dark:text-gray-300' : ''}`}
+                            style={{
+                                color: textColor,
+                            }}
                             {...props}
                         />
                     ),
                     ol: ({ ...props }) => (
                         <ol
-                            className="mb-3 list-decimal list-inside space-y-1 text-gray-700 dark:text-gray-300"
+                            className={`mb-3 list-decimal ml-4 pl-5 space-y-1 ${!noteColor ? 'text-gray-700 dark:text-gray-300' : ''}`}
+                            style={{
+                                color: textColor,
+                            }}
                             {...props}
                         />
                     ),
-                    li: ({ ...props }) => <li className="ml-4" {...props} />,
+                    li: ({ ...props }) => (
+                        <li
+                            className={
+                                !noteColor
+                                    ? 'text-gray-700 dark:text-gray-300'
+                                    : ''
+                            }
+                            style={{
+                                color: textColor,
+                            }}
+                            {...props}
+                        />
+                    ),
 
                     // Customize link styles
                     a: ({ ...props }) => (
@@ -225,7 +298,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             }
                             return (
                                 <code
-                                    className="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono text-gray-900 dark:text-gray-100"
+                                    className="py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono text-gray-900 dark:text-gray-100"
                                     {...props}
                                 >
                                     {children}
@@ -293,7 +366,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     // Customize strong/bold text
                     strong: ({ ...props }) => (
                         <strong
-                            className="font-semibold text-gray-900 dark:text-gray-100"
+                            className={`font-semibold ${!noteColor ? 'text-gray-900 dark:text-gray-100' : ''}`}
+                            style={{
+                                color: textColor,
+                            }}
                             {...props}
                         />
                     ),
@@ -301,7 +377,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     // Customize italic text
                     em: ({ ...props }) => (
                         <em
-                            className="italic text-gray-700 dark:text-gray-300"
+                            className={`italic ${!noteColor ? 'text-gray-700 dark:text-gray-300' : ''}`}
+                            style={{
+                                color: textColor,
+                            }}
                             {...props}
                         />
                     ),
