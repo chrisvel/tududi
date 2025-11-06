@@ -173,17 +173,19 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     // Customize list styles
                     ul: ({ ...props }) => (
                         <ul
-                            className="mb-3 list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300"
+                            className="mb-3 list-disc ml-4 pl-5 space-y-1 text-gray-700 dark:text-gray-300"
                             {...props}
                         />
                     ),
                     ol: ({ ...props }) => (
                         <ol
-                            className="mb-3 list-decimal list-inside space-y-1 text-gray-700 dark:text-gray-300"
+                            className="mb-3 list-decimal ml-4 pl-5 space-y-1 text-gray-700 dark:text-gray-300"
                             {...props}
                         />
                     ),
-                    li: ({ ...props }) => <li className="ml-4" {...props} />,
+                    li: ({ ...props }) => (
+                        <li className="text-gray-700 dark:text-gray-300" {...props} />
+                    ),
 
                     // Customize link styles
                     a: ({ ...props }) => (
