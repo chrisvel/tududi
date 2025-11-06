@@ -564,13 +564,13 @@ const Notes: React.FC = () => {
                                     <div
                                         key={note.uid}
                                         onClick={() => handleSelectNote(note)}
-                                        className={`p-5 cursor-pointer transition-colors ${
+                                        className={`p-5 cursor-pointer ${
                                             previewNote?.uid === note.uid
-                                                ? 'bg-white dark:bg-gray-900 mb-1'
+                                                ? 'bg-white dark:bg-gray-900 border-b border-transparent'
                                                 : index !==
                                                     sortedNotes.length - 1
                                                   ? 'border-b border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                                  : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                  : 'border-b border-transparent hover:bg-gray-50 dark:hover:bg-gray-800'
                                         }`}
                                     >
                                         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
