@@ -70,7 +70,7 @@ const config = {
 
     // API Documentation (Swagger)
     swagger: {
-        enabled: process.env.SWAGGER_ENABLED !== 'false' && !production,
+        enabled: process.env.SWAGGER_ENABLED !== 'false',
     },
 
     // Rate limiting configuration
