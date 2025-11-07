@@ -66,7 +66,8 @@ const options = {
                         },
                         description: {
                             type: 'string',
-                            description: 'Task description (Markdown supported)',
+                            description:
+                                'Task description (Markdown supported)',
                         },
                         status: {
                             type: 'string',
