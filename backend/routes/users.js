@@ -44,7 +44,58 @@ router.get('/users', async (req, res) => {
     }
 });
 
-// GET /api/profile
+/**
+ * @swagger
+ * /api/profile:
+ *   get:
+ *     summary: Get user profile
+ *     tags: [Profile]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 uid:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 surname:
+ *                   type: string
+ *                 appearance:
+ *                   type: string
+ *                   enum: [light, dark, system]
+ *                 language:
+ *                   type: string
+ *                 timezone:
+ *                   type: string
+ *                 first_day_of_week:
+ *                   type: integer
+ *                 avatar_image:
+ *                   type: string
+ *                 telegram_bot_token:
+ *                   type: string
+ *                 telegram_chat_id:
+ *                   type: string
+ *                 task_summary_enabled:
+ *                   type: boolean
+ *                 task_summary_frequency:
+ *                   type: string
+ *                 task_intelligence_enabled:
+ *                   type: boolean
+ *                 pomodoro_enabled:
+ *                   type: boolean
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Profile not found
+ */
 router.get('/profile', async (req, res) => {
     try {
         const user = await User.findByPk(req.session.userId, {
@@ -94,7 +145,79 @@ router.get('/profile', async (req, res) => {
     }
 });
 
-// PATCH /api/profile
+/**
+ * @swagger
+ * /api/profile:
+ *   patch:
+ *     summary: Update user profile
+ *     tags: [Profile]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: User's first name
+ *               surname:
+ *                 type: string
+ *                 description: User's last name
+ *               appearance:
+ *                 type: string
+ *                 enum: [light, dark, system]
+ *                 description: Theme preference
+ *               language:
+ *                 type: string
+ *                 description: Language code (e.g., "en", "es")
+ *               timezone:
+ *                 type: string
+ *                 description: Timezone (e.g., "America/New_York")
+ *               first_day_of_week:
+ *                 type: integer
+ *                 description: First day of week (0=Sunday, 1=Monday)
+ *               avatar_image:
+ *                 type: string
+ *                 description: Avatar image URL
+ *               telegram_bot_token:
+ *                 type: string
+ *                 description: Telegram bot token
+ *               telegram_allowed_users:
+ *                 type: string
+ *                 description: Comma-separated list of allowed Telegram users
+ *               task_intelligence_enabled:
+ *                 type: boolean
+ *                 description: Enable task intelligence features
+ *               task_summary_enabled:
+ *                 type: boolean
+ *                 description: Enable task summary emails
+ *               pomodoro_enabled:
+ *                 type: boolean
+ *                 description: Enable Pomodoro timer
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 uid:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *       400:
+ *         description: Invalid request
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Profile not found
+ */
 router.patch('/profile', async (req, res) => {
     try {
         const user = await User.findByPk(req.session.userId);

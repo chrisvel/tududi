@@ -92,6 +92,18 @@ app.use('/api/uploads', express.static(config.uploadPath));
 const { requireAuth } = require('./middleware/auth');
 const { logError } = require('./services/logService');
 
+// Swagger documentation
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
+
+// Serve Swagger documentation on /api
+app.use('/api', swaggerUi.serve);
+app.get('/api', swaggerUi.setup(swaggerSpec, {
+    customSiteTitle: 'Tududi API Documentation',
+    customfavIcon: '/favicon.ico',
+    customCss: '.swagger-ui .topbar { display: none }',
+}));
+
 // Health check (before auth middleware) - ensure it's completely bypassed
 app.get('/api/health', (req, res) => {
     res.status(200).json({

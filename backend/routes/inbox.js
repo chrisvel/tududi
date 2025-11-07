@@ -6,7 +6,51 @@ const _ = require('lodash');
 const { logError } = require('../services/logService');
 const router = express.Router();
 
-// GET /api/inbox
+/**
+ * @swagger
+ * /api/inbox:
+ *   get:
+ *     summary: Get inbox items
+ *     tags: [Inbox]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: Number of items to return
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *         description: Number of items to skip
+ *     responses:
+ *       200:
+ *         description: List of inbox items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/InboxItem'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                     limit:
+ *                       type: integer
+ *                     offset:
+ *                       type: integer
+ *       401:
+ *         description: Unauthorized
+ */
 router.get('/inbox', async (req, res) => {
     try {
         // Check if pagination parameters are provided
@@ -63,7 +107,43 @@ router.get('/inbox', async (req, res) => {
     }
 });
 
-// POST /api/inbox
+/**
+ * @swagger
+ * /api/inbox:
+ *   post:
+ *     summary: Create a new inbox item
+ *     tags: [Inbox]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - content
+ *             properties:
+ *               content:
+ *                 type: string
+ *                 description: Inbox item content
+ *                 example: "Remember to call John"
+ *               source:
+ *                 type: string
+ *                 description: Source of the item
+ *                 example: "manual"
+ *     responses:
+ *       201:
+ *         description: Inbox item created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InboxItem'
+ *       400:
+ *         description: Invalid request
+ *       401:
+ *         description: Unauthorized
+ */
 router.post('/inbox', async (req, res) => {
     try {
         const { content, source } = req.body;
