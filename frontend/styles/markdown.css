@@ -163,6 +163,7 @@
 /* Custom markdown styles */
 .markdown-content {
   line-height: 1.6;
+  overflow-x: auto;
 }
 
 .markdown-content p:last-child {
@@ -200,8 +201,75 @@
 }
 
 .markdown-content table {
-  border-radius: 0.375rem;
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.markdown-content .markdown-table-wrapper {
+  border-radius: 0.5rem;
+  border: 1px solid rgba(15, 23, 42, 0.1);
   overflow: hidden;
+  overflow-x: auto;
+  box-shadow: 0 4px 10px -8px rgba(15, 23, 42, 0.2);
+  background: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.dark .markdown-content .markdown-table-wrapper {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 16px -10px rgba(0, 0, 0, 0.7);
+  background: rgba(17, 24, 39, 0.9);
+}
+
+.markdown-content .markdown-table-wrapper .markdown-table {
+  border-radius: 0;
+  background: transparent;
+}
+
+.markdown-content .markdown-table thead th {
+  background: rgba(243, 244, 246, 0.95);
+  color: #111827;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.dark .markdown-content .markdown-table thead th {
+  background: rgba(31, 41, 55, 0.85);
+  color: #f9fafb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.markdown-content .markdown-table tbody tr:nth-child(odd) td {
+  background-color: rgba(249, 250, 251, 0.4);
+}
+
+.dark .markdown-content .markdown-table tbody tr:nth-child(odd) td {
+  background-color: rgba(15, 23, 42, 0.5);
+}
+
+.markdown-content .markdown-table th,
+.markdown-content .markdown-table td {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.markdown-content .markdown-table tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown-content .markdown-table td + td,
+.markdown-content .markdown-table th + th {
+  border-left: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.dark .markdown-content .markdown-table th,
+.dark .markdown-content .markdown-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark .markdown-content .markdown-table td + td,
+.dark .markdown-content .markdown-table th + th {
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .markdown-content blockquote {
@@ -275,19 +343,6 @@
 .dark .markdown-content pre:hover::after {
   background: rgba(255, 255, 255, 0.8);
   color: black;
-}
-
-/* Better table responsiveness */
-.markdown-content table {
-  max-width: 100%;
-  overflow-x: auto;
-  display: block;
-  white-space: nowrap;
-}
-
-.markdown-content tbody {
-  display: table;
-  width: 100%;
 }
 
 @media (max-width: 768px) {
