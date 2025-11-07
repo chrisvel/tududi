@@ -138,11 +138,9 @@ const registerRateLimiting = (basePath) => {
     app.use(basePath, authenticatedApiLimiter);
 };
 
-const rateLimitPaths = new Set(['/api']);
-if (API_VERSION && API_BASE_PATH !== '/api') {
-    rateLimitPaths.add(API_BASE_PATH);
-}
-rateLimitPaths.forEach(registerRateLimiting);
+const rateLimitPath =
+    API_VERSION && API_BASE_PATH !== '/api' ? API_BASE_PATH : '/api';
+registerRateLimiting(rateLimitPath);
 
 // Health check (before auth middleware) - ensure it's completely bypassed
 const registerHealthCheck = (basePath) => {
