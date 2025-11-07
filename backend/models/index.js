@@ -33,6 +33,7 @@ const Role = require('./role')(sequelize);
 const Action = require('./action')(sequelize);
 const Permission = require('./permission')(sequelize);
 const View = require('./view')(sequelize);
+const ApiToken = require('./api_token')(sequelize);
 
 // Define associations
 User.hasMany(Area, { foreignKey: 'user_id' });
@@ -139,6 +140,9 @@ Action.belongsTo(User, { foreignKey: 'target_user_id', as: 'Target' });
 User.hasMany(View, { foreignKey: 'user_id' });
 View.belongsTo(User, { foreignKey: 'user_id' });
 
+User.hasMany(ApiToken, { foreignKey: 'user_id', as: 'apiTokens' });
+ApiToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
 module.exports = {
     sequelize,
     User,
@@ -153,4 +157,5 @@ module.exports = {
     Action,
     Permission,
     View,
+    ApiToken,
 };

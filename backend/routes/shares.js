@@ -3,6 +3,16 @@ const { User, Permission, Project, Task, Note } = require('../models');
 const { execAction } = require('../services/execAction');
 const { logError } = require('../services/logService');
 const router = express.Router();
+const { getAuthenticatedUserId } = require('../utils/request-utils');
+
+const getUserIdOrUnauthorized = (req, res) => {
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+        res.status(401).json({ error: 'Authentication required' });
+        return null;
+    }
+    return userId;
+};
 
 const permissionsService = require('../services/permissionsService');
 const { isAdmin } = require('../services/rolesService');
@@ -37,6 +47,8 @@ async function isResourceOwner(userId, resourceType, resourceUid) {
 // POST /api/shares
 router.post('/shares', async (req, res) => {
     try {
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
         const { resource_type, resource_uid, target_user_email, access_level } =
             req.body;
         if (
@@ -48,9 +60,9 @@ router.post('/shares', async (req, res) => {
             return res.status(400).json({ error: 'Missing parameters' });
         }
         // Only owner (or admin) can grant shares
-        const userIsAdmin = await isAdmin(req.session.userId);
+        const userIsAdmin = await isAdmin(userId);
         const userIsOwner = await isResourceOwner(
-            req.session.userId,
+            userId,
             resource_type,
             resource_uid
         );
@@ -96,7 +108,7 @@ router.post('/shares', async (req, res) => {
 
         await execAction({
             verb: 'share_grant',
-            actorUserId: req.session.userId,
+            actorUserId: userId,
             targetUserId: target.id,
             resourceType: resource_type,
             resourceUid: resource_uid,
@@ -112,14 +124,16 @@ router.post('/shares', async (req, res) => {
 // DELETE /api/shares
 router.delete('/shares', async (req, res) => {
     try {
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
         const { resource_type, resource_uid, target_user_id } = req.body;
         if (!resource_type || !resource_uid || !target_user_id) {
             return res.status(400).json({ error: 'Missing parameters' });
         }
         // Only owner (or admin) can revoke shares
-        const userIsAdmin = await isAdmin(req.session.userId);
+        const userIsAdmin = await isAdmin(userId);
         const userIsOwner = await isResourceOwner(
-            req.session.userId,
+            userId,
             resource_type,
             resource_uid
         );
@@ -156,7 +170,7 @@ router.delete('/shares', async (req, res) => {
 
         await execAction({
             verb: 'share_revoke',
-            actorUserId: req.session.userId,
+            actorUserId: userId,
             targetUserId: Number(target_user_id),
             resourceType: resource_type,
             resourceUid: resource_uid,
@@ -171,15 +185,17 @@ router.delete('/shares', async (req, res) => {
 // GET /api/shares?resource_type=...&resource_uid=...
 router.get('/shares', async (req, res) => {
     try {
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
         const { resource_type, resource_uid } = req.query;
         if (!resource_type || !resource_uid) {
             return res.status(400).json({ error: 'Missing parameters' });
         }
 
         // Only owner (or admin) can view shares
-        const userIsAdmin = await isAdmin(req.session.userId);
+        const userIsAdmin = await isAdmin(userId);
         const userIsOwner = await isResourceOwner(
-            req.session.userId,
+            userId,
             resource_type,
             resource_uid
         );

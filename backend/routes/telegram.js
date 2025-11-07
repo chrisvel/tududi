@@ -4,11 +4,23 @@ const { logError } = require('../services/logService');
 const telegramPoller = require('../services/telegramPoller');
 const { getBotInfo } = require('../services/telegramApi');
 const router = express.Router();
+const { getAuthenticatedUserId } = require('../utils/request-utils');
+
+const getUserIdOrUnauthorized = (req, res) => {
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+        res.status(401).json({ error: 'Authentication required' });
+        return null;
+    }
+    return userId;
+};
 
 // POST /api/telegram/start-polling
 router.post('/telegram/start-polling', async (req, res) => {
     try {
-        const user = await User.findByPk(req.session.userId);
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
+        const user = await User.findByPk(userId);
         if (!user || !user.telegram_bot_token) {
             return res
                 .status(400)
@@ -37,7 +49,9 @@ router.post('/telegram/start-polling', async (req, res) => {
 // POST /api/telegram/stop-polling
 router.post('/telegram/stop-polling', async (req, res) => {
     try {
-        const success = telegramPoller.removeUser(req.session.userId);
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
+        const success = telegramPoller.removeUser(userId);
 
         res.json({
             success: true,
@@ -66,6 +80,8 @@ router.get('/telegram/polling-status', async (req, res) => {
 // POST /api/telegram/setup
 router.post('/telegram/setup', async (req, res) => {
     try {
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
         const { token } = req.body;
 
         if (!token) {
@@ -74,7 +90,7 @@ router.post('/telegram/setup', async (req, res) => {
                 .json({ error: 'Telegram bot token is required.' });
         }
 
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findByPk(userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -123,7 +139,9 @@ router.post('/telegram/setup', async (req, res) => {
 // POST /api/telegram/send-welcome
 router.post('/telegram/send-welcome', async (req, res) => {
     try {
-        const user = await User.findByPk(req.session.userId);
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
+        const user = await User.findByPk(userId);
         if (!user || !user.telegram_bot_token) {
             return res
                 .status(400)

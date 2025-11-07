@@ -1,4 +1,14 @@
 const { User } = require('../models');
+const { findValidTokenByValue } = require('../services/apiTokenService');
+
+const getBearerToken = (req) => {
+    const authHeader = req.headers?.authorization || '';
+    const [scheme, token] = authHeader.split(' ');
+    if (scheme && token && scheme.toLowerCase() === 'bearer') {
+        return token.trim();
+    }
+    return null;
+};
 
 const requireAuth = async (req, res, next) => {
     try {
@@ -8,24 +18,35 @@ const requireAuth = async (req, res, next) => {
             return next();
         }
 
-        if (!req.session || !req.session.userId) {
+        if (req.session && req.session.userId) {
+            const user = await User.findByPk(req.session.userId);
+            if (!user) {
+                req.session.destroy();
+                return res.status(401).json({ error: 'User not found' });
+            }
+            req.currentUser = user;
+            return next();
+        }
+
+        const bearerToken = getBearerToken(req);
+        if (!bearerToken) {
             return res.status(401).json({ error: 'Authentication required' });
         }
 
-        const user = await User.findByPk(req.session.userId);
+        const apiToken = await findValidTokenByValue(bearerToken);
+        if (!apiToken) {
+            return res.status(401).json({ error: 'Invalid or expired API token' });
+        }
+
+        const user = await User.findByPk(apiToken.user_id);
         if (!user) {
-            req.session.destroy();
             return res.status(401).json({ error: 'User not found' });
         }
 
-        // Debug logging to verify correct user is authenticated
-        if (req.path.includes('/tasks') && req.method === 'GET') {
-            console.log(
-                `[AUTH DEBUG] ${req.method} ${req.path} - User: ${user.email} (ID: ${user.id})`
-            );
-        }
-
         req.currentUser = user;
+        req.authToken = apiToken;
+        await apiToken.update({ last_used_at: new Date() });
+
         next();
     } catch (error) {
         console.error('Authentication error:', error);

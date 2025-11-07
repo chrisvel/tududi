@@ -4,6 +4,7 @@ const { isValidUid } = require('../utils/slug-utils');
 const { logError } = require('../services/logService');
 const _ = require('lodash');
 const router = express.Router();
+const { getAuthenticatedUserId } = require('../utils/request-utils');
 
 /**
  * @swagger
@@ -33,8 +34,10 @@ const router = express.Router();
  */
 router.get('/areas', async (req, res) => {
     try {
+        const userId = getAuthenticatedUserId(req);
+        if (!userId) return res.status(401).json({ error: 'Authentication required' });
         const areas = await Area.findAll({
-            where: { user_id: req.session.userId },
+            where: { user_id: userId },
             attributes: ['id', 'uid', 'name', 'description'],
             order: [['name', 'ASC']],
         });
@@ -83,10 +86,12 @@ router.get('/areas', async (req, res) => {
  */
 router.get('/areas/:uid', async (req, res) => {
     try {
+        const userId = getAuthenticatedUserId(req);
+        if (!userId) return res.status(401).json({ error: 'Authentication required' });
         if (!isValidUid(req.params.uid))
             return res.status(400).json({ error: 'Invalid UID' });
         const area = await Area.findOne({
-            where: { uid: req.params.uid, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: userId },
             attributes: ['uid', 'name', 'description'],
         });
 
@@ -148,6 +153,8 @@ router.get('/areas/:uid', async (req, res) => {
  */
 router.post('/areas', async (req, res) => {
     try {
+        const userId = getAuthenticatedUserId(req);
+        if (!userId) return res.status(401).json({ error: 'Authentication required' });
         const { name, description } = req.body;
 
         if (!name || _.isEmpty(name.trim())) {
@@ -157,7 +164,7 @@ router.post('/areas', async (req, res) => {
         const area = await Area.create({
             name: name.trim(),
             description: description || '',
-            user_id: req.session.userId,
+            user_id: userId,
         });
 
         res.status(201).json(_.pick(area, ['uid', 'name', 'description']));
@@ -222,10 +229,12 @@ router.post('/areas', async (req, res) => {
  */
 router.patch('/areas/:uid', async (req, res) => {
     try {
+        const userId = getAuthenticatedUserId(req);
+        if (!userId) return res.status(401).json({ error: 'Authentication required' });
         if (!isValidUid(req.params.uid))
             return res.status(400).json({ error: 'Invalid UID' });
         const area = await Area.findOne({
-            where: { uid: req.params.uid, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: userId },
         });
 
         if (!area) {
@@ -284,11 +293,13 @@ router.patch('/areas/:uid', async (req, res) => {
  */
 router.delete('/areas/:uid', async (req, res) => {
     try {
+        const userId = getAuthenticatedUserId(req);
+        if (!userId) return res.status(401).json({ error: 'Authentication required' });
         if (!isValidUid(req.params.uid))
             return res.status(400).json({ error: 'Invalid UID' });
 
         const area = await Area.findOne({
-            where: { uid: req.params.uid, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: userId },
         });
 
         if (!area) {

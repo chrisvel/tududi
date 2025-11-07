@@ -21,6 +21,16 @@ const { validateTagName } = require('../services/tagsService');
 const { uid } = require('../utils/uid');
 const { logError } = require('../services/logService');
 const router = express.Router();
+const { getAuthenticatedUserId } = require('../utils/request-utils');
+
+router.use((req, res, next) => {
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    req.authUserId = userId;
+    next();
+});
 const { hasAccess } = require('../middleware/authorize');
 const { requireAuth } = require('../middleware/auth');
 
@@ -186,7 +196,7 @@ router.get('/projects', async (req, res) => {
         const ownedOrShared =
             await permissionsService.ownershipOrPermissionWhere(
                 'project',
-                req.session.userId
+                req.authUserId
             );
         let whereClause = ownedOrShared;
 
@@ -593,7 +603,7 @@ router.post('/project', async (req, res) => {
             due_date_at: due_date_at || null,
             image_url: image_url || null,
             state: state || 'idea',
-            user_id: req.session.userId,
+            user_id: req.authUserId,
         };
 
         // Create is always allowed for the authenticated user; project is owned by creator
@@ -601,7 +611,7 @@ router.post('/project', async (req, res) => {
 
         // Update tags if provided, but don't let tag errors break project creation
         try {
-            await updateProjectTags(project, tagsData, req.session.userId);
+            await updateProjectTags(project, tagsData, req.authUserId);
         } catch (tagError) {
             logError(
                 'Tag update failed, but project created successfully:',
@@ -744,7 +754,7 @@ router.patch(
             if (state !== undefined) updateData.state = state;
 
             await project.update(updateData);
-            await updateProjectTags(project, tagsData, req.session.userId);
+            await updateProjectTags(project, tagsData, req.authUserId);
 
             // Reload project with associations
             const projectWithAssociations = await Project.findByPk(project.id, {
@@ -848,7 +858,7 @@ router.delete(
                         {
                             where: {
                                 project_id: project.id,
-                                user_id: req.session.userId,
+                                user_id: req.authUserId,
                             },
                             transaction,
                         }
@@ -860,7 +870,7 @@ router.delete(
                         {
                             where: {
                                 project_id: project.id,
-                                user_id: req.session.userId,
+                                user_id: req.authUserId,
                             },
                             transaction,
                         }

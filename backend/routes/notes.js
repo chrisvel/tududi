@@ -3,6 +3,16 @@ const { Note, Tag, Project } = require('../models');
 const { extractUidFromSlug, isValidUid } = require('../utils/slug-utils');
 const { validateTagName } = require('../services/tagsService');
 const router = express.Router();
+const { getAuthenticatedUserId } = require('../utils/request-utils');
+
+router.use((req, res, next) => {
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    req.authUserId = userId;
+    next();
+});
 const permissionsService = require('../services/permissionsService');
 const { hasAccess } = require('../middleware/authorize');
 const _ = require('lodash');
@@ -93,7 +103,7 @@ router.get('/notes', async (req, res) => {
 
         const whereClause = await permissionsService.ownershipOrPermissionWhere(
             'note',
-            req.session.userId
+            req.authUserId
         );
         let includeClause = [
             {
@@ -228,7 +238,7 @@ router.post('/note', async (req, res) => {
         const noteAttributes = {
             title,
             content,
-            user_id: req.session.userId,
+            user_id: req.authUserId,
         };
 
         // Add color if provided
@@ -265,11 +275,11 @@ router.post('/note', async (req, res) => {
 
             // Check if user has write access to the project
             const projectAccess = await permissionsService.getAccess(
-                req.session.userId,
+                req.authUserId,
                 'project',
                 project.uid
             );
-            const isOwner = project.user_id === req.session.userId;
+            const isOwner = project.user_id === req.authUserId;
             const canWrite =
                 isOwner || projectAccess === 'rw' || projectAccess === 'admin';
 
@@ -293,7 +303,7 @@ router.post('/note', async (req, res) => {
             }
         }
 
-        await updateNoteTags(note, tagNames, req.session.userId);
+        await updateNoteTags(note, tagNames, req.authUserId);
 
         // Reload note with associations
         const noteWithAssociations = await Note.findByPk(note.id, {
@@ -437,11 +447,11 @@ router.patch(
                             .json({ error: 'Invalid project.' });
                     }
                     const projectAccess = await permissionsService.getAccess(
-                        req.session.userId,
+                        req.authUserId,
                         'project',
                         project.uid
                     );
-                    const isOwner = project.user_id === req.session.userId;
+                    const isOwner = project.user_id === req.authUserId;
                     const canWrite =
                         isOwner ||
                         projectAccess === 'rw' ||
@@ -469,7 +479,7 @@ router.patch(
                         tagNames = tags.map((t) => t.name);
                     }
                 }
-                await updateNoteTags(note, tagNames, req.session.userId);
+                await updateNoteTags(note, tagNames, req.authUserId);
             }
 
             // Reload note with associations

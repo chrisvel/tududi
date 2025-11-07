@@ -21,12 +21,12 @@ const options = {
         },
         servers: [
             {
-                url: `http://localhost:3002${API_BASE_PATH}`,
-                description: 'Backend development server',
+                url: 'http://localhost:3002',
+                description: `Backend server (base path ${API_BASE_PATH})`,
             },
             {
-                url: `http://localhost:8080${API_BASE_PATH}`,
-                description: 'Frontend dev server (proxied)',
+                url: 'http://localhost:8080',
+                description: `Frontend dev server (proxy to ${API_BASE_PATH})`,
             },
         ],
         components: {
@@ -261,6 +261,41 @@ const options = {
                             format: 'date-time',
                         },
                         updated_at: {
+                            type: 'string',
+                            format: 'date-time',
+                        },
+                    },
+                },
+                ApiKey: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'integer' },
+                        name: {
+                            type: 'string',
+                            description: 'Friendly label for the API key',
+                        },
+                        token_prefix: {
+                            type: 'string',
+                            description:
+                                'First characters displayed to help identify the key',
+                        },
+                        created_at: {
+                            type: 'string',
+                            format: 'date-time',
+                        },
+                        updated_at: {
+                            type: 'string',
+                            format: 'date-time',
+                        },
+                        last_used_at: {
+                            type: 'string',
+                            format: 'date-time',
+                        },
+                        expires_at: {
+                            type: 'string',
+                            format: 'date-time',
+                        },
+                        revoked_at: {
                             type: 'string',
                             format: 'date-time',
                         },

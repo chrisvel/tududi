@@ -4,7 +4,17 @@ const { processInboxItem } = require('../services/inboxProcessingService');
 const { isValidUid } = require('../utils/slug-utils');
 const _ = require('lodash');
 const { logError } = require('../services/logService');
+const { getAuthenticatedUserId } = require('../utils/request-utils');
 const router = express.Router();
+
+const getUserIdOrUnauthorized = (req, res) => {
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+        res.status(401).json({ error: 'Authentication required' });
+        return null;
+    }
+    return userId;
+};
 
 /**
  * @swagger
@@ -53,6 +63,8 @@ const router = express.Router();
  */
 router.get('/inbox', async (req, res) => {
     try {
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
         // Check if pagination parameters are provided
         const hasPagination =
             !_.isEmpty(req.query.limit) || !_.isEmpty(req.query.offset);
@@ -65,14 +77,14 @@ router.get('/inbox', async (req, res) => {
             // Get total count for pagination info
             const totalCount = await InboxItem.count({
                 where: {
-                    user_id: req.session.userId,
+                    user_id: userId,
                     status: 'added',
                 },
             });
 
             const items = await InboxItem.findAll({
                 where: {
-                    user_id: req.session.userId,
+                    user_id: userId,
                     status: 'added',
                 },
                 order: [['created_at', 'DESC']],
@@ -93,7 +105,7 @@ router.get('/inbox', async (req, res) => {
             // Return simple array for backward compatibility (used by tests)
             const items = await InboxItem.findAll({
                 where: {
-                    user_id: req.session.userId,
+                    user_id: userId,
                     status: 'added',
                 },
                 order: [['created_at', 'DESC']],
@@ -146,6 +158,8 @@ router.get('/inbox', async (req, res) => {
  */
 router.post('/inbox', async (req, res) => {
     try {
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
         const { content, source } = req.body;
 
         if (!content || _.isEmpty(content.trim())) {
@@ -158,7 +172,7 @@ router.post('/inbox', async (req, res) => {
         const item = await InboxItem.create({
             content: content.trim(),
             source: finalSource,
-            user_id: req.session.userId,
+            user_id: userId,
         });
 
         res.status(201).json(
@@ -185,12 +199,14 @@ router.post('/inbox', async (req, res) => {
 // GET /api/inbox/:uid
 router.get('/inbox/:uid', async (req, res) => {
     try {
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
         if (!isValidUid(req.params.uid)) {
             return res.status(400).json({ error: 'Invalid UID' });
         }
 
         const item = await InboxItem.findOne({
-            where: { uid: req.params.uid, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: userId },
             attributes: [
                 'uid',
                 'content',
@@ -215,12 +231,14 @@ router.get('/inbox/:uid', async (req, res) => {
 // PATCH /api/inbox/:uid
 router.patch('/inbox/:uid', async (req, res) => {
     try {
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
         if (!isValidUid(req.params.uid)) {
             return res.status(400).json({ error: 'Invalid UID' });
         }
 
         const item = await InboxItem.findOne({
-            where: { uid: req.params.uid, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: userId },
         });
 
         if (_.isEmpty(item)) {
@@ -258,12 +276,14 @@ router.patch('/inbox/:uid', async (req, res) => {
 // DELETE /api/inbox/:uid
 router.delete('/inbox/:uid', async (req, res) => {
     try {
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
         if (!isValidUid(req.params.uid)) {
             return res.status(400).json({ error: 'Invalid UID' });
         }
 
         const item = await InboxItem.findOne({
-            where: { uid: req.params.uid, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: userId },
         });
 
         if (_.isEmpty(item)) {
@@ -284,12 +304,14 @@ router.delete('/inbox/:uid', async (req, res) => {
 // PATCH /api/inbox/:uid/process
 router.patch('/inbox/:uid/process', async (req, res) => {
     try {
+        const userId = getUserIdOrUnauthorized(req, res);
+        if (!userId) return;
         if (!isValidUid(req.params.uid)) {
             return res.status(400).json({ error: 'Invalid UID' });
         }
 
         const item = await InboxItem.findOne({
-            where: { uid: req.params.uid, user_id: req.session.userId },
+            where: { uid: req.params.uid, user_id: userId },
         });
 
         if (_.isEmpty(item)) {
