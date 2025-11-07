@@ -35,7 +35,8 @@ const { getAuthenticatedUserId } = require('../utils/request-utils');
 router.get('/areas', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
-        if (!userId) return res.status(401).json({ error: 'Authentication required' });
+        if (!userId)
+            return res.status(401).json({ error: 'Authentication required' });
         const areas = await Area.findAll({
             where: { user_id: userId },
             attributes: ['id', 'uid', 'name', 'description'],
@@ -87,7 +88,8 @@ router.get('/areas', async (req, res) => {
 router.get('/areas/:uid', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
-        if (!userId) return res.status(401).json({ error: 'Authentication required' });
+        if (!userId)
+            return res.status(401).json({ error: 'Authentication required' });
         if (!isValidUid(req.params.uid))
             return res.status(400).json({ error: 'Invalid UID' });
         const area = await Area.findOne({
@@ -154,7 +156,8 @@ router.get('/areas/:uid', async (req, res) => {
 router.post('/areas', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
-        if (!userId) return res.status(401).json({ error: 'Authentication required' });
+        if (!userId)
+            return res.status(401).json({ error: 'Authentication required' });
         const { name, description } = req.body;
 
         if (!name || _.isEmpty(name.trim())) {
@@ -230,7 +233,8 @@ router.post('/areas', async (req, res) => {
 router.patch('/areas/:uid', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
-        if (!userId) return res.status(401).json({ error: 'Authentication required' });
+        if (!userId)
+            return res.status(401).json({ error: 'Authentication required' });
         if (!isValidUid(req.params.uid))
             return res.status(400).json({ error: 'Invalid UID' });
         const area = await Area.findOne({
@@ -294,7 +298,8 @@ router.patch('/areas/:uid', async (req, res) => {
 router.delete('/areas/:uid', async (req, res) => {
     try {
         const userId = getAuthenticatedUserId(req);
-        if (!userId) return res.status(401).json({ error: 'Authentication required' });
+        if (!userId)
+            return res.status(401).json({ error: 'Authentication required' });
         if (!isValidUid(req.params.uid))
             return res.status(400).json({ error: 'Invalid UID' });
 

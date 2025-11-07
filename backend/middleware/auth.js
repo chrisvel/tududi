@@ -35,7 +35,9 @@ const requireAuth = async (req, res, next) => {
 
         const apiToken = await findValidTokenByValue(bearerToken);
         if (!apiToken) {
-            return res.status(401).json({ error: 'Invalid or expired API token' });
+            return res
+                .status(401)
+                .json({ error: 'Invalid or expired API token' });
         }
 
         const user = await User.findByPk(apiToken.user_id);
