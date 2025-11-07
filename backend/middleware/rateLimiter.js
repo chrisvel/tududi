@@ -1,4 +1,5 @@
 const rateLimit = require('express-rate-limit');
+const { ipKeyGenerator } = require('express-rate-limit');
 const { getConfig } = require('../config/config');
 
 /**
@@ -82,11 +83,11 @@ const authenticatedApiLimiter = rateLimit({
     // Use user ID as the key instead of IP for authenticated requests
     keyGenerator: (req) => {
         // Prefer user ID from session or API token authentication
-        return (
-            req.session?.userId?.toString() ||
-            req.user?.id?.toString() ||
-            req.ip
-        );
+        const userId =
+            req.session?.userId?.toString() || req.user?.id?.toString();
+        if (userId) return userId;
+        // Use proper IPv6-compatible IP key generator as fallback
+        return ipKeyGenerator(req);
     },
     // Only apply to authenticated requests or if disabled
     skip: (req) => {
@@ -116,11 +117,11 @@ const createResourceLimiter = rateLimit({
     legacyHeaders: false,
     skip: skipInTest,
     keyGenerator: (req) => {
-        return (
-            req.session?.userId?.toString() ||
-            req.user?.id?.toString() ||
-            req.ip
-        );
+        const userId =
+            req.session?.userId?.toString() || req.user?.id?.toString();
+        if (userId) return userId;
+        // Use proper IPv6-compatible IP key generator as fallback
+        return ipKeyGenerator(req);
     },
     handler: (req, res) => {
         res.status(429).json({
@@ -143,11 +144,11 @@ const apiKeyManagementLimiter = rateLimit({
     legacyHeaders: false,
     skip: skipInTest,
     keyGenerator: (req) => {
-        return (
-            req.session?.userId?.toString() ||
-            req.user?.id?.toString() ||
-            req.ip
-        );
+        const userId =
+            req.session?.userId?.toString() || req.user?.id?.toString();
+        if (userId) return userId;
+        // Use proper IPv6-compatible IP key generator as fallback
+        return ipKeyGenerator(req);
     },
     handler: (req, res) => {
         res.status(429).json({
