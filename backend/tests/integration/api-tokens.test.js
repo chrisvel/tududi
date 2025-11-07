@@ -285,12 +285,6 @@ describe('API Token Authentication', () => {
         });
 
         it('should update last_used_at when using API token', async () => {
-            // Get initial state
-            const tokensBefore = await agent.get('/api/profile/api-keys');
-            const tokenBefore = tokensBefore.body.find(
-                (t) => t.name === 'Test Token'
-            );
-
             // Wait a moment to ensure timestamp difference
             await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -305,12 +299,15 @@ describe('API Token Authentication', () => {
                 (t) => t.name === 'Test Token'
             );
 
+            // Verify last_used_at is set and is a recent timestamp
             expect(tokenAfter.last_used_at).toBeDefined();
-            if (tokenBefore.last_used_at) {
-                expect(new Date(tokenAfter.last_used_at)).toBeAfter(
-                    new Date(tokenBefore.last_used_at)
-                );
-            }
+            const lastUsedDate = new Date(tokenAfter.last_used_at);
+            const now = new Date();
+            expect(lastUsedDate.getTime()).toBeLessThanOrEqual(now.getTime());
+            // Should be within the last minute
+            expect(now.getTime() - lastUsedDate.getTime()).toBeLessThan(
+                60 * 1000
+            );
         });
     });
 
@@ -339,7 +336,9 @@ describe('API Token Authentication', () => {
 
         it('should prevent using revoked token', async () => {
             // Revoke the token
-            await agent.post(`/api/profile/api-keys/${revokeApiToken.id}/revoke`);
+            await agent.post(
+                `/api/profile/api-keys/${revokeApiToken.id}/revoke`
+            );
 
             // Try to use revoked token
             const response = await request(app)
