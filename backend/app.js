@@ -107,26 +107,28 @@ const {
     authenticatedApiLimiter,
 } = require('./middleware/rateLimiter');
 
-// Swagger documentation
-const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./config/swagger');
+// Swagger documentation (only enabled in development by default)
+if (config.swagger.enabled) {
+    const swaggerUi = require('swagger-ui-express');
+    const swaggerSpec = require('./config/swagger');
 
-const swaggerUiOptions = {
-    customSiteTitle: 'Tududi API Documentation',
-    customfavIcon: '/favicon.ico',
-    customCss: '.swagger-ui .topbar { display: none }',
-};
+    const swaggerUiOptions = {
+        customSiteTitle: 'Tududi API Documentation',
+        customfavIcon: '/favicon.ico',
+        customCss: '.swagger-ui .topbar { display: none }',
+    };
 
-const registerSwaggerDocs = (basePath) => {
-    app.use(basePath, swaggerUi.serve);
-    app.get(basePath, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
-};
+    const registerSwaggerDocs = (basePath) => {
+        app.use(basePath, swaggerUi.serve);
+        app.get(basePath, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+    };
 
-const docPaths = new Set(['/api']);
-if (API_VERSION && API_BASE_PATH !== '/api') {
-    docPaths.add(API_BASE_PATH);
+    const docPaths = new Set(['/api']);
+    if (API_VERSION && API_BASE_PATH !== '/api') {
+        docPaths.add(API_BASE_PATH);
+    }
+    docPaths.forEach(registerSwaggerDocs);
 }
-docPaths.forEach(registerSwaggerDocs);
 
 // Apply rate limiting to API routes
 // Use both limiters: apiLimiter for unauthenticated, authenticatedApiLimiter for authenticated

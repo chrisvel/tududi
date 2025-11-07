@@ -68,6 +68,11 @@ const config = {
     uploadPath:
         process.env.TUDUDI_UPLOAD_PATH || path.join(projectRootPath, 'uploads'),
 
+    // API Documentation (Swagger)
+    swagger: {
+        enabled: process.env.SWAGGER_ENABLED !== 'false' && !production,
+    },
+
     // Rate limiting configuration
     rateLimiting: {
         // Disable rate limiting in test environment
