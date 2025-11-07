@@ -1,5 +1,8 @@
 const swaggerJsdoc = require('swagger-jsdoc');
 
+const API_VERSION = process.env.API_VERSION || 'v1';
+const API_BASE_PATH = `/api/${API_VERSION}`;
+
 const options = {
     definition: {
         openapi: '3.0.0',
@@ -18,12 +21,12 @@ const options = {
         },
         servers: [
             {
-                url: 'http://localhost:8080',
-                description: 'Development server',
+                url: `http://localhost:3002${API_BASE_PATH}`,
+                description: 'Backend development server',
             },
             {
-                url: 'http://localhost:3000',
-                description: 'Production server',
+                url: `http://localhost:8080${API_BASE_PATH}`,
+                description: 'Frontend dev server (proxied)',
             },
         ],
         components: {
@@ -275,5 +278,23 @@ const options = {
 };
 
 const swaggerSpec = swaggerJsdoc(options);
+
+if (swaggerSpec?.paths) {
+    const updatedPaths = {};
+
+    Object.entries(swaggerSpec.paths).forEach(([pathKey, pathValue]) => {
+        if (pathKey.startsWith('/api/')) {
+            const versionedPath =
+                API_BASE_PATH === '/api'
+                    ? pathKey
+                    : `${API_BASE_PATH}${pathKey.slice(4)}`;
+            updatedPaths[versionedPath] = pathValue;
+        } else {
+            updatedPaths[pathKey] = pathValue;
+        }
+    });
+
+    swaggerSpec.paths = updatedPaths;
+}
 
 module.exports = swaggerSpec;
