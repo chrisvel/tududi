@@ -3,6 +3,7 @@ const { User } = require('../models');
 const { isAdmin } = require('../services/rolesService');
 const { logError } = require('../services/logService');
 const packageJson = require('../../package.json');
+const { authLimiter } = require('../middleware/rateLimiter');
 const router = express.Router();
 
 /**
@@ -159,7 +160,7 @@ router.get('/current_user', async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     try {
         const { email, password } = req.body;
 

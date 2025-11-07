@@ -11,6 +11,7 @@ const {
     deleteApiToken,
     serializeApiToken,
 } = require('../services/apiTokenService');
+const { apiKeyManagementLimiter } = require('../middleware/rateLimiter');
 
 router.use((req, res, next) => {
     const userId = getAuthenticatedUserId(req);
@@ -438,7 +439,7 @@ router.post('/profile/change-password', async (req, res) => {
  *               items:
  *                 $ref: '#/components/schemas/ApiKey'
  */
-router.get('/profile/api-keys', async (req, res) => {
+router.get('/profile/api-keys', apiKeyManagementLimiter, async (req, res) => {
     try {
         const tokens = await ApiToken.findAll({
             where: { user_id: req.authUserId },
@@ -492,7 +493,7 @@ router.get('/profile/api-keys', async (req, res) => {
  *       400:
  *         description: Invalid payload
  */
-router.post('/profile/api-keys', async (req, res) => {
+router.post('/profile/api-keys', apiKeyManagementLimiter, async (req, res) => {
     try {
         const { name, expires_at } = req.body || {};
 
@@ -547,24 +548,28 @@ router.post('/profile/api-keys', async (req, res) => {
  *       404:
  *         description: API key not found
  */
-router.post('/profile/api-keys/:id/revoke', async (req, res) => {
-    try {
-        const tokenId = parseInt(req.params.id, 10);
-        if (Number.isNaN(tokenId)) {
-            return res.status(400).json({ error: 'Invalid API key id.' });
-        }
+router.post(
+    '/profile/api-keys/:id/revoke',
+    apiKeyManagementLimiter,
+    async (req, res) => {
+        try {
+            const tokenId = parseInt(req.params.id, 10);
+            if (Number.isNaN(tokenId)) {
+                return res.status(400).json({ error: 'Invalid API key id.' });
+            }
 
-        const token = await revokeApiToken(tokenId, req.authUserId);
-        if (!token) {
-            return res.status(404).json({ error: 'API key not found.' });
-        }
+            const token = await revokeApiToken(tokenId, req.authUserId);
+            if (!token) {
+                return res.status(404).json({ error: 'API key not found.' });
+            }
 
-        res.json(serializeApiToken(token));
-    } catch (error) {
-        logError('Error revoking API key:', error);
-        res.status(500).json({ error: 'Internal server error' });
+            res.json(serializeApiToken(token));
+        } catch (error) {
+            logError('Error revoking API key:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
-});
+);
 
 /**
  * @swagger
@@ -586,24 +591,28 @@ router.post('/profile/api-keys/:id/revoke', async (req, res) => {
  *       404:
  *         description: API key not found
  */
-router.delete('/profile/api-keys/:id', async (req, res) => {
-    try {
-        const tokenId = parseInt(req.params.id, 10);
-        if (Number.isNaN(tokenId)) {
-            return res.status(400).json({ error: 'Invalid API key id.' });
-        }
+router.delete(
+    '/profile/api-keys/:id',
+    apiKeyManagementLimiter,
+    async (req, res) => {
+        try {
+            const tokenId = parseInt(req.params.id, 10);
+            if (Number.isNaN(tokenId)) {
+                return res.status(400).json({ error: 'Invalid API key id.' });
+            }
 
-        const deleted = await deleteApiToken(tokenId, req.authUserId);
-        if (!deleted) {
-            return res.status(404).json({ error: 'API key not found.' });
-        }
+            const deleted = await deleteApiToken(tokenId, req.authUserId);
+            if (!deleted) {
+                return res.status(404).json({ error: 'API key not found.' });
+            }
 
-        res.status(204).send();
-    } catch (error) {
-        logError('Error deleting API key:', error);
-        res.status(500).json({ error: 'Internal server error' });
+            res.status(204).send();
+        } catch (error) {
+            logError('Error deleting API key:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
     }
-});
+);
 
 // POST /api/profile/task-summary/toggle
 router.post('/profile/task-summary/toggle', async (req, res) => {

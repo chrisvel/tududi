@@ -101,6 +101,12 @@ if (API_VERSION && API_BASE_PATH !== '/api') {
 const { requireAuth } = require('./middleware/auth');
 const { logError } = require('./services/logService');
 
+// Rate limiting middleware
+const {
+    apiLimiter,
+    authenticatedApiLimiter,
+} = require('./middleware/rateLimiter');
+
 // Swagger documentation
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
@@ -121,6 +127,20 @@ if (API_VERSION && API_BASE_PATH !== '/api') {
     docPaths.add(API_BASE_PATH);
 }
 docPaths.forEach(registerSwaggerDocs);
+
+// Apply rate limiting to API routes
+// Use both limiters: apiLimiter for unauthenticated, authenticatedApiLimiter for authenticated
+// Each has skip logic to handle their specific use case
+const registerRateLimiting = (basePath) => {
+    app.use(basePath, apiLimiter);
+    app.use(basePath, authenticatedApiLimiter);
+};
+
+const rateLimitPaths = new Set(['/api']);
+if (API_VERSION && API_BASE_PATH !== '/api') {
+    rateLimitPaths.add(API_BASE_PATH);
+}
+rateLimitPaths.forEach(registerRateLimiting);
 
 // Health check (before auth middleware) - ensure it's completely bypassed
 const registerHealthCheck = (basePath) => {
