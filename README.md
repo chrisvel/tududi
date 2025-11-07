@@ -52,6 +52,7 @@ For the thinking behind tududi, read:
     - Create tasks directly through Telegram messages
     - Receive daily digests of your tasks
     - Quick capture of ideas and todos on the go
+- **Open API & Access Tokens**: Versioned Swagger docs exposed at `/api/v1` plus personal API keys for integrating tududi with your own tooling or automations.
 
 ## 🗺️ Roadmap
 

@@ -3,6 +3,16 @@ const { Note, Tag, Project } = require('../models');
 const { extractUidFromSlug, isValidUid } = require('../utils/slug-utils');
 const { validateTagName } = require('../services/tagsService');
 const router = express.Router();
+const { getAuthenticatedUserId } = require('../utils/request-utils');
+
+router.use((req, res, next) => {
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    req.authUserId = userId;
+    next();
+});
 const permissionsService = require('../services/permissionsService');
 const { hasAccess } = require('../middleware/authorize');
 const _ = require('lodash');
@@ -54,7 +64,38 @@ async function updateNoteTags(note, tagsArray, userId) {
     }
 }
 
-// GET /api/notes
+/**
+ * @swagger
+ * /api/notes:
+ *   get:
+ *     summary: Get all notes
+ *     tags: [Notes]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: order_by
+ *         schema:
+ *           type: string
+ *           example: "title:asc"
+ *         description: Sort order (field:direction)
+ *       - in: query
+ *         name: project_id
+ *         schema:
+ *           type: integer
+ *         description: Filter by project ID
+ *     responses:
+ *       200:
+ *         description: List of notes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Note'
+ *       401:
+ *         description: Unauthorized
+ */
 router.get('/notes', async (req, res) => {
     try {
         const orderBy = req.query.order_by || 'title:asc';
@@ -62,7 +103,7 @@ router.get('/notes', async (req, res) => {
 
         const whereClause = await permissionsService.ownershipOrPermissionWhere(
             'note',
-            req.session.userId
+            req.authUserId
         );
         let includeClause = [
             {
@@ -139,7 +180,56 @@ router.get(
     }
 );
 
-// POST /api/note
+/**
+ * @swagger
+ * /api/note:
+ *   post:
+ *     summary: Create a new note
+ *     tags: [Notes]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - content
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Note title
+ *                 example: "Meeting notes"
+ *               content:
+ *                 type: string
+ *                 description: Note content (Markdown supported)
+ *                 example: "# Meeting Summary\n- Point 1\n- Point 2"
+ *               color:
+ *                 type: string
+ *                 description: Background color (hex)
+ *                 example: "#B71C1C"
+ *               project_uid:
+ *                 type: string
+ *                 description: Associated project UID
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of tag names
+ *     responses:
+ *       201:
+ *         description: Note created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Note'
+ *       400:
+ *         description: Invalid request
+ *       401:
+ *         description: Unauthorized
+ */
 router.post('/note', async (req, res) => {
     try {
         const { title, content, project_uid, project_id, tags, color } =
@@ -148,7 +238,7 @@ router.post('/note', async (req, res) => {
         const noteAttributes = {
             title,
             content,
-            user_id: req.session.userId,
+            user_id: req.authUserId,
         };
 
         // Add color if provided
@@ -185,11 +275,11 @@ router.post('/note', async (req, res) => {
 
             // Check if user has write access to the project
             const projectAccess = await permissionsService.getAccess(
-                req.session.userId,
+                req.authUserId,
                 'project',
                 project.uid
             );
-            const isOwner = project.user_id === req.session.userId;
+            const isOwner = project.user_id === req.authUserId;
             const canWrite =
                 isOwner || projectAccess === 'rw' || projectAccess === 'admin';
 
@@ -213,7 +303,7 @@ router.post('/note', async (req, res) => {
             }
         }
 
-        await updateNoteTags(note, tagNames, req.session.userId);
+        await updateNoteTags(note, tagNames, req.authUserId);
 
         // Reload note with associations
         const noteWithAssociations = await Note.findByPk(note.id, {
@@ -246,6 +336,59 @@ router.post('/note', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/note/{uid}:
+ *   patch:
+ *     summary: Update a note
+ *     tags: [Notes]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Note UID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Note title
+ *               content:
+ *                 type: string
+ *                 description: Note content (Markdown supported)
+ *               color:
+ *                 type: string
+ *                 description: Background color (hex)
+ *               project_uid:
+ *                 type: string
+ *                 description: Associated project UID
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of tag names
+ *     responses:
+ *       200:
+ *         description: Note updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Note'
+ *       400:
+ *         description: Invalid request
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Note not found
+ */
 router.patch(
     '/note/:uid',
     hasAccess(
@@ -304,11 +447,11 @@ router.patch(
                             .json({ error: 'Invalid project.' });
                     }
                     const projectAccess = await permissionsService.getAccess(
-                        req.session.userId,
+                        req.authUserId,
                         'project',
                         project.uid
                     );
-                    const isOwner = project.user_id === req.session.userId;
+                    const isOwner = project.user_id === req.authUserId;
                     const canWrite =
                         isOwner ||
                         projectAccess === 'rw' ||
@@ -336,7 +479,7 @@ router.patch(
                         tagNames = tags.map((t) => t.name);
                     }
                 }
-                await updateNoteTags(note, tagNames, req.session.userId);
+                await updateNoteTags(note, tagNames, req.authUserId);
             }
 
             // Reload note with associations
@@ -368,6 +511,37 @@ router.patch(
     }
 );
 
+/**
+ * @swagger
+ * /api/note/{uid}:
+ *   delete:
+ *     summary: Delete a note
+ *     tags: [Notes]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Note UID
+ *     responses:
+ *       200:
+ *         description: Note deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Note deleted successfully."
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Note not found
+ */
 router.delete(
     '/note/:uid',
     hasAccess(

@@ -107,40 +107,20 @@ async function ownershipOrPermissionWhere(resourceType, userId) {
         });
         if (user) {
             userUid = user.uid;
-            console.log(
-                `[PERMISSIONS DEBUG] User lookup: ID=${userId}, UID=${userUid}, Email=${user.email}`
-            );
         }
     }
 
     const isUserAdmin = await isAdmin(userUid);
-    console.log(
-        `[PERMISSIONS DEBUG] Resource: ${resourceType}, UserId: ${userId}, IsAdmin: ${isUserAdmin}`
-    );
 
     // Admin users should NOT see all resources automatically
     // They should only see their own resources and shared resources, like regular users
     // If admin-level system-wide visibility is needed, it should be via dedicated admin endpoints
-    // if (isUserAdmin) {
-    //     console.log(
-    //         `[PERMISSIONS DEBUG] User is admin, returning empty where clause (all resources visible)`
-    //     );
-    //     return {}; // empty where clause = no restriction
-    // }
 
     const sharedUids = await getSharedUidsForUser(resourceType, userId);
-    console.log(
-        `[PERMISSIONS DEBUG] Shared ${resourceType} UIDs for user ${userId}:`,
-        sharedUids
-    );
 
     // For tasks and notes, also include items from shared projects
     if (resourceType === 'task' || resourceType === 'note') {
         const sharedProjectUids = await getSharedUidsForUser('project', userId);
-        console.log(
-            `[PERMISSIONS DEBUG] Shared project UIDs for user ${userId}:`,
-            sharedProjectUids
-        );
 
         // Get the project IDs for shared projects
         let sharedProjectIds = [];
@@ -151,10 +131,6 @@ async function ownershipOrPermissionWhere(resourceType, userId) {
                 raw: true,
             });
             sharedProjectIds = projects.map((p) => p.id);
-            console.log(
-                `[PERMISSIONS DEBUG] Shared project IDs for user ${userId}:`,
-                sharedProjectIds
-            );
         }
 
         const conditions = [
@@ -169,10 +145,6 @@ async function ownershipOrPermissionWhere(resourceType, userId) {
             conditions.push({ project_id: { [Op.in]: sharedProjectIds } }); // Items in shared projects
         }
 
-        console.log(
-            `[PERMISSIONS DEBUG] Final where conditions for ${resourceType}:`,
-            JSON.stringify(conditions)
-        );
         return { [Op.or]: conditions };
     }
 

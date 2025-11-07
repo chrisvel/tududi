@@ -328,10 +328,12 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                                 [Table content hidden in preview]
                             </span>
                         ) : (
-                            <table
-                                className="mb-4 w-full border-collapse border border-gray-300 dark:border-gray-600"
-                                {...props}
-                            />
+                            <div className="markdown-table-wrapper">
+                                <table
+                                    className="markdown-table w-full border-collapse"
+                                    {...props}
+                                />
+                            </div>
                         ),
                     thead: ({ ...props }) =>
                         summaryMode ? null : (
@@ -343,14 +345,14 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                     th: ({ ...props }) =>
                         summaryMode ? null : (
                             <th
-                                className="border border-gray-300 dark:border-gray-600 px-3 py-2 text-left font-semibold text-gray-900 dark:text-gray-100"
+                                className="px-3 py-2 text-left font-semibold text-gray-900 dark:text-gray-100"
                                 {...props}
                             />
                         ),
                     td: ({ ...props }) =>
                         summaryMode ? null : (
                             <td
-                                className="border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-700 dark:text-gray-300"
+                                className="px-3 py-2 text-gray-700 dark:text-gray-300"
                                 {...props}
                             />
                         ),

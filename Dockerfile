@@ -107,7 +107,8 @@ ENV NODE_ENV=production \
     TUDUDI_USER_PASSWORD="" \
     DISABLE_TELEGRAM=false \
     DISABLE_SCHEDULER=false \
-    TUDUDI_UPLOAD_PATH="/app/backend/uploads"
+    TUDUDI_UPLOAD_PATH="/app/backend/uploads" \
+    SWAGGER_ENABLED=false
 
 HEALTHCHECK --interval=60s --timeout=3s --start-period=10s --retries=2 \
     CMD curl -sf http://localhost:3002/api/health || exit 1

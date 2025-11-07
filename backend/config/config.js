@@ -67,6 +67,59 @@ const config = {
 
     uploadPath:
         process.env.TUDUDI_UPLOAD_PATH || path.join(projectRootPath, 'uploads'),
+
+    // API Documentation (Swagger)
+    swagger: {
+        enabled: process.env.SWAGGER_ENABLED !== 'false' && !production,
+    },
+
+    // Rate limiting configuration
+    rateLimiting: {
+        // Disable rate limiting in test environment
+        enabled:
+            process.env.RATE_LIMITING_ENABLED !== 'false' &&
+            environment !== 'test',
+
+        // Authentication endpoints (login, register)
+        auth: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_AUTH_WINDOW_MS) ||
+                15 * 60 * 1000, // 15 minutes
+            max: parseInt(process.env.RATE_LIMIT_AUTH_MAX) || 5, // 5 requests per window
+        },
+
+        // General API for unauthenticated requests
+        api: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_API_WINDOW_MS) ||
+                15 * 60 * 1000, // 15 minutes
+            max: parseInt(process.env.RATE_LIMIT_API_MAX) || 100, // 100 requests per window
+        },
+
+        // Authenticated API requests
+        authenticatedApi: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_AUTH_API_WINDOW_MS) ||
+                15 * 60 * 1000, // 15 minutes
+            max: parseInt(process.env.RATE_LIMIT_AUTH_API_MAX) || 1000, // 1000 requests per window
+        },
+
+        // Resource creation endpoints
+        createResource: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_CREATE_WINDOW_MS) ||
+                15 * 60 * 1000, // 15 minutes
+            max: parseInt(process.env.RATE_LIMIT_CREATE_MAX) || 50, // 50 requests per window
+        },
+
+        // API key management endpoints
+        apiKeyManagement: {
+            windowMs:
+                parseInt(process.env.RATE_LIMIT_API_KEY_WINDOW_MS) ||
+                60 * 60 * 1000, // 1 hour
+            max: parseInt(process.env.RATE_LIMIT_API_KEY_MAX) || 10, // 10 requests per window
+        },
+    },
 };
 
 console.log(`Using database file '${config.dbFile}'`);

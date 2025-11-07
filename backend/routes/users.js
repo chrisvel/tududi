@@ -1,8 +1,26 @@
 const express = require('express');
-const { User, Role } = require('../models');
+const { User, Role, ApiToken } = require('../models');
+const _ = require('lodash');
 const { logError } = require('../services/logService');
 const taskSummaryService = require('../services/taskSummaryService');
 const router = express.Router();
+const { getAuthenticatedUserId } = require('../utils/request-utils');
+const {
+    createApiToken,
+    revokeApiToken,
+    deleteApiToken,
+    serializeApiToken,
+} = require('../services/apiTokenService');
+const { apiKeyManagementLimiter } = require('../middleware/rateLimiter');
+
+router.use((req, res, next) => {
+    const userId = getAuthenticatedUserId(req);
+    if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+    }
+    req.authUserId = userId;
+    next();
+});
 
 const VALID_FREQUENCIES = [
     'daily',
@@ -44,10 +62,61 @@ router.get('/users', async (req, res) => {
     }
 });
 
-// GET /api/profile
+/**
+ * @swagger
+ * /api/profile:
+ *   get:
+ *     summary: Get user profile
+ *     tags: [Profile]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 uid:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 surname:
+ *                   type: string
+ *                 appearance:
+ *                   type: string
+ *                   enum: [light, dark, system]
+ *                 language:
+ *                   type: string
+ *                 timezone:
+ *                   type: string
+ *                 first_day_of_week:
+ *                   type: integer
+ *                 avatar_image:
+ *                   type: string
+ *                 telegram_bot_token:
+ *                   type: string
+ *                 telegram_chat_id:
+ *                   type: string
+ *                 task_summary_enabled:
+ *                   type: boolean
+ *                 task_summary_frequency:
+ *                   type: string
+ *                 task_intelligence_enabled:
+ *                   type: boolean
+ *                 pomodoro_enabled:
+ *                   type: boolean
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Profile not found
+ */
 router.get('/profile', async (req, res) => {
     try {
-        const user = await User.findByPk(req.session.userId, {
+        const user = await User.findByPk(req.authUserId, {
             attributes: [
                 'uid',
                 'email',
@@ -94,10 +163,82 @@ router.get('/profile', async (req, res) => {
     }
 });
 
-// PATCH /api/profile
+/**
+ * @swagger
+ * /api/profile:
+ *   patch:
+ *     summary: Update user profile
+ *     tags: [Profile]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: User's first name
+ *               surname:
+ *                 type: string
+ *                 description: User's last name
+ *               appearance:
+ *                 type: string
+ *                 enum: [light, dark, system]
+ *                 description: Theme preference
+ *               language:
+ *                 type: string
+ *                 description: Language code (e.g., "en", "es")
+ *               timezone:
+ *                 type: string
+ *                 description: Timezone (e.g., "America/New_York")
+ *               first_day_of_week:
+ *                 type: integer
+ *                 description: First day of week (0=Sunday, 1=Monday)
+ *               avatar_image:
+ *                 type: string
+ *                 description: Avatar image URL
+ *               telegram_bot_token:
+ *                 type: string
+ *                 description: Telegram bot token
+ *               telegram_allowed_users:
+ *                 type: string
+ *                 description: Comma-separated list of allowed Telegram users
+ *               task_intelligence_enabled:
+ *                 type: boolean
+ *                 description: Enable task intelligence features
+ *               task_summary_enabled:
+ *                 type: boolean
+ *                 description: Enable task summary emails
+ *               pomodoro_enabled:
+ *                 type: boolean
+ *                 description: Enable Pomodoro timer
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 uid:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *       400:
+ *         description: Invalid request
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Profile not found
+ */
 router.patch('/profile', async (req, res) => {
     try {
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findByPk(req.authUserId);
         if (!user) {
             return res.status(404).json({ error: 'Profile not found.' });
         }
@@ -252,7 +393,7 @@ router.post('/profile/change-password', async (req, res) => {
             });
         }
 
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findByPk(req.authUserId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -280,10 +421,203 @@ router.post('/profile/change-password', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/profile/api-keys:
+ *   get:
+ *     summary: List API keys for the current user
+ *     tags: [Profile]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: List of API keys
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ApiKey'
+ */
+router.get('/profile/api-keys', apiKeyManagementLimiter, async (req, res) => {
+    try {
+        const tokens = await ApiToken.findAll({
+            where: { user_id: req.authUserId },
+            order: [['created_at', 'DESC']],
+        });
+
+        res.json(tokens.map(serializeApiToken));
+    } catch (error) {
+        logError('Error listing API keys:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * @swagger
+ * /api/profile/api-keys:
+ *   post:
+ *     summary: Create a new API key
+ *     tags: [Profile]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Friendly name for the API key
+ *               expires_at:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Optional expiration timestamp
+ *     responses:
+ *       201:
+ *         description: API key created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: The plain API key. This value is only returned once.
+ *                 apiKey:
+ *                   $ref: '#/components/schemas/ApiKey'
+ *       400:
+ *         description: Invalid payload
+ */
+router.post('/profile/api-keys', apiKeyManagementLimiter, async (req, res) => {
+    try {
+        const { name, expires_at } = req.body || {};
+
+        if (!name || _.isEmpty(name.trim())) {
+            return res.status(400).json({ error: 'API key name is required.' });
+        }
+
+        let expiresAtDate = null;
+        if (expires_at) {
+            const parsedDate = new Date(expires_at);
+            if (Number.isNaN(parsedDate.getTime())) {
+                return res
+                    .status(400)
+                    .json({ error: 'expires_at must be a valid date.' });
+            }
+            expiresAtDate = parsedDate;
+        }
+
+        const { rawToken, tokenRecord } = await createApiToken({
+            userId: req.authUserId,
+            name: name.trim(),
+            expiresAt: expiresAtDate,
+        });
+
+        res.status(201).json({
+            token: rawToken,
+            apiKey: serializeApiToken(tokenRecord),
+        });
+    } catch (error) {
+        logError('Error creating API key:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * @swagger
+ * /api/profile/api-keys/{id}/revoke:
+ *   post:
+ *     summary: Revoke an API key
+ *     tags: [Profile]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Revoked key details
+ *       404:
+ *         description: API key not found
+ */
+router.post(
+    '/profile/api-keys/:id/revoke',
+    apiKeyManagementLimiter,
+    async (req, res) => {
+        try {
+            const tokenId = parseInt(req.params.id, 10);
+            if (Number.isNaN(tokenId)) {
+                return res.status(400).json({ error: 'Invalid API key id.' });
+            }
+
+            const token = await revokeApiToken(tokenId, req.authUserId);
+            if (!token) {
+                return res.status(404).json({ error: 'API key not found.' });
+            }
+
+            res.json(serializeApiToken(token));
+        } catch (error) {
+            logError('Error revoking API key:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+);
+
+/**
+ * @swagger
+ * /api/profile/api-keys/{id}:
+ *   delete:
+ *     summary: Delete an API key
+ *     tags: [Profile]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: API key deleted
+ *       404:
+ *         description: API key not found
+ */
+router.delete(
+    '/profile/api-keys/:id',
+    apiKeyManagementLimiter,
+    async (req, res) => {
+        try {
+            const tokenId = parseInt(req.params.id, 10);
+            if (Number.isNaN(tokenId)) {
+                return res.status(400).json({ error: 'Invalid API key id.' });
+            }
+
+            const deleted = await deleteApiToken(tokenId, req.authUserId);
+            if (!deleted) {
+                return res.status(404).json({ error: 'API key not found.' });
+            }
+
+            res.status(204).send();
+        } catch (error) {
+            logError('Error deleting API key:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+);
+
 // POST /api/profile/task-summary/toggle
 router.post('/profile/task-summary/toggle', async (req, res) => {
     try {
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findByPk(req.authUserId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -326,7 +660,7 @@ router.post('/profile/task-summary/frequency', async (req, res) => {
             return res.status(400).json({ error: 'Invalid frequency value.' });
         }
 
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findByPk(req.authUserId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -352,7 +686,7 @@ router.post('/profile/task-summary/frequency', async (req, res) => {
 // POST /api/profile/task-summary/send-now
 router.post('/profile/task-summary/send-now', async (req, res) => {
     try {
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findByPk(req.authUserId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -388,7 +722,7 @@ router.post('/profile/task-summary/send-now', async (req, res) => {
 // GET /api/profile/task-summary/status
 router.get('/profile/task-summary/status', async (req, res) => {
     try {
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findByPk(req.authUserId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -409,7 +743,7 @@ router.get('/profile/task-summary/status', async (req, res) => {
 // PUT /api/profile/today-settings
 router.put('/profile/today-settings', async (req, res) => {
     try {
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findByPk(req.authUserId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }
@@ -485,7 +819,7 @@ router.put('/profile/today-settings', async (req, res) => {
 // PUT /api/profile/sidebar-settings
 router.put('/profile/sidebar-settings', async (req, res) => {
     try {
-        const user = await User.findByPk(req.session.userId);
+        const user = await User.findByPk(req.authUserId);
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
         }

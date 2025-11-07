@@ -12,6 +12,8 @@ const { initializeTelegramPolling } = require('./services/telegramInitializer');
 const taskScheduler = require('./services/taskScheduler');
 const { setConfig, getConfig } = require('./config/config');
 const config = getConfig();
+const API_VERSION = process.env.API_VERSION || 'v1';
+const API_BASE_PATH = `/api/${API_VERSION}`;
 
 const app = express();
 
@@ -86,39 +88,105 @@ if (config.production) {
 }
 
 // Serve uploaded files
-app.use('/api/uploads', express.static(config.uploadPath));
+const registerUploadsStatic = (basePath) => {
+    app.use(`${basePath}/uploads`, express.static(config.uploadPath));
+};
+
+registerUploadsStatic('/api');
+if (API_VERSION && API_BASE_PATH !== '/api') {
+    registerUploadsStatic(API_BASE_PATH);
+}
 
 // Authentication middleware
 const { requireAuth } = require('./middleware/auth');
 const { logError } = require('./services/logService');
 
+// Rate limiting middleware
+const {
+    apiLimiter,
+    authenticatedApiLimiter,
+} = require('./middleware/rateLimiter');
+
+// Swagger documentation (only enabled in development by default)
+if (config.swagger.enabled) {
+    const swaggerUi = require('swagger-ui-express');
+    const swaggerSpec = require('./config/swagger');
+
+    const swaggerUiOptions = {
+        customSiteTitle: 'Tududi API Documentation',
+        customfavIcon: '/favicon.ico',
+        customCss: '.swagger-ui .topbar { display: none }',
+    };
+
+    const registerSwaggerDocs = (basePath) => {
+        app.use(basePath, swaggerUi.serve);
+        app.get(basePath, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+    };
+
+    const docPaths = new Set(['/api']);
+    if (API_VERSION && API_BASE_PATH !== '/api') {
+        docPaths.add(API_BASE_PATH);
+    }
+    docPaths.forEach(registerSwaggerDocs);
+}
+
+// Apply rate limiting to API routes
+// Use both limiters: apiLimiter for unauthenticated, authenticatedApiLimiter for authenticated
+// Each has skip logic to handle their specific use case
+const registerRateLimiting = (basePath) => {
+    app.use(basePath, apiLimiter);
+    app.use(basePath, authenticatedApiLimiter);
+};
+
+const rateLimitPaths = new Set(['/api']);
+if (API_VERSION && API_BASE_PATH !== '/api') {
+    rateLimitPaths.add(API_BASE_PATH);
+}
+rateLimitPaths.forEach(registerRateLimiting);
+
 // Health check (before auth middleware) - ensure it's completely bypassed
-app.get('/api/health', (req, res) => {
-    res.status(200).json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        environment: config.environment,
+const registerHealthCheck = (basePath) => {
+    app.get(`${basePath}/health`, (req, res) => {
+        res.status(200).json({
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            environment: config.environment,
+        });
     });
-});
+};
+
+const healthPaths = new Set(['/api']);
+if (API_VERSION && API_BASE_PATH !== '/api') {
+    healthPaths.add(API_BASE_PATH);
+}
+healthPaths.forEach(registerHealthCheck);
 
 // Routes
-app.use('/api', require('./routes/auth'));
-app.use('/api', requireAuth, require('./routes/tasks'));
-app.use('/api', requireAuth, require('./routes/projects'));
-app.use('/api', requireAuth, require('./routes/admin'));
-app.use('/api', requireAuth, require('./routes/shares'));
-app.use('/api', requireAuth, require('./routes/areas'));
-app.use('/api', requireAuth, require('./routes/notes'));
-app.use('/api', requireAuth, require('./routes/tags'));
-app.use('/api', requireAuth, require('./routes/users'));
-app.use('/api', requireAuth, require('./routes/inbox'));
-app.use('/api', requireAuth, require('./routes/url'));
-app.use('/api', requireAuth, require('./routes/telegram'));
-app.use('/api', requireAuth, require('./routes/quotes'));
-app.use('/api', requireAuth, require('./routes/task-events'));
-app.use('/api/search', requireAuth, require('./routes/search'));
-app.use('/api/views', requireAuth, require('./routes/views'));
+const registerApiRoutes = (basePath) => {
+    app.use(basePath, require('./routes/auth'));
+    app.use(basePath, requireAuth, require('./routes/tasks'));
+    app.use(basePath, requireAuth, require('./routes/projects'));
+    app.use(basePath, requireAuth, require('./routes/admin'));
+    app.use(basePath, requireAuth, require('./routes/shares'));
+    app.use(basePath, requireAuth, require('./routes/areas'));
+    app.use(basePath, requireAuth, require('./routes/notes'));
+    app.use(basePath, requireAuth, require('./routes/tags'));
+    app.use(basePath, requireAuth, require('./routes/users'));
+    app.use(basePath, requireAuth, require('./routes/inbox'));
+    app.use(basePath, requireAuth, require('./routes/url'));
+    app.use(basePath, requireAuth, require('./routes/telegram'));
+    app.use(basePath, requireAuth, require('./routes/quotes'));
+    app.use(basePath, requireAuth, require('./routes/task-events'));
+    app.use(`${basePath}/search`, requireAuth, require('./routes/search'));
+    app.use(`${basePath}/views`, requireAuth, require('./routes/views'));
+};
+
+const routeBases = new Set(['/api']);
+if (API_VERSION && API_BASE_PATH !== '/api') {
+    routeBases.add(API_BASE_PATH);
+}
+routeBases.forEach(registerApiRoutes);
 
 // SPA fallback
 app.get('*', (req, res) => {
