@@ -107,7 +107,8 @@ const {
     authenticatedApiLimiter,
 } = require('./middleware/rateLimiter');
 
-// Swagger documentation (only enabled in development by default)
+// Swagger documentation - enabled by default, protected by authentication
+// Mounted on /api-docs to avoid conflicts with API routes
 if (config.swagger.enabled) {
     const swaggerUi = require('swagger-ui-express');
     const swaggerSpec = require('./config/swagger');
@@ -118,16 +119,13 @@ if (config.swagger.enabled) {
         customCss: '.swagger-ui .topbar { display: none }',
     };
 
-    const registerSwaggerDocs = (basePath) => {
-        app.use(basePath, swaggerUi.serve);
-        app.get(basePath, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
-    };
-
-    const docPaths = new Set(['/api']);
-    if (API_VERSION && API_BASE_PATH !== '/api') {
-        docPaths.add(API_BASE_PATH);
-    }
-    docPaths.forEach(registerSwaggerDocs);
+    // Expose on /api-docs, protected by authentication
+    app.use('/api-docs', requireAuth, swaggerUi.serve);
+    app.get(
+        '/api-docs',
+        requireAuth,
+        swaggerUi.setup(swaggerSpec, swaggerUiOptions)
+    );
 }
 
 // Apply rate limiting to API routes
