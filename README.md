@@ -111,6 +111,37 @@ npm run frontend:dev  # Terminal 2 - Frontend on :8080
 
 For database management, testing, and detailed development instructions, see [docs.tududi.com](https://docs.tududi.com)
 
+## 🔌 API
+
+Tududi provides a comprehensive REST API for integration with external tools and automation workflows.
+
+**Base URL:** `http://localhost:8080/api/v1`
+
+**Key Features:**
+- Complete CRUD operations for tasks, projects, notes, and areas
+- Personal API keys for secure access
+- Swagger documentation available at `/api-docs` (requires authentication)
+- Support for recurring tasks, subtasks, and tag management
+- Real-time task metrics and productivity insights
+
+**Authentication:** Uses session cookies or Bearer token authentication. Generate personal API keys through the web interface for programmatic access.
+
+**Quick Example:**
+```bash
+# Get all tasks
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+     http://localhost:3002/api/v1/tasks
+
+# Create a new task
+curl -X POST \
+     -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"name":"Complete API documentation","priority":"medium"}' \
+     http://localhost:3002/api/v1/task
+```
+
+For full API documentation, visit `/api-docs` after authentication or check the Swagger schema definitions in [`backend/config/swagger.js`](backend/config/swagger.js).
+
 ## 🤝 Contributing
 
 Contributions to tududi are welcome! Whether it's bug fixes, new features, documentation improvements, or translations, we appreciate your help.

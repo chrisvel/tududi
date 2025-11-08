@@ -117,13 +117,19 @@ if (config.swagger.enabled) {
         customSiteTitle: 'Tududi API Documentation',
         customfavIcon: '/favicon.ico',
         customCss: '.swagger-ui .topbar { display: none }',
+        swaggerOptions: {
+            url: '/api-docs/swagger.json',
+        },
     };
-
     // Expose on /api-docs, protected by authentication
     app.use('/api-docs', requireAuth, swaggerUi.serve);
+    app.get('/api-docs/swagger.json', requireAuth, (req, res) =>
+        res.json(swaggerSpec)
+    );
     app.get(
         '/api-docs',
         requireAuth,
+        swaggerUi.serveFiles(swaggerSpec, swaggerUiOptions),
         swaggerUi.setup(swaggerSpec, swaggerUiOptions)
     );
 }
