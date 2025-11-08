@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { generateRecurringTasks } = require('../../services/recurringTaskService');
+const {
+    generateRecurringTasks,
+} = require('../../services/recurringTaskService');
 const { logError } = require('../../services/logService');
 const {
     filterTasksByParams,

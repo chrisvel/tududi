@@ -3,11 +3,10 @@ const router = express.Router();
 const { Task, Tag, Project, TaskEvent, sequelize } = require('../../models');
 const permissionsService = require('../../services/permissionsService');
 const { hasAccess } = require('../../middleware/authorize');
-const { generateRecurringTasks } = require('../../services/recurringTaskService');
 const {
-    logEvent,
-    logTaskUpdate,
-} = require('../../services/taskEventService');
+    generateRecurringTasks,
+} = require('../../services/recurringTaskService');
+const { logEvent, logTaskUpdate } = require('../../services/taskEventService');
 const {
     processDueDateForStorage,
     getSafeTimezone,
