@@ -130,6 +130,7 @@ router.get('/tasks', async (req, res) => {
                 dayGroupingOrderBy
             );
         }
+
         const metrics = await computeTaskMetrics(
             req.currentUser.id,
             req.currentUser.timezone

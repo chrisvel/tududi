@@ -161,23 +161,27 @@ healthPaths.forEach(registerHealthCheck);
 // Routes
 const registerApiRoutes = (basePath) => {
     app.use(basePath, require('./routes/auth'));
-    app.use(basePath, requireAuth, require('./routes/tasks'));
-    app.use(basePath, requireAuth, require('./routes/projects'));
-    app.use(basePath, requireAuth, require('./routes/admin'));
-    app.use(basePath, requireAuth, require('./routes/shares'));
-    app.use(basePath, requireAuth, require('./routes/areas'));
-    app.use(basePath, requireAuth, require('./routes/notes'));
-    app.use(basePath, requireAuth, require('./routes/tags'));
-    app.use(basePath, requireAuth, require('./routes/users'));
-    app.use(basePath, requireAuth, require('./routes/inbox'));
-    app.use(basePath, requireAuth, require('./routes/url'));
-    app.use(basePath, requireAuth, require('./routes/telegram'));
-    app.use(basePath, requireAuth, require('./routes/quotes'));
-    app.use(basePath, requireAuth, require('./routes/task-events'));
-    app.use(`${basePath}/search`, requireAuth, require('./routes/search'));
-    app.use(`${basePath}/views`, requireAuth, require('./routes/views'));
+
+    app.use(basePath, requireAuth);
+    app.use(basePath, require('./routes/tasks'));
+    app.use(basePath, require('./routes/projects'));
+    app.use(basePath, require('./routes/admin'));
+    app.use(basePath, require('./routes/shares'));
+    app.use(basePath, require('./routes/areas'));
+    app.use(basePath, require('./routes/notes'));
+    app.use(basePath, require('./routes/tags'));
+    app.use(basePath, require('./routes/users'));
+    app.use(basePath, require('./routes/inbox'));
+    app.use(basePath, require('./routes/url'));
+    app.use(basePath, require('./routes/telegram'));
+    app.use(basePath, require('./routes/quotes'));
+    app.use(basePath, require('./routes/task-events'));
+    app.use(`${basePath}/search`, require('./routes/search'));
+    app.use(`${basePath}/views`, require('./routes/views'));
 };
 
+// Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility
+// The requireAuth middleware is applied once per base path, preventing the auth loop
 const routeBases = new Set(['/api']);
 if (API_VERSION && API_BASE_PATH !== '/api') {
     routeBases.add(API_BASE_PATH);

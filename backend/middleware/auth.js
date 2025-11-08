@@ -47,6 +47,7 @@ const requireAuth = async (req, res, next) => {
 
         req.currentUser = user;
         req.authToken = apiToken;
+
         await apiToken.update({ last_used_at: new Date() });
 
         next();
