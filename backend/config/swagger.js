@@ -37,6 +37,13 @@ const options = {
                     name: 'connect.sid',
                     description: 'Session cookie authentication',
                 },
+                BearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                    description:
+                        'JWT token authentication via Authorization header',
+                },
             },
             schemas: {
                 Error: {
