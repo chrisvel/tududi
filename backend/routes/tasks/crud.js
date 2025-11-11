@@ -14,66 +14,6 @@ const {
 const { logError } = require('../../services/logService');
 const { serializeTask, updateTaskTags } = require('./helpers');
 
-/**
- * @swagger
- * /api/task:
- *   post:
- *     summary: Create a new task
- *     tags: [Tasks]
- *     security:
- *       - cookieAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *             properties:
- *               name:
- *                 type: string
- *                 description: Task name
- *                 example: "Complete project documentation"
- *               priority:
- *                 type: string
- *                 enum: [low, medium, high]
- *                 description: Task priority
- *               status:
- *                 type: string
- *                 enum: [pending, completed, archived]
- *                 description: Task status
- *               due_date:
- *                 type: string
- *                 format: date-time
- *                 description: Task due date
- *               project_id:
- *                 type: integer
- *                 description: Associated project ID
- *               note:
- *                 type: string
- *                 description: Task description (Markdown supported)
- *               tags:
- *                 type: array
- *                 items:
- *                   type: string
- *                 description: Array of tag names
- *               recurrence_type:
- *                 type: string
- *                 enum: [daily, weekly, monthly, yearly]
- *                 description: Recurring pattern
- *     responses:
- *       201:
- *         description: Task created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Task'
- *       400:
- *         description: Invalid request
- *       401:
- *         description: Unauthorized
- */
 router.post('/task', async (req, res) => {
     try {
         const {
@@ -358,72 +298,6 @@ router.get(
     }
 );
 
-/**
- * @swagger
- * /api/task/{id}:
- *   patch:
- *     summary: Update a task
- *     tags: [Tasks]
- *     security:
- *       - cookieAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Task ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *                 description: Task name
- *               note:
- *                 type: string
- *                 description: Task description (Markdown supported)
- *               priority:
- *                 type: string
- *                 enum: [low, medium, high]
- *                 description: Task priority
- *               status:
- *                 type: string
- *                 enum: [pending, completed, archived]
- *                 description: Task status
- *               due_date:
- *                 type: string
- *                 format: date-time
- *                 description: Task due date
- *               project_id:
- *                 type: integer
- *                 description: Associated project ID
- *               tags:
- *                 type: array
- *                 items:
- *                   type: string
- *                 description: Array of tag names
- *               recurrence_type:
- *                 type: string
- *                 enum: [daily, weekly, monthly, yearly]
- *                 description: Recurring pattern
- *     responses:
- *       200:
- *         description: Task updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Task'
- *       400:
- *         description: Invalid request
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Task not found
- */
 router.patch(
     '/task/:id',
     hasAccess(
@@ -1058,37 +932,6 @@ router.patch(
     }
 );
 
-/**
- * @swagger
- * /api/task/{id}:
- *   delete:
- *     summary: Delete a task
- *     tags: [Tasks]
- *     security:
- *       - cookieAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Task ID
- *     responses:
- *       200:
- *         description: Task deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Task deleted successfully."
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Task not found
- */
 router.delete(
     '/task/:id',
     hasAccess(

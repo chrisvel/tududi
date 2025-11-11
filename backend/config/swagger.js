@@ -1,4 +1,5 @@
 const swaggerJsdoc = require('swagger-jsdoc');
+const path = require('path');
 
 const API_VERSION = process.env.API_VERSION || 'v1';
 const API_BASE_PATH = `/api/${API_VERSION}`;
@@ -316,7 +317,7 @@ const options = {
             },
         ],
     },
-    apis: ['./routes/*.js'], // Path to route files for JSDoc comments
+    apis: [path.join(__dirname, '..', 'docs', 'swagger', '*.js')], // Path to centralized Swagger documentation files
 };
 
 const swaggerSpec = swaggerJsdoc(options);

@@ -239,6 +239,62 @@ async function serializeTask(task, userTimezone = 'UTC', options = {}) {
     };
 }
 
+// Helper function to serialize multiple tasks
+async function serializeTasks(tasks, userTimezone = 'UTC', options = {}) {
+    return await Promise.all(
+        tasks.map((task) => serializeTask(task, userTimezone, options))
+    );
+}
+
+// Helper function to build metrics response with serialized tasks
+async function buildMetricsResponse(
+    metrics,
+    userTimezone,
+    serializationOptions = {}
+) {
+    return {
+        total_open_tasks: metrics.total_open_tasks,
+        tasks_pending_over_month: metrics.tasks_pending_over_month,
+        tasks_in_progress_count: metrics.tasks_in_progress_count,
+        tasks_in_progress: await serializeTasks(
+            metrics.tasks_in_progress,
+            userTimezone,
+            serializationOptions
+        ),
+        tasks_due_today: await serializeTasks(
+            metrics.tasks_due_today,
+            userTimezone,
+            serializationOptions
+        ),
+        today_plan_tasks: await serializeTasks(
+            metrics.today_plan_tasks,
+            userTimezone,
+            serializationOptions
+        ),
+        suggested_tasks: await serializeTasks(
+            metrics.suggested_tasks,
+            userTimezone,
+            serializationOptions
+        ),
+        tasks_completed_today: await Promise.all(
+            metrics.tasks_completed_today.map(async (task) => {
+                const serialized = await serializeTask(
+                    task,
+                    userTimezone,
+                    serializationOptions
+                );
+                return {
+                    ...serialized,
+                    completed_at: task.completed_at
+                        ? task.completed_at.toISOString()
+                        : null,
+                };
+            })
+        ),
+        weekly_completions: metrics.weekly_completions,
+    };
+}
+
 // Helper function to update task tags
 async function updateTaskTags(task, tagsData, userId) {
     if (!tagsData) return;
@@ -547,16 +603,6 @@ async function filterTasksByParams(params, userId, userTimezone) {
         case 'upcoming': {
             const safeTimezone = getSafeTimezone(userTimezone);
             const upcomingRange = getUpcomingRangeInUTC(safeTimezone, 7);
-
-            console.log('📅 UPCOMING RANGE DEBUG:');
-            console.log(`  Timezone: ${safeTimezone}`);
-            console.log(
-                `  Range Start (UTC): ${upcomingRange.start.toISOString()}`
-            );
-            console.log(
-                `  Range End (UTC): ${upcomingRange.end.toISOString()}`
-            );
-            console.log(`  User ID: ${userId}`);
 
             // For upcoming view, we want to show recurring instances (children) with due dates
             // Override the default whereClause to include recurring instances
@@ -1164,6 +1210,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC') {
 module.exports = {
     groupTasksByDay,
     serializeTask,
+    serializeTasks,
+    buildMetricsResponse,
     updateTaskTags,
     checkAndUpdateParentTaskCompletion,
     undoneParentTaskIfNeeded,
