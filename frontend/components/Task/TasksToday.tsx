@@ -93,16 +93,28 @@ const TasksToday: React.FC = () => {
     });
     const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
 
-    // Metrics from the API
-    const [metrics, setMetrics] = useState<Metrics>({
+    // Metrics from the API (counts) + task arrays stored locally
+    const [metrics, setMetrics] = useState<Metrics & {
+        tasks_in_progress?: Task[];
+        tasks_due_today?: Task[];
+        today_plan_tasks?: Task[];
+        suggested_tasks?: Task[];
+        tasks_completed_today?: Task[];
+    }>({
         total_open_tasks: 0,
         tasks_pending_over_month: 0,
         tasks_in_progress_count: 0,
+        tasks_due_today_count: 0,
+        today_plan_tasks_count: 0,
+        suggested_tasks_count: 0,
+        tasks_completed_today_count: 0,
+        weekly_completions: [],
+        // Task arrays (fetched separately via include_lists parameter)
         tasks_in_progress: [],
         tasks_due_today: [],
+        today_plan_tasks: [],
         suggested_tasks: [],
         tasks_completed_today: [],
-        weekly_completions: [],
     });
 
     // Helper function to get completion trend vs average
@@ -201,16 +213,19 @@ const TasksToday: React.FC = () => {
 
             setIsLoading(true);
             try {
-                const { tasks: fetchedTasks, metrics: fetchedMetrics } =
-                    await fetchTasks('?type=today');
+                const result = await fetchTasks('?type=today');
                 if (isMounted.current) {
-                    // setTasks(fetchedTasks); // Removed local state
-                    if (isMounted.current) {
-                        // setTasks(fetchedTasks); // Removed local state
-                        setMetrics(fetchedMetrics);
-                        useStore.getState().tasksStore.setTasks(fetchedTasks);
-                        setIsError(false);
-                    }
+                    setMetrics({
+                        ...result.metrics,
+                        // Store task arrays locally (fetched via include_lists=true)
+                        tasks_in_progress: result.tasks_in_progress || [],
+                        tasks_due_today: result.tasks_due_today || [],
+                        today_plan_tasks: result.tasks || [], // Main tasks array is today plan
+                        suggested_tasks: result.suggested_tasks || [],
+                        tasks_completed_today: result.tasks_completed_today || [],
+                    } as any);
+                    useStore.getState().tasksStore.setTasks(result.tasks);
+                    setIsError(false);
                 }
 
                 // Preload tags to prevent re-renders when modal opens
@@ -596,11 +611,17 @@ const TasksToday: React.FC = () => {
                 await deleteTask(taskId);
 
                 // Reload tasks to reflect the change
-                const { tasks: updatedTasks, metrics: updatedMetrics } =
-                    await fetchTasks('?type=today');
+                const result = await fetchTasks('?type=today');
                 if (isMounted.current) {
-                    useStore.getState().tasksStore.setTasks(updatedTasks);
-                    setMetrics(updatedMetrics);
+                    useStore.getState().tasksStore.setTasks(result.tasks);
+                    setMetrics({
+                        ...result.metrics,
+                        tasks_in_progress: result.tasks_in_progress || [],
+                        tasks_due_today: result.tasks_due_today || [],
+                        today_plan_tasks: result.tasks || [],
+                        suggested_tasks: result.suggested_tasks || [],
+                        tasks_completed_today: result.tasks_completed_today || [],
+                    } as any);
                 }
             } catch (error) {
                 console.error('Error deleting task:', error);
@@ -617,11 +638,17 @@ const TasksToday: React.FC = () => {
                 await toggleTaskToday(taskId);
 
                 // Reload tasks to reflect the change
-                const { tasks: updatedTasks, metrics: updatedMetrics } =
-                    await fetchTasks('?type=today');
+                const result = await fetchTasks('?type=today');
                 if (isMounted.current) {
-                    useStore.getState().tasksStore.setTasks(updatedTasks);
-                    setMetrics(updatedMetrics);
+                    useStore.getState().tasksStore.setTasks(result.tasks);
+                    setMetrics({
+                        ...result.metrics,
+                        tasks_in_progress: result.tasks_in_progress || [],
+                        tasks_due_today: result.tasks_due_today || [],
+                        today_plan_tasks: result.tasks || [],
+                        suggested_tasks: result.suggested_tasks || [],
+                        tasks_completed_today: result.tasks_completed_today || [],
+                    } as any);
                 }
             } catch (error) {
                 console.error('Error toggling task today status:', error);

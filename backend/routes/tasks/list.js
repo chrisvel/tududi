@@ -6,24 +6,44 @@ const {
 const { logError } = require('../../services/logService');
 const {
     filterTasksByParams,
-    computeTaskMetrics,
     serializeTasks,
-    buildMetricsResponse,
     groupTasksByDay,
 } = require('./helpers');
+const {
+    resetQueryCounter,
+    getQueryStats,
+    enableQueryLogging,
+} = require('../../middleware/queryLogger');
+
+// Enable query logging for debugging
+enableQueryLogging();
 
 router.get('/tasks', async (req, res) => {
+    const startTime = Date.now();
+    resetQueryCounter();
+
+    console.log('\n🔍 === NEW REQUEST TO /api/tasks ===');
+    console.log('Query params:', req.query);
+    console.log(
+        'Auth method:',
+        req.authToken ? 'Bearer Token' : 'Cookie Session'
+    );
+
+    // Create request-scoped permission cache
+    const permissionCache = new Map();
+
     try {
         // Generate recurring tasks for upcoming view with locking
         if (req.query.type === 'upcoming') {
             await generateRecurringTasksWithLock(req.currentUser.id, 7);
         }
 
-        // Fetch tasks based on query parameters
+        // Fetch tasks based on query parameters (with cache)
         const tasks = await filterTasksByParams(
             req.query,
             req.currentUser.id,
-            req.currentUser.timezone
+            req.currentUser.timezone,
+            permissionCache
         );
 
         // Group tasks by day if requested
@@ -41,25 +61,14 @@ router.get('/tasks', async (req, res) => {
             );
         }
 
-        // Compute metrics
-        const metrics = await computeTaskMetrics(
-            req.currentUser.id,
-            req.currentUser.timezone
-        );
-
         // Determine serialization options
         const serializationOptions =
             req.query.type === 'today' ? { preserveOriginalName: true } : {};
 
-        // Build response
+        // Build response - TASKS ONLY (no metrics)
         const response = {
             tasks: await serializeTasks(
                 tasks,
-                req.currentUser.timezone,
-                serializationOptions
-            ),
-            metrics: await buildMetricsResponse(
-                metrics,
                 req.currentUser.timezone,
                 serializationOptions
             ),
@@ -77,6 +86,72 @@ router.get('/tasks', async (req, res) => {
                 );
             }
         }
+
+        // For today type, optionally include dashboard task lists
+        if (
+            req.query.type === 'today' &&
+            req.query.include_lists === 'true'
+        ) {
+            const { computeTaskMetrics } = require('./helpers');
+            const metricsData = await computeTaskMetrics(
+                req.currentUser.id,
+                req.currentUser.timezone,
+                permissionCache
+            );
+
+            // Serialize the task lists (but metrics endpoint only returns counts)
+            const { serializeTasks: serialize } = require('./helpers');
+            response.tasks_in_progress = await serialize(
+                metricsData.tasks_in_progress,
+                req.currentUser.timezone,
+                serializationOptions
+            );
+            response.tasks_due_today = await serialize(
+                metricsData.tasks_due_today,
+                req.currentUser.timezone,
+                serializationOptions
+            );
+            response.suggested_tasks = await serialize(
+                metricsData.suggested_tasks,
+                req.currentUser.timezone,
+                serializationOptions
+            );
+            response.tasks_completed_today = await serialize(
+                metricsData.tasks_completed_today,
+                req.currentUser.timezone,
+                serializationOptions
+            );
+        }
+
+        const totalTime = Date.now() - startTime;
+        const queryStats = getQueryStats();
+
+        console.log('\n📊 === REQUEST COMPLETE ===');
+        console.log(`⏱️  Total time: ${totalTime}ms`);
+        console.log(`🔍 Query count: ${queryStats.count}`);
+        console.log(
+            `📈 Avg query time: ${(totalTime / (queryStats.count || 1)).toFixed(2)}ms`
+        );
+        console.log(`📦 Tasks returned: ${response.tasks?.length || 0}`);
+        console.log(`📊 Metrics included: ${!!response.metrics}`);
+
+        if (queryStats.count > 10) {
+            console.log('\n⚠️  WARNING: More than 10 queries detected!');
+            console.log('Top 5 slowest queries:');
+            queryStats.queries
+                .sort((a, b) => b.time - a.time)
+                .slice(0, 5)
+                .forEach((q) => {
+                    console.log(
+                        `  [${q.num}] ${q.time}ms: ${q.sql.substring(0, 150)}...`
+                    );
+                });
+        }
+        console.log('='.repeat(50) + '\n');
+
+        // Add performance timing header
+        res.set('X-Response-Time', `${totalTime}ms`);
+        res.set('X-Query-Count', queryStats.count.toString());
 
         res.json(response);
     } catch (error) {

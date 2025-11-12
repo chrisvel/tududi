@@ -48,7 +48,15 @@ const requireAuth = async (req, res, next) => {
         req.currentUser = user;
         req.authToken = apiToken;
 
-        await apiToken.update({ last_used_at: new Date() });
+        // Update last_used_at asynchronously (non-blocking) to avoid slowing down the request
+        // Only update if it hasn't been updated in the last 5 minutes to reduce database writes
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        if (!apiToken.last_used_at || apiToken.last_used_at < fiveMinutesAgo) {
+            // Fire and forget - don't await this update
+            apiToken.update({ last_used_at: new Date() }).catch((err) => {
+                console.error('Failed to update token last_used_at:', err);
+            });
+        }
 
         next();
     } catch (error) {

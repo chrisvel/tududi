@@ -46,7 +46,7 @@
  *         description: Sort order (field:direction)
  *     responses:
  *       200:
- *         description: List of tasks with metrics
+ *         description: List of tasks (use /api/tasks/metrics for dashboard statistics)
  *         content:
  *           application/json:
  *             schema:
@@ -56,15 +56,68 @@
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Task'
- *                 metrics:
+ *                 groupedTasks:
  *                   type: object
- *                   properties:
- *                     total_open_tasks:
- *                       type: integer
- *                     tasks_pending_over_month:
- *                       type: integer
- *                     tasks_in_progress_count:
- *                       type: integer
+ *                   description: Tasks grouped by day (only when groupBy=day)
+ *                   additionalProperties:
+ *                     type: array
+ *                     items:
+ *                       $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Unauthorized
+ */
+
+/**
+ * @swagger
+ * /api/tasks/metrics:
+ *   get:
+ *     summary: Get task metrics and dashboard statistics (counts only)
+ *     description: Returns only numeric counts and statistics. Use /api/tasks with filters to fetch actual task data.
+ *     tags: [Tasks]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Task metrics and statistics (counts only, no task arrays)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total_open_tasks:
+ *                   type: integer
+ *                   description: Total number of open tasks
+ *                 tasks_pending_over_month:
+ *                   type: integer
+ *                   description: Number of tasks pending for over a month
+ *                 tasks_in_progress_count:
+ *                   type: integer
+ *                   description: Number of tasks currently in progress
+ *                 tasks_due_today_count:
+ *                   type: integer
+ *                   description: Number of tasks due today
+ *                 today_plan_tasks_count:
+ *                   type: integer
+ *                   description: Number of tasks in today's plan
+ *                 suggested_tasks_count:
+ *                   type: integer
+ *                   description: Number of suggested tasks
+ *                 tasks_completed_today_count:
+ *                   type: integer
+ *                   description: Number of tasks completed today
+ *                 weekly_completions:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       date:
+ *                         type: string
+ *                         format: date
+ *                       count:
+ *                         type: integer
+ *                       dayName:
+ *                         type: string
  *       401:
  *         description: Unauthorized
  */

@@ -7,7 +7,10 @@ const {
     getTodayBoundsInUTC,
     processDueDateForResponse,
 } = require('../../utils/timezone-utils');
-const { getTaskTodayMoveCount } = require('../../services/taskEventService');
+const {
+    getTaskTodayMoveCount,
+    getTaskTodayMoveCounts,
+} = require('../../services/taskEventService');
 const { validateTagName } = require('../../services/tagsService');
 const { logError } = require('../../services/logService');
 const moment = require('moment-timezone');
@@ -158,12 +161,22 @@ async function groupTasksByDay(
 }
 
 // Helper function to serialize task with today move count
-async function serializeTask(task, userTimezone = 'UTC', options = {}) {
+async function serializeTask(
+    task,
+    userTimezone = 'UTC',
+    options = {},
+    moveCountMap = null
+) {
     if (!task) {
         throw new Error('Task is null or undefined');
     }
     const taskJson = task.toJSON();
-    const todayMoveCount = await getTaskTodayMoveCount(task.id);
+
+    // Use pre-fetched move count if available, otherwise fetch individually
+    const todayMoveCount = moveCountMap
+        ? (moveCountMap[task.id] || 0)
+        : await getTaskTodayMoveCount(task.id);
+
     const safeTimezone = getSafeTimezone(userTimezone);
 
     // Include subtasks if they exist
@@ -239,14 +252,26 @@ async function serializeTask(task, userTimezone = 'UTC', options = {}) {
     };
 }
 
-// Helper function to serialize multiple tasks
+// Helper function to serialize multiple tasks with bulk query optimization
 async function serializeTasks(tasks, userTimezone = 'UTC', options = {}) {
+    if (!tasks || tasks.length === 0) {
+        return [];
+    }
+
+    // Bulk fetch today move counts for all tasks to avoid N+1 queries
+    const taskIds = tasks.map((task) => task.id);
+    const moveCountMap = await getTaskTodayMoveCounts(taskIds);
+
+    // Serialize all tasks in parallel with pre-fetched move counts
     return await Promise.all(
-        tasks.map((task) => serializeTask(task, userTimezone, options))
+        tasks.map((task) =>
+            serializeTask(task, userTimezone, options, moveCountMap)
+        )
     );
 }
 
-// Helper function to build metrics response with serialized tasks
+// Helper function to build metrics response with counts only
+// Tasks should be fetched separately via /api/tasks with filters
 async function buildMetricsResponse(
     metrics,
     userTimezone,
@@ -256,41 +281,10 @@ async function buildMetricsResponse(
         total_open_tasks: metrics.total_open_tasks,
         tasks_pending_over_month: metrics.tasks_pending_over_month,
         tasks_in_progress_count: metrics.tasks_in_progress_count,
-        tasks_in_progress: await serializeTasks(
-            metrics.tasks_in_progress,
-            userTimezone,
-            serializationOptions
-        ),
-        tasks_due_today: await serializeTasks(
-            metrics.tasks_due_today,
-            userTimezone,
-            serializationOptions
-        ),
-        today_plan_tasks: await serializeTasks(
-            metrics.today_plan_tasks,
-            userTimezone,
-            serializationOptions
-        ),
-        suggested_tasks: await serializeTasks(
-            metrics.suggested_tasks,
-            userTimezone,
-            serializationOptions
-        ),
-        tasks_completed_today: await Promise.all(
-            metrics.tasks_completed_today.map(async (task) => {
-                const serialized = await serializeTask(
-                    task,
-                    userTimezone,
-                    serializationOptions
-                );
-                return {
-                    ...serialized,
-                    completed_at: task.completed_at
-                        ? task.completed_at.toISOString()
-                        : null,
-                };
-            })
-        ),
+        tasks_due_today_count: metrics.tasks_due_today.length,
+        today_plan_tasks_count: metrics.today_plan_tasks.length,
+        suggested_tasks_count: metrics.suggested_tasks.length,
+        tasks_completed_today_count: metrics.tasks_completed_today.length,
         weekly_completions: metrics.weekly_completions,
     };
 }
@@ -491,11 +485,12 @@ async function undoneAllSubtasks(parentTaskId, userId) {
 }
 
 // Filter tasks by parameters
-async function filterTasksByParams(params, userId, userTimezone) {
+async function filterTasksByParams(params, userId, userTimezone, permissionCache = null) {
     // Include owned or shared tasks; exclude subtasks by default
     const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
         'task',
-        userId
+        userId,
+        permissionCache
     );
     if (params.type === 'upcoming') {
         // Remove search-related parameters to prevent search functionality
@@ -750,9 +745,9 @@ async function filterTasksByParams(params, userId, userTimezone) {
 }
 
 // Compute task metrics
-async function computeTaskMetrics(userId, userTimezone = 'UTC') {
+async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache = null) {
     const visibleTasksWhere =
-        await permissionsService.ownershipOrPermissionWhere('task', userId);
+        await permissionsService.ownershipOrPermissionWhere('task', userId, permissionCache);
     const totalOpenTasks = await Task.count({
         where: {
             ...visibleTasksWhere,
