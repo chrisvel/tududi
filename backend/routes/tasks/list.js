@@ -98,21 +98,6 @@ router.get('/tasks', async (req, res) => {
             req.currentUser.timezone
         );
 
-        // Debug logging for upcoming view
-        if (req.query.type === 'upcoming') {
-            console.log('🔍 UPCOMING TASKS DEBUG:');
-            console.log(`  Total tasks returned: ${tasks.length}`);
-            if (tasks.length > 0) {
-                tasks.forEach((task) => {
-                    console.log(
-                        `- ID: ${task.id}, Name: "${task.name}", Due: ${task.due_date}, Recur: ${task.recurrence_type}, Parent: ${task.recurring_parent_id}, Status: ${task.status}`
-                    );
-                });
-            } else {
-                console.log('  ⚠️ No tasks matched the query!');
-            }
-        }
-
         // Group upcoming tasks by day of week if requested
         let groupedTasks = null;
         if (req.query.type === 'upcoming' && req.query.groupBy === 'day') {
