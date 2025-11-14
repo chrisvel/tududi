@@ -1,5 +1,5 @@
-const { Project, Task } = require('../../../../models');
-const permissionsService = require('../../../../services/permissionsService');
+const { Project, Task } = require('../../../models');
+const permissionsService = require('../../../services/permissionsService');
 
 async function validateProjectAccess(projectId, userId) {
     if (!projectId || !projectId.toString().trim()) {

@@ -15,6 +15,7 @@ const {
     handleTaskCompletion,
 } = require('../../services/recurringTaskService');
 const { logError } = require('../../services/logService');
+const { logEvent } = require('../../services/taskEventService');
 
 const {
     filterTasksByParams,
@@ -27,22 +28,21 @@ const { getSafeTimezone } = require('../../utils/timezone-utils');
 const {
     validateProjectAccess,
     validateParentTaskAccess,
-} = require('./handlers/crud/validation');
+} = require('./utils/validation');
 const {
     buildTaskAttributes,
     buildUpdateAttributes,
-} = require('./handlers/crud/builders');
-const { createSubtasks, updateSubtasks } = require('./handlers/crud/subtasks');
-const { handleRecurrenceUpdate } = require('./handlers/crud/recurrence');
-const { handleCompletionStatus } = require('./handlers/crud/completion');
-const { captureOldValues, logTaskChanges } = require('./handlers/crud/logging');
+} = require('./core/builders');
+const { createSubtasks, updateSubtasks } = require('./operations/subtasks');
+const { handleCompletionStatus } = require('./operations/completion');
+const { captureOldValues, logTaskChanges } = require('./utils/logging');
 const {
     handleParentChildOnStatusChange,
-} = require('./handlers/crud/parent-child');
+} = require('./operations/parent-child');
 const {
     TASK_INCLUDES,
     TASK_INCLUDES_WITH_SUBTASKS,
-} = require('./handlers/crud/constants');
+} = require('./utils/constants');
 
 const {
     handleRecurringTasks,
@@ -50,13 +50,16 @@ const {
     serializeGroupedTasks,
     addDashboardLists,
     addPerformanceHeaders,
-} = require('./handlers/list');
+} = require('./operations/list');
 
-const { calculateNextIterations } = require('./handlers/recurring');
+const {
+    handleRecurrenceUpdate,
+    calculateNextIterations,
+} = require('./operations/recurring');
 
-const { getTaskMetrics } = require('./handlers/metrics');
+const { getTaskMetrics } = require('./queries/metrics-computation');
 
-const { getSubtasks } = require('./handlers/subtasks');
+const { getSubtasks } = require('./operations/subtasks');
 
 if (process.env.NODE_ENV === 'development') {
     enableQueryLogging();
@@ -407,8 +410,7 @@ router.patch('/task/:id', requireTaskWriteAccess, async (req, res) => {
         const recurrenceChanged = await handleRecurrenceUpdate(
             task,
             recurrenceFields,
-            req.body,
-            req.currentUser.id
+            req.body
         );
 
         await task.update(taskAttributes);
@@ -458,7 +460,6 @@ router.patch('/task/:id', requireTaskWriteAccess, async (req, res) => {
         );
 
         if (today !== undefined && today !== oldValues.today) {
-            const { logEvent } = require('../../services/taskEventService');
             try {
                 await logEvent({
                     taskId: task.id,
@@ -548,70 +549,6 @@ router.delete('/task/:id', requireTaskWriteAccess, async (req, res) => {
                     recurrence_week_of_month: null,
                     completion_based: false,
                 });
-            }
-        }
-
-        await TaskEvent.findAll({
-            where: { task_id: req.params.id },
-        });
-
-        await sequelize.query(
-            'SELECT COUNT(*) as count FROM tasks_tags WHERE task_id = ?',
-            {
-                replacements: [req.params.id],
-                type: sequelize.QueryTypes.SELECT,
-            }
-        );
-
-        await sequelize.query('PRAGMA foreign_key_list(tasks)', {
-            type: sequelize.QueryTypes.SELECT,
-        });
-
-        const allTables = await sequelize.query(
-            "SELECT name FROM sqlite_master WHERE type='table'",
-            { type: sequelize.QueryTypes.SELECT }
-        );
-
-        const validTableNames = [
-            'tasks',
-            'projects',
-            'notes',
-            'users',
-            'tags',
-            'areas',
-            'permissions',
-            'actions',
-            'task_events',
-            'inbox_items',
-            'tasks_tags',
-            'notes_tags',
-            'projects_tags',
-            'Sessions',
-        ];
-
-        for (const table of allTables) {
-            if (
-                table.name !== 'tasks' &&
-                validTableNames.includes(table.name)
-            ) {
-                try {
-                    const fks = await sequelize.query(
-                        `PRAGMA foreign_key_list(${table.name})`,
-                        { type: sequelize.QueryTypes.SELECT }
-                    );
-                    const taskRefs = fks.filter((fk) => fk.table === 'tasks');
-                    if (taskRefs.length > 0) {
-                        for (const fk of taskRefs) {
-                            await sequelize.query(
-                                `SELECT COUNT(*) as count FROM ${table.name} WHERE ${fk.from} = ?`,
-                                {
-                                    replacements: [req.params.id],
-                                    type: sequelize.QueryTypes.SELECT,
-                                }
-                            );
-                        }
-                    }
-                } catch (error) {}
             }
         }
 

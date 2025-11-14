@@ -1,4 +1,4 @@
-const { Tag, Project, Task } = require('../../../../models');
+const { Tag, Project, Task } = require('../../../models');
 
 const TASK_INCLUDES = [
     {

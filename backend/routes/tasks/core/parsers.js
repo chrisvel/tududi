@@ -1,4 +1,4 @@
-const { Task } = require('../../../../models');
+const { Task } = require('../../../models');
 
 function parsePriority(priority) {
     if (priority === undefined) return null;

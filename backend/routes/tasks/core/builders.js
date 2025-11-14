@@ -1,8 +1,6 @@
-const { Task } = require('../../../../models');
+const { Task } = require('../../../models');
 const { parsePriority, parseStatus } = require('./parsers');
-const {
-    processDueDateForStorage,
-} = require('../../../../utils/timezone-utils');
+const { processDueDateForStorage } = require('../../../utils/timezone-utils');
 
 function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
     const attrs = {

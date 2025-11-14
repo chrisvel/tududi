@@ -1,11 +1,9 @@
 const {
     generateRecurringTasksWithLock,
 } = require('../../../services/recurringTaskService');
-const {
-    groupTasksByDay,
-    serializeTasks,
-    computeTaskMetrics,
-} = require('../helpers');
+const { groupTasksByDay } = require('./grouping');
+const { serializeTasks } = require('../core/serializers');
+const { computeTaskMetrics } = require('../queries/metrics-computation');
 
 async function handleRecurringTasks(userId, queryType) {
     if (queryType === 'upcoming') {

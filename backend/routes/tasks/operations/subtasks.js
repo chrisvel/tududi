@@ -1,5 +1,49 @@
-const { Task } = require('../../../../models');
-const { parsePriority, parseStatus } = require('./parsers');
+const { Task, Tag, Project } = require('../../../models');
+const permissionsService = require('../../../services/permissionsService');
+const { logError } = require('../../../services/logService');
+const { serializeTask } = require('../core/serializers');
+const { parsePriority, parseStatus } = require('../core/parsers');
+
+async function getSubtasks(parentTaskId, userId, timezone) {
+    const parent = await Task.findOne({ where: { id: parentTaskId } });
+    if (!parent) {
+        return { error: 'Not found', subtasks: [] };
+    }
+
+    const pAccess = await permissionsService.getAccess(
+        userId,
+        'task',
+        parent.uid
+    );
+    if (pAccess === 'none') {
+        return { error: 'Forbidden', subtasks: null };
+    }
+
+    const subtasks = await Task.findAll({
+        where: {
+            parent_task_id: parentTaskId,
+        },
+        include: [
+            {
+                model: Tag,
+                attributes: ['id', 'name', 'uid'],
+                through: { attributes: [] },
+            },
+            {
+                model: Project,
+                attributes: ['id', 'name', 'uid'],
+                required: false,
+            },
+        ],
+        order: [['created_at', 'ASC']],
+    });
+
+    const serializedSubtasks = await Promise.all(
+        subtasks.map((subtask) => serializeTask(subtask, timezone))
+    );
+
+    return { error: null, subtasks: serializedSubtasks };
+}
 
 async function createSubtasks(parentTaskId, subtasks, userId) {
     if (!subtasks || !Array.isArray(subtasks)) return;
@@ -29,7 +73,7 @@ async function createSubtasks(parentTaskId, subtasks, userId) {
     await Promise.all(subtaskPromises);
 }
 
-async function updateSubtasks(taskId, subtasks, userId, serializationOptions) {
+async function updateSubtasks(taskId, subtasks, userId) {
     if (!subtasks || !Array.isArray(subtasks)) return;
 
     const existingSubtasks = await Task.findAll({
@@ -100,6 +144,7 @@ async function updateSubtasks(taskId, subtasks, userId, serializationOptions) {
 }
 
 module.exports = {
+    getSubtasks,
     createSubtasks,
     updateSubtasks,
 };

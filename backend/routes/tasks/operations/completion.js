@@ -1,5 +1,5 @@
-const { Task } = require('../../../../models');
-const { parseStatus } = require('./parsers');
+const { Task } = require('../../../models');
+const { parseStatus } = require('../core/parsers');
 
 async function handleCompletionStatus(taskAttributes, status, task) {
     if (status === undefined) return;
