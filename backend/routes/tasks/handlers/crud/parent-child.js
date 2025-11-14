@@ -6,7 +6,12 @@ const {
     undoneAllSubtasks,
 } = require('../../helpers');
 
-async function handleParentChildOnStatusChange(task, oldStatus, newStatus, userId) {
+async function handleParentChildOnStatusChange(
+    task,
+    oldStatus,
+    newStatus,
+    userId
+) {
     let parentChildLogicExecuted = false;
 
     const directSubtasksQuery = await Task.findAll({
@@ -26,11 +31,10 @@ async function handleParentChildOnStatusChange(task, oldStatus, newStatus, userI
 
     if (task.parent_task_id) {
         if (newStatus === Task.STATUS.DONE || newStatus === 'done') {
-            const parentUpdated =
-                await checkAndUpdateParentTaskCompletion(
-                    task.parent_task_id,
-                    userId
-                );
+            const parentUpdated = await checkAndUpdateParentTaskCompletion(
+                task.parent_task_id,
+                userId
+            );
             if (parentUpdated) {
                 parentChildLogicExecuted = true;
             }
@@ -45,18 +49,12 @@ async function handleParentChildOnStatusChange(task, oldStatus, newStatus, userI
         }
     } else if (task.Subtasks && task.Subtasks.length > 0) {
         if (newStatus === Task.STATUS.DONE) {
-            const subtasksUpdated = await completeAllSubtasks(
-                task.id,
-                userId
-            );
+            const subtasksUpdated = await completeAllSubtasks(task.id, userId);
             if (subtasksUpdated) {
                 parentChildLogicExecuted = true;
             }
         } else if (oldStatus === Task.STATUS.DONE || oldStatus === 'done') {
-            const subtasksUpdated = await undoneAllSubtasks(
-                task.id,
-                userId
-            );
+            const subtasksUpdated = await undoneAllSubtasks(task.id, userId);
             if (subtasksUpdated) {
                 parentChildLogicExecuted = true;
             }

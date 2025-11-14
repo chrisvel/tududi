@@ -22,9 +22,7 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
 
     // For daily recurrence, start from the next day after startDate
     if (task.recurrence_type === 'daily') {
-        nextDate.setDate(
-            nextDate.getDate() + (task.recurrence_interval || 1)
-        );
+        nextDate.setDate(nextDate.getDate() + (task.recurrence_interval || 1));
     } else if (task.recurrence_type === 'weekly') {
         // For weekly, find next occurrence of the target weekday
         const interval = task.recurrence_interval || 1;

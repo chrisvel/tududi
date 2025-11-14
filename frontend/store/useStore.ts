@@ -452,7 +452,9 @@ export const useStore = create<StoreState>((set: any) => ({
         toggleTaskToday: async (taskId) => {
             const { toggleTaskToday } = await import('../utils/tasksService');
             try {
-                const currentTask = useStore.getState().tasksStore.tasks.find(t => t.id === taskId);
+                const currentTask = useStore
+                    .getState()
+                    .tasksStore.tasks.find((t) => t.id === taskId);
                 const updatedTask = await toggleTaskToday(taskId, currentTask);
                 set((state) => ({
                     tasksStore: {

@@ -375,7 +375,10 @@ const Tasks: React.FC = () => {
         }
     };
 
-    const handleToggleToday = async (taskId: number, task?: Task): Promise<void> => {
+    const handleToggleToday = async (
+        taskId: number,
+        task?: Task
+    ): Promise<void> => {
         try {
             await toggleTaskToday(taskId, task);
             // Refetch data to ensure consistency with all task relationships
