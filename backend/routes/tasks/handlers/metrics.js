@@ -1,18 +1,8 @@
 const { computeTaskMetrics, buildMetricsResponse } = require('../helpers');
 
-async function getTaskMetrics(userId, timezone, queryType) {
+async function getTaskMetrics(userId, timezone) {
     const metrics = await computeTaskMetrics(userId, timezone);
-
-    const serializationOptions =
-        queryType === 'today' ? { preserveOriginalName: true } : {};
-
-    const response = await buildMetricsResponse(
-        metrics,
-        timezone,
-        serializationOptions
-    );
-
-    return response;
+    return await buildMetricsResponse(metrics);
 }
 
 module.exports = {

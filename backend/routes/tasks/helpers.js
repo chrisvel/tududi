@@ -15,18 +15,8 @@ const { validateTagName } = require('../../services/tagsService');
 const { logError } = require('../../services/logService');
 const moment = require('moment-timezone');
 
-async function groupTasksByDay(
-    tasks,
-    userTimezone,
-    maxDays = 14,
-    orderBy = 'created_at:desc'
-) {
-    const safeTimezone = getSafeTimezone(userTimezone);
-    const groupedTasks = {};
+function categorizeTasksByDate(tasks, cutoffDate, safeTimezone) {
     const tasksByDate = new Map();
-
-    const now = moment.tz(safeTimezone);
-    const cutoffDate = now.clone().add(maxDays, 'days').endOf('day');
 
     tasks.forEach((task) => {
         if (!task.due_date) {
@@ -51,95 +41,111 @@ async function groupTasksByDay(
         tasksByDate.get(dateKey).push(task);
     });
 
+    return tasksByDate;
+}
+
+function generateGroupName(dateKey, now, safeTimezone) {
+    const dateMoment = moment.tz(dateKey, safeTimezone);
+    const dayName = dateMoment.format('dddd');
+    const dateDisplay = dateMoment.format('MMMM D');
+    const isToday = dateMoment.isSame(now, 'day');
+    const isTomorrow = dateMoment.isSame(now.clone().add(1, 'day'), 'day');
+
+    if (isToday) {
+        return 'Today';
+    } else if (isTomorrow) {
+        return 'Tomorrow';
+    } else {
+        return `${dayName}, ${dateDisplay}`;
+    }
+}
+
+function compareTasksByPriority(a, b) {
+    return (a.priority || 0) - (b.priority || 0);
+}
+
+function compareTasksByName(a, b) {
+    return (a.name || '').localeCompare(b.name || '');
+}
+
+function compareTasksByDueDate(a, b, safeTimezone) {
+    if (a.due_date && b.due_date) {
+        const timeA = moment.tz(a.due_date, safeTimezone);
+        const timeB = moment.tz(b.due_date, safeTimezone);
+        return (
+            timeA.hour() * 60 +
+            timeA.minute() -
+            (timeB.hour() * 60 + timeB.minute())
+        );
+    } else if (a.due_date && !b.due_date) {
+        return -1;
+    } else if (!a.due_date && b.due_date) {
+        return 1;
+    }
+    return 0;
+}
+
+function compareTasksByCreatedAt(a, b) {
+    return new Date(a.created_at || 0) - new Date(b.created_at || 0);
+}
+
+function createTaskComparator(orderColumn, orderDirection, safeTimezone) {
+    return (a, b) => {
+        let comparison = 0;
+
+        switch (orderColumn) {
+            case 'priority':
+                comparison = compareTasksByPriority(a, b);
+                break;
+            case 'name':
+                comparison = compareTasksByName(a, b);
+                break;
+            case 'due_date':
+                comparison = compareTasksByDueDate(a, b, safeTimezone);
+                break;
+            case 'created_at':
+            default:
+                comparison = compareTasksByCreatedAt(a, b);
+                break;
+        }
+
+        return orderDirection === 'desc' ? -comparison : comparison;
+    };
+}
+
+function sortTasksByOrder(tasks, orderBy, safeTimezone) {
+    const [orderColumn, orderDirection = 'desc'] = orderBy.split(':');
+    tasks.sort(createTaskComparator(orderColumn, orderDirection, safeTimezone));
+}
+
+async function groupTasksByDay(
+    tasks,
+    userTimezone,
+    maxDays = 14,
+    orderBy = 'created_at:desc'
+) {
+    const safeTimezone = getSafeTimezone(userTimezone);
+    const now = moment.tz(safeTimezone);
+    const cutoffDate = now.clone().add(maxDays, 'days').endOf('day');
+
+    const tasksByDate = categorizeTasksByDate(tasks, cutoffDate, safeTimezone);
+
     const sortedDates = Array.from(tasksByDate.keys())
         .filter((key) => key !== 'no-date' && key !== 'later')
         .sort();
 
+    const groupedTasks = {};
+
     sortedDates.forEach((dateKey) => {
-        const dateMoment = moment.tz(dateKey, safeTimezone);
-        const dayName = dateMoment.format('dddd');
-        const dateDisplay = dateMoment.format('MMMM D');
-        const isToday = dateMoment.isSame(now, 'day');
-        const isTomorrow = dateMoment.isSame(now.clone().add(1, 'day'), 'day');
-
-        let groupName;
-        if (isToday) {
-            groupName = 'Today';
-        } else if (isTomorrow) {
-            groupName = 'Tomorrow';
-        } else {
-            groupName = `${dayName}, ${dateDisplay}`;
-        }
-
-        const tasks = tasksByDate.get(dateKey);
-
-        const [orderColumn, orderDirection = 'desc'] = orderBy.split(':');
-        tasks.sort((a, b) => {
-            let comparison = 0;
-
-            switch (orderColumn) {
-                case 'priority':
-                    comparison = (a.priority || 0) - (b.priority || 0);
-                    break;
-                case 'name':
-                    comparison = (a.name || '').localeCompare(b.name || '');
-                    break;
-                case 'due_date':
-                    if (a.due_date && b.due_date) {
-                        const timeA = moment.tz(a.due_date, safeTimezone);
-                        const timeB = moment.tz(b.due_date, safeTimezone);
-                        comparison =
-                            timeA.hour() * 60 +
-                            timeA.minute() -
-                            (timeB.hour() * 60 + timeB.minute());
-                    } else if (a.due_date && !b.due_date) {
-                        comparison = -1;
-                    } else if (!a.due_date && b.due_date) {
-                        comparison = 1;
-                    }
-                    break;
-                case 'created_at':
-                default:
-                    comparison =
-                        new Date(a.created_at || 0) -
-                        new Date(b.created_at || 0);
-                    break;
-            }
-
-            return orderDirection === 'desc' ? -comparison : comparison;
-        });
-
-        groupedTasks[groupName] = tasks;
+        const groupName = generateGroupName(dateKey, now, safeTimezone);
+        const tasksForDate = tasksByDate.get(dateKey);
+        sortTasksByOrder(tasksForDate, orderBy, safeTimezone);
+        groupedTasks[groupName] = tasksForDate;
     });
 
     if (tasksByDate.has('no-date')) {
         const noDateTasks = tasksByDate.get('no-date');
-        const [orderColumn, orderDirection = 'desc'] = orderBy.split(':');
-        noDateTasks.sort((a, b) => {
-            let comparison = 0;
-
-            switch (orderColumn) {
-                case 'priority':
-                    comparison = (a.priority || 0) - (b.priority || 0);
-                    break;
-                case 'name':
-                    comparison = (a.name || '').localeCompare(b.name || '');
-                    break;
-                case 'due_date':
-                    comparison =
-                        new Date(a.created_at || 0) -
-                        new Date(b.created_at || 0);
-                    break;
-                case 'created_at':
-                default:
-                    comparison =
-                        new Date(a.created_at || 0) -
-                        new Date(b.created_at || 0);
-                    break;
-            }
-
-            return orderDirection === 'desc' ? -comparison : comparison;
-        });
+        sortTasksByOrder(noDateTasks, orderBy, safeTimezone);
         groupedTasks['No Due Date'] = noDateTasks;
     }
 
@@ -246,11 +252,7 @@ async function serializeTasks(tasks, userTimezone = 'UTC', options = {}) {
     );
 }
 
-async function buildMetricsResponse(
-    metrics,
-    userTimezone,
-    serializationOptions = {}
-) {
+async function buildMetricsResponse(metrics) {
     return {
         total_open_tasks: metrics.total_open_tasks,
         tasks_pending_over_month: metrics.tasks_pending_over_month,
@@ -676,18 +678,37 @@ async function filterTasksByParams(
     });
 }
 
-async function computeTaskMetrics(
-    userId,
-    userTimezone = 'UTC',
-    permissionCache = null
-) {
-    const visibleTasksWhere =
-        await permissionsService.ownershipOrPermissionWhere(
-            'task',
-            userId,
-            permissionCache
-        );
-    const totalOpenTasks = await Task.count({
+function getTaskIncludeConfig() {
+    return [
+        {
+            model: Tag,
+            attributes: ['id', 'name', 'uid'],
+            through: { attributes: [] },
+            required: false,
+        },
+        {
+            model: Project,
+            attributes: ['id', 'name', 'state', 'uid'],
+            required: false,
+        },
+        {
+            model: Task,
+            as: 'Subtasks',
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name', 'uid'],
+                    through: { attributes: [] },
+                    required: false,
+                },
+            ],
+            required: false,
+        },
+    ];
+}
+
+async function countTotalOpenTasks(visibleTasksWhere) {
+    return await Task.count({
         where: {
             ...visibleTasksWhere,
             status: { [Op.ne]: Task.STATUS.DONE },
@@ -695,9 +716,11 @@ async function computeTaskMetrics(
             recurring_parent_id: null,
         },
     });
+}
 
+async function countTasksPendingOverMonth(visibleTasksWhere) {
     const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const tasksPendingOverMonth = await Task.count({
+    return await Task.count({
         where: {
             ...visibleTasksWhere,
             status: { [Op.ne]: Task.STATUS.DONE },
@@ -706,44 +729,23 @@ async function computeTaskMetrics(
             recurring_parent_id: null,
         },
     });
+}
 
-    const tasksInProgress = await Task.findAll({
+async function fetchTasksInProgress(visibleTasksWhere) {
+    return await Task.findAll({
         where: {
             ...visibleTasksWhere,
             status: { [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'] },
             parent_task_id: null,
             recurring_parent_id: null,
         },
-        include: [
-            {
-                model: Tag,
-                attributes: ['id', 'name', 'uid'],
-                through: { attributes: [] },
-                required: false,
-            },
-            {
-                model: Project,
-                attributes: ['id', 'name', 'state', 'uid'],
-                required: false,
-            },
-            {
-                model: Task,
-                as: 'Subtasks',
-                include: [
-                    {
-                        model: Tag,
-                        attributes: ['id', 'name', 'uid'],
-                        through: { attributes: [] },
-                        required: false,
-                    },
-                ],
-                required: false,
-            },
-        ],
+        include: getTaskIncludeConfig(),
         order: [['priority', 'DESC']],
     });
+}
 
-    const todayPlanTasks = await Task.findAll({
+async function fetchTodayPlanTasks(visibleTasksWhere) {
+    return await Task.findAll({
         where: {
             ...visibleTasksWhere,
             today: true,
@@ -758,42 +760,19 @@ async function computeTaskMetrics(
             parent_task_id: null,
             recurring_parent_id: null,
         },
-        include: [
-            {
-                model: Tag,
-                attributes: ['id', 'name', 'uid'],
-                through: { attributes: [] },
-                required: false,
-            },
-            {
-                model: Project,
-                attributes: ['id', 'name', 'state', 'uid'],
-                required: false,
-            },
-            {
-                model: Task,
-                as: 'Subtasks',
-                include: [
-                    {
-                        model: Tag,
-                        attributes: ['id', 'name', 'uid'],
-                        through: { attributes: [] },
-                        required: false,
-                    },
-                ],
-                required: false,
-            },
-        ],
+        include: getTaskIncludeConfig(),
         order: [
             ['priority', 'DESC'],
             ['created_at', 'ASC'],
         ],
     });
+}
 
+async function fetchTasksDueToday(visibleTasksWhere, userTimezone) {
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
-    const tasksDueToday = await Task.findAll({
+    return await Task.findAll({
         where: {
             [Op.and]: [
                 visibleTasksWhere,
@@ -819,211 +798,160 @@ async function computeTaskMetrics(
                 },
             ],
         },
-        include: [
-            {
-                model: Tag,
-                attributes: ['id', 'name', 'uid'],
-                through: { attributes: [] },
-                required: false,
-            },
-            {
-                model: Project,
-                attributes: ['id', 'name', 'state', 'uid'],
-                required: false,
-            },
-            {
-                model: Task,
-                as: 'Subtasks',
-                include: [
-                    {
-                        model: Tag,
-                        attributes: ['id', 'name', 'uid'],
-                        through: { attributes: [] },
-                        required: false,
-                    },
-                ],
-                required: false,
-            },
-        ],
+        include: getTaskIncludeConfig(),
     });
+}
 
-    let suggestedTasks = [];
-
-    if (
-        totalOpenTasks >= 3 ||
-        tasksInProgress.length > 0 ||
-        tasksDueToday.length > 0
-    ) {
-        const excludedTaskIds = [
-            ...tasksInProgress.map((t) => t.id),
-            ...tasksDueToday.map((t) => t.id),
-        ];
-
-        const somedayTaskIds = await sequelize
-            .query(
-                `SELECT DISTINCT task_id FROM tasks_tags
+async function fetchSomedayTaskIds(userId) {
+    return await sequelize
+        .query(
+            `SELECT DISTINCT task_id FROM tasks_tags
        JOIN tags ON tasks_tags.tag_id = tags.id
        WHERE tags.name = 'someday' AND tags.user_id = ?`,
-                {
-                    replacements: [userId],
-                    type: sequelize.QueryTypes.SELECT,
-                }
-            )
-            .then((results) => results.map((r) => r.task_id));
+            {
+                replacements: [userId],
+                type: sequelize.QueryTypes.SELECT,
+            }
+        )
+        .then((results) => results.map((r) => r.task_id));
+}
 
-        const nonProjectTasks = await Task.findAll({
-            where: {
-                ...visibleTasksWhere,
-                status: {
-                    [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
-                },
-                id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
-                [Op.or]: [{ project_id: null }, { project_id: '' }],
-                parent_task_id: null,
-                recurring_parent_id: null,
+async function fetchNonProjectTasks(
+    visibleTasksWhere,
+    excludedTaskIds,
+    somedayTaskIds
+) {
+    return await Task.findAll({
+        where: {
+            ...visibleTasksWhere,
+            status: {
+                [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
             },
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                    required: false,
-                },
-                {
-                    model: Project,
-                    attributes: ['id', 'name', 'uid'],
-                    required: false,
-                },
-                {
-                    model: Task,
-                    as: 'Subtasks',
-                    include: [
-                        {
-                            model: Tag,
-                            attributes: ['id', 'name', 'uid'],
-                            through: { attributes: [] },
-                            required: false,
-                        },
-                    ],
-                    required: false,
-                },
-            ],
-            order: [
-                ['priority', 'DESC'],
-                ['created_at', 'ASC'],
-            ],
-            limit: 6,
-        });
+            id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
+            [Op.or]: [{ project_id: null }, { project_id: '' }],
+            parent_task_id: null,
+            recurring_parent_id: null,
+        },
+        include: getTaskIncludeConfig(),
+        order: [
+            ['priority', 'DESC'],
+            ['created_at', 'ASC'],
+        ],
+        limit: 6,
+    });
+}
 
-        const projectTasks = await Task.findAll({
-            where: {
-                ...visibleTasksWhere,
-                status: {
-                    [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
-                },
-                id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
-                project_id: { [Op.not]: null, [Op.ne]: '' },
-                parent_task_id: null,
-                recurring_parent_id: null,
+async function fetchProjectTasks(
+    visibleTasksWhere,
+    excludedTaskIds,
+    somedayTaskIds
+) {
+    return await Task.findAll({
+        where: {
+            ...visibleTasksWhere,
+            status: {
+                [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
             },
-            include: [
-                {
-                    model: Tag,
-                    attributes: ['id', 'name', 'uid'],
-                    through: { attributes: [] },
-                    required: false,
-                },
-                {
-                    model: Project,
-                    attributes: ['id', 'name', 'uid'],
-                    required: false,
-                },
-                {
-                    model: Task,
-                    as: 'Subtasks',
-                    include: [
-                        {
-                            model: Tag,
-                            attributes: ['id', 'name', 'uid'],
-                            through: { attributes: [] },
-                            required: false,
-                        },
-                    ],
-                    required: false,
-                },
-            ],
-            order: [
-                ['priority', 'DESC'],
-                ['created_at', 'ASC'],
-            ],
-            limit: 6,
-        });
+            id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
+            project_id: { [Op.not]: null, [Op.ne]: '' },
+            parent_task_id: null,
+            recurring_parent_id: null,
+        },
+        include: getTaskIncludeConfig(),
+        order: [
+            ['priority', 'DESC'],
+            ['created_at', 'ASC'],
+        ],
+        limit: 6,
+    });
+}
 
-        let combinedTasks = [...nonProjectTasks, ...projectTasks];
+async function fetchSomedayFallbackTasks(
+    userId,
+    usedTaskIds,
+    somedayTaskIds,
+    limit
+) {
+    return await Task.findAll({
+        where: {
+            user_id: userId,
+            status: {
+                [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
+            },
+            id: {
+                [Op.notIn]: usedTaskIds,
+                [Op.in]: somedayTaskIds,
+            },
+            parent_task_id: null,
+            recurring_parent_id: null,
+        },
+        include: getTaskIncludeConfig(),
+        order: [
+            ['priority', 'DESC'],
+            ['created_at', 'ASC'],
+        ],
+        limit: limit,
+    });
+}
 
-        if (combinedTasks.length < 6) {
-            const usedTaskIds = [
-                ...excludedTaskIds,
-                ...combinedTasks.map((t) => t.id),
-            ];
-
-            const somedayFallbackTasks = await Task.findAll({
-                where: {
-                    user_id: userId,
-                    status: {
-                        [Op.in]: [Task.STATUS.NOT_STARTED, Task.STATUS.WAITING],
-                    },
-                    id: {
-                        [Op.notIn]: usedTaskIds,
-                        [Op.in]: somedayTaskIds,
-                    },
-                    parent_task_id: null,
-                    recurring_parent_id: null,
-                },
-                include: [
-                    {
-                        model: Tag,
-                        attributes: ['id', 'name', 'uid'],
-                        through: { attributes: [] },
-                        required: false,
-                    },
-                    {
-                        model: Project,
-                        attributes: ['id', 'name', 'uid'],
-                        required: false,
-                    },
-                    {
-                        model: Task,
-                        as: 'Subtasks',
-                        include: [
-                            {
-                                model: Tag,
-                                attributes: ['id', 'name', 'uid'],
-                                through: { attributes: [] },
-                                required: false,
-                            },
-                        ],
-                        required: false,
-                    },
-                ],
-                order: [
-                    ['priority', 'DESC'],
-                    ['created_at', 'ASC'],
-                ],
-                limit: 12 - combinedTasks.length,
-            });
-
-            combinedTasks = [...combinedTasks, ...somedayFallbackTasks];
-        }
-
-        suggestedTasks = combinedTasks;
+async function computeSuggestedTasks(
+    visibleTasksWhere,
+    userId,
+    totalOpenTasks,
+    tasksInProgress,
+    tasksDueToday
+) {
+    if (
+        totalOpenTasks < 3 &&
+        tasksInProgress.length === 0 &&
+        tasksDueToday.length === 0
+    ) {
+        return [];
     }
 
+    const excludedTaskIds = [
+        ...tasksInProgress.map((t) => t.id),
+        ...tasksDueToday.map((t) => t.id),
+    ];
+
+    const somedayTaskIds = await fetchSomedayTaskIds(userId);
+
+    const [nonProjectTasks, projectTasks] = await Promise.all([
+        fetchNonProjectTasks(
+            visibleTasksWhere,
+            excludedTaskIds,
+            somedayTaskIds
+        ),
+        fetchProjectTasks(visibleTasksWhere, excludedTaskIds, somedayTaskIds),
+    ]);
+
+    let combinedTasks = [...nonProjectTasks, ...projectTasks];
+
+    if (combinedTasks.length < 6) {
+        const usedTaskIds = [
+            ...excludedTaskIds,
+            ...combinedTasks.map((t) => t.id),
+        ];
+
+        const somedayFallbackTasks = await fetchSomedayFallbackTasks(
+            userId,
+            usedTaskIds,
+            somedayTaskIds,
+            12 - combinedTasks.length
+        );
+
+        combinedTasks = [...combinedTasks, ...somedayFallbackTasks];
+    }
+
+    return combinedTasks;
+}
+
+async function fetchTasksCompletedToday(userId, userTimezone) {
     const todayInUserTz = moment.tz(userTimezone);
     const todayStart = todayInUserTz.clone().startOf('day').utc().toDate();
     const todayEnd = todayInUserTz.clone().endOf('day').utc().toDate();
 
-    const tasksCompletedToday = await Task.findAll({
+    return await Task.findAll({
         where: {
             user_id: userId,
             status: Task.STATUS.DONE,
@@ -1033,35 +961,13 @@ async function computeTaskMetrics(
                 [Op.between]: [todayStart, todayEnd],
             },
         },
-        include: [
-            {
-                model: Tag,
-                attributes: ['id', 'name', 'uid'],
-                through: { attributes: [] },
-                required: false,
-            },
-            {
-                model: Project,
-                attributes: ['id', 'name', 'state', 'uid'],
-                required: false,
-            },
-            {
-                model: Task,
-                as: 'Subtasks',
-                include: [
-                    {
-                        model: Tag,
-                        attributes: ['id', 'name', 'uid'],
-                        through: { attributes: [] },
-                        required: false,
-                    },
-                ],
-                required: false,
-            },
-        ],
+        include: getTaskIncludeConfig(),
         order: [['completed_at', 'DESC']],
     });
+}
 
+async function computeWeeklyCompletions(userId, userTimezone) {
+    const todayInUserTz = moment.tz(userTimezone);
     const weekStartInUserTz = moment.tz(userTimezone).subtract(6, 'days');
     const weekStart = weekStartInUserTz.clone().startOf('day').utc().toDate();
     const weekEnd = todayInUserTz.clone().endOf('day').utc().toDate();
@@ -1110,6 +1016,47 @@ async function computeTaskMetrics(
         weeklyData.push(dayData);
     }
 
+    return weeklyData;
+}
+
+async function computeTaskMetrics(
+    userId,
+    userTimezone = 'UTC',
+    permissionCache = null
+) {
+    const visibleTasksWhere =
+        await permissionsService.ownershipOrPermissionWhere(
+            'task',
+            userId,
+            permissionCache
+        );
+
+    const [
+        totalOpenTasks,
+        tasksPendingOverMonth,
+        tasksInProgress,
+        todayPlanTasks,
+        tasksDueToday,
+        tasksCompletedToday,
+        weeklyCompletions,
+    ] = await Promise.all([
+        countTotalOpenTasks(visibleTasksWhere),
+        countTasksPendingOverMonth(visibleTasksWhere),
+        fetchTasksInProgress(visibleTasksWhere),
+        fetchTodayPlanTasks(visibleTasksWhere),
+        fetchTasksDueToday(visibleTasksWhere, userTimezone),
+        fetchTasksCompletedToday(userId, userTimezone),
+        computeWeeklyCompletions(userId, userTimezone),
+    ]);
+
+    const suggestedTasks = await computeSuggestedTasks(
+        visibleTasksWhere,
+        userId,
+        totalOpenTasks,
+        tasksInProgress,
+        tasksDueToday
+    );
+
     return {
         total_open_tasks: totalOpenTasks,
         tasks_pending_over_month: tasksPendingOverMonth,
@@ -1119,7 +1066,7 @@ async function computeTaskMetrics(
         today_plan_tasks: todayPlanTasks,
         suggested_tasks: suggestedTasks,
         tasks_completed_today: tasksCompletedToday,
-        weekly_completions: weeklyData,
+        weekly_completions: weeklyCompletions,
     };
 }
 
@@ -1135,4 +1082,5 @@ module.exports = {
     undoneAllSubtasks,
     filterTasksByParams,
     computeTaskMetrics,
+    getTaskIncludeConfig,
 };
