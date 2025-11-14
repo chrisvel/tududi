@@ -21,9 +21,8 @@ async function safeAddColumns(queryInterface, tableName, columns) {
 
 async function safeCreateTable(queryInterface, tableName, tableDefinition) {
     try {
-        const tableExists = await queryInterface
-            .listTables()
-            .then((tables) => tables.includes(tableName));
+        const tables = await queryInterface.showAllTables();
+        const tableExists = tables.includes(tableName);
 
         if (!tableExists) {
             await queryInterface.createTable(tableName, tableDefinition);
