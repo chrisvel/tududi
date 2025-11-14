@@ -607,7 +607,7 @@ const TasksToday: React.FC = () => {
     );
 
     const handleTaskDelete = useCallback(
-        async (taskId: number): Promise<void> => {
+        async (taskId: number, task?: Task): Promise<void> => {
             if (!isMounted.current) return;
 
             try {
@@ -635,11 +635,11 @@ const TasksToday: React.FC = () => {
     );
 
     const handleToggleToday = useCallback(
-        async (taskId: number): Promise<void> => {
+        async (taskId: number, task?: Task): Promise<void> => {
             if (!isMounted.current) return;
 
             try {
-                await toggleTaskToday(taskId);
+                await toggleTaskToday(taskId, task);
 
                 // Reload tasks to reflect the change
                 const result = await fetchTasks('?type=today');

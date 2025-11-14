@@ -6,6 +6,18 @@ const { createTestUser } = require('../helpers/testUtils');
 describe('Recurring Tasks API', () => {
     let user, agent;
 
+    const toggleTaskCompletion = async (taskId) => {
+        const task = await Task.findByPk(taskId);
+        const newStatus =
+            task.status === Task.STATUS.DONE
+                ? task.note
+                    ? Task.STATUS.IN_PROGRESS
+                    : Task.STATUS.NOT_STARTED
+                : Task.STATUS.DONE;
+
+        return agent.patch(`/api/task/${taskId}`).send({ status: newStatus });
+    };
+
     beforeEach(async () => {
         user = await createTestUser({
             email: 'test@example.com',
@@ -315,7 +327,7 @@ describe('Recurring Tasks API', () => {
         });
     });
 
-    describe('PATCH /api/task/:id/toggle_completion - Recurring task completion', () => {
+    describe('PATCH /api/task/:id - Recurring task completion', () => {
         it('should create next instance when completing a completion-based recurring task', async () => {
             const recurringTask = await Task.create({
                 name: 'Completion Based Task',
@@ -326,9 +338,7 @@ describe('Recurring Tasks API', () => {
                 status: 0, // NOT_STARTED
             });
 
-            const response = await agent.patch(
-                `/api/task/${recurringTask.id}/toggle_completion`
-            );
+            const response = await toggleTaskCompletion(recurringTask.id);
 
             expect(response.status).toBe(200);
             expect(response.body.status).toBe(2); // DONE
@@ -349,9 +359,7 @@ describe('Recurring Tasks API', () => {
                 status: 0, // NOT_STARTED
             });
 
-            const response = await agent.patch(
-                `/api/task/${recurringTask.id}/toggle_completion`
-            );
+            const response = await toggleTaskCompletion(recurringTask.id);
 
             expect(response.status).toBe(200);
             expect(response.body.status).toBe(2); // DONE
@@ -366,9 +374,7 @@ describe('Recurring Tasks API', () => {
                 status: 0, // NOT_STARTED
             });
 
-            const response = await agent.patch(
-                `/api/task/${regularTask.id}/toggle_completion`
-            );
+            const response = await toggleTaskCompletion(regularTask.id);
 
             expect(response.status).toBe(200);
             expect(response.body.status).toBe(2); // DONE
@@ -382,9 +388,7 @@ describe('Recurring Tasks API', () => {
                 status: 2, // DONE
             });
 
-            const response = await agent.patch(
-                `/api/task/${task.id}/toggle_completion`
-            );
+            const response = await toggleTaskCompletion(task.id);
 
             expect(response.status).toBe(200);
             expect(response.body.status).toBe(0); // NOT_STARTED
@@ -398,9 +402,7 @@ describe('Recurring Tasks API', () => {
                 status: 2, // DONE
             });
 
-            const response = await agent.patch(
-                `/api/task/${task.id}/toggle_completion`
-            );
+            const response = await toggleTaskCompletion(task.id);
 
             expect(response.status).toBe(200);
             expect(response.body.status).toBe(1); // IN_PROGRESS

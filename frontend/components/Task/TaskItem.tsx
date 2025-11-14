@@ -139,7 +139,7 @@ interface TaskItemProps {
     onTaskDelete: (taskId: number) => void;
     projects: Project[];
     hideProjectName?: boolean;
-    onToggleToday?: (taskId: number) => Promise<void>;
+    onToggleToday?: (taskId: number, task?: Task) => Promise<void>;
     isUpcomingView?: boolean;
     showCompletedTasks?: boolean;
 }

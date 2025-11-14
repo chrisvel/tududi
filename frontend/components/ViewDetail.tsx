@@ -197,10 +197,10 @@ const ViewDetail: React.FC = () => {
         }
     };
 
-    const handleToggleToday = async (taskId: number) => {
+    const handleToggleToday = async (taskId: number, task?: Task) => {
         try {
             const { toggleTaskToday } = await import('../utils/tasksService');
-            const updatedTask = await toggleTaskToday(taskId);
+            const updatedTask = await toggleTaskToday(taskId, task);
 
             setTasks((prevTasks) =>
                 prevTasks.map((task) =>

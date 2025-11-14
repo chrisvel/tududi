@@ -89,16 +89,22 @@ export const updateTask = async (
     return await response.json();
 };
 
-export const toggleTaskCompletion = async (taskId: number): Promise<Task> => {
-    const response = await fetch(`/api/task/${taskId}/toggle_completion`, {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: getPostHeaders(),
-    });
+export const toggleTaskCompletion = async (
+    taskId: number,
+    currentTask?: Task
+): Promise<Task> => {
+    if (!currentTask) {
+        currentTask = await fetchTaskById(taskId);
+    }
 
-    await handleAuthResponse(response, 'Failed to toggle task completion.');
-    const result = await response.json();
-    return result;
+    const newStatus =
+        currentTask.status === 2 || currentTask.status === 'done'
+            ? currentTask.note
+                ? 1
+                : 0
+            : 2;
+
+    return await updateTask(taskId, { ...currentTask, status: newStatus });
 };
 
 export const deleteTask = async (taskId: number): Promise<void> => {
@@ -141,15 +147,18 @@ export const fetchSubtasks = async (parentTaskId: number): Promise<Task[]> => {
     return await response.json();
 };
 
-export const toggleTaskToday = async (taskId: number): Promise<Task> => {
-    const response = await fetch(`/api/task/${taskId}/toggle-today`, {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: getPostHeaders(),
-    });
+export const toggleTaskToday = async (
+    taskId: number,
+    currentTask?: Task
+): Promise<Task> => {
+    if (!currentTask) {
+        currentTask = await fetchTaskById(taskId);
+    }
 
-    await handleAuthResponse(response, 'Failed to toggle task today status.');
-    return await response.json();
+    return await updateTask(taskId, {
+        ...currentTask,
+        today: !currentTask.today,
+    });
 };
 
 export interface TaskIteration {
