@@ -7,18 +7,12 @@ const {
     computeTaskMetrics,
 } = require('../helpers');
 
-/**
- * Generate recurring tasks for upcoming view
- */
 async function handleRecurringTasks(userId, queryType) {
     if (queryType === 'upcoming') {
         await generateRecurringTasksWithLock(userId, 7);
     }
 }
 
-/**
- * Build grouped tasks response if requested
- */
 async function buildGroupedTasks(
     tasks,
     queryType,
@@ -37,9 +31,6 @@ async function buildGroupedTasks(
     return await groupTasksByDay(tasks, timezone, days, dayGroupingOrderBy);
 }
 
-/**
- * Serialize grouped tasks for response
- */
 async function serializeGroupedTasks(groupedTasks, timezone) {
     if (!groupedTasks) return null;
 
@@ -50,9 +41,6 @@ async function serializeGroupedTasks(groupedTasks, timezone) {
     return serialized;
 }
 
-/**
- * Add dashboard task lists for today view
- */
 async function addDashboardLists(
     response,
     userId,
@@ -83,9 +71,6 @@ async function addDashboardLists(
     }
 }
 
-/**
- * Add performance timing headers
- */
 function addPerformanceHeaders(res, startTime, queryStats) {
     const totalTime = Date.now() - startTime;
     res.set('X-Response-Time', `${totalTime}ms`);

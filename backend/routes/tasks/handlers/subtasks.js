@@ -3,11 +3,7 @@ const permissionsService = require('../../../services/permissionsService');
 const { logError } = require('../../../services/logService');
 const { serializeTask } = require('../helpers');
 
-/**
- * Get subtasks for a parent task
- */
 async function getSubtasks(parentTaskId, userId, timezone) {
-    // Ensure parent visibility first
     const parent = await Task.findOne({ where: { id: parentTaskId } });
     if (!parent) {
         return { error: 'Not found', subtasks: [] };

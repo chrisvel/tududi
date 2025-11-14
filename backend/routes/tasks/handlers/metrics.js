@@ -1,8 +1,5 @@
 const { computeTaskMetrics, buildMetricsResponse } = require('../helpers');
 
-/**
- * Get task metrics for dashboard
- */
 async function getTaskMetrics(userId, timezone, queryType) {
     const metrics = await computeTaskMetrics(userId, timezone);
 
