@@ -112,7 +112,6 @@ async function groupTasksByDay(
         groupedTasks[groupName] = tasks;
     });
 
-
     if (tasksByDate.has('no-date')) {
         const noDateTasks = tasksByDate.get('no-date');
         const [orderColumn, orderDirection = 'desc'] = orderBy.split(':');
@@ -159,7 +158,7 @@ async function serializeTask(
     const taskJson = task.toJSON();
 
     const todayMoveCount = moveCountMap
-        ? (moveCountMap[task.id] || 0)
+        ? moveCountMap[task.id] || 0
         : await getTaskTodayMoveCount(task.id);
 
     const safeTimezone = getSafeTimezone(userTimezone);
@@ -441,7 +440,12 @@ async function undoneAllSubtasks(parentTaskId, userId) {
     }
 }
 
-async function filterTasksByParams(params, userId, userTimezone, permissionCache = null) {
+async function filterTasksByParams(
+    params,
+    userId,
+    userTimezone,
+    permissionCache = null
+) {
     const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
         'task',
         userId,
@@ -672,9 +676,17 @@ async function filterTasksByParams(params, userId, userTimezone, permissionCache
     });
 }
 
-async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache = null) {
+async function computeTaskMetrics(
+    userId,
+    userTimezone = 'UTC',
+    permissionCache = null
+) {
     const visibleTasksWhere =
-        await permissionsService.ownershipOrPermissionWhere('task', userId, permissionCache);
+        await permissionsService.ownershipOrPermissionWhere(
+            'task',
+            userId,
+            permissionCache
+        );
     const totalOpenTasks = await Task.count({
         where: {
             ...visibleTasksWhere,

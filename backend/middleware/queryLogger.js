@@ -13,7 +13,9 @@ const enableQueryLogging = () => {
             sql: sql.substring(0, 300),
             time: timestamp,
         });
-        console.log(`[Query ${queryCount} @ ${timestamp}ms] ${sql.substring(0, 200)}...`);
+        console.log(
+            `[Query ${queryCount} @ ${timestamp}ms] ${sql.substring(0, 200)}...`
+        );
     };
 };
 

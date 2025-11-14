@@ -175,13 +175,16 @@ describe('Global Recurring Task Instance Filtering', () => {
         });
 
         it('should exclude recurring instances from task metrics', async () => {
-            const response = await agent.get('/api/tasks?type=today&include_lists=true');
+            const response = await agent.get(
+                '/api/tasks?type=today&include_lists=true'
+            );
 
             expect(response.status).toBe(200);
 
             // Check that dashboard lists don't include recurring instances
-            const tasksInProgressIds =
-                response.body.tasks_in_progress.map((t) => t.id);
+            const tasksInProgressIds = response.body.tasks_in_progress.map(
+                (t) => t.id
+            );
             const tasksDueTodayIds = response.body.tasks_due_today.map(
                 (t) => t.id
             );

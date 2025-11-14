@@ -446,10 +446,7 @@ const getTaskTodayMoveCounts = async (taskIds) => {
     const results = await TaskEvent.findAll({
         attributes: [
             'task_id',
-            [
-                sequelize.fn('COUNT', sequelize.col('task_id')),
-                'move_count',
-            ],
+            [sequelize.fn('COUNT', sequelize.col('task_id')), 'move_count'],
         ],
         where: {
             task_id: {

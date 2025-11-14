@@ -23,9 +23,10 @@ export const fetchTasks = async (
 }> => {
     // For today view, include dashboard task lists
     const includeLists = query.includes('type=today');
-    const tasksQuery = includeLists && !query.includes('include_lists')
-        ? `${query}${query.includes('?') ? '&' : '?'}include_lists=true`
-        : query;
+    const tasksQuery =
+        includeLists && !query.includes('include_lists')
+            ? `${query}${query.includes('?') ? '&' : '?'}include_lists=true`
+            : query;
 
     // Fetch tasks and metrics in parallel for better performance
     const [tasksResponse, metricsResponse] = await Promise.all([

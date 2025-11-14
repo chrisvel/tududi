@@ -94,13 +94,15 @@ const TasksToday: React.FC = () => {
     const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
 
     // Metrics from the API (counts) + task arrays stored locally
-    const [metrics, setMetrics] = useState<Metrics & {
-        tasks_in_progress?: Task[];
-        tasks_due_today?: Task[];
-        today_plan_tasks?: Task[];
-        suggested_tasks?: Task[];
-        tasks_completed_today?: Task[];
-    }>({
+    const [metrics, setMetrics] = useState<
+        Metrics & {
+            tasks_in_progress?: Task[];
+            tasks_due_today?: Task[];
+            today_plan_tasks?: Task[];
+            suggested_tasks?: Task[];
+            tasks_completed_today?: Task[];
+        }
+    >({
         total_open_tasks: 0,
         tasks_pending_over_month: 0,
         tasks_in_progress_count: 0,
@@ -222,7 +224,8 @@ const TasksToday: React.FC = () => {
                         tasks_due_today: result.tasks_due_today || [],
                         today_plan_tasks: result.tasks || [], // Main tasks array is today plan
                         suggested_tasks: result.suggested_tasks || [],
-                        tasks_completed_today: result.tasks_completed_today || [],
+                        tasks_completed_today:
+                            result.tasks_completed_today || [],
                     } as any);
                     useStore.getState().tasksStore.setTasks(result.tasks);
                     setIsError(false);
@@ -620,7 +623,8 @@ const TasksToday: React.FC = () => {
                         tasks_due_today: result.tasks_due_today || [],
                         today_plan_tasks: result.tasks || [],
                         suggested_tasks: result.suggested_tasks || [],
-                        tasks_completed_today: result.tasks_completed_today || [],
+                        tasks_completed_today:
+                            result.tasks_completed_today || [],
                     } as any);
                 }
             } catch (error) {
@@ -647,7 +651,8 @@ const TasksToday: React.FC = () => {
                         tasks_due_today: result.tasks_due_today || [],
                         today_plan_tasks: result.tasks || [],
                         suggested_tasks: result.suggested_tasks || [],
-                        tasks_completed_today: result.tasks_completed_today || [],
+                        tasks_completed_today:
+                            result.tasks_completed_today || [],
                     } as any);
                 }
             } catch (error) {
