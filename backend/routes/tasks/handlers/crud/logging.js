@@ -1,5 +1,8 @@
 const { logError } = require('../../../../services/logService');
-const { logTaskUpdate, logEvent } = require('../../../../services/taskEventService');
+const {
+    logTaskUpdate,
+    logEvent,
+} = require('../../../../services/taskEventService');
 
 function captureOldValues(task) {
     return {

@@ -607,7 +607,7 @@ const TasksToday: React.FC = () => {
     );
 
     const handleTaskDelete = useCallback(
-        async (taskId: number, task?: Task): Promise<void> => {
+        async (taskId: number): Promise<void> => {
             if (!isMounted.current) return;
 
             try {
