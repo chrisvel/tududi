@@ -15,7 +15,6 @@ const { validateTagName } = require('../../services/tagsService');
 const { logError } = require('../../services/logService');
 const moment = require('moment-timezone');
 
-// Helper function to group tasks by actual day names
 async function groupTasksByDay(
     tasks,
     userTimezone,
@@ -29,10 +28,8 @@ async function groupTasksByDay(
     const now = moment.tz(safeTimezone);
     const cutoffDate = now.clone().add(maxDays, 'days').endOf('day');
 
-    // Group tasks by their exact due date
     tasks.forEach((task) => {
         if (!task.due_date) {
-            // Tasks with no due date go to a special "No Due Date" group
             if (!tasksByDate.has('no-date')) {
                 tasksByDate.set('no-date', []);
             }
@@ -42,12 +39,10 @@ async function groupTasksByDay(
 
         const taskDueDate = moment.tz(task.due_date, safeTimezone);
 
-        // Skip tasks beyond the specified days
         if (taskDueDate.isAfter(cutoffDate)) {
-            return; // Don't include tasks beyond the cutoff date
+            return;
         }
 
-        // Use YYYY-MM-DD as the key for grouping by exact date
         const dateKey = taskDueDate.format('YYYY-MM-DD');
 
         if (!tasksByDate.has(dateKey)) {
@@ -56,20 +51,17 @@ async function groupTasksByDay(
         tasksByDate.get(dateKey).push(task);
     });
 
-    // Convert the map to the final grouped structure with day names
     const sortedDates = Array.from(tasksByDate.keys())
         .filter((key) => key !== 'no-date' && key !== 'later')
-        .sort(); // Sort dates chronologically
+        .sort();
 
-    // Add date groups in chronological order
     sortedDates.forEach((dateKey) => {
         const dateMoment = moment.tz(dateKey, safeTimezone);
-        const dayName = dateMoment.format('dddd'); // e.g., "Monday", "Tuesday"
-        const dateDisplay = dateMoment.format('MMMM D'); // e.g., "August 12"
+        const dayName = dateMoment.format('dddd');
+        const dateDisplay = dateMoment.format('MMMM D');
         const isToday = dateMoment.isSame(now, 'day');
         const isTomorrow = dateMoment.isSame(now.clone().add(1, 'day'), 'day');
 
-        // Create a descriptive group name
         let groupName;
         if (isToday) {
             groupName = 'Today';
@@ -81,7 +73,6 @@ async function groupTasksByDay(
 
         const tasks = tasksByDate.get(dateKey);
 
-        // Sort tasks within each day based on orderBy parameter
         const [orderColumn, orderDirection = 'desc'] = orderBy.split(':');
         tasks.sort((a, b) => {
             let comparison = 0;
@@ -115,14 +106,12 @@ async function groupTasksByDay(
                     break;
             }
 
-            // Apply direction (desc = reverse order)
             return orderDirection === 'desc' ? -comparison : comparison;
         });
 
         groupedTasks[groupName] = tasks;
     });
 
-    // Removed "Later" group as requested
 
     if (tasksByDate.has('no-date')) {
         const noDateTasks = tasksByDate.get('no-date');
@@ -138,7 +127,6 @@ async function groupTasksByDay(
                     comparison = (a.name || '').localeCompare(b.name || '');
                     break;
                 case 'due_date':
-                    // For no-date tasks, fall back to created_at
                     comparison =
                         new Date(a.created_at || 0) -
                         new Date(b.created_at || 0);
@@ -151,7 +139,6 @@ async function groupTasksByDay(
                     break;
             }
 
-            // Apply direction (desc = reverse order)
             return orderDirection === 'desc' ? -comparison : comparison;
         });
         groupedTasks['No Due Date'] = noDateTasks;
@@ -160,7 +147,6 @@ async function groupTasksByDay(
     return groupedTasks;
 }
 
-// Helper function to serialize task with today move count
 async function serializeTask(
     task,
     userTimezone = 'UTC',
@@ -172,19 +158,14 @@ async function serializeTask(
     }
     const taskJson = task.toJSON();
 
-    // Use pre-fetched move count if available, otherwise fetch individually
     const todayMoveCount = moveCountMap
         ? (moveCountMap[task.id] || 0)
         : await getTaskTodayMoveCount(task.id);
 
     const safeTimezone = getSafeTimezone(userTimezone);
 
-    // Include subtasks if they exist
     const { Subtasks, ...taskWithoutSubtasks } = taskJson;
 
-    // For recurring task templates, show recurrence type instead of original name
-    // unless skipDisplayNameTransform option is true
-    // Skip this transformation for 'today' type queries to show actual task names
     let displayName = taskJson.name;
     if (
         !options.skipDisplayNameTransform &&
@@ -193,7 +174,6 @@ async function serializeTask(
         taskJson.recurrence_type !== 'none' &&
         !taskJson.recurring_parent_id
     ) {
-        // This is a recurring template - format the display name based on recurrence type
         switch (taskJson.recurrence_type) {
             case 'daily':
                 displayName = 'Daily';
@@ -218,19 +198,19 @@ async function serializeTask(
         ...taskWithoutSubtasks,
         name: displayName,
         original_name: taskJson.name,
-        uid: task.uid, // Explicitly include uid
+        uid: task.uid,
         due_date: processDueDateForResponse(taskJson.due_date, safeTimezone),
         tags: taskJson.Tags || [],
         Project: taskJson.Project
             ? {
                   ...taskJson.Project,
-                  uid: taskJson.Project.uid, // Explicitly include Project uid
+                  uid: taskJson.Project.uid,
               }
             : null,
         subtasks: Subtasks
             ? Subtasks.map((subtask) => ({
                   ...subtask,
-                  uid: subtask.uid, // Also include uid for subtasks
+                  uid: subtask.uid,
                   tags: subtask.Tags || [],
                   due_date: processDueDateForResponse(
                       subtask.due_date,
@@ -252,17 +232,14 @@ async function serializeTask(
     };
 }
 
-// Helper function to serialize multiple tasks with bulk query optimization
 async function serializeTasks(tasks, userTimezone = 'UTC', options = {}) {
     if (!tasks || tasks.length === 0) {
         return [];
     }
 
-    // Bulk fetch today move counts for all tasks to avoid N+1 queries
     const taskIds = tasks.map((task) => task.id);
     const moveCountMap = await getTaskTodayMoveCounts(taskIds);
 
-    // Serialize all tasks in parallel with pre-fetched move counts
     return await Promise.all(
         tasks.map((task) =>
             serializeTask(task, userTimezone, options, moveCountMap)
@@ -270,8 +247,6 @@ async function serializeTasks(tasks, userTimezone = 'UTC', options = {}) {
     );
 }
 
-// Helper function to build metrics response with counts only
-// Tasks should be fetched separately via /api/tasks with filters
 async function buildMetricsResponse(
     metrics,
     userTimezone,
@@ -289,18 +264,15 @@ async function buildMetricsResponse(
     };
 }
 
-// Helper function to update task tags
 async function updateTaskTags(task, tagsData, userId) {
     if (!tagsData) return;
 
-    // Validate and filter tag names
     const validTagNames = [];
     const invalidTags = [];
 
     for (const tag of tagsData) {
         const validation = validateTagName(tag.name);
         if (validation.valid) {
-            // Check for duplicates
             if (!validTagNames.includes(validation.name)) {
                 validTagNames.push(validation.name);
             }
@@ -309,7 +281,6 @@ async function updateTaskTags(task, tagsData, userId) {
         }
     }
 
-    // If there are invalid tags, throw an error
     if (invalidTags.length > 0) {
         throw new Error(
             `Invalid tag names: ${invalidTags.map((t) => `"${t.name}" (${t.error})`).join(', ')}`
@@ -321,12 +292,10 @@ async function updateTaskTags(task, tagsData, userId) {
         return;
     }
 
-    // Find existing tags
     const existingTags = await Tag.findAll({
         where: { user_id: userId, name: validTagNames },
     });
 
-    // Create new tags
     const existingTagNames = existingTags.map((tag) => tag.name);
     const newTagNames = validTagNames.filter(
         (name) => !existingTagNames.includes(name)
@@ -336,15 +305,12 @@ async function updateTaskTags(task, tagsData, userId) {
         newTagNames.map((name) => Tag.create({ name, user_id: userId }))
     );
 
-    // Set all tags to task
     const allTags = [...existingTags, ...createdTags];
     await task.setTags(allTags);
 }
 
-// Helper function to check if all subtasks are done and update parent task
 async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
     try {
-        // Get all subtasks for the parent task
         const subtasks = await Task.findAll({
             where: {
                 parent_task_id: parentTaskId,
@@ -352,7 +318,6 @@ async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
             },
         });
 
-        // Check if all subtasks are done
         const allSubtasksDone =
             subtasks.length > 0 &&
             subtasks.every(
@@ -362,7 +327,6 @@ async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
             );
 
         if (allSubtasksDone) {
-            // Check if parent is already done to avoid unnecessary updates
             const parentTask = await Task.findOne({
                 where: {
                     id: parentTaskId,
@@ -375,7 +339,6 @@ async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
                 parentTask.status !== Task.STATUS.DONE &&
                 parentTask.status !== 'done'
             ) {
-                // Update parent task to done
                 await Task.update(
                     {
                         status: Task.STATUS.DONE,
@@ -398,10 +361,8 @@ async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
     }
 }
 
-// Helper function to undone parent task when subtask gets undone
 async function undoneParentTaskIfNeeded(parentTaskId, userId) {
     try {
-        // Get parent task
         const parentTask = await Task.findOne({
             where: {
                 id: parentTaskId,
@@ -409,7 +370,6 @@ async function undoneParentTaskIfNeeded(parentTaskId, userId) {
             },
         });
 
-        // If parent is done, undone it
         if (
             parentTask &&
             (parentTask.status === Task.STATUS.DONE ||
@@ -436,10 +396,8 @@ async function undoneParentTaskIfNeeded(parentTaskId, userId) {
     }
 }
 
-// Helper function to complete all subtasks when parent is done
 async function completeAllSubtasks(parentTaskId, userId) {
     try {
-        // Update all subtasks to be completed - this ensures completed_at is set for all
         const result = await Task.update(
             {
                 status: Task.STATUS.DONE,
@@ -452,14 +410,13 @@ async function completeAllSubtasks(parentTaskId, userId) {
                 },
             }
         );
-        return result[0] > 0; // Return true if any subtasks were actually updated
+        return result[0] > 0;
     } catch (error) {
         logError('Error completing all subtasks:', error);
         return false;
     }
 }
 
-// Helper function to undone all subtasks when parent is undone
 async function undoneAllSubtasks(parentTaskId, userId) {
     try {
         const result = await Task.update(
@@ -477,24 +434,20 @@ async function undoneAllSubtasks(parentTaskId, userId) {
                 },
             }
         );
-        return result[0] > 0; // Return true if any subtasks were actually updated
+        return result[0] > 0;
     } catch (error) {
         logError('Error undoing all subtasks:', error);
         return false;
     }
 }
 
-// Filter tasks by parameters
 async function filterTasksByParams(params, userId, userTimezone, permissionCache = null) {
-    // Include owned or shared tasks; exclude subtasks by default
     const ownedOrShared = await permissionsService.ownershipOrPermissionWhere(
         'task',
         userId,
         permissionCache
     );
     if (params.type === 'upcoming') {
-        // Remove search-related parameters to prevent search functionality
-        // Keep client_side_filtering to allow frontend to control completed task visibility
         params = { ...params };
         delete params.search;
     }
@@ -502,9 +455,7 @@ async function filterTasksByParams(params, userId, userTimezone, permissionCache
         parent_task_id: null,
     };
 
-    // Include both recurring templates and instances, but handle them appropriately
     whereClause[Op.or] = [
-        // Include all non-recurring tasks
         {
             [Op.and]: [
                 {
@@ -513,43 +464,41 @@ async function filterTasksByParams(params, userId, userTimezone, permissionCache
                         { recurrence_type: null },
                     ],
                 },
-                { recurring_parent_id: null }, // Non-recurring tasks have no parent
+                { recurring_parent_id: null },
             ],
         },
-        // Include recurring templates that are not in the past
         {
             [Op.and]: [
                 { recurrence_type: { [Op.ne]: 'none' } },
                 { recurrence_type: { [Op.ne]: null } },
-                { recurring_parent_id: null }, // Templates have no parent
+                { recurring_parent_id: null },
                 {
                     [Op.or]: [
-                        { due_date: null }, // No due date - always show
+                        { due_date: null },
                         {
                             due_date: {
                                 [Op.gte]: new Date(
                                     new Date().setHours(0, 0, 0, 0)
                                 ),
                             },
-                        }, // Today or future (start of today)
+                        },
                     ],
                 },
             ],
         },
-        // Include recurring task instances (but only future ones)
         {
             [Op.and]: [
-                { recurring_parent_id: { [Op.ne]: null } }, // Has a recurring parent
+                { recurring_parent_id: { [Op.ne]: null } },
                 {
                     [Op.or]: [
-                        { due_date: null }, // No due date - always show
+                        { due_date: null },
                         {
                             due_date: {
                                 [Op.gte]: new Date(
                                     new Date().setHours(0, 0, 0, 0)
                                 ),
                             },
-                        }, // Today or future instances only
+                        },
                     ],
                 },
             ],
@@ -581,10 +530,8 @@ async function filterTasksByParams(params, userId, userTimezone, permissionCache
         },
     ];
 
-    // Filter by type
     switch (params.type) {
         case 'today':
-            // Exclude recurring task instances for today view
             whereClause.recurring_parent_id = null;
             whereClause.status = {
                 [Op.notIn]: [
@@ -593,21 +540,18 @@ async function filterTasksByParams(params, userId, userTimezone, permissionCache
                     'done',
                     'archived',
                 ],
-            }; // Exclude completed and archived tasks (both integer and string values)
+            };
             break;
         case 'upcoming': {
             const safeTimezone = getSafeTimezone(userTimezone);
             const upcomingRange = getUpcomingRangeInUTC(safeTimezone, 7);
 
-            // For upcoming view, we want to show recurring instances (children) with due dates
-            // Override the default whereClause to include recurring instances
             whereClause = {
-                parent_task_id: null, // Exclude subtasks from main task lists
+                parent_task_id: null,
                 due_date: {
                     [Op.between]: [upcomingRange.start, upcomingRange.end],
                 },
                 [Op.or]: [
-                    // Include non-recurring tasks
                     {
                         [Op.and]: [
                             { recurring_parent_id: null },
@@ -619,24 +563,20 @@ async function filterTasksByParams(params, userId, userTimezone, permissionCache
                             },
                         ],
                     },
-                    // Include recurring task instances (children) - this is the key change!
                     {
                         [Op.and]: [
-                            { recurring_parent_id: { [Op.ne]: null } }, // Has a parent (is an instance)
-                            { recurrence_type: 'none' }, // Instances have recurrence_type: 'none'
+                            { recurring_parent_id: { [Op.ne]: null } },
+                            { recurrence_type: 'none' },
                         ],
                     },
                 ],
             };
 
-            // Apply status filter based on client_side_filtering
             if (params.status === 'done') {
                 whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
             } else if (!params.client_side_filtering) {
-                // Only exclude completed tasks if not doing client-side filtering
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             }
-            // If client_side_filtering is true, don't add any status filter (include all)
             break;
         }
         case 'next':
@@ -649,7 +589,6 @@ async function filterTasksByParams(params, userId, userTimezone, permissionCache
             whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             break;
         case 'someday':
-            // Exclude recurring task instances for someday view
             whereClause.recurring_parent_id = null;
             whereClause.due_date = null;
             whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
@@ -658,48 +597,38 @@ async function filterTasksByParams(params, userId, userTimezone, permissionCache
             whereClause.status = Task.STATUS.WAITING;
             break;
         case 'all':
-            // For 'all' view, include both recurring templates and instances
-            // The complex OR logic above already handles this correctly
             if (params.status === 'done') {
                 whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
             } else if (!params.client_side_filtering) {
-                // Only exclude completed tasks if not doing client-side filtering
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             }
             break;
         default:
-            // Exclude recurring task instances from default view unless include_instances is specified
             if (!params.include_instances) {
                 whereClause.recurring_parent_id = null;
             }
             if (params.status === 'done') {
                 whereClause.status = { [Op.in]: [Task.STATUS.DONE, 'done'] };
             } else if (!params.client_side_filtering) {
-                // Only exclude completed tasks if not doing client-side filtering
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE, 'done'] };
             }
-        // If client_side_filtering is true, don't add any status filter (include all)
     }
 
-    // Filter by tag
     if (params.tag) {
         includeClause[0].where = { name: params.tag };
         includeClause[0].required = true;
     }
 
-    // Filter by priority
     if (params.priority) {
         whereClause.priority = Task.getPriorityValue(params.priority);
     }
 
     let orderClause = [['created_at', 'DESC']];
 
-    // Special ordering for inbox - newest items first
     if (params.type === 'inbox') {
         orderClause = [['created_at', 'DESC']];
     }
 
-    // Apply ordering
     if (params.order_by) {
         const [orderColumn, orderDirection = 'asc'] =
             params.order_by.split(':');
@@ -731,7 +660,6 @@ async function filterTasksByParams(params, userId, userTimezone, permissionCache
         }
     }
 
-    // Always apply ownership filter
     const finalWhereClause = {
         [Op.and]: [ownedOrShared, whereClause],
     };
@@ -744,7 +672,6 @@ async function filterTasksByParams(params, userId, userTimezone, permissionCache
     });
 }
 
-// Compute task metrics
 async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache = null) {
     const visibleTasksWhere =
         await permissionsService.ownershipOrPermissionWhere('task', userId, permissionCache);
@@ -752,8 +679,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         where: {
             ...visibleTasksWhere,
             status: { [Op.ne]: Task.STATUS.DONE },
-            parent_task_id: null, // Exclude subtasks
-            recurring_parent_id: null, // Exclude recurring instances
+            parent_task_id: null,
+            recurring_parent_id: null,
         },
     });
 
@@ -763,8 +690,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
             ...visibleTasksWhere,
             status: { [Op.ne]: Task.STATUS.DONE },
             created_at: { [Op.lt]: oneMonthAgo },
-            parent_task_id: null, // Exclude subtasks
-            recurring_parent_id: null, // Exclude recurring instances
+            parent_task_id: null,
+            recurring_parent_id: null,
         },
     });
 
@@ -772,8 +699,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         where: {
             ...visibleTasksWhere,
             status: { [Op.in]: [Task.STATUS.IN_PROGRESS, 'in_progress'] },
-            parent_task_id: null, // Exclude subtasks
-            recurring_parent_id: null, // Exclude recurring instances
+            parent_task_id: null,
+            recurring_parent_id: null,
         },
         include: [
             {
@@ -804,7 +731,6 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         order: [['priority', 'DESC']],
     });
 
-    // Get tasks in today plan
     const todayPlanTasks = await Task.findAll({
         where: {
             ...visibleTasksWhere,
@@ -817,8 +743,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
                     'archived',
                 ],
             },
-            parent_task_id: null, // Exclude subtasks
-            recurring_parent_id: null, // Exclude recurring instances
+            parent_task_id: null,
+            recurring_parent_id: null,
         },
         include: [
             {
@@ -852,7 +778,6 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         ],
     });
 
-    // Get tasks due today in user's timezone
     const safeTimezone = getSafeTimezone(userTimezone);
     const todayBounds = getTodayBoundsInUTC(safeTimezone);
 
@@ -869,8 +794,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
                             'archived',
                         ],
                     },
-                    parent_task_id: null, // Exclude subtasks
-                    recurring_parent_id: null, // Exclude recurring instances
+                    parent_task_id: null,
+                    recurring_parent_id: null,
                     [Op.or]: [
                         { due_date: { [Op.lte]: todayBounds.end } },
                         sequelize.literal(`EXISTS (
@@ -910,12 +835,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         ],
     });
 
-    // Get suggested tasks only if user has a meaningful task base
     let suggestedTasks = [];
 
-    // Only show suggested tasks if:
-    // 1. User has at least 3 total tasks, OR
-    // 2. User has at least 1 project with tasks
     if (
         totalOpenTasks >= 3 ||
         tasksInProgress.length > 0 ||
@@ -926,7 +847,6 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
             ...tasksDueToday.map((t) => t.id),
         ];
 
-        // Get task IDs that have "someday" tag
         const somedayTaskIds = await sequelize
             .query(
                 `SELECT DISTINCT task_id FROM tasks_tags
@@ -939,7 +859,6 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
             )
             .then((results) => results.map((r) => r.task_id));
 
-        // Get tasks without projects (excluding someday tagged tasks)
         const nonProjectTasks = await Task.findAll({
             where: {
                 ...visibleTasksWhere,
@@ -948,8 +867,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
                 },
                 id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
                 [Op.or]: [{ project_id: null }, { project_id: '' }],
-                parent_task_id: null, // Exclude subtasks
-                recurring_parent_id: null, // Exclude recurring instances
+                parent_task_id: null,
+                recurring_parent_id: null,
             },
             include: [
                 {
@@ -984,7 +903,6 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
             limit: 6,
         });
 
-        // Get tasks with projects (excluding someday tagged tasks)
         const projectTasks = await Task.findAll({
             where: {
                 ...visibleTasksWhere,
@@ -993,8 +911,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
                 },
                 id: { [Op.notIn]: [...excludedTaskIds, ...somedayTaskIds] },
                 project_id: { [Op.not]: null, [Op.ne]: '' },
-                parent_task_id: null, // Exclude subtasks
-                recurring_parent_id: null, // Exclude recurring instances
+                parent_task_id: null,
+                recurring_parent_id: null,
             },
             include: [
                 {
@@ -1029,10 +947,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
             limit: 6,
         });
 
-        // Check if we have enough suggestions (at least 6 total)
         let combinedTasks = [...nonProjectTasks, ...projectTasks];
 
-        // If we don't have enough suggestions, include someday tasks as fallback
         if (combinedTasks.length < 6) {
             const usedTaskIds = [
                 ...excludedTaskIds,
@@ -1049,8 +965,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
                         [Op.notIn]: usedTaskIds,
                         [Op.in]: somedayTaskIds,
                     },
-                    parent_task_id: null, // Exclude subtasks
-                    recurring_parent_id: null, // Exclude recurring instances
+                    parent_task_id: null,
+                    recurring_parent_id: null,
                 },
                 include: [
                     {
@@ -1091,7 +1007,6 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         suggestedTasks = combinedTasks;
     }
 
-    // Get tasks completed today - use user's timezone
     const todayInUserTz = moment.tz(userTimezone);
     const todayStart = todayInUserTz.clone().startOf('day').utc().toDate();
     const todayEnd = todayInUserTz.clone().endOf('day').utc().toDate();
@@ -1100,8 +1015,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         where: {
             user_id: userId,
             status: Task.STATUS.DONE,
-            parent_task_id: null, // Exclude subtasks
-            recurring_parent_id: null, // Exclude recurring instances
+            parent_task_id: null,
+            recurring_parent_id: null,
             completed_at: {
                 [Op.between]: [todayStart, todayEnd],
             },
@@ -1135,12 +1050,10 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         order: [['completed_at', 'DESC']],
     });
 
-    // Get weekly completion data (last 7 days) - use user's timezone
     const weekStartInUserTz = moment.tz(userTimezone).subtract(6, 'days');
     const weekStart = weekStartInUserTz.clone().startOf('day').utc().toDate();
     const weekEnd = todayInUserTz.clone().endOf('day').utc().toDate();
 
-    // For SQLite, we'll fetch the raw data and process it in JavaScript
     const weeklyCompletionsRaw = await Task.findAll({
         where: {
             user_id: userId,
@@ -1153,10 +1066,8 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         raw: true,
     });
 
-    // Process the data in JavaScript to group by date in user's timezone
     const dateCountMap = {};
     weeklyCompletionsRaw.forEach((task) => {
-        // Parse the completed_at field more reliably - convert to Date first, then to moment
         const completedDate = new Date(task.completed_at);
         const dateInUserTz = moment(completedDate)
             .tz(userTimezone)
@@ -1164,7 +1075,6 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         dateCountMap[dateInUserTz] = (dateCountMap[dateInUserTz] || 0) + 1;
     });
 
-    // Convert to the format expected by the rest of the code
     const weeklyCompletions = Object.entries(dateCountMap).map(
         ([date, count]) => ({
             date,
@@ -1172,7 +1082,6 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         })
     );
 
-    // Process weekly completion data to ensure all 7 days are represented
     const weeklyData = [];
     for (let i = 6; i >= 0; i--) {
         const dateInUserTz = moment.tz(userTimezone).subtract(i, 'days');
@@ -1184,7 +1093,7 @@ async function computeTaskMetrics(userId, userTimezone = 'UTC', permissionCache 
         const dayData = {
             date: dateString,
             count: found ? parseInt(found.count) : 0,
-            dayName: dateInUserTz.format('ddd'), // Short day name
+            dayName: dateInUserTz.format('ddd'),
         };
         weeklyData.push(dayData);
     }

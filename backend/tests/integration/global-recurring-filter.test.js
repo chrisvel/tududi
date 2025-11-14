@@ -175,22 +175,21 @@ describe('Global Recurring Task Instance Filtering', () => {
         });
 
         it('should exclude recurring instances from task metrics', async () => {
-            const response = await agent.get('/api/tasks');
+            const response = await agent.get('/api/tasks?type=today&include_lists=true');
 
             expect(response.status).toBe(200);
-            expect(response.body.metrics).toBeDefined();
 
-            // Check that metrics don't include recurring instances
+            // Check that dashboard lists don't include recurring instances
             const tasksInProgressIds =
-                response.body.metrics.tasks_in_progress.map((t) => t.id);
-            const tasksDueTodayIds = response.body.metrics.tasks_due_today.map(
+                response.body.tasks_in_progress.map((t) => t.id);
+            const tasksDueTodayIds = response.body.tasks_due_today.map(
                 (t) => t.id
             );
-            const suggestedTasksIds = response.body.metrics.suggested_tasks.map(
+            const suggestedTasksIds = response.body.suggested_tasks.map(
                 (t) => t.id
             );
 
-            // None of the metrics should include instance IDs
+            // None of the dashboard lists should include instance IDs
             expect(tasksInProgressIds).not.toContain(instance1.id);
             expect(tasksInProgressIds).not.toContain(instance2.id);
             expect(tasksDueTodayIds).not.toContain(instance1.id);

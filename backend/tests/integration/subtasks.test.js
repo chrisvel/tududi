@@ -527,13 +527,13 @@ describe('Subtasks API', () => {
             });
 
             const response = await agent
-                .get('/api/tasks')
+                .get('/api/tasks?type=today&include_lists=true')
 
                 .expect(200);
 
             // Should only show parent task in completed today, not subtask
-            expect(response.body.metrics.tasks_completed_today).toHaveLength(1);
-            expect(response.body.metrics.tasks_completed_today[0].id).toBe(
+            expect(response.body.tasks_completed_today).toHaveLength(1);
+            expect(response.body.tasks_completed_today[0].id).toBe(
                 parentTask.id
             );
         });

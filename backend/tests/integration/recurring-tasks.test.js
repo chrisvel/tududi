@@ -522,11 +522,11 @@ describe('Recurring Tasks API', () => {
         });
 
         it('should return task metrics excluding recurring instances', async () => {
-            const response = await agent.get('/api/tasks');
+            const response = await agent.get('/api/tasks/metrics');
 
             expect(response.status).toBe(200);
-            expect(response.body.metrics).toBeDefined();
-            expect(response.body.metrics.total_open_tasks).toBe(2);
+            expect(response.body.total_open_tasks).toBeDefined();
+            expect(response.body.total_open_tasks).toBe(2);
         });
     });
 
