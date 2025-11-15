@@ -43,7 +43,7 @@ test.describe('Notes - Basic Functionality', () => {
 
         // Verify note appears in the list
         await expect(
-            page.locator('h3', { hasText: noteTitle })
+            page.locator('h3', { hasText: noteTitle }).first()
         ).toBeVisible();
     });
 
@@ -66,10 +66,10 @@ test.describe('Notes - Basic Functionality', () => {
         await page.keyboard.press('Escape');
 
         // Verify note was created
-        await expect(page.locator('h3', { hasText: originalTitle })).toBeVisible();
+        await expect(page.locator('h3', { hasText: originalTitle }).first()).toBeVisible();
 
         // Click on the note in the list to select it
-        await page.locator('h3', { hasText: originalTitle }).click();
+        await page.locator('h3', { hasText: originalTitle }).first().click();
         await page.waitForTimeout(300);
 
         // Verify we're in preview mode
@@ -98,9 +98,9 @@ test.describe('Notes - Basic Functionality', () => {
         ).toBeVisible();
 
         // Verify updated note appears in the list
-        await expect(page.locator('h3', { hasText: updatedTitle })).toBeVisible();
+        await expect(page.locator('h3', { hasText: updatedTitle }).first()).toBeVisible();
 
         // Verify old title is not shown
-        await expect(page.locator('h3', { hasText: originalTitle })).not.toBeVisible();
+        await expect(page.locator('h3', { hasText: originalTitle })).toHaveCount(0);
     });
 });

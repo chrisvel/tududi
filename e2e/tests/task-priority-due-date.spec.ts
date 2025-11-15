@@ -70,7 +70,9 @@ test('user can set task priority to high', async ({ page, baseURL }) => {
   // Wait for dropdown to close
   await expect(page.locator('[data-testid="priority-dropdown"][data-state="closed"]')).toBeVisible();
 
-  // Save the task
+  // Wait for the save button to be stable after priority change
+  await page.waitForTimeout(200);
+  await expect(page.locator('[data-testid="task-save-button"]')).toBeVisible();
   await page.locator('[data-testid="task-save-button"]').click();
 
   // Wait for saving state then idle state
@@ -113,7 +115,9 @@ test('user can set task priority to medium and low', async ({ page, baseURL }) =
   await mediumPriorityOption.click();
   await expect(page.locator('[data-testid="priority-dropdown"][data-state="closed"]')).toBeVisible();
 
-  // Save the task
+  // Wait for the save button to be stable after priority change
+  await page.waitForTimeout(200);
+  await expect(page.locator('[data-testid="task-save-button"]')).toBeVisible();
   await page.locator('[data-testid="task-save-button"]').click();
   await expect(page.locator('[data-testid="task-modal"][data-state="saving"]')).toBeVisible();
   await expect(page.locator('[data-testid="task-modal"]')).not.toBeVisible({ timeout: 10000 });
@@ -145,6 +149,9 @@ test('user can set task priority to medium and low', async ({ page, baseURL }) =
   await lowPriorityOption.click();
   await expect(page.locator('[data-testid="priority-dropdown"][data-state="closed"]')).toBeVisible();
 
+  // Wait for the save button to be stable after priority change
+  await page.waitForTimeout(200);
+  await expect(page.locator('[data-testid="task-save-button"]')).toBeVisible();
   await page.locator('[data-testid="task-save-button"]').click();
   await expect(page.locator('[data-testid="task-modal"][data-state="saving"]')).toBeVisible();
   await expect(page.locator('[data-testid="task-modal"]')).not.toBeVisible({ timeout: 10000 });
@@ -188,7 +195,9 @@ test('user can set a due date for a task', async ({ page, baseURL }) => {
   await dayButton.click();
   await expect(page.locator('[data-testid="datepicker"][data-state="closed"]')).toBeVisible();
 
-  // Save the task
+  // Wait for the save button to be stable after date change
+  await page.waitForTimeout(200);
+  await expect(page.locator('[data-testid="task-save-button"]')).toBeVisible();
   await page.locator('[data-testid="task-save-button"]').click();
   await expect(page.locator('[data-testid="task-modal"][data-state="saving"]')).toBeVisible();
   await expect(page.locator('[data-testid="task-modal"]')).not.toBeVisible({ timeout: 10000 });
