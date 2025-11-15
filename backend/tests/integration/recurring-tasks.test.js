@@ -693,4 +693,74 @@ describe('Recurring Tasks API', () => {
             expect(recurringTask.original_name).toBe('Take vitamins');
         });
     });
+
+    describe('Recurring tasks with subtasks', () => {
+        it('should copy subtasks when generating recurring task instances', async () => {
+            const recurringTaskService = require('../../services/recurringTaskService');
+
+            // Create a recurring task with subtasks
+            const taskData = {
+                name: 'Weekly grocery shopping',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                priority: 1,
+                completion_based: false,
+                subtasks: [
+                    { name: 'Buy milk', priority: 0 },
+                    { name: 'Buy bread', priority: 1 },
+                    { name: 'Buy eggs', priority: 0 },
+                ],
+            };
+
+            const createResponse = await agent.post('/api/task').send(taskData);
+            expect(createResponse.status).toBe(201);
+
+            const recurringTaskId = createResponse.body.id;
+
+            // Verify subtasks were created
+            const subtasksResponse = await agent.get(
+                `/api/task/${recurringTaskId}/subtasks`
+            );
+            expect(subtasksResponse.status).toBe(200);
+            expect(subtasksResponse.body.length).toBe(3);
+
+            // Generate recurring task instances
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            await recurringTaskService.generateRecurringTasks(user.id, 2);
+
+            // Find the generated instance
+            const instances = await Task.findAll({
+                where: {
+                    user_id: user.id,
+                    recurring_parent_id: recurringTaskId,
+                },
+            });
+
+            expect(instances.length).toBeGreaterThan(0);
+
+            const firstInstance = instances[0];
+
+            // Check if subtasks were copied to the instance
+            const instanceSubtasksResponse = await agent.get(
+                `/api/task/${firstInstance.id}/subtasks`
+            );
+            expect(instanceSubtasksResponse.status).toBe(200);
+            expect(instanceSubtasksResponse.body.length).toBe(3);
+
+            // Verify subtask names match
+            const subtaskNames = instanceSubtasksResponse.body.map(
+                (s) => s.name
+            );
+            expect(subtaskNames).toContain('Buy milk');
+            expect(subtaskNames).toContain('Buy bread');
+            expect(subtaskNames).toContain('Buy eggs');
+
+            // Verify all subtasks are in NOT_STARTED status
+            instanceSubtasksResponse.body.forEach((subtask) => {
+                expect(subtask.status).toBe(Task.STATUS.NOT_STARTED);
+            });
+        });
+    });
 });
