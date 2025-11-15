@@ -1,11 +1,12 @@
 const { Task, Tag, Project } = require('../../../models');
+const taskRepository = require('../../../repositories/TaskRepository');
 const permissionsService = require('../../../services/permissionsService');
 const { logError } = require('../../../services/logService');
 const { serializeTask } = require('../core/serializers');
 const { parsePriority, parseStatus } = require('../core/parsers');
 
 async function getSubtasks(parentTaskId, userId, timezone) {
-    const parent = await Task.findOne({ where: { id: parentTaskId } });
+    const parent = await taskRepository.findById(parentTaskId);
     if (!parent) {
         return { error: 'Not found', subtasks: [] };
     }
@@ -19,24 +20,24 @@ async function getSubtasks(parentTaskId, userId, timezone) {
         return { error: 'Forbidden', subtasks: null };
     }
 
-    const subtasks = await Task.findAll({
-        where: {
-            parent_task_id: parentTaskId,
-        },
-        include: [
-            {
-                model: Tag,
-                attributes: ['id', 'name', 'uid'],
-                through: { attributes: [] },
-            },
-            {
-                model: Project,
-                attributes: ['id', 'name', 'uid'],
-                required: false,
-            },
-        ],
-        order: [['created_at', 'ASC']],
-    });
+    const subtasks = await taskRepository.findAll(
+        { parent_task_id: parentTaskId },
+        {
+            include: [
+                {
+                    model: Tag,
+                    attributes: ['id', 'name', 'uid'],
+                    through: { attributes: [] },
+                },
+                {
+                    model: Project,
+                    attributes: ['id', 'name', 'uid'],
+                    required: false,
+                },
+            ],
+            order: [['created_at', 'ASC']],
+        }
+    );
 
     const serializedSubtasks = await Promise.all(
         subtasks.map((subtask) => serializeTask(subtask, timezone))
@@ -48,37 +49,32 @@ async function getSubtasks(parentTaskId, userId, timezone) {
 async function createSubtasks(parentTaskId, subtasks, userId) {
     if (!subtasks || !Array.isArray(subtasks)) return;
 
-    const subtaskPromises = subtasks
+    const subtasksData = subtasks
         .filter((subtask) => subtask.name && subtask.name.trim())
-        .map((subtask) =>
-            Task.create({
-                name: subtask.name.trim(),
-                parent_task_id: parentTaskId,
-                user_id: userId,
-                priority: parsePriority(subtask.priority) || Task.PRIORITY.LOW,
-                status: parseStatus(subtask.status),
-                completed_at:
-                    subtask.status === 'done' ||
-                    subtask.status === Task.STATUS.DONE
-                        ? subtask.completed_at
-                            ? new Date(subtask.completed_at)
-                            : new Date()
-                        : null,
-                today: subtask.today || false,
-                recurrence_type: 'none',
-                completion_based: false,
-            })
-        );
+        .map((subtask) => ({
+            name: subtask.name.trim(),
+            parent_task_id: parentTaskId,
+            user_id: userId,
+            priority: parsePriority(subtask.priority) || Task.PRIORITY.LOW,
+            status: parseStatus(subtask.status),
+            completed_at:
+                subtask.status === 'done' || subtask.status === Task.STATUS.DONE
+                    ? subtask.completed_at
+                        ? new Date(subtask.completed_at)
+                        : new Date()
+                    : null,
+            today: subtask.today || false,
+            recurrence_type: 'none',
+            completion_based: false,
+        }));
 
-    await Promise.all(subtaskPromises);
+    await taskRepository.createMany(subtasksData);
 }
 
 async function updateSubtasks(taskId, subtasks, userId) {
     if (!subtasks || !Array.isArray(subtasks)) return;
 
-    const existingSubtasks = await Task.findAll({
-        where: { parent_task_id: taskId, user_id: userId },
-    });
+    const existingSubtasks = await taskRepository.findChildren(taskId, userId);
 
     const subtasksToKeep = subtasks.filter((s) => s.id && !s.isNew);
     const subtasksToDelete = existingSubtasks.filter(
@@ -86,7 +82,7 @@ async function updateSubtasks(taskId, subtasks, userId) {
     );
 
     if (subtasksToDelete.length > 0) {
-        await Task.destroy({
+        await taskRepository.destroyMany({
             where: {
                 id: subtasksToDelete.map((s) => s.id),
                 user_id: userId,
@@ -126,7 +122,7 @@ async function updateSubtasks(taskId, subtasks, userId) {
                     parsePriority(subtask.priority) || Task.PRIORITY.LOW;
             }
 
-            return Task.update(updateData, {
+            return taskRepository.bulkUpdate(updateData, {
                 where: { id: subtask.id, user_id: userId },
             });
         });

@@ -1,15 +1,14 @@
 const { Task } = require('../../../models');
 const { Op } = require('sequelize');
+const taskRepository = require('../../../repositories/TaskRepository');
 const { logError } = require('../../../services/logService');
 
 async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
     try {
-        const subtasks = await Task.findAll({
-            where: {
-                parent_task_id: parentTaskId,
-                user_id: userId,
-            },
-        });
+        const subtasks = await taskRepository.findChildren(
+            parentTaskId,
+            userId
+        );
 
         const allSubtasksDone =
             subtasks.length > 0 &&
@@ -20,30 +19,20 @@ async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
             );
 
         if (allSubtasksDone) {
-            const parentTask = await Task.findOne({
-                where: {
-                    id: parentTaskId,
-                    user_id: userId,
-                },
-            });
+            const parentTask = await taskRepository.findByIdAndUser(
+                parentTaskId,
+                userId
+            );
 
             if (
                 parentTask &&
                 parentTask.status !== Task.STATUS.DONE &&
                 parentTask.status !== 'done'
             ) {
-                await Task.update(
-                    {
-                        status: Task.STATUS.DONE,
-                        completed_at: new Date(),
-                    },
-                    {
-                        where: {
-                            id: parentTaskId,
-                            user_id: userId,
-                        },
-                    }
-                );
+                await taskRepository.update(parentTaskId, userId, {
+                    status: Task.STATUS.DONE,
+                    completed_at: new Date(),
+                });
                 return true;
             }
         }
@@ -56,30 +45,20 @@ async function checkAndUpdateParentTaskCompletion(parentTaskId, userId) {
 
 async function undoneParentTaskIfNeeded(parentTaskId, userId) {
     try {
-        const parentTask = await Task.findOne({
-            where: {
-                id: parentTaskId,
-                user_id: userId,
-            },
-        });
+        const parentTask = await taskRepository.findByIdAndUser(
+            parentTaskId,
+            userId
+        );
 
         if (
             parentTask &&
             (parentTask.status === Task.STATUS.DONE ||
                 parentTask.status === 'done')
         ) {
-            await Task.update(
-                {
-                    status: Task.STATUS.NOT_STARTED,
-                    completed_at: null,
-                },
-                {
-                    where: {
-                        id: parentTaskId,
-                        user_id: userId,
-                    },
-                }
-            );
+            await taskRepository.update(parentTaskId, userId, {
+                status: Task.STATUS.NOT_STARTED,
+                completed_at: null,
+            });
             return true;
         }
         return false;
@@ -91,16 +70,12 @@ async function undoneParentTaskIfNeeded(parentTaskId, userId) {
 
 async function completeAllSubtasks(parentTaskId, userId) {
     try {
-        const result = await Task.update(
+        const result = await taskRepository.updateChildren(
+            parentTaskId,
+            userId,
             {
                 status: Task.STATUS.DONE,
                 completed_at: new Date(),
-            },
-            {
-                where: {
-                    parent_task_id: parentTaskId,
-                    user_id: userId,
-                },
             }
         );
         return result[0] > 0;
@@ -112,18 +87,16 @@ async function completeAllSubtasks(parentTaskId, userId) {
 
 async function undoneAllSubtasks(parentTaskId, userId) {
     try {
-        const result = await Task.update(
+        const result = await taskRepository.updateChildrenWithConditions(
+            parentTaskId,
+            userId,
             {
                 status: Task.STATUS.NOT_STARTED,
                 completed_at: null,
             },
             {
-                where: {
-                    parent_task_id: parentTaskId,
-                    user_id: userId,
-                    status: {
-                        [Op.in]: [Task.STATUS.DONE, 'done'],
-                    },
+                status: {
+                    [Op.in]: [Task.STATUS.DONE, 'done'],
                 },
             }
         );
@@ -142,13 +115,11 @@ async function handleParentChildOnStatusChange(
 ) {
     let parentChildLogicExecuted = false;
 
-    const directSubtasksQuery = await Task.findAll({
-        where: {
-            parent_task_id: task.id,
-            user_id: userId,
-        },
-        attributes: ['id', 'name', 'status', 'parent_task_id'],
-    });
+    const directSubtasksQuery = await taskRepository.findChildren(
+        task.id,
+        userId,
+        { attributes: ['id', 'name', 'status', 'parent_task_id'] }
+    );
 
     if (
         directSubtasksQuery.length > 0 &&

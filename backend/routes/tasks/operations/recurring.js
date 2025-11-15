@@ -1,4 +1,5 @@
 const { Task } = require('../../../models');
+const taskRepository = require('../../../repositories/TaskRepository');
 const {
     calculateNextDueDate,
 } = require('../../../services/recurringTaskService');
@@ -17,9 +18,7 @@ async function handleRecurrenceUpdate(task, recurrenceFields, reqBody) {
         return false;
     }
 
-    const childTasks = await Task.findAll({
-        where: { recurring_parent_id: task.id },
-    });
+    const childTasks = await taskRepository.findRecurringChildren(task.id);
 
     if (childTasks.length > 0) {
         const now = new Date();

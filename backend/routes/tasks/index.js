@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { Task, TaskEvent, sequelize } = require('../../models');
-
-const { hasAccess } = require('../../middleware/authorize');
+const taskRepository = require('../../repositories/TaskRepository');
 const {
     resetQueryCounter,
     getQueryStats,
@@ -17,12 +16,9 @@ const {
 const { logError } = require('../../services/logService');
 const { logEvent } = require('../../services/taskEventService');
 
-const {
-    filterTasksByParams,
-    serializeTasks,
-    serializeTask,
-    updateTaskTags,
-} = require('./helpers');
+const { serializeTask, serializeTasks } = require('./core/serializers');
+const { updateTaskTags } = require('./operations/tags');
+const { filterTasksByParams } = require('./queries/query-builders');
 const { getSafeTimezone } = require('../../utils/timezone-utils');
 
 const {
@@ -61,31 +57,14 @@ const { getTaskMetrics } = require('./queries/metrics-computation');
 
 const { getSubtasks } = require('./operations/subtasks');
 
+const {
+    requireTaskReadAccess,
+    requireTaskWriteAccess,
+} = require('./middleware/access');
+
 if (process.env.NODE_ENV === 'development') {
     enableQueryLogging();
 }
-
-const requireTaskReadAccess = hasAccess(
-    'ro',
-    'task',
-    async (req) => {
-        return req.params.uid;
-    },
-    { notFoundMessage: 'Task not found.' }
-);
-
-const requireTaskWriteAccess = hasAccess(
-    'rw',
-    'task',
-    async (req) => {
-        const t = await Task.findOne({
-            where: { id: req.params.id },
-            attributes: ['uid'],
-        });
-        return t?.uid;
-    },
-    { notFoundMessage: 'Task not found.' }
-);
 
 router.get('/tasks', async (req, res) => {
     const startTime = Date.now();
@@ -197,11 +176,11 @@ router.post('/task', async (req, res) => {
             return res.status(400).json({ error: error.message });
         }
 
-        const task = await Task.create(taskAttributes);
+        const task = await taskRepository.create(taskAttributes);
         await updateTaskTags(task, tagsData, req.currentUser.id);
         await createSubtasks(task.id, subtasks, req.currentUser.id);
 
-        const taskWithAssociations = await Task.findByPk(task.id, {
+        const taskWithAssociations = await taskRepository.findById(task.id, {
             include: TASK_INCLUDES,
         });
 
@@ -255,8 +234,7 @@ router.post('/task', async (req, res) => {
 
 router.get('/task/:uid', requireTaskReadAccess, async (req, res) => {
     try {
-        const task = await Task.findOne({
-            where: { uid: req.params.uid },
+        const task = await taskRepository.findByUid(req.params.uid, {
             include: TASK_INCLUDES_WITH_SUBTASKS,
         });
 
@@ -299,8 +277,7 @@ router.patch('/task/:id', requireTaskWriteAccess, async (req, res) => {
 
         const tagsData = tags || Tags;
 
-        const task = await Task.findOne({
-            where: { id: req.params.id },
+        const task = await taskRepository.findById(req.params.id, {
             include: TASK_INCLUDES_WITH_SUBTASKS,
         });
 
@@ -312,12 +289,10 @@ router.patch('/task/:id', requireTaskWriteAccess, async (req, res) => {
         const oldStatus = task.status;
 
         if (update_parent_recurrence && task.recurring_parent_id) {
-            const parentTask = await Task.findOne({
-                where: {
-                    id: task.recurring_parent_id,
-                    user_id: req.currentUser.id,
-                },
-            });
+            const parentTask = await taskRepository.findByIdAndUser(
+                task.recurring_parent_id,
+                req.currentUser.id
+            );
 
             if (parentTask) {
                 await parentTask.update({
@@ -475,7 +450,7 @@ router.patch('/task/:id', requireTaskWriteAccess, async (req, res) => {
             }
         }
 
-        const taskWithAssociations = await Task.findByPk(task.id, {
+        const taskWithAssociations = await taskRepository.findById(task.id, {
             include: TASK_INCLUDES,
         });
 
@@ -508,17 +483,15 @@ router.patch('/task/:id', requireTaskWriteAccess, async (req, res) => {
 
 router.delete('/task/:id', requireTaskWriteAccess, async (req, res) => {
     try {
-        const task = await Task.findOne({
-            where: { id: req.params.id },
-        });
+        const task = await taskRepository.findById(req.params.id);
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found.' });
         }
 
-        const childTasks = await Task.findAll({
-            where: { recurring_parent_id: req.params.id },
-        });
+        const childTasks = await taskRepository.findRecurringChildren(
+            req.params.id
+        );
 
         if (childTasks.length > 0) {
             const now = new Date();
@@ -564,10 +537,7 @@ router.delete('/task/:id', requireTaskWriteAccess, async (req, res) => {
                 replacements: [req.params.id],
             });
 
-            await Task.update(
-                { recurring_parent_id: null },
-                { where: { recurring_parent_id: req.params.id } }
-            );
+            await taskRepository.clearRecurringParent(req.params.id);
 
             await task.destroy({ force: true });
         } finally {
@@ -628,12 +598,10 @@ router.get('/task/:id/next-iterations', async (req, res) => {
     try {
         const taskId = parseInt(req.params.id);
 
-        const task = await Task.findOne({
-            where: {
-                id: taskId,
-                user_id: req.currentUser.id,
-            },
-        });
+        const task = await taskRepository.findByIdAndUser(
+            taskId,
+            req.currentUser.id
+        );
 
         if (!task) {
             return res.status(404).json({ error: 'Task not found' });
