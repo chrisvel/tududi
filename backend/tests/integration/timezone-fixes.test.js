@@ -216,16 +216,21 @@ describe('Timezone Fixes Integration Tests', () => {
                 .post('/api/task')
                 .send({ name: 'Yesterday Task', due_date: yesterdayInEST });
 
-            // Fetch tasks with metrics
-            const tasksRes = await agent.get('/api/tasks');
+            // Fetch tasks with dashboard lists
+            const tasksRes = await agent.get(
+                '/api/tasks?type=today&include_lists=true'
+            );
 
             expect(tasksRes.statusCode).toBe(200);
 
             // Both tasks should appear in tasks_due_today since they're overdue
-            const { metrics } = tasksRes.body;
-            expect(metrics.tasks_due_today.length).toBeGreaterThanOrEqual(2);
+            expect(tasksRes.body.tasks_due_today.length).toBeGreaterThanOrEqual(
+                2
+            );
 
-            const taskNames = metrics.tasks_due_today.map((task) => task.name);
+            const taskNames = tasksRes.body.tasks_due_today.map(
+                (task) => task.name
+            );
             expect(taskNames).toContain('Today Task');
             expect(taskNames).toContain('Yesterday Task');
         });

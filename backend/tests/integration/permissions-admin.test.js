@@ -174,22 +174,24 @@ describe('Admin Permissions - Resource Visibility', () => {
                 is_completed: false,
             });
 
-            // Admin fetches tasks with metrics
-            const res = await adminAgent.get('/api/tasks?compute_metrics=true');
-            expect(res.status).toBe(200);
+            // Admin fetches tasks
+            const tasksRes = await adminAgent.get('/api/tasks');
+            expect(tasksRes.status).toBe(200);
 
             // Admin should only see their own tasks in the response
-            expect(res.body.tasks.length).toBe(2);
+            expect(tasksRes.body.tasks.length).toBe(2);
 
             // Verify the admin's task IDs are present
-            const taskIds = res.body.tasks.map((t) => t.id);
+            const taskIds = tasksRes.body.tasks.map((t) => t.id);
             expect(taskIds).toContain(adminTask1.id);
             expect(taskIds).toContain(adminTask2.id);
 
-            // Verify metrics exist and only count admin's tasks
-            expect(res.body.metrics).toBeDefined();
+            // Fetch metrics separately
+            const metricsRes = await adminAgent.get('/api/tasks/metrics');
+            expect(metricsRes.status).toBe(200);
+            expect(metricsRes.body.total_open_tasks).toBeDefined();
             // Admin has 2 tasks total (other users' tasks should not be counted)
-            expect(res.body.metrics.total_open_tasks).toBeLessThanOrEqual(2);
+            expect(metricsRes.body.total_open_tasks).toBeLessThanOrEqual(2);
         });
     });
 });

@@ -23,7 +23,7 @@ interface TaskHeaderProps {
     onTaskClick: (e: React.MouseEvent) => void;
     onToggleCompletion?: () => void;
     hideProjectName?: boolean;
-    onToggleToday?: (taskId: number) => Promise<void>;
+    onToggleToday?: (taskId: number, task?: Task) => Promise<void>;
     onTaskUpdate?: (task: Task) => Promise<void>;
     isOverdue?: boolean;
     // Props for subtasks functionality
@@ -144,7 +144,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
         e.stopPropagation(); // Prevent opening task modal
         if (onToggleToday && task.id) {
             try {
-                await onToggleToday(task.id);
+                await onToggleToday(task.id, task);
             } catch (error) {
                 console.error('Failed to toggle today status:', error);
             }

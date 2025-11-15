@@ -10,7 +10,7 @@ interface TodayPlanProps {
     projects: Project[];
     onTaskUpdate: (task: Task) => Promise<void>;
     onTaskDelete: (taskId: number) => Promise<void>;
-    onToggleToday?: (taskId: number) => Promise<void>;
+    onToggleToday?: (taskId: number, task?: Task) => Promise<void>;
     onTaskCompletionToggle?: (task: Task) => void; // New prop
 }
 

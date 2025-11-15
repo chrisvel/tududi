@@ -1,5 +1,3 @@
-import { Task } from './Task';
-
 export interface WeeklyCompletion {
     date: string;
     count: number;
@@ -10,10 +8,9 @@ export interface Metrics {
     total_open_tasks: number;
     tasks_pending_over_month: number;
     tasks_in_progress_count: number;
-    tasks_in_progress: Task[];
-    tasks_due_today: Task[];
-    today_plan_tasks?: Task[];
-    suggested_tasks: Task[];
-    tasks_completed_today: Task[];
+    tasks_due_today_count: number;
+    today_plan_tasks_count: number;
+    suggested_tasks_count: number;
+    tasks_completed_today_count: number;
     weekly_completions: WeeklyCompletion[];
 }

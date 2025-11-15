@@ -7,6 +7,18 @@ describe('Subtasks Completion Logic Integration', () => {
     let testUser;
     let agent;
 
+    const toggleTaskCompletion = async (taskId) => {
+        const task = await Task.findByPk(taskId);
+        const newStatus =
+            task.status === Task.STATUS.DONE
+                ? task.note
+                    ? Task.STATUS.IN_PROGRESS
+                    : Task.STATUS.NOT_STARTED
+                : Task.STATUS.DONE;
+
+        return agent.patch(`/api/task/${taskId}`).send({ status: newStatus });
+    };
+
     beforeEach(async () => {
         await Task.destroy({ where: {}, truncate: true });
 
@@ -56,10 +68,8 @@ describe('Subtasks Completion Logic Integration', () => {
             });
 
             // Complete parent task
-            await agent
-                .patch(`/api/task/${parentTask.id}/toggle_completion`)
-
-                .expect(200);
+            let res = await toggleTaskCompletion(parentTask.id);
+            expect(res.status).toBe(200);
 
             // Verify parent task is completed
             const updatedParent = await Task.findByPk(parentTask.id);
@@ -109,10 +119,8 @@ describe('Subtasks Completion Logic Integration', () => {
             });
 
             // Undone parent task
-            await agent
-                .patch(`/api/task/${parentTask.id}/toggle_completion`)
-
-                .expect(200);
+            let res = await toggleTaskCompletion(parentTask.id);
+            expect(res.status).toBe(200);
 
             // Verify parent task is undone
             const updatedParent = await Task.findByPk(parentTask.id);
@@ -160,20 +168,16 @@ describe('Subtasks Completion Logic Integration', () => {
             });
 
             // Complete first subtask
-            await agent
-                .patch(`/api/task/${subtask1.id}/toggle_completion`)
-
-                .expect(200);
+            let res = await toggleTaskCompletion(subtask1.id);
+            expect(res.status).toBe(200);
 
             // Parent should still be incomplete
             let updatedParent = await Task.findByPk(parentTask.id);
             expect(updatedParent.status).toBe(Task.STATUS.NOT_STARTED);
 
             // Complete second subtask
-            await agent
-                .patch(`/api/task/${subtask2.id}/toggle_completion`)
-
-                .expect(200);
+            const res2 = await toggleTaskCompletion(subtask2.id);
+            expect(res2.status).toBe(200);
 
             // Parent should now be completed
             updatedParent = await Task.findByPk(parentTask.id);
@@ -211,10 +215,8 @@ describe('Subtasks Completion Logic Integration', () => {
             });
 
             // Undone one subtask
-            await agent
-                .patch(`/api/task/${subtask1.id}/toggle_completion`)
-
-                .expect(200);
+            let res = await toggleTaskCompletion(subtask1.id);
+            expect(res.status).toBe(200);
 
             // Parent should be undone
             const updatedParent = await Task.findByPk(parentTask.id);
@@ -236,10 +238,8 @@ describe('Subtasks Completion Logic Integration', () => {
             });
 
             // Complete parent task directly
-            await agent
-                .patch(`/api/task/${parentTask.id}/toggle_completion`)
-
-                .expect(200);
+            let res = await toggleTaskCompletion(parentTask.id);
+            expect(res.status).toBe(200);
 
             // Parent should be completed normally
             const updatedParent = await Task.findByPk(parentTask.id);
@@ -285,20 +285,16 @@ describe('Subtasks Completion Logic Integration', () => {
             });
 
             // Complete remaining subtasks
-            await agent
-                .patch(`/api/task/${subtask2.id}/toggle_completion`)
-
-                .expect(200);
+            let res = await toggleTaskCompletion(subtask2.id);
+            expect(res.status).toBe(200);
 
             // Parent should still be incomplete
             let updatedParent = await Task.findByPk(parentTask.id);
             expect(updatedParent.status).toBe(Task.STATUS.NOT_STARTED);
 
             // Complete last subtask
-            await agent
-                .patch(`/api/task/${subtask3.id}/toggle_completion`)
-
-                .expect(200);
+            const res2 = await toggleTaskCompletion(subtask3.id);
+            expect(res2.status).toBe(200);
 
             // Parent should now be completed
             updatedParent = await Task.findByPk(parentTask.id);
@@ -324,20 +320,14 @@ describe('Subtasks Completion Logic Integration', () => {
             });
 
             // Rapidly toggle subtask completion
-            await agent
-                .patch(`/api/task/${subtask.id}/toggle_completion`)
+            let res = await toggleTaskCompletion(subtask.id);
+            expect(res.status).toBe(200);
 
-                .expect(200);
+            const res2 = await toggleTaskCompletion(subtask.id);
+            expect(res2.status).toBe(200);
 
-            await agent
-                .patch(`/api/task/${subtask.id}/toggle_completion`)
-
-                .expect(200);
-
-            await agent
-                .patch(`/api/task/${subtask.id}/toggle_completion`)
-
-                .expect(200);
+            const res3 = await toggleTaskCompletion(subtask.id);
+            expect(res3.status).toBe(200);
 
             // Final state should be consistent
             const updatedSubtask = await Task.findByPk(subtask.id);
@@ -415,8 +405,8 @@ describe('Subtasks Completion Logic Integration', () => {
 
             // Simulate concurrent completion
             const promises = [
-                agent.patch(`/api/task/${subtask1.id}/toggle_completion`),
-                agent.patch(`/api/task/${subtask2.id}/toggle_completion`),
+                toggleTaskCompletion(subtask1.id),
+                toggleTaskCompletion(subtask2.id),
             ];
 
             const results = await Promise.all(promises);
@@ -488,7 +478,7 @@ describe('Subtasks Completion Logic Integration', () => {
 
             // Complete all subtasks
             const completionPromises = subtasks.map((subtask) =>
-                agent.patch(`/api/task/${subtask.id}/toggle_completion`)
+                toggleTaskCompletion(subtask.id)
             );
 
             const startTime = Date.now();

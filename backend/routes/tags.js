@@ -7,26 +7,6 @@ const _ = require('lodash');
 const { Op } = require('sequelize');
 const { logError } = require('../services/logService');
 
-/**
- * @swagger
- * /api/tags:
- *   get:
- *     summary: Get all tags
- *     tags: [Tags]
- *     security:
- *       - cookieAuth: []
- *     responses:
- *       200:
- *         description: List of tags
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Tag'
- *       401:
- *         description: Unauthorized
- */
 router.get('/tags', async (req, res) => {
     try {
         const tags = await Tag.findAll({
@@ -72,39 +52,6 @@ router.get('/tag', async (req, res) => {
     }
 });
 
-/**
- * @swagger
- * /api/tag:
- *   post:
- *     summary: Create a new tag
- *     tags: [Tags]
- *     security:
- *       - cookieAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *             properties:
- *               name:
- *                 type: string
- *                 description: Tag name
- *                 example: "urgent"
- *     responses:
- *       201:
- *         description: Tag created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Tag'
- *       400:
- *         description: Invalid request
- *       401:
- *         description: Unauthorized
- */
 router.post('/tag', async (req, res) => {
     try {
         const { name } = req.body;

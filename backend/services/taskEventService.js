@@ -1,4 +1,4 @@
-const { TaskEvent } = require('../models');
+const { TaskEvent, sequelize } = require('../models');
 
 // Helper function to create value object
 const createValueObject = (fieldName, value) =>
@@ -431,6 +431,45 @@ const getTaskTodayMoveCount = async (taskId) => {
     return count;
 };
 
+/**
+ * Get today move counts for multiple tasks in a single query (bulk operation)
+ * @param {Array<number>} taskIds - Array of task IDs
+ * @returns {Promise<Object>} Map of task_id -> count
+ */
+const getTaskTodayMoveCounts = async (taskIds) => {
+    const { Op } = require('sequelize');
+
+    if (!taskIds || taskIds.length === 0) {
+        return {};
+    }
+
+    const results = await TaskEvent.findAll({
+        attributes: [
+            'task_id',
+            [sequelize.fn('COUNT', sequelize.col('task_id')), 'move_count'],
+        ],
+        where: {
+            task_id: {
+                [Op.in]: taskIds,
+            },
+            event_type: 'today_changed',
+            new_value: {
+                [Op.like]: '%"today":true%',
+            },
+        },
+        group: ['task_id'],
+        raw: true,
+    });
+
+    // Convert array to map for O(1) lookup
+    const countMap = {};
+    results.forEach((result) => {
+        countMap[result.task_id] = parseInt(result.move_count, 10);
+    });
+
+    return countMap;
+};
+
 module.exports = {
     logEvent,
     logTaskCreated,
@@ -446,4 +485,5 @@ module.exports = {
     getUserProductivityMetrics,
     getTaskActivitySummary,
     getTaskTodayMoveCount,
+    getTaskTodayMoveCounts,
 };

@@ -95,7 +95,13 @@ async function getAccess(userId, resourceType, resourceUid) {
     return perm ? perm.access_level : ACCESS.NONE;
 }
 
-async function ownershipOrPermissionWhere(resourceType, userId) {
+async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {
+    // Check cache first (request-scoped)
+    const cacheKey = `permission_${resourceType}_${userId}`;
+    if (cache && cache.has(cacheKey)) {
+        return cache.get(cacheKey);
+    }
+
     // Build WHERE clause for resource queries based on ownership and sharing permissions
     // Note: isAdmin expects a UID, but we might receive a numeric ID
     // Get the user's UID if we received a numeric ID
@@ -145,11 +151,13 @@ async function ownershipOrPermissionWhere(resourceType, userId) {
             conditions.push({ project_id: { [Op.in]: sharedProjectIds } }); // Items in shared projects
         }
 
-        return { [Op.or]: conditions };
+        const result = { [Op.or]: conditions };
+        if (cache) cache.set(cacheKey, result);
+        return result;
     }
 
     // For other resource types (projects, etc.), use the original logic
-    return {
+    const result = {
         [Op.or]: [
             { user_id: userId },
             sharedUids.length
@@ -157,6 +165,8 @@ async function ownershipOrPermissionWhere(resourceType, userId) {
                 : { uid: null },
         ],
     };
+    if (cache) cache.set(cacheKey, result);
+    return result;
 }
 
 module.exports = {

@@ -355,9 +355,12 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
-    const handleToggleToday = async (taskId: number): Promise<void> => {
+    const handleToggleToday = async (
+        taskId: number,
+        task?: Task
+    ): Promise<void> => {
         try {
-            const updatedTask = await toggleTaskToday(taskId);
+            const updatedTask = await toggleTaskToday(taskId, task);
             // Update the task in the local state immediately to avoid UI flashing
             setTasks(
                 tasks.map((task) =>

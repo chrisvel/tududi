@@ -109,12 +109,13 @@ describe('Task Editing in Shared Projects', () => {
         });
         const task = taskResponse.body;
 
-        // Shared user should be able to toggle completion
-        const response = await sharedUserAgent.patch(
-            `/api/task/${task.id}/toggle_completion`
-        );
+        // Shared user should be able to update task status
+        const response = await sharedUserAgent
+            .patch(`/api/task/${task.id}`)
+            .send({ status: 2 });
 
         expect(response.status).toBe(200);
+        expect(response.body.status).toBe(2);
     });
 
     test('shared user created task can be edited by them in shared project', async () => {

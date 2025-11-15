@@ -42,28 +42,30 @@ describe('Tasks Permissions', () => {
         expect(res.body.error).toBe('Forbidden');
     });
 
-    it("PATCH /api/task/:id/toggle_completion should return 403 for other user's task", async () => {
+    it("PATCH /api/task/:id (status) should return 403 for other user's task", async () => {
         const otherTask = await Task.create({
             name: 'Other Task',
             user_id: otherUser.id,
+            status: 0,
         });
 
         const res = await agent
-            .patch(`/api/task/${otherTask.id}/toggle_completion`)
-            .send({});
+            .patch(`/api/task/${otherTask.id}`)
+            .send({ status: 2 });
         expect(res.status).toBe(403);
         expect(res.body.error).toBe('Forbidden');
     });
 
-    it("PATCH /api/task/:id/toggle-today should return 403 for other user's task", async () => {
+    it("PATCH /api/task/:id (today) should return 403 for other user's task", async () => {
         const otherTask = await Task.create({
             name: 'Other Task',
             user_id: otherUser.id,
+            today: false,
         });
 
         const res = await agent
-            .patch(`/api/task/${otherTask.id}/toggle-today`)
-            .send({});
+            .patch(`/api/task/${otherTask.id}`)
+            .send({ today: true });
         expect(res.status).toBe(403);
         expect(res.body.error).toBe('Forbidden');
     });

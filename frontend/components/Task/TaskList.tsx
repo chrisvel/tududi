@@ -11,7 +11,7 @@ interface TaskListProps {
     onTaskDelete: (taskId: number) => void;
     projects: Project[];
     hideProjectName?: boolean;
-    onToggleToday?: (taskId: number) => Promise<void>;
+    onToggleToday?: (taskId: number, task?: Task) => Promise<void>;
     showCompletedTasks?: boolean; // New prop
 }
 

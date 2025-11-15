@@ -1,5 +1,9 @@
 const { Task, sequelize } = require('../models');
 const { Op } = require('sequelize');
+const { logError } = require('./logService');
+
+// Simple in-memory lock to prevent concurrent generation per user
+const generationLocks = new Map();
 
 // Helper function for pure calculations
 const addDays = (date, days) => {
@@ -7,6 +11,32 @@ const addDays = (date, days) => {
     result.setDate(result.getDate() + days);
     return result;
 };
+
+/**
+ * Generate recurring tasks with locking to prevent concurrent execution
+ * @param {number} userId - User ID to generate tasks for
+ * @param {number} lookAheadDays - Number of days to look ahead (default: 7)
+ * @returns {Promise<Array>} Array of newly created tasks
+ */
+const generateRecurringTasksWithLock = async (userId, lookAheadDays = 7) => {
+    const lockKey = `user_${userId}`;
+
+    // Check if generation is already in progress for this user
+    if (generationLocks.get(lockKey)) {
+        return []; // Already generating, skip this request
+    }
+
+    try {
+        generationLocks.set(lockKey, true);
+        return await generateRecurringTasks(userId, lookAheadDays);
+    } catch (error) {
+        logError('Error generating recurring tasks with lock:', error);
+        throw error;
+    } finally {
+        generationLocks.delete(lockKey);
+    }
+};
+
 /**
  * Generate new tasks from recurring task templates
  * @param {number} userId - Optional user ID to limit processing
@@ -549,6 +579,7 @@ const handleTaskCompletion = async (task) => {
 
 module.exports = {
     generateRecurringTasks,
+    generateRecurringTasksWithLock,
     processRecurringTask,
     createTaskInstance,
     calculateNextDueDate,
