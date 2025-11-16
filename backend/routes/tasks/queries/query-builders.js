@@ -128,19 +128,22 @@ async function filterTasksByParams(
                 },
                 {
                     [Op.and]: [
+                        { recurrence_type: { [Op.ne]: 'none' } },
+                        { recurrence_type: { [Op.ne]: null } },
+                        { recurring_parent_id: null },
+                        { today: true },
+                    ],
+                },
+                {
+                    [Op.and]: [
                         { recurring_parent_id: { [Op.ne]: null } },
                         {
-                            [Op.or]: [
-                                { today: true },
-                                {
-                                    due_date: {
-                                        [Op.between]: [
-                                            todayBounds.start,
-                                            todayBounds.end,
-                                        ],
-                                    },
-                                },
-                            ],
+                            due_date: {
+                                [Op.between]: [
+                                    todayBounds.start,
+                                    todayBounds.end,
+                                ],
+                            },
                         },
                     ],
                 },
