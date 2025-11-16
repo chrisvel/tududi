@@ -6,7 +6,7 @@ import DiscardChangesDialog from '../Shared/DiscardChangesDialog';
 import { useToast } from '../Shared/ToastContext';
 import { Project } from '../../entities/Project';
 import { useStore } from '../../store/useStore';
-import { fetchTaskById } from '../../utils/tasksService';
+import { fetchTaskByUid } from '../../utils/tasksService';
 import {
     analyzeTaskName,
     TaskAnalysis,
@@ -100,7 +100,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const expandedSections = {
         ...baseSections,
         subtasks: baseSections.subtasks || autoFocusSubtasks,
-        recurrence: baseSections.recurrence || !!task.recurring_parent_id, // Auto-expand for child tasks
+        recurrence: baseSections.recurrence || !!task.recurring_parent_uid, // Auto-expand for child tasks
     };
 
     const { showSuccessToast, showErrorToast } = useToast();
@@ -179,11 +179,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
     // Handle parent task fetching separately
     useEffect(() => {
         const fetchParentTask = async () => {
-            if (task.recurring_parent_id && isOpen) {
+            if (task.recurring_parent_uid && isOpen) {
                 setParentTaskLoading(true);
                 try {
-                    const parent = await fetchTaskById(
-                        task.recurring_parent_id
+                    const parent = await fetchTaskByUid(
+                        task.recurring_parent_uid
                     );
                     setParentTask(parent);
                 } catch (error) {
@@ -198,7 +198,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         };
 
         fetchParentTask();
-    }, [task.recurring_parent_id, isOpen]);
+    }, [task.recurring_parent_uid, isOpen]);
 
     // Fetch task intelligence setting from user profile
     useEffect(() => {
@@ -934,7 +934,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                             >
                                                 <ArrowPathIcon className="h-5 w-5" />
                                                 {(formData.recurrence_type ||
-                                                    formData.recurring_parent_id) && (
+                                                    formData.recurring_parent_uid) && (
                                                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                 )}
                                             </button>

@@ -252,11 +252,11 @@ const TaskDetails: React.FC = () => {
     // Load parent task for child tasks (recurring instances)
     useEffect(() => {
         const loadParentTask = async () => {
-            if (task?.recurring_parent_id) {
+            if (task?.recurring_parent_uid) {
                 try {
                     setLoadingParent(true);
-                    const parent = await fetchTaskById(
-                        task.recurring_parent_id
+                    const parent = await fetchTaskByUid(
+                        task.recurring_parent_uid
                     );
                     setParentTask(parent);
                 } catch (error) {
@@ -269,7 +269,7 @@ const TaskDetails: React.FC = () => {
         };
 
         loadParentTask();
-    }, [task?.recurring_parent_id]);
+    }, [task?.recurring_parent_uid]);
 
     const handleEdit = (e?: React.MouseEvent) => {
         if (e) {

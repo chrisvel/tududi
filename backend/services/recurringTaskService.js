@@ -73,8 +73,10 @@ const processRecurringTask = async (task, now, lookAheadDate = null) => {
         return newTasks;
     }
 
-    if (!task.last_generated_date && task.due_date) {
-        const originalDueDate = new Date(task.due_date.getTime());
+    if (!task.last_generated_date) {
+        const originalDueDate = task.due_date
+            ? new Date(task.due_date.getTime())
+            : new Date(now.getTime());
 
         if (originalDueDate <= generateUpTo) {
             const startOfDay = new Date(originalDueDate);
