@@ -1,18 +1,19 @@
 import { Project } from '../entities/Project';
 import { handleAuthResponse } from './authUtils';
+import { getApiPath } from '../config/paths';
 
 export const fetchProjects = async (
     stateFilter = 'all',
     areaFilter = ''
 ): Promise<Project[]> => {
-    let url = `/api/projects`;
+    let url = 'projects';
     const params = new URLSearchParams();
 
     if (stateFilter !== 'all') params.append('state', stateFilter);
     if (areaFilter) params.append('area', areaFilter);
     if (params.toString()) url += `?${params.toString()}`;
 
-    const response = await fetch(url, {
+    const response = await fetch(getApiPath(url), {
         credentials: 'include',
         headers: { Accept: 'application/json' },
     });
@@ -27,7 +28,7 @@ export const fetchGroupedProjects = async (
     stateFilter = 'all',
     areaFilter = ''
 ): Promise<Record<string, Project[]>> => {
-    let url = `/api/projects`;
+    let url = 'projects';
     const params = new URLSearchParams();
 
     params.append('grouped', 'true');
@@ -35,7 +36,7 @@ export const fetchGroupedProjects = async (
     if (areaFilter) params.append('area', areaFilter);
     if (params.toString()) url += `?${params.toString()}`;
 
-    const response = await fetch(url, {
+    const response = await fetch(getApiPath(url), {
         credentials: 'include',
         headers: { Accept: 'application/json' },
     });
@@ -47,7 +48,7 @@ export const fetchGroupedProjects = async (
 };
 
 export const fetchProjectById = async (projectId: string): Promise<Project> => {
-    const response = await fetch(`/api/project/${projectId}`, {
+    const response = await fetch(getApiPath(`project/${projectId}`), {
         credentials: 'include',
         headers: { Accept: 'application/json' },
     });
@@ -59,7 +60,7 @@ export const fetchProjectById = async (projectId: string): Promise<Project> => {
 export const createProject = async (
     projectData: Partial<Project>
 ): Promise<Project> => {
-    const response = await fetch('/api/project', {
+    const response = await fetch(getApiPath('project'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -77,7 +78,7 @@ export const updateProject = async (
     projectUid: string,
     projectData: Partial<Project>
 ): Promise<Project> => {
-    const response = await fetch(`/api/project/${projectUid}`, {
+    const response = await fetch(getApiPath(`project/${projectUid}`), {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -98,7 +99,7 @@ export const deleteProject = async (projectUid: string): Promise<void> => {
 
     console.log('Attempting to delete project with UID:', projectUid);
 
-    const response = await fetch(`/api/project/${projectUid}`, {
+    const response = await fetch(getApiPath(`project/${projectUid}`), {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -120,7 +121,7 @@ export const deleteProject = async (projectUid: string): Promise<void> => {
 };
 
 export const fetchProjectBySlug = async (uidSlug: string): Promise<Project> => {
-    const response = await fetch(`/api/project/${uidSlug}`, {
+    const response = await fetch(getApiPath(`project/${uidSlug}`), {
         credentials: 'include',
         headers: {
             Accept: 'application/json',

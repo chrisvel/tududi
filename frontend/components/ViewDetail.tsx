@@ -17,6 +17,7 @@ import TaskList from './Task/TaskList';
 import ProjectItem from './Project/ProjectItem';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import { searchUniversal } from '../utils/searchService';
+import { getApiPath } from '../config/paths';
 
 interface View {
     id: number;
@@ -112,7 +113,7 @@ const ViewDetail: React.FC = () => {
 
         try {
             // Fetch view details
-            const viewResponse = await fetch(`/api/views/${uid}`, {
+            const viewResponse = await fetch(getApiPath(`views/${uid}`), {
                 credentials: 'include',
             });
             if (!viewResponse.ok) {
@@ -163,7 +164,7 @@ const ViewDetail: React.FC = () => {
     // Task handlers
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            const response = await fetch(`/api/task/${updatedTask.id}`, {
+            const response = await fetch(getApiPath(`task/${updatedTask.id}`), {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedTask),
@@ -183,7 +184,7 @@ const ViewDetail: React.FC = () => {
 
     const handleTaskDelete = async (taskId: number) => {
         try {
-            const response = await fetch(`/api/task/${taskId}`, {
+            const response = await fetch(getApiPath(`task/${taskId}`), {
                 method: 'DELETE',
             });
 
@@ -245,7 +246,7 @@ const ViewDetail: React.FC = () => {
         if (!view || !editedName.trim()) return;
 
         try {
-            const response = await fetch(`/api/views/${view.uid}`, {
+            const response = await fetch(getApiPath(`views/${view.uid}`), {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -275,7 +276,7 @@ const ViewDetail: React.FC = () => {
         if (!view) return;
 
         try {
-            const response = await fetch(`/api/views/${view.uid}`, {
+            const response = await fetch(getApiPath(`views/${view.uid}`), {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -299,7 +300,7 @@ const ViewDetail: React.FC = () => {
         if (!view) return;
 
         try {
-            const response = await fetch(`/api/views/${view.uid}`, {
+            const response = await fetch(getApiPath(`views/${view.uid}`), {
                 method: 'DELETE',
                 credentials: 'include',
             });

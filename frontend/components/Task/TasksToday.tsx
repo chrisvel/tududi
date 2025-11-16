@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { el, enUS, es, ja, uk, de } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
+import { getLocalesPath, getApiPath } from '../../config/paths';
 import {
     ClipboardDocumentListIcon,
     ArrowPathIcon,
@@ -248,7 +249,7 @@ const TasksToday: React.FC = () => {
 
             // Load all profile settings in a single API call instead of multiple calls
             try {
-                const response = await fetch('/api/profile', {
+                const response = await fetch(getApiPath('profile'), {
                     credentials: 'include',
                 });
                 if (response.ok) {
@@ -370,7 +371,7 @@ const TasksToday: React.FC = () => {
             // Load daily quote from translations
             try {
                 const response = await fetch(
-                    `/locales/${i18n.language}/quotes.json`
+                    getLocalesPath(`${i18n.language}/quotes.json`)
                 );
                 if (response.ok) {
                     const data = await response.json();
@@ -388,7 +389,7 @@ const TasksToday: React.FC = () => {
                 } else {
                     // Fallback to English if language file doesn't exist
                     const fallbackResponse = await fetch(
-                        '/locales/en/quotes.json'
+                        getLocalesPath('en/quotes.json')
                     );
                     if (fallbackResponse.ok) {
                         const fallbackData = await fallbackResponse.json();

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { getApiPath, getAssetPath } from '../config/paths';
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -24,7 +25,7 @@ const Login: React.FC = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch(getApiPath('login'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -137,7 +138,7 @@ const Login: React.FC = () => {
                     {/* Right side - Graphic */}
                     <div className="hidden lg:flex items-center justify-center">
                         <img
-                            src="/login-gfx.png"
+                            src={getAssetPath('login-gfx.png')}
                             alt="Login illustration"
                             className="max-w-md w-full h-auto"
                         />

@@ -1,3 +1,5 @@
+import { getApiPath } from '../config/paths';
+
 interface SearchParams {
     query: string;
     filters?: string[];
@@ -43,13 +45,16 @@ export const searchUniversal = async (
             queryParams.append('tags', params.tags.join(','));
         }
 
-        const response = await fetch(`/api/search?${queryParams.toString()}`, {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+        const response = await fetch(
+            getApiPath(`search?${queryParams.toString()}`),
+            {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
 
         if (!response.ok) {
             throw new Error('Search request failed');

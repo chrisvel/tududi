@@ -28,6 +28,7 @@ import {
 } from './utils/projectsService';
 import { createTask, updateTask } from './utils/tasksService';
 import { isAuthError } from './utils/authUtils';
+import { Link } from 'react-router-dom';
 
 interface LayoutProps {
     currentUser: User;
@@ -204,12 +205,12 @@ const Layout: React.FC<LayoutProps> = ({
                 const taskLink = (
                     <span>
                         {t('task.updated', 'Task')}{' '}
-                        <a
-                            href="/tasks"
+                        <Link
+                            to="/tasks"
                             className="text-green-200 underline hover:text-green-100"
                         >
                             {taskData.name}
-                        </a>{' '}
+                        </Link>{' '}
                         {t('task.updatedSuccessfully', 'updated successfully!')}
                     </span>
                 );

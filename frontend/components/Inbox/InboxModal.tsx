@@ -13,6 +13,7 @@ import { XMarkIcon, TagIcon, FolderIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
 import { Link } from 'react-router-dom';
 import { isUrl } from '../../utils/urlService';
+import { getApiPath } from '../../config/paths';
 // import UrlPreview from "../Shared/UrlPreview";
 // import { UrlTitleResult } from "../../utils/urlService";
 
@@ -697,7 +698,7 @@ const InboxModal: React.FC<InboxModalProps> = ({
 
         try {
             setIsAnalyzing(true);
-            const response = await fetch('/api/inbox/analyze-text', {
+            const response = await fetch(getApiPath('inbox/analyze-text'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

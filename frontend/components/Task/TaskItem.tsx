@@ -131,6 +131,7 @@ import { isTaskOverdue } from '../../utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useStore } from '../../store/useStore';
+import { getApiPath } from '../../config/paths';
 
 interface TaskItemProps {
     task: Task;
@@ -289,7 +290,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const handleSave = async (updatedTask: Task) => {
         try {
             await onTaskUpdate(updatedTask);
-            modalStore.closeTaskModal();
+            // Let TaskModal invoke onClose so unsaved-change checks remain consistent
         } catch (error: any) {
             console.error('Task update failed:', error);
             showErrorToast(t('errors.permissionDenied', 'Permission denied'));
@@ -316,7 +317,6 @@ const TaskItem: React.FC<TaskItemProps> = ({
     const handleDelete = async () => {
         if (task.id) {
             try {
-                modalStore.closeTaskModal();
                 await onTaskDelete(task.id);
             } catch (error: any) {
                 console.error('Task delete failed:', error);
@@ -378,7 +378,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                         try {
                             // Refetch the current task with updated subtasks
                             const updatedTaskResponse = await fetch(
-                                `/api/task/${task.id}`
+                                getApiPath(`task/${task.id}`)
                             );
                             if (updatedTaskResponse.ok) {
                                 const updatedTaskData =
@@ -404,7 +404,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
 
     const handleCreateProject = async (name: string): Promise<Project> => {
         try {
-            const response = await fetch('/api/project', {
+            const response = await fetch(getApiPath('project'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

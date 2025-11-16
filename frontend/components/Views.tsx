@@ -8,6 +8,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import ConfirmDialog from './Shared/ConfirmDialog';
+import { getApiPath } from '../config/paths';
 
 interface View {
     id: number;
@@ -36,7 +37,7 @@ const Views: React.FC = () => {
 
     const fetchViews = async () => {
         try {
-            const response = await fetch('/api/views', {
+            const response = await fetch(getApiPath('views'), {
                 credentials: 'include',
             });
             if (response.ok) {
@@ -53,10 +54,13 @@ const Views: React.FC = () => {
     const handleDeleteView = async () => {
         if (!viewToDelete) return;
         try {
-            const response = await fetch(`/api/views/${viewToDelete.uid}`, {
-                method: 'DELETE',
-                credentials: 'include',
-            });
+            const response = await fetch(
+                getApiPath(`views/${viewToDelete.uid}`),
+                {
+                    method: 'DELETE',
+                    credentials: 'include',
+                }
+            );
             if (response.ok) {
                 setViews(views.filter((v) => v.uid !== viewToDelete.uid));
                 // Notify sidebar to refresh
@@ -72,7 +76,7 @@ const Views: React.FC = () => {
 
     const togglePin = async (view: View) => {
         try {
-            const response = await fetch(`/api/views/${view.uid}`, {
+            const response = await fetch(getApiPath(`views/${view.uid}`), {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

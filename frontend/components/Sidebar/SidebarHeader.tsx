@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { getAssetPath } from '../../config/paths';
 
 interface SidebarHeaderProps {
     isDarkMode: boolean;
@@ -7,20 +9,20 @@ interface SidebarHeaderProps {
 const SidebarHeader: React.FC<SidebarHeaderProps> = ({ isDarkMode }) => {
     return (
         <div className="flex justify-center mb-6 mt-2">
-            <a
-                href="/"
+            <Link
+                to="/"
                 className="flex justify-center items-center mb-2 no-underline"
             >
                 <img
-                    src={
+                    src={getAssetPath(
                         isDarkMode
-                            ? '/wide-logo-light.png'
-                            : '/wide-logo-dark.png'
-                    }
+                            ? 'wide-logo-light.png'
+                            : 'wide-logo-dark.png'
+                    )}
                     alt="tududi"
                     className="h-12 w-auto"
                 />
-            </a>
+            </Link>
         </div>
     );
 };

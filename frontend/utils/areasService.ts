@@ -1,8 +1,9 @@
 import { Area } from '../entities/Area';
 import { handleAuthResponse } from './authUtils';
+import { getApiPath } from '../config/paths';
 
 export const fetchAreas = async (): Promise<Area[]> => {
-    const response = await fetch('/api/areas', {
+    const response = await fetch(getApiPath('areas'), {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
@@ -13,7 +14,7 @@ export const fetchAreas = async (): Promise<Area[]> => {
 };
 
 export const createArea = async (areaData: Partial<Area>): Promise<Area> => {
-    const response = await fetch('/api/areas', {
+    const response = await fetch(getApiPath('areas'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -31,7 +32,7 @@ export const updateArea = async (
     areaUid: string,
     areaData: Partial<Area>
 ): Promise<Area> => {
-    const response = await fetch(`/api/areas/${areaUid}`, {
+    const response = await fetch(getApiPath(`areas/${areaUid}`), {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -46,7 +47,7 @@ export const updateArea = async (
 };
 
 export const deleteArea = async (areaUid: string): Promise<void> => {
-    const response = await fetch(`/api/areas/${areaUid}`, {
+    const response = await fetch(getApiPath(`areas/${areaUid}`), {
         method: 'DELETE',
         credentials: 'include',
         headers: {

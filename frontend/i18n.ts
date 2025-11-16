@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { getLocalesPath } from './config/paths';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -84,7 +85,7 @@ i18nInstance
         defaultNS: 'translation',
         ns: ['translation'],
         backend: {
-            loadPath: '/locales/{{lng}}/{{ns}}.json',
+            loadPath: 'locales/{{lng}}/{{ns}}.json',
             queryStringParams: { v: '1' },
             requestOptions: {
                 cache: 'default',
@@ -94,18 +95,11 @@ i18nInstance
         },
     })
     .then(() => {
-        const loadPath = isDevelopment
-            ? `./locales/${i18n.language}/translation.json`
-            : `/locales/${i18n.language}/translation.json`;
+        const loadPath = getLocalesPath(`${i18n.language}/translation.json`);
 
         fetch(loadPath)
             .then((response) => {
                 if (!response.ok) {
-                    if (isDevelopment) {
-                        return fetch(
-                            `/locales/${i18n.language}/translation.json`
-                        );
-                    }
                     throw new Error(
                         `Failed to fetch translation: ${response.status}`
                     );
@@ -125,13 +119,13 @@ i18nInstance
                 if (isDevelopment) {
                     try {
                         setTimeout(() => {
-                            fetch(
-                                `/locales/${i18n.language}/translation.json`,
-                                {
-                                    headers: { Accept: 'application/json' },
-                                    mode: 'cors',
-                                }
-                            )
+                            const retryPath = getLocalesPath(
+                                `${i18n.language}/translation.json`
+                            );
+                            fetch(retryPath, {
+                                headers: { Accept: 'application/json' },
+                                mode: 'cors',
+                            })
                                 .then((res) => res.json())
                                 .then((data) => {
                                     i18n.addResourceBundle(
@@ -182,17 +176,9 @@ i18n.on('languageChanged', (lng) => {
     };
 
     if (!i18n.hasResourceBundle(lng, 'translation')) {
-        const loadPath = isDevelopment
-            ? `./locales/${lng}/translation.json`
-            : `/locales/${lng}/translation.json`;
+        const loadPath = getLocalesPath(`${lng}/translation.json`);
 
         fetch(loadPath)
-            .then((response) => {
-                if (!response.ok) {
-                    return fetch(`/locales/${lng}/translation.json`);
-                }
-                return response;
-            })
             .then((response) => response.json())
             .then((data) => {
                 if (data) {

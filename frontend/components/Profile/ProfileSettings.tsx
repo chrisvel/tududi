@@ -6,6 +6,7 @@ import React, {
     useCallback,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getLocalesPath, getApiPath } from '../../config/paths';
 import {
     InformationCircleIcon,
     EyeIcon,
@@ -255,7 +256,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             const resources = i18n.getResourceBundle(value, 'translation');
 
             if (!resources || Object.keys(resources).length === 0) {
-                const loadPath = `/locales/${value}/translation.json`;
+                const loadPath = getLocalesPath(`${value}/translation.json`);
                 try {
                     const response = await fetch(loadPath);
                     if (response.ok) {
@@ -438,7 +439,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         const fetchProfile = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('/api/profile');
+                const response = await fetch(getApiPath('profile'));
 
                 if (!response.ok) {
                     throw new Error(
@@ -504,7 +505,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
         const fetchPollingStatus = async () => {
             try {
-                const response = await fetch('/api/telegram/polling-status');
+                const response = await fetch(
+                    getApiPath('telegram/polling-status')
+                );
 
                 if (!response.ok) {
                     throw new Error(
@@ -535,15 +538,18 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             if (profile?.telegram_bot_token) {
                 try {
                     // Fetch bot info
-                    const setupResponse = await fetch('/api/telegram/setup', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            token: profile.telegram_bot_token,
-                        }),
-                    });
+                    const setupResponse = await fetch(
+                        getApiPath('telegram/setup'),
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                token: profile.telegram_bot_token,
+                            }),
+                        }
+                    );
 
                     if (setupResponse.ok) {
                         const setupData = await setupResponse.json();
@@ -559,7 +565,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                     // Also fetch and auto-start polling status
                     const pollingResponse = await fetch(
-                        '/api/telegram/polling-status',
+                        getApiPath('telegram/polling-status'),
                         {
                             credentials: 'include',
                             headers: {
@@ -639,7 +645,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 throw new Error(t('profile.invalidTelegramToken'));
             }
 
-            const response = await fetch('/api/telegram/setup', {
+            const response = await fetch(getApiPath('telegram/setup'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -689,7 +695,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 // Send welcome message on first setup
                 if (profile?.telegram_chat_id) {
                     try {
-                        await fetch('/api/telegram/send-welcome', {
+                        await fetch(getApiPath('telegram/send-welcome'), {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -720,7 +726,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
     const handleStartPolling = async () => {
         try {
-            const response = await fetch('/api/telegram/start-polling', {
+            const response = await fetch(getApiPath('telegram/start-polling'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -753,7 +759,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
     const handleStopPolling = async () => {
         try {
-            const response = await fetch('/api/telegram/stop-polling', {
+            const response = await fetch(getApiPath('telegram/stop-polling'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -813,7 +819,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 delete dataToSend.confirmPassword;
             }
 
-            const response = await fetch('/api/profile', {
+            const response = await fetch(getApiPath('profile'), {
                 method: 'PATCH',
                 credentials: 'include',
                 headers: {
@@ -2140,7 +2146,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                         onClick={async () => {
                                             try {
                                                 const response = await fetch(
-                                                    '/api/profile/task-summary/send-now',
+                                                    getApiPath(
+                                                        'profile/task-summary/send-now'
+                                                    ),
                                                     {
                                                         method: 'POST',
                                                         headers: {

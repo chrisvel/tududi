@@ -4,9 +4,10 @@ import {
     getDefaultHeaders,
     getPostHeaders,
 } from './authUtils';
+import { getApiPath } from '../config/paths';
 
 export const fetchNotes = async (): Promise<Note[]> => {
-    const response = await fetch('/api/notes', {
+    const response = await fetch(getApiPath('notes'), {
         credentials: 'include',
         headers: getDefaultHeaders(),
     });
@@ -16,7 +17,7 @@ export const fetchNotes = async (): Promise<Note[]> => {
 };
 
 export const createNote = async (noteData: Note): Promise<Note> => {
-    const response = await fetch('/api/note', {
+    const response = await fetch(getApiPath('note'), {
         method: 'POST',
         credentials: 'include',
         headers: getPostHeaders(),
@@ -48,7 +49,7 @@ export const updateNote = async (
     // Use the provided noteUid
     const noteIdentifier = noteUid;
 
-    const response = await fetch(`/api/note/${noteIdentifier}`, {
+    const response = await fetch(getApiPath(`note/${noteIdentifier}`), {
         method: 'PATCH',
         credentials: 'include',
         headers: getPostHeaders(),
@@ -60,7 +61,7 @@ export const updateNote = async (
 };
 
 export const deleteNote = async (noteUid: string): Promise<void> => {
-    const response = await fetch(`/api/note/${noteUid}`, {
+    const response = await fetch(getApiPath(`note/${noteUid}`), {
         method: 'DELETE',
         credentials: 'include',
         headers: getDefaultHeaders(),
@@ -70,7 +71,7 @@ export const deleteNote = async (noteUid: string): Promise<void> => {
 };
 
 export const fetchNoteBySlug = async (uidSlug: string): Promise<Note> => {
-    const response = await fetch(`/api/note/${uidSlug}`, {
+    const response = await fetch(getApiPath(`note/${uidSlug}`), {
         credentials: 'include',
         headers: getDefaultHeaders(),
     });
