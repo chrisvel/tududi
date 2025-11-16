@@ -6,6 +6,7 @@ const {
     getTaskTodayMoveCount,
     getTaskTodayMoveCounts,
 } = require('../../../services/taskEventService');
+const taskRepository = require('../../../repositories/TaskRepository');
 
 async function serializeTask(
     task,
@@ -54,11 +55,23 @@ async function serializeTask(
         }
     }
 
+    let recurringParentUid = null;
+    if (taskJson.recurring_parent_id) {
+        const parentTask = await taskRepository.findById(
+            taskJson.recurring_parent_id,
+            {
+                attributes: ['uid'],
+            }
+        );
+        recurringParentUid = parentTask?.uid || null;
+    }
+
     return {
         ...taskWithoutSubtasks,
         name: displayName,
         original_name: taskJson.name,
         uid: task.uid,
+        recurring_parent_uid: recurringParentUid,
         due_date: processDueDateForResponse(taskJson.due_date, safeTimezone),
         tags: taskJson.Tags || [],
         Project: taskJson.Project

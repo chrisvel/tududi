@@ -4,6 +4,7 @@ const permissionsService = require('../../../services/permissionsService');
 const {
     getSafeTimezone,
     getUpcomingRangeInUTC,
+    getTodayBoundsInUTC,
 } = require('../../../utils/timezone-utils');
 
 async function filterTasksByParams(
@@ -101,8 +102,10 @@ async function filterTasksByParams(
     ];
 
     switch (params.type) {
-        case 'today':
-            whereClause.recurring_parent_id = null;
+        case 'today': {
+            const safeTimezone = getSafeTimezone(userTimezone);
+            const todayBounds = getTodayBoundsInUTC(safeTimezone);
+
             whereClause.status = {
                 [Op.notIn]: [
                     Task.STATUS.DONE,
@@ -111,7 +114,42 @@ async function filterTasksByParams(
                     'archived',
                 ],
             };
+            whereClause[Op.or] = [
+                {
+                    [Op.and]: [
+                        {
+                            [Op.or]: [
+                                { recurrence_type: 'none' },
+                                { recurrence_type: null },
+                            ],
+                        },
+                        { recurring_parent_id: null },
+                    ],
+                },
+                {
+                    [Op.and]: [
+                        { recurrence_type: { [Op.ne]: 'none' } },
+                        { recurrence_type: { [Op.ne]: null } },
+                        { recurring_parent_id: null },
+                        { today: true },
+                    ],
+                },
+                {
+                    [Op.and]: [
+                        { recurring_parent_id: { [Op.ne]: null } },
+                        {
+                            due_date: {
+                                [Op.between]: [
+                                    todayBounds.start,
+                                    todayBounds.end,
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ];
             break;
+        }
         case 'upcoming': {
             const safeTimezone = getSafeTimezone(userTimezone);
             const upcomingRange = getUpcomingRangeInUTC(safeTimezone, 7);

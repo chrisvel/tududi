@@ -19,7 +19,10 @@ const { logEvent } = require('../../services/taskEventService');
 const { serializeTask, serializeTasks } = require('./core/serializers');
 const { updateTaskTags } = require('./operations/tags');
 const { filterTasksByParams } = require('./queries/query-builders');
-const { getSafeTimezone } = require('../../utils/timezone-utils');
+const {
+    getSafeTimezone,
+    getTodayBoundsInUTC,
+} = require('../../utils/timezone-utils');
 
 const {
     validateProjectAccess,
@@ -76,7 +79,36 @@ router.get('/tasks', async (req, res) => {
 
         await handleRecurringTasks(userId, type);
 
-        const tasks = await filterTasksByParams(req.query, userId, timezone);
+        let tasks = await filterTasksByParams(req.query, userId, timezone);
+
+        // For type=today, exclude templates that have instances with due_date in today's range
+        if (type === 'today') {
+            const safeTimezone = getSafeTimezone(timezone);
+            const todayBounds = getTodayBoundsInUTC(safeTimezone);
+
+            // Find all instances with due_date in today's range
+            const instancesForToday = tasks.filter(
+                (t) =>
+                    t.recurring_parent_id &&
+                    t.due_date &&
+                    new Date(t.due_date) >= todayBounds.start &&
+                    new Date(t.due_date) <= todayBounds.end
+            );
+
+            // Get parent IDs of those instances
+            const parentIdsWithTodayInstances = new Set(
+                instancesForToday.map((t) => t.recurring_parent_id)
+            );
+
+            // Filter out templates that have instances for today
+            tasks = tasks.filter(
+                (t) =>
+                    !t.recurrence_type ||
+                    t.recurrence_type === 'none' ||
+                    t.recurring_parent_id !== null ||
+                    !parentIdsWithTodayInstances.has(t.id)
+            );
+        }
 
         const groupedTasks = await buildGroupedTasks(
             tasks,

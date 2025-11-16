@@ -8,6 +8,8 @@ const { computeTaskMetrics } = require('../queries/metrics-computation');
 async function handleRecurringTasks(userId, queryType) {
     if (queryType === 'upcoming') {
         await generateRecurringTasksWithLock(userId, 7);
+    } else if (queryType === 'today') {
+        await generateRecurringTasksWithLock(userId, 1);
     }
 }
 
