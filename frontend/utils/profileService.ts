@@ -1,4 +1,5 @@
 import { handleAuthResponse } from './authUtils';
+import { getApiPath } from '../config/paths';
 
 interface Profile {
     id: number;
@@ -34,7 +35,7 @@ interface TelegramBotInfo {
 }
 
 export const fetchProfile = async (): Promise<Profile> => {
-    const response = await fetch('/api/profile', {
+    const response = await fetch(getApiPath('profile'), {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
@@ -47,7 +48,7 @@ export const fetchProfile = async (): Promise<Profile> => {
 export const updateProfile = async (
     profileData: Partial<Profile>
 ): Promise<Profile> => {
-    const response = await fetch('/api/profile', {
+    const response = await fetch(getApiPath('profile'), {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -61,7 +62,7 @@ export const updateProfile = async (
 };
 
 export const fetchSchedulerStatus = async (): Promise<SchedulerStatus> => {
-    const response = await fetch('/api/profile/task-summary/status', {
+    const response = await fetch(getApiPath('profile/task-summary/status'), {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
@@ -72,7 +73,7 @@ export const fetchSchedulerStatus = async (): Promise<SchedulerStatus> => {
 };
 
 export const sendTaskSummaryNow = async (): Promise<any> => {
-    const response = await fetch('/api/profile/task-summary/send-now', {
+    const response = await fetch(getApiPath('profile/task-summary/send-now'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -85,7 +86,7 @@ export const sendTaskSummaryNow = async (): Promise<any> => {
 };
 
 export const fetchTelegramPollingStatus = async (): Promise<any> => {
-    const response = await fetch('/api/telegram/polling-status', {
+    const response = await fetch(getApiPath('telegram/polling-status'), {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
@@ -99,7 +100,7 @@ export const setupTelegram = async (
     botToken: string,
     chatId: string
 ): Promise<TelegramBotInfo> => {
-    const response = await fetch('/api/telegram/setup', {
+    const response = await fetch(getApiPath('telegram/setup'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -116,7 +117,7 @@ export const setupTelegram = async (
 };
 
 export const startTelegramPolling = async (): Promise<any> => {
-    const response = await fetch('/api/telegram/start-polling', {
+    const response = await fetch(getApiPath('telegram/start-polling'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -129,7 +130,7 @@ export const startTelegramPolling = async (): Promise<any> => {
 };
 
 export const stopTelegramPolling = async (): Promise<any> => {
-    const response = await fetch('/api/telegram/stop-polling', {
+    const response = await fetch(getApiPath('telegram/stop-polling'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -145,7 +146,7 @@ export const testTelegram = async (
     userId: number,
     message: string
 ): Promise<any> => {
-    const response = await fetch(`/api/telegram/test/${userId}`, {
+    const response = await fetch(getApiPath(`telegram/test/${userId}`), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -159,7 +160,7 @@ export const testTelegram = async (
 };
 
 export const toggleTaskSummary = async (): Promise<any> => {
-    const response = await fetch('/api/profile/task-summary/toggle', {
+    const response = await fetch(getApiPath('profile/task-summary/toggle'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -174,7 +175,7 @@ export const toggleTaskSummary = async (): Promise<any> => {
 export const updateTaskSummaryFrequency = async (
     frequency: string
 ): Promise<any> => {
-    const response = await fetch('/api/profile/task-summary/frequency', {
+    const response = await fetch(getApiPath('profile/task-summary/frequency'), {
         method: 'POST',
         credentials: 'include',
         headers: {

@@ -16,6 +16,8 @@ import { el, enUS, es, ja, uk, de } from 'date-fns/locale';
 import CalendarMonthView from './Calendar/CalendarMonthView';
 import CalendarWeekView from './Calendar/CalendarWeekView';
 import CalendarDayView from './Calendar/CalendarDayView';
+import { getApiPath } from '../config/paths';
+import { Link } from 'react-router-dom';
 
 const getLocale = (language: string) => {
     switch (language) {
@@ -94,7 +96,7 @@ const Calendar: React.FC = () => {
 
     const checkGoogleCalendarStatus = async () => {
         try {
-            const response = await fetch('/api/calendar/status', {
+            const response = await fetch(getApiPath('calendar/status'), {
                 credentials: 'include',
             });
             if (response.ok) {
@@ -110,7 +112,7 @@ const Calendar: React.FC = () => {
     const loadTasks = async () => {
         setIsLoadingTasks(true);
         try {
-            const response = await fetch('/api/tasks', {
+            const response = await fetch(getApiPath('tasks'), {
                 credentials: 'include',
             });
             if (response.ok) {
@@ -205,7 +207,7 @@ const Calendar: React.FC = () => {
 
     const loadProjects = async () => {
         try {
-            const response = await fetch('/api/projects', {
+            const response = await fetch(getApiPath('projects'), {
                 credentials: 'include',
             });
             if (response.ok) {
@@ -222,7 +224,7 @@ const Calendar: React.FC = () => {
 
         setIsConnecting(true);
         try {
-            const response = await fetch('/api/calendar/auth', {
+            const response = await fetch(getApiPath('calendar/auth'), {
                 credentials: 'include',
             });
             if (response.ok) {
@@ -259,7 +261,7 @@ const Calendar: React.FC = () => {
             }
 
             // Real disconnect API call
-            const response = await fetch('/api/calendar/disconnect', {
+            const response = await fetch(getApiPath('calendar/disconnect'), {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -372,7 +374,7 @@ const Calendar: React.FC = () => {
 
     const handleCreateProject = async (name: string): Promise<Project> => {
         try {
-            const response = await fetch('/api/projects', {
+            const response = await fetch(getApiPath('projects'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -712,13 +714,13 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({
 
                 {/* Action Buttons */}
                 <div className="mt-6 flex justify-between">
-                    <a
-                        href="/tasks"
+                    <Link
+                        to="/tasks"
                         className="inline-flex items-center px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                     >
                         <ArrowTopRightOnSquareIcon className="w-4 h-4 mr-1" />
                         {t('calendar.goToTasks')}
-                    </a>
+                    </Link>
 
                     <div className="flex space-x-3">
                         <button

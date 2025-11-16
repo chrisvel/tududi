@@ -22,6 +22,7 @@ import {
     ExclamationTriangleIcon,
     PlayIcon,
 } from '@heroicons/react/24/outline';
+import { getApiPath } from '../../config/paths';
 
 interface ProjectModalProps {
     isOpen: boolean;
@@ -295,7 +296,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             const formData = new FormData();
             formData.append('image', imageFile);
 
-            const response = await fetch('/api/upload/project-image', {
+            const response = await fetch(getApiPath('upload/project-image'), {
                 method: 'POST',
                 credentials: 'include',
                 body: formData,

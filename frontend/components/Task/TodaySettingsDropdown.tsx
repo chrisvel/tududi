@@ -9,6 +9,7 @@ import {
     ChatBubbleBottomCenterTextIcon,
     ListBulletIcon,
 } from '@heroicons/react/24/outline';
+import { getApiPath } from '../../config/paths';
 
 interface TodaySettingsDropdownProps {
     isOpen: boolean;
@@ -80,7 +81,7 @@ const TodaySettingsDropdown: React.FC<TodaySettingsDropdownProps> = ({
     const saveSettings = async (settingsToSave: typeof localSettings) => {
         setIsSaving(true);
         try {
-            const response = await fetch('/api/profile/today-settings', {
+            const response = await fetch(getApiPath('profile/today-settings'), {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {

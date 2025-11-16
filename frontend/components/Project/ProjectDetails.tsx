@@ -48,6 +48,7 @@ import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import { usePersistedModal } from '../../hooks/usePersistedModal';
 import BannerBadge from '../Shared/BannerBadge';
+import { getApiPath } from '../../config/paths';
 
 const ProjectDetails: React.FC = () => {
     const { uidSlug } = useParams<{ uidSlug: string }>();
@@ -287,7 +288,7 @@ const ProjectDetails: React.FC = () => {
 
         try {
             // Use direct fetch call like Tasks.tsx to ensure proper tag saving
-            const response = await fetch(`/api/task/${updatedTask.id}`, {
+            const response = await fetch(getApiPath(`task/${updatedTask.id}`), {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -488,7 +489,7 @@ const ProjectDetails: React.FC = () => {
 
         try {
             // Save preferences directly via API call
-            const response = await fetch(`/api/project/${project.id}`, {
+            const response = await fetch(getApiPath(`project/${project.id}`), {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -544,7 +545,7 @@ const ProjectDetails: React.FC = () => {
     const handleEditNote = async (note: Note) => {
         try {
             // Fetch the complete note data including tags
-            const response = await fetch(`/api/note/${note.uid}`, {
+            const response = await fetch(getApiPath(`note/${note.uid}`), {
                 credentials: 'include',
                 headers: { Accept: 'application/json' },
             });

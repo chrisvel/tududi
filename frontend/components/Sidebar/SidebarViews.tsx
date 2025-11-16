@@ -20,6 +20,7 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { getApiPath } from '../../config/paths';
 
 interface View {
     id: number;
@@ -138,7 +139,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
 
     const fetchUserSettings = async () => {
         try {
-            const response = await fetch('/api/profile', {
+            const response = await fetch(getApiPath('profile'), {
                 credentials: 'include',
             });
             if (response.ok) {
@@ -159,7 +160,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
 
     const fetchPinnedViews = async () => {
         try {
-            const response = await fetch('/api/views/pinned', {
+            const response = await fetch(getApiPath('views/pinned'), {
                 credentials: 'include',
             });
             if (response.ok) {
@@ -174,7 +175,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
     const togglePin = async (view: View, e: React.MouseEvent) => {
         e.stopPropagation();
         try {
-            const response = await fetch(`/api/views/${view.uid}`, {
+            const response = await fetch(getApiPath(`views/${view.uid}`), {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -208,7 +209,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
 
             // Save to backend
             try {
-                await fetch('/api/profile/sidebar-settings', {
+                await fetch(getApiPath('profile/sidebar-settings'), {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

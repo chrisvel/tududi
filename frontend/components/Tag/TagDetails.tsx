@@ -22,6 +22,7 @@ import ConfirmDialog from '../Shared/ConfirmDialog';
 import { Tag } from '../../entities/Tag';
 import { useStore } from '../../store/useStore';
 import { updateTag, deleteTag } from '../../utils/tagsService';
+import { getApiPath } from '../../config/paths';
 
 const TagDetails: React.FC = () => {
     const { t } = useTranslation();
@@ -77,8 +78,16 @@ const TagDetails: React.FC = () => {
 
                 // Now fetch entities that have this tag using the tag name
                 const [tasksResponse, notesResponse] = await Promise.all([
-                    fetch(`/api/tasks?tag=${encodeURIComponent(tagData.name)}`),
-                    fetch(`/api/notes?tag=${encodeURIComponent(tagData.name)}`),
+                    fetch(
+                        getApiPath(
+                            `tasks?tag=${encodeURIComponent(tagData.name)}`
+                        )
+                    ),
+                    fetch(
+                        getApiPath(
+                            `notes?tag=${encodeURIComponent(tagData.name)}`
+                        )
+                    ),
                 ]);
 
                 if (tasksResponse.ok) {
@@ -121,7 +130,7 @@ const TagDetails: React.FC = () => {
     // Task handlers
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            const response = await fetch(`/api/task/${updatedTask.id}`, {
+            const response = await fetch(getApiPath(`task/${updatedTask.id}`), {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedTask),
@@ -141,7 +150,7 @@ const TagDetails: React.FC = () => {
 
     const handleTaskDelete = async (taskId: number) => {
         try {
-            const response = await fetch(`/api/task/${taskId}`, {
+            const response = await fetch(getApiPath(`task/${taskId}`), {
                 method: 'DELETE',
             });
 

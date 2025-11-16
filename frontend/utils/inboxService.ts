@@ -1,6 +1,7 @@
 import { InboxItem } from '../entities/InboxItem';
 import { useStore } from '../store/useStore';
 import { handleAuthResponse } from './authUtils';
+import { getApiPath } from '../config/paths';
 
 // API functions
 export const fetchInboxItems = async (
@@ -20,7 +21,7 @@ export const fetchInboxItems = async (
         offset: offset.toString(),
     });
 
-    const response = await fetch(`/api/inbox?${params}`, {
+    const response = await fetch(getApiPath(`inbox?${params}`), {
         credentials: 'include',
         headers: {
             Accept: 'application/json',
@@ -55,7 +56,7 @@ export const createInboxItem = async (
     content: string,
     source?: string
 ): Promise<InboxItem> => {
-    const response = await fetch('/api/inbox', {
+    const response = await fetch(getApiPath('inbox'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -73,7 +74,7 @@ export const updateInboxItem = async (
     itemUid: string,
     content: string
 ): Promise<InboxItem> => {
-    const response = await fetch(`/api/inbox/${itemUid}`, {
+    const response = await fetch(getApiPath(`inbox/${itemUid}`), {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -88,7 +89,7 @@ export const updateInboxItem = async (
 };
 
 export const processInboxItem = async (itemUid: string): Promise<InboxItem> => {
-    const response = await fetch(`/api/inbox/${itemUid}/process`, {
+    const response = await fetch(getApiPath(`inbox/${itemUid}/process`), {
         method: 'PATCH',
         credentials: 'include',
         headers: {
@@ -101,7 +102,7 @@ export const processInboxItem = async (itemUid: string): Promise<InboxItem> => {
 };
 
 export const deleteInboxItem = async (itemUid: string): Promise<void> => {
-    const response = await fetch(`/api/inbox/${itemUid}`, {
+    const response = await fetch(getApiPath(`inbox/${itemUid}`), {
         method: 'DELETE',
         credentials: 'include',
         headers: {

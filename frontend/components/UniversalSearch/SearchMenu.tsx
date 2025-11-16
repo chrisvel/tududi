@@ -10,6 +10,7 @@ import {
 import FilterBadge from './FilterBadge';
 import SearchResults from './SearchResults';
 import { useToast } from '../Shared/ToastContext';
+import { getApiPath } from '../../config/paths';
 
 interface SearchMenuProps {
     searchQuery: string;
@@ -80,7 +81,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
     useEffect(() => {
         const fetchTags = async () => {
             try {
-                const response = await fetch('/api/tags', {
+                const response = await fetch(getApiPath('tags'), {
                     credentials: 'include',
                 });
                 if (response.ok) {
@@ -120,7 +121,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         setSaveError('');
 
         try {
-            const response = await fetch('/api/views', {
+            const response = await fetch(getApiPath('views'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

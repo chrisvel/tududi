@@ -23,6 +23,7 @@ import TaskDetails from './components/Task/TaskDetails';
 import LoadingScreen from './components/Shared/LoadingScreen';
 import InboxItems from './components/Inbox/InboxItems';
 import { setCurrentUser as setUserInStorage } from './utils/userUtils';
+import { getApiPath, getLocalesPath } from './config/paths';
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
 
@@ -37,7 +38,7 @@ const App: React.FC = () => {
 
     const fetchCurrentUser = async () => {
         try {
-            const response = await fetch('/api/current_user', {
+            const response = await fetch(getApiPath('current_user'), {
                 credentials: 'include',
                 headers: {
                     Accept: 'application/json',
@@ -93,7 +94,7 @@ const App: React.FC = () => {
 
     useEffect(() => {
         if (i18n.isInitialized) {
-            fetch(`/locales/${i18n.language}/translation.json`)
+            fetch(getLocalesPath(`${i18n.language}/translation.json`))
                 .then((response) => {
                     return response.json();
                 })

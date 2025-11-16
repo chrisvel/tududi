@@ -25,6 +25,8 @@ const credentials = {
     },
 };
 
+const defaultHost = environment === 'test' ? '127.0.0.1' : '0.0.0.0';
+
 const config = {
     allowedOrigins: process.env.TUDUDI_ALLOWED_ORIGINS
         ? process.env.TUDUDI_ALLOWED_ORIGINS.split(',').map((origin) =>
@@ -51,7 +53,9 @@ const config = {
 
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:8080',
 
-    host: process.env.HOST || '0.0.0.0',
+    // Some CI/sandbox environments disallow binding to 0.0.0.0, so force
+    // loopback for tests unless HOST is explicitly provided.
+    host: process.env.HOST || defaultHost,
 
     port: process.env.PORT || 3002,
 

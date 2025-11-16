@@ -5,6 +5,7 @@ import {
     getDefaultHeaders,
     getPostHeaders,
 } from './authUtils';
+import { getApiPath } from '../config/paths';
 
 export interface GroupedTasks {
     [groupName: string]: Task[];
@@ -30,11 +31,11 @@ export const fetchTasks = async (
 
     // Fetch tasks and metrics in parallel for better performance
     const [tasksResponse, metricsResponse] = await Promise.all([
-        fetch(`/api/tasks${tasksQuery}`, {
+        fetch(getApiPath(`tasks${tasksQuery}`), {
             credentials: 'include',
             headers: getDefaultHeaders(),
         }),
-        fetch('/api/tasks/metrics', {
+        fetch(getApiPath('tasks/metrics'), {
             credentials: 'include',
             headers: getDefaultHeaders(),
         }),
@@ -63,7 +64,7 @@ export const fetchTasks = async (
 };
 
 export const createTask = async (taskData: Task): Promise<Task> => {
-    const response = await fetch('/api/task', {
+    const response = await fetch(getApiPath('task'), {
         method: 'POST',
         credentials: 'include',
         headers: getPostHeaders(),
@@ -78,7 +79,7 @@ export const updateTask = async (
     taskId: number,
     taskData: Task
 ): Promise<Task> => {
-    const response = await fetch(`/api/task/${taskId}`, {
+    const response = await fetch(getApiPath(`task/${taskId}`), {
         method: 'PATCH',
         credentials: 'include',
         headers: getPostHeaders(),
@@ -108,7 +109,7 @@ export const toggleTaskCompletion = async (
 };
 
 export const deleteTask = async (taskId: number): Promise<void> => {
-    const response = await fetch(`/api/task/${taskId}`, {
+    const response = await fetch(getApiPath(`task/${taskId}`), {
         method: 'DELETE',
         credentials: 'include',
         headers: getDefaultHeaders(),
@@ -118,7 +119,7 @@ export const deleteTask = async (taskId: number): Promise<void> => {
 };
 
 export const fetchTaskById = async (taskId: number): Promise<Task> => {
-    const response = await fetch(`/api/task/${taskId}`, {
+    const response = await fetch(getApiPath(`task/${taskId}`), {
         credentials: 'include',
         headers: getDefaultHeaders(),
     });
@@ -128,17 +129,20 @@ export const fetchTaskById = async (taskId: number): Promise<Task> => {
 };
 
 export const fetchTaskByUid = async (uid: string): Promise<Task> => {
-    const response = await fetch(`/api/task/${encodeURIComponent(uid)}`, {
-        credentials: 'include',
-        headers: getDefaultHeaders(),
-    });
+    const response = await fetch(
+        getApiPath(`task/${encodeURIComponent(uid)}`),
+        {
+            credentials: 'include',
+            headers: getDefaultHeaders(),
+        }
+    );
 
     await handleAuthResponse(response, 'Failed to fetch task.');
     return await response.json();
 };
 
 export const fetchSubtasks = async (parentTaskId: number): Promise<Task[]> => {
-    const response = await fetch(`/api/task/${parentTaskId}/subtasks`, {
+    const response = await fetch(getApiPath(`task/${parentTaskId}/subtasks`), {
         credentials: 'include',
         headers: getDefaultHeaders(),
     });
@@ -171,8 +175,10 @@ export const fetchTaskNextIterations = async (
     startFromDate?: string
 ): Promise<TaskIteration[]> => {
     const url = startFromDate
-        ? `/api/task/${taskId}/next-iterations?startFromDate=${startFromDate}`
-        : `/api/task/${taskId}/next-iterations`;
+        ? getApiPath(
+              `task/${taskId}/next-iterations?startFromDate=${startFromDate}`
+          )
+        : getApiPath(`task/${taskId}/next-iterations`);
 
     const response = await fetch(url, {
         credentials: 'include',

@@ -9,6 +9,7 @@ import {
 } from '../../utils/sharesService';
 import { ChevronDownIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { getCurrentUser } from '../../utils/userUtils';
+import { getApiPath } from '../../config/paths';
 
 interface ProjectShareModalProps {
     isOpen: boolean;
@@ -67,7 +68,7 @@ const ProjectShareModal: React.FC<ProjectShareModalProps> = ({
         const loadUsers = async () => {
             setLoadingUsers(true);
             try {
-                const res = await fetch('/api/users', {
+                const res = await fetch(getApiPath('users'), {
                     credentials: 'include',
                     headers: { Accept: 'application/json' },
                 });

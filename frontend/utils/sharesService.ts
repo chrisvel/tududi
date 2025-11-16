@@ -1,3 +1,5 @@
+import { getApiPath } from '../config/paths';
+
 export type AccessLevel = 'ro' | 'rw';
 
 export interface ShareGrantRequest {
@@ -8,7 +10,7 @@ export interface ShareGrantRequest {
 }
 
 export async function grantShare(req: ShareGrantRequest): Promise<void> {
-    const res = await fetch('/api/shares', {
+    const res = await fetch(getApiPath('shares'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -41,7 +43,7 @@ export async function listShares(
     resource_uid: string
 ): Promise<ListSharesResponseRow[]> {
     const params = new URLSearchParams({ resource_type, resource_uid });
-    const res = await fetch(`/api/shares?${params.toString()}`, {
+    const res = await fetch(getApiPath(`shares?${params.toString()}`), {
         method: 'GET',
         credentials: 'include',
         headers: { Accept: 'application/json' },
@@ -65,7 +67,7 @@ export async function revokeShare(
     resource_uid: string,
     target_user_id: number
 ): Promise<void> {
-    const res = await fetch('/api/shares', {
+    const res = await fetch(getApiPath('shares'), {
         method: 'DELETE',
         credentials: 'include',
         headers: {

@@ -10,6 +10,7 @@ import { EnvelopeIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import PomodoroTimer from './Shared/PomodoroTimer';
 import UniversalSearch from './UniversalSearch/UniversalSearch';
+import { getApiPath } from '../config/paths';
 
 interface NavbarProps {
     isDarkMode: boolean;
@@ -84,7 +85,7 @@ const Navbar: React.FC<NavbarProps> = ({
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await fetch('/api/profile', {
+                const response = await fetch(getApiPath('profile'), {
                     credentials: 'include',
                 });
                 if (response.ok) {
@@ -127,7 +128,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
     const handleLogout = async () => {
         try {
-            const response = await fetch('/api/logout', {
+            const response = await fetch(getApiPath('logout'), {
                 method: 'GET',
                 credentials: 'include',
             });

@@ -8,6 +8,7 @@ import {
     TrashIcon,
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import { getApiPath } from '../../config/paths';
 
 interface AdminUserItem {
     id: number;
@@ -19,7 +20,7 @@ interface AdminUserItem {
 }
 
 const fetchAdminUsers = async (t: any): Promise<AdminUserItem[]> => {
-    const res = await fetch('/api/admin/users', {
+    const res = await fetch(getApiPath('admin/users'), {
         credentials: 'include',
         headers: { Accept: 'application/json' },
     });
@@ -41,7 +42,7 @@ const createAdminUser = async (
     surname?: string,
     role?: 'admin' | 'user'
 ): Promise<AdminUserItem> => {
-    const res = await fetch('/api/admin/users', {
+    const res = await fetch(getApiPath('admin/users'), {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -82,7 +83,7 @@ const updateAdminUser = async (
     const body: any = { email, name, surname, role };
     if (password) body.password = password;
 
-    const res = await fetch(`/api/admin/users/${id}`, {
+    const res = await fetch(getApiPath(`admin/users/${id}`), {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -114,7 +115,7 @@ const updateAdminUser = async (
 };
 
 const deleteAdminUser = async (id: number, t: any): Promise<void> => {
-    const res = await fetch(`/api/admin/users/${id}`, {
+    const res = await fetch(getApiPath(`admin/users/${id}`), {
         method: 'DELETE',
         credentials: 'include',
         headers: { Accept: 'application/json' },

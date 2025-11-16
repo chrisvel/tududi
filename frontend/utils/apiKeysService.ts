@@ -1,3 +1,5 @@
+import { getApiPath } from '../config/paths';
+
 export interface ApiKeySummary {
     id: number;
     name: string;
@@ -24,7 +26,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export async function fetchApiKeys(): Promise<ApiKeySummary[]> {
-    const response = await fetch('/api/profile/api-keys', {
+    const response = await fetch(getApiPath('profile/api-keys'), {
         credentials: 'include',
     });
     return handleResponse<ApiKeySummary[]>(response);
@@ -34,7 +36,7 @@ export async function createApiKey(payload: {
     name: string;
     expires_at?: string | null;
 }): Promise<CreateApiKeyResponse> {
-    const response = await fetch('/api/profile/api-keys', {
+    const response = await fetch(getApiPath('profile/api-keys'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -44,7 +46,7 @@ export async function createApiKey(payload: {
 }
 
 export async function revokeApiKey(id: number): Promise<ApiKeySummary> {
-    const response = await fetch(`/api/profile/api-keys/${id}/revoke`, {
+    const response = await fetch(getApiPath(`profile/api-keys/${id}/revoke`), {
         method: 'POST',
         credentials: 'include',
     });
@@ -52,7 +54,7 @@ export async function revokeApiKey(id: number): Promise<ApiKeySummary> {
 }
 
 export async function deleteApiKey(id: number): Promise<void> {
-    const response = await fetch(`/api/profile/api-keys/${id}`, {
+    const response = await fetch(getApiPath(`profile/api-keys/${id}`), {
         method: 'DELETE',
         credentials: 'include',
     });

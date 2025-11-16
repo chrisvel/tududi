@@ -8,6 +8,7 @@ import './i18n'; // Import i18n config to initialize it
 import './styles/markdown.css'; // Import markdown styles
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n'; // Import the i18n instance with its configuration
+import { getBasePath } from './config/paths';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -50,9 +51,10 @@ const container = document.getElementById('root');
 
 if (container) {
     const root = createRoot(container);
+    const basename = getBasePath();
     root.render(
         <I18nextProvider i18n={i18n}>
-            <BrowserRouter>
+            <BrowserRouter basename={basename || undefined}>
                 <ToastProvider>
                     <TelegramStatusProvider>
                         <App />

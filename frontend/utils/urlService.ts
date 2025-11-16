@@ -2,6 +2,7 @@
  * Service for URL-related operations like extracting titles from web pages
  */
 import { handleAuthResponse } from './authUtils';
+import { getApiPath } from '../config/paths';
 
 export interface UrlTitleResult {
     url: string;
@@ -20,7 +21,7 @@ export interface UrlTitleResult {
 export const extractUrlTitle = async (url: string): Promise<UrlTitleResult> => {
     try {
         const response = await fetch(
-            `/api/url/title?url=${encodeURIComponent(url)}`,
+            getApiPath(`url/title?url=${encodeURIComponent(url)}`),
             {
                 credentials: 'include',
                 headers: {
@@ -46,7 +47,7 @@ export const extractTitleFromText = async (
     text: string
 ): Promise<UrlTitleResult | null> => {
     try {
-        const response = await fetch('/api/url/extract-from-text', {
+        const response = await fetch(getApiPath('url/extract-from-text'), {
             method: 'POST',
             credentials: 'include',
             headers: {

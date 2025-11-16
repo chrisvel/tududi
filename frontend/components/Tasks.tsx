@@ -23,6 +23,7 @@ import {
     MagnifyingGlassIcon,
 } from '@heroicons/react/24/solid';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import { getApiPath } from '../config/paths';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -192,7 +193,9 @@ const Tasks: React.FC = () => {
                 const searchParams = allTasksUrl.toString();
 
                 const tasksResponse = await fetch(
-                    `/api/tasks?${searchParams}${tagId ? `&tag=${tagId}` : ''}`
+                    getApiPath(
+                        `tasks?${searchParams}${tagId ? `&tag=${tagId}` : ''}`
+                    )
                 );
 
                 if (tasksResponse.ok) {
@@ -286,7 +289,7 @@ const Tasks: React.FC = () => {
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
-            const response = await fetch(`/api/task/${updatedTask.id}`, {
+            const response = await fetch(getApiPath(`task/${updatedTask.id}`), {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedTask),
@@ -356,7 +359,7 @@ const Tasks: React.FC = () => {
 
     const handleTaskDelete = async (taskId: number) => {
         try {
-            const response = await fetch(`/api/task/${taskId}`, {
+            const response = await fetch(getApiPath(`task/${taskId}`), {
                 method: 'DELETE',
             });
 
@@ -388,12 +391,12 @@ const Tasks: React.FC = () => {
             const project = params.get('project');
             const priority = params.get('priority');
 
-            let apiPath = `/api/tasks?type=${type}&order_by=${orderBy}`;
+            let apiPath = `tasks?type=${type}&order_by=${orderBy}`;
             if (tag) apiPath += `&tag=${tag}`;
             if (project) apiPath += `&project=${project}`;
             if (priority) apiPath += `&priority=${priority}`;
 
-            const response = await fetch(apiPath, {
+            const response = await fetch(getApiPath(apiPath), {
                 credentials: 'include',
             });
 

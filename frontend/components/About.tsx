@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HeartIcon } from '@heroicons/react/24/outline';
+import { getApiPath } from '../config/paths';
 
 interface AboutProps {
     isDarkMode?: boolean;
@@ -12,7 +13,7 @@ const About: React.FC<AboutProps> = ({ isDarkMode = false }) => {
 
     useEffect(() => {
         // Fetch version from the deployed app
-        fetch('/api/version')
+        fetch(getApiPath('version'))
             .then((response) => response.json())
             .then((data) => {
                 if (data.version) {
