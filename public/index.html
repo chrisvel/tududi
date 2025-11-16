@@ -3,6 +3,38 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
+    <script>
+      (function () {
+        function sanitize(value) {
+          if (!value) return '';
+          var trimmed = value.trim();
+          if (!trimmed || trimmed === '/') return '';
+          if (trimmed.endsWith('/')) trimmed = trimmed.slice(0, -1);
+          if (!trimmed.startsWith('/')) trimmed = '/' + trimmed;
+          return trimmed;
+        }
+
+        function detectIngress() {
+          var match = window.location.pathname.match(/^\/api\/hassio_ingress\/[^/]+/);
+          return match ? match[0] : '';
+        }
+
+        var envBase = '<%= htmlWebpackPlugin.options.BASE_PATH || "" %>';
+        var runtimeBase = sanitize(window.__TUDUDI_BASE_PATH__ || envBase);
+        if (!runtimeBase) {
+          runtimeBase = sanitize(detectIngress());
+        }
+
+        window.__TUDUDI_BASE_PATH__ = runtimeBase;
+        var baseHref = runtimeBase ? runtimeBase + '/' : '/';
+        var baseTag = document.querySelector('base') || document.createElement('base');
+        if (!baseTag.parentNode) {
+          document.head.insertBefore(baseTag, document.head.firstChild);
+        }
+        baseTag.setAttribute('href', baseHref);
+      })();
+    </script>
     <title>tududi</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

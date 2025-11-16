@@ -82,6 +82,9 @@ module.exports = {
             title: 'tududi',
             filename: 'index.html',
             template: 'public/index.html',
+            templateParameters: {
+                BASE_PATH: process.env.TUDUDI_BASE_PATH || '',
+            },
         }),
         new CopyWebpackPlugin({
             patterns: [
