@@ -35,7 +35,10 @@ async function getSubtasks(parentTaskId, userId, timezone) {
                     required: false,
                 },
             ],
-            order: [['created_at', 'ASC']],
+            order: [
+                ['order', 'ASC'],
+                ['created_at', 'ASC'],
+            ], // Order by order field, fallback to created_at
         }
     );
 
@@ -49,9 +52,16 @@ async function getSubtasks(parentTaskId, userId, timezone) {
 async function createSubtasks(parentTaskId, subtasks, userId) {
     if (!subtasks || !Array.isArray(subtasks)) return;
 
+    // Get the highest order value for existing subtasks
+    const existingSubtasks = await taskRepository.findAll(
+        { parent_task_id: parentTaskId },
+        { attributes: ['order'], order: [['order', 'DESC']], limit: 1 }
+    );
+    const maxOrder = existingSubtasks[0]?.order ?? 0;
+
     const subtasksData = subtasks
         .filter((subtask) => subtask.name && subtask.name.trim())
-        .map((subtask) => ({
+        .map((subtask, index) => ({
             name: subtask.name.trim(),
             parent_task_id: parentTaskId,
             user_id: userId,
@@ -66,6 +76,7 @@ async function createSubtasks(parentTaskId, subtasks, userId) {
             today: subtask.today || false,
             recurrence_type: 'none',
             completion_based: false,
+            order: maxOrder + index + 1, // Assign sequential order values
         }));
 
     await taskRepository.createMany(subtasksData);
@@ -90,36 +101,43 @@ async function updateSubtasks(taskId, subtasks, userId) {
         });
     }
 
+    // Update order for all subtasks to reflect their position in the array
+    const allSubtasksToUpdate = subtasks.filter((s) => s.id);
+
     const subtasksToUpdate = subtasks.filter(
         (s) =>
             s.id &&
             ((s.isEdited && s.name && s.name.trim()) || s._statusChanged)
     );
 
-    if (subtasksToUpdate.length > 0) {
-        const updatePromises = subtasksToUpdate.map((subtask) => {
-            const updateData = {};
+    if (subtasksToUpdate.length > 0 || allSubtasksToUpdate.length > 0) {
+        const updatePromises = allSubtasksToUpdate.map((subtask, index) => {
+            const updateData = {
+                order: index + 1, // Update order based on position in array
+            };
 
-            if (subtask.isEdited && subtask.name && subtask.name.trim()) {
-                updateData.name = subtask.name.trim();
-            }
-
-            if (subtask._statusChanged || subtask.status !== undefined) {
-                updateData.status = parseStatus(subtask.status);
-
-                if (
-                    updateData.status === Task.STATUS.DONE &&
-                    !subtask.completed_at
-                ) {
-                    updateData.completed_at = new Date();
-                } else if (updateData.status !== Task.STATUS.DONE) {
-                    updateData.completed_at = null;
+            if (subtasksToUpdate.includes(subtask)) {
+                if (subtask.isEdited && subtask.name && subtask.name.trim()) {
+                    updateData.name = subtask.name.trim();
                 }
-            }
 
-            if (subtask.priority !== undefined) {
-                updateData.priority =
-                    parsePriority(subtask.priority) || Task.PRIORITY.LOW;
+                if (subtask._statusChanged || subtask.status !== undefined) {
+                    updateData.status = parseStatus(subtask.status);
+
+                    if (
+                        updateData.status === Task.STATUS.DONE &&
+                        !subtask.completed_at
+                    ) {
+                        updateData.completed_at = new Date();
+                    } else if (updateData.status !== Task.STATUS.DONE) {
+                        updateData.completed_at = null;
+                    }
+                }
+
+                if (subtask.priority !== undefined) {
+                    updateData.priority =
+                        parsePriority(subtask.priority) || Task.PRIORITY.LOW;
+                }
             }
 
             return taskRepository.bulkUpdate(updateData, {
