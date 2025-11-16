@@ -96,11 +96,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
     });
 
     // Derive expanded sections with subtasks controlled by autoFocusSubtasks
-    // and recurrence expanded for child tasks
     const expandedSections = {
         ...baseSections,
         subtasks: baseSections.subtasks || autoFocusSubtasks,
-        recurrence: baseSections.recurrence || !!task.recurring_parent_uid, // Auto-expand for child tasks
     };
 
     const { showSuccessToast, showErrorToast } = useToast();
@@ -164,6 +162,14 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
         // Clear project name - selected project will show as badge
         setNewProjectName('');
+
+        // Auto-expand recurrence section for child tasks (once when modal opens)
+        if (task.recurring_parent_uid) {
+            setBaseSections((prev) => ({
+                ...prev,
+                recurrence: true,
+            }));
+        }
     }, [task.id, task.project_id, projects]);
 
     // Handle task analysis separately
