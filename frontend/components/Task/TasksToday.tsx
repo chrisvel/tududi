@@ -597,7 +597,10 @@ const TasksToday: React.FC = () => {
 
             try {
                 // Make API call to persist the change and get the updated task from server
-                const updatedTaskFromServer = await updateTask(updatedTask.id, updatedTask);
+                const updatedTaskFromServer = await updateTask(
+                    updatedTask.id,
+                    updatedTask
+                );
 
                 // Update the UI again with the actual server response to ensure consistency
                 setMetrics((prevMetrics) => {
@@ -629,26 +632,38 @@ const TasksToday: React.FC = () => {
 
                     // Update task in all relevant lists with server data
                     if (newMetrics.today_plan_tasks) {
-                        newMetrics.today_plan_tasks = updateTaskInList(newMetrics.today_plan_tasks);
+                        newMetrics.today_plan_tasks = updateTaskInList(
+                            newMetrics.today_plan_tasks
+                        );
                     }
                     if (newMetrics.suggested_tasks) {
-                        newMetrics.suggested_tasks = updateTaskInList(newMetrics.suggested_tasks);
+                        newMetrics.suggested_tasks = updateTaskInList(
+                            newMetrics.suggested_tasks
+                        );
                     }
                     if (newMetrics.tasks_due_today) {
-                        newMetrics.tasks_due_today = updateTaskInList(newMetrics.tasks_due_today);
+                        newMetrics.tasks_due_today = updateTaskInList(
+                            newMetrics.tasks_due_today
+                        );
                     }
                     if (newMetrics.tasks_in_progress) {
-                        newMetrics.tasks_in_progress = updateTaskInList(newMetrics.tasks_in_progress);
+                        newMetrics.tasks_in_progress = updateTaskInList(
+                            newMetrics.tasks_in_progress
+                        );
                     }
                     if (newMetrics.tasks_completed_today) {
-                        newMetrics.tasks_completed_today = updateTaskInList(newMetrics.tasks_completed_today);
+                        newMetrics.tasks_completed_today = updateTaskInList(
+                            newMetrics.tasks_completed_today
+                        );
                     }
 
                     return newMetrics;
                 });
 
                 // Also update the store with server response
-                useStore.getState().tasksStore.updateTaskInStore(updatedTaskFromServer);
+                useStore
+                    .getState()
+                    .tasksStore.updateTaskInStore(updatedTaskFromServer);
             } catch (error) {
                 console.error('Error updating task:', error);
                 // Revert UI on error if necessary, or re-fetch to sync
