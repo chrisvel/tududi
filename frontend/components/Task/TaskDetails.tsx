@@ -22,7 +22,6 @@ import {
     deleteTask,
     toggleTaskCompletion,
     fetchTaskByUid,
-    fetchTaskById,
     fetchTaskNextIterations,
     TaskIteration,
 } from '../../utils/tasksService';
