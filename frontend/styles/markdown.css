@@ -292,6 +292,16 @@
   vertical-align: middle;
 }
 
+/* Fix loose lists - remove paragraph margins inside list items */
+.markdown-content li > p {
+  margin-bottom: 0;
+}
+
+/* Add spacing between list items that contain paragraphs (loose lists) */
+.markdown-content li:has(> p) + li {
+  margin-top: 0.5rem;
+}
+
 /* Nested task lists - add indentation with padding */
 .markdown-content ul ul {
   padding-left: 1.5rem;
