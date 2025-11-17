@@ -14,6 +14,7 @@ import {
     ExclamationTriangleIcon,
     CheckCircleIcon,
     ShareIcon,
+    MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import TaskList from '../Task/TaskList';
 import ProjectModal from '../Project/ProjectModal';
@@ -90,6 +91,10 @@ const ProjectDetails: React.FC = () => {
     const hasCheckedAutoSuggest = useRef(false);
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
     const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
+
+    // Search state
+    const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
     // Sort options for tasks
     const sortOptions: SortOption[] = [
@@ -663,6 +668,17 @@ const ProjectDetails: React.FC = () => {
             );
         }
 
+        // Filter by search query
+        if (taskSearchQuery.trim()) {
+            const query = taskSearchQuery.toLowerCase();
+            filteredTasks = filteredTasks.filter(
+                (task) =>
+                    task.name.toLowerCase().includes(query) ||
+                    task.original_name?.toLowerCase().includes(query) ||
+                    task.note?.toLowerCase().includes(query)
+            );
+        }
+
         // Then, sort the filtered tasks
         const sortedTasks = [...filteredTasks].sort((a, b) => {
             const [field, direction] = orderBy.split(':');
@@ -715,7 +731,7 @@ const ProjectDetails: React.FC = () => {
         });
 
         return sortedTasks;
-    }, [tasks, showCompleted, orderBy]);
+    }, [tasks, showCompleted, orderBy, taskSearchQuery]);
 
     // Function to get the appropriate icon for project state
     const getStateIcon = (state: string) => {
@@ -1004,6 +1020,28 @@ const ProjectDetails: React.FC = () => {
                             {/* Inline Controls - Always visible for tasks tab */}
                             {activeTab === 'tasks' && (
                                 <div className="flex items-center gap-2 flex-wrap justify-end">
+                                    {/* Search Button */}
+                                    <button
+                                        onClick={() => setIsSearchExpanded((v) => !v)}
+                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-1.5 ${
+                                            isSearchExpanded
+                                                ? 'bg-blue-50/70 dark:bg-blue-900/20'
+                                                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                        }`}
+                                        aria-expanded={isSearchExpanded}
+                                        aria-label={
+                                            isSearchExpanded
+                                                ? 'Collapse search panel'
+                                                : 'Show search input'
+                                        }
+                                        title={
+                                            isSearchExpanded
+                                                ? 'Hide search'
+                                                : 'Search Tasks'
+                                        }
+                                    >
+                                        <MagnifyingGlassIcon className="h-4 w-4 text-gray-600 dark:text-gray-200" />
+                                    </button>
                                     {/* Show Completed Toggle */}
                                     <div className="flex items-center gap-2">
                                         <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
@@ -1082,6 +1120,28 @@ const ProjectDetails: React.FC = () => {
                         {/* Inline Controls - Always visible for tasks tab */}
                         {activeTab === 'tasks' && (
                             <div className="flex items-center gap-4">
+                                {/* Search Button */}
+                                <button
+                                    onClick={() => setIsSearchExpanded((v) => !v)}
+                                    className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
+                                        isSearchExpanded
+                                            ? 'bg-blue-50/70 dark:bg-blue-900/20'
+                                            : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                    }`}
+                                    aria-expanded={isSearchExpanded}
+                                    aria-label={
+                                        isSearchExpanded
+                                            ? 'Collapse search panel'
+                                            : 'Show search input'
+                                    }
+                                    title={
+                                        isSearchExpanded
+                                            ? 'Hide search'
+                                            : 'Search Tasks'
+                                    }
+                                >
+                                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
+                                </button>
                                 {/* Show Completed Toggle */}
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -1120,6 +1180,33 @@ const ProjectDetails: React.FC = () => {
                         )}
                     </div>
                 </div>
+
+                {/* Search input section, collapsible - only for tasks tab */}
+                {activeTab === 'tasks' && (
+                    <div
+                        className={`transition-all duration-300 ease-in-out ${
+                            isSearchExpanded
+                                ? 'max-h-24 opacity-100 mb-4'
+                                : 'max-h-0 opacity-0 mb-0'
+                        } overflow-hidden`}
+                    >
+                        <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
+                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
+                            <input
+                                type="text"
+                                placeholder={t(
+                                    'tasks.searchPlaceholder',
+                                    'Search tasks...'
+                                )}
+                                value={taskSearchQuery}
+                                onChange={(e) =>
+                                    setTaskSearchQuery(e.target.value)
+                                }
+                                className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
+                            />
+                        </div>
+                    </div>
+                )}
 
                 {/* Auto-suggest form for tasks with no items */}
                 {activeTab === 'tasks' && showAutoSuggestForm && (
@@ -1167,12 +1254,17 @@ const ProjectDetails: React.FC = () => {
                             ) : (
                                 <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
                                     <p className="text-gray-500 dark:text-gray-400">
-                                        {showCompleted
+                                        {taskSearchQuery.trim()
                                             ? t(
-                                                  'project.noCompletedTasks',
-                                                  'No completed tasks.'
+                                                  'tasks.noTasksAvailable',
+                                                  'No tasks available.'
                                               )
-                                            : t('project.noTasks', 'No tasks.')}
+                                            : showCompleted
+                                              ? t(
+                                                    'project.noCompletedTasks',
+                                                    'No completed tasks.'
+                                                )
+                                              : t('project.noTasks', 'No tasks.')}
                                     </p>
                                 </div>
                             )}
