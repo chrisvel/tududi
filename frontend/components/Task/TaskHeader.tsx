@@ -258,14 +258,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
                                         </Link>
                                     </div>
                                 )}
-                                {project &&
-                                    !hideProjectName &&
-                                    task.tags &&
-                                    task.tags.length > 0 && (
-                                        <span className="mx-2 text-xs text-gray-500 dark:text-gray-400">
-                                            •
-                                        </span>
-                                    )}
                                 {task.tags && task.tags.length > 0 && (
                                     <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
                                         <TagIcon className="h-3 w-3 mr-1" />
