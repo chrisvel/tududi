@@ -271,3 +271,66 @@ test('project priority can be set to None after being set to Medium', async ({ p
 
   await expect(page.locator('[data-testid="project-modal"]')).not.toBeVisible({ timeout: 5000 });
 });
+
+test('task created from inbox thought defaults to None priority', async ({ page, baseURL }) => {
+  const appUrl = await login(page, baseURL);
+
+  await navigateAndWait(page, appUrl + '/inbox');
+
+  // Create an inbox item
+  const timestamp = Date.now();
+  const thoughtContent = `Test thought ${timestamp}`;
+
+  // Click the Quick Inbox Capture button in the navbar
+  await page.getByRole('button', { name: 'Quick Inbox Capture' }).click();
+
+  // Wait for the InboxModal to appear
+  await expect(page.locator('input[name="text"]')).toBeVisible();
+
+  // Add the thought
+  await page.locator('input[name="text"]').fill(thoughtContent);
+
+  // Submit the form by pressing Enter
+  await page.locator('input[name="text"]').press('Enter');
+
+  // Wait for the modal to close
+  await expect(page.locator('input[name="text"]')).not.toBeVisible();
+
+  // Verify the thought appears in the inbox
+  await expect(page.locator('text=' + thoughtContent)).toBeVisible();
+
+  // Find the inbox item container and hover to show convert buttons
+  const inboxItemContainer = page.locator('.rounded-lg.shadow-sm').filter({ hasText: thoughtContent });
+  await inboxItemContainer.hover();
+
+  // Click the "Convert to Task" button (clipboard icon with title="Create task")
+  await inboxItemContainer.locator('button[title="Create task"]').click();
+
+  // Wait for the Task Modal to appear
+  const taskNameInput = page.locator('[data-testid="task-name-input"]');
+  await expect(taskNameInput).toBeVisible({ timeout: 10000 });
+
+  // Verify the task name field is pre-filled with the thought content
+  await expect(taskNameInput).toHaveValue(thoughtContent);
+
+  // Wait for modal to be in idle state
+  await expect(page.locator('[data-testid="task-modal"][data-state="idle"]')).toBeVisible();
+
+  // Click the priority section icon to expand the priority section
+  const prioritySectionButton = page.locator('button[title*="Priority"]').filter({ has: page.locator('svg') });
+  await prioritySectionButton.click();
+
+  // Wait for priority section to be expanded
+  await expect(page.locator('[data-testid="priority-section"][data-state="expanded"]')).toBeVisible();
+
+  // Check that the priority dropdown shows "None"
+  const priorityDropdown = page.locator('[data-testid="priority-dropdown"]');
+  await expect(priorityDropdown).toBeVisible();
+
+  // The dropdown should contain "None" text
+  await expect(priorityDropdown).toContainText(/none/i);
+
+  // Close modal without saving
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[data-testid="task-modal"]')).not.toBeVisible({ timeout: 5000 });
+});
