@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 
 // Simple smoke test: user can log in and gets redirected to Today page
 // Requires backend and frontend dev servers running locally. By default:
-// - Frontend: http://localhost:8080 (webpack dev server)
-// - Backend: http://localhost:3002 (proxied by webpack dev server)
+// - Frontend: http://localhost:8080 (Vite dev server)
+// - Backend: http://localhost:3002 (proxied by Vite dev server)
 // Set APP_URL to override base URL if needed.
 
 test('user can login and reach Today page', async ({ page, baseURL }) => {

@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -10,7 +9,7 @@ const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { sequelize } = require('./models');
 const { initializeTelegramPolling } = require('./services/telegramInitializer');
 const taskScheduler = require('./services/taskScheduler');
-const { setConfig, getConfig } = require('./config/config');
+const { getConfig } = require('./config/config');
 const config = getConfig();
 const API_VERSION = process.env.API_VERSION || 'v1';
 const API_BASE_PATH = `/api/${API_VERSION}`;
@@ -69,23 +68,6 @@ app.use(
         },
     })
 );
-
-// Static files
-if (config.production) {
-    app.use(express.static(path.join(__dirname, 'dist')));
-} else {
-    app.use(express.static('public'));
-}
-
-// Serve locales
-if (config.production) {
-    app.use('/locales', express.static(path.join(__dirname, 'dist/locales')));
-} else {
-    app.use(
-        '/locales',
-        express.static(path.join(__dirname, '../public/locales'))
-    );
-}
 
 // Serve uploaded files
 const registerUploadsStatic = (basePath) => {
@@ -194,23 +176,12 @@ if (API_VERSION && API_BASE_PATH !== '/api') {
 }
 routeBases.forEach(registerApiRoutes);
 
-// SPA fallback
+// 404 handler - only return JSON 404 for requests that reach here
 app.get('*', (req, res) => {
-    if (
-        !req.path.startsWith('/api/') &&
-        !req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg)$/)
-    ) {
-        if (config.production) {
-            res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-        } else {
-            res.sendFile(path.join(__dirname, '../public', 'index.html'));
-        }
-    } else {
-        res.status(404).json({
-            error: 'Not Found',
-            message: 'The requested resource could not be found.',
-        });
-    }
+    res.status(404).json({
+        error: 'Not Found',
+        message: 'The requested resource could not be found.',
+    });
 });
 
 // Error handling fallback.
@@ -229,7 +200,7 @@ app.use((err, req, res, next) => {
 async function startServer() {
     try {
         // Create session store table
-        await sessionStore.sync();
+        sessionStore.sync();
 
         // Initialize Telegram polling after database is ready
         await initializeTelegramPolling();

@@ -184,8 +184,8 @@ describe('User Create Script', () => {
         });
     });
 
-    describe('Integration with npm script', () => {
-        it('should work when called via npm run command', async () => {
+    describe('Integration with pnpm script', () => {
+        it('should work when called via pnpm run command', async () => {
             const email = 'npmtest@example.com';
             const password = 'testpassword123';
 
@@ -193,16 +193,32 @@ describe('User Create Script', () => {
             await User.destroy({ where: { email } });
 
             try {
-                // This simulates running: npm run user:create npmtest@example.com testpassword123
-                const output = execSync(
-                    `npm run user:create ${email} ${password}`,
-                    {
-                        cwd: path.join(__dirname, '../..'),
-                        env: { ...process.env, NODE_ENV: 'test' },
-                        encoding: 'utf8',
-                        timeout: 10000,
-                    }
-                );
+                let output;
+                try {
+                    // This simulates running: pnpm -w run user:create npmtest@example.com testpassword123
+                    // We pass the current test's DB_FILE so the subprocess uses the same database
+                    // The -w flag runs the script from the workspace root
+                    output = execSync(
+                        `pnpm -w run user:create ${email} ${password}`,
+                        {
+                            cwd: path.join(__dirname, '../..'),
+                            env: {
+                                ...process.env,
+                                NODE_ENV: 'test',
+                                DB_FILE: process.env.DB_FILE // Share the same test database
+                            },
+                            encoding: 'utf8',
+                            timeout: 10000,
+                            stdio: 'pipe' // Capture both stdout and stderr
+                        }
+                    );
+                } catch (error) {
+                    // If the command fails, log the error details
+                    console.error('Command failed with error:', error.message);
+                    console.error('stderr:', error.stderr);
+                    console.error('stdout:', error.stdout);
+                    throw error;
+                }
 
                 expect(output).toBeTruthy();
 

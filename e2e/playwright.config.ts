@@ -8,8 +8,8 @@ const slowMoMs = Number(process.env.E2E_SLOWMO || '0') || 0;
 
 export default defineConfig({
   testDir: './tests',
-  timeout: 60_000,
-  expect: { timeout: 10_000 },
+  timeout: 10000,
+  expect: { timeout: 10000 },
   fullyParallel: true,
   reporter: [['list']],
   use: {

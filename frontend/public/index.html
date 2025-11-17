@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
+    <script>
+      (function () {
+        function sanitize(value) {
+          if (!value) return '';
+          var trimmed = value.trim();
+          if (!trimmed || trimmed === '/') return '';
+          if (trimmed.endsWith('/')) trimmed = trimmed.slice(0, -1);
+          if (!trimmed.startsWith('/')) trimmed = '/' + trimmed;
+          return trimmed;
+        }
+
+        function detectIngress() {
+          var match = window.location.pathname.match(/^\/api\/hassio_ingress\/[^/]+/);
+          return match ? match[0] : '';
+        }
+
+        var envBase = '<%= htmlWebpackPlugin.options.BASE_PATH || "" %>';
+        var runtimeBase = sanitize(window.__TUDUDI_BASE_PATH__ || envBase);
+        if (!runtimeBase) {
+          runtimeBase = sanitize(detectIngress());
+        }
+
+        window.__TUDUDI_BASE_PATH__ = runtimeBase;
+        var baseHref = runtimeBase ? runtimeBase + '/' : '/';
+        var baseTag = document.querySelector('base') || document.createElement('base');
+        if (!baseTag.parentNode) {
+          document.head.insertBefore(baseTag, document.head.firstChild);
+        }
+        baseTag.setAttribute('href', baseHref);
+      })();
+    </script>
+    <title>tududi</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    
+    <!-- Web app manifest for PWA support -->
+    <link rel="manifest" href="manifest.json">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

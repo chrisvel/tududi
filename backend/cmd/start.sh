@@ -85,7 +85,7 @@ fi
 
 # Run database migrations automatically
 echo "Running database migrations..."
-if npx sequelize-cli db:migrate --config config/database.js; then
+if pnpm exec sequelize-cli db:migrate --config config/database.js; then
   echo "Migrations completed successfully"
 else
   echo "Migration failed, but continuing startup (may be expected for new installations)"

@@ -7,61 +7,17 @@
     "test": "test"
   },
   "scripts": {
-    "start": "bash scripts/start-all-dev.sh",
-    "dev": "pnpm --filter tududi-frontend run dev",
-    "build": "pnpm --filter tududi-frontend run build",
-    "pre-push": "pnpm run lint:fix && pnpm run format:fix",
-    "pre-release": "pnpm run lint:fix && pnpm run format:fix && pnpm run test && pnpm run test:ui",
-    "test": "pnpm --filter tududi-backend run test",
-    "test:backend": "pnpm --filter tududi-backend run test",
-    "test:ui": "bash e2e/bin/run-e2e.sh && echo \"Success!\"",
-    "test:ui:headed": "cross-env E2E_MODE=headed E2E_SLOWMO=500 bash e2e/bin/run-e2e.sh",
-    "test:watch": "pnpm --filter tududi-frontend run test:watch",
-    "test:coverage": "pnpm --filter tududi-frontend run test:coverage && pnpm --filter tududi-backend run test:coverage",
-    "frontend:dev": "pnpm --filter tududi-frontend run dev",
-    "frontend:start": "pnpm --filter tududi-frontend run start",
-    "frontend:build": "pnpm --filter tududi-frontend run build",
-    "frontend:test": "pnpm --filter tududi-frontend run test",
-    "frontend:test:watch": "pnpm --filter tududi-frontend run test:watch",
-    "frontend:test:coverage": "pnpm --filter tududi-frontend run test:coverage",
-    "frontend:lint": "pnpm --filter tududi-frontend run lint",
-    "frontend:lint:fix": "pnpm --filter tududi-frontend run lint:fix",
-    "frontend:format": "pnpm --filter tududi-frontend run format",
-    "frontend:format:fix": "pnpm --filter tududi-frontend run format:fix",
-    "backend:start": "pnpm --filter tududi-backend run start",
-    "backend:dev": "pnpm --filter tududi-backend run dev",
-    "backend:test": "pnpm --filter tududi-backend run test",
-    "backend:test:watch": "pnpm --filter tududi-backend run test:watch",
-    "backend:test:coverage": "pnpm --filter tududi-backend run test:coverage",
-    "backend:test:unit": "pnpm --filter tududi-backend run test:unit",
-    "backend:test:integration": "pnpm --filter tududi-backend run test:integration",
-    "backend:lint": "pnpm --filter tududi-backend run lint",
-    "backend:lint:fix": "pnpm --filter tududi-backend run lint:fix",
-    "backend:format": "pnpm --filter tududi-backend run format",
-    "backend:format:fix": "pnpm --filter tududi-backend run format:fix",
-    "db:init": "cd backend && node scripts/db-init.js",
-    "db:sync": "cd backend && node scripts/db-sync.js",
-    "db:migrate": "cd backend && node scripts/db-migrate.js",
-    "db:reset": "cd backend && node scripts/db-reset.js",
-    "db:status": "cd backend && node scripts/db-status.js",
-    "db:seed": "cd backend && node scripts/seed-dev-data.js",
-    "user:create": "cd backend && node scripts/user-create.js",
-    "migration:create": "cd backend && node scripts/migration-create.js",
-    "migration:run": "cd backend && pnpm exec sequelize-cli db:migrate",
-    "migration:undo": "cd backend && pnpm exec sequelize-cli db:migrate:undo",
-    "migration:undo:all": "cd backend && pnpm exec sequelize-cli db:migrate:undo:all",
-    "migration:status": "cd backend && pnpm exec sequelize-cli db:migrate:status",
-    "clean": "rimraf dist",
-    "lint": "pnpm --filter tududi-frontend run lint && pnpm --filter tududi-backend run lint",
-    "lint:fix": "pnpm --filter tududi-frontend run lint:fix && pnpm --filter tududi-backend run lint:fix",
-    "format": "pnpm --filter tududi-frontend run format && pnpm --filter tududi-backend run format",
-    "format:fix": "pnpm --filter tududi-frontend run lint:fix && pnpm --filter tududi-backend run format:fix",
-    "docker:test-build": "bash scripts/test-docker-build.sh"
+    "start": "bash scripts/start-all-dev.sh"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "cross-env": "~7.0.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sqlite3"
+    ]
   }
 }

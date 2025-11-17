@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Favicon</title>
+</head>
+<body>
+    <h2>Favicon Generator for tududi</h2>
+    <p>Use this canvas to generate a favicon.ico file:</p>
+    
+    <canvas id="favicon" width="32" height="32" style="border: 1px solid #ccc; image-rendering: pixelated; width: 160px; height: 160px;"></canvas>
+    <br><br>
+    
+    <button onclick="generateFavicon()">Generate Favicon</button>
+    <button onclick="downloadFavicon()">Download as PNG</button>
+    
+    <script>
+        function generateFavicon() {
+            const canvas = document.getElementById('favicon');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas with transparent background
+            ctx.clearRect(0, 0, 32, 32);
+            
+            // Set style
+            ctx.strokeStyle = '#4a5568';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.fillStyle = 'none';
+            
+            // Draw circle
+            ctx.beginPath();
+            ctx.arc(16, 16, 13, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Draw checkmark
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(10, 16);
+            ctx.lineTo(14, 20);
+            ctx.lineTo(22, 12);
+            ctx.stroke();
+        }
+        
+        function downloadFavicon() {
+            const canvas = document.getElementById('favicon');
+            const link = document.createElement('a');
+            link.download = 'favicon.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // Generate on load
+        generateFavicon();
+    </script>
+    
+    <p><small>
+        After downloading the PNG, you can convert it to ICO format using online tools like:
+        <br>• https://convertio.co/png-ico/
+        <br>• https://favicon.io/favicon-converter/
+        <br>Then replace this file with the generated favicon.ico
+    </small></p>
+</body>
+</html>

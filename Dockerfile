@@ -1,44 +1,3 @@
-###############
-# BUILD STAGE #
-###############
-# Use Playwright image with browsers and deps preinstalled for running E2E tests
-FROM mcr.microsoft.com/playwright:v1.54.2-jammy AS builder
-
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    build-essential \
-    python3 \
-    pkg-config \
-    libsqlite3-dev \
-    sqlite3 \
-    bash \
-    curl && \
-    rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-
-# Install all dependencies (frontend and backend)
-RUN npm install --no-audit --no-fund
-
-# Copy source code
-COPY . ./
-
-# Build frontend
-RUN NODE_ENV=production npm run frontend:build
-
-# Run backend tests
-RUN npm run backend:test
-
-# Uncomment to run E2E tests (browsers already present in this base image)
-#ENV CI=1
-#RUN npm run test:ui
-
-# Cleanup
-RUN npm cache clean --force && \
-    rm -rf ~/.npm /tmp/*
-
-
 ####################
 # Production stage #
 ####################
@@ -62,6 +21,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     rm -rf /usr/share/man /usr/share/doc /usr/share/info
+
+# Install pnpm for runtime commands
+RUN npm install -g pnpm@9
 
 # Create app user and group
 RUN groupadd -g ${APP_GID} app && \
@@ -91,7 +53,7 @@ RUN mkdir -p /app/backend/db /app/backend/certs /app/backend/uploads
 
 # Cleanup
 RUN rm -rf /usr/local/lib/node_modules/npm/docs /usr/local/lib/node_modules/npm/man && \
-    rm -rf /root/.npm /tmp/* /var/tmp/*
+    rm -rf /root/.npm /root/.local/share/pnpm /tmp/* /var/tmp/*
 
 VOLUME ["/app/backend/db"]
 VOLUME ["/app/backend/uploads"]
