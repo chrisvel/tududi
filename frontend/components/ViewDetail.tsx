@@ -45,6 +45,13 @@ const ViewDetail: React.FC = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [showCriteriaDropdown, setShowCriteriaDropdown] = useState(false);
 
+    // Pagination state
+    const [offset, setOffset] = useState(0);
+    const [hasMore, setHasMore] = useState(false);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [totalCount, setTotalCount] = useState(0);
+    const limit = 20;
+
     // State for ProjectItem and Note components
     const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null);
@@ -108,7 +115,7 @@ const ViewDetail: React.FC = () => {
         });
     }, [tasks]);
 
-    const fetchViewAndResults = async () => {
+    const fetchViewAndResults = async (resetPagination = true) => {
         if (!uid) return;
 
         try {
@@ -123,8 +130,10 @@ const ViewDetail: React.FC = () => {
             const viewData = await viewResponse.json();
             setView(viewData);
 
-            // Fetch search results
-            const results = await searchUniversal({
+            const currentOffset = resetPagination ? 0 : offset;
+
+            // Fetch search results with pagination and exclude subtasks
+            const response = await searchUniversal({
                 query: viewData.search_query || '',
                 filters: viewData.filters,
                 priority: viewData.priority || undefined,
@@ -133,6 +142,9 @@ const ViewDetail: React.FC = () => {
                     viewData.tags && viewData.tags.length > 0
                         ? viewData.tags
                         : undefined,
+                limit: limit,
+                offset: currentOffset,
+                excludeSubtasks: true,
             });
 
             // Separate results by type
@@ -140,7 +152,7 @@ const ViewDetail: React.FC = () => {
             const noteResults: Note[] = [];
             const projectResults: Project[] = [];
 
-            results.forEach((result) => {
+            response.results.forEach((result) => {
                 if (result.type === 'Task') {
                     taskResults.push(result as any);
                 } else if (result.type === 'Note') {
@@ -150,15 +162,35 @@ const ViewDetail: React.FC = () => {
                 }
             });
 
-            setTasks(taskResults);
-            setNotes(noteResults);
-            setProjects(projectResults);
+            if (resetPagination) {
+                setTasks(taskResults);
+                setNotes(noteResults);
+                setProjects(projectResults);
+                setOffset(limit);
+            } else {
+                setTasks((prev) => [...prev, ...taskResults]);
+                setNotes((prev) => [...prev, ...noteResults]);
+                setProjects((prev) => [...prev, ...projectResults]);
+                setOffset((prev) => prev + limit);
+            }
+
+            setHasMore(response.pagination?.hasMore || false);
+            if (response.pagination) {
+                setTotalCount(response.pagination.total);
+            }
         } catch (error) {
             console.error('Error fetching view:', error);
             navigate('/views');
         } finally {
             setIsLoading(false);
+            setIsLoadingMore(false);
         }
+    };
+
+    const loadMore = async () => {
+        if (!hasMore || isLoadingMore) return;
+        setIsLoadingMore(true);
+        await fetchViewAndResults(false);
     };
 
     // Task handlers
@@ -518,7 +550,7 @@ const ViewDetail: React.FC = () => {
                 {tasks.length > 0 && (
                     <div className="mb-8">
                         <h3 className="text-lg font-light text-gray-900 dark:text-white mb-4">
-                            {t('tasks.title')} ({activeTasks.length})
+                            {t('tasks.title')} ({totalCount})
                         </h3>
                         <TaskList
                             tasks={tasks}
@@ -528,6 +560,61 @@ const ViewDetail: React.FC = () => {
                             hideProjectName={false}
                             onToggleToday={handleToggleToday}
                         />
+                        {/* Load more button */}
+                        {hasMore && (
+                            <div className="flex justify-center pt-4">
+                                <button
+                                    onClick={loadMore}
+                                    disabled={isLoadingMore}
+                                    className="inline-flex items-center px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    {isLoadingMore ? (
+                                        <>
+                                            <svg
+                                                className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <circle
+                                                    className="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                ></circle>
+                                                <path
+                                                    className="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                ></path>
+                                            </svg>
+                                            {t('common.loading', 'Loading...')}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <QueueListIcon className="h-4 w-4 mr-2" />
+                                            {t('common.loadMore', 'Load More')}
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Pagination info */}
+                        {tasks.length > 0 && (
+                            <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
+                                {t(
+                                    'tasks.showingItems',
+                                    'Showing {{current}} of {{total}} items',
+                                    {
+                                        current: tasks.length,
+                                        total: totalCount,
+                                    }
+                                )}
+                            </div>
+                        )}
                     </div>
                 )}
 

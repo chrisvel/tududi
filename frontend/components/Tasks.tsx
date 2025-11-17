@@ -22,7 +22,10 @@ import {
     XMarkIcon,
     MagnifyingGlassIcon,
 } from '@heroicons/react/24/solid';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import {
+    InformationCircleIcon,
+    QueueListIcon,
+} from '@heroicons/react/24/outline';
 import { getApiPath } from '../config/paths';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -57,6 +60,13 @@ const Tasks: React.FC = () => {
     const [isSearchExpanded, setIsSearchExpanded] = useState(false); // Collapsed by default
     const [showCompleted, setShowCompleted] = useState(false); // Show completed tasks toggle
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    // Pagination state
+    const [offset, setOffset] = useState(0);
+    const [hasMore, setHasMore] = useState(false);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [totalCount, setTotalCount] = useState(0);
+    const limit = 20;
 
     const dropdownRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
@@ -167,54 +177,88 @@ const Tasks: React.FC = () => {
         };
     }, [dropdownOpen]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const tagId = query.get('tag');
-                const type = query.get('type');
+    const fetchData = async (resetPagination = true) => {
+        setLoading(resetPagination);
+        setError(null);
+        try {
+            const tagId = query.get('tag');
+            const type = query.get('type');
 
-                // Fetch all tasks (both completed and non-completed) for client-side filtering
-                const allTasksUrl = new URLSearchParams(query.toString());
-                // Add special parameter to get ALL tasks (completed and non-completed)
-                allTasksUrl.set('client_side_filtering', 'true');
+            // Fetch all tasks (both completed and non-completed) for client-side filtering
+            const allTasksUrl = new URLSearchParams(query.toString());
+            // Add special parameter to get ALL tasks (completed and non-completed)
+            allTasksUrl.set('client_side_filtering', 'true');
 
-                // Add groupBy=day for upcoming tasks
-                if (type === 'upcoming') {
-                    allTasksUrl.set('type', 'upcoming');
-                    allTasksUrl.set('groupBy', 'day');
-                    // Always show 7 days (whole week including tomorrow)
-                    allTasksUrl.set('maxDays', '7');
-                    allTasksUrl.set('sidebarOpen', isSidebarOpen.toString());
-                    allTasksUrl.set('isMobile', isMobile.toString());
-                }
+            // Add groupBy=day for upcoming tasks
+            if (type === 'upcoming') {
+                allTasksUrl.set('type', 'upcoming');
+                allTasksUrl.set('groupBy', 'day');
+                // Always show 7 days (whole week including tomorrow)
+                allTasksUrl.set('maxDays', '7');
+                allTasksUrl.set('sidebarOpen', isSidebarOpen.toString());
+                allTasksUrl.set('isMobile', isMobile.toString());
+            }
 
-                const searchParams = allTasksUrl.toString();
+            // Add pagination parameters
+            const currentOffset = resetPagination ? 0 : offset;
+            allTasksUrl.set('limit', limit.toString());
+            allTasksUrl.set('offset', currentOffset.toString());
 
-                const tasksResponse = await fetch(
-                    getApiPath(
-                        `tasks?${searchParams}${tagId ? `&tag=${tagId}` : ''}`
-                    )
-                );
+            const searchParams = allTasksUrl.toString();
 
-                if (tasksResponse.ok) {
-                    const tasksData = await tasksResponse.json();
+            const tasksResponse = await fetch(
+                getApiPath(
+                    `tasks?${searchParams}${tagId ? `&tag=${tagId}` : ''}`
+                )
+            );
+
+            if (tasksResponse.ok) {
+                const tasksData = await tasksResponse.json();
+
+                if (resetPagination) {
                     setTasks(tasksData.tasks || []);
                     setGroupedTasks(tasksData.groupedTasks || null);
+                    setOffset(limit);
                 } else {
-                    throw new Error('Failed to fetch tasks.');
+                    setTasks((prev) => [...prev, ...(tasksData.tasks || [])]);
+                    // For grouped tasks, merge them
+                    if (tasksData.groupedTasks) {
+                        setGroupedTasks((prev) => {
+                            if (!prev) return tasksData.groupedTasks;
+                            return {
+                                ...prev,
+                                ...tasksData.groupedTasks,
+                            };
+                        });
+                    }
+                    setOffset((prev) => prev + limit);
                 }
 
-                // Projects are now loaded by Layout component into global store
-            } catch (error) {
-                setError((error as Error).message);
-            } finally {
-                setLoading(false);
+                setHasMore(tasksData.pagination?.hasMore || false);
+                if (tasksData.pagination) {
+                    setTotalCount(tasksData.pagination.total);
+                }
+            } else {
+                throw new Error('Failed to fetch tasks.');
             }
-        };
 
-        fetchData();
+            // Projects are now loaded by Layout component into global store
+        } catch (error) {
+            setError((error as Error).message);
+        } finally {
+            setLoading(false);
+            setIsLoadingMore(false);
+        }
+    };
+
+    const loadMore = async () => {
+        if (!hasMore || isLoadingMore) return;
+        setIsLoadingMore(true);
+        await fetchData(false);
+    };
+
+    useEffect(() => {
+        fetchData(true);
     }, [location, isSidebarOpen, isMobile]);
 
     // Handle window resize for mobile detection
@@ -458,7 +502,7 @@ const Tasks: React.FC = () => {
                 >
                     <div className="flex items-center mb-2 sm:mb-0">
                         <h2
-                            className={`${isUpcomingView ? 'text-lg sm:text-xl' : 'text-2xl'} font-medium`}
+                            className={`${isUpcomingView ? 'text-lg sm:text-xl' : 'text-2xl'} font-light`}
                         >
                             {title}
                         </h2>
@@ -634,36 +678,93 @@ const Tasks: React.FC = () => {
                         {displayTasks.length > 0 ||
                         (groupedTasks &&
                             Object.keys(groupedTasks).length > 0) ? (
-                            query.get('type') === 'upcoming' ? (
-                                <GroupedTaskList
-                                    tasks={displayTasks}
-                                    groupedTasks={groupedTasks}
-                                    onTaskCreate={handleTaskCreate}
-                                    onTaskUpdate={handleTaskUpdate}
-                                    onTaskCompletionToggle={
-                                        handleTaskCompletionToggle
-                                    }
-                                    onTaskDelete={handleTaskDelete}
-                                    projects={projects}
-                                    hideProjectName={false}
-                                    onToggleToday={undefined} // Don't show "Add to Today" in upcoming view
-                                    showCompletedTasks={showCompleted}
-                                    searchQuery={taskSearchQuery}
-                                />
-                            ) : (
-                                <TaskList
-                                    tasks={displayTasks}
-                                    onTaskCreate={handleTaskCreate}
-                                    onTaskUpdate={handleTaskUpdate}
-                                    onTaskCompletionToggle={
-                                        handleTaskCompletionToggle
-                                    }
-                                    onTaskDelete={handleTaskDelete}
-                                    projects={projects}
-                                    onToggleToday={handleToggleToday}
-                                    showCompletedTasks={showCompleted}
-                                />
-                            )
+                            <>
+                                {query.get('type') === 'upcoming' ? (
+                                    <GroupedTaskList
+                                        tasks={displayTasks}
+                                        groupedTasks={groupedTasks}
+                                        onTaskCreate={handleTaskCreate}
+                                        onTaskUpdate={handleTaskUpdate}
+                                        onTaskCompletionToggle={
+                                            handleTaskCompletionToggle
+                                        }
+                                        onTaskDelete={handleTaskDelete}
+                                        projects={projects}
+                                        hideProjectName={false}
+                                        onToggleToday={undefined} // Don't show "Add to Today" in upcoming view
+                                        showCompletedTasks={showCompleted}
+                                        searchQuery={taskSearchQuery}
+                                    />
+                                ) : (
+                                    <TaskList
+                                        tasks={displayTasks}
+                                        onTaskCreate={handleTaskCreate}
+                                        onTaskUpdate={handleTaskUpdate}
+                                        onTaskCompletionToggle={
+                                            handleTaskCompletionToggle
+                                        }
+                                        onTaskDelete={handleTaskDelete}
+                                        projects={projects}
+                                        onToggleToday={handleToggleToday}
+                                        showCompletedTasks={showCompleted}
+                                    />
+                                )}
+                                {/* Load more button */}
+                                {hasMore && (
+                                    <div className="flex justify-center pt-4">
+                                        <button
+                                            onClick={loadMore}
+                                            disabled={isLoadingMore}
+                                            className="inline-flex items-center px-6 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                            {isLoadingMore ? (
+                                                <>
+                                                    <svg
+                                                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <circle
+                                                            className="opacity-25"
+                                                            cx="12"
+                                                            cy="12"
+                                                            r="10"
+                                                            stroke="currentColor"
+                                                            strokeWidth="4"
+                                                        ></circle>
+                                                        <path
+                                                            className="opacity-75"
+                                                            fill="currentColor"
+                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                        ></path>
+                                                    </svg>
+                                                    {t('common.loading', 'Loading...')}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <QueueListIcon className="h-4 w-4 mr-2" />
+                                                    {t('common.loadMore', 'Load More')}
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Pagination info */}
+                                {tasks.length > 0 && (
+                                    <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2 pb-4">
+                                        {t(
+                                            'tasks.showingItems',
+                                            'Showing {{current}} of {{total}} items',
+                                            {
+                                                current: tasks.length,
+                                                total: totalCount,
+                                            }
+                                        )}
+                                    </div>
+                                )}
+                            </>
                         ) : (
                             <div className="flex justify-center items-center mt-4">
                                 <div className="w-full max-w bg-black/2 dark:bg-gray-900/25 rounded-l px-10 py-24 flex flex-col items-center opacity-95">
