@@ -107,9 +107,16 @@ router.get('/', async (req, res) => {
 
             // Add search query filter if specified
             if (searchQuery) {
+                const lowerQuery = searchQuery.toLowerCase();
                 taskConditions[Op.or] = [
-                    { name: { [Op.like]: `%${searchQuery}%` } },
-                    { note: { [Op.like]: `%${searchQuery}%` } },
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('Task.name')),
+                        { [Op.like]: `%${lowerQuery}%` }
+                    ),
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('Task.note')),
+                        { [Op.like]: `%${lowerQuery}%` }
+                    ),
                 ];
             }
 
@@ -173,9 +180,16 @@ router.get('/', async (req, res) => {
             };
 
             if (searchQuery) {
+                const lowerQuery = searchQuery.toLowerCase();
                 projectConditions[Op.or] = [
-                    { name: { [Op.like]: `%${searchQuery}%` } },
-                    { description: { [Op.like]: `%${searchQuery}%` } },
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('Project.name')),
+                        { [Op.like]: `%${lowerQuery}%` }
+                    ),
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('Project.description')),
+                        { [Op.like]: `%${lowerQuery}%` }
+                    ),
                 ];
             }
 
@@ -233,9 +247,16 @@ router.get('/', async (req, res) => {
             };
 
             if (searchQuery) {
+                const lowerQuery = searchQuery.toLowerCase();
                 areaConditions[Op.or] = [
-                    { name: { [Op.like]: `%${searchQuery}%` } },
-                    { description: { [Op.like]: `%${searchQuery}%` } },
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('Area.name')),
+                        { [Op.like]: `%${lowerQuery}%` }
+                    ),
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('Area.description')),
+                        { [Op.like]: `%${lowerQuery}%` }
+                    ),
                 ];
             }
 
@@ -263,9 +284,16 @@ router.get('/', async (req, res) => {
             };
 
             if (searchQuery) {
+                const lowerQuery = searchQuery.toLowerCase();
                 noteConditions[Op.or] = [
-                    { title: { [Op.like]: `%${searchQuery}%` } },
-                    { content: { [Op.like]: `%${searchQuery}%` } },
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('Note.title')),
+                        { [Op.like]: `%${lowerQuery}%` }
+                    ),
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('Note.content')),
+                        { [Op.like]: `%${lowerQuery}%` }
+                    ),
                 ];
             }
 
@@ -312,7 +340,13 @@ router.get('/', async (req, res) => {
             };
 
             if (searchQuery) {
-                tagConditions.name = { [Op.like]: `%${searchQuery}%` };
+                const lowerQuery = searchQuery.toLowerCase();
+                tagConditions[Op.and] = [
+                    sequelize.where(
+                        sequelize.fn('LOWER', sequelize.col('Tag.name')),
+                        { [Op.like]: `%${lowerQuery}%` }
+                    ),
+                ];
             }
 
             const tags = await Tag.findAll({
