@@ -74,7 +74,15 @@ router.get('/tasks', async (req, res) => {
     resetQueryCounter();
 
     try {
-        const { type, groupBy, maxDays, order_by, include_lists } = req.query;
+        const {
+            type,
+            groupBy,
+            maxDays,
+            order_by,
+            include_lists,
+            limit: limitParam,
+            offset: offsetParam,
+        } = req.query;
         const { id: userId, timezone } = req.currentUser;
 
         await handleRecurringTasks(userId, type);
@@ -110,8 +118,20 @@ router.get('/tasks', async (req, res) => {
             );
         }
 
+        // Pagination support
+        const hasPagination =
+            limitParam !== undefined || offsetParam !== undefined;
+        const totalCount = tasks.length;
+        let paginatedTasks = tasks;
+
+        if (hasPagination) {
+            const limit = parseInt(limitParam, 10) || 20;
+            const offset = parseInt(offsetParam, 10) || 0;
+            paginatedTasks = tasks.slice(offset, offset + limit);
+        }
+
         const groupedTasks = await buildGroupedTasks(
-            tasks,
+            paginatedTasks,
             type,
             groupBy,
             maxDays,
@@ -123,7 +143,11 @@ router.get('/tasks', async (req, res) => {
             type === 'today' ? { preserveOriginalName: true } : {};
 
         const response = {
-            tasks: await serializeTasks(tasks, timezone, serializationOptions),
+            tasks: await serializeTasks(
+                paginatedTasks,
+                timezone,
+                serializationOptions
+            ),
         };
 
         const serializedGrouped = await serializeGroupedTasks(
@@ -142,6 +166,18 @@ router.get('/tasks', async (req, res) => {
             include_lists,
             serializationOptions
         );
+
+        // Add pagination metadata if pagination was requested
+        if (hasPagination) {
+            const limit = parseInt(limitParam, 10) || 20;
+            const offset = parseInt(offsetParam, 10) || 0;
+            response.pagination = {
+                total: totalCount,
+                limit: limit,
+                offset: offset,
+                hasMore: offset + paginatedTasks.length < totalCount,
+            };
+        }
 
         addPerformanceHeaders(res, startTime, getQueryStats());
         res.json(response);

@@ -6,6 +6,9 @@ interface SearchParams {
     priority?: string;
     due?: string;
     tags?: string[];
+    limit?: number;
+    offset?: number;
+    excludeSubtasks?: boolean;
 }
 
 interface SearchResult {
@@ -19,9 +22,21 @@ interface SearchResult {
     status?: string;
 }
 
+interface Pagination {
+    total: number;
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+}
+
+interface SearchResponse {
+    results: SearchResult[];
+    pagination?: Pagination;
+}
+
 export const searchUniversal = async (
     params: SearchParams
-): Promise<SearchResult[]> => {
+): Promise<SearchResponse> => {
     try {
         const queryParams = new URLSearchParams();
 
@@ -45,6 +60,18 @@ export const searchUniversal = async (
             queryParams.append('tags', params.tags.join(','));
         }
 
+        if (params.limit !== undefined) {
+            queryParams.append('limit', params.limit.toString());
+        }
+
+        if (params.offset !== undefined) {
+            queryParams.append('offset', params.offset.toString());
+        }
+
+        if (params.excludeSubtasks) {
+            queryParams.append('excludeSubtasks', 'true');
+        }
+
         const response = await fetch(
             getApiPath(`search?${queryParams.toString()}`),
             {
@@ -61,9 +88,15 @@ export const searchUniversal = async (
         }
 
         const data = await response.json();
-        return data.results || [];
+        return {
+            results: data.results || [],
+            pagination: data.pagination,
+        };
     } catch (error) {
         console.error('Error searching:', error);
         throw error;
     }
 };
+
+// Export types for use in components
+export type { SearchParams, SearchResult, Pagination, SearchResponse };

@@ -1013,4 +1013,173 @@ describe('Universal Search Routes', () => {
             });
         });
     });
+
+    describe('Pagination', () => {
+        it('should paginate search results with limit and offset', async () => {
+            // Create 25 tasks to test pagination (more than default limit of 20)
+            const tasks = [];
+            for (let i = 1; i <= 25; i++) {
+                tasks.push(
+                    await Task.create({
+                        user_id: user.id,
+                        name: `Paginated Task ${i}`,
+                        note: 'Test pagination',
+                        status: 0,
+                    })
+                );
+            }
+
+            // First page: get first 10 results
+            const response1 = await agent.get('/api/search').query({
+                filters: 'Task',
+                limit: 10,
+                offset: 0,
+            });
+
+            expect(response1.status).toBe(200);
+            expect(response1.body.results).toBeDefined();
+            expect(response1.body.pagination).toBeDefined();
+            expect(response1.body.pagination.total).toBeGreaterThanOrEqual(25);
+            expect(response1.body.pagination.limit).toBe(10);
+            expect(response1.body.pagination.offset).toBe(0);
+            expect(response1.body.results.length).toBe(10);
+            expect(response1.body.pagination.hasMore).toBe(true);
+
+            // Second page: get next 10 results
+            const response2 = await agent.get('/api/search').query({
+                filters: 'Task',
+                limit: 10,
+                offset: 10,
+            });
+
+            expect(response2.status).toBe(200);
+            expect(response2.body.pagination.offset).toBe(10);
+            expect(response2.body.results.length).toBe(10);
+            expect(response2.body.pagination.hasMore).toBe(true);
+
+            // Third page: get remaining results
+            const response3 = await agent.get('/api/search').query({
+                filters: 'Task',
+                limit: 10,
+                offset: 20,
+            });
+
+            expect(response3.status).toBe(200);
+            expect(response3.body.pagination.offset).toBe(20);
+            expect(response3.body.results.length).toBeGreaterThanOrEqual(5);
+        });
+
+        it('should support pagination with tag filters', async () => {
+            // Create a tag
+            const tag = await Tag.create({
+                user_id: user.id,
+                name: 'pagination-test',
+            });
+
+            // Create 30 tasks with the tag
+            for (let i = 1; i <= 30; i++) {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: `Tagged Task ${i}`,
+                    status: 0,
+                });
+                // Associate task with tag using Sequelize association
+                await task.addTag(tag);
+            }
+
+            // Get first page
+            const response1 = await agent.get('/api/search').query({
+                filters: 'Task',
+                tags: 'pagination-test',
+                limit: 15,
+                offset: 0,
+            });
+
+            expect(response1.status).toBe(200);
+            expect(response1.body.pagination).toBeDefined();
+            expect(response1.body.pagination.total).toBe(30);
+            expect(response1.body.results.length).toBe(15);
+            expect(response1.body.pagination.hasMore).toBe(true);
+
+            // Get second page
+            const response2 = await agent.get('/api/search').query({
+                filters: 'Task',
+                tags: 'pagination-test',
+                limit: 15,
+                offset: 15,
+            });
+
+            expect(response2.status).toBe(200);
+            expect(response2.body.results.length).toBe(15);
+            expect(response2.body.pagination.hasMore).toBe(false);
+        });
+
+        it('should maintain backward compatibility without pagination params', async () => {
+            // Create 5 tasks
+            for (let i = 1; i <= 5; i++) {
+                await Task.create({
+                    user_id: user.id,
+                    name: `Task ${i}`,
+                    status: 0,
+                });
+            }
+
+            // Request without pagination params
+            const response = await agent.get('/api/search').query({
+                filters: 'Task',
+            });
+
+            expect(response.status).toBe(200);
+            expect(response.body.results).toBeDefined();
+            // Should NOT include pagination metadata when no params provided
+            expect(response.body.pagination).toBeUndefined();
+            expect(response.body.results.length).toBeGreaterThanOrEqual(5);
+        });
+
+        it('should handle offset beyond total results', async () => {
+            // Create 10 tasks
+            for (let i = 1; i <= 10; i++) {
+                await Task.create({
+                    user_id: user.id,
+                    name: `Task ${i}`,
+                    status: 0,
+                });
+            }
+
+            // Request with offset beyond available results
+            const response = await agent.get('/api/search').query({
+                filters: 'Task',
+                limit: 10,
+                offset: 100,
+            });
+
+            expect(response.status).toBe(200);
+            expect(response.body.pagination).toBeDefined();
+            expect(response.body.pagination.total).toBeGreaterThanOrEqual(10);
+            expect(response.body.results.length).toBe(0);
+            expect(response.body.pagination.hasMore).toBe(false);
+        });
+
+        it('should use default limit of 20 when limit param is provided without value', async () => {
+            // Create 25 tasks
+            for (let i = 1; i <= 25; i++) {
+                await Task.create({
+                    user_id: user.id,
+                    name: `Task ${i}`,
+                    status: 0,
+                });
+            }
+
+            // Request with limit param but no value (or invalid value)
+            const response = await agent.get('/api/search').query({
+                filters: 'Task',
+                limit: '',
+            });
+
+            expect(response.status).toBe(200);
+            expect(response.body.pagination).toBeDefined();
+            expect(response.body.pagination.limit).toBe(20);
+            expect(response.body.results.length).toBe(20);
+        });
+    });
 });

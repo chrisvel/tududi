@@ -25,6 +25,9 @@ const priorityToInt = (priorityStr) => {
  *   - priority: filter by priority (low,medium,high)
  *   - due: filter by due date (today,tomorrow,next_week,next_month)
  *   - tags: comma-separated list of tag names to filter by
+ *   - limit: number of results to return (default: 20)
+ *   - offset: number of results to skip (default: 0)
+ *   - excludeSubtasks: if 'true', exclude tasks that have a parent_task_id or recurring_parent_id
  */
 router.get('/', async (req, res) => {
     try {
@@ -33,7 +36,16 @@ router.get('/', async (req, res) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        const { q: query, filters, priority, due, tags: tagsParam } = req.query;
+        const {
+            q: query,
+            filters,
+            priority,
+            due,
+            tags: tagsParam,
+            limit: limitParam,
+            offset: offsetParam,
+            excludeSubtasks,
+        } = req.query;
         const searchQuery = query ? query.trim() : '';
         const filterTypes = filters
             ? filters.split(',').map((f) => f.trim())
@@ -42,7 +54,14 @@ router.get('/', async (req, res) => {
             ? tagsParam.split(',').map((t) => t.trim())
             : [];
 
+        // Pagination support
+        const hasPagination =
+            limitParam !== undefined || offsetParam !== undefined;
+        const limit = hasPagination ? parseInt(limitParam, 10) || 20 : 20;
+        const offset = hasPagination ? parseInt(offsetParam, 10) || 0 : 0;
+
         const results = [];
+        let totalCount = 0;
 
         // If tags are specified, find their IDs first
         let tagIds = [];
@@ -105,6 +124,12 @@ router.get('/', async (req, res) => {
                 user_id: userId,
             };
 
+            // Exclude subtasks and recurring instances if requested
+            if (excludeSubtasks === 'true') {
+                taskConditions.parent_task_id = null;
+                taskConditions.recurring_parent_id = null;
+            }
+
             // Add search query filter if specified
             if (searchQuery) {
                 const lowerQuery = searchQuery.toLowerCase();
@@ -153,10 +178,20 @@ router.get('/', async (req, res) => {
                 });
             }
 
+            // Count total tasks if pagination is requested
+            if (hasPagination) {
+                totalCount += await Task.count({
+                    where: taskConditions,
+                    include: tagIds.length > 0 ? taskInclude : undefined,
+                    distinct: true,
+                });
+            }
+
             const tasks = await Task.findAll({
                 where: taskConditions,
                 include: taskInclude,
-                limit: 20,
+                limit: limit,
+                offset: offset,
                 order: [['updated_at', 'DESC']],
             });
 
@@ -223,10 +258,21 @@ router.get('/', async (req, res) => {
                 });
             }
 
+            // Count total projects if pagination is requested
+            if (hasPagination) {
+                totalCount += await Project.count({
+                    where: projectConditions,
+                    include:
+                        projectInclude.length > 0 ? projectInclude : undefined,
+                    distinct: true,
+                });
+            }
+
             const projects = await Project.findAll({
                 where: projectConditions,
                 include: projectInclude.length > 0 ? projectInclude : undefined,
-                limit: 20,
+                limit: limit,
+                offset: offset,
                 order: [['updated_at', 'DESC']],
             });
 
@@ -266,9 +312,17 @@ router.get('/', async (req, res) => {
                 ];
             }
 
+            // Count total areas if pagination is requested
+            if (hasPagination) {
+                totalCount += await Area.count({
+                    where: areaConditions,
+                });
+            }
+
             const areas = await Area.findAll({
                 where: areaConditions,
-                limit: 20,
+                limit: limit,
+                offset: offset,
                 order: [['updated_at', 'DESC']],
             });
 
@@ -318,10 +372,20 @@ router.get('/', async (req, res) => {
                 });
             }
 
+            // Count total notes if pagination is requested
+            if (hasPagination) {
+                totalCount += await Note.count({
+                    where: noteConditions,
+                    include: noteInclude.length > 0 ? noteInclude : undefined,
+                    distinct: true,
+                });
+            }
+
             const notes = await Note.findAll({
                 where: noteConditions,
                 include: noteInclude.length > 0 ? noteInclude : undefined,
-                limit: 20,
+                limit: limit,
+                offset: offset,
                 order: [['updated_at', 'DESC']],
             });
 
@@ -355,9 +419,17 @@ router.get('/', async (req, res) => {
                 ];
             }
 
+            // Count total tags if pagination is requested
+            if (hasPagination) {
+                totalCount += await Tag.count({
+                    where: tagConditions,
+                });
+            }
+
             const tags = await Tag.findAll({
                 where: tagConditions,
-                limit: 20,
+                limit: limit,
+                offset: offset,
                 order: [['name', 'ASC']],
             });
 
@@ -371,7 +443,20 @@ router.get('/', async (req, res) => {
             );
         }
 
-        res.json({ results });
+        // Return results with pagination metadata if requested
+        if (hasPagination) {
+            res.json({
+                results,
+                pagination: {
+                    total: totalCount,
+                    limit: limit,
+                    offset: offset,
+                    hasMore: offset + results.length < totalCount,
+                },
+            });
+        } else {
+            res.json({ results });
+        }
     } catch (error) {
         console.error('Search error:', error);
         res.status(500).json({ error: 'Search failed' });

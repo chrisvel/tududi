@@ -65,7 +65,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                     due: selectedDue || undefined,
                     tags: selectedTags.length > 0 ? selectedTags : undefined,
                 });
-                setResults(data);
+                setResults(data.results);
             } catch (error) {
                 console.error('Search failed:', error);
                 setResults([]);
