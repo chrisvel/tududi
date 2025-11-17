@@ -26,6 +26,11 @@ const TASK_INCLUDES_WITH_SUBTASKS = [
                 through: { attributes: [] },
             },
         ],
+        separate: true, // Required for order to work with associations
+        order: [
+            ['order', 'ASC'],
+            ['created_at', 'ASC'],
+        ],
     },
 ];
 

@@ -139,6 +139,11 @@ module.exports = (sequelize) => {
                     key: 'id',
                 },
             },
+            order: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                comment: 'Order position for subtasks within a parent task',
+            },
             completed_at: {
                 type: DataTypes.DATE,
                 allowNull: true,
@@ -161,6 +166,10 @@ module.exports = (sequelize) => {
                 },
                 {
                     fields: ['parent_task_id'],
+                },
+                {
+                    name: 'tasks_parent_task_id_order',
+                    fields: ['parent_task_id', 'order'],
                 },
             ],
         }
