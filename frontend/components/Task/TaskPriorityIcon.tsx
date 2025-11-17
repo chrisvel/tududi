@@ -66,7 +66,7 @@ const TaskPriorityIcon: React.FC<TaskPriorityIconProps> = ({
                 return 'text-yellow-500';
             case 'low':
             case 0:
-                return 'text-gray-300';
+                return 'text-blue-500';
             case null:
             case undefined:
             case '':
