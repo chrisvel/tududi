@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
             tags: tagsParam,
             limit: limitParam,
             offset: offsetParam,
-            excludeSubtasks
+            excludeSubtasks,
         } = req.query;
         const searchQuery = query ? query.trim() : '';
         const filterTypes = filters
@@ -55,7 +55,8 @@ router.get('/', async (req, res) => {
             : [];
 
         // Pagination support
-        const hasPagination = limitParam !== undefined || offsetParam !== undefined;
+        const hasPagination =
+            limitParam !== undefined || offsetParam !== undefined;
         const limit = hasPagination ? parseInt(limitParam, 10) || 20 : 20;
         const offset = hasPagination ? parseInt(offsetParam, 10) || 0 : 0;
 
@@ -261,7 +262,8 @@ router.get('/', async (req, res) => {
             if (hasPagination) {
                 totalCount += await Project.count({
                     where: projectConditions,
-                    include: projectInclude.length > 0 ? projectInclude : undefined,
+                    include:
+                        projectInclude.length > 0 ? projectInclude : undefined,
                     distinct: true,
                 });
             }
