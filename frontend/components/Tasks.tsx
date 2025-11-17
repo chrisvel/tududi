@@ -79,42 +79,36 @@ const Tasks: React.FC = () => {
     const displayTasks = useMemo(() => {
         let filteredTasks;
 
-        // For upcoming view, don't filter by completion status here
-        // Let GroupedTaskList handle it
-        if (isUpcomingView) {
-            filteredTasks = tasks;
+        // Filter by completion status (applies to all views)
+        if (showCompleted) {
+            // Show only completed tasks (done=2 or archived=3)
+            filteredTasks = tasks.filter(
+                (task) =>
+                    task.status === 'done' ||
+                    task.status === 'archived' ||
+                    task.status === 2 ||
+                    task.status === 3
+            );
         } else {
-            // First filter by completion status
-            if (showCompleted) {
-                // Show only completed tasks (done=2 or archived=3)
-                filteredTasks = tasks.filter(
-                    (task) =>
-                        task.status === 'done' ||
-                        task.status === 'archived' ||
-                        task.status === 2 ||
-                        task.status === 3
-                );
-            } else {
-                // Show only non-completed tasks - exclude done(2) and archived(3)
-                filteredTasks = tasks.filter(
-                    (task) =>
-                        task.status !== 'done' &&
-                        task.status !== 'archived' &&
-                        task.status !== 2 &&
-                        task.status !== 3
-                );
-            }
+            // Show only non-completed tasks - exclude done(2) and archived(3)
+            filteredTasks = tasks.filter(
+                (task) =>
+                    task.status !== 'done' &&
+                    task.status !== 'archived' &&
+                    task.status !== 2 &&
+                    task.status !== 3
+            );
+        }
 
-            // Then filter by search query if provided (skip for upcoming view)
-            if (taskSearchQuery.trim()) {
-                const query = taskSearchQuery.toLowerCase();
-                filteredTasks = filteredTasks.filter(
-                    (task) =>
-                        task.name.toLowerCase().includes(query) ||
-                        task.original_name?.toLowerCase().includes(query) ||
-                        task.note?.toLowerCase().includes(query)
-                );
-            }
+        // Then filter by search query if provided (skip for upcoming view)
+        if (taskSearchQuery.trim() && !isUpcomingView) {
+            const query = taskSearchQuery.toLowerCase();
+            filteredTasks = filteredTasks.filter(
+                (task) =>
+                    task.name.toLowerCase().includes(query) ||
+                    task.original_name?.toLowerCase().includes(query) ||
+                    task.note?.toLowerCase().includes(query)
+            );
         }
 
         return filteredTasks;
