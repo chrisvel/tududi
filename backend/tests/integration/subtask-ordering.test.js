@@ -325,15 +325,13 @@ describe('Subtask Ordering', () => {
 
             // Add subtasks in multiple concurrent requests
             const promises = [
-                agent
-                    .patch(`/api/task/${createResponse.body.id}`)
-                    .send({
-                        name: 'Parent Task',
-                        subtasks: [
-                            { name: 'Batch 1 - Task 1', isNew: true },
-                            { name: 'Batch 1 - Task 2', isNew: true },
-                        ],
-                    }),
+                agent.patch(`/api/task/${createResponse.body.id}`).send({
+                    name: 'Parent Task',
+                    subtasks: [
+                        { name: 'Batch 1 - Task 1', isNew: true },
+                        { name: 'Batch 1 - Task 2', isNew: true },
+                    ],
+                }),
                 // Note: This test demonstrates the limitation - concurrent updates
                 // may result in inconsistent state. In practice, the UI prevents this.
             ];
