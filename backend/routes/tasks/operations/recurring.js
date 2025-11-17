@@ -9,12 +9,29 @@ const {
 } = require('../../../utils/timezone-utils');
 
 async function handleRecurrenceUpdate(task, recurrenceFields, reqBody) {
+    // Check if recurrence fields changed
     const recurrenceChanged = recurrenceFields.some((field) => {
         const newValue = reqBody[field];
         return newValue !== undefined && newValue !== task[field];
     });
 
-    if (!recurrenceChanged || task.recurrence_type === 'none') {
+    // Also check if template fields that affect instances have changed
+    // These fields should be propagated to all future instances
+    const templateFieldsChanged = [
+        'name',
+        'project_id',
+        'priority',
+        'note',
+    ].some((field) => {
+        const newValue = reqBody[field];
+        return newValue !== undefined && newValue !== task[field];
+    });
+
+    const shouldRegenerateInstances =
+        (recurrenceChanged || templateFieldsChanged) &&
+        task.recurrence_type !== 'none';
+
+    if (!shouldRegenerateInstances) {
         return false;
     }
 
@@ -39,7 +56,7 @@ async function handleRecurrenceUpdate(task, recurrenceFields, reqBody) {
         }
     }
 
-    return recurrenceChanged;
+    return shouldRegenerateInstances;
 }
 
 async function calculateNextIterations(task, startFromDate, userTimezone) {

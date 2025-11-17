@@ -77,13 +77,13 @@ const Tasks: React.FC = () => {
 
     // Filter tasks based on completion status and search query
     const displayTasks = useMemo(() => {
-        let filteredTasks;
+        let filteredTasks: Task[];
 
         // Filter by completion status (applies to all views)
         if (showCompleted) {
             // Show only completed tasks (done=2 or archived=3)
             filteredTasks = tasks.filter(
-                (task) =>
+                (task: Task) =>
                     task.status === 'done' ||
                     task.status === 'archived' ||
                     task.status === 2 ||
@@ -92,7 +92,7 @@ const Tasks: React.FC = () => {
         } else {
             // Show only non-completed tasks - exclude done(2) and archived(3)
             filteredTasks = tasks.filter(
-                (task) =>
+                (task: Task) =>
                     task.status !== 'done' &&
                     task.status !== 'archived' &&
                     task.status !== 2 &&
@@ -104,7 +104,7 @@ const Tasks: React.FC = () => {
         if (taskSearchQuery.trim() && !isUpcomingView) {
             const query = taskSearchQuery.toLowerCase();
             filteredTasks = filteredTasks.filter(
-                (task) =>
+                (task: Task) =>
                     task.name.toLowerCase().includes(query) ||
                     task.original_name?.toLowerCase().includes(query) ||
                     task.note?.toLowerCase().includes(query)
