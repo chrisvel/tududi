@@ -157,20 +157,24 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
     // Handle task updates only when the task ID changes or modal opens
     useEffect(() => {
-        setFormData(task);
-        setTags(task.tags?.map((tag) => tag.name) || []);
+        if (isOpen) {
+            setFormData(task);
+            setTags(task.tags?.map((tag) => tag.name) || []);
 
-        // Clear project name - selected project will show as badge
-        setNewProjectName('');
+            // Clear project name - selected project will show as badge
+            setNewProjectName('');
 
-        // Auto-expand recurrence section for child tasks (once when modal opens)
-        if (task.recurring_parent_uid) {
-            setBaseSections((prev) => ({
-                ...prev,
-                recurrence: true,
-            }));
+            // Reset expandable sections to default state
+            setBaseSections({
+                tags: false,
+                project: false,
+                priority: false,
+                dueDate: false,
+                recurrence: task.recurring_parent_uid ? true : false,
+                subtasks: false,
+            });
         }
-    }, [task.id, task.project_id, projects]);
+    }, [isOpen, task.id, task.project_id, projects]);
 
     // Handle task analysis separately
     useEffect(() => {
