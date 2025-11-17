@@ -1022,7 +1022,9 @@ const ProjectDetails: React.FC = () => {
                                 <div className="flex items-center gap-2 flex-wrap justify-end">
                                     {/* Search Button */}
                                     <button
-                                        onClick={() => setIsSearchExpanded((v) => !v)}
+                                        onClick={() =>
+                                            setIsSearchExpanded((v) => !v)
+                                        }
                                         className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-1.5 ${
                                             isSearchExpanded
                                                 ? 'bg-blue-50/70 dark:bg-blue-900/20'
@@ -1122,7 +1124,9 @@ const ProjectDetails: React.FC = () => {
                             <div className="flex items-center gap-4">
                                 {/* Search Button */}
                                 <button
-                                    onClick={() => setIsSearchExpanded((v) => !v)}
+                                    onClick={() =>
+                                        setIsSearchExpanded((v) => !v)
+                                    }
                                     className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
                                         isSearchExpanded
                                             ? 'bg-blue-50/70 dark:bg-blue-900/20'
@@ -1264,7 +1268,10 @@ const ProjectDetails: React.FC = () => {
                                                     'project.noCompletedTasks',
                                                     'No completed tasks.'
                                                 )
-                                              : t('project.noTasks', 'No tasks.')}
+                                              : t(
+                                                    'project.noTasks',
+                                                    'No tasks.'
+                                                )}
                                     </p>
                                 </div>
                             )}
