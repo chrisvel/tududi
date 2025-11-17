@@ -78,7 +78,7 @@ const InboxItems: React.FC = () => {
         () => ({
             name: '',
             status: 'not_started' as const,
-            priority: 'low' as const,
+            priority: null,
             completed_at: null,
         }),
         []
