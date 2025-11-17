@@ -851,6 +851,166 @@ describe('Universal Search Routes', () => {
                 );
                 expect(returnedTasks.length).toBeLessThanOrEqual(20);
             });
+
+            it('should perform case-insensitive search for ASCII characters', async () => {
+                // NOTE: SQLite's LOWER() function only supports ASCII characters
+                // For Unicode (Cyrillic, Greek, etc.), search is case-sensitive
+                // This is a known limitation of SQLite without ICU extension
+
+                // Create test data with mixed case ASCII
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Important Meeting',
+                    note: 'Discussion about Project',
+                    status: 0,
+                });
+
+                await Project.create({
+                    user_id: user.id,
+                    name: 'Website Redesign',
+                    description: 'Complete overhaul of company site',
+                    state: 'active',
+                });
+
+                // Test lowercase search finds uppercase ASCII
+                const response1 = await agent.get('/api/search').query({
+                    q: 'important',
+                    filters: 'Task',
+                });
+                expect(response1.status).toBe(200);
+                const tasks1 = response1.body.results.filter(
+                    (r) => r.type === 'Task'
+                );
+                expect(tasks1.length).toBeGreaterThanOrEqual(1);
+                expect(tasks1.some((t) => t.name.includes('Important'))).toBe(
+                    true
+                );
+
+                // Test uppercase search finds mixed case ASCII
+                const response2 = await agent.get('/api/search').query({
+                    q: 'MEETING',
+                    filters: 'Task',
+                });
+                expect(response2.status).toBe(200);
+                const tasks2 = response2.body.results.filter(
+                    (r) => r.type === 'Task'
+                );
+                expect(tasks2.length).toBeGreaterThanOrEqual(1);
+                expect(
+                    tasks2.some((t) => t.name.toLowerCase().includes('meeting'))
+                ).toBe(true);
+
+                // Test search in note content (case-insensitive)
+                const response3 = await agent.get('/api/search').query({
+                    q: 'project',
+                    filters: 'Task',
+                });
+                expect(response3.status).toBe(200);
+                const tasks3 = response3.body.results.filter(
+                    (r) => r.type === 'Task'
+                );
+                expect(tasks3.length).toBeGreaterThanOrEqual(1);
+
+                // Test project search (case-insensitive)
+                const response4 = await agent.get('/api/search').query({
+                    q: 'website',
+                    filters: 'Project',
+                });
+                expect(response4.status).toBe(200);
+                const projects = response4.body.results.filter(
+                    (r) => r.type === 'Project'
+                );
+                expect(projects.length).toBeGreaterThanOrEqual(1);
+                expect(projects.some((p) => p.name.includes('Website'))).toBe(
+                    true
+                );
+            });
+
+            it('should demonstrate Cyrillic search limitation', async () => {
+                // NOTE: This test documents the current Cyrillic search limitation
+                // SQLite's LOWER() only works with ASCII, so our search uses:
+                //   - JavaScript toLowerCase() on search query: "Тест" -> "тест"
+                //   - SQLite LOWER() on database: "Тест Русский" -> "Тест Русский" (unchanged)
+                // Result: Case-insensitive search doesn't work for Cyrillic
+                // Future improvement: Add ICU extension, FTS5, or normalized search fields
+
+                // Create test data with Cyrillic text (all lowercase to match search query)
+                await Task.create({
+                    user_id: user.id,
+                    name: 'тест русский',
+                    note: 'заметка по-русски',
+                    status: 0,
+                });
+
+                await Task.create({
+                    user_id: user.id,
+                    name: 'завдання українське',
+                    note: 'нотатка українською',
+                    status: 0,
+                });
+
+                // Lowercase search DOES work when database text is also lowercase
+                const response1 = await agent.get('/api/search').query({
+                    q: 'тест',
+                    filters: 'Task',
+                });
+                expect(response1.status).toBe(200);
+                const tasks1 = response1.body.results.filter(
+                    (r) => r.type === 'Task'
+                );
+                expect(tasks1.length).toBeGreaterThanOrEqual(1);
+                expect(tasks1.some((t) => t.name.includes('тест'))).toBe(true);
+
+                // Ukrainian lowercase search works
+                const response2 = await agent.get('/api/search').query({
+                    q: 'завдання',
+                    filters: 'Task',
+                });
+                expect(response2.status).toBe(200);
+                const tasks2 = response2.body.results.filter(
+                    (r) => r.type === 'Task'
+                );
+                expect(tasks2.length).toBeGreaterThanOrEqual(1);
+                expect(tasks2.some((t) => t.name.includes('завдання'))).toBe(
+                    true
+                );
+
+                // Search in note content works
+                const response3 = await agent.get('/api/search').query({
+                    q: 'заметка',
+                    filters: 'Task',
+                });
+                expect(response3.status).toBe(200);
+                const tasks3 = response3.body.results.filter(
+                    (r) => r.type === 'Task'
+                );
+                expect(tasks3.length).toBeGreaterThanOrEqual(1);
+                expect(
+                    tasks3.some((t) => t.description?.includes('заметка'))
+                ).toBe(true);
+
+                // Now test the limitation: Create uppercase Cyrillic task
+                await Task.create({
+                    user_id: user.id,
+                    name: 'ТЕСТ UPPERCASE',
+                    note: 'UPPERCASE заметка',
+                    status: 0,
+                });
+
+                // Lowercase search will NOT find uppercase Cyrillic (limitation)
+                const response4 = await agent.get('/api/search').query({
+                    q: 'тест uppercase',
+                    filters: 'Task',
+                });
+                expect(response4.status).toBe(200);
+                const tasks4 = response4.body.results.filter(
+                    (r) => r.type === 'Task'
+                );
+                // Won't find it because JavaScript lowercased query doesn't match uppercase Cyrillic in DB
+                expect(tasks4.some((t) => t.name.includes('UPPERCASE'))).toBe(
+                    false
+                );
+            });
         });
     });
 });
