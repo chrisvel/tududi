@@ -187,7 +187,10 @@ router.get('/', async (req, res) => {
                         { [Op.like]: `%${lowerQuery}%` }
                     ),
                     sequelize.where(
-                        sequelize.fn('LOWER', sequelize.col('Project.description')),
+                        sequelize.fn(
+                            'LOWER',
+                            sequelize.col('Project.description')
+                        ),
                         { [Op.like]: `%${lowerQuery}%` }
                     ),
                 ];
@@ -254,7 +257,10 @@ router.get('/', async (req, res) => {
                         { [Op.like]: `%${lowerQuery}%` }
                     ),
                     sequelize.where(
-                        sequelize.fn('LOWER', sequelize.col('Area.description')),
+                        sequelize.fn(
+                            'LOWER',
+                            sequelize.col('Area.description')
+                        ),
                         { [Op.like]: `%${lowerQuery}%` }
                     ),
                 ];

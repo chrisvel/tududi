@@ -1007,9 +1007,9 @@ describe('Universal Search Routes', () => {
                     (r) => r.type === 'Task'
                 );
                 // Won't find it because JavaScript lowercased query doesn't match uppercase Cyrillic in DB
-                expect(
-                    tasks4.some((t) => t.name.includes('UPPERCASE'))
-                ).toBe(false);
+                expect(tasks4.some((t) => t.name.includes('UPPERCASE'))).toBe(
+                    false
+                );
             });
         });
     });
