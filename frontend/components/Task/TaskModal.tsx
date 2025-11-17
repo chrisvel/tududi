@@ -942,7 +942,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 )}
                                             >
                                                 <ArrowPathIcon className="h-5 w-5" />
-                                                {(formData.recurrence_type ||
+                                                {((formData.recurrence_type &&
+                                                    formData.recurrence_type !==
+                                                        'none') ||
                                                     formData.recurring_parent_uid) && (
                                                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
                                                 )}
