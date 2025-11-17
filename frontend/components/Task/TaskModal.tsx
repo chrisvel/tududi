@@ -580,7 +580,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                         ref={modalRef}
                         data-testid="task-modal"
                         data-state={isSaving ? 'saving' : 'idle'}
-                        className={`bg-white dark:bg-gray-800 border-0 w-full sm:max-w-2xl transform transition-transform duration-300 ${
+                        className={`bg-white dark:bg-gray-800 border-0 w-full sm:max-w-2xl max-w-full overflow-hidden transform transition-transform duration-300 ${
                             isClosing ? 'scale-95' : 'scale-100'
                         } h-full sm:h-auto sm:my-4`}
                     >

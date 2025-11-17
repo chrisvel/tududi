@@ -28,10 +28,14 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
 
     const scrollToBottom = () => {
         setTimeout(() => {
-            if (subtasksSectionRef.current) {
-                subtasksSectionRef.current.scrollIntoView({
+            // Find the modal's scrollable container
+            const modalScrollContainer = document.querySelector(
+                '.absolute.inset-0.overflow-y-auto'
+            );
+            if (modalScrollContainer) {
+                modalScrollContainer.scrollTo({
+                    top: modalScrollContainer.scrollHeight,
                     behavior: 'smooth',
-                    block: 'end',
                 });
             }
         }, 100);
@@ -150,7 +154,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                             className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800"
                         >
                             {editingIndex === index ? (
-                                <div className="px-3 py-2.5 flex items-center space-x-3">
+                                <div className="px-3 py-2.5 flex items-center space-x-3 overflow-hidden">
                                     <div className="flex-shrink-0">
                                         <TaskPriorityIcon
                                             priority={subtask.priority || 'low'}
@@ -206,7 +210,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                             }
                                         }}
                                         onBlur={handleSaveEdit}
-                                        className="flex-1 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:text-white"
+                                        className="flex-1 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:text-white overflow-hidden"
                                         autoFocus
                                     />
                                     <button
@@ -219,8 +223,8 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                     </button>
                                 </div>
                             ) : (
-                                <div className="px-3 py-2.5 flex items-center justify-between">
-                                    <div className="flex items-center space-x-3 flex-1 min-w-0">
+                                <div className="px-3 py-2.5 flex items-center justify-between overflow-hidden">
+                                    <div className="flex items-center space-x-3 flex-1 min-w-0 overflow-hidden">
                                         <div className="flex-shrink-0">
                                             <TaskPriorityIcon
                                                 priority={
@@ -266,7 +270,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                                             />
                                         </div>
                                         <span
-                                            className={`text-sm flex-1 truncate cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 ${
+                                            className={`text-sm flex-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 break-all ${
                                                 subtask.status === 'done' ||
                                                 subtask.status === 2 ||
                                                 subtask.status === 'archived' ||
@@ -325,7 +329,7 @@ const TaskSubtasksSection: React.FC<TaskSubtasksSectionProps> = ({
                     onChange={(e) => setNewSubtaskName(e.target.value)}
                     onKeyDown={handleKeyPress}
                     placeholder={t('subtasks.placeholder', 'Add a subtask...')}
-                    className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white overflow-hidden"
                 />
                 <button
                     type="button"
