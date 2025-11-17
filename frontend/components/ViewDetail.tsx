@@ -103,18 +103,6 @@ const ViewDetail: React.FC = () => {
         }
     }, [isEditingName, editedName]);
 
-    // Filter out completed tasks for display count
-    const activeTasks = useMemo(() => {
-        return tasks.filter((task) => {
-            const isCompleted =
-                task.status === 'done' ||
-                task.status === 'archived' ||
-                task.status === 2 ||
-                task.status === 3;
-            return !isCompleted;
-        });
-    }, [tasks]);
-
     const fetchViewAndResults = async (resetPagination = true) => {
         if (!uid) return;
 
