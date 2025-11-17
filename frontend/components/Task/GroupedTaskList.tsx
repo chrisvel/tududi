@@ -58,10 +58,19 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
             return { recurringGroups: [], standaloneTask: [] };
         }
 
-        // Filter completed tasks if needed
+        // Filter tasks based on completion status
         const filteredTasks = showCompletedTasks
-            ? tasks
+            ? tasks.filter((task) => {
+                  // Show only completed tasks (done=2 or archived=3)
+                  const isCompleted =
+                      task.status === 'done' ||
+                      task.status === 'archived' ||
+                      task.status === 2 ||
+                      task.status === 3;
+                  return isCompleted;
+              })
             : tasks.filter((task) => {
+                  // Show only non-completed tasks
                   const isCompleted =
                       task.status === 'done' ||
                       task.status === 'archived' ||
@@ -131,9 +140,19 @@ const GroupedTaskList: React.FC<GroupedTaskListProps> = ({
 
         const filtered: GroupedTasks = {};
         Object.entries(groupedTasks).forEach(([groupName, groupTasks]) => {
+            // Filter by completion status
             let filteredTasks = showCompletedTasks
-                ? groupTasks
+                ? groupTasks.filter((task) => {
+                      // Show only completed tasks
+                      const isCompleted =
+                          task.status === 'done' ||
+                          task.status === 'archived' ||
+                          task.status === 2 ||
+                          task.status === 3;
+                      return isCompleted;
+                  })
                 : groupTasks.filter((task) => {
+                      // Show only non-completed tasks
                       const isCompleted =
                           task.status === 'done' ||
                           task.status === 'archived' ||
