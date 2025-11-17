@@ -14,6 +14,6 @@
     "tsBuildInfoFile": ".tsbuildinfo",
     "types": ["node"]
   },
-  "include": ["frontend/**/*"],
-  "exclude": ["node_modules", "dist", "backend"]
+  "include": ["./**/*"],
+  "exclude": ["node_modules", "../dist", "../backend"]
 }

@@ -14,9 +14,9 @@ cleanup() {
 trap cleanup INT TERM EXIT
 
 echo "Starting backend..."
-npm run backend:start &
+pnpm --filter tududi-backend run start &
 
 echo "Starting frontend..."
-npm run frontend:dev &
+pnpm --filter tududi-frontend run dev &
 
 wait
