@@ -1192,7 +1192,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                         onClick={handleAvatarRemove}
                                         className="mt-3 text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                                     >
-                                        {t('profile.removeAvatar', 'Remove Avatar')}
+                                        {t(
+                                            'profile.removeAvatar',
+                                            'Remove Avatar'
+                                        )}
                                     </button>
                                 )}
                                 <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
