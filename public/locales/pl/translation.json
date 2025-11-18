@@ -305,7 +305,17 @@
     "name": "Imię",
     "surname": "Nazwisko",
     "enterName": "Wprowadź swoje imię",
-    "enterSurname": "Wprowadź swoje nazwisko"
+    "enterSurname": "Wprowadź swoje nazwisko",
+    "avatar": "Profile Photo",
+    "uploadAvatar": "Upload Photo",
+    "removeAvatar": "Remove Avatar",
+    "avatarDescription": "Upload a profile photo (max 5MB)",
+    "avatarUploadError": "Please upload an image file",
+    "avatarSizeError": "Image must be smaller than 5MB",
+    "avatarUploadSuccess": "Avatar uploaded successfully!",
+    "avatarRemoveSuccess": "Avatar removed successfully!",
+    "avatarUploadFailed": "Failed to upload avatar",
+    "avatarRemoveFailed": "Failed to remove avatar"
   },
   "productivity": {
     "stalledProjects": "Zatrzymane projekty",

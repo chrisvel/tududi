@@ -802,13 +802,17 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            showErrorToast('Please upload an image file');
+            showErrorToast(
+                t('profile.avatarUploadError', 'Please upload an image file')
+            );
             return;
         }
 
         // Validate file size (5MB)
         if (file.size > 5 * 1024 * 1024) {
-            showErrorToast('Image must be smaller than 5MB');
+            showErrorToast(
+                t('profile.avatarSizeError', 'Image must be smaller than 5MB')
+            );
             return;
         }
 
@@ -1146,8 +1150,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             {/* Avatar Upload Section */}
                             <div className="mb-8 flex flex-col items-center">
                                 <div className="relative">
-                                    {avatarPreview ||
-                                    formData.avatar_image ? (
+                                    {avatarPreview || formData.avatar_image ? (
                                         <img
                                             src={
                                                 avatarPreview ||
@@ -1189,11 +1192,14 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                         onClick={handleAvatarRemove}
                                         className="mt-3 text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                                     >
-                                        Remove Avatar
+                                        {t('profile.removeAvatar', 'Remove Avatar')}
                                     </button>
                                 )}
                                 <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                    Upload a profile photo (max 5MB)
+                                    {t(
+                                        'profile.avatarDescription',
+                                        'Upload a profile photo (max 5MB)'
+                                    )}
                                 </p>
                             </div>
 

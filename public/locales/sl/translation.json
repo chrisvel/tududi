@@ -305,7 +305,17 @@
     "name": "Ime",
     "surname": "Priimek",
     "enterName": "Vnesite svoje ime",
-    "enterSurname": "Vnesite svoj priimek"
+    "enterSurname": "Vnesite svoj priimek",
+    "avatar": "Profile Photo",
+    "uploadAvatar": "Upload Photo",
+    "removeAvatar": "Remove Avatar",
+    "avatarDescription": "Upload a profile photo (max 5MB)",
+    "avatarUploadError": "Please upload an image file",
+    "avatarSizeError": "Image must be smaller than 5MB",
+    "avatarUploadSuccess": "Avatar uploaded successfully!",
+    "avatarRemoveSuccess": "Avatar removed successfully!",
+    "avatarUploadFailed": "Failed to upload avatar",
+    "avatarRemoveFailed": "Failed to remove avatar"
   },
   "productivity": {
     "stalledProjects": "Zastali projekti",

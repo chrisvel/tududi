@@ -305,7 +305,17 @@
     "name": "الاسم",
     "surname": "الكنية",
     "enterName": "أدخل اسمك",
-    "enterSurname": "أدخل كنيتك"
+    "enterSurname": "أدخل كنيتك",
+    "avatar": "Profile Photo",
+    "uploadAvatar": "Upload Photo",
+    "removeAvatar": "Remove Avatar",
+    "avatarDescription": "Upload a profile photo (max 5MB)",
+    "avatarUploadError": "Please upload an image file",
+    "avatarSizeError": "Image must be smaller than 5MB",
+    "avatarUploadSuccess": "Avatar uploaded successfully!",
+    "avatarRemoveSuccess": "Avatar removed successfully!",
+    "avatarUploadFailed": "Failed to upload avatar",
+    "avatarRemoveFailed": "Failed to remove avatar"
   },
   "productivity": {
     "stalledProjects": "المشاريع المتوقفة",
@@ -1009,7 +1019,9 @@
     "dueDate": "تاريخ الاستحقاق",
     "noCriteriaSet": "لم يتم تعيين أي معايير محددة",
     "priorityLabel": "الأولوية:",
-    "dueLabel": "استحقاق:"
+    "dueLabel": "استحقاق:",
+    "tags": "علامات",
+    "recurring": "متكرر"
   },
   "search": {
     "placeholder": "ابحث عن المهام، المشاريع، الملاحظات...",
@@ -1041,6 +1053,14 @@
       "project": "مشروع",
       "area": "منطقة",
       "note": "ملاحظة"
+    },
+    "thatAre": "، التي هي",
+    "extras": "إضافات",
+    "recurringFilter": {
+      "label": "متكرر",
+      "recurring": "قوالب متكررة",
+      "nonRecurring": "غير متكرر",
+      "instances": "حالات متكررة"
     }
   }
 }

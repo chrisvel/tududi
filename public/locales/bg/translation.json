@@ -305,7 +305,17 @@
     "name": "Име",
     "surname": "Фамилия",
     "enterName": "Въведете вашето име",
-    "enterSurname": "Въведете вашата фамилия"
+    "enterSurname": "Въведете вашата фамилия",
+    "avatar": "Profile Photo",
+    "uploadAvatar": "Upload Photo",
+    "removeAvatar": "Remove Avatar",
+    "avatarDescription": "Upload a profile photo (max 5MB)",
+    "avatarUploadError": "Please upload an image file",
+    "avatarSizeError": "Image must be smaller than 5MB",
+    "avatarUploadSuccess": "Avatar uploaded successfully!",
+    "avatarRemoveSuccess": "Avatar removed successfully!",
+    "avatarUploadFailed": "Failed to upload avatar",
+    "avatarRemoveFailed": "Failed to remove avatar"
   },
   "productivity": {
     "stalledProjects": "Забавени проекти",
