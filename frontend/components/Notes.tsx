@@ -560,41 +560,73 @@ const Notes: React.FC = () => {
                                     </p>
                                 </div>
                             ) : (
-                                sortedNotes.map((note, index) => (
-                                    <div
-                                        key={note.uid}
-                                        onClick={() => handleSelectNote(note)}
-                                        className={`p-5 cursor-pointer ${
-                                            previewNote?.uid === note.uid
-                                                ? 'bg-white dark:bg-gray-900 border-b border-transparent'
-                                                : index !==
-                                                    sortedNotes.length - 1
-                                                  ? 'border-b border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                                  : 'border-b border-transparent hover:bg-gray-50 dark:hover:bg-gray-800'
-                                        }`}
-                                    >
-                                        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
-                                            {note.title ||
-                                                t(
-                                                    'notes.untitled',
-                                                    'Untitled Note'
+                                sortedNotes.map((note, index) => {
+                                    const noteProject = note.project || note.Project;
+                                    const noteTags = note.tags || note.Tags || [];
+
+                                    return (
+                                        <div
+                                            key={note.uid}
+                                            onClick={() => handleSelectNote(note)}
+                                            className={`p-5 cursor-pointer ${
+                                                previewNote?.uid === note.uid
+                                                    ? 'bg-white dark:bg-gray-900 border-b border-transparent'
+                                                    : index !==
+                                                        sortedNotes.length - 1
+                                                      ? 'border-b border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                      : 'border-b border-transparent hover:bg-gray-50 dark:hover:bg-gray-800'
+                                            }`}
+                                        >
+                                            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                                                {note.title ||
+                                                    t(
+                                                        'notes.untitled',
+                                                        'Untitled Note'
+                                                    )}
+                                            </h3>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                                                {note.content.substring(0, 100)}
+                                                {note.content.length > 100
+                                                    ? '...'
+                                                    : ''}
+                                            </p>
+                                            <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mt-2">
+                                                <span>
+                                                    {new Date(
+                                                        note.updated_at ||
+                                                            note.created_at ||
+                                                            ''
+                                                    ).toLocaleDateString()}
+                                                </span>
+                                                {noteProject && (
+                                                    <>
+                                                        <span className="text-gray-300 dark:text-gray-600">·</span>
+                                                        <span className="flex items-center gap-1 truncate">
+                                                            <FolderIcon className="h-3 w-3 flex-shrink-0" />
+                                                            <span className="truncate">{noteProject.name}</span>
+                                                        </span>
+                                                    </>
                                                 )}
-                                        </h3>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                                            {note.content.substring(0, 100)}
-                                            {note.content.length > 100
-                                                ? '...'
-                                                : ''}
-                                        </p>
-                                        <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-                                            {new Date(
-                                                note.updated_at ||
-                                                    note.created_at ||
-                                                    ''
-                                            ).toLocaleDateString()}
+                                                {noteTags.length > 0 && (
+                                                    <>
+                                                        <span className="text-gray-300 dark:text-gray-600">·</span>
+                                                        <span className="flex items-center gap-1 truncate">
+                                                            <TagIconOutline className="h-3 w-3 flex-shrink-0" />
+                                                            <span className="truncate">
+                                                                {noteTags.map((tag, idx) => (
+                                                                    <React.Fragment key={tag.name || idx}>
+                                                                        {idx > 0 && ', '}
+                                                                        {tag.name}
+                                                                    </React.Fragment>
+                                                                ))}
+                                                            </span>
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             )}
                         </div>
                     </div>
