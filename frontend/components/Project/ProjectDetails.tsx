@@ -576,6 +576,20 @@ const ProjectDetails: React.FC = () => {
                     return currentIdentifier !== noteIdentifier;
                 })
             );
+            // Remove note from global store
+            const globalNotes = useStore.getState().notesStore.notes;
+            useStore
+                .getState()
+                .notesStore.setNotes(
+                    globalNotes.filter((note) => {
+                        const currentIdentifier =
+                            note.uid ??
+                            (note.id !== undefined
+                                ? String(note.id)
+                                : undefined);
+                        return currentIdentifier !== noteIdentifier;
+                    })
+                );
             setNoteToDelete(null);
             setIsConfirmDialogOpen(false);
         } catch {
@@ -612,6 +626,15 @@ const ProjectDetails: React.FC = () => {
 
             if (savedNote.id && savedNoteProjectId !== currentProjectId) {
                 setNotes(notes.filter((n) => n.id !== savedNote.id));
+                // Update global store - update or remove note
+                const globalNotes = useStore.getState().notesStore.notes;
+                useStore
+                    .getState()
+                    .notesStore.setNotes(
+                        globalNotes.map((note) =>
+                            note.uid === savedNote.uid ? savedNote : note
+                        )
+                    );
             } else if (isUpdate) {
                 const savedIdentifier =
                     savedNote.uid ??
@@ -628,8 +651,22 @@ const ProjectDetails: React.FC = () => {
                             : n;
                     })
                 );
+                // Update global store
+                const globalNotes = useStore.getState().notesStore.notes;
+                useStore
+                    .getState()
+                    .notesStore.setNotes(
+                        globalNotes.map((note) =>
+                            note.uid === savedNote.uid ? savedNote : note
+                        )
+                    );
             } else {
                 setNotes([savedNote, ...notes]);
+                // Add new note to global store
+                const globalNotes = useStore.getState().notesStore.notes;
+                useStore
+                    .getState()
+                    .notesStore.setNotes([savedNote, ...globalNotes]);
             }
 
             setIsNoteModalOpen(false);
