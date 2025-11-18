@@ -325,9 +325,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 ? t(recurringOption.labelKey)
                 : selectedRecurring;
             parts.push(
-                <span key="recurring-label">
-                    {t('search.thatAre') + ' '}
-                </span>
+                <span key="recurring-label">{t('search.thatAre') + ' '}</span>
             );
             parts.push(
                 <span
