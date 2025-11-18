@@ -64,7 +64,8 @@ router.get('/:identifier', async (req, res) => {
 // POST /api/views - Create a new view
 router.post('/', async (req, res) => {
     try {
-        const { name, search_query, filters, priority, due, tags } = req.body;
+        const { name, search_query, filters, priority, due, tags, recurring } =
+            req.body;
 
         if (!name || name.trim() === '') {
             return res.status(400).json({ error: 'View name is required' });
@@ -78,6 +79,7 @@ router.post('/', async (req, res) => {
             priority: priority || null,
             due: due || null,
             tags: tags || [],
+            recurring: recurring || null,
             is_pinned: false,
         });
 
@@ -106,8 +108,16 @@ router.patch('/:identifier', async (req, res) => {
             return res.status(404).json({ error: 'View not found' });
         }
 
-        const { name, search_query, filters, priority, due, tags, is_pinned } =
-            req.body;
+        const {
+            name,
+            search_query,
+            filters,
+            priority,
+            due,
+            tags,
+            recurring,
+            is_pinned,
+        } = req.body;
 
         const updates = {};
         if (name !== undefined) updates.name = name.trim();
@@ -116,6 +126,7 @@ router.patch('/:identifier', async (req, res) => {
         if (priority !== undefined) updates.priority = priority;
         if (due !== undefined) updates.due = due;
         if (tags !== undefined) updates.tags = tags;
+        if (recurring !== undefined) updates.recurring = recurring;
         if (is_pinned !== undefined) updates.is_pinned = is_pinned;
 
         await view.update(updates);

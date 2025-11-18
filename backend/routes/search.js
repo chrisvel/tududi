@@ -2,6 +2,7 @@ const express = require('express');
 const { Task, Tag, Project, Area, Note, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
+const { serializeTasks } = require('./tasks/core/serializers');
 const router = express.Router();
 
 // Helper function to convert priority string to integer
@@ -25,6 +26,7 @@ const priorityToInt = (priorityStr) => {
  *   - priority: filter by priority (low,medium,high)
  *   - due: filter by due date (today,tomorrow,next_week,next_month)
  *   - tags: comma-separated list of tag names to filter by
+ *   - recurring: filter by recurrence type (recurring,non_recurring,instances)
  *   - limit: number of results to return (default: 20)
  *   - offset: number of results to skip (default: 0)
  *   - excludeSubtasks: if 'true', exclude tasks that have a parent_task_id or recurring_parent_id
@@ -42,6 +44,7 @@ router.get('/', async (req, res) => {
             priority,
             due,
             tags: tagsParam,
+            recurring,
             limit: limitParam,
             offset: offsetParam,
             excludeSubtasks,
@@ -158,10 +161,44 @@ router.get('/', async (req, res) => {
                 Object.assign(taskConditions, dueDateCondition);
             }
 
+            // Add recurring filter if specified
+            if (recurring) {
+                switch (recurring) {
+                    case 'recurring':
+                        // Show only recurring templates (not instances)
+                        taskConditions.recurrence_type = { [Op.ne]: 'none' };
+                        taskConditions.recurring_parent_id = null;
+                        break;
+                    case 'non_recurring':
+                        // Show only non-recurring tasks (not templates or instances)
+                        taskConditions[Op.or] = [
+                            { recurrence_type: 'none' },
+                            { recurrence_type: null },
+                        ];
+                        taskConditions.recurring_parent_id = null;
+                        break;
+                    case 'instances':
+                        // Show only recurring instances (spawned from templates)
+                        taskConditions.recurring_parent_id = { [Op.ne]: null };
+                        break;
+                }
+            }
+
             const taskInclude = [
                 {
                     model: Project,
                     attributes: ['id', 'uid', 'name'],
+                },
+                {
+                    model: Task,
+                    as: 'Subtasks',
+                    include: [
+                        {
+                            model: Tag,
+                            attributes: ['id', 'name', 'uid'],
+                            through: { attributes: [] },
+                        },
+                    ],
                 },
             ];
 
@@ -173,8 +210,16 @@ router.get('/', async (req, res) => {
                         id: { [Op.in]: tagIds },
                     },
                     through: { attributes: [] },
-                    attributes: [],
+                    attributes: ['id', 'name', 'uid'],
                     required: true,
+                });
+            } else {
+                // Always include tags for display, even if not filtering
+                taskInclude.push({
+                    model: Tag,
+                    through: { attributes: [] },
+                    attributes: ['id', 'name', 'uid'],
+                    required: false,
                 });
             }
 
@@ -195,15 +240,17 @@ router.get('/', async (req, res) => {
                 order: [['updated_at', 'DESC']],
             });
 
+            // Use proper serialization to include all task data
+            const serializedTasks = await serializeTasks(
+                tasks,
+                req.currentUser?.timezone || 'UTC'
+            );
+
             results.push(
-                ...tasks.map((task) => ({
+                ...serializedTasks.map((task) => ({
                     type: 'Task',
-                    id: task.id,
-                    uid: task.uid,
-                    name: task.name,
+                    ...task,
                     description: task.note,
-                    priority: task.priority,
-                    status: task.status,
                 }))
             );
         }

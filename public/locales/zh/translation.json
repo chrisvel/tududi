@@ -1009,7 +1009,9 @@
     "dueDate": "到期日期",
     "noCriteriaSet": "未设置特定条件",
     "priorityLabel": "优先级：",
-    "dueLabel": "到期："
+    "dueLabel": "到期：",
+    "tags": "标签",
+    "recurring": "循环"
   },
   "search": {
     "placeholder": "搜索任务、项目、笔记...",
@@ -1041,6 +1043,14 @@
       "project": "项目",
       "area": "区域",
       "note": "笔记"
+    },
+    "thatAre": "，是",
+    "extras": "附加项",
+    "recurringFilter": {
+      "label": "循环",
+      "recurring": "循环模板",
+      "nonRecurring": "非循环",
+      "instances": "循环实例"
     }
   }
 }

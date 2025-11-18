@@ -1009,7 +1009,9 @@
     "dueDate": "Förfallodatum",
     "noCriteriaSet": "Inga specifika kriterier angivna",
     "priorityLabel": "Prioritet:",
-    "dueLabel": "Förfall:"
+    "dueLabel": "Förfall:",
+    "tags": "Taggar",
+    "recurring": "Återkommande"
   },
   "search": {
     "placeholder": "Sök uppgifter, projekt, anteckningar...",
@@ -1041,6 +1043,14 @@
       "project": "projekt",
       "area": "område",
       "note": "anteckning"
+    },
+    "thatAre": ", som är",
+    "extras": "Extra",
+    "recurringFilter": {
+      "label": "Återkommande",
+      "recurring": "återkommande mallar",
+      "nonRecurring": "icke-återkommande",
+      "instances": "återkommande instanser"
     }
   }
 }

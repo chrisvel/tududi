@@ -1009,7 +1009,9 @@
     "dueDate": "Forfallsdato",
     "noCriteriaSet": "Ingen spesifikke kriterier satt",
     "priorityLabel": "Prioritet:",
-    "dueLabel": "Forfall:"
+    "dueLabel": "Forfall:",
+    "tags": "Tags",
+    "recurring": "Gjentakende"
   },
   "search": {
     "placeholder": "Søk etter oppgaver, prosjekter, notater...",
@@ -1041,6 +1043,14 @@
       "project": "prosjekt",
       "area": "område",
       "note": "notat"
+    },
+    "thatAre": ", som er",
+    "extras": "Ekstra",
+    "recurringFilter": {
+      "label": "Gjentakende",
+      "recurring": "gjentakende maler",
+      "nonRecurring": "ikke-gjentakende",
+      "instances": "gjentakende instanser"
     }
   }
 }

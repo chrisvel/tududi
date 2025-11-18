@@ -1009,7 +1009,9 @@
     "dueDate": "Data de Vencimento",
     "noCriteriaSet": "Nenhum critério específico definido",
     "priorityLabel": "Prioridade:",
-    "dueLabel": "Vencimento:"
+    "dueLabel": "Vencimento:",
+    "tags": "Tags",
+    "recurring": "Recorrente"
   },
   "search": {
     "placeholder": "Pesquisar tarefas, projetos, notas...",
@@ -1041,6 +1043,14 @@
       "project": "projeto",
       "area": "área",
       "note": "nota"
+    },
+    "thatAre": ", que são",
+    "extras": "Extras",
+    "recurringFilter": {
+      "label": "Recorrente",
+      "recurring": "modelos recorrentes",
+      "nonRecurring": "não recorrente",
+      "instances": "instâncias recorrentes"
     }
   }
 }

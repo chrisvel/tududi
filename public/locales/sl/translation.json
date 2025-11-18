@@ -1009,7 +1009,9 @@
     "dueDate": "Rok",
     "noCriteriaSet": "Nobena specifična merila niso nastavljena",
     "priorityLabel": "Prioriteta:",
-    "dueLabel": "Rok:"
+    "dueLabel": "Rok:",
+    "tags": "Oznake",
+    "recurring": "Ponovno"
   },
   "search": {
     "placeholder": "Išči naloge, projekte, zapiske...",
@@ -1041,6 +1043,14 @@
       "project": "projekt",
       "area": "območje",
       "note": "opomba"
+    },
+    "thatAre": ", ki so",
+    "extras": "Dodatki",
+    "recurringFilter": {
+      "label": "Ponovno",
+      "recurring": "ponavljajoče se predloge",
+      "nonRecurring": "neponavljajoče se",
+      "instances": "ponavljajoče se instance"
     }
   }
 }

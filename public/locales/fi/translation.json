@@ -1009,7 +1009,9 @@
     "dueDate": "Eräpäivä",
     "noCriteriaSet": "Ei erityisiä kriteereitä asetettu",
     "priorityLabel": "Prioriteetti:",
-    "dueLabel": "Eräpäivä:"
+    "dueLabel": "Eräpäivä:",
+    "tags": "Tunnisteet",
+    "recurring": "Toistuva"
   },
   "search": {
     "placeholder": "Hae tehtäviä, projekteja, muistiinpanoja...",
@@ -1041,6 +1043,14 @@
       "project": "projekti",
       "area": "alue",
       "note": "muistio"
+    },
+    "thatAre": ", jotka ovat",
+    "extras": "Lisäosat",
+    "recurringFilter": {
+      "label": "Toistuva",
+      "recurring": "toistuvat mallit",
+      "nonRecurring": "ei-toistuva",
+      "instances": "toistuvat instanssit"
     }
   }
 }

@@ -1009,7 +1009,9 @@
     "dueDate": "Ngày đến hạn",
     "noCriteriaSet": "Không có tiêu chí cụ thể nào được thiết lập",
     "priorityLabel": "Độ ưu tiên:",
-    "dueLabel": "Đến hạn:"
+    "dueLabel": "Đến hạn:",
+    "tags": "Thẻ",
+    "recurring": "Lặp lại"
   },
   "search": {
     "placeholder": "Tìm kiếm nhiệm vụ, dự án, ghi chú...",
@@ -1041,6 +1043,14 @@
       "project": "dự án",
       "area": "khu vực",
       "note": "ghi chú"
+    },
+    "thatAre": ", mà là",
+    "extras": "Phụ kiện",
+    "recurringFilter": {
+      "label": "Lặp lại",
+      "recurring": "mẫu lặp lại",
+      "nonRecurring": "không lặp lại",
+      "instances": "các phiên bản lặp lại"
     }
   }
 }

@@ -1010,7 +1010,9 @@
     "dueDate": "Fecha de Vencimiento",
     "noCriteriaSet": "No se han establecido criterios específicos",
     "priorityLabel": "Prioridad:",
-    "dueLabel": "Vence:"
+    "dueLabel": "Vence:",
+    "tags": "Etiquetas",
+    "recurring": "Recurrente"
   },
   "search": {
     "placeholder": "Buscar tareas, proyectos, notas...",
@@ -1042,6 +1044,14 @@
       "project": "proyecto",
       "area": "área",
       "note": "nota"
+    },
+    "thatAre": ", que son",
+    "extras": "Extras",
+    "recurringFilter": {
+      "label": "Recurrente",
+      "recurring": "plantillas recurrentes",
+      "nonRecurring": "no recurrente",
+      "instances": "instancias recurrentes"
     }
   }
 }

@@ -1009,7 +1009,9 @@
     "dueDate": "Vervaldatum",
     "noCriteriaSet": "Geen specifieke criteria ingesteld",
     "priorityLabel": "Prioriteit:",
-    "dueLabel": "Vervaldatum:"
+    "dueLabel": "Vervaldatum:",
+    "tags": "Tags",
+    "recurring": "Herhalend"
   },
   "search": {
     "placeholder": "Zoek taken, projecten, notities...",
@@ -1041,6 +1043,14 @@
       "project": "project",
       "area": "gebied",
       "note": "notitie"
+    },
+    "thatAre": ", die zijn",
+    "extras": "Extra's",
+    "recurringFilter": {
+      "label": "Herhalend",
+      "recurring": "herhalende sjablonen",
+      "nonRecurring": "niet-herhalend",
+      "instances": "herhalende instanties"
     }
   }
 }
