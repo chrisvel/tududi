@@ -1009,7 +1009,9 @@
     "dueDate": "Tanggal Jatuh Tempo",
     "noCriteriaSet": "Tidak ada kriteria spesifik yang ditetapkan",
     "priorityLabel": "Prioritas:",
-    "dueLabel": "Jatuh Tempo:"
+    "dueLabel": "Jatuh Tempo:",
+    "tags": "Tag",
+    "recurring": "Berulang"
   },
   "search": {
     "placeholder": "Cari tugas, proyek, catatan...",
@@ -1041,6 +1043,14 @@
       "project": "proyek",
       "area": "area",
       "note": "catatan"
+    },
+    "thatAre": ", yang adalah",
+    "extras": "Ekstra",
+    "recurringFilter": {
+      "label": "Berulang",
+      "recurring": "template berulang",
+      "nonRecurring": "tidak berulang",
+      "instances": "instansi berulang"
     }
   }
 }

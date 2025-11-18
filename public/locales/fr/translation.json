@@ -1009,7 +1009,9 @@
     "dueDate": "Date d'échéance",
     "noCriteriaSet": "Aucun critère spécifique défini",
     "priorityLabel": "Priorité :",
-    "dueLabel": "Échéance :"
+    "dueLabel": "Échéance :",
+    "tags": "Étiquettes",
+    "recurring": "Récurrent"
   },
   "search": {
     "placeholder": "Rechercher des tâches, des projets, des notes...",
@@ -1041,6 +1043,14 @@
       "project": "projet",
       "area": "zone",
       "note": "note"
+    },
+    "thatAre": ", qui sont",
+    "extras": "Extras",
+    "recurringFilter": {
+      "label": "Récurrent",
+      "recurring": "modèles récurrents",
+      "nonRecurring": "non récurrent",
+      "instances": "instances récurrentes"
     }
   }
 }

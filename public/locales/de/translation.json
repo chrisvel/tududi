@@ -1018,7 +1018,9 @@
     "dueDate": "Fälligkeitsdatum",
     "noCriteriaSet": "Keine spezifischen Kriterien festgelegt",
     "priorityLabel": "Priorität:",
-    "dueLabel": "Fällig:"
+    "dueLabel": "Fällig:",
+    "tags": "Tags",
+    "recurring": "Wiederkehrend"
   },
   "search": {
     "placeholder": "Aufgaben, Projekte, Notizen suchen...",
@@ -1050,6 +1052,14 @@
       "project": "Projekt",
       "area": "Bereich",
       "note": "Notiz"
+    },
+    "thatAre": ", die sind",
+    "extras": "Extras",
+    "recurringFilter": {
+      "label": "Wiederkehrend",
+      "recurring": "wiederkehrende Vorlagen",
+      "nonRecurring": "nicht-wiederkehrend",
+      "instances": "wiederkehrende Instanzen"
     }
   }
 }

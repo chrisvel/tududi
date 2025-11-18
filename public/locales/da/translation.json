@@ -1009,7 +1009,9 @@
     "dueDate": "Forfaldsdato",
     "noCriteriaSet": "Ingen specifikke kriterier sat",
     "priorityLabel": "Prioritet:",
-    "dueLabel": "Forfalder:"
+    "dueLabel": "Forfalder:",
+    "tags": "Tags",
+    "recurring": "Gentagende"
   },
   "search": {
     "placeholder": "Søg opgaver, projekter, noter...",
@@ -1041,6 +1043,14 @@
       "project": "projekt",
       "area": "område",
       "note": "note"
+    },
+    "thatAre": ", der er",
+    "extras": "Ekstra",
+    "recurringFilter": {
+      "label": "Gentagende",
+      "recurring": "gentagende skabeloner",
+      "nonRecurring": "ikke-gentagende",
+      "instances": "gentagende instanser"
     }
   }
 }

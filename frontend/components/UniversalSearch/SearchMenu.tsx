@@ -55,6 +55,12 @@ const dueOptions = [
     { value: 'next_month', labelKey: 'dateIndicators.nextMonth' },
 ];
 
+const recurringOptions = [
+    { value: 'recurring', labelKey: 'search.recurringFilter.recurring' },
+    { value: 'non_recurring', labelKey: 'search.recurringFilter.nonRecurring' },
+    { value: 'instances', labelKey: 'search.recurringFilter.instances' },
+];
+
 const SearchMenu: React.FC<SearchMenuProps> = ({
     searchQuery,
     selectedFilters,
@@ -68,6 +74,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
     );
     const [selectedDue, setSelectedDue] = useState<string | null>(null);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [selectedRecurring, setSelectedRecurring] = useState<string | null>(
+        null
+    );
     const [availableTags, setAvailableTags] = useState<
         Array<{ id: number; name: string }>
     >([]);
@@ -111,6 +120,12 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         );
     };
 
+    const handleRecurringToggle = (recurring: string) => {
+        setSelectedRecurring(
+            selectedRecurring === recurring ? null : recurring
+        );
+    };
+
     const handleSaveView = async () => {
         if (!viewName.trim()) {
             setSaveError(t('search.viewNameRequired'));
@@ -134,6 +149,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                     priority: selectedPriority || null,
                     due: selectedDue || null,
                     tags: selectedTags.length > 0 ? selectedTags : null,
+                    recurring: selectedRecurring || null,
                 }),
             });
 
@@ -300,6 +316,29 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
             parts.push(...tagsWithSeparators);
         }
 
+        // Add recurring filter
+        if (selectedRecurring) {
+            const recurringOption = recurringOptions.find(
+                (opt) => opt.value === selectedRecurring
+            );
+            const recurringLabel = recurringOption
+                ? t(recurringOption.labelKey)
+                : selectedRecurring;
+            parts.push(
+                <span key="recurring-label">
+                    {t('search.thatAre') + ' '}
+                </span>
+            );
+            parts.push(
+                <span
+                    key="recurring"
+                    style={{ fontWeight: 800, fontStyle: 'normal' }}
+                >
+                    {recurringLabel}
+                </span>
+            );
+        }
+
         if (parts.length === 0) return null;
 
         // Construct the sentence
@@ -316,7 +355,8 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         searchQuery.trim() ||
         selectedPriority ||
         selectedDue ||
-        selectedTags.length > 0;
+        selectedTags.length > 0 ||
+        selectedRecurring;
 
     return (
         <div
@@ -464,6 +504,41 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                             )}
                         </div>
 
+                        {/* Divider */}
+                        <div className="my-4 border-t border-gray-300 dark:border-gray-600"></div>
+
+                        {/* Extras Section */}
+                        <div className="space-y-3">
+                            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+                                {t('search.extras')}
+                            </div>
+
+                            {/* Recurring Filters */}
+                            <div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                                    {t('search.recurringFilter.label')}
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {recurringOptions.map((option) => (
+                                        <FilterBadge
+                                            key={option.value}
+                                            name={t(option.labelKey)}
+                                            color="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+                                            isSelected={
+                                                selectedRecurring ===
+                                                option.value
+                                            }
+                                            onToggle={() =>
+                                                handleRecurringToggle(
+                                                    option.value
+                                                )
+                                            }
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Save as Smart View Section */}
                         {hasActiveFilters && (
                             <div className="mt-4 pt-4 border-t border-gray-300 dark:border-gray-600">
@@ -553,6 +628,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 selectedPriority={selectedPriority}
                 selectedDue={selectedDue}
                 selectedTags={selectedTags}
+                selectedRecurring={selectedRecurring}
                 onClose={onClose}
             />
         </div>

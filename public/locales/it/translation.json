@@ -1009,7 +1009,9 @@
     "dueDate": "Data di Scadenza",
     "noCriteriaSet": "Nessun criterio specifico impostato",
     "priorityLabel": "Priorità:",
-    "dueLabel": "Scadenza:"
+    "dueLabel": "Scadenza:",
+    "tags": "Tag",
+    "recurring": "Ricorrente"
   },
   "search": {
     "placeholder": "Cerca attività, progetti, note...",
@@ -1041,6 +1043,14 @@
       "project": "progetto",
       "area": "area",
       "note": "nota"
+    },
+    "thatAre": ", che sono",
+    "extras": "Extra",
+    "recurringFilter": {
+      "label": "Ricorrente",
+      "recurring": "modelli ricorrenti",
+      "nonRecurring": "non ricorrente",
+      "instances": "istanze ricorrenti"
     }
   }
 }

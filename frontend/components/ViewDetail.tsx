@@ -30,6 +30,7 @@ interface View {
     priority: string | null;
     due: string | null;
     tags: string[];
+    recurring: string | null;
     is_pinned: boolean;
 }
 
@@ -234,6 +235,7 @@ const ViewDetail: React.FC = () => {
                     viewData.tags && viewData.tags.length > 0
                         ? viewData.tags
                         : undefined,
+                recurring: viewData.recurring || undefined,
                 limit: limit,
                 offset: currentOffset,
                 excludeSubtasks: true,
@@ -341,6 +343,14 @@ const ViewDetail: React.FC = () => {
         } catch (error) {
             console.error('Error toggling today status:', error);
         }
+    };
+
+    const handleTaskCompletionToggle = (updatedTask: Task) => {
+        setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === updatedTask.id ? updatedTask : task
+            )
+        );
     };
 
     const getCompletionPercentage = (project: Project) => {
@@ -650,12 +660,26 @@ const ViewDetail: React.FC = () => {
                                                         </div>
                                                     </div>
                                                 )}
+                                            {view.recurring && (
+                                                <div>
+                                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">
+                                                        {t('views.recurring')}
+                                                    </p>
+                                                    <span className="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 rounded text-xs font-medium capitalize">
+                                                        {view.recurring.replace(
+                                                            /_/g,
+                                                            ' '
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            )}
                                             {!view.filters.length &&
                                                 !view.search_query &&
                                                 !view.priority &&
                                                 !view.due &&
                                                 (!view.tags ||
-                                                    view.tags.length === 0) && (
+                                                    view.tags.length === 0) &&
+                                                !view.recurring && (
                                                     <p className="text-sm text-gray-600 dark:text-gray-400 italic">
                                                         {t(
                                                             'views.noCriteriaSet'
@@ -724,8 +748,9 @@ const ViewDetail: React.FC = () => {
                         <TaskList
                             tasks={displayTasks}
                             onTaskUpdate={handleTaskUpdate}
+                            onTaskCompletionToggle={handleTaskCompletionToggle}
                             onTaskDelete={handleTaskDelete}
-                            projects={[]}
+                            projects={projects}
                             hideProjectName={false}
                             onToggleToday={handleToggleToday}
                             showCompletedTasks={showCompleted}

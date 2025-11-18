@@ -1009,7 +1009,9 @@
     "dueDate": "Son Tarih",
     "noCriteriaSet": "Belirli bir kriter ayarlanmamış",
     "priorityLabel": "Öncelik:",
-    "dueLabel": "Son Tarih:"
+    "dueLabel": "Son Tarih:",
+    "tags": "Etiketler",
+    "recurring": "Tekrarlayan"
   },
   "search": {
     "placeholder": "Görevleri, projeleri, notları ara...",
@@ -1041,6 +1043,14 @@
       "project": "proje",
       "area": "alan",
       "note": "not"
+    },
+    "thatAre": ", olan",
+    "extras": "Ekstralar",
+    "recurringFilter": {
+      "label": "Tekrarlayan",
+      "recurring": "tekrarlayan şablonlar",
+      "nonRecurring": "tekrarlamayan",
+      "instances": "tekrarlayan örnekler"
     }
   }
 }

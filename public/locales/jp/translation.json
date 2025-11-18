@@ -1009,7 +1009,9 @@
     "dueDate": "期限",
     "noCriteriaSet": "特定の条件は設定されていません",
     "priorityLabel": "優先度:",
-    "dueLabel": "期限:"
+    "dueLabel": "期限:",
+    "tags": "タグ",
+    "recurring": "定期的"
   },
   "search": {
     "placeholder": "タスク、プロジェクト、ノートを検索...",
@@ -1041,6 +1043,14 @@
       "project": "プロジェクト",
       "area": "エリア",
       "note": "ノート"
+    },
+    "thatAre": "、それは",
+    "extras": "エクストラ",
+    "recurringFilter": {
+      "label": "定期的",
+      "recurring": "定期的なテンプレート",
+      "nonRecurring": "非定期的",
+      "instances": "定期的なインスタンス"
     }
   }
 }

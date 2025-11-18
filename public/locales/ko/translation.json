@@ -1009,7 +1009,9 @@
     "dueDate": "마감일",
     "noCriteriaSet": "특정 기준이 설정되지 않음",
     "priorityLabel": "우선순위:",
-    "dueLabel": "마감:"
+    "dueLabel": "마감:",
+    "tags": "태그",
+    "recurring": "반복"
   },
   "search": {
     "placeholder": "작업, 프로젝트, 노트 검색...",
@@ -1041,6 +1043,14 @@
       "project": "프로젝트",
       "area": "영역",
       "note": "노트"
+    },
+    "thatAre": ", 그 중",
+    "extras": "추가 기능",
+    "recurringFilter": {
+      "label": "반복",
+      "recurring": "반복 템플릿",
+      "nonRecurring": "비반복",
+      "instances": "반복 인스턴스"
     }
   }
 }

@@ -62,6 +62,10 @@ module.exports = (sequelize) => {
                     this.setDataValue('tags', JSON.stringify(value));
                 },
             },
+            recurring: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
             is_pinned: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

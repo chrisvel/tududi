@@ -1009,7 +1009,9 @@
     "dueDate": "Data limită",
     "noCriteriaSet": "Niciun criteriu specific setat",
     "priorityLabel": "Prioritate:",
-    "dueLabel": "Termen:"
+    "dueLabel": "Termen:",
+    "tags": "Etichete",
+    "recurring": "Recurent"
   },
   "search": {
     "placeholder": "Caută sarcini, proiecte, note...",
@@ -1041,6 +1043,14 @@
       "project": "proiect",
       "area": "zonă",
       "note": "notă"
+    },
+    "thatAre": ", care sunt",
+    "extras": "Extra",
+    "recurringFilter": {
+      "label": "Recurent",
+      "recurring": "șabloane recurente",
+      "nonRecurring": "non-recurent",
+      "instances": "instanțe recurente"
     }
   }
 }

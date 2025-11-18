@@ -1009,7 +1009,9 @@
     "dueDate": "Termin",
     "noCriteriaSet": "Nie ustawiono konkretnych kryteriów",
     "priorityLabel": "Priorytet:",
-    "dueLabel": "Termin:"
+    "dueLabel": "Termin:",
+    "tags": "Tagi",
+    "recurring": "Powtarzające się"
   },
   "search": {
     "placeholder": "Szukaj zadań, projektów, notatek...",
@@ -1041,6 +1043,14 @@
       "project": "projekt",
       "area": "obszar",
       "note": "notatka"
+    },
+    "thatAre": ", które są",
+    "extras": "Dodatki",
+    "recurringFilter": {
+      "label": "Powtarzające się",
+      "recurring": "powtarzające się szablony",
+      "nonRecurring": "niepowtarzające się",
+      "instances": "powtarzające się instancje"
     }
   }
 }

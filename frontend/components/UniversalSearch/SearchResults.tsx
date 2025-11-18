@@ -16,6 +16,7 @@ interface SearchResultsProps {
     selectedPriority: string | null;
     selectedDue: string | null;
     selectedTags: string[];
+    selectedRecurring: string | null;
     onClose: () => void;
 }
 
@@ -36,6 +37,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     selectedPriority,
     selectedDue,
     selectedTags,
+    selectedRecurring,
     onClose,
 }) => {
     const { t } = useTranslation();
@@ -50,7 +52,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 selectedFilters.length === 0 &&
                 !selectedPriority &&
                 !selectedDue &&
-                selectedTags.length === 0
+                selectedTags.length === 0 &&
+                !selectedRecurring
             ) {
                 setResults([]);
                 return;
@@ -64,6 +67,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                     priority: selectedPriority || undefined,
                     due: selectedDue || undefined,
                     tags: selectedTags.length > 0 ? selectedTags : undefined,
+                    recurring: selectedRecurring || undefined,
                 });
                 setResults(data.results);
             } catch (error) {
@@ -82,6 +86,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         selectedPriority,
         selectedDue,
         selectedTags,
+        selectedRecurring,
     ]);
 
     const getIcon = (type: string) => {
