@@ -250,6 +250,7 @@ router.get('/', async (req, res) => {
                 ...serializedTasks.map((task) => ({
                     type: 'Task',
                     ...task,
+                    description: task.note,
                 }))
             );
         }
