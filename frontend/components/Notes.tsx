@@ -561,13 +561,17 @@ const Notes: React.FC = () => {
                                 </div>
                             ) : (
                                 sortedNotes.map((note, index) => {
-                                    const noteProject = note.project || note.Project;
-                                    const noteTags = note.tags || note.Tags || [];
+                                    const noteProject =
+                                        note.project || note.Project;
+                                    const noteTags =
+                                        note.tags || note.Tags || [];
 
                                     return (
                                         <div
                                             key={note.uid}
-                                            onClick={() => handleSelectNote(note)}
+                                            onClick={() =>
+                                                handleSelectNote(note)
+                                            }
                                             className={`p-5 cursor-pointer ${
                                                 previewNote?.uid === note.uid
                                                     ? 'bg-white dark:bg-gray-900 border-b border-transparent'
@@ -600,25 +604,47 @@ const Notes: React.FC = () => {
                                                 </span>
                                                 {noteProject && (
                                                     <>
-                                                        <span className="text-gray-300 dark:text-gray-600">·</span>
+                                                        <span className="text-gray-300 dark:text-gray-600">
+                                                            ·
+                                                        </span>
                                                         <span className="flex items-center gap-1 truncate">
                                                             <FolderIcon className="h-3 w-3 flex-shrink-0" />
-                                                            <span className="truncate">{noteProject.name}</span>
+                                                            <span className="truncate">
+                                                                {
+                                                                    noteProject.name
+                                                                }
+                                                            </span>
                                                         </span>
                                                     </>
                                                 )}
                                                 {noteTags.length > 0 && (
                                                     <>
-                                                        <span className="text-gray-300 dark:text-gray-600">·</span>
+                                                        <span className="text-gray-300 dark:text-gray-600">
+                                                            ·
+                                                        </span>
                                                         <span className="flex items-center gap-1 truncate">
                                                             <TagIconOutline className="h-3 w-3 flex-shrink-0" />
                                                             <span className="truncate">
-                                                                {noteTags.map((tag, idx) => (
-                                                                    <React.Fragment key={tag.name || idx}>
-                                                                        {idx > 0 && ', '}
-                                                                        {tag.name}
-                                                                    </React.Fragment>
-                                                                ))}
+                                                                {noteTags.map(
+                                                                    (
+                                                                        tag,
+                                                                        idx
+                                                                    ) => (
+                                                                        <React.Fragment
+                                                                            key={
+                                                                                tag.name ||
+                                                                                idx
+                                                                            }
+                                                                        >
+                                                                            {idx >
+                                                                                0 &&
+                                                                                ', '}
+                                                                            {
+                                                                                tag.name
+                                                                            }
+                                                                        </React.Fragment>
+                                                                    )
+                                                                )}
                                                             </span>
                                                         </span>
                                                     </>
