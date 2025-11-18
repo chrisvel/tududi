@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePersistedModal } from '../../hooks/usePersistedModal';
@@ -9,6 +9,7 @@ import {
     PencilSquareIcon,
     TrashIcon,
     TagIcon,
+    MagnifyingGlassIcon,
 } from '@heroicons/react/24/solid';
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
@@ -23,6 +24,7 @@ import { Tag } from '../../entities/Tag';
 import { useStore } from '../../store/useStore';
 import { updateTag, deleteTag } from '../../utils/tagsService';
 import { getApiPath } from '../../config/paths';
+import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
 
 const TagDetails: React.FC = () => {
     const { t } = useTranslation();
@@ -33,6 +35,12 @@ const TagDetails: React.FC = () => {
     const allProjects = useStore((state: any) => state.projectsStore.projects);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Search, filter, and sort state
+    const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const [showCompleted, setShowCompleted] = useState(false);
+    const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
     // Filter projects by current tag
     const projects = allProjects.filter(
@@ -65,6 +73,102 @@ const TagDetails: React.FC = () => {
     }>({ isOpen: false, project: null });
 
     const navigate = useNavigate();
+
+    // Sort options for tasks
+    const sortOptions: SortOption[] = [
+        { value: 'due_date:asc', label: t('sort.due_date', 'Due Date') },
+        { value: 'name:asc', label: t('sort.name', 'Name') },
+        { value: 'priority:desc', label: t('sort.priority', 'Priority') },
+        { value: 'status:desc', label: t('sort.status', 'Status') },
+        { value: 'created_at:desc', label: t('sort.created_at', 'Created At') },
+    ];
+
+    // Filter and sort tasks
+    const displayTasks = useMemo(() => {
+        let filteredTasks: Task[];
+
+        // Filter by completion status
+        if (showCompleted) {
+            filteredTasks = tasks.filter(
+                (task: Task) =>
+                    task.status === 'done' ||
+                    task.status === 'archived' ||
+                    task.status === 2 ||
+                    task.status === 3
+            );
+        } else {
+            filteredTasks = tasks.filter(
+                (task: Task) =>
+                    task.status !== 'done' &&
+                    task.status !== 'archived' &&
+                    task.status !== 2 &&
+                    task.status !== 3
+            );
+        }
+
+        // Filter by search query
+        if (taskSearchQuery.trim()) {
+            const query = taskSearchQuery.toLowerCase();
+            filteredTasks = filteredTasks.filter(
+                (task: Task) =>
+                    task.name.toLowerCase().includes(query) ||
+                    task.original_name?.toLowerCase().includes(query) ||
+                    task.note?.toLowerCase().includes(query)
+            );
+        }
+
+        // Sort tasks
+        const sortedTasks = [...filteredTasks].sort((a, b) => {
+            const [field, direction] = orderBy.split(':');
+            const isAsc = direction === 'asc';
+
+            let valueA, valueB;
+
+            switch (field) {
+                case 'name':
+                    valueA = a.name?.toLowerCase() || '';
+                    valueB = b.name?.toLowerCase() || '';
+                    break;
+                case 'due_date':
+                    valueA = a.due_date ? new Date(a.due_date).getTime() : 0;
+                    valueB = b.due_date ? new Date(b.due_date).getTime() : 0;
+                    break;
+                case 'priority': {
+                    const priorityMap = { high: 2, medium: 1, low: 0 };
+                    valueA =
+                        typeof a.priority === 'string'
+                            ? priorityMap[a.priority] || 0
+                            : a.priority || 0;
+                    valueB =
+                        typeof b.priority === 'string'
+                            ? priorityMap[b.priority] || 0
+                            : b.priority || 0;
+                    break;
+                }
+                case 'status':
+                    valueA =
+                        typeof a.status === 'string' ? a.status : a.status || 0;
+                    valueB =
+                        typeof b.status === 'string' ? b.status : b.status || 0;
+                    break;
+                case 'created_at':
+                default:
+                    valueA = a.created_at
+                        ? new Date(a.created_at).getTime()
+                        : 0;
+                    valueB = b.created_at
+                        ? new Date(b.created_at).getTime()
+                        : 0;
+                    break;
+            }
+
+            if (valueA < valueB) return isAsc ? -1 : 1;
+            if (valueA > valueB) return isAsc ? 1 : -1;
+            return 0;
+        });
+
+        return sortedTasks;
+    }, [tasks, showCompleted, taskSearchQuery, orderBy, t]);
 
     useEffect(() => {
         const fetchTagData = async () => {
@@ -255,11 +359,65 @@ const TagDetails: React.FC = () => {
         <div className="flex justify-center px-4 lg:px-2">
             <div className="w-full max-w-5xl">
                 {/* Tag Header */}
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-light text-gray-900 dark:text-white">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
+                    <h2 className="text-2xl font-light text-gray-900 dark:text-white mb-2 sm:mb-0">
                         Tag: {tag.name}
                     </h2>
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                        <button
+                            onClick={() => setIsSearchExpanded((v) => !v)}
+                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
+                                isSearchExpanded
+                                    ? 'bg-blue-50/70 dark:bg-blue-900/20'
+                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                            }`}
+                            aria-expanded={isSearchExpanded}
+                            aria-label={
+                                isSearchExpanded
+                                    ? 'Collapse search panel'
+                                    : 'Show search input'
+                            }
+                            title={
+                                isSearchExpanded
+                                    ? 'Hide search'
+                                    : 'Search Tasks'
+                            }
+                        >
+                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
+                        </button>
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                Show completed
+                            </span>
+                            <button
+                                onClick={() => setShowCompleted((v) => !v)}
+                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                                    showCompleted
+                                        ? 'bg-blue-600'
+                                        : 'bg-gray-200 dark:bg-gray-600'
+                                }`}
+                                aria-pressed={showCompleted}
+                                aria-label={
+                                    showCompleted
+                                        ? 'Hide completed tasks'
+                                        : 'Show completed tasks'
+                                }
+                            >
+                                <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                        showCompleted
+                                            ? 'translate-x-4'
+                                            : 'translate-x-0.5'
+                                    }`}
+                                />
+                            </button>
+                        </div>
+                        <SortFilterButton
+                            options={sortOptions}
+                            value={orderBy}
+                            onChange={setOrderBy}
+                            size="desktop"
+                        />
                         <button
                             ref={editButtonRef}
                             type="button"
@@ -277,6 +435,29 @@ const TagDetails: React.FC = () => {
                         >
                             <TrashIcon className="h-5 w-5" />
                         </button>
+                    </div>
+                </div>
+
+                {/* Search input section, collapsible */}
+                <div
+                    className={`transition-all duration-300 ease-in-out ${
+                        isSearchExpanded
+                            ? 'max-h-24 opacity-100 mb-4'
+                            : 'max-h-0 opacity-0 mb-0'
+                    } overflow-hidden`}
+                >
+                    <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
+                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
+                        <input
+                            type="text"
+                            placeholder={t(
+                                'tasks.searchPlaceholder',
+                                'Search tasks...'
+                            )}
+                            value={taskSearchQuery}
+                            onChange={(e) => setTaskSearchQuery(e.target.value)}
+                            className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
+                        />
                     </div>
                 </div>
 
@@ -324,19 +505,20 @@ const TagDetails: React.FC = () => {
                 </div>
 
                 {/* Tasks Section */}
-                {tasks.length > 0 && (
+                {displayTasks.length > 0 && (
                     <div className="mb-8">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                             <CheckIcon className="h-5 w-5 mr-2" />
-                            {t('tasks.title')} ({tasks.length})
+                            {t('tasks.title')} ({displayTasks.length})
                         </h3>
                         <TaskList
-                            tasks={tasks}
+                            tasks={displayTasks}
                             onTaskUpdate={handleTaskUpdate}
                             onTaskDelete={handleTaskDelete}
                             projects={[]} // Empty since we're viewing by tag
                             hideProjectName={false}
                             onToggleToday={handleToggleToday}
+                            showCompletedTasks={showCompleted}
                         />
                     </div>
                 )}
@@ -478,16 +660,21 @@ const TagDetails: React.FC = () => {
                 )}
 
                 {/* Empty State */}
-                {tasks.length === 0 &&
+                {displayTasks.length === 0 &&
                     notes.length === 0 &&
                     projects.length === 0 && (
                         <div className="text-center py-8">
                             <TagIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                             <p className="text-gray-600 dark:text-gray-400 text-lg">
-                                {t(
-                                    'tags.noItemsWithTag',
-                                    `No items found with the tag "${tag.name}"`
-                                )}
+                                {taskSearchQuery.trim()
+                                    ? t(
+                                          'tasks.noTasksAvailable',
+                                          'No tasks available.'
+                                      )
+                                    : t(
+                                          'tags.noItemsWithTag',
+                                          `No items found with the tag "${tag.name}"`
+                                      )}
                             </p>
                         </div>
                     )}
