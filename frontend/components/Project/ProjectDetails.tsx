@@ -578,18 +578,14 @@ const ProjectDetails: React.FC = () => {
             );
             // Remove note from global store
             const globalNotes = useStore.getState().notesStore.notes;
-            useStore
-                .getState()
-                .notesStore.setNotes(
-                    globalNotes.filter((note) => {
-                        const currentIdentifier =
-                            note.uid ??
-                            (note.id !== undefined
-                                ? String(note.id)
-                                : undefined);
-                        return currentIdentifier !== noteIdentifier;
-                    })
-                );
+            useStore.getState().notesStore.setNotes(
+                globalNotes.filter((note) => {
+                    const currentIdentifier =
+                        note.uid ??
+                        (note.id !== undefined ? String(note.id) : undefined);
+                    return currentIdentifier !== noteIdentifier;
+                })
+            );
             setNoteToDelete(null);
             setIsConfirmDialogOpen(false);
         } catch {
