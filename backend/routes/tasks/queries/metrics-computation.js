@@ -20,7 +20,8 @@ async function computeSuggestedTasks(
     userId,
     totalOpenTasks,
     tasksInProgress,
-    tasksDueToday
+    tasksDueToday,
+    todayPlanTasks
 ) {
     if (
         totalOpenTasks < 3 &&
@@ -33,6 +34,7 @@ async function computeSuggestedTasks(
     const excludedTaskIds = [
         ...tasksInProgress.map((t) => t.id),
         ...tasksDueToday.map((t) => t.id),
+        ...todayPlanTasks.map((t) => t.id),
     ];
 
     const somedayTaskIds = await fetchSomedayTaskIds(userId);
@@ -155,7 +157,8 @@ async function computeTaskMetrics(
         userId,
         totalOpenTasks,
         tasksInProgress,
-        tasksDueToday
+        tasksDueToday,
+        todayPlanTasks
     );
 
     return {
