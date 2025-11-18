@@ -22,6 +22,7 @@ router.get('/current_user', async (req, res) => {
                     'language',
                     'appearance',
                     'timezone',
+                    'avatar_image',
                 ],
             });
             if (user) {
@@ -35,6 +36,7 @@ router.get('/current_user', async (req, res) => {
                         language: user.language,
                         appearance: user.appearance,
                         timezone: user.timezone,
+                        avatar_image: user.avatar_image,
                         is_admin: admin,
                     },
                 });
