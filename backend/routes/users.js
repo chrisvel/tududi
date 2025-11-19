@@ -12,6 +12,9 @@ const {
     serializeApiToken,
 } = require('../services/apiTokenService');
 const { apiKeyManagementLimiter } = require('../middleware/rateLimiter');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs').promises;
 
 router.use((req, res, next) => {
     const userId = getAuthenticatedUserId(req);
@@ -32,6 +35,46 @@ const VALID_FREQUENCIES = [
     '8h',
     '12h',
 ];
+
+// Configure multer for avatar uploads
+const storage = multer.diskStorage({
+    destination: async (req, file, cb) => {
+        const uploadDir = path.join(__dirname, '../uploads/avatars');
+        try {
+            await fs.mkdir(uploadDir, { recursive: true });
+            cb(null, uploadDir);
+        } catch (error) {
+            cb(error, uploadDir);
+        }
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = path.extname(file.originalname);
+        cb(null, `avatar-${req.authUserId}-${uniqueSuffix}${ext}`);
+    },
+});
+
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(
+        path.extname(file.originalname).toLowerCase()
+    );
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed!'));
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
+    },
+    fileFilter: fileFilter,
+});
 
 router.get('/users', async (req, res) => {
     try {
@@ -245,6 +288,87 @@ router.patch('/profile', async (req, res) => {
             details: error.errors
                 ? error.errors.map((e) => e.message)
                 : [error.message],
+        });
+    }
+});
+
+router.post('/profile/avatar', upload.single('avatar'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const user = await User.findByPk(req.authUserId);
+        if (!user) {
+            // Clean up uploaded file
+            await fs.unlink(req.file.path).catch(() => {});
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Delete old avatar file if it exists
+        if (user.avatar_image) {
+            const oldAvatarPath = path.join(
+                __dirname,
+                '../uploads/avatars',
+                path.basename(user.avatar_image)
+            );
+            await fs.unlink(oldAvatarPath).catch(() => {
+                // Ignore errors if file doesn't exist
+            });
+        }
+
+        // Store relative path in database
+        const avatarUrl = `/uploads/avatars/${path.basename(req.file.path)}`;
+        await user.update({ avatar_image: avatarUrl });
+
+        res.json({
+            success: true,
+            avatar_image: avatarUrl,
+            message: 'Avatar uploaded successfully',
+        });
+    } catch (error) {
+        // Clean up uploaded file on error
+        if (req.file) {
+            await fs.unlink(req.file.path).catch(() => {});
+        }
+        logError('Error uploading avatar:', error);
+        res.status(500).json({
+            error: 'Failed to upload avatar',
+            details: error.message,
+        });
+    }
+});
+
+router.delete('/profile/avatar', async (req, res) => {
+    try {
+        const user = await User.findByPk(req.authUserId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Delete avatar file if it exists
+        if (user.avatar_image) {
+            const avatarPath = path.join(
+                __dirname,
+                '../uploads/avatars',
+                path.basename(user.avatar_image)
+            );
+            await fs.unlink(avatarPath).catch(() => {
+                // Ignore errors if file doesn't exist
+            });
+        }
+
+        await user.update({ avatar_image: null });
+
+        res.json({
+            success: true,
+            message: 'Avatar removed successfully',
+        });
+    } catch (error) {
+        logError('Error removing avatar:', error);
+        res.status(500).json({
+            error: 'Failed to remove avatar',
+            details: error.message,
         });
     }
 });

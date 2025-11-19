@@ -305,7 +305,17 @@
     "name": "名前",
     "surname": "姓",
     "enterName": "名前を入力してください",
-    "enterSurname": "姓を入力してください"
+    "enterSurname": "姓を入力してください",
+    "avatar": "Profile Photo",
+    "uploadAvatar": "Upload Photo",
+    "removeAvatar": "Remove Avatar",
+    "avatarDescription": "Upload a profile photo (max 5MB)",
+    "avatarUploadError": "Please upload an image file",
+    "avatarSizeError": "Image must be smaller than 5MB",
+    "avatarUploadSuccess": "Avatar uploaded successfully!",
+    "avatarRemoveSuccess": "Avatar removed successfully!",
+    "avatarUploadFailed": "Failed to upload avatar",
+    "avatarRemoveFailed": "Failed to remove avatar"
   },
   "nextTask": {
     "suggestion": "進行中のものがないので、こちらから始めてみませんか",

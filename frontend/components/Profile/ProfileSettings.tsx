@@ -26,6 +26,8 @@ import {
     MoonIcon,
     KeyIcon,
     TrashIcon,
+    PhotoIcon,
+    UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
@@ -171,6 +173,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const [apiKeyToDelete, setApiKeyToDelete] = useState<ApiKeySummary | null>(
         null
     );
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [removeAvatar, setRemoveAvatar] = useState(false);
 
     const forceUpdate = useCallback(() => {
         setUpdateKey((prevKey) => prevKey + 1);
@@ -792,6 +797,74 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         }
     };
 
+    const handleAvatarSelect = (file: File) => {
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showErrorToast(
+                t('profile.avatarUploadError', 'Please upload an image file')
+            );
+            return;
+        }
+
+        // Validate file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showErrorToast(
+                t('profile.avatarSizeError', 'Image must be smaller than 5MB')
+            );
+            return;
+        }
+
+        // Store file for later upload
+        setAvatarFile(file);
+        setRemoveAvatar(false);
+
+        // Create preview URL
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setAvatarPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleAvatarRemove = () => {
+        setAvatarFile(null);
+        setAvatarPreview(null);
+        setRemoveAvatar(true);
+    };
+
+    const uploadAvatar = async (file: File): Promise<string> => {
+        const formData = new FormData();
+        formData.append('avatar', file);
+
+        const response = await fetch(getApiPath('profile/avatar'), {
+            method: 'POST',
+            credentials: 'include',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to upload avatar');
+        }
+
+        const data = await response.json();
+        return data.avatar_image;
+    };
+
+    const deleteAvatar = async (): Promise<void> => {
+        const response = await fetch(getApiPath('profile/avatar'), {
+            method: 'DELETE',
+            credentials: 'include',
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to remove avatar');
+        }
+    };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
@@ -835,6 +908,21 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             }
 
             const updatedProfile: Profile = await response.json();
+
+            // Handle avatar upload or deletion
+            if (avatarFile) {
+                // Upload new avatar
+                const avatarUrl = await uploadAvatar(avatarFile);
+                updatedProfile.avatar_image = avatarUrl;
+                setAvatarFile(null);
+                setAvatarPreview(null);
+            } else if (removeAvatar && formData.avatar_image) {
+                // Delete avatar
+                await deleteAvatar();
+                updatedProfile.avatar_image = null;
+                setRemoveAvatar(false);
+            }
+
             setProfile(updatedProfile);
 
             // Update formData to reflect the saved changes, preserving any fields not in response
@@ -938,6 +1026,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                   )
                 : t('profile.successMessage', 'Profile updated successfully!');
             showSuccessToast(successMessage);
+
+            // Reload page if avatar changed to update navbar
+            if (avatarFile || removeAvatar) {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
         } catch (err) {
             showErrorToast((err as Error).message);
         }
@@ -1051,6 +1146,65 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                     'Account & Preferences'
                                 )}
                             </h3>
+
+                            {/* Avatar Upload Section */}
+                            <div className="mb-8 flex flex-col items-center">
+                                <div className="relative">
+                                    {avatarPreview || formData.avatar_image ? (
+                                        <img
+                                            src={
+                                                avatarPreview ||
+                                                getApiPath(
+                                                    formData.avatar_image
+                                                )
+                                            }
+                                            alt="Avatar"
+                                            className="w-32 h-32 rounded-full object-cover border-4 border-blue-500"
+                                        />
+                                    ) : (
+                                        <div className="w-32 h-32 rounded-full border-4 border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                            <UserCircleIcon className="w-20 h-20 text-gray-400 dark:text-gray-500" />
+                                        </div>
+                                    )}
+                                    <label
+                                        htmlFor="avatar-upload"
+                                        className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 cursor-pointer transition-colors"
+                                    >
+                                        <PhotoIcon className="w-5 h-5" />
+                                        <input
+                                            id="avatar-upload"
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                const file =
+                                                    e.target.files?.[0];
+                                                if (file) {
+                                                    handleAvatarSelect(file);
+                                                }
+                                            }}
+                                        />
+                                    </label>
+                                </div>
+                                {(formData.avatar_image || avatarPreview) && (
+                                    <button
+                                        type="button"
+                                        onClick={handleAvatarRemove}
+                                        className="mt-3 text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                                    >
+                                        {t(
+                                            'profile.removeAvatar',
+                                            'Remove Avatar'
+                                        )}
+                                    </button>
+                                )}
+                                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                    {t(
+                                        'profile.avatarDescription',
+                                        'Upload a profile photo (max 5MB)'
+                                    )}
+                                </p>
+                            </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>

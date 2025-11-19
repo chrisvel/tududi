@@ -17,7 +17,7 @@ interface NavbarProps {
     toggleDarkMode: () => void;
     currentUser: {
         email: string;
-        avatarUrl?: string;
+        avatar_image?: string;
         is_admin?: boolean;
     };
     setCurrentUser: React.Dispatch<React.SetStateAction<any>>;
@@ -216,9 +216,9 @@ const Navbar: React.FC<NavbarProps> = ({
                             className="flex items-center focus:outline-none"
                             aria-label="User Menu"
                         >
-                            {currentUser?.avatarUrl ? (
+                            {currentUser?.avatar_image ? (
                                 <img
-                                    src={currentUser.avatarUrl}
+                                    src={getApiPath(currentUser.avatar_image)}
                                     alt="User Avatar"
                                     className="h-8 w-8 rounded-full object-cover border-2 border-green-500"
                                 />

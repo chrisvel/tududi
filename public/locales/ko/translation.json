@@ -305,7 +305,17 @@
     "name": "이름",
     "surname": "성",
     "enterName": "이름을 입력하세요",
-    "enterSurname": "성을 입력하세요"
+    "enterSurname": "성을 입력하세요",
+    "avatar": "Profile Photo",
+    "uploadAvatar": "Upload Photo",
+    "removeAvatar": "Remove Avatar",
+    "avatarDescription": "Upload a profile photo (max 5MB)",
+    "avatarUploadError": "Please upload an image file",
+    "avatarSizeError": "Image must be smaller than 5MB",
+    "avatarUploadSuccess": "Avatar uploaded successfully!",
+    "avatarRemoveSuccess": "Avatar removed successfully!",
+    "avatarUploadFailed": "Failed to upload avatar",
+    "avatarRemoveFailed": "Failed to remove avatar"
   },
   "productivity": {
     "stalledProjects": "정체된 프로젝트",
