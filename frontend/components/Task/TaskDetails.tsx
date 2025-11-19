@@ -15,6 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import TaskModal from './TaskModal';
+import RecurrenceDisplay from './RecurrenceDisplay';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import {
@@ -134,6 +135,25 @@ const TaskDetails: React.FC = () => {
             month: 'short',
             day: 'numeric',
         });
+    };
+
+    const formatDateWithDayName = (dateString: string) => {
+        const date = new Date(dateString);
+        const today = new Date().toISOString().split('T')[0];
+        const isToday = dateString === today;
+
+        const dayName = date.toLocaleDateString(undefined, { weekday: 'long' });
+        const formattedDate = date.toLocaleDateString(undefined, {
+            day: 'numeric',
+            month: 'long',
+        });
+
+        return {
+            dayName,
+            formattedDate,
+            fullText: `${dayName}, ${formattedDate}`,
+            isToday,
+        };
     };
 
     const formatRecurrence = (recurrenceType: string) => {
@@ -615,7 +635,8 @@ const TaskDetails: React.FC = () => {
                                     task.today_move_count > 1
                                         ? t(
                                               'task.overdueMultipleDays',
-                                              `This task has been postponed ${task.today_move_count} times.`
+                                              `This task has been postponed {{count}} times.`,
+                                              { count: task.today_move_count }
                                           )
                                         : t(
                                               'task.overdueYesterday',
@@ -864,71 +885,56 @@ const TaskDetails: React.FC = () => {
                                             parentTask.recurrence_type !==
                                                 'none') ? (
                                             <div className="mb-4">
-                                                <div className="flex items-center mb-2">
-                                                    <ArrowPathIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                        {formatRecurrence(
-                                                            task.recurring_parent_id &&
-                                                                parentTask?.recurrence_type
-                                                                ? parentTask.recurrence_type
-                                                                : task.recurrence_type
-                                                        )}
-                                                    </span>
-                                                    {((task.recurring_parent_id &&
-                                                        parentTask?.recurrence_interval &&
-                                                        parentTask.recurrence_interval >
-                                                            1) ||
-                                                        (!task.recurring_parent_id &&
-                                                            task.recurrence_interval &&
-                                                            task.recurrence_interval >
-                                                                1)) && (
-                                                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                                                            (
-                                                            {t(
-                                                                'recurrence.every',
-                                                                'Every'
-                                                            )}{' '}
-                                                            {task.recurring_parent_id &&
-                                                            parentTask?.recurrence_interval
-                                                                ? parentTask.recurrence_interval
-                                                                : task.recurrence_interval}
-                                                            )
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                {((task.recurring_parent_id &&
-                                                    parentTask?.recurrence_end_date) ||
-                                                    (!task.recurring_parent_id &&
-                                                        task.recurrence_end_date)) && (
-                                                    <div className="flex items-center text-sm">
-                                                        <CalendarIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                                                        <span className="text-gray-500 dark:text-gray-400">
-                                                            {t(
-                                                                'recurrence.endsOn',
-                                                                'Ends on'
-                                                            )}{' '}
-                                                            {formatDueDate(
-                                                                task.recurring_parent_id &&
-                                                                    parentTask?.recurrence_end_date
-                                                                    ? parentTask.recurrence_end_date
-                                                                    : task.recurrence_end_date!
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {((task.recurring_parent_id &&
-                                                    parentTask?.completion_based) ||
-                                                    (!task.recurring_parent_id &&
-                                                        task.completion_based)) && (
-                                                    <div className="flex items-center mt-2">
-                                                        <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
-                                                            {t(
-                                                                'recurrence.completionBased',
-                                                                'Completion-based'
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                <RecurrenceDisplay
+                                                    recurrenceType={
+                                                        task.recurring_parent_id &&
+                                                        parentTask?.recurrence_type
+                                                            ? parentTask.recurrence_type
+                                                            : task.recurrence_type
+                                                    }
+                                                    recurrenceInterval={
+                                                        task.recurring_parent_id &&
+                                                        parentTask?.recurrence_interval
+                                                            ? parentTask.recurrence_interval
+                                                            : task.recurrence_interval
+                                                    }
+                                                    recurrenceWeekdays={
+                                                        task.recurring_parent_id &&
+                                                        parentTask?.recurrence_weekdays
+                                                            ? parentTask.recurrence_weekdays
+                                                            : task.recurrence_weekdays
+                                                    }
+                                                    recurrenceEndDate={
+                                                        task.recurring_parent_id &&
+                                                        parentTask?.recurrence_end_date
+                                                            ? parentTask.recurrence_end_date
+                                                            : task.recurrence_end_date
+                                                    }
+                                                    recurrenceMonthDay={
+                                                        task.recurring_parent_id &&
+                                                        parentTask?.recurrence_month_day
+                                                            ? parentTask.recurrence_month_day
+                                                            : task.recurrence_month_day
+                                                    }
+                                                    recurrenceWeekOfMonth={
+                                                        task.recurring_parent_id &&
+                                                        parentTask?.recurrence_week_of_month
+                                                            ? parentTask.recurrence_week_of_month
+                                                            : task.recurrence_week_of_month
+                                                    }
+                                                    recurrenceWeekday={
+                                                        task.recurring_parent_id &&
+                                                        parentTask?.recurrence_weekday
+                                                            ? parentTask.recurrence_weekday
+                                                            : task.recurrence_weekday
+                                                    }
+                                                    completionBased={
+                                                        task.recurring_parent_id &&
+                                                        parentTask?.completion_based
+                                                            ? parentTask.completion_based
+                                                            : task.completion_based
+                                                    }
+                                                />
                                             </div>
                                         ) : null}
 
@@ -946,12 +952,30 @@ const TaskDetails: React.FC = () => {
                                                         {task.recurring_parent_id
                                                             ? t(
                                                                   'task.nextOccurrencesAfterThis',
-                                                                  'Next 5 Occurrences After This'
+                                                                  'Next Occurrences After This'
                                                               )
                                                             : t(
                                                                   'task.nextOccurrences',
-                                                                  'Next 5 Occurrences'
+                                                                  'Next Occurrences'
                                                               )}
+                                                        {!loadingIterations &&
+                                                            nextIterations.length >
+                                                                0 &&
+                                                            nextIterations.some(
+                                                                (iter) =>
+                                                                    formatDateWithDayName(
+                                                                        iter.date
+                                                                    ).isToday
+                                                            ) && (
+                                                                <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
+                                                                    (
+                                                                    {t(
+                                                                        'task.includingToday',
+                                                                        'including today'
+                                                                    )}
+                                                                    )
+                                                                </span>
+                                                            )}
                                                     </span>
                                                 </div>
 
@@ -972,24 +996,75 @@ const TaskDetails: React.FC = () => {
                                                             (
                                                                 iteration,
                                                                 index
-                                                            ) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className="flex items-center py-1 px-2 rounded bg-gray-50 dark:bg-gray-800"
-                                                                >
-                                                                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
-                                                                        <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                                                                            {index +
-                                                                                1}
-                                                                        </span>
+                                                            ) => {
+                                                                const dateInfo =
+                                                                    formatDateWithDayName(
+                                                                        iteration.date
+                                                                    );
+                                                                return (
+                                                                    <div
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        className={`flex items-center py-2 px-3 rounded transition-colors ${
+                                                                            dateInfo.isToday
+                                                                                ? 'bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800'
+                                                                                : 'bg-gray-50 dark:bg-gray-800 border border-transparent'
+                                                                        }`}
+                                                                    >
+                                                                        <div
+                                                                            className={`w-7 h-7 rounded-full flex items-center justify-center mr-3 ${
+                                                                                dateInfo.isToday
+                                                                                    ? 'bg-blue-600 dark:bg-blue-500'
+                                                                                    : 'bg-blue-100 dark:bg-blue-900'
+                                                                            }`}
+                                                                        >
+                                                                            <span
+                                                                                className={`text-xs font-medium ${
+                                                                                    dateInfo.isToday
+                                                                                        ? 'text-white'
+                                                                                        : 'text-blue-600 dark:text-blue-400'
+                                                                                }`}
+                                                                            >
+                                                                                {index +
+                                                                                    1}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className="flex-1">
+                                                                            <div
+                                                                                className={`text-sm font-medium ${
+                                                                                    dateInfo.isToday
+                                                                                        ? 'text-blue-900 dark:text-blue-100'
+                                                                                        : 'text-gray-900 dark:text-gray-100'
+                                                                                }`}
+                                                                            >
+                                                                                {
+                                                                                    dateInfo.dayName
+                                                                                }
+                                                                                {dateInfo.isToday && (
+                                                                                    <span className="ml-2 text-xs px-2 py-0.5 bg-blue-600 dark:bg-blue-500 text-white rounded-full font-semibold">
+                                                                                        {t(
+                                                                                            'dateIndicators.today',
+                                                                                            'TODAY'
+                                                                                        )}
+                                                                                    </span>
+                                                                                )}
+                                                                            </div>
+                                                                            <div
+                                                                                className={`text-xs ${
+                                                                                    dateInfo.isToday
+                                                                                        ? 'text-blue-700 dark:text-blue-300'
+                                                                                        : 'text-gray-500 dark:text-gray-400'
+                                                                                }`}
+                                                                            >
+                                                                                {
+                                                                                    dateInfo.formattedDate
+                                                                                }
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
-                                                                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                                                                        {formatDueDate(
-                                                                            iteration.date
-                                                                        )}
-                                                                    </span>
-                                                                </div>
-                                                            )
+                                                                );
+                                                            }
                                                         )}
                                                     </div>
                                                 ) : (

@@ -21,6 +21,7 @@ export interface Task {
     recurrence_interval?: number;
     recurrence_end_date?: string;
     recurrence_weekday?: number;
+    recurrence_weekdays?: number[]; // Array of weekday numbers for weekly recurrence
     recurrence_month_day?: number;
     recurrence_week_of_month?: number;
     completion_based?: boolean;

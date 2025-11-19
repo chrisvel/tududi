@@ -13,16 +13,6 @@ import {
 } from '../../utils/taskIntelligenceService';
 import { useTranslation } from 'react-i18next';
 import { getTaskIntelligenceEnabled } from '../../utils/profileService';
-import {
-    TagIcon,
-    FolderIcon,
-    ArrowPathIcon,
-    TrashIcon,
-    ListBulletIcon,
-    ExclamationTriangleIcon,
-    CalendarIcon,
-} from '@heroicons/react/24/outline';
-
 // Import form sections
 import TaskTitleSection from './TaskForm/TaskTitleSection';
 import TaskContentSection from './TaskForm/TaskContentSection';
@@ -30,8 +20,10 @@ import TaskTagsSection from './TaskForm/TaskTagsSection';
 import TaskProjectSection from './TaskForm/TaskProjectSection';
 import TaskRecurrenceSection from './TaskForm/TaskRecurrenceSection';
 import TaskSubtasksSection from './TaskForm/TaskSubtasksSection';
-import PriorityDropdown from '../Shared/PriorityDropdown';
-import DatePicker from '../Shared/DatePicker';
+import TaskPrioritySection from './TaskForm/TaskPrioritySection';
+import TaskDueDateSection from './TaskForm/TaskDueDateSection';
+import TaskSectionToggle from './TaskForm/TaskSectionToggle';
+import TaskModalActions from './TaskForm/TaskModalActions';
 
 interface TaskModalProps {
     isOpen: boolean;
@@ -704,7 +696,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                                 'Priority'
                                                             )}
                                                         </h3>
-                                                        <PriorityDropdown
+                                                        <TaskPrioritySection
                                                             value={getPriorityString(
                                                                 formData.priority
                                                             )}
@@ -733,32 +725,29 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                                 'Due Date'
                                                             )}
                                                         </h3>
-                                                        <div className="overflow-visible">
-                                                            <DatePicker
-                                                                value={
-                                                                    formData.due_date ||
-                                                                    ''
-                                                                }
-                                                                onChange={(
-                                                                    value
-                                                                ) => {
-                                                                    const event =
-                                                                        {
-                                                                            target: {
-                                                                                name: 'due_date',
-                                                                                value,
-                                                                            },
-                                                                        } as React.ChangeEvent<HTMLInputElement>;
-                                                                    handleChange(
-                                                                        event
-                                                                    );
-                                                                }}
-                                                                placeholder={t(
-                                                                    'forms.task.dueDatePlaceholder',
-                                                                    'Select due date'
-                                                                )}
-                                                            />
-                                                        </div>
+                                                        <TaskDueDateSection
+                                                            value={
+                                                                formData.due_date ||
+                                                                ''
+                                                            }
+                                                            onChange={(
+                                                                value
+                                                            ) => {
+                                                                const event = {
+                                                                    target: {
+                                                                        name: 'due_date',
+                                                                        value,
+                                                                    },
+                                                                } as React.ChangeEvent<HTMLInputElement>;
+                                                                handleChange(
+                                                                    event
+                                                                );
+                                                            }}
+                                                            placeholder={t(
+                                                                'forms.task.dueDatePlaceholder',
+                                                                'Select due date'
+                                                            )}
+                                                        />
                                                     </div>
                                                 )}
 
@@ -771,15 +760,76 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                             )}
                                                         </h3>
                                                         <TaskRecurrenceSection
-                                                            formData={formData}
-                                                            parentTask={
-                                                                parentTask
+                                                            recurrenceType={
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_type ||
+                                                                'none'
+                                                            }
+                                                            recurrenceInterval={
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_interval ||
+                                                                1
+                                                            }
+                                                            recurrenceEndDate={
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_end_date
+                                                            }
+                                                            recurrenceWeekday={
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_weekday
+                                                            }
+                                                            recurrenceWeekdays={
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_weekdays
+                                                            }
+                                                            recurrenceMonthDay={
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_month_day
+                                                            }
+                                                            recurrenceWeekOfMonth={
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_week_of_month
+                                                            }
+                                                            completionBased={
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .completion_based ||
+                                                                false
+                                                            }
+                                                            onChange={
+                                                                handleRecurrenceChange
+                                                            }
+                                                            disabled={
+                                                                !!parentTask
+                                                            }
+                                                            isChildTask={
+                                                                !!parentTask
                                                             }
                                                             parentTaskLoading={
                                                                 parentTaskLoading
-                                                            }
-                                                            onRecurrenceChange={
-                                                                handleRecurrenceChange
                                                             }
                                                             onEditParent={
                                                                 parentTask
@@ -840,214 +890,21 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                 </div>
 
                                 {/* Section Icons - Above border, split layout */}
-                                <div className="flex-shrink-0 bg-white dark:bg-gray-800 px-3 py-2">
-                                    <div className="flex items-center justify-between">
-                                        {/* Left side: Section icons */}
-                                        <div className="flex items-center space-x-1">
-                                            {/* Tags Toggle */}
-                                            <button
-                                                onClick={() =>
-                                                    toggleSection('tags')
-                                                }
-                                                className={`relative p-2 rounded-full transition-colors ${
-                                                    expandedSections.tags
-                                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                }`}
-                                                title={t(
-                                                    'forms.task.labels.tags',
-                                                    'Tags'
-                                                )}
-                                            >
-                                                <TagIcon className="h-5 w-5" />
-                                                {formData.tags &&
-                                                    formData.tags.length >
-                                                        0 && (
-                                                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
-                                                    )}
-                                            </button>
-
-                                            {/* Project Toggle */}
-                                            <button
-                                                onClick={() =>
-                                                    toggleSection('project')
-                                                }
-                                                className={`relative p-2 rounded-full transition-colors ${
-                                                    expandedSections.project
-                                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                }`}
-                                                title={t(
-                                                    'forms.task.labels.project',
-                                                    'Project'
-                                                )}
-                                            >
-                                                <FolderIcon className="h-5 w-5" />
-                                                {formData.project_id && (
-                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
-                                                )}
-                                            </button>
-
-                                            {/* Priority Toggle */}
-                                            <button
-                                                onClick={() =>
-                                                    toggleSection('priority')
-                                                }
-                                                className={`relative p-2 rounded-full transition-colors ${
-                                                    expandedSections.priority
-                                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                }`}
-                                                title={t(
-                                                    'forms.task.labels.priority',
-                                                    'Priority'
-                                                )}
-                                            >
-                                                <ExclamationTriangleIcon className="h-5 w-5" />
-                                                {formData.priority != null && (
-                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
-                                                )}
-                                            </button>
-
-                                            {/* Due Date Toggle */}
-                                            <button
-                                                onClick={() =>
-                                                    toggleSection('dueDate')
-                                                }
-                                                className={`relative p-2 rounded-full transition-colors ${
-                                                    expandedSections.dueDate
-                                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                }`}
-                                                title={t(
-                                                    'forms.task.labels.dueDate',
-                                                    'Due Date'
-                                                )}
-                                            >
-                                                <CalendarIcon className="h-5 w-5" />
-                                                {formData.due_date && (
-                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
-                                                )}
-                                            </button>
-
-                                            {/* Recurrence Toggle */}
-                                            <button
-                                                onClick={() =>
-                                                    toggleSection('recurrence')
-                                                }
-                                                className={`relative p-2 rounded-full transition-colors ${
-                                                    expandedSections.recurrence
-                                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                }`}
-                                                title={t(
-                                                    'forms.task.recurrence',
-                                                    'Recurrence'
-                                                )}
-                                            >
-                                                <ArrowPathIcon className="h-5 w-5" />
-                                                {((formData.recurrence_type &&
-                                                    formData.recurrence_type !==
-                                                        'none') ||
-                                                    formData.recurring_parent_uid) && (
-                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
-                                                )}
-                                            </button>
-
-                                            {/* Subtasks Toggle */}
-                                            <button
-                                                onClick={() =>
-                                                    toggleSection('subtasks')
-                                                }
-                                                className={`relative p-2 rounded-full transition-colors ${
-                                                    expandedSections.subtasks
-                                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                }`}
-                                                title={t(
-                                                    'forms.task.subtasks',
-                                                    'Subtasks'
-                                                )}
-                                            >
-                                                <ListBulletIcon className="h-5 w-5" />
-                                                {subtasks.length > 0 && (
-                                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
-                                                )}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <TaskSectionToggle
+                                    expandedSections={expandedSections}
+                                    onToggleSection={toggleSection}
+                                    formData={formData}
+                                    subtasksCount={subtasks.length}
+                                />
 
                                 {/* Action Buttons - Below border with custom layout */}
-                                <div className="flex-shrink-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between sm:rounded-bl-lg">
-                                    {/* Left side: Delete and Cancel */}
-                                    <div className="flex items-center space-x-3">
-                                        {task.id && (
-                                            <button
-                                                type="button"
-                                                onClick={handleDeleteClick}
-                                                className="p-2 border border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none transition duration-150 ease-in-out"
-                                                title={t(
-                                                    'common.delete',
-                                                    'Delete'
-                                                )}
-                                            >
-                                                <TrashIcon className="h-4 w-4" />
-                                            </button>
-                                        )}
-                                        <button
-                                            type="button"
-                                            onClick={handleClose}
-                                            className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 focus:outline-none transition duration-150 ease-in-out text-sm"
-                                        >
-                                            {t('common.cancel', 'Cancel')}
-                                        </button>
-                                    </div>
-
-                                    {/* Right side: Save */}
-                                    <button
-                                        type="button"
-                                        onClick={handleSubmit}
-                                        disabled={isSaving}
-                                        className={`px-4 py-2 rounded-md focus:outline-none transition duration-150 ease-in-out text-sm ${
-                                            isSaving
-                                                ? 'bg-blue-400 text-white cursor-not-allowed dark:bg-blue-400'
-                                                : 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
-                                        }`}
-                                        data-testid="task-save-button"
-                                    >
-                                        {isSaving ? (
-                                            <span className="flex items-center">
-                                                <svg
-                                                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <circle
-                                                        className="opacity-25"
-                                                        cx="12"
-                                                        cy="12"
-                                                        r="10"
-                                                        stroke="currentColor"
-                                                        strokeWidth="4"
-                                                    ></circle>
-                                                    <path
-                                                        className="opacity-75"
-                                                        fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                    ></path>
-                                                </svg>
-                                                {t(
-                                                    'common.saving',
-                                                    'Saving...'
-                                                )}
-                                            </span>
-                                        ) : (
-                                            t('common.save', 'Save')
-                                        )}
-                                    </button>
-                                </div>
+                                <TaskModalActions
+                                    taskId={task.id}
+                                    isSaving={isSaving}
+                                    onDelete={handleDeleteClick}
+                                    onCancel={handleClose}
+                                    onSave={handleSubmit}
+                                />
                             </div>
                         </div>
                     </div>
