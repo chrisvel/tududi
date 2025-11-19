@@ -15,7 +15,6 @@ const WeekdaySelector: React.FC<WeekdaySelectorProps> = ({
 }) => {
     const { t } = useTranslation();
     const [firstDayOfWeek, setFirstDayOfWeek] = useState<number | null>(null);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadFirstDayOfWeek = async () => {
@@ -26,8 +25,6 @@ const WeekdaySelector: React.FC<WeekdaySelectorProps> = ({
             } catch (error) {
                 console.error('Error loading first day of week:', error);
                 setFirstDayOfWeek(1); // Default to Monday on error
-            } finally {
-                setLoading(false);
             }
         };
         loadFirstDayOfWeek();
