@@ -115,6 +115,31 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskUid, refreshKey }) => {
                 }
                 return t('timeline.events.recurrenceEndDateChanged');
             }
+            case 'recurrence_type_changed': {
+                const oldType = old_value?.recurrence_type;
+                const newType = new_value?.recurrence_type;
+                if (oldType !== undefined && newType !== undefined) {
+                    const formatRecurrenceType = (type: string) => {
+                        const typeMap: Record<string, string> = {
+                            none: t('recurrence.none', 'None'),
+                            daily: t('recurrence.daily', 'Daily'),
+                            weekly: t('recurrence.weekly', 'Weekly'),
+                            monthly: t('recurrence.monthly', 'Monthly'),
+                            monthly_weekday: t(
+                                'recurrence.monthlyWeekday',
+                                'Monthly (weekday)'
+                            ),
+                            monthly_last_day: t(
+                                'recurrence.monthlyLastDay',
+                                'Monthly (last day)'
+                            ),
+                        };
+                        return typeMap[type] || type;
+                    };
+                    return `${t('timeline.events.recurrenceType')}: ${formatRecurrenceType(oldType)} → ${formatRecurrenceType(newType)}`;
+                }
+                return t('timeline.events.recurrenceTypeChanged');
+            }
             case 'name_changed':
                 return t('timeline.events.nameUpdated');
             case 'description_changed':

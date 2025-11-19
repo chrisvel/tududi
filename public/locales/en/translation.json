@@ -156,6 +156,8 @@
       "priority": "Priority",
       "dueDate": "Due date",
       "recurrenceEndDate": "Recurrence end date",
+      "recurrenceType": "Recurrence type",
+      "recurrenceTypeChanged": "Recurrence type changed",
       "none": "None"
     }
   },

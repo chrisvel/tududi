@@ -959,7 +959,8 @@ const TaskDetails: React.FC = () => {
                                                                   'Next Occurrences'
                                                               )}
                                                         {!loadingIterations &&
-                                                            nextIterations.length > 0 &&
+                                                            nextIterations.length >
+                                                                0 &&
                                                             nextIterations.some(
                                                                 (iter) =>
                                                                     formatDateWithDayName(
@@ -1002,7 +1003,9 @@ const TaskDetails: React.FC = () => {
                                                                     );
                                                                 return (
                                                                     <div
-                                                                        key={index}
+                                                                        key={
+                                                                            index
+                                                                        }
                                                                         className={`flex items-center py-2 px-3 rounded transition-colors ${
                                                                             dateInfo.isToday
                                                                                 ? 'bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800'

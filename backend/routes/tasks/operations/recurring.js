@@ -105,7 +105,9 @@ async function calculateNextIterations(task, startFromDate, userTimezone) {
     // If today doesn't match, calculate the next occurrence
     if (!includesToday) {
         if (task.recurrence_type === 'daily') {
-            nextDate.setDate(nextDate.getDate() + (task.recurrence_interval || 1));
+            nextDate.setDate(
+                nextDate.getDate() + (task.recurrence_interval || 1)
+            );
         } else if (task.recurrence_type === 'weekly') {
             const interval = task.recurrence_interval || 1;
             if (

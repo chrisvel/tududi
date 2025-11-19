@@ -22,8 +22,7 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
     recurrenceWeekdays,
     recurrenceEndDate,
     recurrenceMonthDay,
-    recurrenceWeekOfMonth,
-    recurrenceWeekday,
+    // recurrenceWeekOfMonth and recurrenceWeekday kept for future use
     completionBased = false,
     compact = false,
 }) => {
@@ -45,13 +44,41 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
 
     const allWeekdays = useMemo(
         () => [
-            { value: 0, short: t('weekdays.sunday', 'Sun'), full: t('weekdaysFull.sunday', 'Sunday') },
-            { value: 1, short: t('weekdays.monday', 'Mon'), full: t('weekdaysFull.monday', 'Monday') },
-            { value: 2, short: t('weekdays.tuesday', 'Tue'), full: t('weekdaysFull.tuesday', 'Tuesday') },
-            { value: 3, short: t('weekdays.wednesday', 'Wed'), full: t('weekdaysFull.wednesday', 'Wednesday') },
-            { value: 4, short: t('weekdays.thursday', 'Thu'), full: t('weekdaysFull.thursday', 'Thursday') },
-            { value: 5, short: t('weekdays.friday', 'Fri'), full: t('weekdaysFull.friday', 'Friday') },
-            { value: 6, short: t('weekdays.saturday', 'Sat'), full: t('weekdaysFull.saturday', 'Saturday') },
+            {
+                value: 0,
+                short: t('weekdays.sunday', 'Sun'),
+                full: t('weekdaysFull.sunday', 'Sunday'),
+            },
+            {
+                value: 1,
+                short: t('weekdays.monday', 'Mon'),
+                full: t('weekdaysFull.monday', 'Monday'),
+            },
+            {
+                value: 2,
+                short: t('weekdays.tuesday', 'Tue'),
+                full: t('weekdaysFull.tuesday', 'Tuesday'),
+            },
+            {
+                value: 3,
+                short: t('weekdays.wednesday', 'Wed'),
+                full: t('weekdaysFull.wednesday', 'Wednesday'),
+            },
+            {
+                value: 4,
+                short: t('weekdays.thursday', 'Thu'),
+                full: t('weekdaysFull.thursday', 'Thursday'),
+            },
+            {
+                value: 5,
+                short: t('weekdays.friday', 'Fri'),
+                full: t('weekdaysFull.friday', 'Friday'),
+            },
+            {
+                value: 6,
+                short: t('weekdays.saturday', 'Sat'),
+                full: t('weekdaysFull.saturday', 'Saturday'),
+            },
         ],
         [t]
     );
@@ -65,20 +92,30 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
     }, [allWeekdays, firstDayOfWeek]);
 
     const formatRecurrenceText = () => {
-        const intervalText = recurrenceInterval > 1 ? recurrenceInterval : '';
-
         switch (recurrenceType) {
             case 'daily':
                 return recurrenceInterval > 1
-                    ? t('recurrence.everyNDays', `Every ${recurrenceInterval} days`, { count: recurrenceInterval })
+                    ? t(
+                          'recurrence.everyNDays',
+                          `Every ${recurrenceInterval} days`,
+                          { count: recurrenceInterval }
+                      )
                     : t('recurrence.daily', 'Daily');
             case 'weekly':
                 return recurrenceInterval > 1
-                    ? t('recurrence.everyNWeeks', `Every ${recurrenceInterval} weeks`, { count: recurrenceInterval })
+                    ? t(
+                          'recurrence.everyNWeeks',
+                          `Every ${recurrenceInterval} weeks`,
+                          { count: recurrenceInterval }
+                      )
                     : t('recurrence.weekly', 'Weekly');
             case 'monthly':
                 return recurrenceInterval > 1
-                    ? t('recurrence.everyNMonths', `Every ${recurrenceInterval} months`, { count: recurrenceInterval })
+                    ? t(
+                          'recurrence.everyNMonths',
+                          `Every ${recurrenceInterval} months`,
+                          { count: recurrenceInterval }
+                      )
                     : t('recurrence.monthly', 'Monthly');
             case 'monthly_weekday':
                 return t('recurrence.monthlyWeekday', 'Monthly on weekday');
@@ -113,7 +150,9 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
             {/* Main recurrence info */}
             <div className="flex items-center">
                 <ArrowPathIcon className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
-                <span className={`${compact ? 'text-sm' : 'text-base'} font-medium text-gray-900 dark:text-gray-100`}>
+                <span
+                    className={`${compact ? 'text-sm' : 'text-base'} font-medium text-gray-900 dark:text-gray-100`}
+                >
                     {formatRecurrenceText()}
                 </span>
                 {completionBased && (
@@ -124,18 +163,22 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
             </div>
 
             {/* Weekday display for weekly recurrence */}
-            {recurrenceType === 'weekly' && recurrenceWeekdays && recurrenceWeekdays.length > 0 && (
-                <div className="ml-7">
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-                        {t('forms.task.labels.repeatOn', 'Repeat on')}:
-                    </div>
-                    <div className="flex gap-1 flex-wrap">
-                        {orderedWeekdays.map((weekday) => {
-                            const isSelected = recurrenceWeekdays.includes(weekday.value);
-                            return (
-                                <div
-                                    key={weekday.value}
-                                    className={`
+            {recurrenceType === 'weekly' &&
+                recurrenceWeekdays &&
+                recurrenceWeekdays.length > 0 && (
+                    <div className="ml-7">
+                        <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                            {t('forms.task.labels.repeatOn', 'Repeat on')}:
+                        </div>
+                        <div className="flex gap-1 flex-wrap">
+                            {orderedWeekdays.map((weekday) => {
+                                const isSelected = recurrenceWeekdays.includes(
+                                    weekday.value
+                                );
+                                return (
+                                    <div
+                                        key={weekday.value}
+                                        className={`
                                         w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium
                                         ${
                                             isSelected
@@ -143,15 +186,15 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
                                                 : 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600'
                                         }
                                     `}
-                                    title={weekday.full}
-                                >
-                                    {weekday.short}
-                                </div>
-                            );
-                        })}
+                                        title={weekday.full}
+                                    >
+                                        {weekday.short}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
             {/* Month day display for monthly recurrence */}
             {recurrenceType === 'monthly' && recurrenceMonthDay && (
@@ -165,7 +208,8 @@ const RecurrenceDisplay: React.FC<RecurrenceDisplayProps> = ({
                 <div className="ml-7 flex items-center text-sm text-gray-600 dark:text-gray-400">
                     <CalendarIcon className="h-4 w-4 mr-1" />
                     <span>
-                        {t('recurrence.until', 'Until')} {formatEndDate(recurrenceEndDate)}
+                        {t('recurrence.until', 'Until')}{' '}
+                        {formatEndDate(recurrenceEndDate)}
                     </span>
                 </div>
             )}
