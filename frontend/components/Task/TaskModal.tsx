@@ -726,15 +726,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                             )}
                                                         </h3>
                                                         <TaskDueDateSection
-                                                            value={formData.due_date || ''}
-                                                            onChange={(value) => {
+                                                            value={
+                                                                formData.due_date ||
+                                                                ''
+                                                            }
+                                                            onChange={(
+                                                                value
+                                                            ) => {
                                                                 const event = {
                                                                     target: {
                                                                         name: 'due_date',
                                                                         value,
                                                                     },
                                                                 } as React.ChangeEvent<HTMLInputElement>;
-                                                                handleChange(event);
+                                                                handleChange(
+                                                                    event
+                                                                );
                                                             }}
                                                             placeholder={t(
                                                                 'forms.task.dueDatePlaceholder',
@@ -753,16 +760,34 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                             )}
                                                         </h3>
                                                         <TaskRecurrenceSection
-                                                            formData={formData}
-                                                            parentTask={
-                                                                parentTask
+                                                            recurrenceType={
+                                                                (parentTask || formData).recurrence_type || 'none'
                                                             }
-                                                            parentTaskLoading={
-                                                                parentTaskLoading
+                                                            recurrenceInterval={
+                                                                (parentTask || formData).recurrence_interval || 1
                                                             }
-                                                            onRecurrenceChange={
-                                                                handleRecurrenceChange
+                                                            recurrenceEndDate={
+                                                                (parentTask || formData).recurrence_end_date
                                                             }
+                                                            recurrenceWeekday={
+                                                                (parentTask || formData).recurrence_weekday
+                                                            }
+                                                            recurrenceWeekdays={
+                                                                (parentTask || formData).recurrence_weekdays
+                                                            }
+                                                            recurrenceMonthDay={
+                                                                (parentTask || formData).recurrence_month_day
+                                                            }
+                                                            recurrenceWeekOfMonth={
+                                                                (parentTask || formData).recurrence_week_of_month
+                                                            }
+                                                            completionBased={
+                                                                (parentTask || formData).completion_based || false
+                                                            }
+                                                            onChange={handleRecurrenceChange}
+                                                            disabled={!!parentTask}
+                                                            isChildTask={!!parentTask}
+                                                            parentTaskLoading={parentTaskLoading}
                                                             onEditParent={
                                                                 parentTask
                                                                     ? handleEditParent

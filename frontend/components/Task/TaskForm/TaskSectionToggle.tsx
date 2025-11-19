@@ -19,7 +19,9 @@ interface TaskSectionToggleProps {
         recurrence: boolean;
         subtasks: boolean;
     };
-    onToggleSection: (section: keyof TaskSectionToggleProps['expandedSections']) => void;
+    onToggleSection: (
+        section: keyof TaskSectionToggleProps['expandedSections']
+    ) => void;
     formData: Task;
     subtasksCount: number;
 }
@@ -61,7 +63,8 @@ const TaskSectionToggle: React.FC<TaskSectionToggleProps> = ({
             icon: ArrowPathIcon,
             title: t('forms.task.recurrence', 'Recurrence'),
             hasValue:
-                (formData.recurrence_type && formData.recurrence_type !== 'none') ||
+                (formData.recurrence_type &&
+                    formData.recurrence_type !== 'none') ||
                 !!formData.recurring_parent_uid,
         },
         {
@@ -76,23 +79,25 @@ const TaskSectionToggle: React.FC<TaskSectionToggleProps> = ({
         <div className="flex-shrink-0 bg-white dark:bg-gray-800 px-3 py-2">
             <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-1">
-                    {toggleButtons.map(({ key, icon: Icon, title, hasValue }) => (
-                        <button
-                            key={key}
-                            onClick={() => onToggleSection(key)}
-                            className={`relative p-2 rounded-full transition-colors ${
-                                expandedSections[key]
-                                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
-                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                            }`}
-                            title={title}
-                        >
-                            <Icon className="h-5 w-5" />
-                            {hasValue && (
-                                <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
-                            )}
-                        </button>
-                    ))}
+                    {toggleButtons.map(
+                        ({ key, icon: Icon, title, hasValue }) => (
+                            <button
+                                key={key}
+                                onClick={() => onToggleSection(key)}
+                                className={`relative p-2 rounded-full transition-colors ${
+                                    expandedSections[key]
+                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                }`}
+                                title={title}
+                            >
+                                <Icon className="h-5 w-5" />
+                                {hasValue && (
+                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></span>
+                                )}
+                            </button>
+                        )
+                    )}
                 </div>
             </div>
         </div>
