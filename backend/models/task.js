@@ -94,7 +94,10 @@ module.exports = (sequelize) => {
                     return rawValue ? JSON.parse(rawValue) : null;
                 },
                 set(value) {
-                    this.setDataValue('recurrence_weekdays', value ? JSON.stringify(value) : null);
+                    this.setDataValue(
+                        'recurrence_weekdays',
+                        value ? JSON.stringify(value) : null
+                    );
                 },
             },
             recurrence_month_day: {

@@ -761,33 +761,76 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                         </h3>
                                                         <TaskRecurrenceSection
                                                             recurrenceType={
-                                                                (parentTask || formData).recurrence_type || 'none'
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_type ||
+                                                                'none'
                                                             }
                                                             recurrenceInterval={
-                                                                (parentTask || formData).recurrence_interval || 1
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_interval ||
+                                                                1
                                                             }
                                                             recurrenceEndDate={
-                                                                (parentTask || formData).recurrence_end_date
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_end_date
                                                             }
                                                             recurrenceWeekday={
-                                                                (parentTask || formData).recurrence_weekday
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_weekday
                                                             }
                                                             recurrenceWeekdays={
-                                                                (parentTask || formData).recurrence_weekdays
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_weekdays
                                                             }
                                                             recurrenceMonthDay={
-                                                                (parentTask || formData).recurrence_month_day
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_month_day
                                                             }
                                                             recurrenceWeekOfMonth={
-                                                                (parentTask || formData).recurrence_week_of_month
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .recurrence_week_of_month
                                                             }
                                                             completionBased={
-                                                                (parentTask || formData).completion_based || false
+                                                                (
+                                                                    parentTask ||
+                                                                    formData
+                                                                )
+                                                                    .completion_based ||
+                                                                false
                                                             }
-                                                            onChange={handleRecurrenceChange}
-                                                            disabled={!!parentTask}
-                                                            isChildTask={!!parentTask}
-                                                            parentTaskLoading={parentTaskLoading}
+                                                            onChange={
+                                                                handleRecurrenceChange
+                                                            }
+                                                            disabled={
+                                                                !!parentTask
+                                                            }
+                                                            isChildTask={
+                                                                !!parentTask
+                                                            }
+                                                            parentTaskLoading={
+                                                                parentTaskLoading
+                                                            }
                                                             onEditParent={
                                                                 parentTask
                                                                     ? handleEditParent

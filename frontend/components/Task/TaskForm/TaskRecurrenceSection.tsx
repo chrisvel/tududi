@@ -171,7 +171,10 @@ const TaskRecurrenceSection: React.FC<TaskRecurrenceSectionProps> = ({
                 <WeekdaySelector
                     selectedDays={recurrenceWeekdays || []}
                     onChange={(days) =>
-                        (customOnChange || onChange)('recurrence_weekdays', days)
+                        (customOnChange || onChange)(
+                            'recurrence_weekdays',
+                            days
+                        )
                     }
                     disabled={isDisabled}
                 />

@@ -13,7 +13,8 @@ module.exports = {
                 definition: {
                     type: Sequelize.TEXT,
                     allowNull: true,
-                    comment: 'JSON array of weekday numbers for weekly recurrence (e.g., "[1,3,5]" for Mon, Wed, Fri)',
+                    comment:
+                        'JSON array of weekday numbers for weekly recurrence (e.g., "[1,3,5]" for Mon, Wed, Fri)',
                 },
             },
         ]);

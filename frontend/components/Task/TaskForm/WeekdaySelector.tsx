@@ -31,15 +31,46 @@ const WeekdaySelector: React.FC<WeekdaySelectorProps> = ({
     }, []);
 
     // All weekdays with their short names - use useMemo to recalculate when translations change
-    const allWeekdays = useMemo(() => [
-        { value: 0, short: t('weekdays.sunday', 'Sun'), full: t('weekdaysFull.sunday', 'Sunday') },
-        { value: 1, short: t('weekdays.monday', 'Mon'), full: t('weekdaysFull.monday', 'Monday') },
-        { value: 2, short: t('weekdays.tuesday', 'Tue'), full: t('weekdaysFull.tuesday', 'Tuesday') },
-        { value: 3, short: t('weekdays.wednesday', 'Wed'), full: t('weekdaysFull.wednesday', 'Wednesday') },
-        { value: 4, short: t('weekdays.thursday', 'Thu'), full: t('weekdaysFull.thursday', 'Thursday') },
-        { value: 5, short: t('weekdays.friday', 'Fri'), full: t('weekdaysFull.friday', 'Friday') },
-        { value: 6, short: t('weekdays.saturday', 'Sat'), full: t('weekdaysFull.saturday', 'Saturday') },
-    ], [t]);
+    const allWeekdays = useMemo(
+        () => [
+            {
+                value: 0,
+                short: t('weekdays.sunday', 'Sun'),
+                full: t('weekdaysFull.sunday', 'Sunday'),
+            },
+            {
+                value: 1,
+                short: t('weekdays.monday', 'Mon'),
+                full: t('weekdaysFull.monday', 'Monday'),
+            },
+            {
+                value: 2,
+                short: t('weekdays.tuesday', 'Tue'),
+                full: t('weekdaysFull.tuesday', 'Tuesday'),
+            },
+            {
+                value: 3,
+                short: t('weekdays.wednesday', 'Wed'),
+                full: t('weekdaysFull.wednesday', 'Wednesday'),
+            },
+            {
+                value: 4,
+                short: t('weekdays.thursday', 'Thu'),
+                full: t('weekdaysFull.thursday', 'Thursday'),
+            },
+            {
+                value: 5,
+                short: t('weekdays.friday', 'Fri'),
+                full: t('weekdaysFull.friday', 'Friday'),
+            },
+            {
+                value: 6,
+                short: t('weekdays.saturday', 'Sat'),
+                full: t('weekdaysFull.saturday', 'Saturday'),
+            },
+        ],
+        [t]
+    );
 
     // Reorder weekdays based on first day of week - use useMemo to recalculate when firstDayOfWeek changes
     const orderedWeekdays = useMemo(() => {
@@ -49,7 +80,10 @@ const WeekdaySelector: React.FC<WeekdaySelectorProps> = ({
             ...allWeekdays.slice(firstDayOfWeek),
             ...allWeekdays.slice(0, firstDayOfWeek),
         ];
-        console.log('Ordered weekdays:', ordered.map(w => w.short).join(', '));
+        console.log(
+            'Ordered weekdays:',
+            ordered.map((w) => w.short).join(', ')
+        );
         return ordered;
     }, [allWeekdays, firstDayOfWeek]);
 
@@ -97,7 +131,10 @@ const WeekdaySelector: React.FC<WeekdaySelectorProps> = ({
             </div>
             {selectedDays.length === 0 && !disabled && (
                 <p className="text-xs text-amber-600 dark:text-amber-400">
-                    {t('forms.task.selectAtLeastOneDay', 'Please select at least one day')}
+                    {t(
+                        'forms.task.selectAtLeastOneDay',
+                        'Please select at least one day'
+                    )}
                 </p>
             )}
         </div>
