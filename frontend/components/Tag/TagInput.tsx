@@ -199,13 +199,15 @@ const TagInput: React.FC<TagInputProps> = ({
         <div className="space-y-2 relative">
             <div
                 ref={containerRef}
-                className="flex flex-wrap items-center border border-gray-300 dark:border-gray-900 bg-white dark:bg-gray-900 rounded-md p-2 min-h-[40px]"
+                className={`flex flex-wrap items-start gap-2 border border-gray-300 dark:border-gray-900 bg-white dark:bg-gray-900 rounded-md px-2 min-h-[40px] ${
+                    tags.length > 3 ? 'py-3' : 'py-2'
+                }`}
             >
                 {tags.length > 0 ? (
                     tags.map((tag, index) => (
                         <span
                             key={index}
-                            className="flex items-center bg-gray-200 text-gray-700 text-xs font-medium mr-2 px-2.5 py-0.5 rounded"
+                            className="flex items-center bg-gray-200 text-gray-700 text-xs font-medium px-2.5 py-0.5 rounded"
                         >
                             {tag}
                             <button

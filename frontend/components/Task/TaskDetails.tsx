@@ -39,6 +39,7 @@ import LoadingScreen from '../Shared/LoadingScreen';
 import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import TaskTimeline from './TaskTimeline';
 import { isTaskOverdue } from '../../utils/dateUtils';
+import TagInput from '../Tag/TagInput';
 
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
@@ -80,6 +81,10 @@ const TaskDetails: React.FC = () => {
     const [contentTab, setContentTab] = useState<'edit' | 'preview'>('edit');
     const [isEditingSubtasks, setIsEditingSubtasks] = useState(false);
     const [editedSubtasks, setEditedSubtasks] = useState<Task[]>([]);
+    const [isEditingTags, setIsEditingTags] = useState(false);
+    const [editedTags, setEditedTags] = useState<string[]>(
+        task?.tags?.map((tag: any) => tag.name) || []
+    );
 
     // Project dropdown state
     const [projectName, setProjectName] = useState('');
@@ -99,6 +104,10 @@ const TaskDetails: React.FC = () => {
     useEffect(() => {
         setEditedContent(task?.note || '');
     }, [task?.note]);
+
+    useEffect(() => {
+        setEditedTags(task?.tags?.map((tag: any) => tag.name) || []);
+    }, [task?.tags]);
 
     // Focus input when entering edit mode
     useEffect(() => {
@@ -187,6 +196,69 @@ const TaskDetails: React.FC = () => {
             month: 'short',
             day: 'numeric',
         });
+    };
+
+    const handleSaveTags = async () => {
+        if (!task?.id) {
+            setIsEditingTags(false);
+            setEditedTags(task?.tags?.map((tag: any) => tag.name) || []);
+            return;
+        }
+
+        const currentTags = task.tags?.map((tag: any) => tag.name) || [];
+        if (
+            editedTags.length === currentTags.length &&
+            editedTags.every((tag, idx) => tag === currentTags[idx])
+        ) {
+            setIsEditingTags(false);
+            return;
+        }
+
+        try {
+            await updateTask(task.id, {
+                ...task,
+                tags: editedTags.map((name) => ({ name })),
+            });
+
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            showSuccessToast(
+                t('task.tagsUpdated', 'Tags updated successfully')
+            );
+            setIsEditingTags(false);
+
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating tags:', error);
+            showErrorToast(
+                t('task.tagsUpdateError', 'Failed to update tags')
+            );
+            setEditedTags(task.tags?.map((tag: any) => tag.name) || []);
+            setIsEditingTags(false);
+        }
+    };
+
+    const handleCancelTagsEdit = () => {
+        setIsEditingTags(false);
+        setEditedTags(task?.tags?.map((tag: any) => tag.name) || []);
+    };
+
+    const handleStartTagsEdit = () => {
+        setEditedTags(task?.tags?.map((tag: any) => tag.name) || []);
+        if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
+            tagsStore.loadTags();
+        }
+        setIsEditingTags(true);
     };
 
     const formatDateWithDayName = (dateString: string) => {
@@ -1632,65 +1704,71 @@ const TaskDetails: React.FC = () => {
                                 <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                     {t('task.tags', 'Tags')}
                                 </h4>
-                                <div
-                                    onClick={handleEdit}
-                                    className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-4 cursor-pointer transition-colors"
-                                    title={t(
-                                        'task.clickToEdit',
-                                        'Click to edit'
-                                    )}
-                                >
-                                    {task.tags && task.tags.length > 0 ? (
-                                        <div className="flex items-start flex-wrap gap-2">
-                                            <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mt-0.5" />
-                                            <div className="flex flex-wrap gap-1">
-                                                {task.tags.map(
-                                                    (tag: any, index: number) => (
-                                                        <React.Fragment
-                                                            key={
-                                                                tag.uid ||
-                                                                tag.id ||
-                                                                tag.name
-                                                            }
-                                                        >
-                                                            <Link
-                                                                to={
-                                                                    tag.uid
-                                                                        ? `/tag/${tag.uid}-${tag.name
-                                                                              .toLowerCase()
-                                                                              .replace(
-                                                                                  /[^a-z0-9]+/g,
-                                                                                  '-'
-                                                                              )
-                                                                              .replace(
-                                                                                  /^-|-$/g,
-                                                                                  ''
-                                                                              )}`
-                                                                        : `/tag/${encodeURIComponent(tag.name)}`
-                                                                }
-                                                                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline"
-                                                                onClick={(e) =>
-                                                                    e.stopPropagation()
-                                                                }
-                                                            >
-                                                                {tag.name}
-                                                            </Link>
-                                                            {index <
-                                                                task.tags!.length -
-                                                                    1 && (
-                                                                <span className="text-gray-500">
-                                                                    ,
-                                                                </span>
-                                                            )}
-                                                        </React.Fragment>
-                                                    )
-                                                )}
+                                <div className="space-y-3">
+                                    {isEditingTags ? (
+                                        <div className="space-y-3">
+                                            <TagInput
+                                                initialTags={editedTags}
+                                                onTagsChange={setEditedTags}
+                                                availableTags={tagsStore.tags}
+                                                onFocus={() => {
+                                                    if (
+                                                        !tagsStore.hasLoaded &&
+                                                        !tagsStore.isLoading
+                                                    ) {
+                                                        tagsStore.loadTags();
+                                                    }
+                                                }}
+                                            />
+                                            <div className="flex justify-end space-x-2">
+                                                <button
+                                                    onClick={handleSaveTags}
+                                                    className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
+                                                >
+                                                    {t('common.save', 'Save')}
+                                                </button>
+                                                <button
+                                                    onClick={handleCancelTagsEdit}
+                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                                >
+                                                    {t('common.cancel', 'Cancel')}
+                                                </button>
                                             </div>
                                         </div>
+                                    ) : task.tags && task.tags.length > 0 ? (
+                                        <div className="space-y-1">
+                                            {task.tags.map((tag: any) => (
+                                                <button
+                                                    key={
+                                                        tag.uid ||
+                                                        tag.id ||
+                                                        tag.name
+                                                    }
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleStartTagsEdit();
+                                                    }}
+                                                    className="group flex w-full items-center justify-between px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                                >
+                                                    <div className="flex items-center space-x-2 min-w-0">
+                                                        <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                                        <span className="text-sm text-gray-900 dark:text-gray-100 truncate">
+                                                            {tag.name}
+                                                        </span>
+                                                    </div>
+                                                    <ArrowRightIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 flex-shrink-0" />
+                                                </button>
+                                            ))}
+                                        </div>
                                     ) : (
-                                        <span className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                        <button
+                                            type="button"
+                                            onClick={handleStartTagsEdit}
+                                            className="text-sm text-gray-500 dark:text-gray-400 italic hover:text-blue-600 dark:hover:text-blue-400"
+                                        >
                                             {t('task.noTags', 'No tags')}
-                                        </span>
+                                        </button>
                                     )}
                                 </div>
                             </div>
