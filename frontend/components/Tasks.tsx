@@ -17,10 +17,7 @@ import { useStore } from '../store/useStore';
 import { useToast } from './Shared/ToastContext';
 import { SortOption } from './Shared/SortFilterButton';
 import IconSortDropdown from './Shared/IconSortDropdown';
-import {
-    TagIcon,
-    XMarkIcon,
-} from '@heroicons/react/24/solid';
+import { TagIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import {
     QueueListIcon,
     InformationCircleIcon,

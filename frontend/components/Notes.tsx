@@ -483,14 +483,8 @@ const Notes: React.FC = () => {
                                         'notes.sortNotes',
                                         'Sort notes'
                                     )}
-                                    title={t(
-                                        'notes.sortNotes',
-                                        'Sort notes'
-                                    )}
-                                    dropdownLabel={t(
-                                        'notes.sortBy',
-                                        'Sort by'
-                                    )}
+                                    title={t('notes.sortNotes', 'Sort notes')}
+                                    dropdownLabel={t('notes.sortBy', 'Sort by')}
                                 />
                                 <button
                                     onClick={handleNewNote}

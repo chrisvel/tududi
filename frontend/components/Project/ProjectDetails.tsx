@@ -553,9 +553,7 @@ const ProjectDetails: React.FC = () => {
             >
                 <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        showCompleted
-                            ? 'translate-x-4'
-                            : 'translate-x-0.5'
+                        showCompleted ? 'translate-x-4' : 'translate-x-0.5'
                     }`}
                 />
             </span>
@@ -1212,10 +1210,7 @@ const ProjectDetails: React.FC = () => {
                                         'projects.sortTasks',
                                         'Sort tasks'
                                     )}
-                                    dropdownLabel={t(
-                                        'tasks.sortBy',
-                                        'Sort by'
-                                    )}
+                                    dropdownLabel={t('tasks.sortBy', 'Sort by')}
                                     extraContent={renderShowCompletedToggle()}
                                 />
                             </div>

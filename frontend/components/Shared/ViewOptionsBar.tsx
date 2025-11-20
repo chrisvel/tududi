@@ -158,7 +158,8 @@ const ViewOptionsBar: React.FC<ViewOptionsBarProps> = ({
             {showCompletedToggle && onToggleCompleted && (
                 <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {completedLabel || t('common.showCompleted', 'Show completed')}
+                        {completedLabel ||
+                            t('common.showCompleted', 'Show completed')}
                     </span>
                     <button
                         onClick={onToggleCompleted}
@@ -181,7 +182,9 @@ const ViewOptionsBar: React.FC<ViewOptionsBarProps> = ({
                     >
                         <span
                             className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                showCompleted ? 'translate-x-4' : 'translate-x-0.5'
+                                showCompleted
+                                    ? 'translate-x-4'
+                                    : 'translate-x-0.5'
                             }`}
                         />
                     </button>
@@ -192,10 +195,18 @@ const ViewOptionsBar: React.FC<ViewOptionsBarProps> = ({
             {showSort && sortOptions.length > 0 && onSortChange && (
                 <div className="relative" ref={sortDropdownRef}>
                     <button
-                        onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                        onClick={() =>
+                            setIsSortDropdownOpen(!isSortDropdownOpen)
+                        }
                         className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-                        aria-label={sortLabel || t('common.sortFilter', 'Sort and filter')}
-                        title={sortLabel || t('common.sortFilter', 'Sort and filter')}
+                        aria-label={
+                            sortLabel ||
+                            t('common.sortFilter', 'Sort and filter')
+                        }
+                        title={
+                            sortLabel ||
+                            t('common.sortFilter', 'Sort and filter')
+                        }
                     >
                         <FunnelIcon className="h-5 w-5" />
                     </button>
@@ -208,7 +219,9 @@ const ViewOptionsBar: React.FC<ViewOptionsBarProps> = ({
                                 {sortOptions.map((option) => (
                                     <button
                                         key={option.value}
-                                        onClick={() => handleSortSelect(option.value)}
+                                        onClick={() =>
+                                            handleSortSelect(option.value)
+                                        }
                                         className={`w-full text-left px-3 py-2 text-sm transition-colors ${
                                             sortValue === option.value
                                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
