@@ -790,8 +790,8 @@ const TasksToday: React.FC = () => {
     }
 
     return (
-        <div className="flex justify-center px-4 lg:px-2">
-            <div className="w-full max-w-5xl">
+        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
+            <div className="w-full max-w-5xl mx-auto">
                 <div className="flex flex-col">
                     {/* Today Header with Icons on the Right */}
                     <div className="mb-4">

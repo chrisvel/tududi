@@ -122,8 +122,8 @@ const Views: React.FC = () => {
     }
 
     return (
-        <div className="flex justify-center px-4 lg:px-2">
-            <div className="w-full max-w-5xl">
+        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
+            <div className="w-full">
                 {/* Views Header */}
                 <div className="flex items-center mb-8">
                     <h2 className="text-2xl font-light">{t('views.title')}</h2>
