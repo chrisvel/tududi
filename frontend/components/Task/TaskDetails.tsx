@@ -1,21 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     PencilSquareIcon,
     TrashIcon,
     TagIcon,
-    FolderIcon,
     CalendarIcon,
     ExclamationTriangleIcon,
     ArrowPathIcon,
     ListBulletIcon,
     XMarkIcon,
     ClockIcon,
+    CheckIcon,
+    EyeIcon,
+    PencilIcon,
+    ArrowRightIcon,
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import TaskModal from './TaskModal';
 import RecurrenceDisplay from './RecurrenceDisplay';
+import TaskSubtasksSection from './TaskForm/TaskSubtasksSection';
+import ProjectDropdown from '../Shared/ProjectDropdown';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import {
@@ -42,6 +47,7 @@ const TaskDetails: React.FC = () => {
     const { showSuccessToast, showErrorToast } = useToast();
 
     const projects = useStore((state: any) => state.projectsStore.projects);
+    const projectsStore = useStore((state: any) => state.projectsStore);
     const tagsStore = useStore((state: any) => state.tagsStore);
     const tasksStore = useStore((state: any) => state.tasksStore);
     const task = useStore((state: any) =>
@@ -65,6 +71,52 @@ const TaskDetails: React.FC = () => {
     const [loadingIterations, setLoadingIterations] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
     const [loadingParent, setLoadingParent] = useState(false);
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [editedTitle, setEditedTitle] = useState(task?.name || '');
+    const titleInputRef = useRef<HTMLInputElement>(null);
+    const [isEditingContent, setIsEditingContent] = useState(false);
+    const [editedContent, setEditedContent] = useState(task?.note || '');
+    const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
+    const [contentTab, setContentTab] = useState<'edit' | 'preview'>('edit');
+    const [isEditingSubtasks, setIsEditingSubtasks] = useState(false);
+    const [editedSubtasks, setEditedSubtasks] = useState<Task[]>([]);
+
+    // Project dropdown state
+    const [projectName, setProjectName] = useState('');
+    const [projectDropdownOpen, setProjectDropdownOpen] = useState(false);
+    const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+    const [isCreatingProject, setIsCreatingProject] = useState(false);
+    const projectDropdownRef = useRef<HTMLDivElement>(null);
+
+    // Update edited title when task changes
+    useEffect(() => {
+        if (task?.name) {
+            setEditedTitle(task.name);
+        }
+    }, [task?.name]);
+
+    // Update edited content when task changes
+    useEffect(() => {
+        setEditedContent(task?.note || '');
+    }, [task?.note]);
+
+    // Focus input when entering edit mode
+    useEffect(() => {
+        if (isEditingTitle && titleInputRef.current) {
+            titleInputRef.current.focus();
+            titleInputRef.current.select();
+        }
+    }, [isEditingTitle]);
+
+    // Focus textarea when entering content edit mode
+    useEffect(() => {
+        if (isEditingContent && contentTextareaRef.current) {
+            contentTextareaRef.current.focus();
+            // Move cursor to the end
+            const length = contentTextareaRef.current.value.length;
+            contentTextareaRef.current.setSelectionRange(length, length);
+        }
+    }, [isEditingContent]);
 
     // Load tags early and check for pending modal state on mount
     useEffect(() => {
@@ -172,6 +224,27 @@ const TaskDetails: React.FC = () => {
                 return t('recurrence.recurring', 'Recurring');
         }
     };
+
+    // Handle click outside project dropdown
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                projectDropdownRef.current &&
+                !projectDropdownRef.current.contains(event.target as Node)
+            ) {
+                setProjectDropdownOpen(false);
+                setProjectName('');
+            }
+        };
+
+        if (projectDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [projectDropdownOpen]);
 
     useEffect(() => {
         const fetchTaskData = async () => {
@@ -289,6 +362,330 @@ const TaskDetails: React.FC = () => {
 
         loadParentTask();
     }, [task?.recurring_parent_uid]);
+
+    const handleStartTitleEdit = () => {
+        setIsEditingTitle(true);
+        setEditedTitle(task?.name || '');
+    };
+
+    const handleSaveTitle = async () => {
+        if (!task?.id || !editedTitle.trim()) {
+            setIsEditingTitle(false);
+            setEditedTitle(task?.name || '');
+            return;
+        }
+
+        if (editedTitle.trim() === task.name) {
+            setIsEditingTitle(false);
+            return;
+        }
+
+        try {
+            await updateTask(task.id, { ...task, name: editedTitle.trim() });
+
+            // Update the task in the global store
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            showSuccessToast(
+                t('task.titleUpdated', 'Task title updated successfully')
+            );
+            setIsEditingTitle(false);
+
+            // Refresh timeline to show title change activity
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating task title:', error);
+            showErrorToast(
+                t('task.titleUpdateError', 'Failed to update task title')
+            );
+            setEditedTitle(task.name);
+            setIsEditingTitle(false);
+        }
+    };
+
+    const handleCancelTitleEdit = () => {
+        setIsEditingTitle(false);
+        setEditedTitle(task?.name || '');
+    };
+
+    const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSaveTitle();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            handleCancelTitleEdit();
+        }
+    };
+
+    const handleStartContentEdit = () => {
+        setIsEditingContent(true);
+        setEditedContent(task?.note || '');
+        setContentTab('edit');
+    };
+
+    const handleSaveContent = async () => {
+        if (!task?.id) {
+            setIsEditingContent(false);
+            setEditedContent(task?.note || '');
+            return;
+        }
+
+        // Allow saving empty content (to clear notes)
+        const trimmedContent = editedContent.trim();
+
+        if (trimmedContent === (task.note || '').trim()) {
+            setIsEditingContent(false);
+            return;
+        }
+
+        try {
+            await updateTask(task.id, { ...task, note: trimmedContent });
+
+            // Update the task in the global store
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            showSuccessToast(
+                t('task.contentUpdated', 'Task content updated successfully')
+            );
+            setIsEditingContent(false);
+
+            // Refresh timeline to show content change activity
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating task content:', error);
+            showErrorToast(
+                t('task.contentUpdateError', 'Failed to update task content')
+            );
+            setEditedContent(task.note || '');
+            setIsEditingContent(false);
+        }
+    };
+
+    const handleCancelContentEdit = () => {
+        setIsEditingContent(false);
+        setEditedContent(task?.note || '');
+    };
+
+    const handleContentKeyDown = (e: React.KeyboardEvent) => {
+        // Cmd/Ctrl + Enter to save
+        if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+            e.preventDefault();
+            handleSaveContent();
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            handleCancelContentEdit();
+        }
+    };
+
+    const handleStartSubtasksEdit = () => {
+        setIsEditingSubtasks(true);
+        setEditedSubtasks([...subtasks]);
+    };
+
+    const handleSaveSubtasks = async () => {
+        if (!task?.id) {
+            setIsEditingSubtasks(false);
+            setEditedSubtasks([]);
+            return;
+        }
+
+        try {
+            // Update task with new subtasks
+            await updateTask(task.id, { ...task, subtasks: editedSubtasks });
+
+            // Refresh the task from server to get updated subtasks
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            showSuccessToast(
+                t('task.subtasksUpdated', 'Subtasks updated successfully')
+            );
+            setIsEditingSubtasks(false);
+
+            // Refresh timeline to show subtask changes
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating subtasks:', error);
+            showErrorToast(
+                t('task.subtasksUpdateError', 'Failed to update subtasks')
+            );
+            setEditedSubtasks([...subtasks]);
+            setIsEditingSubtasks(false);
+        }
+    };
+
+    const handleCancelSubtasksEdit = () => {
+        setIsEditingSubtasks(false);
+        setEditedSubtasks([]);
+    };
+
+    const handleProjectSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const searchTerm = e.target.value;
+        setProjectName(searchTerm);
+        setProjectDropdownOpen(true);
+
+        if (searchTerm.trim() === '') {
+            setFilteredProjects(projectsStore.projects.slice(0, 5));
+        } else {
+            const filtered = projectsStore.projects.filter((project) =>
+                project.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            setFilteredProjects(filtered.slice(0, 5));
+        }
+    };
+
+    const handleProjectSelection = async (project: Project) => {
+        if (!task?.id) return;
+
+        try {
+            await updateTask(task.id, { ...task, project_id: project.id });
+
+            // Refresh the task from server
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            setProjectName('');
+            setProjectDropdownOpen(false);
+            showSuccessToast(
+                t('task.projectUpdated', 'Project updated successfully')
+            );
+
+            // Refresh timeline
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating project:', error);
+            showErrorToast(
+                t('task.projectUpdateError', 'Failed to update project')
+            );
+        }
+    };
+
+    const handleClearProject = async () => {
+        if (!task?.id) return;
+
+        try {
+            await updateTask(task.id, { ...task, project_id: null });
+
+            // Refresh the task from server
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            showSuccessToast(
+                t('task.projectCleared', 'Project cleared successfully')
+            );
+
+            // Refresh timeline
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error clearing project:', error);
+            showErrorToast(
+                t('task.projectClearError', 'Failed to clear project')
+            );
+        }
+    };
+
+    const handleCreateProjectInline = async () => {
+        if (!task?.id || !projectName.trim()) return;
+
+        setIsCreatingProject(true);
+        try {
+            const newProject = await createProject({ name: projectName });
+
+            // Add to projects store
+            projectsStore.setProjects([
+                ...projectsStore.projects,
+                newProject,
+            ]);
+
+            // Update task with new project
+            await updateTask(task.id, { ...task, project_id: newProject.id });
+
+            // Refresh the task from server
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            setProjectName('');
+            setProjectDropdownOpen(false);
+            setFilteredProjects([]);
+            showSuccessToast(
+                t('project.createdAndAssigned', 'Project created and assigned')
+            );
+
+            // Refresh timeline
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error creating project:', error);
+            showErrorToast(
+                t('project.createError', 'Failed to create project')
+            );
+        } finally {
+            setIsCreatingProject(false);
+        }
+    };
+
+    const handleShowAllProjects = () => {
+        setProjectDropdownOpen(!projectDropdownOpen);
+        if (!projectDropdownOpen) {
+            setFilteredProjects(projectsStore.projects);
+        }
+    };
 
     const handleEdit = (e?: React.MouseEvent) => {
         if (e) {
@@ -409,6 +806,17 @@ const TaskDetails: React.FC = () => {
         }
     };
 
+    const getProjectLink = (project: Project) => {
+        if (project.uid) {
+            const slug = project.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            return `/project/${project.uid}-${slug}`;
+        }
+        return `/project/${project.id}`;
+    };
+
     if (loading) {
         return <LoadingScreen />;
     }
@@ -441,153 +849,60 @@ const TaskDetails: React.FC = () => {
     }
 
     return (
-        <div className="flex justify-center px-4 lg:px-2">
-            <div className="w-full max-w-5xl">
+        <div className="px-4 lg:px-8 pt-6">
+            <div className="w-full">
                 {/* Header Section with Title and Action Buttons */}
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-3">
                         <TaskPriorityIcon
                             priority={task.priority}
                             status={task.status}
                             onToggleCompletion={handleToggleCompletion}
                         />
-                        <div className="flex flex-col">
-                            <h2 className="text-2xl font-normal text-gray-900 dark:text-gray-100">
-                                {task.name}
-                            </h2>
-                            {/* Project, tags, due date, and recurrence under title */}
-                            {(task.Project ||
-                                (task.tags && task.tags.length > 0) ||
-                                task.due_date ||
-                                (task.recurrence_type &&
-                                    task.recurrence_type !== 'none') ||
-                                task.recurring_parent_id) && (
-                                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                    {task.Project && (
-                                        <div className="flex items-center">
-                                            <FolderIcon className="h-3 w-3 mr-1" />
-                                            <Link
-                                                to={
-                                                    task.Project.uid
-                                                        ? `/project/${task.Project.uid}-${task.Project.name
-                                                              .toLowerCase()
-                                                              .replace(
-                                                                  /[^a-z0-9]+/g,
-                                                                  '-'
-                                                              )
-                                                              .replace(
-                                                                  /^-|-$/g,
-                                                                  ''
-                                                              )}`
-                                                        : `/project/${task.Project.id}`
-                                                }
-                                                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline"
-                                            >
-                                                {task.Project.name}
-                                            </Link>
-                                        </div>
-                                    )}
-                                    {task.Project &&
-                                        task.tags &&
-                                        task.tags.length > 0 && (
-                                            <span className="mx-2">•</span>
+                        <div className="flex flex-col flex-1">
+                            {isEditingTitle ? (
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        ref={titleInputRef}
+                                        type="text"
+                                        value={editedTitle}
+                                        onChange={(e) =>
+                                            setEditedTitle(e.target.value)
+                                        }
+                                        onKeyDown={handleTitleKeyDown}
+                                        onBlur={handleSaveTitle}
+                                        className="text-2xl font-normal text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 w-full"
+                                        placeholder={t(
+                                            'task.titlePlaceholder',
+                                            'Enter task title'
                                         )}
-                                    {task.tags && task.tags.length > 0 && (
-                                        <div className="flex items-center">
-                                            <TagIcon className="h-3 w-3 mr-1" />
-                                            <span>
-                                                {task.tags.map(
-                                                    (
-                                                        tag: any,
-                                                        index: number
-                                                    ) => (
-                                                        <React.Fragment
-                                                            key={
-                                                                tag.uid ||
-                                                                tag.id ||
-                                                                tag.name
-                                                            }
-                                                        >
-                                                            <Link
-                                                                to={
-                                                                    tag.uid
-                                                                        ? `/tag/${tag.uid}-${tag.name
-                                                                              .toLowerCase()
-                                                                              .replace(
-                                                                                  /[^a-z0-9]+/g,
-                                                                                  '-'
-                                                                              )
-                                                                              .replace(
-                                                                                  /^-|-$/g,
-                                                                                  ''
-                                                                              )}`
-                                                                        : `/tag/${encodeURIComponent(tag.name)}`
-                                                                }
-                                                                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline"
-                                                            >
-                                                                {tag.name}
-                                                            </Link>
-                                                            {index <
-                                                                task.tags!
-                                                                    .length -
-                                                                    1 && ', '}
-                                                        </React.Fragment>
-                                                    )
-                                                )}
-                                            </span>
-                                        </div>
-                                    )}
-                                    {(task.Project ||
-                                        (task.tags && task.tags.length > 0)) &&
-                                        task.due_date && (
-                                            <span className="mx-2">•</span>
-                                        )}
-                                    {task.due_date && (
-                                        <div className="flex items-center">
-                                            <CalendarIcon className="h-3 w-3 mr-1" />
-                                            <span>
-                                                {formatDueDate(task.due_date)}
-                                            </span>
-                                        </div>
-                                    )}
-                                    {(task.Project ||
-                                        (task.tags && task.tags.length > 0) ||
-                                        task.due_date) &&
-                                        task.recurrence_type &&
-                                        task.recurrence_type !== 'none' && (
-                                            <span className="mx-2">•</span>
-                                        )}
-                                    {task.recurrence_type &&
-                                        task.recurrence_type !== 'none' && (
-                                            <div className="flex items-center">
-                                                <ArrowPathIcon className="h-3 w-3 mr-1" />
-                                                <span>
-                                                    {formatRecurrence(
-                                                        task.recurrence_type
-                                                    )}
-                                                </span>
-                                            </div>
-                                        )}
-                                    {(task.Project ||
-                                        (task.tags && task.tags.length > 0) ||
-                                        task.due_date ||
-                                        (task.recurrence_type &&
-                                            task.recurrence_type !== 'none')) &&
-                                        task.recurring_parent_id && (
-                                            <span className="mx-2">•</span>
-                                        )}
-                                    {task.recurring_parent_id && (
-                                        <div className="flex items-center">
-                                            <ArrowPathIcon className="h-3 w-3 mr-1" />
-                                            <span>
-                                                {t(
-                                                    'recurrence.instance',
-                                                    'Recurring task instance'
-                                                )}
-                                            </span>
-                                        </div>
-                                    )}
+                                    />
+                                    <button
+                                        onClick={handleSaveTitle}
+                                        className="p-1.5 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 rounded-full transition-colors duration-200"
+                                        title={t('common.save', 'Save')}
+                                    >
+                                        <CheckIcon className="h-5 w-5" />
+                                    </button>
+                                    <button
+                                        onClick={handleCancelTitleEdit}
+                                        className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-full transition-colors duration-200"
+                                        title={t('common.cancel', 'Cancel')}
+                                    >
+                                        <XMarkIcon className="h-5 w-5" />
+                                    </button>
                                 </div>
+                            ) : (
+                                <h2
+                                    onClick={handleStartTitleEdit}
+                                    className="text-2xl font-normal text-gray-900 dark:text-gray-100 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 py-1 -mx-2 transition-colors"
+                                    title={t(
+                                        'task.clickToEditTitle',
+                                        'Click to edit title'
+                                    )}
+                                >
+                                    {task.name}
+                                </h2>
                             )}
                         </div>
                     </div>
@@ -648,25 +963,143 @@ const TaskDetails: React.FC = () => {
                     </div>
                 )}
 
-                {/* Content - Two column layout */}
+                {/* Content - Full width layout */}
                 <div className="mb-8 mt-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Left Column - Notes and Subtasks */}
-                        <div className="lg:col-span-2 space-y-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        {/* Left Column - Main Content */}
+                        <div className="lg:col-span-3 space-y-8">
                             {/* Notes Section - Always Visible */}
                             <div>
-                                <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                     {t('task.content', 'Content')}
                                 </h4>
-                                {task.note ? (
-                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
+                                {isEditingContent ? (
+                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-blue-500 dark:border-blue-400 p-6">
+                                        <div className="relative">
+                                            {/* Floating toggle buttons */}
+                                            <div className="absolute top-2 right-2 z-10 flex space-x-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setContentTab('edit')
+                                                    }
+                                                    className={`p-1.5 rounded-md transition-colors ${
+                                                        contentTab === 'edit'
+                                                            ? 'bg-blue-600 text-white'
+                                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                                    }`}
+                                                    title={t(
+                                                        'common.edit',
+                                                        'Edit'
+                                                    )}
+                                                >
+                                                    <PencilIcon className="h-3 w-3" />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setContentTab('preview')
+                                                    }
+                                                    className={`p-1.5 rounded-md transition-colors ${
+                                                        contentTab === 'preview'
+                                                            ? 'bg-blue-600 text-white'
+                                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                                    }`}
+                                                    title={t(
+                                                        'common.preview',
+                                                        'Preview'
+                                                    )}
+                                                >
+                                                    <EyeIcon className="h-3 w-3" />
+                                                </button>
+                                            </div>
+
+                                            {contentTab === 'edit' ? (
+                                                <textarea
+                                                    ref={contentTextareaRef}
+                                                    value={editedContent}
+                                                    onChange={(e) =>
+                                                        setEditedContent(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    onKeyDown={
+                                                        handleContentKeyDown
+                                                    }
+                                                    className="w-full min-h-[200px] bg-transparent border-none focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100 resize-y font-normal pr-20"
+                                                    placeholder={t(
+                                                        'task.contentPlaceholder',
+                                                        'Add content here... (Markdown supported)'
+                                                    )}
+                                                />
+                                            ) : (
+                                                <div className="w-full min-h-[200px] bg-gray-50 dark:bg-gray-800 rounded p-3 pr-20 overflow-y-auto">
+                                                    {editedContent ? (
+                                                        <MarkdownRenderer
+                                                            content={
+                                                                editedContent
+                                                            }
+                                                            className="prose dark:prose-invert max-w-none"
+                                                        />
+                                                    ) : (
+                                                        <p className="text-gray-500 dark:text-gray-400 italic">
+                                                            {t(
+                                                                'task.noContentPreview',
+                                                                'No content to preview. Switch to Edit mode to add content.'
+                                                            )}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                {t(
+                                                    'task.contentEditHint',
+                                                    'Press Cmd/Ctrl+Enter to save, Esc to cancel'
+                                                )}
+                                            </span>
+                                            <div className="flex space-x-2">
+                                                <button
+                                                    onClick={handleSaveContent}
+                                                    className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
+                                                >
+                                                    {t('common.save', 'Save')}
+                                                </button>
+                                                <button
+                                                    onClick={
+                                                        handleCancelContentEdit
+                                                    }
+                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                                >
+                                                    {t('common.cancel', 'Cancel')}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : task.note ? (
+                                    <div
+                                        onClick={handleStartContentEdit}
+                                        className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-6 cursor-pointer transition-colors"
+                                        title={t(
+                                            'task.clickToEditContent',
+                                            'Click to edit content'
+                                        )}
+                                    >
                                         <MarkdownRenderer
                                             content={task.note}
                                             className="prose dark:prose-invert max-w-none"
                                         />
                                     </div>
                                 ) : (
-                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
+                                    <div
+                                        onClick={handleStartContentEdit}
+                                        className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-6 cursor-pointer transition-colors"
+                                        title={t(
+                                            'task.clickToAddContent',
+                                            'Click to add content'
+                                        )}
+                                    >
                                         <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                                             <PencilSquareIcon className="h-12 w-12 mb-3 opacity-50" />
                                             <span className="text-sm text-center">
@@ -682,136 +1115,163 @@ const TaskDetails: React.FC = () => {
 
                             {/* Subtasks Section - Always Visible */}
                             <div>
-                                <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                     {t('task.subtasks', 'Subtasks')}
                                 </h4>
-                                {subtasks.length > 0 ? (
+                                {isEditingSubtasks ? (
+                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-blue-500 dark:border-blue-400 p-6">
+                                        <TaskSubtasksSection
+                                            parentTaskId={task.id!}
+                                            subtasks={editedSubtasks}
+                                            onSubtasksChange={setEditedSubtasks}
+                                        />
+                                        <div className="flex items-center justify-end mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                            <div className="flex space-x-2">
+                                                <button
+                                                    onClick={handleSaveSubtasks}
+                                                    className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
+                                                >
+                                                    {t('common.save', 'Save')}
+                                                </button>
+                                                <button
+                                                    onClick={
+                                                        handleCancelSubtasksEdit
+                                                    }
+                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                                >
+                                                    {t('common.cancel', 'Cancel')}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : subtasks.length > 0 ? (
                                     <div className="space-y-1">
                                         {subtasks.map((subtask: Task) => (
                                             <div
                                                 key={subtask.id}
-                                                className="group"
+                                                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 transition-all duration-200 ${
+                                                    subtask.status ===
+                                                        'in_progress' ||
+                                                    subtask.status === 1
+                                                        ? 'border-green-400/60 dark:border-green-500/60'
+                                                        : 'border-gray-50 dark:border-gray-800'
+                                                }`}
                                             >
-                                                <div
-                                                    className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 transition-all duration-200 ${
-                                                        subtask.status ===
-                                                            'in_progress' ||
-                                                        subtask.status === 1
-                                                            ? 'border-green-400/60 dark:border-green-500/60'
-                                                            : 'border-gray-50 dark:border-gray-800'
-                                                    }`}
-                                                >
-                                                    <div className="px-4 py-2.5 flex items-center space-x-3">
-                                                        <div
-                                                            className="flex-shrink-0"
-                                                            onClick={(e) =>
-                                                                e.stopPropagation()
-                                                            }
-                                                        >
-                                                            <TaskPriorityIcon
-                                                                priority={
-                                                                    subtask.priority
-                                                                }
-                                                                status={
-                                                                    subtask.status
-                                                                }
-                                                                onToggleCompletion={async (
-                                                                    e?: React.MouseEvent
-                                                                ) => {
-                                                                    e?.stopPropagation();
+                                                <div className="px-4 py-2.5 flex items-center space-x-3">
+                                                    <TaskPriorityIcon
+                                                        priority={
+                                                            subtask.priority
+                                                        }
+                                                        status={
+                                                            subtask.status
+                                                        }
+                                                        onToggleCompletion={async () => {
+                                                            console.log(
+                                                                'Toggling subtask:',
+                                                                subtask.id
+                                                            );
+                                                            if (
+                                                                subtask.id
+                                                            ) {
+                                                                try {
+                                                                    // Pass the current subtask to avoid fetching it
+                                                                    await toggleTaskCompletion(
+                                                                        subtask.id,
+                                                                        subtask
+                                                                    );
+                                                                    // Refresh task data which includes updated subtasks
                                                                     if (
-                                                                        subtask.id
+                                                                        uid
                                                                     ) {
-                                                                        try {
-                                                                            await toggleTaskCompletion(
-                                                                                subtask.id
+                                                                        const updatedTask =
+                                                                            await fetchTaskByUid(
+                                                                                uid
                                                                             );
-                                                                            // Reload subtasks after toggling completion
-                                                                            if (
-                                                                                task?.id
-                                                                            ) {
-                                                                                // Refresh task data which includes updated subtasks
-                                                                                if (
+                                                                        const existingIndex =
+                                                                            tasksStore.tasks.findIndex(
+                                                                                (
+                                                                                    t: Task
+                                                                                ) =>
+                                                                                    t.uid ===
                                                                                     uid
-                                                                                ) {
-                                                                                    const updatedTask =
-                                                                                        await fetchTaskByUid(
-                                                                                            uid
-                                                                                        );
-                                                                                    const existingIndex =
-                                                                                        tasksStore.tasks.findIndex(
-                                                                                            (
-                                                                                                t: Task
-                                                                                            ) =>
-                                                                                                t.uid ===
-                                                                                                uid
-                                                                                        );
-                                                                                    if (
-                                                                                        existingIndex >=
-                                                                                        0
-                                                                                    ) {
-                                                                                        const updatedTasks =
-                                                                                            [
-                                                                                                ...tasksStore.tasks,
-                                                                                            ];
-                                                                                        updatedTasks[
-                                                                                            existingIndex
-                                                                                        ] =
-                                                                                            updatedTask;
-                                                                                        tasksStore.setTasks(
-                                                                                            updatedTasks
-                                                                                        );
-                                                                                    }
-                                                                                }
-
-                                                                                // Refresh timeline to show subtask completion activity
-                                                                                setTimelineRefreshKey(
-                                                                                    (
-                                                                                        prev
-                                                                                    ) =>
-                                                                                        prev +
-                                                                                        1
-                                                                                );
-                                                                            }
-                                                                        } catch (error) {
-                                                                            console.error(
-                                                                                'Error toggling subtask completion:',
-                                                                                error
+                                                                            );
+                                                                        if (
+                                                                            existingIndex >=
+                                                                            0
+                                                                        ) {
+                                                                            const updatedTasks =
+                                                                                [
+                                                                                    ...tasksStore.tasks,
+                                                                                ];
+                                                                            updatedTasks[
+                                                                                existingIndex
+                                                                            ] =
+                                                                                updatedTask;
+                                                                            tasksStore.setTasks(
+                                                                                updatedTasks
                                                                             );
                                                                         }
                                                                     }
-                                                                }}
-                                                            />
-                                                        </div>
-                                                        <span
-                                                            className={`text-base flex-1 truncate ${
-                                                                subtask.status ===
-                                                                    'done' ||
-                                                                subtask.status ===
-                                                                    2 ||
-                                                                subtask.status ===
-                                                                    'archived' ||
-                                                                subtask.status ===
-                                                                    3
-                                                                    ? 'text-gray-500 dark:text-gray-400'
-                                                                    : 'text-gray-900 dark:text-gray-100'
-                                                            }`}
-                                                        >
-                                                            {subtask.name}
-                                                        </span>
-                                                    </div>
+
+                                                                    // Refresh timeline to show subtask completion activity
+                                                                    setTimelineRefreshKey(
+                                                                        (
+                                                                            prev
+                                                                        ) =>
+                                                                            prev +
+                                                                            1
+                                                                    );
+                                                                } catch (error) {
+                                                                    console.error(
+                                                                        'Error toggling subtask completion:',
+                                                                        error
+                                                                    );
+                                                                }
+                                                            }
+                                                        }}
+                                                    />
+                                                    <span
+                                                        onClick={
+                                                            handleStartSubtasksEdit
+                                                        }
+                                                        className={`text-base flex-1 truncate cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
+                                                            subtask.status ===
+                                                                'done' ||
+                                                            subtask.status ===
+                                                                2 ||
+                                                            subtask.status ===
+                                                                'archived' ||
+                                                            subtask.status ===
+                                                                3
+                                                                ? 'text-gray-500 dark:text-gray-400'
+                                                                : 'text-gray-900 dark:text-gray-100'
+                                                        }`}
+                                                        title={t(
+                                                            'task.clickToEditSubtasks',
+                                                            'Click to edit subtasks'
+                                                        )}
+                                                    >
+                                                        {subtask.name}
+                                                    </span>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
+                                    <div
+                                        onClick={handleStartSubtasksEdit}
+                                        className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-6 cursor-pointer transition-colors"
+                                        title={t(
+                                            'task.clickToEditSubtasks',
+                                            'Click to add or edit subtasks'
+                                        )}
+                                    >
                                         <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
                                             <ListBulletIcon className="h-12 w-12 mb-3 opacity-50" />
                                             <span className="text-sm text-center">
                                                 {t(
-                                                    'task.noSubtasks',
-                                                    'No subtasks yet'
+                                                    'task.noSubtasksClickToAdd',
+                                                    'No subtasks yet, click to add'
                                                 )}
                                             </span>
                                         </div>
@@ -824,7 +1284,7 @@ const TaskDetails: React.FC = () => {
                                 task.recurrence_type !== 'none') ||
                                 task.recurring_parent_id) && (
                                 <div>
-                                    <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                         {t(
                                             'task.recurringSetup',
                                             'Recurring Setup'
@@ -1082,16 +1542,198 @@ const TaskDetails: React.FC = () => {
                             )}
                         </div>
 
-                        {/* Right Column - Recent Activity */}
-                        <div>
-                            <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                                {t('task.recentActivity', 'Recent Activity')}
-                            </h4>
-                            <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
-                                <TaskTimeline
-                                    taskUid={task.uid}
-                                    refreshKey={timelineRefreshKey}
-                                />
+                        {/* Right Column - Metadata and Recent Activity */}
+                        <div className="space-y-6">
+                            {/* Project Section */}
+                            <div ref={projectDropdownRef}>
+                                <div className="flex items-center justify-between mb-2">
+                                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        {t('task.project', 'Project')}
+                                    </h4>
+                                </div>
+                                {projectDropdownOpen ? (
+                                    <ProjectDropdown
+                                        projectName={projectName}
+                                        onProjectSearch={handleProjectSearch}
+                                        dropdownOpen={projectDropdownOpen}
+                                        filteredProjects={filteredProjects}
+                                        onProjectSelection={handleProjectSelection}
+                                        onCreateProject={handleCreateProjectInline}
+                                        isCreatingProject={isCreatingProject}
+                                        onShowAllProjects={handleShowAllProjects}
+                                        allProjects={projectsStore.projects}
+                                        selectedProject={null}
+                                        onClearProject={handleClearProject}
+                                    />
+                                ) : task.Project ? (
+                                    <div
+                                        onClick={() => setProjectDropdownOpen(true)}
+                                        className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative cursor-pointer hover:opacity-90 transition-opacity"
+                                    >
+                                        <div
+                                            className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg relative"
+                                            style={{ height: '100px' }}
+                                        >
+                                            {task.Project.image_url ? (
+                                                <img
+                                                    src={task.Project.image_url}
+                                                    alt={task.Project.name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <span className="text-2xl font-extrabold text-gray-500 dark:text-gray-400 opacity-20">
+                                                    {task.Project.name
+                                                        .split(' ')
+                                                        .map((word) => word[0])
+                                                        .join('')
+                                                        .toUpperCase()}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="p-3">
+                                            <div className="flex items-center text-md font-semibold text-gray-900 dark:text-gray-100">
+                                                <span className="truncate">
+                                                    {task.Project.name}
+                                                </span>
+                                                <Link
+                                                    to={getProjectLink(task.Project)}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex-shrink-0 ml-auto"
+                                                    title={t(
+                                                        'project.viewProject',
+                                                        'Go to project'
+                                                    )}
+                                                >
+                                                    <ArrowRightIcon className="h-4 w-4" />
+                                                    <span className="sr-only">
+                                                        {t(
+                                                            'project.viewProject',
+                                                            'Go to project'
+                                                        )}
+                                                    </span>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        onClick={() => setProjectDropdownOpen(true)}
+                                        className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 p-6 cursor-pointer transition-colors flex items-center justify-center"
+                                    >
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                            {t('task.noProject', 'No project - Click to assign')}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Tags Section */}
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    {t('task.tags', 'Tags')}
+                                </h4>
+                                <div
+                                    onClick={handleEdit}
+                                    className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-4 cursor-pointer transition-colors"
+                                    title={t(
+                                        'task.clickToEdit',
+                                        'Click to edit'
+                                    )}
+                                >
+                                    {task.tags && task.tags.length > 0 ? (
+                                        <div className="flex items-start flex-wrap gap-2">
+                                            <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mt-0.5" />
+                                            <div className="flex flex-wrap gap-1">
+                                                {task.tags.map(
+                                                    (tag: any, index: number) => (
+                                                        <React.Fragment
+                                                            key={
+                                                                tag.uid ||
+                                                                tag.id ||
+                                                                tag.name
+                                                            }
+                                                        >
+                                                            <Link
+                                                                to={
+                                                                    tag.uid
+                                                                        ? `/tag/${tag.uid}-${tag.name
+                                                                              .toLowerCase()
+                                                                              .replace(
+                                                                                  /[^a-z0-9]+/g,
+                                                                                  '-'
+                                                                              )
+                                                                              .replace(
+                                                                                  /^-|-$/g,
+                                                                                  ''
+                                                                              )}`
+                                                                        : `/tag/${encodeURIComponent(tag.name)}`
+                                                                }
+                                                                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline"
+                                                                onClick={(e) =>
+                                                                    e.stopPropagation()
+                                                                }
+                                                            >
+                                                                {tag.name}
+                                                            </Link>
+                                                            {index <
+                                                                task.tags!.length -
+                                                                    1 && (
+                                                                <span className="text-gray-500">
+                                                                    ,
+                                                                </span>
+                                                            )}
+                                                        </React.Fragment>
+                                                    )
+                                                )}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                            {t('task.noTags', 'No tags')}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Due Date Section */}
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    {t('task.dueDate', 'Due Date')}
+                                </h4>
+                                <div
+                                    onClick={handleEdit}
+                                    className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-4 cursor-pointer transition-colors"
+                                    title={t(
+                                        'task.clickToEdit',
+                                        'Click to edit'
+                                    )}
+                                >
+                                    {task.due_date ? (
+                                        <div className="flex items-center text-gray-900 dark:text-gray-100">
+                                            <CalendarIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
+                                            <span className="text-sm">
+                                                {formatDueDate(task.due_date)}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                            {t('task.noDueDate', 'No due date')}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Recent Activity Section */}
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    {t('task.recentActivity', 'Recent Activity')}
+                                </h4>
+                                <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
+                                    <TaskTimeline
+                                        taskUid={task.uid}
+                                        refreshKey={timelineRefreshKey}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

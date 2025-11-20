@@ -77,25 +77,16 @@ const Tasks: React.FC = () => {
         let filteredTasks: Task[];
 
         // Filter by completion status (applies to all views)
-        if (showCompleted) {
-            // Show only completed tasks (done=2 or archived=3)
-            filteredTasks = tasks.filter(
-                (task: Task) =>
-                    task.status === 'done' ||
-                    task.status === 'archived' ||
-                    task.status === 2 ||
-                    task.status === 3
-            );
-        } else {
-            // Show only non-completed tasks - exclude done(2) and archived(3)
-            filteredTasks = tasks.filter(
-                (task: Task) =>
-                    task.status !== 'done' &&
-                    task.status !== 'archived' &&
-                    task.status !== 2 &&
-                    task.status !== 3
-            );
-        }
+        filteredTasks = showCompleted
+            ? tasks // Show everything when completed tasks are toggled on
+            : tasks.filter(
+                  // Otherwise hide completed/archived items
+                  (task: Task) =>
+                      task.status !== 'done' &&
+                      task.status !== 'archived' &&
+                      task.status !== 2 &&
+                      task.status !== 3
+              );
 
         // Then filter by search query if provided (skip for upcoming view)
         if (taskSearchQuery.trim() && !isUpcomingView) {
