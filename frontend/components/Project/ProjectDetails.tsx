@@ -45,7 +45,8 @@ import { createNote } from '../../utils/notesService';
 import { isAuthError } from '../../utils/authUtils';
 import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
 import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
-import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
+import { SortOption } from '../Shared/SortFilterButton';
+import IconSortDropdown from '../Shared/IconSortDropdown';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import { usePersistedModal } from '../../hooks/usePersistedModal';
 import BannerBadge from '../Shared/BannerBadge';
@@ -524,6 +525,42 @@ const ProjectDetails: React.FC = () => {
         // Save to project
         saveProjectPreferences(showCompleted, newOrderBy);
     };
+
+    const renderShowCompletedToggle = () => (
+        <button
+            type="button"
+            onClick={() => handleShowCompletedChange(!showCompleted)}
+            className="w-full flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
+            aria-pressed={showCompleted}
+            aria-label={
+                showCompleted
+                    ? t('projects.hideCompleted', 'Hide completed tasks')
+                    : t('projects.showCompleted', 'Show completed tasks')
+            }
+            title={
+                showCompleted
+                    ? t('projects.hideCompleted', 'Hide completed tasks')
+                    : t('projects.showCompleted', 'Show completed tasks')
+            }
+        >
+            <span>{t('common.showCompleted', 'Show completed')}</span>
+            <span
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                    showCompleted
+                        ? 'bg-blue-600'
+                        : 'bg-gray-200 dark:bg-gray-600'
+                }`}
+            >
+                <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        showCompleted
+                            ? 'translate-x-4'
+                            : 'translate-x-0.5'
+                    }`}
+                />
+            </span>
+        </button>
+    );
 
     const handleDeleteProject = async () => {
         if (!project?.uid) {
@@ -1077,39 +1114,23 @@ const ProjectDetails: React.FC = () => {
                                     >
                                         <MagnifyingGlassIcon className="h-4 w-4 text-gray-600 dark:text-gray-200" />
                                     </button>
-                                    {/* Show Completed Toggle */}
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                                            Show completed
-                                        </span>
-                                        <button
-                                            onClick={() =>
-                                                handleShowCompletedChange(
-                                                    !showCompleted
-                                                )
-                                            }
-                                            className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${
-                                                showCompleted
-                                                    ? 'bg-blue-600'
-                                                    : 'bg-gray-200 dark:bg-gray-600'
-                                            }`}
-                                        >
-                                            <span
-                                                className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
-                                                    showCompleted
-                                                        ? 'translate-x-3.5'
-                                                        : 'translate-x-0.5'
-                                                }`}
-                                            />
-                                        </button>
-                                    </div>
-
-                                    {/* Sort Filter */}
-                                    <SortFilterButton
+                                    <IconSortDropdown
                                         options={sortOptions}
                                         value={orderBy}
                                         onChange={handleSortChange}
-                                        size="mobile"
+                                        ariaLabel={t(
+                                            'projects.sortTasks',
+                                            'Sort tasks'
+                                        )}
+                                        title={t(
+                                            'projects.sortTasks',
+                                            'Sort tasks'
+                                        )}
+                                        dropdownLabel={t(
+                                            'tasks.sortBy',
+                                            'Sort by'
+                                        )}
+                                        extraContent={renderShowCompletedToggle()}
                                     />
                                 </div>
                             )}
@@ -1179,39 +1200,23 @@ const ProjectDetails: React.FC = () => {
                                 >
                                     <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
                                 </button>
-                                {/* Show Completed Toggle */}
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                                        Show completed
-                                    </span>
-                                    <button
-                                        onClick={() =>
-                                            handleShowCompletedChange(
-                                                !showCompleted
-                                            )
-                                        }
-                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                                            showCompleted
-                                                ? 'bg-blue-600'
-                                                : 'bg-gray-200 dark:bg-gray-600'
-                                        }`}
-                                    >
-                                        <span
-                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                showCompleted
-                                                    ? 'translate-x-4'
-                                                    : 'translate-x-0.5'
-                                            }`}
-                                        />
-                                    </button>
-                                </div>
-
-                                {/* Sort Filter */}
-                                <SortFilterButton
+                                <IconSortDropdown
                                     options={sortOptions}
                                     value={orderBy}
                                     onChange={handleSortChange}
-                                    size="desktop"
+                                    ariaLabel={t(
+                                        'projects.sortTasks',
+                                        'Sort tasks'
+                                    )}
+                                    title={t(
+                                        'projects.sortTasks',
+                                        'Sort tasks'
+                                    )}
+                                    dropdownLabel={t(
+                                        'tasks.sortBy',
+                                        'Sort by'
+                                    )}
+                                    extraContent={renderShowCompletedToggle()}
                                 />
                             </div>
                         )}

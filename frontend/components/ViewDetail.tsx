@@ -19,7 +19,8 @@ import ProjectItem from './Project/ProjectItem';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import { searchUniversal } from '../utils/searchService';
 import { getApiPath } from '../config/paths';
-import SortFilterButton, { SortOption } from './Shared/SortFilterButton';
+import { SortOption } from './Shared/SortFilterButton';
+import IconSortDropdown from './Shared/IconSortDropdown';
 
 interface View {
     id: number;
@@ -473,11 +474,11 @@ const ViewDetail: React.FC = () => {
     }
 
     return (
-        <div className="flex justify-center px-4 lg:px-2">
-            <div className="w-full max-w-5xl">
+        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
+            <div className="w-full max-w-5xl mx-auto">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
-                    <div className="flex items-center flex-1 mb-2 sm:mb-0">
+                <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap mb-8">
+                    <div className="flex items-center flex-1 min-w-0 gap-2">
                         {isEditingName ? (
                             <input
                                 ref={titleInputRef}
@@ -497,13 +498,13 @@ const ViewDetail: React.FC = () => {
                         ) : (
                             <h2
                                 onClick={handleEditName}
-                                className="text-2xl font-light text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                className="text-2xl font-light text-gray-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate"
                             >
                                 {view.name}
                             </h2>
                         )}
                     </div>
-                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
                         <button
                             onClick={() => setIsSearchExpanded((v) => !v)}
                             className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
@@ -525,38 +526,65 @@ const ViewDetail: React.FC = () => {
                         >
                             <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
                         </button>
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                                Show completed
-                            </span>
-                            <button
-                                onClick={() => setShowCompleted((v) => !v)}
-                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                                    showCompleted
-                                        ? 'bg-blue-600'
-                                        : 'bg-gray-200 dark:bg-gray-600'
-                                }`}
-                                aria-pressed={showCompleted}
-                                aria-label={
-                                    showCompleted
-                                        ? 'Hide completed tasks'
-                                        : 'Show completed tasks'
-                                }
-                            >
-                                <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                        showCompleted
-                                            ? 'translate-x-4'
-                                            : 'translate-x-0.5'
-                                    }`}
-                                />
-                            </button>
-                        </div>
-                        <SortFilterButton
+                        <IconSortDropdown
                             options={sortOptions}
                             value={orderBy}
                             onChange={setOrderBy}
-                            size="desktop"
+                            ariaLabel={t('views.sortTasks', 'Sort tasks')}
+                            title={t('views.sortTasks', 'Sort tasks')}
+                            dropdownLabel={t('tasks.sortBy', 'Sort by')}
+                            extraContent={
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCompleted((v) => !v)}
+                                    className="w-full flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
+                                    aria-pressed={showCompleted}
+                                    aria-label={
+                                        showCompleted
+                                            ? t(
+                                                  'views.hideCompleted',
+                                                  'Hide completed tasks'
+                                              )
+                                            : t(
+                                                  'views.showCompleted',
+                                                  'Show completed tasks'
+                                              )
+                                    }
+                                    title={
+                                        showCompleted
+                                            ? t(
+                                                  'views.hideCompleted',
+                                                  'Hide completed tasks'
+                                              )
+                                            : t(
+                                                  'views.showCompleted',
+                                                  'Show completed tasks'
+                                              )
+                                    }
+                                >
+                                    <span>
+                                        {t(
+                                            'common.showCompleted',
+                                            'Show completed'
+                                        )}
+                                    </span>
+                                    <span
+                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                                            showCompleted
+                                                ? 'bg-blue-600'
+                                                : 'bg-gray-200 dark:bg-gray-600'
+                                        }`}
+                                    >
+                                        <span
+                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                showCompleted
+                                                    ? 'translate-x-4'
+                                                    : 'translate-x-0.5'
+                                            }`}
+                                        />
+                                    </span>
+                                </button>
+                            }
                         />
                         <div className="relative" ref={criteriaDropdownRef}>
                             <button

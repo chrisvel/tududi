@@ -6,7 +6,6 @@ import {
     TrashIcon,
     FolderIcon,
     TagIcon as TagIconOutline,
-    FunnelIcon,
     ClockIcon,
     EllipsisVerticalIcon,
     XMarkIcon,
@@ -18,6 +17,7 @@ import NoteModal from './Note/NoteModal';
 import ConfirmDialog from './Shared/ConfirmDialog';
 import DiscardChangesDialog from './Shared/DiscardChangesDialog';
 import MarkdownRenderer from './Shared/MarkdownRenderer';
+import IconSortDropdown from './Shared/IconSortDropdown';
 import TagInput from './Tag/TagInput';
 import { Note } from '../entities/Note';
 import { createNote, updateNote } from '../utils/notesService';
@@ -75,7 +75,6 @@ const Notes: React.FC = () => {
     const [showProjectDropdown, setShowProjectDropdown] = useState(false);
     const [showTagsInput, setShowTagsInput] = useState(false);
     const [showDiscardDialog, setShowDiscardDialog] = useState(false);
-    const [showSortDropdown, setShowSortDropdown] = useState(false);
     const [showNoteOptionsDropdown, setShowNoteOptionsDropdown] =
         useState(false);
     const hasAutoSelected = useRef(false);
@@ -86,7 +85,6 @@ const Notes: React.FC = () => {
         ENABLE_NOTE_COLOR && previewNote ? previewNote.color : undefined;
     const activeNoteColor =
         (isEditing && editingNoteColor) || previewNoteColor || undefined;
-    const sortDropdownRef = useRef<HTMLDivElement>(null);
     const noteOptionsDropdownRef = useRef<HTMLDivElement>(null);
 
     // Get notes and projects from global store
@@ -412,15 +410,9 @@ const Notes: React.FC = () => {
         }
     }, [sortedNotes, previewNote, uid]);
 
-    // Handle clicking outside sort dropdown to close it
+    // Handle clicking outside note options dropdown to close it
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (
-                sortDropdownRef.current &&
-                !sortDropdownRef.current.contains(event.target as Node)
-            ) {
-                setShowSortDropdown(false);
-            }
             if (
                 noteOptionsDropdownRef.current &&
                 !noteOptionsDropdownRef.current.contains(event.target as Node)
@@ -483,49 +475,23 @@ const Notes: React.FC = () => {
                             </h3>
                             <div className="flex items-center gap-2">
                                 {/* Sort Filter Dropdown */}
-                                <div className="relative" ref={sortDropdownRef}>
-                                    <button
-                                        onClick={() =>
-                                            setShowSortDropdown(
-                                                !showSortDropdown
-                                            )
-                                        }
-                                        className="p-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
-                                        aria-label="Sort notes"
-                                    >
-                                        <FunnelIcon className="h-5 w-5" />
-                                    </button>
-                                    {showSortDropdown && (
-                                        <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                                            <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                                                Sort by
-                                            </div>
-                                            <div className="py-1">
-                                                {sortOptions.map((option) => (
-                                                    <button
-                                                        key={option.value}
-                                                        onClick={() => {
-                                                            handleSortChange(
-                                                                option.value
-                                                            );
-                                                            setShowSortDropdown(
-                                                                false
-                                                            );
-                                                        }}
-                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-                                                            orderBy ===
-                                                            option.value
-                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                                        }`}
-                                                    >
-                                                        {option.label}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
+                                <IconSortDropdown
+                                    options={sortOptions}
+                                    value={orderBy}
+                                    onChange={handleSortChange}
+                                    ariaLabel={t(
+                                        'notes.sortNotes',
+                                        'Sort notes'
                                     )}
-                                </div>
+                                    title={t(
+                                        'notes.sortNotes',
+                                        'Sort notes'
+                                    )}
+                                    dropdownLabel={t(
+                                        'notes.sortBy',
+                                        'Sort by'
+                                    )}
+                                />
                                 <button
                                     onClick={handleNewNote}
                                     className="p-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"

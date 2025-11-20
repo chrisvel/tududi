@@ -5,7 +5,6 @@ import { useSidebar } from '../contexts/SidebarContext';
 import TaskList from './Task/TaskList';
 import GroupedTaskList from './Task/GroupedTaskList';
 import NewTask from './Task/NewTask';
-import SortFilter from './Shared/SortFilter';
 import { Task } from '../entities/Task';
 import { getTitleAndIcon } from './Task/getTitleAndIcon';
 import { getDescription } from './Task/getDescription';
@@ -17,14 +16,15 @@ import {
 import { useStore } from '../store/useStore';
 import { useToast } from './Shared/ToastContext';
 import { SortOption } from './Shared/SortFilterButton';
+import IconSortDropdown from './Shared/IconSortDropdown';
 import {
     TagIcon,
     XMarkIcon,
-    MagnifyingGlassIcon,
 } from '@heroicons/react/24/solid';
 import {
-    InformationCircleIcon,
     QueueListIcon,
+    InformationCircleIcon,
+    MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import { getApiPath } from '../config/paths';
 
@@ -480,23 +480,17 @@ const Tasks: React.FC = () => {
     };
 
     return (
-        <div
-            className={
-                isUpcomingView
-                    ? 'w-full px-2 sm:px-4 lg:px-6'
-                    : 'flex justify-center px-4 lg:px-2'
-            }
-        >
-            <div
-                className={`w-full ${isUpcomingView ? 'max-w-none' : 'max-w-5xl'}`}
-            >
+        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
+            <div className="w-full max-w-5xl mx-auto">
                 {/* Title row with info button and filters dropdown on the right */}
                 <div
-                    className={`flex flex-col sm:flex-row items-start sm:items-center justify-between ${isUpcomingView ? 'mb-4 sm:mb-6' : 'mb-8'}`}
+                    className={`flex items-center justify-between gap-2 min-w-0 ${
+                        isUpcomingView ? 'mb-4 sm:mb-6' : 'mb-8'
+                    }`}
                 >
-                    <div className="flex items-center mb-2 sm:mb-0">
+                    <div className="flex items-center flex-1 min-w-0 gap-2">
                         <h2
-                            className={`${isUpcomingView ? 'text-lg sm:text-xl' : 'text-2xl'} font-light`}
+                            className={`${isUpcomingView ? 'text-lg sm:text-xl' : 'text-2xl'} font-light truncate`}
                         >
                             {title}
                         </h2>
@@ -517,7 +511,11 @@ const Tasks: React.FC = () => {
                     </div>
                     {/* Info expand/collapse button, search button, show completed toggle, and sort dropdown */}
                     <div
-                        className={`flex items-center gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0 ${isUpcomingView ? 'md:fixed md:right-4 md:top-20 md:px-3 md:py-2 md:z-20' : 'flex-wrap'}`}
+                        className={`flex items-center gap-2 flex-shrink-0 ${
+                            isUpcomingView
+                                ? 'md:fixed md:right-4 md:top-20 md:px-3 md:py-2 md:z-20'
+                                : ''
+                        }`}
                     >
                         <button
                             onClick={() => setIsInfoExpanded((v) => !v)}
@@ -563,42 +561,65 @@ const Tasks: React.FC = () => {
                                 </span>
                             </button>
                         )}
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                                Show completed
-                            </span>
-                            <button
-                                onClick={() => setShowCompleted((v) => !v)}
-                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                                    showCompleted
-                                        ? 'bg-blue-600'
-                                        : 'bg-gray-200 dark:bg-gray-600'
-                                }`}
-                                aria-pressed={showCompleted}
-                                aria-label={
-                                    showCompleted
-                                        ? 'Hide completed tasks'
-                                        : 'Show completed tasks'
-                                }
-                                title={
-                                    showCompleted
-                                        ? 'Hide completed tasks'
-                                        : 'Show completed tasks'
-                                }
-                            >
-                                <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        <IconSortDropdown
+                            options={sortOptions}
+                            value={orderBy}
+                            onChange={handleSortChange}
+                            ariaLabel={t('tasks.sortTasks', 'Sort tasks')}
+                            title={t('tasks.sortTasks', 'Sort tasks')}
+                            dropdownLabel={t('tasks.sortBy', 'Sort by')}
+                            extraContent={
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCompleted((v) => !v)}
+                                    className="w-full flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
+                                    aria-pressed={showCompleted}
+                                    aria-label={
                                         showCompleted
-                                            ? 'translate-x-4'
-                                            : 'translate-x-0.5'
-                                    }`}
-                                />
-                            </button>
-                        </div>
-                        <SortFilter
-                            sortOptions={sortOptions}
-                            sortValue={orderBy}
-                            onSortChange={handleSortChange}
+                                            ? t(
+                                                  'tasks.hideCompleted',
+                                                  'Hide completed tasks'
+                                              )
+                                            : t(
+                                                  'tasks.showCompleted',
+                                                  'Show completed tasks'
+                                              )
+                                    }
+                                    title={
+                                        showCompleted
+                                            ? t(
+                                                  'tasks.hideCompleted',
+                                                  'Hide completed tasks'
+                                              )
+                                            : t(
+                                                  'tasks.showCompleted',
+                                                  'Show completed tasks'
+                                              )
+                                    }
+                                >
+                                    <span>
+                                        {t(
+                                            'tasks.showCompleted',
+                                            'Show completed'
+                                        )}
+                                    </span>
+                                    <span
+                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                                            showCompleted
+                                                ? 'bg-blue-600'
+                                                : 'bg-gray-200 dark:bg-gray-600'
+                                        }`}
+                                    >
+                                        <span
+                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                showCompleted
+                                                    ? 'translate-x-4'
+                                                    : 'translate-x-0.5'
+                                            }`}
+                                        />
+                                    </span>
+                                </button>
+                            }
                         />
                     </div>
                 </div>
