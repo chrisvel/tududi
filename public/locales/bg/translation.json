@@ -731,7 +731,9 @@
     "noDueDate": "Няма крайна дата",
     "instanceOf": "Това е инстанция на повтаряща се задача",
     "parentTask": "Родителска задача",
-    "includingToday": "включително днес"
+    "includingToday": "включително днес",
+    "has": "има",
+    "fromProject": "от проекта"
   },
   "projects": {
     "loading": "Зареждане на проекти...",

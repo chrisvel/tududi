@@ -731,7 +731,9 @@
     "nextOccurrencesAfterThis": "Volgende Voorvallen Na Dit",
     "instanceOf": "Dit is een instantie van een terugkerende taak",
     "parentTask": "Bovenliggende Taak",
-    "includingToday": "inclusief vandaag"
+    "includingToday": "inclusief vandaag",
+    "has": "heeft",
+    "fromProject": "van het project"
   },
   "projects": {
     "loading": "Projecten laden...",

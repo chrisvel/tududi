@@ -731,7 +731,9 @@
     "noDueDate": "Ingen förfallodatum",
     "instanceOf": "Detta är en instans av en återkommande uppgift",
     "parentTask": "Överordnad uppgift",
-    "includingToday": "inklusive idag"
+    "includingToday": "inklusive idag",
+    "has": "har",
+    "fromProject": "från projektet"
   },
   "projects": {
     "loading": "Laddar projekt...",

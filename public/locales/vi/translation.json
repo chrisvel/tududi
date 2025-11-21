@@ -731,7 +731,9 @@
     "noDueDate": "Không có ngày hết hạn",
     "instanceOf": "Đây là một phiên bản của một nhiệm vụ định kỳ",
     "parentTask": "Nhiệm vụ Cha",
-    "includingToday": "bao gồm hôm nay"
+    "includingToday": "bao gồm hôm nay",
+    "has": "có",
+    "fromProject": "từ dự án"
   },
   "projects": {
     "loading": "Đang tải dự án...",

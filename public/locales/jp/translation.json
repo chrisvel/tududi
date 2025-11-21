@@ -797,7 +797,9 @@
     "noDueDate": "期限なし",
     "instanceOf": "これは定期的なタスクのインスタンスです",
     "parentTask": "親タスク",
-    "includingToday": "今日を含む"
+    "includingToday": "今日を含む",
+    "has": "持っている",
+    "fromProject": "プロジェクトから"
   },
   "calendar": {
     "month": "月",

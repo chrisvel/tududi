@@ -731,7 +731,9 @@
     "nextOccurrencesAfterThis": "Neste forekomster etter dette",
     "instanceOf": "Dette er en instans av en gjentakende oppgave",
     "parentTask": "Foreldrepågave",
-    "includingToday": "inkludert i dag"
+    "includingToday": "inkludert i dag",
+    "has": "har",
+    "fromProject": "fra prosjektet"
   },
   "projects": {
     "loading": "Laster prosjekter...",

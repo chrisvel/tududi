@@ -731,7 +731,9 @@
     "noDueDate": "Brez roka",
     "instanceOf": "To je instanca ponavljajoče se naloge",
     "parentTask": "Nadrejena naloga",
-    "includingToday": "vključno s danes"
+    "includingToday": "vključno s danes",
+    "has": "ima",
+    "fromProject": "iz projekta"
   },
   "projects": {
     "loading": "Nalagam projekte...",

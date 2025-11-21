@@ -731,7 +731,9 @@
     "noDueDate": "Sem data de vencimento",
     "instanceOf": "Esta é uma instância de uma tarefa recorrente",
     "parentTask": "Tarefa Pai",
-    "includingToday": "incluindo hoje"
+    "includingToday": "incluindo hoje",
+    "has": "tem",
+    "fromProject": "do projeto"
   },
   "projects": {
     "loading": "Carregando projetos...",

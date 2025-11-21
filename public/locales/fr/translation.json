@@ -731,7 +731,9 @@
     "noDueDate": "Pas de date d'échéance",
     "instanceOf": "Ceci est une instance d'une tâche récurrente",
     "parentTask": "Tâche parente",
-    "includingToday": "y compris aujourd'hui"
+    "includingToday": "y compris aujourd'hui",
+    "has": "a",
+    "fromProject": "du projet"
   },
   "projects": {
     "loading": "Chargement des projets...",

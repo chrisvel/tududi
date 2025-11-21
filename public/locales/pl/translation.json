@@ -731,7 +731,9 @@
     "noDueDate": "Brak daty wykonania",
     "instanceOf": "To jest instancja zadania cyklicznego",
     "parentTask": "Zadanie nadrzędne",
-    "includingToday": "w tym dzisiaj"
+    "includingToday": "w tym dzisiaj",
+    "has": "ma",
+    "fromProject": "z projektu"
   },
   "projects": {
     "loading": "Ładowanie projektów...",

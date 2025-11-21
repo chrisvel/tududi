@@ -731,7 +731,9 @@
     "noDueDate": "Ingen forfaldsdato",
     "instanceOf": "Dette er en instans af en tilbagevendende opgave",
     "parentTask": "Overordnet opgave",
-    "includingToday": "inklusive i dag"
+    "includingToday": "inklusive i dag",
+    "has": "har",
+    "fromProject": "fra projektet"
   },
   "projects": {
     "loading": "Indlæser projekter...",

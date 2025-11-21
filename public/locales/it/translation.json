@@ -731,7 +731,9 @@
     "noDueDate": "Nessuna data di scadenza",
     "instanceOf": "Questa è un'istanza di un'attività ricorrente",
     "parentTask": "Attività principale",
-    "includingToday": "incluso oggi"
+    "includingToday": "incluso oggi",
+    "has": "ha",
+    "fromProject": "dal progetto"
   },
   "projects": {
     "loading": "Caricamento progetti...",

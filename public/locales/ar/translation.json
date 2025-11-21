@@ -675,7 +675,7 @@
     "is": "هي",
     "and": "و",
     "dueOn": "مستحقة",
-    "inProject": "من المشروع",
+    "inProject": "في المشروع",
     "lowPriority": "أولوية منخفضة",
     "mediumPriority": "أولوية متوسطة",
     "highPriority": "أولوية عالية",
@@ -731,7 +731,9 @@
     "noDueDate": "لا توجد تاريخ استحقاق",
     "instanceOf": "هذه نسخة من مهمة متكررة",
     "parentTask": "المهمة الرئيسية",
-    "includingToday": "بما في ذلك اليوم"
+    "includingToday": "بما في ذلك اليوم",
+    "has": "يمتلك",
+    "fromProject": "من المشروع"
   },
   "projects": {
     "loading": "جارٍ تحميل المشاريع...",

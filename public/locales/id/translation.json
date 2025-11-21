@@ -731,7 +731,9 @@
     "noDueDate": "Tidak ada tanggal jatuh tempo",
     "instanceOf": "Ini adalah instance dari tugas berulang",
     "parentTask": "Tugas Induk",
-    "includingToday": "termasuk hari ini"
+    "includingToday": "termasuk hari ini",
+    "has": "memiliki",
+    "fromProject": "dari proyek"
   },
   "projects": {
     "loading": "Memuat proyek...",

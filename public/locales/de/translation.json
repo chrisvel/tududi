@@ -665,7 +665,9 @@
     "noDueDate": "Kein Fälligkeitsdatum",
     "instanceOf": "Dies ist eine Instanz einer wiederkehrenden Aufgabe",
     "parentTask": "Übergeordnete Aufgabe",
-    "includingToday": "einschließlich heute"
+    "includingToday": "einschließlich heute",
+    "has": "hat",
+    "fromProject": "vom Projekt"
   },
   "calendar": {
     "month": "Monat",

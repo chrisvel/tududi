@@ -731,7 +731,9 @@
     "nextOccurrencesAfterThis": "이후의 다음 발생",
     "instanceOf": "이것은 반복 작업의 인스턴스입니다",
     "parentTask": "상위 작업",
-    "includingToday": "오늘 포함"
+    "includingToday": "오늘 포함",
+    "has": "있음",
+    "fromProject": "프로젝트에서"
   },
   "projects": {
     "loading": "프로젝트 로딩 중...",

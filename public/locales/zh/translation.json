@@ -731,7 +731,9 @@
     "noDueDate": "没有截止日期",
     "instanceOf": "这是一个重复任务的实例",
     "parentTask": "父任务",
-    "includingToday": "包括今天"
+    "includingToday": "包括今天",
+    "has": "有",
+    "fromProject": "来自项目"
   },
   "projects": {
     "loading": "加载项目中...",

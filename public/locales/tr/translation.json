@@ -731,7 +731,9 @@
     "noDueDate": "Son tarih yok",
     "instanceOf": "Bu, tekrarlayan bir görevin bir örneğidir",
     "parentTask": "Üst Görev",
-    "includingToday": "bugün dahil"
+    "includingToday": "bugün dahil",
+    "has": "var",
+    "fromProject": "projeden"
   },
   "projects": {
     "loading": "Projeler yükleniyor...",

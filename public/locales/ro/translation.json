@@ -731,7 +731,9 @@
     "noDueDate": "Fără dată limită",
     "instanceOf": "Aceasta este o instanță a unei sarcini recurente",
     "parentTask": "Sarcina Părinte",
-    "includingToday": "inclusiv astăzi"
+    "includingToday": "inclusiv astăzi",
+    "has": "are",
+    "fromProject": "din proiect"
   },
   "projects": {
     "loading": "Se încarcă proiectele...",

@@ -731,7 +731,9 @@
     "noDueDate": "Ei määräaikaa",
     "instanceOf": "Tämä on toistuvan tehtävän instanssi",
     "parentTask": "Ylätason tehtävä",
-    "includingToday": "mukana tänään"
+    "includingToday": "mukana tänään",
+    "has": "on",
+    "fromProject": "projektista"
   },
   "projects": {
     "loading": "Ladataan projekteja...",

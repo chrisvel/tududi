@@ -693,7 +693,9 @@
     "noDueDate": "Sin fecha de vencimiento",
     "instanceOf": "Esta es una instancia de una tarea recurrente",
     "parentTask": "Tarea principal",
-    "includingToday": "incluyendo hoy"
+    "includingToday": "incluyendo hoy",
+    "has": "tiene",
+    "fromProject": "del proyecto"
   },
   "dateIndicators": {
     "today": "HOY",
