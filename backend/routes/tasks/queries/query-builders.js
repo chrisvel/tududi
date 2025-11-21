@@ -1,5 +1,5 @@
 const { Task, Tag, Project, sequelize } = require('../../../models');
-const { Op } = require('sequelize');
+const { Op, QueryTypes } = require('sequelize');
 const permissionsService = require('../../../services/permissionsService');
 const {
     getSafeTimezone,
@@ -222,10 +222,7 @@ async function filterTasksByParams(
             }
     }
 
-    if (params.tag) {
-        includeClause[0].where = { name: params.tag };
-        includeClause[0].required = true;
-    }
+    let tagFilteredTaskIds = null;
 
     if (params.priority) {
         whereClause.priority = Task.getPriorityValue(params.priority);
@@ -266,6 +263,33 @@ async function filterTasksByParams(
         } else {
             orderClause = [[orderColumn, orderDirection.toUpperCase()]];
         }
+    }
+
+    if (params.tag) {
+        const taggedTaskIds = await sequelize.query(
+            `SELECT DISTINCT tasks_tags.task_id
+             FROM tasks_tags
+             INNER JOIN tags ON tags.id = tasks_tags.tag_id
+             WHERE tags.name = :tagName`,
+            {
+                replacements: { tagName: params.tag },
+                type: QueryTypes.SELECT,
+            }
+        );
+
+        tagFilteredTaskIds = taggedTaskIds.map((row) => row.task_id);
+
+        // No tasks found with this tag - return early to avoid unnecessary query
+        if (tagFilteredTaskIds.length === 0) {
+            return [];
+        }
+    }
+
+    if (tagFilteredTaskIds) {
+        whereClause.id = {
+            ...(whereClause.id || {}),
+            [Op.in]: tagFilteredTaskIds,
+        };
     }
 
     const finalWhereClause = {
