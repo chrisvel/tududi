@@ -147,9 +147,13 @@ test('user can mark a task as complete', async ({ page, baseURL }) => {
   await createTask(page, taskName);
 
   // Enable "Show completed" first to ensure completed tasks remain visible
-  const showCompletedButton = page.locator('button:has-text("Show completed")').first();
-  if (await showCompletedButton.isVisible()) {
-    await showCompletedButton.click();
+  const sortFilterButton = page.getByRole('button', { name: /sort tasks/i });
+  await expect(sortFilterButton).toBeVisible({ timeout: 5000 });
+  await sortFilterButton.click();
+
+  const showCompletedToggle = page.getByRole('button', { name: /show completed/i });
+  if (await showCompletedToggle.isVisible()) {
+    await showCompletedToggle.click();
     await page.waitForLoadState('networkidle');
   }
 
@@ -169,8 +173,8 @@ test('user can mark a task as complete', async ({ page, baseURL }) => {
   // Wait for network idle after completing the task
   await page.waitForLoadState('networkidle');
 
-  // Click the "Show completed" toggle to make completed tasks visible
-  const showCompletedToggle = page.getByText('Show completed');
+  // Click the "Show completed" toggle to make completed tasks visible (now inside the sort/filter dropdown)
+  await sortFilterButton.click();
   await expect(showCompletedToggle).toBeVisible({ timeout: 5000 });
   await showCompletedToggle.click();
   await page.waitForLoadState('networkidle');

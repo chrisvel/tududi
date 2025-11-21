@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Toistuvuuden päättymispäivämäärä on muuttunut",
       "recurrenceEndDate": "Toistuvuuden päättymispäivämäärä",
       "recurrence_type_changed": "Toistotyypin muutos",
-      "recurrence_interval_changed": "Toistovälin muutos"
+      "recurrence_interval_changed": "Toistovälin muutos",
+      "completionBasedChanged": "Suoritusperusteinen toistuvuus muuttunut",
+      "projectIdChanged": "Määrätty projektiin",
+      "recurrenceType": "Toistuvuustyyppi",
+      "recurrenceTypeChanged": "Toistuvuustyyppi muuttunut"
     },
     "justNow": "Juuri nyt",
     "minutesAgo": "{{minutes}}m sitten",
@@ -410,7 +414,8 @@
         "monthDay": "Kuukauden päivä",
         "weekOfMonth": "Kuukauden viikko",
         "recurrenceEndDate": "Loppupäivämäärä (valinnainen)",
-        "completionBased": "Toista valmistumisen jälkeen"
+        "completionBased": "Toista valmistumisen jälkeen",
+        "repeatOn": "Toista"
       },
       "projectSearchPlaceholder": "Etsi tai luo projekti...",
       "noMatchingProjects": "Ei vastaavia projekteja",
@@ -431,7 +436,8 @@
         "short": "Yritä olla tarkempi siitä, mitä on tehtävä",
         "noVerb": "Mitä erityistä toimintoa sinun tarvitsee tehdä? Yritä aloittaa verbillä.",
         "vague": "Yritä aloittaa toimintaverbillä kuten \"Soita\", \"Kirjoita\", \"Aikatauluta\" tai \"Tutki\""
-      }
+      },
+      "selectAtLeastOneDay": "Valitse vähintään yksi päivä"
     },
     "noteTitle": "Muistion Otsikko",
     "noteContent": "Muistion Sisältö",
@@ -506,7 +512,10 @@
     "browseImage": "Selaa kuvaa",
     "noNotes": "Ei muistiinpanoja tälle projektille.",
     "deleteProject": "Poista projekti",
-    "createSuccess": "Projekti luotiin onnistuneesti!"
+    "createSuccess": "Projekti luotiin onnistuneesti!",
+    "createdAndAssigned": "Projekti luotu ja osoitettu",
+    "createError": "Projektin luominen epäonnistui",
+    "viewProject": "Siirry projektiin"
   },
   "errors": {
     "required": "Tämä kenttä on pakollinen",
@@ -661,7 +670,70 @@
     "subtasks": "Ala-tehtävät",
     "noSubtasks": "Ei vielä ala-tehtäviä",
     "recentActivity": "Viimeaikainen toiminta",
-    "noActivityYet": "Ei vielä toimintaa"
+    "noActivityYet": "Ei vielä toimintaa",
+    "thisTask": "Tämä tehtävä",
+    "is": "on",
+    "and": "ja",
+    "dueOn": "eräpäivä",
+    "inProject": "projektista",
+    "lowPriority": "matala prioriteetti",
+    "mediumPriority": "keskitasoinen prioriteetti",
+    "highPriority": "korkea prioriteetti",
+    "inDays": "{{count}} päivän kuluttua",
+    "daysAgo": "{{count}} päivää sitten",
+    "tagsUpdated": "Tunnisteet päivitetty onnistuneesti",
+    "tagsUpdateError": "Tunnisteiden päivittäminen epäonnistui",
+    "recurrenceUpdated": "Toistuvuus päivitetty onnistuneesti",
+    "recurrenceUpdateError": "Toistuvuuden päivittäminen epäonnistui",
+    "dueDateUpdated": "Eräpäivä päivitetty onnistuneesti",
+    "dueDateUpdateError": "Eräpäivän päivittäminen epäonnistui",
+    "titleUpdated": "Tehtävän otsikko päivitetty onnistuneesti",
+    "titleUpdateError": "Tehtävän otsikon päivittäminen epäonnistui",
+    "contentUpdated": "Tehtävän sisältö päivitetty onnistuneesti",
+    "contentUpdateError": "Tehtävän sisällön päivittäminen epäonnistui",
+    "subtasksUpdated": "Ala-tehtävät päivitetty onnistuneesti",
+    "subtasksUpdateError": "Ala-tehtävien päivittäminen epäonnistui",
+    "projectUpdated": "Projekti päivitetty onnistuneesti",
+    "projectUpdateError": "Projektin päivittäminen epäonnistui",
+    "projectCleared": "Projekti tyhjennetty onnistuneesti",
+    "projectClearError": "Projektin tyhjentäminen epäonnistui",
+    "priorityUpdated": "Prioriteetti päivitetty onnistuneesti",
+    "priorityUpdateError": "Prioriteetin päivittäminen epäonnistui",
+    "status": {
+      "notStarted": "ei aloitettu",
+      "inProgress": "käynnissä",
+      "done": "valmis",
+      "archived": "arkistoitu",
+      "unknown": "käynnissä"
+    },
+    "noSubtasksClickToAdd": "Ei alitehtäviä vielä, napsauta lisätäksesi",
+    "project": "Projekti",
+    "noProject": "Ei projektia - Napsauta osoittaaksesi",
+    "tags": "Tunnisteet",
+    "noTags": "Ei tunnisteita",
+    "priority": "Prioriteetti",
+    "dueDate": "Eräpäivä",
+    "recurringSetup": "Toistuva asetukset",
+    "notRecurring": "Tämä tehtävä ei ole vielä toistuva.",
+    "clickToEditTitle": "Napsauta muokataksesi otsikkoa",
+    "clickToEditContent": "Napsauta muokataksesi sisältöä",
+    "clickToAddContent": "Napsauta lisätäksesi sisältöä",
+    "clickToEditSubtasks": "Napsauta muokataksesi alitehtäviä",
+    "clickToAddOrEditSubtasks": "Napsauta lisätäksesi tai muokataksesi alitehtäviä",
+    "contentPlaceholder": "Lisää sisältöä tänne... (Markdown tuettu)",
+    "contentEditHint": "Paina Cmd/Ctrl+Enter tallentaaksesi, Esc peruuttaaksesi",
+    "noContentPreview": "Ei esikatseltavaa sisältöä. Vaihda Muokkaustilaan lisätäksesi sisältöä.",
+    "deleteConfirmTitle": "Poista tehtävä",
+    "deleteConfirmMessage": "Oletko varma, että haluat poistaa tämän tehtävän? Tätä toimintoa ei voi peruuttaa.",
+    "noMoreIterations": "Ei enää aikataulutettuja iteraatioita",
+    "nextOccurrences": "Seuraavat esiintymät",
+    "nextOccurrencesAfterThis": "Seuraavat esiintymät tämän jälkeen",
+    "noDueDate": "Ei määräaikaa",
+    "instanceOf": "Tämä on toistuvan tehtävän instanssi",
+    "parentTask": "Ylätason tehtävä",
+    "includingToday": "mukana tänään",
+    "has": "on",
+    "fromProject": "projektista"
   },
   "projects": {
     "loading": "Ladataan projekteja...",
@@ -1062,5 +1134,8 @@
       "nonRecurring": "ei-toistuva",
       "instances": "toistuvat instanssit"
     }
+  },
+  "subtasks": {
+    "placeholder": "Lisää alitehtävä..."
   }
 }

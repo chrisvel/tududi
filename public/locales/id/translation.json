@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Tanggal akhir pengulangan telah diubah",
       "recurrenceEndDate": "Tanggal akhir pengulangan",
       "recurrence_type_changed": "Tipe pengulangan berubah",
-      "recurrence_interval_changed": "Interval pengulangan berubah"
+      "recurrence_interval_changed": "Interval pengulangan berubah",
+      "completionBasedChanged": "Perulangan berbasis penyelesaian diubah",
+      "projectIdChanged": "Ditugaskan ke proyek",
+      "recurrenceType": "Jenis perulangan",
+      "recurrenceTypeChanged": "Jenis perulangan diubah"
     },
     "justNow": "Baru saja",
     "minutesAgo": "{{minutes}}m yang lalu",
@@ -410,7 +414,8 @@
         "monthDay": "Hari dalam bulan",
         "weekOfMonth": "Minggu dalam bulan",
         "recurrenceEndDate": "Tanggal akhir (opsional)",
-        "completionBased": "Ulangi setelah penyelesaian"
+        "completionBased": "Ulangi setelah penyelesaian",
+        "repeatOn": "Ulangi pada"
       },
       "projectSearchPlaceholder": "Cari atau buat proyek...",
       "noMatchingProjects": "Tidak ada proyek yang cocok",
@@ -431,7 +436,8 @@
         "short": "Cobalah untuk lebih spesifik tentang apa yang perlu dilakukan",
         "noVerb": "Tindakan spesifik apa yang perlu Anda ambil? Cobalah mulai dengan kata kerja.",
         "vague": "Cobalah mulai dengan kata kerja aksi seperti \"Hubungi\", \"Tulis\", \"Jadwalkan\", atau \"Teliti\""
-      }
+      },
+      "selectAtLeastOneDay": "Silakan pilih setidaknya satu hari"
     },
     "noteTitle": "Judul Catatan",
     "noteContent": "Konten Catatan",
@@ -506,7 +512,10 @@
     "browseImage": "Telusuri Gambar",
     "noNotes": "Tidak ada catatan untuk proyek ini.",
     "deleteProject": "Hapus Proyek",
-    "createSuccess": "Proyek berhasil dibuat!"
+    "createSuccess": "Proyek berhasil dibuat!",
+    "createdAndAssigned": "Proyek dibuat dan ditugaskan",
+    "createError": "Gagal membuat proyek",
+    "viewProject": "Pergi ke proyek"
   },
   "errors": {
     "required": "Kolom ini diperlukan",
@@ -661,7 +670,70 @@
     "subtasks": "Subtugas",
     "noSubtasks": "Belum ada subtugas",
     "recentActivity": "Aktivitas Terbaru",
-    "noActivityYet": "Belum ada aktivitas"
+    "noActivityYet": "Belum ada aktivitas",
+    "thisTask": "Tugas ini",
+    "is": "adalah",
+    "and": "dan",
+    "dueOn": "jatuh tempo",
+    "inProject": "dari proyek",
+    "lowPriority": "prioritas rendah",
+    "mediumPriority": "prioritas sedang",
+    "highPriority": "prioritas tinggi",
+    "inDays": "dalam {{count}} hari",
+    "daysAgo": "{{count}} hari yang lalu",
+    "tagsUpdated": "Tag berhasil diperbarui",
+    "tagsUpdateError": "Gagal memperbarui tag",
+    "recurrenceUpdated": "Perulangan berhasil diperbarui",
+    "recurrenceUpdateError": "Gagal memperbarui perulangan",
+    "dueDateUpdated": "Tanggal jatuh tempo berhasil diperbarui",
+    "dueDateUpdateError": "Gagal memperbarui tanggal jatuh tempo",
+    "titleUpdated": "Judul tugas berhasil diperbarui",
+    "titleUpdateError": "Gagal memperbarui judul tugas",
+    "contentUpdated": "Konten tugas berhasil diperbarui",
+    "contentUpdateError": "Gagal memperbarui konten tugas",
+    "subtasksUpdated": "Subtugas berhasil diperbarui",
+    "subtasksUpdateError": "Gagal memperbarui subtugas",
+    "projectUpdated": "Proyek berhasil diperbarui",
+    "projectUpdateError": "Gagal memperbarui proyek",
+    "projectCleared": "Proyek berhasil dibersihkan",
+    "projectClearError": "Gagal membersihkan proyek",
+    "priorityUpdated": "Prioritas berhasil diperbarui",
+    "priorityUpdateError": "Gagal memperbarui prioritas",
+    "status": {
+      "notStarted": "belum dimulai",
+      "inProgress": "sedang berlangsung",
+      "done": "selesai",
+      "archived": "diarsipkan",
+      "unknown": "berlangsung"
+    },
+    "noSubtasksClickToAdd": "Belum ada subtugas, klik untuk menambah",
+    "project": "Proyek",
+    "noProject": "Tidak ada proyek - Klik untuk menugaskan",
+    "tags": "Tag",
+    "noTags": "Tidak ada tag",
+    "priority": "Prioritas",
+    "dueDate": "Tanggal Jatuh Tempo",
+    "recurringSetup": "Pengaturan Berulang",
+    "notRecurring": "Tugas ini belum berulang.",
+    "clickToEditTitle": "Klik untuk mengedit judul",
+    "clickToEditContent": "Klik untuk mengedit konten",
+    "clickToAddContent": "Klik untuk menambah konten",
+    "clickToEditSubtasks": "Klik untuk mengedit subtugas",
+    "clickToAddOrEditSubtasks": "Klik untuk menambah atau mengedit subtugas",
+    "contentPlaceholder": "Tambahkan konten di sini... (Markdown didukung)",
+    "contentEditHint": "Tekan Cmd/Ctrl+Enter untuk menyimpan, Esc untuk membatalkan",
+    "noContentPreview": "Tidak ada konten untuk ditampilkan. Beralih ke mode Edit untuk menambahkan konten.",
+    "deleteConfirmTitle": "Hapus Tugas",
+    "deleteConfirmMessage": "Apakah Anda yakin ingin menghapus tugas ini? Tindakan ini tidak dapat dibatalkan.",
+    "noMoreIterations": "Tidak ada iterasi lain yang dijadwalkan",
+    "nextOccurrences": "Kejadian Berikutnya",
+    "nextOccurrencesAfterThis": "Kejadian Berikutnya Setelah Ini",
+    "noDueDate": "Tidak ada tanggal jatuh tempo",
+    "instanceOf": "Ini adalah instance dari tugas berulang",
+    "parentTask": "Tugas Induk",
+    "includingToday": "termasuk hari ini",
+    "has": "memiliki",
+    "fromProject": "dari proyek"
   },
   "projects": {
     "loading": "Memuat proyek...",
@@ -1062,5 +1134,8 @@
       "nonRecurring": "tidak berulang",
       "instances": "instansi berulang"
     }
+  },
+  "subtasks": {
+    "placeholder": "Tambahkan subtugas..."
   }
 }

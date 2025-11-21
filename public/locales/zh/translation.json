@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "重复结束日期已更改",
       "recurrenceEndDate": "重复结束日期",
       "recurrence_type_changed": "重复类型已更改",
-      "recurrence_interval_changed": "重复间隔已更改"
+      "recurrence_interval_changed": "重复间隔已更改",
+      "completionBasedChanged": "基于完成的重复已更改",
+      "projectIdChanged": "已分配到项目",
+      "recurrenceType": "重复类型",
+      "recurrenceTypeChanged": "重复类型已更改"
     },
     "justNow": "刚刚",
     "minutesAgo": "{{minutes}}分钟前",
@@ -410,7 +414,8 @@
         "monthDay": "每月的天",
         "weekOfMonth": "每月的周",
         "recurrenceEndDate": "结束日期（可选）",
-        "completionBased": "完成后重复"
+        "completionBased": "完成后重复",
+        "repeatOn": "重复于"
       },
       "projectSearchPlaceholder": "搜索或创建项目...",
       "noMatchingProjects": "没有匹配的项目",
@@ -431,7 +436,8 @@
         "short": "尽量更具体地说明需要做什么",
         "noVerb": "你需要采取什么具体行动？尝试以动词开头。",
         "vague": "尝试以动作动词开头，例如 \"打电话\"、\"写\"、\"安排\" 或 \"研究\""
-      }
+      },
+      "selectAtLeastOneDay": "请至少选择一天"
     },
     "noteTitle": "笔记标题",
     "noteContent": "笔记内容",
@@ -506,7 +512,10 @@
     "browseImage": "浏览图片",
     "noNotes": "此项目没有备注。",
     "deleteProject": "删除项目",
-    "createSuccess": "项目创建成功！"
+    "createSuccess": "项目创建成功！",
+    "createdAndAssigned": "项目已创建并分配",
+    "createError": "创建项目失败",
+    "viewProject": "前往项目"
   },
   "errors": {
     "required": "此字段为必填项",
@@ -661,7 +670,70 @@
     "subtasks": "子任务",
     "noSubtasks": "尚无子任务",
     "recentActivity": "最近活动",
-    "noActivityYet": "尚无活动"
+    "noActivityYet": "尚无活动",
+    "noSubtasksClickToAdd": "尚无子任务，点击添加",
+    "project": "项目",
+    "noProject": "没有项目 - 点击分配",
+    "tags": "标签",
+    "noTags": "没有标签",
+    "priority": "优先级",
+    "dueDate": "截止日期",
+    "recurringSetup": "重复设置",
+    "notRecurring": "此任务尚未重复。",
+    "clickToEditTitle": "点击编辑标题",
+    "clickToEditContent": "点击编辑内容",
+    "clickToAddContent": "点击添加内容",
+    "clickToEditSubtasks": "点击编辑子任务",
+    "clickToAddOrEditSubtasks": "点击添加或编辑子任务",
+    "contentPlaceholder": "在这里添加内容...（支持Markdown）",
+    "contentEditHint": "按 Cmd/Ctrl+Enter 保存，按 Esc 取消",
+    "noContentPreview": "没有内容可预览。切换到编辑模式以添加内容。",
+    "deleteConfirmTitle": "删除任务",
+    "deleteConfirmMessage": "您确定要删除此任务吗？此操作无法撤销。",
+    "noMoreIterations": "没有更多计划的迭代",
+    "nextOccurrences": "下一个发生",
+    "nextOccurrencesAfterThis": "此后的下一个发生",
+    "thisTask": "此任务",
+    "is": "是",
+    "and": "和",
+    "dueOn": "到期",
+    "inProject": "来自项目",
+    "lowPriority": "低优先级",
+    "mediumPriority": "中优先级",
+    "highPriority": "高优先级",
+    "inDays": "在 {{count}} 天内",
+    "daysAgo": "{{count}} 天前",
+    "tagsUpdated": "标签更新成功",
+    "tagsUpdateError": "更新标签失败",
+    "recurrenceUpdated": "重复更新成功",
+    "recurrenceUpdateError": "更新重复失败",
+    "dueDateUpdated": "截止日期更新成功",
+    "dueDateUpdateError": "更新截止日期失败",
+    "titleUpdated": "任务标题更新成功",
+    "titleUpdateError": "更新任务标题失败",
+    "contentUpdated": "任务内容更新成功",
+    "contentUpdateError": "更新任务内容失败",
+    "subtasksUpdated": "子任务更新成功",
+    "subtasksUpdateError": "更新子任务失败",
+    "projectUpdated": "项目更新成功",
+    "projectUpdateError": "更新项目失败",
+    "projectCleared": "项目清除成功",
+    "projectClearError": "清除项目失败",
+    "priorityUpdated": "优先级更新成功",
+    "priorityUpdateError": "更新优先级失败",
+    "status": {
+      "notStarted": "未开始",
+      "inProgress": "进行中",
+      "done": "已完成",
+      "archived": "已归档",
+      "unknown": "进行中"
+    },
+    "noDueDate": "没有截止日期",
+    "instanceOf": "这是一个重复任务的实例",
+    "parentTask": "父任务",
+    "includingToday": "包括今天",
+    "has": "有",
+    "fromProject": "来自项目"
   },
   "projects": {
     "loading": "加载项目中...",
@@ -1062,5 +1134,8 @@
       "nonRecurring": "非循环",
       "instances": "循环实例"
     }
+  },
+  "subtasks": {
+    "placeholder": "添加子任务..."
   }
 }

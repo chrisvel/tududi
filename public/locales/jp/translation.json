@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "繰り返し終了日が変更されました",
       "recurrenceEndDate": "繰り返し終了日",
       "recurrence_type_changed": "繰り返しタイプが変更されました",
-      "recurrence_interval_changed": "繰り返し間隔が変更されました"
+      "recurrence_interval_changed": "繰り返し間隔が変更されました",
+      "completionBasedChanged": "完了ベースの繰り返しが変更されました",
+      "projectIdChanged": "プロジェクトに割り当てられました",
+      "recurrenceType": "繰り返しの種類",
+      "recurrenceTypeChanged": "繰り返しの種類が変更されました"
     },
     "justNow": "たった今",
     "minutesAgo": "{{minutes}}分前",
@@ -396,7 +400,8 @@
         "status": "ステータス",
         "priority": "優先度",
         "dueDate": "期限日",
-        "note": "ノート"
+        "note": "ノート",
+        "repeatOn": "繰り返し"
       },
       "recurrenceSettings": "繰り返し設定",
       "completionBasedHelp": "チェックすると、次のタスクは期限日ではなく完了日に基づいて作成されます",
@@ -418,7 +423,8 @@
         "short": "何をする必要があるのか具体的に記述してみてください",
         "noVerb": "具体的な行動は何ですか？ 動詞で始めてみてください。",
         "vague": "\"電話する\"、\"書く\"、\"予定する\"、\"調査する\"などの動詞で始めてみてください"
-      }
+      },
+      "selectAtLeastOneDay": "少なくとも1日を選択してください"
     },
     "areaName": "エリア名",
     "areaDescription": "エリアの説明",
@@ -683,7 +689,10 @@
     "name": "プロジェクト名",
     "noNotes": "このプロジェクトにはノートがありません。",
     "deleteProject": "プロジェクトを削除",
-    "createSuccess": "プロジェクトが正常に作成されました！"
+    "createSuccess": "プロジェクトが正常に作成されました！",
+    "createdAndAssigned": "プロジェクトが作成され、割り当てられました",
+    "createError": "プロジェクトの作成に失敗しました",
+    "viewProject": "プロジェクトに移動"
   },
   "task": {
     "suggestions": {
@@ -727,7 +736,70 @@
     "subtasks": "サブタスク",
     "noSubtasks": "まだサブタスクはありません",
     "recentActivity": "最近の活動",
-    "noActivityYet": "まだアクティビティはありません"
+    "noActivityYet": "まだアクティビティはありません",
+    "thisTask": "このタスク",
+    "is": "は",
+    "and": "と",
+    "dueOn": "期限",
+    "inProject": "プロジェクトから",
+    "lowPriority": "低優先度",
+    "mediumPriority": "中優先度",
+    "highPriority": "高優先度",
+    "inDays": "{{count}}日以内",
+    "daysAgo": "{{count}}日前",
+    "tagsUpdated": "タグが正常に更新されました",
+    "tagsUpdateError": "タグの更新に失敗しました",
+    "recurrenceUpdated": "繰り返しが正常に更新されました",
+    "recurrenceUpdateError": "繰り返しの更新に失敗しました",
+    "dueDateUpdated": "期限が正常に更新されました",
+    "dueDateUpdateError": "期限の更新に失敗しました",
+    "titleUpdated": "タスクのタイトルが正常に更新されました",
+    "titleUpdateError": "タスクのタイトルの更新に失敗しました",
+    "contentUpdated": "タスクの内容が正常に更新されました",
+    "contentUpdateError": "タスクの内容の更新に失敗しました",
+    "subtasksUpdated": "サブタスクが正常に更新されました",
+    "subtasksUpdateError": "サブタスクの更新に失敗しました",
+    "projectUpdated": "プロジェクトが正常に更新されました",
+    "projectUpdateError": "プロジェクトの更新に失敗しました",
+    "projectCleared": "プロジェクトが正常にクリアされました",
+    "projectClearError": "プロジェクトのクリアに失敗しました",
+    "priorityUpdated": "優先度が正常に更新されました",
+    "priorityUpdateError": "優先度の更新に失敗しました",
+    "status": {
+      "notStarted": "未開始",
+      "inProgress": "進行中",
+      "done": "完了",
+      "archived": "アーカイブ済み",
+      "unknown": "進行中"
+    },
+    "noSubtasksClickToAdd": "まだサブタスクはありません。クリックして追加",
+    "project": "プロジェクト",
+    "noProject": "プロジェクトがありません - 割り当てるにはクリック",
+    "tags": "タグ",
+    "noTags": "タグがありません",
+    "priority": "優先度",
+    "dueDate": "期限日",
+    "recurringSetup": "繰り返し設定",
+    "notRecurring": "このタスクはまだ繰り返しではありません。",
+    "clickToEditTitle": "タイトルを編集するにはクリック",
+    "clickToEditContent": "内容を編集するにはクリック",
+    "clickToAddContent": "内容を追加するにはクリック",
+    "clickToEditSubtasks": "サブタスクを編集するにはクリック",
+    "clickToAddOrEditSubtasks": "サブタスクを追加または編集するにはクリック",
+    "contentPlaceholder": "ここに内容を追加... (Markdown対応)",
+    "contentEditHint": "Cmd/Ctrl+Enterを押して保存、Escを押してキャンセル",
+    "noContentPreview": "プレビューするコンテンツがありません。コンテンツを追加するには編集モードに切り替えてください。",
+    "deleteConfirmTitle": "タスクの削除",
+    "deleteConfirmMessage": "本当にこのタスクを削除してもよろしいですか？この操作は元に戻せません。",
+    "noMoreIterations": "スケジュールされた繰り返しはありません",
+    "nextOccurrences": "次の発生",
+    "nextOccurrencesAfterThis": "これ以降の次の発生",
+    "noDueDate": "期限なし",
+    "instanceOf": "これは定期的なタスクのインスタンスです",
+    "parentTask": "親タスク",
+    "includingToday": "今日を含む",
+    "has": "持っている",
+    "fromProject": "プロジェクトから"
   },
   "calendar": {
     "month": "月",
@@ -1062,5 +1134,8 @@
       "nonRecurring": "非定期的",
       "instances": "定期的なインスタンス"
     }
+  },
+  "subtasks": {
+    "placeholder": "サブタスクを追加..."
   }
 }

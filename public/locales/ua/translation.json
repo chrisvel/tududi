@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Дата закінчення повторення змінена",
       "recurrenceEndDate": "Дата закінчення повторення",
       "recurrence_type_changed": "Тип повторення змінено",
-      "recurrence_interval_changed": "Інтервал повторення змінено"
+      "recurrence_interval_changed": "Інтервал повторення змінено",
+      "completionBasedChanged": "Зміни в повторенні на основі завершення",
+      "projectIdChanged": "Призначено проекту",
+      "recurrenceType": "Тип повторення",
+      "recurrenceTypeChanged": "Тип повторення змінено"
     },
     "justNow": "Щойно",
     "minutesAgo": "{{minutes}}м тому",
@@ -225,7 +229,8 @@
         "status": "Статус",
         "priority": "Пріоритет",
         "dueDate": "Термін виконання",
-        "note": "Примітка"
+        "note": "Примітка",
+        "repeatOn": "Повторювати в"
       },
       "recurrenceSettings": "Налаштування повторення",
       "completionBasedHelp": "Якщо відмічено, наступне завдання буде створене на основі дати завершення замість дати виконання",
@@ -247,7 +252,8 @@
         "short": "Спробуйте бути більш конкретними щодо того, що потрібно зробити",
         "noVerb": "Які конкретні дії ви повинні виконати? Спробуйте почати з дієслова.",
         "vague": "Спробуйте почати з дієслова, наприклад \"Зателефонувати\", \"Написати\", \"Запланувати\", або \"Дослідити\""
-      }
+      },
+      "selectAtLeastOneDay": "Будь ласка, виберіть принаймні один день"
     },
     "title": "Назва",
     "description": "Опис",
@@ -435,7 +441,10 @@
     "name": "Назва проекту",
     "noNotes": "Немає приміток для цього проекту.",
     "deleteProject": "Видалити проект",
-    "createSuccess": "Проект успішно створено!"
+    "createSuccess": "Проект успішно створено!",
+    "createdAndAssigned": "Проект створено та призначено",
+    "createError": "Не вдалося створити проект",
+    "viewProject": "Перейти до проекту"
   },
   "profile": {
     "title": "Налаштування Профілю",
@@ -637,7 +646,70 @@
     "subtasks": "Підзавдання",
     "noSubtasks": "Ще немає підзавдань",
     "recentActivity": "Остання активність",
-    "noActivityYet": "Ще немає активності"
+    "noActivityYet": "Ще немає активності",
+    "noSubtasksClickToAdd": "Немає підзадач, натисніть, щоб додати",
+    "project": "Проект",
+    "noProject": "Немає проекту - натисніть, щоб призначити",
+    "tags": "Теги",
+    "noTags": "Немає тегів",
+    "priority": "Пріоритет",
+    "dueDate": "Термін виконання",
+    "recurringSetup": "Налаштування повторення",
+    "notRecurring": "Ця задача ще не є повторюваною.",
+    "clickToEditTitle": "Натисніть, щоб редагувати заголовок",
+    "clickToEditContent": "Натисніть, щоб редагувати вміст",
+    "clickToAddContent": "Натисніть, щоб додати вміст",
+    "clickToEditSubtasks": "Натисніть, щоб редагувати підзадачі",
+    "clickToAddOrEditSubtasks": "Натисніть, щоб додати або редагувати підзадачі",
+    "contentPlaceholder": "Додайте вміст тут... (підтримується Markdown)",
+    "contentEditHint": "Натисніть Cmd/Ctrl+Enter, щоб зберегти, Esc, щоб скасувати",
+    "noContentPreview": "Немає вмісту для попереднього перегляду. Перейдіть в режим редагування, щоб додати вміст.",
+    "deleteConfirmTitle": "Видалити задачу",
+    "deleteConfirmMessage": "Ви впевнені, що хочете видалити цю задачу? Цю дію не можна скасувати.",
+    "noMoreIterations": "Більше ітерацій не заплановано",
+    "nextOccurrences": "Наступні випадки",
+    "nextOccurrencesAfterThis": "Наступні випадки після цього",
+    "thisTask": "Ця задача",
+    "is": "є",
+    "and": "і",
+    "dueOn": "термін",
+    "inProject": "з проєкту",
+    "lowPriority": "низький пріоритет",
+    "mediumPriority": "середній пріоритет",
+    "highPriority": "високий пріоритет",
+    "inDays": "через {{count}} дні",
+    "daysAgo": "{{count}} днів тому",
+    "tagsUpdated": "Теги успішно оновлено",
+    "tagsUpdateError": "Не вдалося оновити теги",
+    "recurrenceUpdated": "Повторення успішно оновлено",
+    "recurrenceUpdateError": "Не вдалося оновити повторення",
+    "dueDateUpdated": "Термін виконання успішно оновлено",
+    "dueDateUpdateError": "Не вдалося оновити термін виконання",
+    "titleUpdated": "Назву завдання успішно оновлено",
+    "titleUpdateError": "Не вдалося оновити назву завдання",
+    "contentUpdated": "Зміст завдання успішно оновлено",
+    "contentUpdateError": "Не вдалося оновити зміст завдання",
+    "subtasksUpdated": "Підзавдання успішно оновлено",
+    "subtasksUpdateError": "Не вдалося оновити підзавдання",
+    "projectUpdated": "Проект успішно оновлено",
+    "projectUpdateError": "Не вдалося оновити проект",
+    "projectCleared": "Проект успішно очищено",
+    "projectClearError": "Не вдалося очистити проект",
+    "priorityUpdated": "Пріоритет успішно оновлено",
+    "priorityUpdateError": "Не вдалося оновити пріоритет",
+    "status": {
+      "notStarted": "не розпочато",
+      "inProgress": "в процесі",
+      "done": "завершено",
+      "archived": "архівовано",
+      "unknown": "триває"
+    },
+    "noDueDate": "Без терміну виконання",
+    "instanceOf": "Це екземпляр повторювального завдання",
+    "parentTask": "Батьківське завдання",
+    "includingToday": "включаючи сьогодні",
+    "has": "має",
+    "fromProject": "з проєкту"
   },
   "calendar": {
     "month": "Місяць",
@@ -1062,5 +1134,8 @@
       "nonRecurring": "неповторювані",
       "instances": "повторювані екземпляри"
     }
+  },
+  "subtasks": {
+    "placeholder": "Додати підзадачу..."
   }
 }

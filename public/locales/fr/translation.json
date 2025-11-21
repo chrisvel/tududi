@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Date de fin de récurrence modifiée",
       "recurrenceEndDate": "Date de fin de récurrence",
       "recurrence_type_changed": "Type de récurrence changé",
-      "recurrence_interval_changed": "Intervalle de récurrence changé"
+      "recurrence_interval_changed": "Intervalle de récurrence changé",
+      "completionBasedChanged": "Récurrence basée sur l'achèvement modifiée",
+      "projectIdChanged": "Assigné à un projet",
+      "recurrenceType": "Type de récurrence",
+      "recurrenceTypeChanged": "Type de récurrence modifié"
     },
     "justNow": "À l'instant",
     "minutesAgo": "{{minutes}}m auparavant",
@@ -410,7 +414,8 @@
         "monthDay": "Jour du mois",
         "weekOfMonth": "Semaine du mois",
         "recurrenceEndDate": "Date de fin (optionnel)",
-        "completionBased": "Répéter après achèvement"
+        "completionBased": "Répéter après achèvement",
+        "repeatOn": "Répéter le"
       },
       "projectSearchPlaceholder": "Rechercher ou créer un projet...",
       "noMatchingProjects": "Aucun projet correspondant",
@@ -431,7 +436,8 @@
         "short": "Essayez d'être plus spécifique sur ce qui doit être fait",
         "noVerb": "Quelle action spécifique devez-vous entreprendre ? Essayez de commencer par un verbe.",
         "vague": "Essayez de commencer par un verbe d'action comme \"Appeler\", \"Écrire\", \"Planifier\" ou \"Rechercher\""
-      }
+      },
+      "selectAtLeastOneDay": "Veuillez sélectionner au moins un jour"
     },
     "noteTitle": "Titre de la note",
     "noteContent": "Contenu de la note",
@@ -506,7 +512,10 @@
     "browseImage": "Parcourir l'image",
     "noNotes": "Aucune note pour ce projet.",
     "deleteProject": "Supprimer le projet",
-    "createSuccess": "Projet créé avec succès !"
+    "createSuccess": "Projet créé avec succès !",
+    "createdAndAssigned": "Projet créé et attribué",
+    "createError": "Échec de la création du projet",
+    "viewProject": "Aller au projet"
   },
   "errors": {
     "required": "Ce champ est requis",
@@ -661,7 +670,70 @@
     "subtasks": "Sous-tâches",
     "noSubtasks": "Aucune sous-tâche pour le moment",
     "recentActivity": "Activité récente",
-    "noActivityYet": "Aucune activité pour le moment"
+    "noActivityYet": "Aucune activité pour le moment",
+    "thisTask": "Cette tâche",
+    "is": "est",
+    "and": "et",
+    "dueOn": "due",
+    "inProject": "du projet",
+    "lowPriority": "priorité basse",
+    "mediumPriority": "priorité moyenne",
+    "highPriority": "priorité élevée",
+    "inDays": "dans {{count}} jours",
+    "daysAgo": "{{count}} jours auparavant",
+    "tagsUpdated": "Étiquettes mises à jour avec succès",
+    "tagsUpdateError": "Échec de la mise à jour des étiquettes",
+    "recurrenceUpdated": "Récurrence mise à jour avec succès",
+    "recurrenceUpdateError": "Échec de la mise à jour de la récurrence",
+    "dueDateUpdated": "Date d'échéance mise à jour avec succès",
+    "dueDateUpdateError": "Échec de la mise à jour de la date d'échéance",
+    "titleUpdated": "Titre de la tâche mis à jour avec succès",
+    "titleUpdateError": "Échec de la mise à jour du titre de la tâche",
+    "contentUpdated": "Contenu de la tâche mis à jour avec succès",
+    "contentUpdateError": "Échec de la mise à jour du contenu de la tâche",
+    "subtasksUpdated": "Sous-tâches mises à jour avec succès",
+    "subtasksUpdateError": "Échec de la mise à jour des sous-tâches",
+    "projectUpdated": "Projet mis à jour avec succès",
+    "projectUpdateError": "Échec de la mise à jour du projet",
+    "projectCleared": "Projet effacé avec succès",
+    "projectClearError": "Échec de l'effacement du projet",
+    "priorityUpdated": "Priorité mise à jour avec succès",
+    "priorityUpdateError": "Échec de la mise à jour de la priorité",
+    "status": {
+      "notStarted": "non commencé",
+      "inProgress": "en cours",
+      "done": "terminé",
+      "archived": "archivé",
+      "unknown": "en cours"
+    },
+    "noSubtasksClickToAdd": "Pas encore de sous-tâches, cliquez pour ajouter",
+    "project": "Projet",
+    "noProject": "Pas de projet - Cliquez pour attribuer",
+    "tags": "Étiquettes",
+    "noTags": "Pas d'étiquettes",
+    "priority": "Priorité",
+    "dueDate": "Date d'échéance",
+    "recurringSetup": "Configuration récurrente",
+    "notRecurring": "Cette tâche n'est pas encore récurrente.",
+    "clickToEditTitle": "Cliquez pour modifier le titre",
+    "clickToEditContent": "Cliquez pour modifier le contenu",
+    "clickToAddContent": "Cliquez pour ajouter du contenu",
+    "clickToEditSubtasks": "Cliquez pour modifier les sous-tâches",
+    "clickToAddOrEditSubtasks": "Cliquez pour ajouter ou modifier des sous-tâches",
+    "contentPlaceholder": "Ajoutez du contenu ici... (Markdown supporté)",
+    "contentEditHint": "Appuyez sur Cmd/Ctrl+Entrée pour enregistrer, Échap pour annuler",
+    "noContentPreview": "Aucun contenu à prévisualiser. Passez en mode Édition pour ajouter du contenu.",
+    "deleteConfirmTitle": "Supprimer la tâche",
+    "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action ne peut pas être annulée.",
+    "noMoreIterations": "Aucune autre itération prévue",
+    "nextOccurrences": "Prochaines occurrences",
+    "nextOccurrencesAfterThis": "Prochaines occurrences après cela",
+    "noDueDate": "Pas de date d'échéance",
+    "instanceOf": "Ceci est une instance d'une tâche récurrente",
+    "parentTask": "Tâche parente",
+    "includingToday": "y compris aujourd'hui",
+    "has": "a",
+    "fromProject": "du projet"
   },
   "projects": {
     "loading": "Chargement des projets...",
@@ -1062,5 +1134,8 @@
       "nonRecurring": "non récurrent",
       "instances": "instances récurrentes"
     }
+  },
+  "subtasks": {
+    "placeholder": "Ajouter une sous-tâche..."
   }
 }

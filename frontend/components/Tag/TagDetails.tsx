@@ -24,7 +24,8 @@ import { Tag } from '../../entities/Tag';
 import { useStore } from '../../store/useStore';
 import { updateTag, deleteTag } from '../../utils/tagsService';
 import { getApiPath } from '../../config/paths';
-import SortFilterButton, { SortOption } from '../Shared/SortFilterButton';
+import { SortOption } from '../Shared/SortFilterButton';
+import IconSortDropdown from '../Shared/IconSortDropdown';
 
 const TagDetails: React.FC = () => {
     const { t } = useTranslation();
@@ -374,50 +375,28 @@ const TagDetails: React.FC = () => {
                             aria-expanded={isSearchExpanded}
                             aria-label={
                                 isSearchExpanded
-                                    ? 'Collapse search panel'
-                                    : 'Show search input'
+                                    ? t(
+                                          'common.hideSearch',
+                                          'Collapse search panel'
+                                      )
+                                    : t(
+                                          'common.showSearch',
+                                          'Show search input'
+                                      )
                             }
                             title={
                                 isSearchExpanded
-                                    ? 'Hide search'
-                                    : 'Search Tasks'
+                                    ? t('common.hideSearch', 'Hide search')
+                                    : t('common.search', 'Search tasks')
                             }
                         >
                             <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
-                        </button>
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                                Show completed
+                            <span className="sr-only">
+                                {isSearchExpanded
+                                    ? t('common.hideSearch', 'Hide search')
+                                    : t('common.search', 'Search tasks')}
                             </span>
-                            <button
-                                onClick={() => setShowCompleted((v) => !v)}
-                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                                    showCompleted
-                                        ? 'bg-blue-600'
-                                        : 'bg-gray-200 dark:bg-gray-600'
-                                }`}
-                                aria-pressed={showCompleted}
-                                aria-label={
-                                    showCompleted
-                                        ? 'Hide completed tasks'
-                                        : 'Show completed tasks'
-                                }
-                            >
-                                <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                        showCompleted
-                                            ? 'translate-x-4'
-                                            : 'translate-x-0.5'
-                                    }`}
-                                />
-                            </button>
-                        </div>
-                        <SortFilterButton
-                            options={sortOptions}
-                            value={orderBy}
-                            onChange={setOrderBy}
-                            size="desktop"
-                        />
+                        </button>
                         <button
                             ref={editButtonRef}
                             type="button"
@@ -505,12 +484,74 @@ const TagDetails: React.FC = () => {
                 </div>
 
                 {/* Tasks Section */}
-                {displayTasks.length > 0 && (
-                    <div className="mb-8">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <div className="mb-8">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                             <CheckIcon className="h-5 w-5 mr-2" />
                             {t('tasks.title')} ({displayTasks.length})
                         </h3>
+                        <IconSortDropdown
+                            options={sortOptions}
+                            value={orderBy}
+                            onChange={setOrderBy}
+                            ariaLabel={t('tasks.sortTasks', 'Sort tasks')}
+                            title={t('tasks.sortTasks', 'Sort tasks')}
+                            dropdownLabel={t('tasks.sortBy', 'Sort by')}
+                            extraContent={
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCompleted((v) => !v)}
+                                    className="w-full flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
+                                    aria-pressed={showCompleted}
+                                    aria-label={
+                                        showCompleted
+                                            ? t(
+                                                  'tasks.hideCompleted',
+                                                  'Hide completed tasks'
+                                              )
+                                            : t(
+                                                  'tasks.showCompleted',
+                                                  'Show completed tasks'
+                                              )
+                                    }
+                                    title={
+                                        showCompleted
+                                            ? t(
+                                                  'tasks.hideCompleted',
+                                                  'Hide completed tasks'
+                                              )
+                                            : t(
+                                                  'tasks.showCompleted',
+                                                  'Show completed tasks'
+                                              )
+                                    }
+                                >
+                                    <span>
+                                        {t(
+                                            'tasks.showCompleted',
+                                            'Show completed'
+                                        )}
+                                    </span>
+                                    <span
+                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                                            showCompleted
+                                                ? 'bg-blue-600'
+                                                : 'bg-gray-200 dark:bg-gray-600'
+                                        }`}
+                                    >
+                                        <span
+                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                                showCompleted
+                                                    ? 'translate-x-4'
+                                                    : 'translate-x-0.5'
+                                            }`}
+                                        />
+                                    </span>
+                                </button>
+                            }
+                        />
+                    </div>
+                    {displayTasks.length > 0 ? (
                         <TaskList
                             tasks={displayTasks}
                             onTaskUpdate={handleTaskUpdate}
@@ -520,8 +561,12 @@ const TagDetails: React.FC = () => {
                             onToggleToday={handleToggleToday}
                             showCompletedTasks={showCompleted}
                         />
-                    </div>
-                )}
+                    ) : (
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {t('tasks.noTasksAvailable', 'No tasks available.')}
+                        </p>
+                    )}
+                </div>
 
                 {/* Notes Section */}
                 {notes.length > 0 && (

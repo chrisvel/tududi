@@ -17,6 +17,10 @@ function buildTaskAttributes(body, userId, timezone, isUpdate = false) {
             body.recurrence_weekday !== undefined
                 ? body.recurrence_weekday
                 : null,
+        recurrence_weekdays:
+            body.recurrence_weekdays !== undefined
+                ? body.recurrence_weekdays
+                : null,
         recurrence_month_day:
             body.recurrence_month_day !== undefined
                 ? body.recurrence_month_day
@@ -65,6 +69,10 @@ function buildUpdateAttributes(body, task, timezone) {
             body.recurrence_weekday !== undefined
                 ? body.recurrence_weekday
                 : task.recurrence_weekday,
+        recurrence_weekdays:
+            body.recurrence_weekdays !== undefined
+                ? body.recurrence_weekdays
+                : task.recurrence_weekdays,
         recurrence_month_day:
             body.recurrence_month_day !== undefined
                 ? body.recurrence_month_day

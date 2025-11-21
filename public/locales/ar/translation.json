@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "تاريخ انتهاء التكرار تم تغييره",
       "recurrenceEndDate": "تاريخ انتهاء التكرار",
       "recurrence_type_changed": "تم تغيير نوع التكرار",
-      "recurrence_interval_changed": "تم تغيير فترة التكرار"
+      "recurrence_interval_changed": "تم تغيير فترة التكرار",
+      "completionBasedChanged": "تغيير التكرار القائم على الإنجاز",
+      "projectIdChanged": "مُعين لمشروع",
+      "recurrenceType": "نوع التكرار",
+      "recurrenceTypeChanged": "تغيير نوع التكرار"
     },
     "justNow": "الآن",
     "minutesAgo": "{{minutes}} دقيقة مضت",
@@ -410,7 +414,8 @@
         "monthDay": "يوم من الشهر",
         "weekOfMonth": "أسبوع من الشهر",
         "recurrenceEndDate": "تاريخ الانتهاء (اختياري)",
-        "completionBased": "كرر بعد الانتهاء"
+        "completionBased": "كرر بعد الانتهاء",
+        "repeatOn": "التكرار في"
       },
       "projectSearchPlaceholder": "ابحث أو أنشئ مشروعًا...",
       "noMatchingProjects": "لا توجد مشاريع مطابقة",
@@ -431,7 +436,8 @@
         "short": "حاول أن تكون أكثر تحديدًا بشأن ما يجب القيام به",
         "noVerb": "ما الإجراء المحدد الذي تحتاج إلى اتخاذه؟ حاول البدء بفعل.",
         "vague": "حاول البدء بفعل عمل مثل \"اتصل\"، \"اكتب\"، \"حدد موعدًا\"، أو \"ابحث\""
-      }
+      },
+      "selectAtLeastOneDay": "يرجى اختيار يوم واحد على الأقل"
     },
     "noteTitle": "عنوان الملاحظة",
     "noteContent": "محتوى الملاحظة",
@@ -506,7 +512,10 @@
     "browseImage": "تصفح الصورة",
     "noNotes": "لا توجد ملاحظات لهذا المشروع.",
     "deleteProject": "حذف المشروع",
-    "createSuccess": "تم إنشاء المشروع بنجاح!"
+    "createSuccess": "تم إنشاء المشروع بنجاح!",
+    "createdAndAssigned": "تم إنشاء المشروع وتعيينه",
+    "createError": "فشل في إنشاء المشروع",
+    "viewProject": "اذهب إلى المشروع"
   },
   "errors": {
     "required": "هذا الحقل مطلوب",
@@ -661,7 +670,70 @@
     "subtasks": "المهام الفرعية",
     "noSubtasks": "لا توجد مهام فرعية بعد",
     "recentActivity": "النشاط الأخير",
-    "noActivityYet": "لا توجد نشاطات بعد"
+    "noActivityYet": "لا توجد نشاطات بعد",
+    "thisTask": "هذه المهمة",
+    "is": "هي",
+    "and": "و",
+    "dueOn": "مستحقة",
+    "inProject": "في المشروع",
+    "lowPriority": "أولوية منخفضة",
+    "mediumPriority": "أولوية متوسطة",
+    "highPriority": "أولوية عالية",
+    "status": {
+      "notStarted": "لم تبدأ",
+      "inProgress": "قيد التنفيذ",
+      "done": "مكتملة",
+      "archived": "مؤرشفة",
+      "unknown": "جارية"
+    },
+    "noSubtasksClickToAdd": "لا توجد مهام فرعية بعد، انقر لإضافة",
+    "project": "المشروع",
+    "noProject": "لا يوجد مشروع - انقر للتعيين",
+    "tags": "الوسوم",
+    "noTags": "لا توجد وسوم",
+    "priority": "الأولوية",
+    "dueDate": "تاريخ الاستحقاق",
+    "recurringSetup": "إعداد متكرر",
+    "notRecurring": "هذه المهمة ليست متكررة بعد.",
+    "clickToEditTitle": "انقر لتحرير العنوان",
+    "clickToEditContent": "انقر لتحرير المحتوى",
+    "clickToAddContent": "انقر لإضافة محتوى",
+    "clickToEditSubtasks": "انقر لتحرير المهام الفرعية",
+    "clickToAddOrEditSubtasks": "انقر لإضافة أو تحرير المهام الفرعية",
+    "contentPlaceholder": "أضف المحتوى هنا... (يدعم Markdown)",
+    "contentEditHint": "اضغط Cmd/Ctrl+Enter لحفظ، Esc للإلغاء",
+    "noContentPreview": "لا يوجد محتوى للمعاينة. انتقل إلى وضع التحرير لإضافة محتوى.",
+    "deleteConfirmTitle": "حذف المهمة",
+    "deleteConfirmMessage": "هل أنت متأكد أنك تريد حذف هذه المهمة؟ لا يمكن التراجع عن هذا الإجراء.",
+    "noMoreIterations": "لا توجد مزيد من التكرارات المجدولة",
+    "nextOccurrences": "التكرارات القادمة",
+    "nextOccurrencesAfterThis": "التكرارات القادمة بعد ذلك",
+    "inDays": "في {{count}} يوم",
+    "daysAgo": "{{count}} يوم مضى",
+    "tagsUpdated": "تم تحديث العلامات بنجاح",
+    "tagsUpdateError": "فشل في تحديث العلامات",
+    "recurrenceUpdated": "تم تحديث التكرار بنجاح",
+    "recurrenceUpdateError": "فشل في تحديث التكرار",
+    "dueDateUpdated": "تم تحديث تاريخ الاستحقاق بنجاح",
+    "dueDateUpdateError": "فشل في تحديث تاريخ الاستحقاق",
+    "titleUpdated": "تم تحديث عنوان المهمة بنجاح",
+    "titleUpdateError": "فشل في تحديث عنوان المهمة",
+    "contentUpdated": "تم تحديث محتوى المهمة بنجاح",
+    "contentUpdateError": "فشل في تحديث محتوى المهمة",
+    "subtasksUpdated": "تم تحديث المهام الفرعية بنجاح",
+    "subtasksUpdateError": "فشل في تحديث المهام الفرعية",
+    "projectUpdated": "تم تحديث المشروع بنجاح",
+    "projectUpdateError": "فشل في تحديث المشروع",
+    "projectCleared": "تم مسح المشروع بنجاح",
+    "projectClearError": "فشل في مسح المشروع",
+    "priorityUpdated": "تم تحديث الأولوية بنجاح",
+    "priorityUpdateError": "فشل في تحديث الأولوية",
+    "noDueDate": "لا توجد تاريخ استحقاق",
+    "instanceOf": "هذه نسخة من مهمة متكررة",
+    "parentTask": "المهمة الرئيسية",
+    "includingToday": "بما في ذلك اليوم",
+    "has": "يمتلك",
+    "fromProject": "من المشروع"
   },
   "projects": {
     "loading": "جارٍ تحميل المشاريع...",
@@ -1062,5 +1134,8 @@
       "nonRecurring": "غير متكرر",
       "instances": "حالات متكررة"
     }
+  },
+  "subtasks": {
+    "placeholder": "أضف مهمة فرعية..."
   }
 }

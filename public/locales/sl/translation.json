@@ -156,7 +156,11 @@
       "recurrenceEndDateChanged": "Datum konca ponavljanja se je spremenil",
       "recurrenceEndDate": "Datum konca ponavljanja",
       "recurrence_type_changed": "Vrsta ponavljanja se je spremenila",
-      "recurrence_interval_changed": "Interval ponavljanja se je spremenil"
+      "recurrence_interval_changed": "Interval ponavljanja se je spremenil",
+      "completionBasedChanged": "Sprememba ponavljanja na podlagi dokončanja",
+      "projectIdChanged": "Dodeljeno projektu",
+      "recurrenceType": "Vrsta ponavljanja",
+      "recurrenceTypeChanged": "Vrsta ponavljanja spremenjena"
     }
   },
   "profile": {
@@ -410,7 +414,8 @@
         "monthDay": "Dan v mesecu",
         "weekOfMonth": "Teden v mesecu",
         "recurrenceEndDate": "Datum konca (neobvezno)",
-        "completionBased": "Ponovi po zaključku"
+        "completionBased": "Ponovi po zaključku",
+        "repeatOn": "Ponovi na"
       },
       "projectSearchPlaceholder": "Išči ali ustvari projekt...",
       "noMatchingProjects": "Brez ustreznih projektov",
@@ -431,7 +436,8 @@
         "short": "Poskusite biti bolj specifični glede tega, kaj je treba narediti",
         "noVerb": "Katero specifično dejanje morate izvesti? Poskusite začeti z glagolom.",
         "vague": "Poskusite začeti z glagolom akcije, kot so \"Pokliči\", \"Napiši\", \"Načrtuj\" ali \"Raziskuj\""
-      }
+      },
+      "selectAtLeastOneDay": "Prosimo, izberite vsaj en dan"
     },
     "noteTitle": "Naslov opombe",
     "noteContent": "Vsebina opombe",
@@ -506,7 +512,10 @@
     "browseImage": "Prebrskaj sliko",
     "noNotes": "Ni opomb za ta projekt.",
     "deleteProject": "Izbriši projekt",
-    "createSuccess": "Projekt uspešno ustvarjen!"
+    "createSuccess": "Projekt uspešno ustvarjen!",
+    "createdAndAssigned": "Projekt ustvarjen in dodeljen",
+    "createError": "Ustvarjanje projekta ni uspelo",
+    "viewProject": "Pojdi na projekt"
   },
   "errors": {
     "required": "To polje je obvezno",
@@ -661,7 +670,70 @@
     "subtasks": "Podnaloge",
     "noSubtasks": "Še ni podnalog",
     "recentActivity": "Nedavna dejavnost",
-    "noActivityYet": "Še ni dejavnosti"
+    "noActivityYet": "Še ni dejavnosti",
+    "noSubtasksClickToAdd": "Še ni podnalog, kliknite za dodajanje",
+    "project": "Projekt",
+    "noProject": "Brez projekta - Kliknite za dodelitev",
+    "tags": "Oznake",
+    "noTags": "Brez oznak",
+    "priority": "Prioriteta",
+    "dueDate": "Rok",
+    "recurringSetup": "Nastavitev ponavljanja",
+    "notRecurring": "Ta naloga še ni ponavljajoča.",
+    "clickToEditTitle": "Kliknite za urejanje naslova",
+    "clickToEditContent": "Kliknite za urejanje vsebine",
+    "clickToAddContent": "Kliknite za dodajanje vsebine",
+    "clickToEditSubtasks": "Kliknite za urejanje podnalog",
+    "clickToAddOrEditSubtasks": "Kliknite za dodajanje ali urejanje podnalog",
+    "contentPlaceholder": "Dodajte vsebino tukaj... (podpora za Markdown)",
+    "contentEditHint": "Pritisnite Cmd/Ctrl+Enter za shranjevanje, Esc za preklic",
+    "noContentPreview": "Brez vsebine za predogled. Preklopite v način urejanja za dodajanje vsebine.",
+    "deleteConfirmTitle": "Izbriši nalogo",
+    "deleteConfirmMessage": "Ali ste prepričani, da želite izbrisati to nalogo? Te akcije ni mogoče razveljaviti.",
+    "noMoreIterations": "Ni več načrtovanih ponovitev",
+    "nextOccurrences": "Naslednji dogodki",
+    "nextOccurrencesAfterThis": "Naslednji dogodki po tem",
+    "thisTask": "Ta naloga",
+    "is": "je",
+    "and": "in",
+    "dueOn": "rok",
+    "inProject": "iz projekta",
+    "lowPriority": "nizka prioriteta",
+    "mediumPriority": "srednja prioriteta",
+    "highPriority": "visoka prioriteta",
+    "inDays": "v {{count}} dneh",
+    "daysAgo": "{{count}} dni nazaj",
+    "tagsUpdated": "Oznake so bile uspešno posodobljene",
+    "tagsUpdateError": "Posodobitev oznak je bila neuspešna",
+    "recurrenceUpdated": "Ponovitev je bila uspešno posodobljena",
+    "recurrenceUpdateError": "Posodobitev ponovitve je bila neuspešna",
+    "dueDateUpdated": "Rok je bil uspešno posodobljen",
+    "dueDateUpdateError": "Posodobitev roka je bila neuspešna",
+    "titleUpdated": "Naslov naloge je bil uspešno posodobljen",
+    "titleUpdateError": "Posodobitev naslova naloge je bila neuspešna",
+    "contentUpdated": "Vsebina naloge je bila uspešno posodobljena",
+    "contentUpdateError": "Posodobitev vsebine naloge je bila neuspešna",
+    "subtasksUpdated": "Podnaloge so bile uspešno posodobljene",
+    "subtasksUpdateError": "Posodobitev podnalog je bila neuspešna",
+    "projectUpdated": "Projekt je bil uspešno posodobljen",
+    "projectUpdateError": "Posodobitev projekta je bila neuspešna",
+    "projectCleared": "Projekt je bil uspešno očiščen",
+    "projectClearError": "Čiščenje projekta je bilo neuspešno",
+    "priorityUpdated": "Prioriteta je bila uspešno posodobljena",
+    "priorityUpdateError": "Posodobitev prioritete je bila neuspešna",
+    "status": {
+      "notStarted": "ni začeto",
+      "inProgress": "v teku",
+      "done": "zaključeno",
+      "archived": "arhivirano",
+      "unknown": "poteka"
+    },
+    "noDueDate": "Brez roka",
+    "instanceOf": "To je instanca ponavljajoče se naloge",
+    "parentTask": "Nadrejena naloga",
+    "includingToday": "vključno s danes",
+    "has": "ima",
+    "fromProject": "iz projekta"
   },
   "projects": {
     "loading": "Nalagam projekte...",
@@ -1062,5 +1134,8 @@
       "nonRecurring": "neponavljajoče se",
       "instances": "ponavljajoče se instance"
     }
+  },
+  "subtasks": {
+    "placeholder": "Dodaj podnalogo..."
   }
 }

@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Einddatum van herhaling gewijzigd",
       "recurrenceEndDate": "Einddatum van herhaling",
       "recurrence_type_changed": "Herhalings type gewijzigd",
-      "recurrence_interval_changed": "Herhalingsinterval gewijzigd"
+      "recurrence_interval_changed": "Herhalingsinterval gewijzigd",
+      "completionBasedChanged": "Voltooiingsgebaseerde herhaling gewijzigd",
+      "projectIdChanged": "Toegewezen aan een project",
+      "recurrenceType": "Herhalings type",
+      "recurrenceTypeChanged": "Herhalings type gewijzigd"
     },
     "justNow": "Net nu",
     "minutesAgo": "{{minutes}}m geleden",
@@ -410,7 +414,8 @@
         "monthDay": "Dag van de maand",
         "weekOfMonth": "Week van de maand",
         "recurrenceEndDate": "Einddatum (optioneel)",
-        "completionBased": "Herhaal na voltooiing"
+        "completionBased": "Herhaal na voltooiing",
+        "repeatOn": "Herhaal op"
       },
       "projectSearchPlaceholder": "Zoek of maak een project...",
       "noMatchingProjects": "Geen overeenkomende projecten",
@@ -431,7 +436,8 @@
         "short": "Probeer specifieker te zijn over wat er gedaan moet worden",
         "noVerb": "Welke specifieke actie moet je ondernemen? Probeer te beginnen met een werkwoord.",
         "vague": "Probeer te beginnen met een actie werkwoord zoals \"Bel\", \"Schrijf\", \"Plan\" of \"Onderzoek\""
-      }
+      },
+      "selectAtLeastOneDay": "Selecteer alstublieft minimaal één dag"
     },
     "noteTitle": "Notitietitel",
     "noteContent": "Notitie-inhoud",
@@ -506,7 +512,10 @@
     "browseImage": "Afbeelding Bladeren",
     "noNotes": "Geen notities voor dit project.",
     "deleteProject": "Project Verwijderen",
-    "createSuccess": "Project succesvol aangemaakt!"
+    "createSuccess": "Project succesvol aangemaakt!",
+    "createdAndAssigned": "Project aangemaakt en toegewezen",
+    "createError": "Mislukt om project aan te maken",
+    "viewProject": "Ga naar project"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -661,7 +670,70 @@
     "subtasks": "Subtaken",
     "noSubtasks": "Nog geen subtaken",
     "recentActivity": "Recente Activiteit",
-    "noActivityYet": "Nog geen activiteit"
+    "noActivityYet": "Nog geen activiteit",
+    "thisTask": "Deze taak",
+    "is": "is",
+    "and": "en",
+    "dueOn": "vervaldatum",
+    "inProject": "van project",
+    "lowPriority": "lage prioriteit",
+    "mediumPriority": "gemiddelde prioriteit",
+    "highPriority": "hoge prioriteit",
+    "inDays": "in {{count}} dagen",
+    "daysAgo": "{{count}} dagen geleden",
+    "tagsUpdated": "Tags succesvol bijgewerkt",
+    "tagsUpdateError": "Bijwerken van tags is mislukt",
+    "recurrenceUpdated": "Herhaling succesvol bijgewerkt",
+    "recurrenceUpdateError": "Bijwerken van herhaling is mislukt",
+    "dueDateUpdated": "Vervaldatum succesvol bijgewerkt",
+    "dueDateUpdateError": "Bijwerken van vervaldatum is mislukt",
+    "titleUpdated": "Taak titel succesvol bijgewerkt",
+    "titleUpdateError": "Het bijwerken van de taak titel is mislukt",
+    "contentUpdated": "Taak inhoud succesvol bijgewerkt",
+    "contentUpdateError": "Het bijwerken van de taak inhoud is mislukt",
+    "subtasksUpdated": "Subtaken succesvol bijgewerkt",
+    "subtasksUpdateError": "Het bijwerken van subtaken is mislukt",
+    "projectUpdated": "Project succesvol bijgewerkt",
+    "projectUpdateError": "Het bijwerken van het project is mislukt",
+    "projectCleared": "Project succesvol gewist",
+    "projectClearError": "Het wissen van het project is mislukt",
+    "priorityUpdated": "Prioriteit succesvol bijgewerkt",
+    "priorityUpdateError": "Het bijwerken van de prioriteit is mislukt",
+    "status": {
+      "notStarted": "niet gestart",
+      "inProgress": "bezig",
+      "done": "voltooid",
+      "archived": "gearchiveerd",
+      "unknown": "lopende"
+    },
+    "noSubtasksClickToAdd": "Nog geen subtaken, klik om toe te voegen",
+    "project": "Project",
+    "noProject": "Geen project - Klik om toe te wijzen",
+    "tags": "Tags",
+    "noTags": "Geen tags",
+    "priority": "Prioriteit",
+    "dueDate": "Vervaldatum",
+    "noDueDate": "Geen vervaldatum",
+    "recurringSetup": "Terugkerende instellingen",
+    "notRecurring": "Deze taak is nog niet terugkerend.",
+    "clickToEditTitle": "Klik om titel te bewerken",
+    "clickToEditContent": "Klik om inhoud te bewerken",
+    "clickToAddContent": "Klik om inhoud toe te voegen",
+    "clickToEditSubtasks": "Klik om subtaken te bewerken",
+    "clickToAddOrEditSubtasks": "Klik om subtaken toe te voegen of te bewerken",
+    "contentPlaceholder": "Voeg hier inhoud toe... (Markdown ondersteund)",
+    "contentEditHint": "Druk op Cmd/Ctrl+Enter om op te slaan, Esc om te annuleren",
+    "noContentPreview": "Geen inhoud om te bekijken. Schakel over naar de bewerkingsmodus om inhoud toe te voegen.",
+    "deleteConfirmTitle": "Taak Verwijderen",
+    "deleteConfirmMessage": "Weet je zeker dat je deze taak wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+    "noMoreIterations": "Geen verdere iteraties gepland",
+    "nextOccurrences": "Volgende Voorvallen",
+    "nextOccurrencesAfterThis": "Volgende Voorvallen Na Dit",
+    "instanceOf": "Dit is een instantie van een terugkerende taak",
+    "parentTask": "Bovenliggende Taak",
+    "includingToday": "inclusief vandaag",
+    "has": "heeft",
+    "fromProject": "van het project"
   },
   "projects": {
     "loading": "Projecten laden...",
@@ -1062,5 +1134,8 @@
       "nonRecurring": "niet-herhalend",
       "instances": "herhalende instanties"
     }
+  },
+  "subtasks": {
+    "placeholder": "Voeg een subtaak toe..."
   }
 }

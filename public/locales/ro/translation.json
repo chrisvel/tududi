@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Data de încheiere a recurenței a fost modificată",
       "recurrenceEndDate": "Data de încheiere a recurenței",
       "recurrence_type_changed": "Tipul de recurență s-a schimbat",
-      "recurrence_interval_changed": "Intervalul de recurență s-a schimbat"
+      "recurrence_interval_changed": "Intervalul de recurență s-a schimbat",
+      "completionBasedChanged": "Recurrence bazată pe finalizare modificată",
+      "projectIdChanged": "Atribuit unui proiect",
+      "recurrenceType": "Tip de recurență",
+      "recurrenceTypeChanged": "Tip de recurență modificat"
     },
     "justNow": "Chiar acum",
     "minutesAgo": "{{minutes}}m în urmă",
@@ -410,7 +414,8 @@
         "monthDay": "Ziua lunii",
         "weekOfMonth": "Săptămâna lunii",
         "recurrenceEndDate": "Data de sfârșit (opțional)",
-        "completionBased": "Repetare după finalizare"
+        "completionBased": "Repetare după finalizare",
+        "repeatOn": "Repetă pe"
       },
       "projectSearchPlaceholder": "Caută sau creează un proiect...",
       "noMatchingProjects": "Niciun proiect corespunzător",
@@ -431,7 +436,8 @@
         "short": "Încercați să fiți mai specifici cu privire la ceea ce trebuie făcut",
         "noVerb": "Ce acțiune specifică trebuie să întreprinzi? Încercați să începeți cu un verb.",
         "vague": "Încercați să începeți cu un verb de acțiune, cum ar fi \"Sună\", \"Scrie\", \"Programează\" sau \"Cercetează\""
-      }
+      },
+      "selectAtLeastOneDay": "Te rugăm să selectezi cel puțin o zi"
     },
     "noteTitle": "Titlul notei",
     "noteContent": "Conținutul notei",
@@ -506,7 +512,10 @@
     "browseImage": "Răsfoiți Imaginea",
     "noNotes": "Nu există note pentru acest proiect.",
     "deleteProject": "Șterge Proiectul",
-    "createSuccess": "Proiect creat cu succes!"
+    "createSuccess": "Proiect creat cu succes!",
+    "createdAndAssigned": "Proiect creat și atribuit",
+    "createError": "Crearea proiectului a eșuat",
+    "viewProject": "Accesează proiectul"
   },
   "errors": {
     "required": "Acest câmp este obligatoriu",
@@ -661,7 +670,70 @@
     "subtasks": "Subsarci",
     "noSubtasks": "Nu există subsarci încă",
     "recentActivity": "Activitate recentă",
-    "noActivityYet": "Nicio activitate încă"
+    "noActivityYet": "Nicio activitate încă",
+    "project": "Proiect",
+    "noProject": "Niciun proiect - Fă clic pentru a atribui",
+    "tags": "Etichete",
+    "noTags": "Niciună etichetă",
+    "priority": "Prioritate",
+    "dueDate": "Data limită",
+    "recurringSetup": "Configurare recurentă",
+    "notRecurring": "Această sarcină nu este încă recurentă.",
+    "clickToEditTitle": "Fă clic pentru a edita titlul",
+    "clickToEditContent": "Fă clic pentru a edita conținutul",
+    "clickToAddContent": "Fă clic pentru a adăuga conținut",
+    "clickToEditSubtasks": "Fă clic pentru a edita subtasks",
+    "clickToAddOrEditSubtasks": "Fă clic pentru a adăuga sau edita subtasks",
+    "contentPlaceholder": "Adăugați conținut aici... (Markdown acceptat)",
+    "contentEditHint": "Apăsați Cmd/Ctrl+Enter pentru a salva, Esc pentru a anula",
+    "noContentPreview": "Nu există conținut de previzualizat. Schimbați în modul Editare pentru a adăuga conținut.",
+    "deleteConfirmTitle": "Ștergeți Sarcina",
+    "deleteConfirmMessage": "Sunteți sigur că doriți să ștergeți această sarcină? Această acțiune nu poate fi anulată.",
+    "noMoreIterations": "Nu mai sunt programate iterații",
+    "nextOccurrences": "Următoarele Apariții",
+    "nextOccurrencesAfterThis": "Următoarele Apariții După Aceasta",
+    "thisTask": "Această sarcină",
+    "is": "este",
+    "and": "și",
+    "dueOn": "scadent",
+    "inProject": "din proiect",
+    "lowPriority": "prioritate scăzută",
+    "mediumPriority": "prioritate medie",
+    "highPriority": "prioritate ridicată",
+    "inDays": "în {{count}} zile",
+    "daysAgo": "{{count}} zile în urmă",
+    "tagsUpdated": "Etichetele au fost actualizate cu succes",
+    "tagsUpdateError": "Actualizarea etichetelor a eșuat",
+    "recurrenceUpdated": "Recurența actualizată cu succes",
+    "recurrenceUpdateError": "Eșec la actualizarea recurenței",
+    "dueDateUpdated": "Data limită actualizată cu succes",
+    "dueDateUpdateError": "Eșec la actualizarea datei limită",
+    "titleUpdated": "Titlul sarcinii actualizat cu succes",
+    "titleUpdateError": "Eșec la actualizarea titlului sarcinii",
+    "contentUpdated": "Conținutul sarcinii actualizat cu succes",
+    "contentUpdateError": "Eșec la actualizarea conținutului sarcinii",
+    "subtasksUpdated": "Subtask-urile actualizate cu succes",
+    "subtasksUpdateError": "Eșec la actualizarea subtask-urilor",
+    "projectUpdated": "Proiectul actualizat cu succes",
+    "projectUpdateError": "Eșec la actualizarea proiectului",
+    "projectCleared": "Proiectul șters cu succes",
+    "projectClearError": "Eșec la ștergerea proiectului",
+    "priorityUpdated": "Prioritatea actualizată cu succes",
+    "priorityUpdateError": "Eșec la actualizarea priorității",
+    "status": {
+      "notStarted": "neînceput",
+      "inProgress": "în desfășurare",
+      "done": "finalizat",
+      "archived": "archivat",
+      "unknown": "în desfășurare"
+    },
+    "noSubtasksClickToAdd": "Nu există subtasks încă, dă click pentru a adăuga",
+    "noDueDate": "Fără dată limită",
+    "instanceOf": "Aceasta este o instanță a unei sarcini recurente",
+    "parentTask": "Sarcina Părinte",
+    "includingToday": "inclusiv astăzi",
+    "has": "are",
+    "fromProject": "din proiect"
   },
   "projects": {
     "loading": "Se încarcă proiectele...",
@@ -1062,5 +1134,8 @@
       "nonRecurring": "non-recurent",
       "instances": "instanțe recurente"
     }
+  },
+  "subtasks": {
+    "placeholder": "Adaugă o subtask..."
   }
 }

@@ -27,6 +27,7 @@ const Views: React.FC = () => {
     const [views, setViews] = useState<View[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const [hoveredViewId, setHoveredViewId] = useState<number | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [viewToDelete, setViewToDelete] = useState<View | null>(null);
@@ -125,14 +126,50 @@ const Views: React.FC = () => {
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
             <div className="w-full">
                 {/* Views Header */}
-                <div className="flex items-center mb-8">
+                <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-light">{t('views.title')}</h2>
+                    <button
+                        type="button"
+                        onClick={() => setIsSearchExpanded(!isSearchExpanded)}
+                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
+                            isSearchExpanded
+                                ? 'bg-blue-50/70 dark:bg-blue-900/20'
+                                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                        }`}
+                        aria-expanded={isSearchExpanded}
+                        aria-label={
+                            isSearchExpanded
+                                ? t(
+                                      'common.hideSearch',
+                                      'Collapse search panel'
+                                  )
+                                : t('common.showSearch', 'Show search input')
+                        }
+                        title={
+                            isSearchExpanded
+                                ? t('common.hideSearch', 'Hide search')
+                                : t('common.search', 'Search views')
+                        }
+                    >
+                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
+                        <span className="sr-only">
+                            {isSearchExpanded
+                                ? t('common.hideSearch', 'Hide search')
+                                : t('common.search', 'Search views')}
+                        </span>
+                    </button>
                 </div>
 
-                {/* Search Bar */}
-                <div className="mb-4">
-                    <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm p-2">
-                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" />
+                {/* Search input section, collapsible */}
+                <div
+                    className={`transition-all duration-300 ease-in-out ${
+                        isSearchExpanded
+                            ? 'max-h-24 opacity-100 mb-4'
+                            : 'max-h-0 opacity-0 mb-0'
+                    } overflow-hidden`}
+                >
+                    <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
+                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
                         <input
                             type="text"
                             placeholder={t('views.searchPlaceholder')}

@@ -223,13 +223,16 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }, [isOpen]);
 
     // Auto-scroll to subtasks section when modal opens with autoFocusSubtasks
+    // But don't auto-scroll for recurring tasks
     useEffect(() => {
-        if (isOpen && autoFocusSubtasks) {
+        const isRecurringTask =
+            task.recurrence_type && task.recurrence_type !== 'none';
+        if (isOpen && autoFocusSubtasks && !isRecurringTask) {
             setTimeout(() => {
                 scrollToSubtasksSection();
             }, 300);
         }
-    }, [isOpen, autoFocusSubtasks]);
+    }, [isOpen, autoFocusSubtasks, task.recurrence_type]);
 
     // Load tags when modal opens if not already loaded
     useEffect(() => {

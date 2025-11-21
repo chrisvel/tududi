@@ -77,25 +77,16 @@ const Tasks: React.FC = () => {
         let filteredTasks: Task[];
 
         // Filter by completion status (applies to all views)
-        if (showCompleted) {
-            // Show only completed tasks (done=2 or archived=3)
-            filteredTasks = tasks.filter(
-                (task: Task) =>
-                    task.status === 'done' ||
-                    task.status === 'archived' ||
-                    task.status === 2 ||
-                    task.status === 3
-            );
-        } else {
-            // Show only non-completed tasks - exclude done(2) and archived(3)
-            filteredTasks = tasks.filter(
-                (task: Task) =>
-                    task.status !== 'done' &&
-                    task.status !== 'archived' &&
-                    task.status !== 2 &&
-                    task.status !== 3
-            );
-        }
+        filteredTasks = showCompleted
+            ? tasks // Show everything when completed tasks are toggled on
+            : tasks.filter(
+                  // Otherwise hide completed/archived items
+                  (task: Task) =>
+                      task.status !== 'done' &&
+                      task.status !== 'archived' &&
+                      task.status !== 2 &&
+                      task.status !== 3
+              );
 
         // Then filter by search query if provided (skip for upcoming view)
         if (taskSearchQuery.trim() && !isUpcomingView) {
@@ -477,8 +468,12 @@ const Tasks: React.FC = () => {
     };
 
     return (
-        <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
-            <div className="w-full max-w-5xl mx-auto">
+        <div
+            className={`w-full pt-4 pb-8 ${isUpcomingView ? '' : 'px-2 sm:px-4 lg:px-6'}`}
+        >
+            <div
+                className={`w-full ${isUpcomingView ? '' : 'max-w-5xl mx-auto'}`}
+            >
                 {/* Title row with info button and filters dropdown on the right */}
                 <div
                     className={`flex items-center justify-between gap-2 min-w-0 ${

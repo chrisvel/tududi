@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Data zakończenia powtarzania została zmieniona",
       "recurrenceEndDate": "Data zakończenia powtarzania",
       "recurrence_type_changed": "Typ powtarzania zmieniony",
-      "recurrence_interval_changed": "Interwał powtarzania zmieniony"
+      "recurrence_interval_changed": "Interwał powtarzania zmieniony",
+      "completionBasedChanged": "Zmiana opartej na ukończeniu powtarzalności",
+      "projectIdChanged": "Przypisano do projektu",
+      "recurrenceType": "Typ powtarzalności",
+      "recurrenceTypeChanged": "Zmiana typu powtarzalności"
     },
     "justNow": "Właśnie teraz",
     "minutesAgo": "{{minutes}}m temu",
@@ -410,7 +414,8 @@
         "monthDay": "Dzień miesiąca",
         "weekOfMonth": "Tydzień miesiąca",
         "recurrenceEndDate": "Data zakończenia (opcjonalnie)",
-        "completionBased": "Powtórz po zakończeniu"
+        "completionBased": "Powtórz po zakończeniu",
+        "repeatOn": "Powtarzaj w"
       },
       "projectSearchPlaceholder": "Szukaj lub utwórz projekt...",
       "noMatchingProjects": "Brak pasujących projektów",
@@ -431,7 +436,8 @@
         "short": "Spróbuj być bardziej konkretny w tym, co należy zrobić",
         "noVerb": "Jaką konkretną czynność musisz wykonać? Spróbuj zacząć od czasownika.",
         "vague": "Spróbuj zacząć od czasownika akcji, takiego jak \"Zadzwoń\", \"Napisz\", \"Zaplanuj\" lub \"Zbadaj\""
-      }
+      },
+      "selectAtLeastOneDay": "Proszę wybrać przynajmniej jeden dzień"
     },
     "noteTitle": "Tytuł notatki",
     "noteContent": "Treść notatki",
@@ -506,7 +512,10 @@
     "browseImage": "Przeglądaj obraz",
     "noNotes": "Brak notatek dla tego projektu.",
     "deleteProject": "Usuń projekt",
-    "createSuccess": "Projekt został pomyślnie utworzony!"
+    "createSuccess": "Projekt został pomyślnie utworzony!",
+    "createdAndAssigned": "Projekt utworzony i przypisany",
+    "createError": "Nie udało się utworzyć projektu",
+    "viewProject": "Przejdź do projektu"
   },
   "errors": {
     "required": "To pole jest wymagane",
@@ -661,7 +670,70 @@
     "subtasks": "Podzadania",
     "noSubtasks": "Brak podzadań",
     "recentActivity": "Ostatnia aktywność",
-    "noActivityYet": "Brak aktywności jeszcze"
+    "noActivityYet": "Brak aktywności jeszcze",
+    "project": "Projekt",
+    "noProject": "Brak projektu - Kliknij, aby przypisać",
+    "tags": "Tagi",
+    "noTags": "Brak tagów",
+    "priority": "Priorytet",
+    "dueDate": "Termin",
+    "recurringSetup": "Ustawienia powtarzalności",
+    "notRecurring": "To zadanie jeszcze nie jest powtarzalne.",
+    "clickToEditTitle": "Kliknij, aby edytować tytuł",
+    "clickToEditContent": "Kliknij, aby edytować treść",
+    "clickToAddContent": "Kliknij, aby dodać treść",
+    "clickToEditSubtasks": "Kliknij, aby edytować podzadania",
+    "clickToAddOrEditSubtasks": "Kliknij, aby dodać lub edytować podzadania",
+    "contentPlaceholder": "Dodaj treść tutaj... (obsługuje Markdown)",
+    "contentEditHint": "Naciśnij Cmd/Ctrl+Enter, aby zapisać, Esc, aby anulować",
+    "noContentPreview": "Brak treści do podglądu. Przełącz się na tryb edycji, aby dodać treść.",
+    "deleteConfirmTitle": "Usuń zadanie",
+    "deleteConfirmMessage": "Czy na pewno chcesz usunąć to zadanie? Ta akcja nie może być cofnięta.",
+    "noMoreIterations": "Brak zaplanowanych iteracji",
+    "nextOccurrences": "Następne wystąpienia",
+    "nextOccurrencesAfterThis": "Następne wystąpienia po tym",
+    "thisTask": "To zadanie",
+    "is": "jest",
+    "and": "i",
+    "dueOn": "należy",
+    "inProject": "z projektu",
+    "lowPriority": "niski priorytet",
+    "mediumPriority": "średni priorytet",
+    "highPriority": "wysoki priorytet",
+    "inDays": "za {{count}} dni",
+    "daysAgo": "{{count}} dni temu",
+    "tagsUpdated": "Tagi zaktualizowane pomyślnie",
+    "tagsUpdateError": "Nie udało się zaktualizować tagów",
+    "recurrenceUpdated": "Powtarzalność zaktualizowana pomyślnie",
+    "recurrenceUpdateError": "Nie udało się zaktualizować powtarzalności",
+    "dueDateUpdated": "Termin zaktualizowany pomyślnie",
+    "dueDateUpdateError": "Nie udało się zaktualizować daty wykonania",
+    "titleUpdated": "Tytuł zadania zaktualizowany pomyślnie",
+    "titleUpdateError": "Nie udało się zaktualizować tytułu zadania",
+    "contentUpdated": "Treść zadania zaktualizowana pomyślnie",
+    "contentUpdateError": "Nie udało się zaktualizować treści zadania",
+    "subtasksUpdated": "Podzadania zaktualizowane pomyślnie",
+    "subtasksUpdateError": "Nie udało się zaktualizować podzadań",
+    "projectUpdated": "Projekt zaktualizowany pomyślnie",
+    "projectUpdateError": "Nie udało się zaktualizować projektu",
+    "projectCleared": "Projekt usunięty pomyślnie",
+    "projectClearError": "Nie udało się usunąć projektu",
+    "priorityUpdated": "Priorytet zaktualizowany pomyślnie",
+    "priorityUpdateError": "Nie udało się zaktualizować priorytetu",
+    "status": {
+      "notStarted": "nie rozpoczęto",
+      "inProgress": "w trakcie",
+      "done": "ukończone",
+      "archived": "zarchiwizowane",
+      "unknown": "w toku"
+    },
+    "noSubtasksClickToAdd": "Brak podzadań, kliknij, aby dodać",
+    "noDueDate": "Brak daty wykonania",
+    "instanceOf": "To jest instancja zadania cyklicznego",
+    "parentTask": "Zadanie nadrzędne",
+    "includingToday": "w tym dzisiaj",
+    "has": "ma",
+    "fromProject": "z projektu"
   },
   "projects": {
     "loading": "Ładowanie projektów...",
@@ -1062,5 +1134,8 @@
       "nonRecurring": "niepowtarzające się",
       "instances": "powtarzające się instancje"
     }
+  },
+  "subtasks": {
+    "placeholder": "Dodaj podzadanie..."
   }
 }

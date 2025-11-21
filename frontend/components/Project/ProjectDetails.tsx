@@ -854,10 +854,11 @@ const ProjectDetails: React.FC = () => {
     }
 
     return (
-        <div className="flex justify-center px-4 lg:px-2">
-            <div className="w-full max-w-5xl">
+        <div className="w-full">
+            {/* Project Banner - Full Width */}
+            <div className="w-full">
                 {/* Project Banner - Unified for both with and without images */}
-                <div className="mb-6 rounded-lg overflow-hidden relative group">
+                <div className="mb-6 overflow-hidden relative group">
                     {/* Background - Image or Gradient */}
                     {project.image_url ? (
                         <img
@@ -1021,79 +1022,175 @@ const ProjectDetails: React.FC = () => {
                         </button>
                     </div>
                 </div>
+            </div>
 
-                {/* Header with Tab Links and Controls */}
-                <div className="mb-4">
-                    {/* Mobile Layout */}
-                    <div className="sm:hidden">
-                        <div className="flex items-center justify-between mb-3">
+            {/* Content Container - Centered with max width */}
+            <div className="flex justify-center px-4 lg:px-2">
+                <div className="w-full max-w-5xl">
+                    {/* Header with Tab Links and Controls */}
+                    <div className="mb-4">
+                        {/* Mobile Layout */}
+                        <div className="sm:hidden">
+                            <div className="flex items-center justify-between mb-3">
+                                {/* Tab Navigation Links */}
+                                <div className="flex items-center space-x-6">
+                                    <button
+                                        onClick={() => setActiveTab('tasks')}
+                                        className={`flex items-center py-2 text-sm font-medium transition-colors ${
+                                            activeTab === 'tasks'
+                                                ? 'text-gray-900 dark:text-gray-100'
+                                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                        }`}
+                                    >
+                                        <span>
+                                            {t('sidebar.tasks', 'Tasks')}
+                                        </span>
+                                        <span
+                                            className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                                                displayTasks.length > 0
+                                                    ? 'bg-gray-200 dark:bg-gray-600'
+                                                    : 'bg-transparent'
+                                            }`}
+                                            style={{
+                                                minWidth: '20px',
+                                                visibility:
+                                                    displayTasks.length > 0
+                                                        ? 'visible'
+                                                        : 'hidden',
+                                            }}
+                                        >
+                                            {displayTasks.length > 0
+                                                ? displayTasks.length
+                                                : '0'}
+                                        </span>
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab('notes')}
+                                        className={`flex items-center py-2 text-sm font-medium transition-colors ${
+                                            activeTab === 'notes'
+                                                ? 'text-gray-900 dark:text-gray-100'
+                                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                        }`}
+                                    >
+                                        <span>
+                                            {t('sidebar.notes', 'Notes')}
+                                        </span>
+                                        <span
+                                            className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                                                notes.length > 0
+                                                    ? 'bg-gray-200 dark:bg-gray-600'
+                                                    : 'bg-transparent'
+                                            }`}
+                                            style={{
+                                                minWidth: '20px',
+                                                visibility:
+                                                    notes.length > 0
+                                                        ? 'visible'
+                                                        : 'hidden',
+                                            }}
+                                        >
+                                            {notes.length > 0
+                                                ? notes.length
+                                                : '0'}
+                                        </span>
+                                    </button>
+                                </div>
+
+                                {/* Inline Controls - Always visible for tasks tab */}
+                                {activeTab === 'tasks' && (
+                                    <div className="flex items-center gap-2 flex-wrap justify-end">
+                                        {/* Search Button */}
+                                        <button
+                                            onClick={() =>
+                                                setIsSearchExpanded((v) => !v)
+                                            }
+                                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-1.5 ${
+                                                isSearchExpanded
+                                                    ? 'bg-blue-50/70 dark:bg-blue-900/20'
+                                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                            }`}
+                                            aria-expanded={isSearchExpanded}
+                                            aria-label={
+                                                isSearchExpanded
+                                                    ? 'Collapse search panel'
+                                                    : 'Show search input'
+                                            }
+                                            title={
+                                                isSearchExpanded
+                                                    ? 'Hide search'
+                                                    : 'Search Tasks'
+                                            }
+                                        >
+                                            <MagnifyingGlassIcon className="h-4 w-4 text-gray-600 dark:text-gray-200" />
+                                        </button>
+                                        <IconSortDropdown
+                                            options={sortOptions}
+                                            value={orderBy}
+                                            onChange={handleSortChange}
+                                            ariaLabel={t(
+                                                'projects.sortTasks',
+                                                'Sort tasks'
+                                            )}
+                                            title={t(
+                                                'projects.sortTasks',
+                                                'Sort tasks'
+                                            )}
+                                            dropdownLabel={t(
+                                                'tasks.sortBy',
+                                                'Sort by'
+                                            )}
+                                            extraContent={renderShowCompletedToggle()}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Desktop Layout */}
+                        <div className="hidden sm:flex items-center justify-between min-h-[2.5rem]">
                             {/* Tab Navigation Links */}
                             <div className="flex items-center space-x-6">
                                 <button
                                     onClick={() => setActiveTab('tasks')}
-                                    className={`flex items-center py-2 text-sm font-medium transition-colors ${
+                                    className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
                                         activeTab === 'tasks'
                                             ? 'text-gray-900 dark:text-gray-100'
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                     }`}
                                 >
                                     <span>{t('sidebar.tasks', 'Tasks')}</span>
-                                    <span
-                                        className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
-                                            displayTasks.length > 0
-                                                ? 'bg-gray-200 dark:bg-gray-600'
-                                                : 'bg-transparent'
-                                        }`}
-                                        style={{
-                                            minWidth: '20px',
-                                            visibility:
-                                                displayTasks.length > 0
-                                                    ? 'visible'
-                                                    : 'hidden',
-                                        }}
-                                    >
-                                        {displayTasks.length > 0
-                                            ? displayTasks.length
-                                            : '0'}
-                                    </span>
+                                    {displayTasks.length > 0 && (
+                                        <span className="ml-2 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                            {displayTasks.length}
+                                        </span>
+                                    )}
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('notes')}
-                                    className={`flex items-center py-2 text-sm font-medium transition-colors ${
+                                    className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
                                         activeTab === 'notes'
                                             ? 'text-gray-900 dark:text-gray-100'
                                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                     }`}
                                 >
                                     <span>{t('sidebar.notes', 'Notes')}</span>
-                                    <span
-                                        className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
-                                            notes.length > 0
-                                                ? 'bg-gray-200 dark:bg-gray-600'
-                                                : 'bg-transparent'
-                                        }`}
-                                        style={{
-                                            minWidth: '20px',
-                                            visibility:
-                                                notes.length > 0
-                                                    ? 'visible'
-                                                    : 'hidden',
-                                        }}
-                                    >
-                                        {notes.length > 0 ? notes.length : '0'}
-                                    </span>
+                                    {notes.length > 0 && (
+                                        <span className="ml-2 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
+                                            {notes.length}
+                                        </span>
+                                    )}
                                 </button>
                             </div>
 
                             {/* Inline Controls - Always visible for tasks tab */}
                             {activeTab === 'tasks' && (
-                                <div className="flex items-center gap-2 flex-wrap justify-end">
+                                <div className="flex items-center gap-4">
                                     {/* Search Button */}
                                     <button
                                         onClick={() =>
                                             setIsSearchExpanded((v) => !v)
                                         }
-                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-1.5 ${
+                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
                                             isSearchExpanded
                                                 ? 'bg-blue-50/70 dark:bg-blue-900/20'
                                                 : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -1110,7 +1207,7 @@ const ProjectDetails: React.FC = () => {
                                                 : 'Search Tasks'
                                         }
                                     >
-                                        <MagnifyingGlassIcon className="h-4 w-4 text-gray-600 dark:text-gray-200" />
+                                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
                                     </button>
                                     <IconSortDropdown
                                         options={sortOptions}
@@ -1135,298 +1232,217 @@ const ProjectDetails: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Desktop Layout */}
-                    <div className="hidden sm:flex items-center justify-between min-h-[2.5rem]">
-                        {/* Tab Navigation Links */}
-                        <div className="flex items-center space-x-6">
-                            <button
-                                onClick={() => setActiveTab('tasks')}
-                                className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
-                                    activeTab === 'tasks'
-                                        ? 'text-gray-900 dark:text-gray-100'
-                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                }`}
-                            >
-                                <span>{t('sidebar.tasks', 'Tasks')}</span>
-                                {displayTasks.length > 0 && (
-                                    <span className="ml-2 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
-                                        {displayTasks.length}
-                                    </span>
-                                )}
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('notes')}
-                                className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
-                                    activeTab === 'notes'
-                                        ? 'text-gray-900 dark:text-gray-100'
-                                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                }`}
-                            >
-                                <span>{t('sidebar.notes', 'Notes')}</span>
-                                {notes.length > 0 && (
-                                    <span className="ml-2 px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 rounded-full">
-                                        {notes.length}
-                                    </span>
-                                )}
-                            </button>
-                        </div>
-
-                        {/* Inline Controls - Always visible for tasks tab */}
-                        {activeTab === 'tasks' && (
-                            <div className="flex items-center gap-4">
-                                {/* Search Button */}
-                                <button
-                                    onClick={() =>
-                                        setIsSearchExpanded((v) => !v)
-                                    }
-                                    className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
-                                        isSearchExpanded
-                                            ? 'bg-blue-50/70 dark:bg-blue-900/20'
-                                            : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
-                                    }`}
-                                    aria-expanded={isSearchExpanded}
-                                    aria-label={
-                                        isSearchExpanded
-                                            ? 'Collapse search panel'
-                                            : 'Show search input'
-                                    }
-                                    title={
-                                        isSearchExpanded
-                                            ? 'Hide search'
-                                            : 'Search Tasks'
-                                    }
-                                >
-                                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
-                                </button>
-                                <IconSortDropdown
-                                    options={sortOptions}
-                                    value={orderBy}
-                                    onChange={handleSortChange}
-                                    ariaLabel={t(
-                                        'projects.sortTasks',
-                                        'Sort tasks'
+                    {/* Search input section, collapsible - only for tasks tab */}
+                    {activeTab === 'tasks' && (
+                        <div
+                            className={`transition-all duration-300 ease-in-out ${
+                                isSearchExpanded
+                                    ? 'max-h-24 opacity-100 mb-4'
+                                    : 'max-h-0 opacity-0 mb-0'
+                            } overflow-hidden`}
+                        >
+                            <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
+                                <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
+                                <input
+                                    type="text"
+                                    placeholder={t(
+                                        'tasks.searchPlaceholder',
+                                        'Search tasks...'
                                     )}
-                                    title={t(
-                                        'projects.sortTasks',
-                                        'Sort tasks'
-                                    )}
-                                    dropdownLabel={t('tasks.sortBy', 'Sort by')}
-                                    extraContent={renderShowCompletedToggle()}
+                                    value={taskSearchQuery}
+                                    onChange={(e) =>
+                                        setTaskSearchQuery(e.target.value)
+                                    }
+                                    className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
                                 />
                             </div>
-                        )}
-                    </div>
-                </div>
+                        </div>
+                    )}
 
-                {/* Search input section, collapsible - only for tasks tab */}
-                {activeTab === 'tasks' && (
-                    <div
-                        className={`transition-all duration-300 ease-in-out ${
-                            isSearchExpanded
-                                ? 'max-h-24 opacity-100 mb-4'
-                                : 'max-h-0 opacity-0 mb-0'
-                        } overflow-hidden`}
-                    >
-                        <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
-                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
-                            <input
-                                type="text"
-                                placeholder={t(
-                                    'tasks.searchPlaceholder',
-                                    'Search tasks...'
-                                )}
-                                value={taskSearchQuery}
-                                onChange={(e) =>
-                                    setTaskSearchQuery(e.target.value)
-                                }
-                                className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
+                    {/* Auto-suggest form for tasks with no items */}
+                    {activeTab === 'tasks' && showAutoSuggestForm && (
+                        <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 mb-6">
+                            <AutoSuggestNextActionBox
+                                onAddAction={(actionDescription) => {
+                                    if (project?.id) {
+                                        handleCreateNextAction(
+                                            project.id,
+                                            actionDescription
+                                        );
+                                    }
+                                }}
+                                onDismiss={handleSkipNextAction}
                             />
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* Auto-suggest form for tasks with no items */}
-                {activeTab === 'tasks' && showAutoSuggestForm && (
-                    <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 mb-6">
-                        <AutoSuggestNextActionBox
-                            onAddAction={(actionDescription) => {
-                                if (project?.id) {
-                                    handleCreateNextAction(
-                                        project.id,
-                                        actionDescription
-                                    );
-                                }
-                            }}
-                            onDismiss={handleSkipNextAction}
-                        />
-                    </div>
-                )}
+                    {/* Tasks Tab Content */}
+                    {activeTab === 'tasks' && (
+                        <>
+                            <div
+                                className={`transition-all duration-300 ease-in-out overflow-hidden mb-1.5 ${
+                                    !showAutoSuggestForm
+                                        ? 'opacity-100 max-h-96 transform translate-y-0'
+                                        : 'opacity-0 max-h-0 transform -translate-y-2'
+                                }`}
+                            >
+                                <NewTask onTaskCreate={handleTaskCreate} />
+                            </div>
 
-                {/* Tasks Tab Content */}
-                {activeTab === 'tasks' && (
-                    <>
-                        <div
-                            className={`transition-all duration-300 ease-in-out overflow-hidden mb-1.5 ${
-                                !showAutoSuggestForm
-                                    ? 'opacity-100 max-h-96 transform translate-y-0'
-                                    : 'opacity-0 max-h-0 transform -translate-y-2'
-                            }`}
-                        >
-                            <NewTask onTaskCreate={handleTaskCreate} />
-                        </div>
+                            <div className="transition-all duration-300 ease-in-out overflow-visible">
+                                {displayTasks.length > 0 ? (
+                                    <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 overflow-visible">
+                                        <TaskList
+                                            tasks={displayTasks}
+                                            onTaskUpdate={handleTaskUpdate}
+                                            onTaskDelete={handleTaskDelete}
+                                            projects={allProjects}
+                                            hideProjectName={true}
+                                            onToggleToday={handleToggleToday}
+                                            showCompletedTasks={showCompleted}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
+                                        <p className="text-gray-500 dark:text-gray-400">
+                                            {taskSearchQuery.trim()
+                                                ? t(
+                                                      'tasks.noTasksAvailable',
+                                                      'No tasks available.'
+                                                  )
+                                                : showCompleted
+                                                  ? t(
+                                                        'project.noCompletedTasks',
+                                                        'No completed tasks.'
+                                                    )
+                                                  : t(
+                                                        'project.noTasks',
+                                                        'No tasks.'
+                                                    )}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    )}
 
-                        <div className="transition-all duration-300 ease-in-out overflow-visible">
-                            {displayTasks.length > 0 ? (
-                                <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 overflow-visible">
-                                    <TaskList
-                                        tasks={displayTasks}
-                                        onTaskUpdate={handleTaskUpdate}
-                                        onTaskDelete={handleTaskDelete}
-                                        projects={allProjects}
-                                        hideProjectName={true}
-                                        onToggleToday={handleToggleToday}
-                                        showCompletedTasks={showCompleted}
-                                    />
+                    {/* Notes Content */}
+                    {activeTab === 'notes' && (
+                        <div className="transition-all duration-300 ease-in-out">
+                            {/* Create New Note Button - Always visible */}
+                            <div className="mb-4">
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                    onClick={() => {
+                                        if (!project?.id || !project.name)
+                                            return;
+                                        setSelectedNote({
+                                            title: '',
+                                            content: '',
+                                            tags: [],
+                                            project_id: project.id,
+                                            project: {
+                                                id: project.id,
+                                                name: project.name,
+                                                uid: project.uid,
+                                            },
+                                            project_uid: project.uid,
+                                        });
+                                        setIsNoteModalOpen(true);
+                                    }}
+                                >
+                                    <PlusCircleIcon className="h-5 w-5" />
+                                    {t('noteCreation', 'Create New Note')}
+                                </button>
+                            </div>
+
+                            {/* Notes Grid or Empty State */}
+                            {notes.length > 0 ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {notes.map((note) => (
+                                        <NoteCard
+                                            key={note.uid}
+                                            note={note}
+                                            onEdit={handleEditNote}
+                                            onDelete={(note) => {
+                                                setNoteToDelete(note);
+                                                setIsConfirmDialogOpen(true);
+                                            }}
+                                            showActions={true}
+                                            showProject={false}
+                                        />
+                                    ))}
                                 </div>
                             ) : (
-                                <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
-                                    <p className="text-gray-500 dark:text-gray-400">
-                                        {taskSearchQuery.trim()
-                                            ? t(
-                                                  'tasks.noTasksAvailable',
-                                                  'No tasks available.'
-                                              )
-                                            : showCompleted
-                                              ? t(
-                                                    'project.noCompletedTasks',
-                                                    'No completed tasks.'
-                                                )
-                                              : t(
-                                                    'project.noTasks',
-                                                    'No tasks.'
-                                                )}
+                                <div className="text-gray-500 dark:text-gray-400">
+                                    <p>
+                                        {t(
+                                            'project.noNotes',
+                                            'No notes for this project.'
+                                        )}
                                     </p>
                                 </div>
                             )}
                         </div>
-                    </>
-                )}
+                    )}
 
-                {/* Notes Content */}
-                {activeTab === 'notes' && (
-                    <div className="transition-all duration-300 ease-in-out">
-                        {/* Create New Note Button - Always visible */}
-                        <div className="mb-4">
-                            <button
-                                type="button"
-                                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
-                                onClick={() => {
-                                    if (!project?.id || !project.name) return;
-                                    setSelectedNote({
-                                        title: '',
-                                        content: '',
-                                        tags: [],
-                                        project_id: project.id,
-                                        project: {
-                                            id: project.id,
-                                            name: project.name,
-                                            uid: project.uid,
-                                        },
-                                        project_uid: project.uid,
-                                    });
-                                    setIsNoteModalOpen(true);
-                                }}
-                            >
-                                <PlusCircleIcon className="h-5 w-5" />
-                                {t('noteCreation', 'Create New Note')}
-                            </button>
-                        </div>
-
-                        {/* Notes Grid or Empty State */}
-                        {notes.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {notes.map((note) => (
-                                    <NoteCard
-                                        key={note.uid}
-                                        note={note}
-                                        onEdit={handleEditNote}
-                                        onDelete={(note) => {
-                                            setNoteToDelete(note);
-                                            setIsConfirmDialogOpen(true);
-                                        }}
-                                        showActions={true}
-                                        showProject={false}
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-gray-500 dark:text-gray-400">
-                                <p>
-                                    {t(
-                                        'project.noNotes',
-                                        'No notes for this project.'
-                                    )}
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                <ProjectModal
-                    isOpen={isModalOpen}
-                    onClose={closeModal}
-                    onSave={handleSaveProject}
-                    project={project}
-                    areas={areas}
-                />
-
-                {/* NoteModal */}
-                <NoteModal
-                    isOpen={isNoteModalOpen}
-                    onClose={() => {
-                        setIsNoteModalOpen(false);
-                        setSelectedNote(null);
-                    }}
-                    onSave={handleSaveNote}
-                    note={selectedNote}
-                    projects={allProjects}
-                />
-
-                {isConfirmDialogOpen && noteToDelete && (
-                    <ConfirmDialog
-                        title="Delete Note"
-                        message={`Are you sure you want to delete the note "${noteToDelete.title}"?`}
-                        onConfirm={() => {
-                            const identifier =
-                                noteToDelete?.uid ??
-                                (noteToDelete?.id !== undefined
-                                    ? String(noteToDelete.id)
-                                    : null);
-
-                            if (identifier) {
-                                handleDeleteNote(identifier);
-                            }
-                        }}
-                        onCancel={() => {
-                            setIsConfirmDialogOpen(false);
-                            setNoteToDelete(null);
-                        }}
+                    <ProjectModal
+                        isOpen={isModalOpen}
+                        onClose={closeModal}
+                        onSave={handleSaveProject}
+                        project={project}
+                        areas={areas}
                     />
-                )}
-                {isConfirmDialogOpen && !noteToDelete && (
-                    <ConfirmDialog
-                        title={t(
-                            'modals.deleteProject.title',
-                            'Delete Project'
-                        )}
-                        message={t(
-                            'modals.deleteProject.message',
-                            'Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?'
-                        )}
-                        onConfirm={handleDeleteProject}
-                        onCancel={() => setIsConfirmDialogOpen(false)}
+
+                    {/* NoteModal */}
+                    <NoteModal
+                        isOpen={isNoteModalOpen}
+                        onClose={() => {
+                            setIsNoteModalOpen(false);
+                            setSelectedNote(null);
+                        }}
+                        onSave={handleSaveNote}
+                        note={selectedNote}
+                        projects={allProjects}
                     />
-                )}
+
+                    {isConfirmDialogOpen && noteToDelete && (
+                        <ConfirmDialog
+                            title="Delete Note"
+                            message={`Are you sure you want to delete the note "${noteToDelete.title}"?`}
+                            onConfirm={() => {
+                                const identifier =
+                                    noteToDelete?.uid ??
+                                    (noteToDelete?.id !== undefined
+                                        ? String(noteToDelete.id)
+                                        : null);
+
+                                if (identifier) {
+                                    handleDeleteNote(identifier);
+                                }
+                            }}
+                            onCancel={() => {
+                                setIsConfirmDialogOpen(false);
+                                setNoteToDelete(null);
+                            }}
+                        />
+                    )}
+                    {isConfirmDialogOpen && !noteToDelete && (
+                        <ConfirmDialog
+                            title={t(
+                                'modals.deleteProject.title',
+                                'Delete Project'
+                            )}
+                            message={t(
+                                'modals.deleteProject.message',
+                                'Deleting this project will remove the project only. All items inside will be retained but will no longer belong to any project. Continue?'
+                            )}
+                            onConfirm={handleDeleteProject}
+                            onCancel={() => setIsConfirmDialogOpen(false)}
+                        />
+                    )}
+                </div>
             </div>
         </div>
     );
