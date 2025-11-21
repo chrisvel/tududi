@@ -854,10 +854,11 @@ const ProjectDetails: React.FC = () => {
     }
 
     return (
-        <div className="flex justify-center px-4 lg:px-2">
-            <div className="w-full max-w-5xl">
+        <div className="w-full">
+            {/* Project Banner - Full Width */}
+            <div className="w-full">
                 {/* Project Banner - Unified for both with and without images */}
-                <div className="mb-6 rounded-lg overflow-hidden relative group">
+                <div className="mb-6 overflow-hidden relative group">
                     {/* Background - Image or Gradient */}
                     {project.image_url ? (
                         <img
@@ -1021,9 +1022,13 @@ const ProjectDetails: React.FC = () => {
                         </button>
                     </div>
                 </div>
+            </div>
 
-                {/* Header with Tab Links and Controls */}
-                <div className="mb-4">
+            {/* Content Container - Centered with max width */}
+            <div className="flex justify-center px-4 lg:px-2">
+                <div className="w-full max-w-5xl">
+                    {/* Header with Tab Links and Controls */}
+                    <div className="mb-4">
                     {/* Mobile Layout */}
                     <div className="sm:hidden">
                         <div className="flex items-center justify-between mb-3">
@@ -1427,6 +1432,7 @@ const ProjectDetails: React.FC = () => {
                         onCancel={() => setIsConfirmDialogOpen(false)}
                     />
                 )}
+                </div>
             </div>
         </div>
     );
