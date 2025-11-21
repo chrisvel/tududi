@@ -71,7 +71,10 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {t('profile.telegramBotToken', 'Telegram Bot Token')}
+                            {t(
+                                'profile.telegramBotToken',
+                                'Telegram Bot Token'
+                            )}
                         </label>
                         <input
                             type="text"
@@ -162,26 +165,37 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                     {(telegramBotInfo || profile?.telegram_bot_token) && (
                         <div className="p-2 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded text-blue-800 dark:text-blue-200">
                             <p className="font-medium mb-2">
-                                {t('profile.botConfigured', 'Bot configured successfully!')}
+                                {t(
+                                    'profile.botConfigured',
+                                    'Bot configured successfully!'
+                                )}
                             </p>
                             <div className="text-sm space-y-1">
                                 {telegramBotInfo?.first_name && (
                                     <p>
-                                        <span className="font-semibold">Bot Name: </span>
+                                        <span className="font-semibold">
+                                            Bot Name:{' '}
+                                        </span>
                                         {telegramBotInfo.first_name}
                                     </p>
                                 )}
                                 {telegramBotInfo?.username && (
                                     <p>
                                         <span className="font-semibold">
-                                            {t('profile.botUsername', 'Bot Username:')}{' '}
+                                            {t(
+                                                'profile.botUsername',
+                                                'Bot Username:'
+                                            )}{' '}
                                         </span>
                                         @{telegramBotInfo.username}
                                     </p>
                                 )}
                                 <div className="mt-2">
                                     <p className="font-semibold mb-1">
-                                        {t('profile.pollingStatus', 'Polling Status:')}{' '}
+                                        {t(
+                                            'profile.pollingStatus',
+                                            'Polling Status:'
+                                        )}{' '}
                                     </p>
                                     <div className="flex items-center mb-2">
                                         <div
@@ -205,14 +219,20 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                                                 onClick={onStopPolling}
                                                 className="px-3 py-1 bg-red-600 text-white dark:bg-red-700 rounded text-sm hover:bg-red-700 dark:hover:bg-red-800"
                                             >
-                                                {t('profile.stopPolling', 'Stop Polling')}
+                                                {t(
+                                                    'profile.stopPolling',
+                                                    'Stop Polling'
+                                                )}
                                             </button>
                                         ) : (
                                             <button
                                                 onClick={onStartPolling}
                                                 className="px-3 py-1 bg-blue-600 text-white dark:bg-blue-700 rounded text-sm hover:bg-blue-700 dark:hover:bg-blue-800"
                                             >
-                                                {t('profile.startPolling', 'Start Polling')}
+                                                {t(
+                                                    'profile.startPolling',
+                                                    'Start Polling'
+                                                )}
                                             </button>
                                         )}
                                         {telegramBotInfo?.chat_url && (
@@ -320,7 +340,10 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
 
                 <div className="mb-4 flex items-center justify-between">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {t('profile.enableTaskSummary', 'Enable Task Summaries')}
+                        {t(
+                            'profile.enableTaskSummary',
+                            'Enable Task Summaries'
+                        )}
                     </label>
                     <div
                         className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
@@ -362,7 +385,7 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                                         `profile.frequency.${frequency}`,
                                         formatFrequency(frequency)
                                     )}
-                            </button>
+                                </button>
                             )
                         )}
                     </div>
@@ -377,9 +400,13 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                 <div className="mt-4">
                     <button
                         type="button"
-                        disabled={!profile?.telegram_bot_token || !profile?.telegram_chat_id}
+                        disabled={
+                            !profile?.telegram_bot_token ||
+                            !profile?.telegram_chat_id
+                        }
                         className={`px-4 py-2 rounded-md ${
-                            !profile?.telegram_bot_token || !profile?.telegram_chat_id
+                            !profile?.telegram_bot_token ||
+                            !profile?.telegram_chat_id
                                 ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                                 : 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
                         }`}
@@ -387,7 +414,8 @@ const TelegramTab: React.FC<TelegramTabProps> = ({
                     >
                         {t('profile.sendTestSummary', 'Send Test Summary')}
                     </button>
-                    {(!profile?.telegram_bot_token || !profile?.telegram_chat_id) && (
+                    {(!profile?.telegram_bot_token ||
+                        !profile?.telegram_chat_id) && (
                         <p className="mt-2 text-xs text-red-500">
                             {t(
                                 'profile.telegramRequiredForSummaries',

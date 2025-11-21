@@ -19,7 +19,6 @@ import { useStore } from '../../store/useStore';
 
 interface InboxItemDetailProps {
     item: InboxItem;
-    onProcess: (uid: string) => void;
     onDelete: (uid: string) => void;
     onUpdate?: (uid: string) => Promise<void>;
     openTaskModal: (task: Task, inboxItemUid?: string) => void;
@@ -30,7 +29,6 @@ interface InboxItemDetailProps {
 
 const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     item,
-    onProcess,
     onDelete,
     onUpdate,
     openTaskModal,
@@ -317,12 +315,8 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             if (isUrl(item.content.trim())) {
                 setLoading(true);
                 try {
-                    const timeoutPromise = new Promise(
-                        (_, reject) =>
-                            setTimeout(
-                                () => reject(new Error('Timeout')),
-                                10000
-                            )
+                    const timeoutPromise = new Promise((_, reject) =>
+                        setTimeout(() => reject(new Error('Timeout')), 10000)
                     );
 
                     const result = (await Promise.race([

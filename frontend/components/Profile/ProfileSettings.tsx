@@ -7,7 +7,14 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getLocalesPath, getApiPath } from '../../config/paths';
-import { UserIcon, ClockIcon, ShieldCheckIcon, LightBulbIcon, KeyIcon, CheckIcon } from '@heroicons/react/24/outline';
+import {
+    UserIcon,
+    ClockIcon,
+    ShieldCheckIcon,
+    LightBulbIcon,
+    KeyIcon,
+    CheckIcon,
+} from '@heroicons/react/24/outline';
 import TelegramIcon from '../Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
 import { dispatchTelegramStatusChange } from '../../contexts/TelegramStatusContext';
@@ -220,7 +227,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             window.forceLanguageReload(value);
                         }
                     }
-                } catch {}
+                } catch (error) {
+                    console.error('Failed to load language resources', error);
+                }
             }
 
             setTimeout(() => {
@@ -467,7 +476,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 if (data.telegram_bot_token && !data.status?.running) {
                     handleStartPolling();
                 }
-            } catch {
+            } catch (error) {
+                console.error('Error fetching polling status', error);
             }
         };
         fetchProfile();
@@ -737,9 +747,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(
-                    data.error || t('profile.sendSummaryFailed')
-                );
+                throw new Error(data.error || t('profile.sendSummaryFailed'));
             }
 
             const data = await response.json();
@@ -1097,9 +1105,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         onCreateApiKey={handleCreateApiKey}
                         onCopyGeneratedToken={handleCopyGeneratedToken}
                         onRevokeApiKey={handleRevokeApiKey}
-                        onRequestDelete={(apiKey) =>
-                            setApiKeyToDelete(apiKey)
-                        }
+                        onRequestDelete={(apiKey) => setApiKeyToDelete(apiKey)}
                         onUpdateNewName={setNewApiKeyName}
                         onUpdateNewExpiration={setNewApiKeyExpiration}
                         getApiKeyStatus={getApiKeyStatus}
@@ -1132,7 +1138,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         onToggleSummary={() =>
                             setFormData((prev) => ({
                                 ...prev,
-                                task_summary_enabled: !prev.task_summary_enabled,
+                                task_summary_enabled:
+                                    !prev.task_summary_enabled,
                             }))
                         }
                         onSelectFrequency={(frequency) =>

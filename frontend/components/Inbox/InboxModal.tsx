@@ -11,7 +11,6 @@ import { createTag } from '../../utils/tagsService';
 import { createProject } from '../../utils/projectsService';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useStore } from '../../store/useStore';
-import { Link } from 'react-router-dom';
 import { isUrl } from '../../utils/urlService';
 import { getApiPath } from '../../config/paths';
 import InboxSelectedChips from './InboxSelectedChips';
@@ -76,7 +75,6 @@ const InboxModal: React.FC<InboxModalProps> = ({
     } | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const analysisTimeoutRef = useRef<NodeJS.Timeout>();
-
 
     const parseHashtags = (text: string): string[] => {
         const trimmedText = text.trim();
@@ -290,7 +288,6 @@ const InboxModal: React.FC<InboxModalProps> = ({
         }
     };
 
-
     const calculateDropdownPosition = (
         input: HTMLInputElement,
         cursorPos: number
@@ -418,7 +415,6 @@ const InboxModal: React.FC<InboxModalProps> = ({
             nameInputRef.current.focus();
         }
     }, [isOpen]);
-
 
     useEffect(() => {
         if (isOpen) {
@@ -955,7 +951,6 @@ const InboxModal: React.FC<InboxModalProps> = ({
                             setInputText('');
                             handleClose();
                             return;
-                        } else {
                         }
                     } catch (error: any) {
                         console.error('Error in note creation flow:', error);
@@ -1348,7 +1343,9 @@ const InboxModal: React.FC<InboxModalProps> = ({
                                     items={filteredTags}
                                     position={dropdownPosition}
                                     selectedIndex={selectedSuggestionIndex}
-                                    onSelect={(tag) => handleTagSelect(tag.name)}
+                                    onSelect={(tag) =>
+                                        handleTagSelect(tag.name)
+                                    }
                                     renderLabel={(tag) => <>#{tag.name}</>}
                                 />
 

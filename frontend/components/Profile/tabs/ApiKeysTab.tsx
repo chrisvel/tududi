@@ -23,9 +23,10 @@ interface ApiKeysTabProps {
     onRequestDelete: (apiKey: ApiKeySummary) => void;
     onUpdateNewName: (value: string) => void;
     onUpdateNewExpiration: (value: string) => void;
-    getApiKeyStatus: (
-        apiKey: ApiKeySummary
-    ) => { label: string; className: string };
+    getApiKeyStatus: (apiKey: ApiKeySummary) => {
+        label: string;
+        className: string;
+    };
     formatDateTime: (value: string | null) => string;
     isCreatingApiKey: boolean;
 }
@@ -76,7 +77,9 @@ const ApiKeysTab: React.FC<ApiKeysTabProps> = ({
                     <input
                         type="text"
                         value={newApiKeyName}
-                        onChange={(event) => onUpdateNewName(event.target.value)}
+                        onChange={(event) =>
+                            onUpdateNewName(event.target.value)
+                        }
                         onKeyDown={(event) => {
                             if (event.key === 'Enter') {
                                 event.preventDefault();
@@ -125,7 +128,10 @@ const ApiKeysTab: React.FC<ApiKeysTabProps> = ({
                     >
                         {isCreatingApiKey
                             ? t('common.saving', 'Saving...')
-                            : t('profile.apiKeys.generateButton', 'Generate key')}
+                            : t(
+                                  'profile.apiKeys.generateButton',
+                                  'Generate key'
+                              )}
                     </button>
                 </div>
             </div>
@@ -176,7 +182,10 @@ const ApiKeysTab: React.FC<ApiKeysTabProps> = ({
                             <thead className="bg-gray-100 dark:bg-gray-800">
                                 <tr>
                                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        {t('profile.apiKeys.table.name', 'Name')}
+                                        {t(
+                                            'profile.apiKeys.table.name',
+                                            'Name'
+                                        )}
                                     </th>
                                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         {t(
@@ -235,16 +244,22 @@ const ApiKeysTab: React.FC<ApiKeysTabProps> = ({
                                                 {key.token_prefix}...
                                             </td>
                                             <td className="px-4 py-3 text-sm">
-                                                <span className={status.className}>
+                                                <span
+                                                    className={status.className}
+                                                >
                                                     {status.label}
                                                 </span>
                                             </td>
                                             <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">
-                                                {formatDateTime(key.last_used_at)}
+                                                {formatDateTime(
+                                                    key.last_used_at
+                                                )}
                                             </td>
                                             <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">
                                                 {key.expires_at
-                                                    ? formatDateTime(key.expires_at)
+                                                    ? formatDateTime(
+                                                          key.expires_at
+                                                      )
                                                     : t(
                                                           'profile.apiKeys.noExpiry',
                                                           'None'
@@ -255,11 +270,16 @@ const ApiKeysTab: React.FC<ApiKeysTabProps> = ({
                                                     <button
                                                         type="button"
                                                         onClick={() =>
-                                                            onRevokeApiKey(key.id)
+                                                            onRevokeApiKey(
+                                                                key.id
+                                                            )
                                                         }
                                                         disabled={
-                                                            Boolean(key.revoked_at) ||
-                                                            revokeInFlightId === key.id
+                                                            Boolean(
+                                                                key.revoked_at
+                                                            ) ||
+                                                            revokeInFlightId ===
+                                                                key.id
                                                         }
                                                         className={`inline-flex items-center px-3 py-1.5 rounded-md border text-xs font-medium ${
                                                             key.revoked_at
@@ -279,16 +299,20 @@ const ApiKeysTab: React.FC<ApiKeysTabProps> = ({
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        onClick={() => onRequestDelete(key)}
+                                                        onClick={() =>
+                                                            onRequestDelete(key)
+                                                        }
                                                         disabled={
                                                             deleteInFlightId ===
                                                                 key.id ||
                                                             Boolean(
-                                                                pendingDeleteId === key.id
+                                                                pendingDeleteId ===
+                                                                    key.id
                                                             )
                                                         }
                                                         className={`inline-flex items-center justify-center px-3 py-1.5 rounded-md border text-xs font-medium ${
-                                                            deleteInFlightId === key.id
+                                                            deleteInFlightId ===
+                                                            key.id
                                                                 ? 'border-gray-400 text-gray-400 cursor-not-allowed'
                                                                 : 'border-red-600 text-red-700 hover:bg-red-50'
                                                         }`}

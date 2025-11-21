@@ -13,13 +13,15 @@ import type { ProfileFormData } from '../types';
 interface AiTabProps {
     isActive: boolean;
     formData: ProfileFormData;
-    onToggle: (field: keyof Pick<
-        ProfileFormData,
-        | 'task_intelligence_enabled'
-        | 'auto_suggest_next_actions_enabled'
-        | 'productivity_assistant_enabled'
-        | 'next_task_suggestion_enabled'
-    >) => void;
+    onToggle: (
+        field: keyof Pick<
+            ProfileFormData,
+            | 'task_intelligence_enabled'
+            | 'auto_suggest_next_actions_enabled'
+            | 'productivity_assistant_enabled'
+            | 'next_task_suggestion_enabled'
+        >
+    ) => void;
 }
 
 interface ToggleRowProps {
@@ -64,7 +66,10 @@ const AiTab: React.FC<AiTabProps> = ({ isActive, formData, onToggle }) => {
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
                 <LightBulbIcon className="w-6 h-6 mr-3 text-blue-500" />
-                {t('profile.aiProductivityFeatures', 'AI & Productivity Features')}
+                {t(
+                    'profile.aiProductivityFeatures',
+                    'AI & Productivity Features'
+                )}
             </h3>
 
             <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
@@ -114,7 +119,9 @@ const AiTab: React.FC<AiTabProps> = ({ isActive, formData, onToggle }) => {
                 </div>
 
                 <ToggleRow
-                    icon={<ChevronRightIcon className="w-5 h-5 text-green-500" />}
+                    icon={
+                        <ChevronRightIcon className="w-5 h-5 text-green-500" />
+                    }
                     label={t(
                         'profile.enableAutoSuggestNextActions',
                         'Enable Next Action Prompts'

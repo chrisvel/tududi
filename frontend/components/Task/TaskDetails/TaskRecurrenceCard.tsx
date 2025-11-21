@@ -83,7 +83,10 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
         if (nextIterations.length === 0) {
             return (
                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {t('task.noUpcomingOccurrences', 'No upcoming occurrences.')}
+                    {t(
+                        'task.noUpcomingOccurrences',
+                        'No upcoming occurrences.'
+                    )}
                 </div>
             );
         }
@@ -145,7 +148,9 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
                     <div className="space-y-4">
                         <TaskRecurrenceSection
                             recurrenceType={recurrenceForm.recurrence_type}
-                            recurrenceInterval={recurrenceForm.recurrence_interval}
+                            recurrenceInterval={
+                                recurrenceForm.recurrence_interval
+                            }
                             recurrenceEndDate={
                                 recurrenceForm.recurrence_end_date || undefined
                             }

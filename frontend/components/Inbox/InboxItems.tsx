@@ -302,7 +302,6 @@ const InboxItems: React.FC = () => {
             setCurrentConversionItemUid(inboxItemUid);
         }
 
-
         setIsNoteModalOpen(true);
     };
 
@@ -344,7 +343,6 @@ const InboxItems: React.FC = () => {
                 await handleProcessItem(currentConversionItemUid, false);
                 setCurrentConversionItemUid(null);
             }
-
         } catch (error) {
             console.error('Failed to create project:', error);
             showErrorToast(t('project.createError'));
@@ -479,7 +477,6 @@ const InboxItems: React.FC = () => {
                                 <InboxItemDetail
                                     key={item.uid || item.id}
                                     item={item}
-                                    onProcess={handleProcessItem}
                                     onDelete={handleDeleteItem}
                                     onUpdate={handleUpdateItem}
                                     openTaskModal={handleOpenTaskModal}

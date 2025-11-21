@@ -139,8 +139,7 @@ const TaskDueDateCard: React.FC<TaskDueDateCardProps> = ({
                                     task.status === 'archived' ||
                                     task.status === 3 ||
                                     task.completed_at;
-                                const overdue =
-                                    dueDate < today && !isCompleted;
+                                const overdue = dueDate < today && !isCompleted;
 
                                 return (
                                     <div
