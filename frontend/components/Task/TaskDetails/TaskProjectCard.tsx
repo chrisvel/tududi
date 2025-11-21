@@ -6,7 +6,7 @@ import ProjectDropdown from '../../Shared/ProjectDropdown';
 import { Project } from '../../../entities/Project';
 import { Task } from '../../../entities/Task';
 
-interface TaskProjectSectionProps {
+interface TaskProjectCardProps {
     task: Task;
     projects: Project[];
     onProjectSelect: (project: Project) => Promise<void>;
@@ -15,7 +15,7 @@ interface TaskProjectSectionProps {
     getProjectLink: (project: Project) => string;
 }
 
-const TaskProjectSection: React.FC<TaskProjectSectionProps> = ({
+const TaskProjectCard: React.FC<TaskProjectCardProps> = ({
     task,
     projects,
     onProjectSelect,
@@ -166,4 +166,4 @@ const TaskProjectSection: React.FC<TaskProjectSectionProps> = ({
     );
 };
 
-export default TaskProjectSection;
+export default TaskProjectCard;

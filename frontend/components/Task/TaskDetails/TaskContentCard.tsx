@@ -7,12 +7,12 @@ import {
 } from '@heroicons/react/24/outline';
 import MarkdownRenderer from '../../Shared/MarkdownRenderer';
 
-interface TaskContentSectionProps {
+interface TaskContentCardProps {
     content: string;
     onUpdate: (newContent: string) => Promise<void>;
 }
 
-const TaskContentSection: React.FC<TaskContentSectionProps> = ({
+const TaskContentCard: React.FC<TaskContentCardProps> = ({
     content,
     onUpdate,
 }) => {
@@ -179,4 +179,4 @@ const TaskContentSection: React.FC<TaskContentSectionProps> = ({
     );
 };
 
-export default TaskContentSection;
+export default TaskContentCard;

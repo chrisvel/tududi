@@ -1,7 +1,10 @@
 export { default as TaskDetailsHeader } from './TaskDetailsHeader';
 export { default as TaskSummaryAlerts } from './TaskSummaryAlerts';
-export { default as TaskContentSection } from './TaskContentSection';
-export { default as TaskProjectSection } from './TaskProjectSection';
-export { default as TaskTagsSection } from './TaskTagsSection';
-export { default as TaskPrioritySection } from './TaskPrioritySection';
+export { default as TaskContentCard } from './TaskContentCard';
+export { default as TaskProjectCard } from './TaskProjectCard';
+export { default as TaskTagsCard } from './TaskTagsCard';
+export { default as TaskPriorityCard } from './TaskPriorityCard';
 export { default as TaskRecurringInstanceInfo } from './TaskRecurringInstanceInfo';
+export { default as TaskSubtasksCard } from './TaskSubtasksCard';
+export { default as TaskRecurrenceCard } from './TaskRecurrenceCard';
+export { default as TaskDueDateCard } from './TaskDueDateCard';

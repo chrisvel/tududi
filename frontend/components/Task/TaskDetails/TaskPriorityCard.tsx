@@ -2,12 +2,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Task, PriorityType } from '../../../entities/Task';
 
-interface TaskPrioritySectionProps {
+interface TaskPriorityCardProps {
     task: Task;
     onUpdate: (priority: PriorityType) => Promise<void>;
 }
 
-const TaskPrioritySection: React.FC<TaskPrioritySectionProps> = ({
+const TaskPriorityCard: React.FC<TaskPriorityCardProps> = ({
     task,
     onUpdate,
 }) => {
@@ -72,4 +72,4 @@ const TaskPrioritySection: React.FC<TaskPrioritySectionProps> = ({
     );
 };
 
-export default TaskPrioritySection;
+export default TaskPriorityCard;
