@@ -154,7 +154,10 @@ const TaskProjectSection: React.FC<TaskProjectSectionProps> = ({
                         className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 p-6 cursor-pointer transition-colors flex items-center justify-center"
                     >
                         <span className="text-sm text-gray-500 dark:text-gray-400 italic">
-                            {t('task.noProject', 'No project - Click to assign')}
+                            {t(
+                                'task.noProject',
+                                'No project - Click to assign'
+                            )}
                         </span>
                     </div>
                 )}

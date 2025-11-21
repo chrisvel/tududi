@@ -143,7 +143,10 @@ const Tags: React.FC = () => {
                         aria-expanded={isSearchExpanded}
                         aria-label={
                             isSearchExpanded
-                                ? t('common.hideSearch', 'Collapse search panel')
+                                ? t(
+                                      'common.hideSearch',
+                                      'Collapse search panel'
+                                  )
                                 : t('common.showSearch', 'Show search input')
                         }
                         title={

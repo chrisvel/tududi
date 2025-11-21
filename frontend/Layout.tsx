@@ -28,7 +28,7 @@ import {
 } from './utils/projectsService';
 import { createTask, updateTask } from './utils/tasksService';
 import { isAuthError } from './utils/authUtils';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface LayoutProps {
     currentUser: User;
@@ -47,6 +47,8 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
     const { t } = useTranslation();
     const { showSuccessToast } = useToast();
+    const location = useLocation();
+    const isUpcomingView = location.pathname === '/upcoming';
     const [isSidebarOpen, setIsSidebarOpen] = useState(
         window.innerWidth >= 1024
     );
@@ -336,7 +338,9 @@ const Layout: React.FC<LayoutProps> = ({
         }
     };
 
-    const mainContentMarginLeft = isSidebarOpen ? 'ml-72' : 'ml-0';
+    const mainContentMarginLeft =
+        isUpcomingView ? 'ml-0' :
+        isSidebarOpen ? 'ml-72' : 'ml-0';
 
     const isLoading =
         isNotesLoading ||
@@ -460,9 +464,9 @@ const Layout: React.FC<LayoutProps> = ({
                 >
                     <div className="flex flex-col bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 min-h-screen overflow-y-auto">
                         <div
-                            className={`flex-grow py-0 px-0 md:px-4 transition-all duration-300 ${
+                            className={`flex-grow py-0 px-0 transition-all duration-300 ${
                                 isMobileSearchOpen ? 'pt-32' : 'pt-20'
-                            } md:pt-20`}
+                            } md:pt-20 ${isUpcomingView ? '' : 'md:px-4'}`}
                         >
                             <div className="w-full">{children}</div>
                         </div>

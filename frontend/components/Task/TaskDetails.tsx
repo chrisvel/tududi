@@ -182,7 +182,6 @@ const TaskDetails: React.FC = () => {
         }
     }, [uid, tagsStore]);
 
-
     const handleStartRecurrenceEdit = () => {
         setRecurrenceForm({
             recurrence_type: task?.recurrence_type || 'none',
@@ -443,8 +442,8 @@ const TaskDetails: React.FC = () => {
 
         return (
             <span>
-                {t('task.thisTask', 'This task')} {' '}
-                {t('task.is', 'is')} <strong>{statusText}</strong>
+                {t('task.thisTask', 'This task')} {t('task.is', 'is')}{' '}
+                <strong>{statusText}</strong>
                 {priorityText && (
                     <>
                         {' '}
@@ -468,7 +467,6 @@ const TaskDetails: React.FC = () => {
             </span>
         );
     };
-
 
     useEffect(() => {
         const fetchTaskData = async () => {

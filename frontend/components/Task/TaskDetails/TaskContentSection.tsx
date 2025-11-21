@@ -96,7 +96,9 @@ const TaskContentSection: React.FC<TaskContentSectionProps> = ({
                             <textarea
                                 ref={contentTextareaRef}
                                 value={editedContent}
-                                onChange={(e) => setEditedContent(e.target.value)}
+                                onChange={(e) =>
+                                    setEditedContent(e.target.value)
+                                }
                                 onKeyDown={handleKeyDown}
                                 className="w-full min-h-[200px] bg-transparent border-none focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100 resize-y font-normal pr-20"
                                 placeholder={t(
@@ -149,7 +151,10 @@ const TaskContentSection: React.FC<TaskContentSectionProps> = ({
                 <div
                     onClick={handleStartEdit}
                     className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-6 cursor-pointer transition-colors"
-                    title={t('task.clickToEditContent', 'Click to edit content')}
+                    title={t(
+                        'task.clickToEditContent',
+                        'Click to edit content'
+                    )}
                 >
                     <MarkdownRenderer
                         content={content}
