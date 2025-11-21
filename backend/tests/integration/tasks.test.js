@@ -284,6 +284,29 @@ describe('Tasks Routes', () => {
             expect(response.body.Tags.map((t) => t.name)).toContain('work');
             expect(response.body.Tags.map((t) => t.name)).toContain('urgent');
         });
+
+        it('should return all tags when filtering by a specific tag', async () => {
+            const taskData = {
+                name: 'Task with multiple tags',
+                tags: [{ name: 'alpha' }, { name: 'beta' }],
+            };
+
+            const createResponse = await agent
+                .post('/api/task')
+                .send(taskData);
+            expect(createResponse.status).toBe(201);
+
+            const response = await agent.get('/api/tasks?tag=alpha');
+
+            expect(response.status).toBe(200);
+            expect(response.body.tasks.length).toBe(1);
+
+            const [task] = response.body.tasks;
+            const tagNames = (task.tags || []).map((t) => t.name);
+
+            expect(tagNames).toEqual(expect.arrayContaining(['alpha', 'beta']));
+            expect(tagNames.length).toBe(2);
+        });
     });
 
     describe('Subtasks filtering', () => {
