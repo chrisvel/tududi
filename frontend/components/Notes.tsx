@@ -497,7 +497,7 @@ const Notes: React.FC = () => {
                         </div>
 
                         {/* Search Bar inside notes list */}
-                        <div className="mb-2 mx-3 flex-shrink-0">
+                        <div className="mb-2 mx-4 flex-shrink-0">
                             <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md p-2">
                                 <MagnifyingGlassIcon className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
                                 <input
@@ -526,11 +526,11 @@ const Notes: React.FC = () => {
                                         onClick={() => handleSelectNote(note)}
                                         className={`p-5 cursor-pointer ${
                                             previewNote?.uid === note.uid
-                                                ? 'bg-white dark:bg-gray-900 border-b border-transparent mr-4 rounded-lg'
+                                                ? 'bg-white dark:bg-gray-900 border-b border-transparent mx-4 rounded-lg'
                                                 : index !==
                                                     sortedNotes.length - 1
-                                                  ? 'border-b border-gray-200/30 dark:border-gray-700/30 hover:bg-gray-50 dark:hover:bg-gray-800 mr-4'
-                                                  : 'border-b border-transparent hover:bg-gray-50 dark:hover:bg-gray-800 mr-4'
+                                                  ? 'border-b border-gray-200/30 dark:border-gray-700/30 hover:bg-gray-50 dark:hover:bg-gray-800 mx-4'
+                                                  : 'border-b border-transparent hover:bg-gray-50 dark:hover:bg-gray-800 mx-4'
                                         }`}
                                     >
                                         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
