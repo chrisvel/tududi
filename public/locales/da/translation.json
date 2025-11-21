@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Ændret slutdato for gentagelse",
       "recurrenceEndDate": "Slutdato for gentagelse",
       "recurrence_type_changed": "Ændret gentagelsestype",
-      "recurrence_interval_changed": "Ændret gentagelsesinterval"
+      "recurrence_interval_changed": "Ændret gentagelsesinterval",
+      "completionBasedChanged": "Ændret baseret på fuldførelse",
+      "projectIdChanged": "Tildelt et projekt",
+      "recurrenceType": "Gentagelsestype",
+      "recurrenceTypeChanged": "Gentagelsestype ændret"
     },
     "justNow": "Lige nu",
     "minutesAgo": "{{minutes}}m siden",
@@ -410,7 +414,8 @@
         "monthDay": "Dag i måneden",
         "weekOfMonth": "Uge i måneden",
         "recurrenceEndDate": "Slutdato (valgfri)",
-        "completionBased": "Gentag efter fuldførelse"
+        "completionBased": "Gentag efter fuldførelse",
+        "repeatOn": "Gentag på"
       },
       "projectSearchPlaceholder": "Søg eller opret et projekt...",
       "noMatchingProjects": "Ingen matchende projekter",
@@ -431,7 +436,8 @@
         "short": "Prøv at være mere specifik om, hvad der skal gøres",
         "noVerb": "Hvilken specifik handling skal du tage? Prøv at starte med et verbum.",
         "vague": "Prøv at starte med et handlingsverb som \"Ring\", \"Skriv\", \"Planlæg\" eller \"Undersøg\""
-      }
+      },
+      "selectAtLeastOneDay": "Vælg venligst mindst én dag"
     },
     "noteTitle": "Notetitel",
     "noteContent": "Noteindhold",
@@ -506,7 +512,10 @@
     "browseImage": "Gennemse Billede",
     "noNotes": "Ingen noter til dette projekt.",
     "deleteProject": "Slet Projekt",
-    "createSuccess": "Projekt oprettet med succes!"
+    "createSuccess": "Projekt oprettet med succes!",
+    "createdAndAssigned": "Projekt oprettet og tildelt",
+    "createError": "Fejl ved oprettelse af projekt",
+    "viewProject": "Gå til projekt"
   },
   "errors": {
     "required": "Dette felt er påkrævet",
@@ -661,7 +670,68 @@
     "subtasks": "Underopgaver",
     "noSubtasks": "Ingen underopgaver endnu",
     "recentActivity": "Seneste aktivitet",
-    "noActivityYet": "Ingen aktivitet endnu"
+    "noActivityYet": "Ingen aktivitet endnu",
+    "thisTask": "Denne opgave",
+    "is": "er",
+    "and": "og",
+    "dueOn": "forfald",
+    "inProject": "fra projekt",
+    "lowPriority": "lav prioritet",
+    "mediumPriority": "medium prioritet",
+    "highPriority": "høj prioritet",
+    "inDays": "om {{count}} dage",
+    "daysAgo": "{{count}} dage siden",
+    "tagsUpdated": "Tags opdateret med succes",
+    "tagsUpdateError": "Kunne ikke opdatere tags",
+    "recurrenceUpdated": "Gentagelse opdateret med succes",
+    "recurrenceUpdateError": "Kunne ikke opdatere gentagelse",
+    "dueDateUpdated": "Forfaldsdato opdateret med succes",
+    "dueDateUpdateError": "Kunne ikke opdatere forfaldsdato",
+    "titleUpdated": "Opgavetitlen blev opdateret med succes",
+    "titleUpdateError": "Fejl ved opdatering af opgavetitel",
+    "contentUpdated": "Opgaveindholdet blev opdateret med succes",
+    "contentUpdateError": "Fejl ved opdatering af opgaveindhold",
+    "subtasksUpdated": "Underopgaver opdateret med succes",
+    "subtasksUpdateError": "Fejl ved opdatering af underopgaver",
+    "projectUpdated": "Projektet blev opdateret med succes",
+    "projectUpdateError": "Fejl ved opdatering af projekt",
+    "projectCleared": "Projektet blev ryddet med succes",
+    "projectClearError": "Fejl ved rydning af projekt",
+    "priorityUpdated": "Prioritet opdateret med succes",
+    "priorityUpdateError": "Fejl ved opdatering af prioritet",
+    "status": {
+      "notStarted": "ikke startet",
+      "inProgress": "i gang",
+      "done": "fuldført",
+      "archived": "arkiveret",
+      "unknown": "gående"
+    },
+    "noSubtasksClickToAdd": "Ingen underopgaver endnu, klik for at tilføje",
+    "project": "Projekt",
+    "noProject": "Ingen projekt - Klik for at tildele",
+    "tags": "Tags",
+    "noTags": "Ingen tags",
+    "priority": "Prioritet",
+    "dueDate": "Forfaldsdato",
+    "recurringSetup": "Gentagen opsætning",
+    "notRecurring": "Denne opgave er ikke gentagende endnu.",
+    "clickToEditTitle": "Klik for at redigere titel",
+    "clickToEditContent": "Klik for at redigere indhold",
+    "clickToAddContent": "Klik for at tilføje indhold",
+    "clickToEditSubtasks": "Klik for at redigere underopgaver",
+    "clickToAddOrEditSubtasks": "Klik for at tilføje eller redigere underopgaver",
+    "contentPlaceholder": "Tilføj indhold her... (Markdown understøttet)",
+    "contentEditHint": "Tryk på Cmd/Ctrl+Enter for at gemme, Esc for at annullere",
+    "noContentPreview": "Ingen indhold at forhåndsvise. Skift til redigeringstilstand for at tilføje indhold.",
+    "deleteConfirmTitle": "Slet Opgave",
+    "deleteConfirmMessage": "Er du sikker på, at du vil slette denne opgave? Denne handling kan ikke fortrydes.",
+    "noMoreIterations": "Ingen flere iterationer planlagt",
+    "nextOccurrences": "Næste Forekomster",
+    "nextOccurrencesAfterThis": "Næste Forekomster Efter Dette",
+    "noDueDate": "Ingen forfaldsdato",
+    "instanceOf": "Dette er en instans af en tilbagevendende opgave",
+    "parentTask": "Overordnet opgave",
+    "includingToday": "inklusive i dag"
   },
   "projects": {
     "loading": "Indlæser projekter...",
@@ -1062,5 +1132,8 @@
       "nonRecurring": "ikke-gentagende",
       "instances": "gentagende instanser"
     }
+  },
+  "subtasks": {
+    "placeholder": "Tilføj en underopgave..."
   }
 }

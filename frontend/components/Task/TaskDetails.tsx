@@ -15,6 +15,7 @@ import {
     EyeIcon,
     PencilIcon,
     ArrowRightIcon,
+    InformationCircleIcon,
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import TaskModal from './TaskModal';
@@ -40,11 +41,13 @@ import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import TaskTimeline from './TaskTimeline';
 import { isTaskOverdue } from '../../utils/dateUtils';
 import TagInput from '../Tag/TagInput';
+import TaskDueDateSection from './TaskForm/TaskDueDateSection';
+import TaskRecurrenceSection from './TaskForm/TaskRecurrenceSection';
 
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
     const navigate = useNavigate();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
 
     const projects = useStore((state: any) => state.projectsStore.projects);
@@ -68,6 +71,8 @@ const TaskDetails: React.FC = () => {
     const [timelineRefreshKey, setTimelineRefreshKey] = useState(0);
     const [isOverdueAlertDismissed, setIsOverdueAlertDismissed] =
         useState(false);
+    const [isSummaryAlertDismissed, setIsSummaryAlertDismissed] =
+        useState(false);
     const [nextIterations, setNextIterations] = useState<TaskIteration[]>([]);
     const [loadingIterations, setLoadingIterations] = useState(false);
     const [parentTask, setParentTask] = useState<Task | null>(null);
@@ -85,6 +90,38 @@ const TaskDetails: React.FC = () => {
     const [editedTags, setEditedTags] = useState<string[]>(
         task?.tags?.map((tag: any) => tag.name) || []
     );
+    const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
+    const actionsMenuRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (
+                actionsMenuOpen &&
+                actionsMenuRef.current &&
+                !actionsMenuRef.current.contains(e.target as Node)
+            ) {
+                setActionsMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [actionsMenuOpen]);
+    const [isEditingDueDate, setIsEditingDueDate] = useState(false);
+    const [editedDueDate, setEditedDueDate] = useState<string>(
+        task?.due_date || ''
+    );
+    const [isEditingRecurrence, setIsEditingRecurrence] = useState(false);
+    const [recurrenceForm, setRecurrenceForm] = useState({
+        recurrence_type: task?.recurrence_type || 'none',
+        recurrence_interval: task?.recurrence_interval || 1,
+        recurrence_end_date: task?.recurrence_end_date || '',
+        recurrence_weekday: task?.recurrence_weekday || null,
+        recurrence_weekdays: task?.recurrence_weekdays || [],
+        recurrence_month_day: task?.recurrence_month_day || null,
+        recurrence_week_of_month: task?.recurrence_week_of_month || null,
+        completion_based: task?.completion_based || false,
+    });
 
     // Project dropdown state
     const [projectName, setProjectName] = useState('');
@@ -108,6 +145,32 @@ const TaskDetails: React.FC = () => {
     useEffect(() => {
         setEditedTags(task?.tags?.map((tag: any) => tag.name) || []);
     }, [task?.tags]);
+
+    useEffect(() => {
+        setEditedDueDate(task?.due_date || '');
+    }, [task?.due_date]);
+
+    useEffect(() => {
+        setRecurrenceForm({
+            recurrence_type: task?.recurrence_type || 'none',
+            recurrence_interval: task?.recurrence_interval || 1,
+            recurrence_end_date: task?.recurrence_end_date || '',
+            recurrence_weekday: task?.recurrence_weekday || null,
+            recurrence_weekdays: task?.recurrence_weekdays || [],
+            recurrence_month_day: task?.recurrence_month_day || null,
+            recurrence_week_of_month: task?.recurrence_week_of_month || null,
+            completion_based: task?.completion_based || false,
+        });
+    }, [
+        task?.recurrence_type,
+        task?.recurrence_interval,
+        task?.recurrence_end_date,
+        task?.recurrence_weekday,
+        task?.recurrence_weekdays,
+        task?.recurrence_month_day,
+        task?.recurrence_week_of_month,
+        task?.completion_based,
+    ]);
 
     // Focus input when entering edit mode
     useEffect(() => {
@@ -191,7 +254,7 @@ const TaskDetails: React.FC = () => {
         if (dueDate === yesterday)
             return t('dateIndicators.yesterday', 'YESTERDAY');
 
-        return new Date(dueDate).toLocaleDateString(undefined, {
+        return new Date(dueDate).toLocaleDateString(i18n.language, {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
@@ -253,6 +316,105 @@ const TaskDetails: React.FC = () => {
         setEditedTags(task?.tags?.map((tag: any) => tag.name) || []);
     };
 
+    const handleStartRecurrenceEdit = () => {
+        setRecurrenceForm({
+            recurrence_type: task?.recurrence_type || 'none',
+            recurrence_interval: task?.recurrence_interval || 1,
+            recurrence_end_date: task?.recurrence_end_date || '',
+            recurrence_weekday: task?.recurrence_weekday || null,
+            recurrence_weekdays: task?.recurrence_weekdays || [],
+            recurrence_month_day: task?.recurrence_month_day || null,
+            recurrence_week_of_month: task?.recurrence_week_of_month || null,
+            completion_based: task?.completion_based || false,
+        });
+        setIsEditingRecurrence(true);
+    };
+
+    const handleRecurrenceChange = (field: string, value: any) => {
+        setRecurrenceForm((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+    };
+
+    const handleSaveRecurrence = async () => {
+        if (!task?.id) {
+            setIsEditingRecurrence(false);
+            return;
+        }
+
+        try {
+            const recurrencePayload: Partial<Task> = {
+                recurrence_type: recurrenceForm.recurrence_type,
+                recurrence_interval: recurrenceForm.recurrence_interval || 1,
+                recurrence_end_date: recurrenceForm.recurrence_end_date || null,
+                recurrence_weekday:
+                    recurrenceForm.recurrence_type === 'weekly' ||
+                    recurrenceForm.recurrence_type === 'monthly_weekday'
+                        ? recurrenceForm.recurrence_weekday || null
+                        : null,
+                recurrence_weekdays:
+                    recurrenceForm.recurrence_type === 'weekly'
+                        ? recurrenceForm.recurrence_weekdays || []
+                        : null,
+                recurrence_month_day:
+                    recurrenceForm.recurrence_type === 'monthly'
+                        ? recurrenceForm.recurrence_month_day || null
+                        : null,
+                recurrence_week_of_month:
+                    recurrenceForm.recurrence_type === 'monthly_weekday'
+                        ? recurrenceForm.recurrence_week_of_month || null
+                        : null,
+                completion_based: recurrenceForm.completion_based,
+            };
+
+            await updateTask(task.id, { ...task, ...recurrencePayload });
+
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            showSuccessToast(
+                t('task.recurrenceUpdated', 'Recurrence updated successfully')
+            );
+            setIsEditingRecurrence(false);
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating recurrence:', error);
+            showErrorToast(
+                t('task.recurrenceUpdateError', 'Failed to update recurrence')
+            );
+            setIsEditingRecurrence(false);
+        }
+    };
+
+    const handleCancelRecurrenceEdit = () => {
+        setIsEditingRecurrence(false);
+        setRecurrenceForm({
+            recurrence_type: task?.recurrence_type || 'none',
+            recurrence_interval: task?.recurrence_interval || 1,
+            recurrence_end_date: task?.recurrence_end_date || '',
+            recurrence_weekday: task?.recurrence_weekday || null,
+            recurrence_weekdays: task?.recurrence_weekdays || [],
+            recurrence_month_day: task?.recurrence_month_day || null,
+            recurrence_week_of_month: task?.recurrence_week_of_month || null,
+            completion_based: task?.completion_based || false,
+        });
+    };
+
+    const handleRecurrenceCardClick = () => {
+        if (task.recurring_parent_id) return;
+        handleStartRecurrenceEdit();
+    };
+
     const handleStartTagsEdit = () => {
         setEditedTags(task?.tags?.map((tag: any) => tag.name) || []);
         if (!tagsStore.hasLoaded && !tagsStore.isLoading) {
@@ -261,13 +423,66 @@ const TaskDetails: React.FC = () => {
         setIsEditingTags(true);
     };
 
+    const handleStartDueDateEdit = () => {
+        setEditedDueDate(task?.due_date || '');
+        setIsEditingDueDate(true);
+    };
+
+    const handleSaveDueDate = async () => {
+        if (!task?.id) {
+            setIsEditingDueDate(false);
+            setEditedDueDate(task?.due_date || '');
+            return;
+        }
+
+        if ((editedDueDate || '') === (task.due_date || '')) {
+            setIsEditingDueDate(false);
+            return;
+        }
+
+        try {
+            await updateTask(task.id, { ...task, due_date: editedDueDate || null });
+
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            showSuccessToast(
+                t('task.dueDateUpdated', 'Due date updated successfully')
+            );
+            setIsEditingDueDate(false);
+
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating due date:', error);
+            showErrorToast(
+                t('task.dueDateUpdateError', 'Failed to update due date')
+            );
+            setEditedDueDate(task.due_date || '');
+            setIsEditingDueDate(false);
+        }
+    };
+
+    const handleCancelDueDateEdit = () => {
+        setIsEditingDueDate(false);
+        setEditedDueDate(task?.due_date || '');
+    };
+
     const formatDateWithDayName = (dateString: string) => {
         const date = new Date(dateString);
         const today = new Date().toISOString().split('T')[0];
         const isToday = dateString === today;
 
-        const dayName = date.toLocaleDateString(undefined, { weekday: 'long' });
-        const formattedDate = date.toLocaleDateString(undefined, {
+        const dayName = date.toLocaleDateString(i18n.language, { weekday: 'long' });
+        const formattedDate = date.toLocaleDateString(i18n.language, {
             day: 'numeric',
             month: 'long',
         });
@@ -278,6 +493,116 @@ const TaskDetails: React.FC = () => {
             fullText: `${dayName}, ${formattedDate}`,
             isToday,
         };
+    };
+
+    const getDueDateDisplay = (dueDate: string) => {
+        const date = new Date(dueDate);
+        if (Number.isNaN(date.getTime())) return null;
+
+        const formattedDate = date.toLocaleDateString(i18n.language, {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const target = new Date(date);
+        target.setHours(0, 0, 0, 0);
+
+        const diffDays = Math.round(
+            (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        let relativeText = '';
+        if (diffDays === 0) {
+            relativeText = t('dateIndicators.today', 'today');
+        } else if (diffDays === 1) {
+            relativeText = t('dateIndicators.tomorrow', 'tomorrow');
+        } else if (diffDays === -1) {
+            relativeText = t('dateIndicators.yesterday', 'yesterday');
+        } else if (diffDays > 0) {
+            relativeText = t('task.inDays', 'in {{count}} days', {
+                count: diffDays,
+            });
+        } else {
+            relativeText = t('task.daysAgo', '{{count}} days ago', {
+                count: Math.abs(diffDays),
+            });
+        }
+
+        return { formattedDate, relativeText };
+    };
+
+    const getStatusLabel = () => {
+        switch (task.status) {
+            case 'not_started':
+            case 0:
+                return t('task.status.notStarted', 'not started');
+            case 'in_progress':
+            case 1:
+                return t('task.status.inProgress', 'in progress');
+            case 'done':
+            case 2:
+                return t('task.status.done', 'completed');
+            case 'archived':
+            case 3:
+                return t('task.status.archived', 'archived');
+            default:
+                return t('task.status.unknown', 'ongoing');
+        }
+    };
+
+    const getPriorityLabel = () => {
+        if (task.priority === null || task.priority === undefined) {
+            return null;
+        }
+        switch (task.priority) {
+            case 'low':
+            case 0:
+                return t('task.lowPriority', 'low priority');
+            case 'medium':
+            case 1:
+                return t('task.mediumPriority', 'medium priority');
+            case 'high':
+            case 2:
+                return t('task.highPriority', 'high priority');
+            default:
+                return null;
+        }
+    };
+
+    const getTaskPlainSummary = () => {
+        const statusText = getStatusLabel();
+        const priorityText = getPriorityLabel();
+        const dueInfo = task.due_date ? getDueDateDisplay(task.due_date) : null;
+
+        return (
+            <span>
+                {t('task.thisTask', 'This task')}{' '}
+                {t('task.is', 'is')}{' '}
+                <strong>{statusText}</strong>
+                {priorityText && (
+                    <>
+                        {' '}{t('task.and', 'and')}{' '}
+                        <strong>{priorityText}</strong>
+                    </>
+                )}
+                {dueInfo && (
+                    <>
+                        {`, ${t('task.dueOn', 'due')} ${dueInfo.relativeText}`} {' '}
+                            ({dueInfo.formattedDate})
+                    </>
+                )}
+                {task.Project && (
+                    <>
+                        {`, ${t('task.inProject', 'from project')}`}{' '}
+                        <strong>{task.Project.name}</strong>
+                    </>
+                )}
+                .
+            </span>
+        );
     };
 
     const formatRecurrence = (recurrenceType: string) => {
@@ -978,27 +1303,69 @@ const TaskDetails: React.FC = () => {
                             )}
                         </div>
                     </div>
-                    <div className="flex space-x-1">
+                    <div className="relative" ref={actionsMenuRef}>
                         <button
-                            onClick={handleEdit}
-                            className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-full transition-colors duration-200"
-                        >
-                            <PencilSquareIcon className="h-5 w-5" />
-                        </button>
-                        <button
+                            className="px-2 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 rounded transition-colors duration-200 text-base"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleDeleteClick();
+                                setActionsMenuOpen(!actionsMenuOpen);
                             }}
-                            className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-full transition-colors duration-200"
+                            aria-haspopup="true"
+                            aria-expanded={actionsMenuOpen}
+                            aria-label={t('common.moreActions', 'More actions')}
                         >
-                            <TrashIcon className="h-5 w-5" />
+                            ...
                         </button>
+                        {actionsMenuOpen && (
+                            <div className="absolute right-0 mt-2 w-40 rounded-lg shadow-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-20">
+                                <button
+                                    className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-t-lg"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setActionsMenuOpen(false);
+                                        handleEdit();
+                                    }}
+                                >
+                                    {t('common.edit', 'Edit')}
+                                </button>
+                                <button
+                                    className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-b-lg"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setActionsMenuOpen(false);
+                                        handleDeleteClick();
+                                    }}
+                                >
+                                    {t('common.delete', 'Delete')}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Overdue Alert */}
+                {!isSummaryAlertDismissed && (
+                    <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 rounded-r-lg relative">
+                        <button
+                            onClick={() => setIsSummaryAlertDismissed(true)}
+                            className="absolute top-2 right-2 p-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 transition-colors"
+                            aria-label={t('common.close', 'Close')}
+                        >
+                            <XMarkIcon className="h-4 w-4" />
+                        </button>
+                        <div className="flex items-center pr-8">
+                            <InformationCircleIcon className="h-5 w-5 text-blue-600 dark:text-blue-300 mr-3 flex-shrink-0" />
+                            <div>
+                                <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                                    {getTaskPlainSummary()}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 {isTaskOverdue(task) && !isOverdueAlertDismissed && (
                     <div className="mb-6 mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 rounded-r-lg relative">
                         <button
@@ -1058,7 +1425,7 @@ const TaskDetails: React.FC = () => {
                                                     className={`p-1.5 rounded-md transition-colors ${
                                                         contentTab === 'edit'
                                                             ? 'bg-blue-600 text-white'
-                                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                                            : 'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700'
                                                     }`}
                                                     title={t(
                                                         'common.edit',
@@ -1075,7 +1442,7 @@ const TaskDetails: React.FC = () => {
                                                     className={`p-1.5 rounded-md transition-colors ${
                                                         contentTab === 'preview'
                                                             ? 'bg-blue-600 text-white'
-                                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                                            : 'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700'
                                                     }`}
                                                     title={t(
                                                         'common.preview',
@@ -1142,7 +1509,7 @@ const TaskDetails: React.FC = () => {
                                                     onClick={
                                                         handleCancelContentEdit
                                                     }
-                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
                                                 >
                                                     {t('common.cancel', 'Cancel')}
                                                 </button>
@@ -1209,7 +1576,7 @@ const TaskDetails: React.FC = () => {
                                                     onClick={
                                                         handleCancelSubtasksEdit
                                                     }
-                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
                                                 >
                                                     {t('common.cancel', 'Cancel')}
                                                 </button>
@@ -1217,7 +1584,7 @@ const TaskDetails: React.FC = () => {
                                         </div>
                                     </div>
                                 ) : subtasks.length > 0 ? (
-                                    <div className="space-y-1">
+                                    <div className="space-y-0.5">
                                         {subtasks.map((subtask: Task) => (
                                             <div
                                                 key={subtask.id}
@@ -1229,7 +1596,7 @@ const TaskDetails: React.FC = () => {
                                                         : 'border-gray-50 dark:border-gray-800'
                                                 }`}
                                             >
-                                                <div className="px-4 py-2.5 flex items-center space-x-3">
+                                                <div className="px-3 py-3 flex items-center space-x-3">
                                                     <TaskPriorityIcon
                                                         priority={
                                                             subtask.priority
@@ -1351,352 +1718,443 @@ const TaskDetails: React.FC = () => {
                                 )}
                             </div>
 
-                            {/* Recurring Setup Section - Show for recurring tasks or child tasks */}
-                            {((task.recurrence_type &&
-                                task.recurrence_type !== 'none') ||
-                                task.recurring_parent_id) && (
-                                <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                        {t(
-                                            'task.recurringSetup',
-                                            'Recurring Setup'
-                                        )}
-                                    </h4>
-                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 p-6">
-                                        {/* Show info for child tasks */}
-                                        {task.recurring_parent_id && (
-                                            <div className="mb-4">
-                                                <div className="flex items-center mb-2">
-                                                    <ArrowPathIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <div>
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    {t(
+                                        'task.recurringSetup',
+                                        'Recurring Setup'
+                                    )}
+                                </h4>
+                                <div
+                                    className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-6 space-y-4 ${
+                                        !task.recurring_parent_id &&
+                                        !isEditingRecurrence
+                                            ? 'cursor-pointer'
+                                            : ''
+                                    }`}
+                                    onClick={
+                                        !task.recurring_parent_id && !isEditingRecurrence
+                                            ? handleRecurrenceCardClick
+                                            : undefined
+                                    }
+                                    role={
+                                        !task.recurring_parent_id && !isEditingRecurrence
+                                            ? 'button'
+                                            : undefined
+                                    }
+                                    tabIndex={
+                                        !task.recurring_parent_id && !isEditingRecurrence
+                                            ? 0
+                                            : -1
+                                    }
+                                    onKeyDown={(e) => {
+                                        if (
+                                            !isEditingRecurrence &&
+                                            !task.recurring_parent_id &&
+                                            e.key === 'Enter'
+                                        ) {
+                                            e.preventDefault();
+                                            handleRecurrenceCardClick();
+                                        }
+                                    }}
+                                >
+                                    {task.recurring_parent_id && (
+                                        <div className="mb-4">
+                                            <div className="flex items-center mb-2">
+                                                <ArrowPathIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    {t(
+                                                        'task.instanceOf',
+                                                        'This is an instance of a recurring task'
+                                                    )}
+                                                </span>
+                                            </div>
+                                            {loadingParent && (
+                                                <div className="flex items-center py-2">
+                                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 mr-2"></div>
+                                                    <span className="text-sm text-gray-600 dark:text-gray-400">
                                                         {t(
-                                                            'task.instanceOf',
-                                                            'This is an instance of a recurring task'
+                                                            'common.loading',
+                                                            'Loading parent task...'
                                                         )}
                                                     </span>
                                                 </div>
-                                                {loadingParent && (
-                                                    <div className="flex items-center py-2">
-                                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 mr-2"></div>
-                                                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            )}
+                                            {parentTask && (
+                                                <div className="ml-6">
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                                        <strong>
                                                             {t(
-                                                                'common.loading',
-                                                                'Loading parent task...'
+                                                                'task.parentTask',
+                                                                'Parent Task'
                                                             )}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {parentTask && (
-                                                    <div className="ml-6">
-                                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                                            <strong>
-                                                                {t(
-                                                                    'task.parentTask',
-                                                                    'Parent Task'
-                                                                )}
-                                                                :
-                                                            </strong>{' '}
-                                                            <Link
-                                                                to={`/task/${parentTask.uid}`}
-                                                                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-medium"
-                                                            >
-                                                                {
-                                                                    parentTask.name
-                                                                }
-                                                            </Link>
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
+                                                            :
+                                                        </strong>{' '}
+                                                        <Link
+                                                            to={`/task/${parentTask.uid}`}
+                                                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-medium"
+                                                        >
+                                                            {
+                                                                parentTask.name
+                                                            }
+                                                        </Link>
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
 
-                                        {/* Recurrence Configuration - Use parent task data for child tasks */}
-                                        {(task.recurrence_type &&
-                                            task.recurrence_type !== 'none') ||
-                                        (parentTask?.recurrence_type &&
-                                            parentTask.recurrence_type !==
-                                                'none') ? (
-                                            <div className="mb-4">
-                                                <RecurrenceDisplay
-                                                    recurrenceType={
-                                                        task.recurring_parent_id &&
-                                                        parentTask?.recurrence_type
-                                                            ? parentTask.recurrence_type
-                                                            : task.recurrence_type
-                                                    }
-                                                    recurrenceInterval={
-                                                        task.recurring_parent_id &&
-                                                        parentTask?.recurrence_interval
-                                                            ? parentTask.recurrence_interval
-                                                            : task.recurrence_interval
-                                                    }
-                                                    recurrenceWeekdays={
-                                                        task.recurring_parent_id &&
-                                                        parentTask?.recurrence_weekdays
-                                                            ? parentTask.recurrence_weekdays
-                                                            : task.recurrence_weekdays
+                                    {isEditingRecurrence &&
+                                    !task.recurring_parent_id ? (
+                                        <div className="space-y-4">
+                                                    <TaskRecurrenceSection
+                                                        recurrenceType={
+                                                            recurrenceForm.recurrence_type
+                                                        }
+                                                        recurrenceInterval={
+                                                        recurrenceForm.recurrence_interval
                                                     }
                                                     recurrenceEndDate={
-                                                        task.recurring_parent_id &&
-                                                        parentTask?.recurrence_end_date
-                                                            ? parentTask.recurrence_end_date
-                                                            : task.recurrence_end_date
-                                                    }
-                                                    recurrenceMonthDay={
-                                                        task.recurring_parent_id &&
-                                                        parentTask?.recurrence_month_day
-                                                            ? parentTask.recurrence_month_day
-                                                            : task.recurrence_month_day
-                                                    }
-                                                    recurrenceWeekOfMonth={
-                                                        task.recurring_parent_id &&
-                                                        parentTask?.recurrence_week_of_month
-                                                            ? parentTask.recurrence_week_of_month
-                                                            : task.recurrence_week_of_month
+                                                        recurrenceForm.recurrence_end_date ||
+                                                        undefined
                                                     }
                                                     recurrenceWeekday={
-                                                        task.recurring_parent_id &&
-                                                        parentTask?.recurrence_weekday
-                                                            ? parentTask.recurrence_weekday
-                                                            : task.recurrence_weekday
+                                                        recurrenceForm.recurrence_weekday ||
+                                                        undefined
                                                     }
-                                                    completionBased={
-                                                        task.recurring_parent_id &&
-                                                        parentTask?.completion_based
-                                                            ? parentTask.completion_based
-                                                            : task.completion_based
+                                                    recurrenceWeekdays={
+                                                        recurrenceForm.recurrence_weekdays ||
+                                                        []
                                                     }
-                                                />
-                                            </div>
-                                        ) : null}
-
-                                        {/* Next Iterations - Show for both parent and child tasks */}
-                                        {((task.recurrence_type &&
-                                            task.recurrence_type !== 'none') ||
-                                            (task.recurring_parent_id &&
-                                                parentTask?.recurrence_type &&
-                                                parentTask.recurrence_type !==
-                                                    'none')) && (
-                                            <div>
-                                                <div className="flex items-center mb-3">
-                                                    <ClockIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                        {task.recurring_parent_id
-                                                            ? t(
-                                                                  'task.nextOccurrencesAfterThis',
-                                                                  'Next Occurrences After This'
-                                                              )
-                                                            : t(
-                                                                  'task.nextOccurrences',
-                                                                  'Next Occurrences'
-                                                              )}
-                                                        {!loadingIterations &&
-                                                            nextIterations.length >
-                                                                0 &&
-                                                            nextIterations.some(
-                                                                (iter) =>
-                                                                    formatDateWithDayName(
-                                                                        iter.date
-                                                                    ).isToday
-                                                            ) && (
-                                                                <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
-                                                                    (
-                                                                    {t(
-                                                                        'task.includingToday',
-                                                                        'including today'
-                                                                    )}
-                                                                    )
-                                                                </span>
-                                                            )}
-                                                    </span>
-                                                </div>
-
-                                                {loadingIterations ? (
-                                                    <div className="flex items-center justify-center py-4">
-                                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                                                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                                                            {t(
-                                                                'common.loading',
-                                                                'Loading...'
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                ) : nextIterations.length >
-                                                  0 ? (
-                                                    <div className="space-y-2">
-                                                        {nextIterations.map(
-                                                            (
-                                                                iteration,
-                                                                index
-                                                            ) => {
-                                                                const dateInfo =
-                                                                    formatDateWithDayName(
-                                                                        iteration.date
-                                                                    );
-                                                                return (
-                                                                    <div
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        className={`flex items-center py-2 px-3 rounded transition-colors ${
-                                                                            dateInfo.isToday
-                                                                                ? 'bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800'
-                                                                                : 'bg-gray-50 dark:bg-gray-800 border border-transparent'
-                                                                        }`}
-                                                                    >
-                                                                        <div
-                                                                            className={`w-7 h-7 rounded-full flex items-center justify-center mr-3 ${
-                                                                                dateInfo.isToday
-                                                                                    ? 'bg-blue-600 dark:bg-blue-500'
-                                                                                    : 'bg-blue-100 dark:bg-blue-900'
-                                                                            }`}
-                                                                        >
-                                                                            <span
-                                                                                className={`text-xs font-medium ${
-                                                                                    dateInfo.isToday
-                                                                                        ? 'text-white'
-                                                                                        : 'text-blue-600 dark:text-blue-400'
-                                                                                }`}
-                                                                            >
-                                                                                {index +
-                                                                                    1}
-                                                                            </span>
-                                                                        </div>
-                                                                        <div className="flex-1">
-                                                                            <div
-                                                                                className={`text-sm font-medium ${
-                                                                                    dateInfo.isToday
-                                                                                        ? 'text-blue-900 dark:text-blue-100'
-                                                                                        : 'text-gray-900 dark:text-gray-100'
-                                                                                }`}
-                                                                            >
-                                                                                {
-                                                                                    dateInfo.dayName
-                                                                                }
-                                                                                {dateInfo.isToday && (
-                                                                                    <span className="ml-2 text-xs px-2 py-0.5 bg-blue-600 dark:bg-blue-500 text-white rounded-full font-semibold">
-                                                                                        {t(
-                                                                                            'dateIndicators.today',
-                                                                                            'TODAY'
-                                                                                        )}
-                                                                                    </span>
-                                                                                )}
-                                                                            </div>
-                                                                            <div
-                                                                                className={`text-xs ${
-                                                                                    dateInfo.isToday
-                                                                                        ? 'text-blue-700 dark:text-blue-300'
-                                                                                        : 'text-gray-500 dark:text-gray-400'
-                                                                                }`}
-                                                                            >
-                                                                                {
-                                                                                    dateInfo.formattedDate
-                                                                                }
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                );
+                                                    recurrenceMonthDay={
+                                                        recurrenceForm.recurrence_month_day ||
+                                                        undefined
+                                                    }
+                                                    recurrenceWeekOfMonth={
+                                                                recurrenceForm.recurrence_week_of_month ||
+                                                                undefined
                                                             }
+                                                        completionBased={
+                                                            recurrenceForm.completion_based
+                                                        }
+                                                        onChange={
+                                                            handleRecurrenceChange
+                                                        }
+                                                    />
+                                                    <div className="flex justify-end space-x-2">
+                                                        <button
+                                                            onClick={handleSaveRecurrence}
+                                                            className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
+                                                        >
+                                                            {t(
+                                                                'common.save',
+                                                                'Save'
+                                                            )}
+                                                        </button>
+                                                        <button
+                                                            onClick={handleCancelRecurrenceEdit}
+                                                            className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                                        >
+                                                            {t(
+                                                                'common.cancel',
+                                                                'Cancel'
                                                         )}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                {(task.recurrence_type &&
+                                                    task.recurrence_type !==
+                                                        'none') ||
+                                                (parentTask?.recurrence_type &&
+                                                    parentTask.recurrence_type !==
+                                                        'none') ? (
+                                                    <div className="mb-4">
+                                                        <RecurrenceDisplay
+                                                            recurrenceType={
+                                                                task.recurring_parent_id &&
+                                                                parentTask?.recurrence_type
+                                                                    ? parentTask.recurrence_type
+                                                                    : task.recurrence_type
+                                                            }
+                                                            recurrenceInterval={
+                                                                task.recurring_parent_id &&
+                                                                parentTask?.recurrence_interval
+                                                                    ? parentTask.recurrence_interval
+                                                                    : task.recurrence_interval
+                                                            }
+                                                            recurrenceWeekdays={
+                                                                task.recurring_parent_id &&
+                                                                parentTask?.recurrence_weekdays
+                                                                    ? parentTask.recurrence_weekdays
+                                                                    : task.recurrence_weekdays
+                                                            }
+                                                            recurrenceEndDate={
+                                                                task.recurring_parent_id &&
+                                                                parentTask?.recurrence_end_date
+                                                                    ? parentTask.recurrence_end_date
+                                                                    : task.recurrence_end_date
+                                                            }
+                                                            recurrenceMonthDay={
+                                                                task.recurring_parent_id &&
+                                                                parentTask?.recurrence_month_day
+                                                                    ? parentTask.recurrence_month_day
+                                                                    : task.recurrence_month_day
+                                                            }
+                                                            recurrenceWeekOfMonth={
+                                                                task.recurring_parent_id &&
+                                                                parentTask?.recurrence_week_of_month
+                                                                    ? parentTask.recurrence_week_of_month
+                                                                    : task.recurrence_week_of_month
+                                                            }
+                                                            recurrenceWeekday={
+                                                                task.recurring_parent_id &&
+                                                                parentTask?.recurrence_weekday
+                                                                    ? parentTask.recurrence_weekday
+                                                                    : task.recurrence_weekday
+                                                            }
+                                                            completionBased={
+                                                                task.recurring_parent_id &&
+                                                                parentTask?.completion_based
+                                                                    ? parentTask.completion_based
+                                                                    : task.completion_based
+                                                            }
+                                                        />
                                                     </div>
                                                 ) : (
-                                                    <div className="text-sm text-gray-500 dark:text-gray-400 py-2">
+                                                    <div className="text-sm text-gray-600 dark:text-gray-400">
                                                         {t(
-                                                            'task.noMoreIterations',
-                                                            'No more iterations scheduled'
+                                                            'task.notRecurring',
+                                                            'This task is not recurring yet.'
                                                         )}
                                                     </div>
                                                 )}
-                                            </div>
+
+                                                {((task.recurrence_type &&
+                                                    task.recurrence_type !==
+                                                        'none') ||
+                                                    (task.recurring_parent_id &&
+                                                        parentTask?.recurrence_type &&
+                                                        parentTask.recurrence_type !==
+                                                            'none')) && (
+                                                    <div>
+                                                        <div className="flex items-center mb-3">
+                                                            <ClockIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
+                                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                {task.recurring_parent_id
+                                                                    ? t(
+                                                                          'task.nextOccurrencesAfterThis',
+                                                                          'Next Occurrences After This'
+                                                                      )
+                                                                    : t(
+                                                                          'task.nextOccurrences',
+                                                                          'Next Occurrences'
+                                                                      )}
+                                                                {!loadingIterations &&
+                                                                    nextIterations.length >
+                                                                        0 &&
+                                                                    nextIterations.some(
+                                                                        (
+                                                                            iter
+                                                                        ) =>
+                                                                            formatDateWithDayName(
+                                                                                iter.date
+                                                                            ).isToday
+                                                                    ) && (
+                                                                        <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
+                                                                            (
+                                                                            {t(
+                                                                                'task.includingToday',
+                                                                                'including today'
+                                                                            )}
+                                                                            )
+                                                                        </span>
+                                                                    )}
+                                                            </span>
+                                                        </div>
+
+                                                        {loadingIterations ? (
+                                                            <div className="flex items-center justify-center py-4">
+                                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                                                                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                                                                    {t(
+                                                                        'common.loading',
+                                                                        'Loading...'
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                        ) : nextIterations.length >
+                                                          0 ? (
+                                                            <div className="space-y-2">
+                                                                {nextIterations.map(
+                                                                    (
+                                                                        iteration,
+                                                                        index
+                                                                    ) => {
+                                                                        const dateInfo =
+                                                                            formatDateWithDayName(
+                                                                                iteration.date
+                                                                            );
+                                                                        return (
+                                                                            <div
+                                                                                key={
+                                                                                    index
+                                                                                }
+                                                                                className={`flex items-center py-2 px-3 rounded transition-colors ${
+                                                                                    dateInfo.isToday
+                                                                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800'
+                                                                                        : 'bg-gray-50 dark:bg-gray-800 border border-transparent'
+                                                                                }`}
+                                                                            >
+                                                                                <div
+                                                                                    className={`w-7 h-7 rounded-full flex items-center justify-center mr-3 ${
+                                                                                        dateInfo.isToday
+                                                                                            ? 'bg-blue-600 dark:bg-blue-500'
+                                                                                            : 'bg-blue-100 dark:bg-blue-900'
+                                                                                    }`}
+                                                                                >
+                                                                                    <span
+                                                                                        className={`text-xs font-medium ${
+                                                                                            dateInfo.isToday
+                                                                                                ? 'text-white'
+                                                                                                : 'text-blue-600 dark:text-blue-400'
+                                                                                        }`}
+                                                                                    >
+                                                                                        {index +
+                                                                                            1}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div className="flex-1">
+                                                                                    <div
+                                                                                        className={`text-sm font-medium ${
+                                                                                            dateInfo.isToday
+                                                                                                ? 'text-blue-900 dark:text-blue-100'
+                                                                                                : 'text-gray-900 dark:text-gray-100'
+                                                                                        }`}
+                                                                                    >
+                                                                                        {
+                                                                                            dateInfo.dayName
+                                                                                        }
+                                                                                        {dateInfo.isToday && (
+                                                                                            <span className="ml-2 text-xs px-2 py-0.5 bg-blue-600 dark:bg-blue-500 text-white rounded-full font-semibold">
+                                                                                                {t(
+                                                                                                    'dateIndicators.today',
+                                                                                                    'TODAY'
+                                                                                                )}
+                                                                                            </span>
+                                                                                        )}
+                                                                                    </div>
+                                                                                    <div
+                                                                                        className={`text-xs ${
+                                                                                            dateInfo.isToday
+                                                                                                ? 'text-blue-700 dark:text-blue-300'
+                                                                                                : 'text-gray-500 dark:text-gray-400'
+                                                                                        }`}
+                                                                                    >
+                                                                                        {
+                                                                                            dateInfo.formattedDate
+                                                                                        }
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-sm text-gray-500 dark:text-gray-400 py-2">
+                                                                {t(
+                                                                    'task.noMoreIterations',
+                                                                    'No more iterations scheduled'
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 </div>
-                            )}
-                        </div>
+                            </div>
 
                         {/* Right Column - Metadata and Recent Activity */}
                         <div className="space-y-6">
                             {/* Project Section */}
                             <div ref={projectDropdownRef}>
-                                <div className="flex items-center justify-between mb-2">
-                                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                        {t('task.project', 'Project')}
-                                    </h4>
-                                </div>
-                                {projectDropdownOpen ? (
-                                    <ProjectDropdown
-                                        projectName={projectName}
-                                        onProjectSearch={handleProjectSearch}
-                                        dropdownOpen={projectDropdownOpen}
-                                        filteredProjects={filteredProjects}
-                                        onProjectSelection={handleProjectSelection}
-                                        onCreateProject={handleCreateProjectInline}
-                                        isCreatingProject={isCreatingProject}
-                                        onShowAllProjects={handleShowAllProjects}
-                                        allProjects={projectsStore.projects}
-                                        selectedProject={null}
-                                        onClearProject={handleClearProject}
-                                    />
-                                ) : task.Project ? (
-                                    <div
-                                        onClick={() => setProjectDropdownOpen(true)}
-                                        className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative cursor-pointer hover:opacity-90 transition-opacity"
-                                    >
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    {t('task.project', 'Project')}
+                                </h4>
+                                <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-colors p-4">
+                                    {projectDropdownOpen ? (
+                                        <ProjectDropdown
+                                            projectName={projectName}
+                                            onProjectSearch={handleProjectSearch}
+                                            dropdownOpen={projectDropdownOpen}
+                                            filteredProjects={filteredProjects}
+                                            onProjectSelection={handleProjectSelection}
+                                            onCreateProject={handleCreateProjectInline}
+                                            isCreatingProject={isCreatingProject}
+                                            onShowAllProjects={handleShowAllProjects}
+                                            allProjects={projectsStore.projects}
+                                            selectedProject={null}
+                                            onClearProject={handleClearProject}
+                                        />
+                                    ) : task.Project ? (
                                         <div
-                                            className="bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden rounded-t-lg relative"
-                                            style={{ height: '100px' }}
+                                            onClick={() => setProjectDropdownOpen(true)}
+                                            className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-sm relative cursor-pointer hover:opacity-90 transition-opacity"
                                         >
-                                            {task.Project.image_url ? (
-                                                <img
-                                                    src={task.Project.image_url}
-                                                    alt={task.Project.name}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <span className="text-2xl font-extrabold text-gray-500 dark:text-gray-400 opacity-20">
-                                                    {task.Project.name
-                                                        .split(' ')
-                                                        .map((word) => word[0])
-                                                        .join('')
-                                                        .toUpperCase()}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="p-3">
-                                            <div className="flex items-center text-md font-semibold text-gray-900 dark:text-gray-100">
-                                                <span className="truncate">
-                                                    {task.Project.name}
-                                                </span>
-                                                <Link
-                                                    to={getProjectLink(task.Project)}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex-shrink-0 ml-auto"
-                                                    title={t(
-                                                        'project.viewProject',
-                                                        'Go to project'
-                                                    )}
-                                                >
-                                                    <ArrowRightIcon className="h-4 w-4" />
-                                                    <span className="sr-only">
-                                                        {t(
+                                            <div
+                                                className="flex items-center justify-center overflow-hidden rounded-t-lg relative"
+                                                style={{ height: '100px' }}
+                                            >
+                                                {task.Project.image_url ? (
+                                                    <img
+                                                        src={task.Project.image_url}
+                                                        alt={task.Project.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
+                                                )}
+                                            </div>
+                                            <div className="p-3">
+                                                <div className="flex items-center text-md font-semibold text-gray-900 dark:text-gray-100">
+                                                    <span className="truncate">
+                                                        {task.Project.name}
+                                                    </span>
+                                                    <Link
+                                                        to={getProjectLink(task.Project)}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="p-1.5 rounded-full text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex-shrink-0 ml-auto"
+                                                        title={t(
                                                             'project.viewProject',
                                                             'Go to project'
                                                         )}
-                                                    </span>
-                                                </Link>
+                                                    >
+                                                        <ArrowRightIcon className="h-4 w-4" />
+                                                        <span className="sr-only">
+                                                            {t(
+                                                                'project.viewProject',
+                                                                'Go to project'
+                                                            )}
+                                                        </span>
+                                                    </Link>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ) : (
-                                    <div
-                                        onClick={() => setProjectDropdownOpen(true)}
-                                        className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 p-6 cursor-pointer transition-colors flex items-center justify-center"
-                                    >
-                                        <span className="text-sm text-gray-500 dark:text-gray-400 italic">
-                                            {t('task.noProject', 'No project - Click to assign')}
-                                        </span>
-                                    </div>
-                                )}
+                                    ) : (
+                                        <div
+                                            onClick={() => setProjectDropdownOpen(true)}
+                                            className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 p-6 cursor-pointer transition-colors flex items-center justify-center"
+                                        >
+                                            <span className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                                {t('task.noProject', 'No project - Click to assign')}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Tags Section */}
@@ -1704,7 +2162,7 @@ const TaskDetails: React.FC = () => {
                                 <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                     {t('task.tags', 'Tags')}
                                 </h4>
-                                <div className="space-y-3">
+                                <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-colors p-4 space-y-3">
                                     {isEditingTags ? (
                                         <div className="space-y-3">
                                             <TagInput
@@ -1729,7 +2187,7 @@ const TaskDetails: React.FC = () => {
                                                 </button>
                                                 <button
                                                     onClick={handleCancelTagsEdit}
-                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
                                                 >
                                                     {t('common.cancel', 'Cancel')}
                                                 </button>
@@ -1749,7 +2207,7 @@ const TaskDetails: React.FC = () => {
                                                         e.stopPropagation();
                                                         handleStartTagsEdit();
                                                     }}
-                                                    className="group flex w-full items-center justify-between px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                                    className="group flex w-full items-center justify-between px-3 py-1.5 rounded-md bg-white dark:bg-gray-900 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                                 >
                                                     <div className="flex items-center space-x-2 min-w-0">
                                                         <TagIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
@@ -1762,14 +2220,196 @@ const TaskDetails: React.FC = () => {
                                             ))}
                                         </div>
                                     ) : (
+                                        <div
+                                            onClick={handleStartTagsEdit}
+                                            className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-4 cursor-pointer transition-colors"
+                                        >
+                                            <span className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                                {t('task.noTags', 'No tags')}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Priority Section */}
+                            <div className="min-w-0">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    {t('task.priority', 'Priority')}
+                                </h4>
+                                <div className="grid grid-cols-2 xl:grid-cols-4 gap-2">
                                         <button
                                             type="button"
-                                            onClick={handleStartTagsEdit}
-                                            className="text-sm text-gray-500 dark:text-gray-400 italic hover:text-blue-600 dark:hover:text-blue-400"
+                                            onClick={async () => {
+                                                try {
+                                                    await updateTask(task.id, {
+                                                        ...task,
+                                                        priority: null,
+                                                    });
+                                                    const updatedTask =
+                                                        await fetchTaskByUid(uid!);
+                                                    tasksStore.updateTaskInStore(
+                                                        updatedTask
+                                                    );
+                                                    setTimelineRefreshKey(
+                                                        (prev) => prev + 1
+                                                    );
+                                                    showSuccessToast(
+                                                        t(
+                                                            'task.priorityUpdated',
+                                                            'Priority updated successfully'
+                                                        )
+                                                    );
+                                                } catch (error) {
+                                                    console.error(
+                                                        'Error updating priority:',
+                                                        error
+                                                    );
+                                                    showErrorToast(
+                                                        t(
+                                                            'task.priorityUpdateError',
+                                                            'Failed to update priority'
+                                                        )
+                                                    );
+                                                }
+                                            }}
+                                            className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap ${
+                                                task.priority === null || task.priority === undefined
+                                                    ? 'bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-gray-100'
+                                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                            }`}
                                         >
-                                            {t('task.noTags', 'No tags')}
+                                            {t('priority.none', 'None')}
                                         </button>
-                                    )}
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                try {
+                                                    await updateTask(task.id, {
+                                                        ...task,
+                                                        priority: 'low',
+                                                    });
+                                                    const updatedTask =
+                                                        await fetchTaskByUid(uid!);
+                                                    tasksStore.updateTaskInStore(
+                                                        updatedTask
+                                                    );
+                                                    setTimelineRefreshKey(
+                                                        (prev) => prev + 1
+                                                    );
+                                                    showSuccessToast(
+                                                        t(
+                                                            'task.priorityUpdated',
+                                                            'Priority updated successfully'
+                                                        )
+                                                    );
+                                                } catch (error) {
+                                                    console.error(
+                                                        'Error updating priority:',
+                                                        error
+                                                    );
+                                                    showErrorToast(
+                                                        t(
+                                                            'task.priorityUpdateError',
+                                                            'Failed to update priority'
+                                                        )
+                                                    );
+                                                }
+                                            }}
+                                            className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap ${
+                                                task.priority === 'low' || task.priority === 0
+                                                    ? 'bg-blue-500 dark:bg-blue-600 text-white'
+                                                    : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50'
+                                            }`}
+                                        >
+                                            {t('priority.low', 'Low')}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                try {
+                                                    await updateTask(task.id, {
+                                                        ...task,
+                                                        priority: 'medium',
+                                                    });
+                                                    const updatedTask =
+                                                        await fetchTaskByUid(uid!);
+                                                    tasksStore.updateTaskInStore(
+                                                        updatedTask
+                                                    );
+                                                    setTimelineRefreshKey(
+                                                        (prev) => prev + 1
+                                                    );
+                                                    showSuccessToast(
+                                                        t(
+                                                            'task.priorityUpdated',
+                                                            'Priority updated successfully'
+                                                        )
+                                                    );
+                                                } catch (error) {
+                                                    console.error(
+                                                        'Error updating priority:',
+                                                        error
+                                                    );
+                                                    showErrorToast(
+                                                        t(
+                                                            'task.priorityUpdateError',
+                                                            'Failed to update priority'
+                                                        )
+                                                    );
+                                                }
+                                            }}
+                                            className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap ${
+                                                task.priority === 'medium' || task.priority === 1
+                                                    ? 'bg-yellow-500 dark:bg-yellow-600 text-white'
+                                                    : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/50'
+                                            }`}
+                                        >
+                                            {t('priority.medium', 'Medium')}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                try {
+                                                    await updateTask(task.id, {
+                                                        ...task,
+                                                        priority: 'high',
+                                                    });
+                                                    const updatedTask =
+                                                        await fetchTaskByUid(uid!);
+                                                    tasksStore.updateTaskInStore(
+                                                        updatedTask
+                                                    );
+                                                    setTimelineRefreshKey(
+                                                        (prev) => prev + 1
+                                                    );
+                                                    showSuccessToast(
+                                                        t(
+                                                            'task.priorityUpdated',
+                                                            'Priority updated successfully'
+                                                        )
+                                                    );
+                                                } catch (error) {
+                                                    console.error(
+                                                        'Error updating priority:',
+                                                        error
+                                                    );
+                                                    showErrorToast(
+                                                        t(
+                                                            'task.priorityUpdateError',
+                                                            'Failed to update priority'
+                                                        )
+                                                    );
+                                                }
+                                            }}
+                                            className={`w-full min-w-0 px-3 py-2 text-sm font-medium rounded transition-colors whitespace-nowrap ${
+                                                task.priority === 'high' || task.priority === 2
+                                                    ? 'bg-red-500 dark:bg-red-600 text-white'
+                                                    : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50'
+                                            }`}
+                                        >
+                                            {t('priority.high', 'High')}
+                                        </button>
                                 </div>
                             </div>
 
@@ -1778,25 +2418,102 @@ const TaskDetails: React.FC = () => {
                                 <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                     {t('task.dueDate', 'Due Date')}
                                 </h4>
-                                <div
-                                    onClick={handleEdit}
-                                    className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-4 cursor-pointer transition-colors"
-                                    title={t(
-                                        'task.clickToEdit',
-                                        'Click to edit'
-                                    )}
-                                >
-                                    {task.due_date ? (
-                                        <div className="flex items-center text-gray-900 dark:text-gray-100">
-                                            <CalendarIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                                            <span className="text-sm">
-                                                {formatDueDate(task.due_date)}
-                                            </span>
+                                <div className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-4 transition-colors ${
+                                    task.due_date && (() => {
+                                        const dueDate = new Date(task.due_date);
+                                        const today = new Date();
+                                        today.setHours(0, 0, 0, 0);
+                                        dueDate.setHours(0, 0, 0, 0);
+                                        const isCompleted = task.status === 'done' || task.status === 2 || task.status === 'archived' || task.status === 3 || task.completed_at;
+                                        return dueDate < today && !isCompleted;
+                                    })() ? 'border-red-500 dark:border-red-400' : ''
+                                }`}>
+                                    {isEditingDueDate ? (
+                                        <div className="space-y-3">
+                                            <TaskDueDateSection
+                                                value={editedDueDate}
+                                                onChange={setEditedDueDate}
+                                                placeholder={t(
+                                                    'forms.task.dueDatePlaceholder',
+                                                    'Select due date'
+                                                )}
+                                            />
+                                            <div className="flex justify-end space-x-2">
+                                                <button
+                                                    onClick={handleSaveDueDate}
+                                                    className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
+                                                >
+                                                    {t('common.save', 'Save')}
+                                                </button>
+                                                <button
+                                                    onClick={
+                                                        handleCancelDueDateEdit
+                                                    }
+                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                                >
+                                                    {t('common.cancel', 'Cancel')}
+                                                </button>
+                                            </div>
                                         </div>
                                     ) : (
-                                        <span className="text-sm text-gray-500 dark:text-gray-400 italic">
-                                            {t('task.noDueDate', 'No due date')}
-                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={handleStartDueDateEdit}
+                                            className="flex w-full items-center justify-between text-left"
+                                        >
+                                            {task.due_date ? (
+                                                (() => {
+                                                    const display =
+                                                        getDueDateDisplay(
+                                                            task.due_date
+                                                        );
+                                                    if (!display) return null;
+                                                    // Check if due date is in the past and task is not completed
+                                                    const dueDate = new Date(task.due_date);
+                                                    const today = new Date();
+                                                    today.setHours(0, 0, 0, 0);
+                                                    dueDate.setHours(0, 0, 0, 0);
+                                                    const isCompleted = task.status === 'done' || task.status === 2 || task.status === 'archived' || task.status === 3 || task.completed_at;
+                                                    const overdue = dueDate < today && !isCompleted;
+
+                                                    return (
+                                                        <div className={`flex items-center justify-between w-full ${
+                                                            overdue
+                                                                ? 'text-red-600 dark:text-red-400'
+                                                                : 'text-gray-900 dark:text-gray-100'
+                                                        }`}>
+                                                            <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                                                <CalendarIcon className={`h-4 w-4 flex-shrink-0 ${
+                                                                    overdue
+                                                                        ? 'text-red-600 dark:text-red-400'
+                                                                        : 'text-gray-500 dark:text-gray-400'
+                                                                }`} />
+                                                                <span className="text-sm font-medium">
+                                                                    {display.formattedDate}
+                                                                </span>
+                                                                <span className={`text-sm italic ${
+                                                                    overdue
+                                                                        ? 'text-red-500 dark:text-red-400 font-medium'
+                                                                        : 'text-gray-500 dark:text-gray-400'
+                                                                }`}>
+                                                                    ({display.relativeText})
+                                                                </span>
+                                                            </div>
+                                                            {overdue && (
+                                                                <ExclamationTriangleIcon className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 ml-2" />
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })()
+                                            ) : (
+                                                <span className="text-sm text-gray-500 dark:text-gray-400 italic">
+                                                    {t(
+                                                        'task.noDueDate',
+                                                        'No due date'
+                                                    )}
+                                                </span>
+                                            )}
+                                        </button>
                                     )}
                                 </div>
                             </div>

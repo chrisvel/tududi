@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Дата окончания повторения изменена",
       "recurrenceEndDate": "Дата окончания повторения",
       "recurrence_type_changed": "Тип повторения изменен",
-      "recurrence_interval_changed": "Интервал повторения изменен"
+      "recurrence_interval_changed": "Интервал повторения изменен",
+      "completionBasedChanged": "Изменено основанное на завершении повторение",
+      "projectIdChanged": "Назначено проекту",
+      "recurrenceType": "Тип повторения",
+      "recurrenceTypeChanged": "Тип повторения изменен"
     },
     "justNow": "Только что",
     "minutesAgo": "{{minutes}}м назад",
@@ -410,7 +414,8 @@
         "monthDay": "День месяца",
         "weekOfMonth": "Неделя месяца",
         "recurrenceEndDate": "Дата окончания (необязательно)",
-        "completionBased": "Повторять после завершения"
+        "completionBased": "Повторять после завершения",
+        "repeatOn": "Повторять в"
       },
       "projectSearchPlaceholder": "Поиск или создание проекта...",
       "noMatchingProjects": "Нет подходящих проектов",
@@ -431,7 +436,8 @@
         "short": "Попробуйте быть более конкретными относительно того, что нужно сделать",
         "noVerb": "Какое конкретное действие вам нужно предпринять? Попробуйте начать с глагола.",
         "vague": "Попробуйте начать с глагола действия, например, \"Позвонить\", \"Написать\", \"Запланировать\" или \"Исследовать\""
-      }
+      },
+      "selectAtLeastOneDay": "Пожалуйста, выберите хотя бы один день"
     },
     "noteTitle": "Название заметки",
     "noteContent": "Содержание заметки",
@@ -506,7 +512,10 @@
     "browseImage": "Выбрать изображение",
     "noNotes": "Нет заметок для этого проекта.",
     "deleteProject": "Удалить проект",
-    "createSuccess": "Проект успешно создан!"
+    "createSuccess": "Проект успешно создан!",
+    "createdAndAssigned": "Проект создан и назначен",
+    "createError": "Не удалось создать проект",
+    "viewProject": "Перейти к проекту"
   },
   "errors": {
     "required": "Это поле обязательно для заполнения",
@@ -661,7 +670,68 @@
     "subtasks": "Подзадачи",
     "noSubtasks": "Подзадач пока нет",
     "recentActivity": "Недавняя активность",
-    "noActivityYet": "Пока нет активности"
+    "noActivityYet": "Пока нет активности",
+    "noSubtasksClickToAdd": "Нет подзадач, нажмите, чтобы добавить",
+    "project": "Проект",
+    "noProject": "Нет проекта - Нажмите, чтобы назначить",
+    "tags": "Теги",
+    "noTags": "Нет тегов",
+    "priority": "Приоритет",
+    "dueDate": "Срок выполнения",
+    "recurringSetup": "Настройка повторения",
+    "notRecurring": "Эта задача пока не является повторяющейся.",
+    "clickToEditTitle": "Нажмите, чтобы редактировать заголовок",
+    "clickToEditContent": "Нажмите, чтобы редактировать содержимое",
+    "clickToAddContent": "Нажмите, чтобы добавить контент",
+    "clickToEditSubtasks": "Нажмите, чтобы редактировать подзадачи",
+    "clickToAddOrEditSubtasks": "Нажмите, чтобы добавить или редактировать подзадачи",
+    "contentPlaceholder": "Добавьте контент здесь... (поддерживается Markdown)",
+    "contentEditHint": "Нажмите Cmd/Ctrl+Enter, чтобы сохранить, Esc, чтобы отменить",
+    "noContentPreview": "Нет контента для предварительного просмотра. Переключитесь в режим редактирования, чтобы добавить контент.",
+    "deleteConfirmTitle": "Удалить задачу",
+    "deleteConfirmMessage": "Вы уверены, что хотите удалить эту задачу? Это действие нельзя отменить.",
+    "noMoreIterations": "Больше итераций не запланировано",
+    "nextOccurrences": "Следующие события",
+    "nextOccurrencesAfterThis": "Следующие события после этого",
+    "thisTask": "Эта задача",
+    "is": "является",
+    "and": "и",
+    "dueOn": "срок",
+    "inProject": "из проекта",
+    "lowPriority": "низкий приоритет",
+    "mediumPriority": "средний приоритет",
+    "highPriority": "высокий приоритет",
+    "inDays": "через {{count}} дней",
+    "daysAgo": "{{count}} дней назад",
+    "tagsUpdated": "Теги успешно обновлены",
+    "tagsUpdateError": "Не удалось обновить теги",
+    "recurrenceUpdated": "Повторение успешно обновлено",
+    "recurrenceUpdateError": "Не удалось обновить повторение",
+    "dueDateUpdated": "Срок выполнения успешно обновлен",
+    "dueDateUpdateError": "Не удалось обновить срок выполнения",
+    "titleUpdated": "Название задачи успешно обновлено",
+    "titleUpdateError": "Не удалось обновить название задачи",
+    "contentUpdated": "Содержимое задачи успешно обновлено",
+    "contentUpdateError": "Не удалось обновить содержимое задачи",
+    "subtasksUpdated": "Подзадачи успешно обновлены",
+    "subtasksUpdateError": "Не удалось обновить подзадачи",
+    "projectUpdated": "Проект успешно обновлен",
+    "projectUpdateError": "Не удалось обновить проект",
+    "projectCleared": "Проект успешно очищен",
+    "projectClearError": "Не удалось очистить проект",
+    "priorityUpdated": "Приоритет успешно обновлен",
+    "priorityUpdateError": "Не удалось обновить приоритет",
+    "status": {
+      "notStarted": "не начато",
+      "inProgress": "в процессе",
+      "done": "завершено",
+      "archived": "архивировано",
+      "unknown": "в процессе"
+    },
+    "noDueDate": "Нет срока выполнения",
+    "instanceOf": "Это экземпляр повторяющейся задачи",
+    "parentTask": "Родительская задача",
+    "includingToday": "включая сегодня"
   },
   "projects": {
     "loading": "Загрузка проектов...",
@@ -1062,5 +1132,8 @@
       "nonRecurring": "неповторяющийся",
       "instances": "повторяющиеся экземпляры"
     }
+  },
+  "subtasks": {
+    "placeholder": "Добавить подзадачу..."
   }
 }

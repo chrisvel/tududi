@@ -51,7 +51,18 @@ async function handleRecurrenceUpdate(task, recurrenceFields, reqBody) {
 
         if (newRecurrenceType !== 'none') {
             for (const futureInstance of futureInstances) {
-                await futureInstance.destroy();
+                try {
+                    await futureInstance.destroy();
+                } catch (error) {
+                    // If dependent records block deletion (e.g., subtasks FK), skip that instance
+                    console.warn(
+                        'Skipping recurring instance deletion due to constraint:',
+                        {
+                            id: futureInstance.id,
+                            error: error?.message,
+                        }
+                    );
+                }
             }
         }
     }

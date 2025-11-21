@@ -359,7 +359,11 @@
       "recurrenceEndDateChanged": "Fecha de finalización de la recurrencia cambiada",
       "recurrenceEndDate": "Fecha de finalización de la recurrencia",
       "recurrence_type_changed": "Tipo de recurrencia cambiado",
-      "recurrence_interval_changed": "Intervalo de recurrencia cambiado"
+      "recurrence_interval_changed": "Intervalo de recurrencia cambiado",
+      "completionBasedChanged": "Recurrencia basada en la finalización cambiada",
+      "projectIdChanged": "Asignado a un proyecto",
+      "recurrenceType": "Tipo de recurrencia",
+      "recurrenceTypeChanged": "Tipo de recurrencia cambiado"
     },
     "justNow": "Justo ahora",
     "minutesAgo": "{{minutes}}m hace",
@@ -507,7 +511,8 @@
         "monthDay": "Día del mes",
         "weekOfMonth": "Semana del mes",
         "recurrenceEndDate": "Fecha de fin (opcional)",
-        "completionBased": "Repetir después de completar"
+        "completionBased": "Repetir después de completar",
+        "repeatOn": "Repetir en"
       },
       "projectSearchPlaceholder": "Buscar o crear un proyecto...",
       "noMatchingProjects": "No hay proyectos coincidentes",
@@ -528,7 +533,8 @@
         "short": "Intenta ser más específico sobre lo que necesita hacerse",
         "noVerb": "¿Qué acción específica necesitas tomar? Intenta comenzar con un verbo.",
         "vague": "Intenta comenzar con un verbo de acción como \"Llamar\", \"Escribir\", \"Programar\", o \"Investigar\""
-      }
+      },
+      "selectAtLeastOneDay": "Por favor, selecciona al menos un día"
     },
     "projectDescriptionPlaceholder": "Ingrese la descripción del proyecto"
   },
@@ -579,7 +585,10 @@
     "noNotes": "No hay notas para este proyecto.",
     "deleteProject": "Eliminar Proyecto",
     "showCompleted": "Mostrar Completados",
-    "createSuccess": "¡Proyecto creado exitosamente!"
+    "createSuccess": "¡Proyecto creado exitosamente!",
+    "createdAndAssigned": "Proyecto creado y asignado",
+    "createError": "Error al crear el proyecto",
+    "viewProject": "Ir al proyecto"
   },
   "task": {
     "labels": {
@@ -623,7 +632,68 @@
     "subtasks": "Subtareas",
     "noSubtasks": "No hay subtareas aún",
     "recentActivity": "Actividad Reciente",
-    "noActivityYet": "No hay actividad aún"
+    "noActivityYet": "No hay actividad aún",
+    "thisTask": "Esta tarea",
+    "is": "es",
+    "and": "y",
+    "dueOn": "vencida",
+    "inProject": "del proyecto",
+    "lowPriority": "baja prioridad",
+    "mediumPriority": "prioridad media",
+    "highPriority": "alta prioridad",
+    "inDays": "en {{count}} días",
+    "daysAgo": "{{count}} días atrás",
+    "tagsUpdated": "Etiquetas actualizadas con éxito",
+    "tagsUpdateError": "Error al actualizar las etiquetas",
+    "recurrenceUpdated": "Recurrencia actualizada con éxito",
+    "recurrenceUpdateError": "Error al actualizar la recurrencia",
+    "dueDateUpdated": "Fecha de vencimiento actualizada con éxito",
+    "dueDateUpdateError": "Error al actualizar la fecha de vencimiento",
+    "titleUpdated": "Título de la tarea actualizado con éxito",
+    "titleUpdateError": "Error al actualizar el título de la tarea",
+    "contentUpdated": "Contenido de la tarea actualizado con éxito",
+    "contentUpdateError": "Error al actualizar el contenido de la tarea",
+    "subtasksUpdated": "Subtareas actualizadas con éxito",
+    "subtasksUpdateError": "Error al actualizar las subtareas",
+    "projectUpdated": "Proyecto actualizado con éxito",
+    "projectUpdateError": "Error al actualizar el proyecto",
+    "projectCleared": "Proyecto limpiado con éxito",
+    "projectClearError": "Error al limpiar el proyecto",
+    "priorityUpdated": "Prioridad actualizada con éxito",
+    "priorityUpdateError": "Error al actualizar la prioridad",
+    "status": {
+      "notStarted": "no iniciado",
+      "inProgress": "en progreso",
+      "done": "completado",
+      "archived": "archivado",
+      "unknown": "en curso"
+    },
+    "noSubtasksClickToAdd": "No hay subtareas aún, haz clic para agregar",
+    "project": "Proyecto",
+    "noProject": "Sin proyecto - Haz clic para asignar",
+    "tags": "Etiquetas",
+    "noTags": "Sin etiquetas",
+    "priority": "Prioridad",
+    "dueDate": "Fecha de vencimiento",
+    "recurringSetup": "Configuración recurrente",
+    "notRecurring": "Esta tarea aún no es recurrente.",
+    "clickToEditTitle": "Haz clic para editar el título",
+    "clickToEditContent": "Haz clic para editar el contenido",
+    "clickToAddContent": "Haz clic para agregar contenido",
+    "clickToEditSubtasks": "Haz clic para editar subtareas",
+    "clickToAddOrEditSubtasks": "Haz clic para agregar o editar subtareas",
+    "contentPlaceholder": "Agrega contenido aquí... (Markdown soportado)",
+    "contentEditHint": "Presiona Cmd/Ctrl+Enter para guardar, Esc para cancelar",
+    "noContentPreview": "No hay contenido para previsualizar. Cambia a modo de edición para agregar contenido.",
+    "deleteConfirmTitle": "Eliminar Tarea",
+    "deleteConfirmMessage": "¿Estás seguro de que deseas eliminar esta tarea? Esta acción no se puede deshacer.",
+    "noMoreIterations": "No hay más iteraciones programadas",
+    "nextOccurrences": "Próximas Ocurrencias",
+    "nextOccurrencesAfterThis": "Próximas Ocurrencias Después de Esto",
+    "noDueDate": "Sin fecha de vencimiento",
+    "instanceOf": "Esta es una instancia de una tarea recurrente",
+    "parentTask": "Tarea principal",
+    "includingToday": "incluyendo hoy"
   },
   "dateIndicators": {
     "today": "HOY",
@@ -1063,5 +1133,8 @@
       "nonRecurring": "no recurrente",
       "instances": "instancias recurrentes"
     }
+  },
+  "subtasks": {
+    "placeholder": "Agregar una subtarea..."
   }
 }

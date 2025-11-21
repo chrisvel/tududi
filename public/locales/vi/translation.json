@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Ngày kết thúc chu kỳ đã thay đổi",
       "recurrenceEndDate": "Ngày kết thúc chu kỳ",
       "recurrence_type_changed": "Loại tái diễn đã thay đổi",
-      "recurrence_interval_changed": "Khoảng thời gian tái diễn đã thay đổi"
+      "recurrence_interval_changed": "Khoảng thời gian tái diễn đã thay đổi",
+      "completionBasedChanged": "Thay đổi tần suất dựa trên hoàn thành",
+      "projectIdChanged": "Được gán cho một dự án",
+      "recurrenceType": "Loại tần suất",
+      "recurrenceTypeChanged": "Thay đổi loại tần suất"
     },
     "justNow": "Vừa xong",
     "minutesAgo": "{{minutes}} phút trước",
@@ -410,7 +414,8 @@
         "monthDay": "Ngày trong tháng",
         "weekOfMonth": "Tuần trong tháng",
         "recurrenceEndDate": "Ngày kết thúc (tùy chọn)",
-        "completionBased": "Lặp lại sau khi hoàn thành"
+        "completionBased": "Lặp lại sau khi hoàn thành",
+        "repeatOn": "Lặp lại vào"
       },
       "projectSearchPlaceholder": "Tìm kiếm hoặc tạo một dự án...",
       "noMatchingProjects": "Không có dự án nào phù hợp",
@@ -431,7 +436,8 @@
         "short": "Hãy cố gắng cụ thể hơn về những gì cần làm",
         "noVerb": "Bạn cần thực hiện hành động cụ thể nào? Hãy thử bắt đầu bằng một động từ.",
         "vague": "Hãy thử bắt đầu bằng một động từ hành động như \"Gọi\", \"Viết\", \"Lên lịch\", hoặc \"Nghiên cứu\""
-      }
+      },
+      "selectAtLeastOneDay": "Vui lòng chọn ít nhất một ngày"
     },
     "noteTitle": "Tiêu đề ghi chú",
     "noteContent": "Nội dung ghi chú",
@@ -506,7 +512,10 @@
     "browseImage": "Duyệt Hình Ảnh",
     "noNotes": "Không có ghi chú cho dự án này.",
     "deleteProject": "Xóa Dự Án",
-    "createSuccess": "Dự án đã được tạo thành công!"
+    "createSuccess": "Dự án đã được tạo thành công!",
+    "createdAndAssigned": "Dự án đã được tạo và gán",
+    "createError": "Tạo dự án không thành công",
+    "viewProject": "Đi đến dự án"
   },
   "errors": {
     "required": "Trường này là bắt buộc",
@@ -661,7 +670,68 @@
     "subtasks": "Công việc con",
     "noSubtasks": "Chưa có công việc con nào",
     "recentActivity": "Hoạt động gần đây",
-    "noActivityYet": "Chưa có hoạt động nào"
+    "noActivityYet": "Chưa có hoạt động nào",
+    "noSubtasksClickToAdd": "Chưa có công việc con, nhấp để thêm",
+    "project": "Dự án",
+    "noProject": "Không có dự án - Nhấp để gán",
+    "tags": "Thẻ",
+    "noTags": "Không có thẻ",
+    "priority": "Độ ưu tiên",
+    "dueDate": "Ngày hết hạn",
+    "recurringSetup": "Cài đặt lặp lại",
+    "notRecurring": "Công việc này chưa lặp lại.",
+    "clickToEditTitle": "Nhấp để chỉnh sửa tiêu đề",
+    "clickToEditContent": "Nhấp để chỉnh sửa nội dung",
+    "clickToAddContent": "Nhấp để thêm nội dung",
+    "clickToEditSubtasks": "Nhấp để chỉnh sửa các công việc con",
+    "clickToAddOrEditSubtasks": "Nhấp để thêm hoặc chỉnh sửa các công việc con",
+    "contentPlaceholder": "Thêm nội dung ở đây... (hỗ trợ Markdown)",
+    "contentEditHint": "Nhấn Cmd/Ctrl+Enter để lưu, Esc để hủy",
+    "noContentPreview": "Không có nội dung để xem trước. Chuyển sang chế độ Chỉnh sửa để thêm nội dung.",
+    "deleteConfirmTitle": "Xóa Công việc",
+    "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa công việc này không? Hành động này không thể hoàn tác.",
+    "noMoreIterations": "Không còn lần lặp nào được lên lịch",
+    "nextOccurrences": "Các lần xuất hiện tiếp theo",
+    "nextOccurrencesAfterThis": "Các lần xuất hiện tiếp theo sau cái này",
+    "thisTask": "Công việc này",
+    "is": "là",
+    "and": "và",
+    "dueOn": "hạn",
+    "inProject": "từ dự án",
+    "lowPriority": "ưu tiên thấp",
+    "mediumPriority": "ưu tiên trung bình",
+    "highPriority": "ưu tiên cao",
+    "inDays": "trong {{count}} ngày",
+    "daysAgo": "{{count}} ngày trước",
+    "tagsUpdated": "Cập nhật thẻ thành công",
+    "tagsUpdateError": "Cập nhật thẻ thất bại",
+    "recurrenceUpdated": "Cập nhật chu kỳ thành công",
+    "recurrenceUpdateError": "Cập nhật chu kỳ thất bại",
+    "dueDateUpdated": "Cập nhật ngày đến hạn thành công",
+    "dueDateUpdateError": "Cập nhật ngày đến hạn thất bại",
+    "titleUpdated": "Cập nhật tiêu đề nhiệm vụ thành công",
+    "titleUpdateError": "Cập nhật tiêu đề nhiệm vụ thất bại",
+    "contentUpdated": "Cập nhật nội dung nhiệm vụ thành công",
+    "contentUpdateError": "Cập nhật nội dung nhiệm vụ thất bại",
+    "subtasksUpdated": "Cập nhật nhiệm vụ con thành công",
+    "subtasksUpdateError": "Cập nhật nhiệm vụ con thất bại",
+    "projectUpdated": "Cập nhật dự án thành công",
+    "projectUpdateError": "Cập nhật dự án thất bại",
+    "projectCleared": "Dự án đã được xóa thành công",
+    "projectClearError": "Xóa dự án thất bại",
+    "priorityUpdated": "Cập nhật độ ưu tiên thành công",
+    "priorityUpdateError": "Cập nhật độ ưu tiên thất bại",
+    "status": {
+      "notStarted": "chưa bắt đầu",
+      "inProgress": "đang tiến hành",
+      "done": "đã hoàn thành",
+      "archived": "đã lưu trữ",
+      "unknown": "đang diễn ra"
+    },
+    "noDueDate": "Không có ngày hết hạn",
+    "instanceOf": "Đây là một phiên bản của một nhiệm vụ định kỳ",
+    "parentTask": "Nhiệm vụ Cha",
+    "includingToday": "bao gồm hôm nay"
   },
   "projects": {
     "loading": "Đang tải dự án...",
@@ -1062,5 +1132,8 @@
       "nonRecurring": "không lặp lại",
       "instances": "các phiên bản lặp lại"
     }
+  },
+  "subtasks": {
+    "placeholder": "Thêm một công việc phụ..."
   }
 }

@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "반복 종료 날짜가 변경되었습니다",
       "recurrenceEndDate": "반복 종료 날짜",
       "recurrence_type_changed": "반복 유형이 변경되었습니다",
-      "recurrence_interval_changed": "반복 간격이 변경되었습니다"
+      "recurrence_interval_changed": "반복 간격이 변경되었습니다",
+      "completionBasedChanged": "완료 기반 반복 변경됨",
+      "projectIdChanged": "프로젝트에 할당됨",
+      "recurrenceType": "반복 유형",
+      "recurrenceTypeChanged": "반복 유형 변경됨"
     },
     "justNow": "방금",
     "minutesAgo": "{{minutes}}분 전",
@@ -410,7 +414,8 @@
         "monthDay": "월의 일",
         "weekOfMonth": "월의 주",
         "recurrenceEndDate": "종료일 (선택 사항)",
-        "completionBased": "완료 후 반복"
+        "completionBased": "완료 후 반복",
+        "repeatOn": "반복"
       },
       "projectSearchPlaceholder": "프로젝트 검색 또는 생성...",
       "noMatchingProjects": "일치하는 프로젝트가 없습니다",
@@ -431,7 +436,8 @@
         "short": "해야 할 일을 더 구체적으로 작성해보세요",
         "noVerb": "어떤 특정 행동을 취해야 하나요? 동사로 시작해보세요.",
         "vague": "\"전화하기\", \"작성하기\", \"일정 잡기\", 또는 \"조사하기\"와 같은 행동 동사로 시작해보세요"
-      }
+      },
+      "selectAtLeastOneDay": "하루 이상 선택해 주세요"
     },
     "noteTitle": "노트 제목",
     "noteContent": "노트 내용",
@@ -506,7 +512,10 @@
     "browseImage": "이미지 찾아보기",
     "noNotes": "이 프로젝트에 대한 메모가 없습니다.",
     "deleteProject": "프로젝트 삭제",
-    "createSuccess": "프로젝트가 성공적으로 생성되었습니다!"
+    "createSuccess": "프로젝트가 성공적으로 생성되었습니다!",
+    "createdAndAssigned": "프로젝트가 생성되고 할당되었습니다",
+    "createError": "프로젝트 생성에 실패했습니다",
+    "viewProject": "프로젝트로 이동"
   },
   "errors": {
     "required": "이 필드는 필수입니다",
@@ -661,7 +670,68 @@
     "subtasks": "하위 작업",
     "noSubtasks": "아직 하위 작업이 없습니다",
     "recentActivity": "최근 활동",
-    "noActivityYet": "아직 활동이 없습니다"
+    "noActivityYet": "아직 활동이 없습니다",
+    "thisTask": "이 작업",
+    "is": "는",
+    "and": "그리고",
+    "dueOn": "기한",
+    "inProject": "프로젝트에서",
+    "lowPriority": "낮은 우선순위",
+    "mediumPriority": "중간 우선순위",
+    "highPriority": "높은 우선순위",
+    "inDays": "{{count}}일 내",
+    "daysAgo": "{{count}}일 전",
+    "tagsUpdated": "태그가 성공적으로 업데이트되었습니다",
+    "tagsUpdateError": "태그 업데이트에 실패했습니다",
+    "recurrenceUpdated": "반복이 성공적으로 업데이트되었습니다",
+    "recurrenceUpdateError": "반복 업데이트에 실패했습니다",
+    "dueDateUpdated": "기한이 성공적으로 업데이트되었습니다",
+    "dueDateUpdateError": "기한 업데이트에 실패했습니다",
+    "titleUpdated": "작업 제목이 성공적으로 업데이트되었습니다",
+    "titleUpdateError": "작업 제목 업데이트에 실패했습니다",
+    "contentUpdated": "작업 내용이 성공적으로 업데이트되었습니다",
+    "contentUpdateError": "작업 내용 업데이트에 실패했습니다",
+    "subtasksUpdated": "하위 작업이 성공적으로 업데이트되었습니다",
+    "subtasksUpdateError": "하위 작업 업데이트에 실패했습니다",
+    "projectUpdated": "프로젝트가 성공적으로 업데이트되었습니다",
+    "projectUpdateError": "프로젝트 업데이트에 실패했습니다",
+    "projectCleared": "프로젝트가 성공적으로 삭제되었습니다",
+    "projectClearError": "프로젝트 삭제에 실패했습니다",
+    "priorityUpdated": "우선 순위가 성공적으로 업데이트되었습니다",
+    "priorityUpdateError": "우선 순위 업데이트에 실패했습니다",
+    "status": {
+      "notStarted": "시작되지 않음",
+      "inProgress": "진행 중",
+      "done": "완료됨",
+      "archived": "보관됨",
+      "unknown": "진행 중"
+    },
+    "noSubtasksClickToAdd": "아직 하위 작업이 없습니다. 클릭하여 추가하세요",
+    "project": "프로젝트",
+    "noProject": "프로젝트가 없습니다 - 클릭하여 할당하세요",
+    "tags": "태그",
+    "noTags": "태그가 없습니다",
+    "priority": "우선순위",
+    "dueDate": "마감일",
+    "noDueDate": "마감일이 없습니다",
+    "recurringSetup": "반복 설정",
+    "notRecurring": "이 작업은 아직 반복되지 않습니다.",
+    "clickToEditTitle": "클릭하여 제목 편집",
+    "clickToEditContent": "클릭하여 내용 편집",
+    "clickToAddContent": "클릭하여 내용 추가",
+    "clickToEditSubtasks": "클릭하여 하위 작업 편집",
+    "clickToAddOrEditSubtasks": "클릭하여 하위 작업 추가 또는 편집",
+    "contentPlaceholder": "여기에 내용을 추가하세요... (Markdown 지원)",
+    "contentEditHint": "Cmd/Ctrl+Enter를 눌러 저장하고, Esc를 눌러 취소하세요",
+    "noContentPreview": "미리보기할 내용이 없습니다. 내용을 추가하려면 편집 모드로 전환하세요.",
+    "deleteConfirmTitle": "작업 삭제",
+    "deleteConfirmMessage": "이 작업을 삭제하시겠습니까? 이 작업은 실행 취소할 수 없습니다.",
+    "noMoreIterations": "더 이상 예약된 반복이 없습니다",
+    "nextOccurrences": "다음 발생",
+    "nextOccurrencesAfterThis": "이후의 다음 발생",
+    "instanceOf": "이것은 반복 작업의 인스턴스입니다",
+    "parentTask": "상위 작업",
+    "includingToday": "오늘 포함"
   },
   "projects": {
     "loading": "프로젝트 로딩 중...",
@@ -1062,5 +1132,8 @@
       "nonRecurring": "비반복",
       "instances": "반복 인스턴스"
     }
+  },
+  "subtasks": {
+    "placeholder": "하위 작업 추가..."
   }
 }

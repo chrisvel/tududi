@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Das Enddatum der Wiederholung wurde geändert",
       "recurrenceEndDate": "Enddatum der Wiederholung",
       "recurrence_type_changed": "Wiederholungsart geändert",
-      "recurrence_interval_changed": "Wiederholungsintervall geändert"
+      "recurrence_interval_changed": "Wiederholungsintervall geändert",
+      "completionBasedChanged": "Änderung der auf Abschluss basierenden Wiederholung",
+      "projectIdChanged": "Einem Projekt zugewiesen",
+      "recurrenceType": "Wiederholungstyp",
+      "recurrenceTypeChanged": "Wiederholungstyp geändert"
     },
     "justNow": "Gerade eben",
     "minutesAgo": "{{minutes}}m her",
@@ -181,7 +185,8 @@
         "status": "Status",
         "priority": "Priorität",
         "dueDate": "Fälligkeitsdatum",
-        "note": "Notiz"
+        "note": "Notiz",
+        "repeatOn": "Wiederholen am"
       },
       "recurrenceSettings": "Wiederholungseinstellungen",
       "completionBasedHelp": "Falls aktiviert, wird die nächste Aufgabe basierend auf dem Abschlussdatum statt dem Fälligkeitsdatum erstellt",
@@ -203,7 +208,8 @@
         "short": "Versuchen Sie, genauer zu beschreiben, was getan werden muss",
         "noVerb": "Welche spezifische Aktion müssen Sie durchführen? Versuchen Sie, mit einem Verb zu beginnen.",
         "vague": "Versuchen Sie, mit einem Aktionsverb wie \"Anrufen\", \"Schreiben\", \"Planen\" oder \"Forschen\" zu beginnen"
-      }
+      },
+      "selectAtLeastOneDay": "Bitte wählen Sie mindestens einen Tag aus"
     },
     "noteTitle": "Notiz-Titel",
     "noteContent": "Notiz-Inhalt",
@@ -383,7 +389,10 @@
     "name": "Projektname",
     "noNotes": "Keine Notizen für dieses Projekt.",
     "deleteProject": "Projekt löschen",
-    "createSuccess": "Projekt erfolgreich erstellt!"
+    "createSuccess": "Projekt erfolgreich erstellt!",
+    "createdAndAssigned": "Projekt erstellt und zugewiesen",
+    "createError": "Projekt konnte nicht erstellt werden",
+    "viewProject": "Zum Projekt gehen"
   },
   "profile": {
     "title": "Profil-Einstellungen",
@@ -595,7 +604,68 @@
     "subtasks": "Unteraufgaben",
     "noSubtasks": "Noch keine Unteraufgaben",
     "recentActivity": "Aktuelle Aktivitäten",
-    "noActivityYet": "Noch keine Aktivität"
+    "noActivityYet": "Noch keine Aktivität",
+    "thisTask": "Diese Aufgabe",
+    "is": "ist",
+    "and": "und",
+    "dueOn": "fällig",
+    "inProject": "aus dem Projekt",
+    "lowPriority": "niedrige Priorität",
+    "mediumPriority": "mittlere Priorität",
+    "highPriority": "hohe Priorität",
+    "inDays": "in {{count}} Tagen",
+    "daysAgo": "{{count}} Tage her",
+    "tagsUpdated": "Tags erfolgreich aktualisiert",
+    "tagsUpdateError": "Fehler beim Aktualisieren der Tags",
+    "recurrenceUpdated": "Wiederholung erfolgreich aktualisiert",
+    "recurrenceUpdateError": "Fehler beim Aktualisieren der Wiederholung",
+    "dueDateUpdated": "Fälligkeitsdatum erfolgreich aktualisiert",
+    "dueDateUpdateError": "Fehler beim Aktualisieren des Fälligkeitsdatums",
+    "titleUpdated": "Aufgabentitel erfolgreich aktualisiert",
+    "titleUpdateError": "Fehler beim Aktualisieren des Aufgabentitels",
+    "contentUpdated": "Aufgabeninhalt erfolgreich aktualisiert",
+    "contentUpdateError": "Fehler beim Aktualisieren des Aufgabeninhalts",
+    "subtasksUpdated": "Unteraufgaben erfolgreich aktualisiert",
+    "subtasksUpdateError": "Fehler beim Aktualisieren der Unteraufgaben",
+    "projectUpdated": "Projekt erfolgreich aktualisiert",
+    "projectUpdateError": "Fehler beim Aktualisieren des Projekts",
+    "projectCleared": "Projekt erfolgreich gelöscht",
+    "projectClearError": "Fehler beim Löschen des Projekts",
+    "priorityUpdated": "Priorität erfolgreich aktualisiert",
+    "priorityUpdateError": "Fehler beim Aktualisieren der Priorität",
+    "status": {
+      "notStarted": "nicht gestartet",
+      "inProgress": "in Bearbeitung",
+      "done": "abgeschlossen",
+      "archived": "archiviert",
+      "unknown": "laufend"
+    },
+    "noSubtasksClickToAdd": "Noch keine Unteraufgaben, klicken Sie zum Hinzufügen",
+    "project": "Projekt",
+    "noProject": "Kein Projekt - Klicken Sie, um zuzuweisen",
+    "tags": "Tags",
+    "noTags": "Keine Tags",
+    "priority": "Priorität",
+    "dueDate": "Fälligkeitsdatum",
+    "recurringSetup": "Wiederkehrende Einrichtung",
+    "notRecurring": "Diese Aufgabe ist noch nicht wiederkehrend.",
+    "clickToEditTitle": "Klicken Sie, um den Titel zu bearbeiten",
+    "clickToEditContent": "Klicken Sie, um den Inhalt zu bearbeiten",
+    "clickToAddContent": "Klicken Sie, um Inhalt hinzuzufügen",
+    "clickToEditSubtasks": "Klicken Sie, um Unteraufgaben zu bearbeiten",
+    "clickToAddOrEditSubtasks": "Klicken Sie, um Unteraufgaben hinzuzufügen oder zu bearbeiten",
+    "contentPlaceholder": "Inhalt hier hinzufügen... (Markdown unterstützt)",
+    "contentEditHint": "Drücken Sie Cmd/Ctrl+Enter, um zu speichern, Esc, um abzubrechen",
+    "noContentPreview": "Kein Inhalt zur Vorschau. Wechseln Sie in den Bearbeitungsmodus, um Inhalte hinzuzufügen.",
+    "deleteConfirmTitle": "Aufgabe löschen",
+    "deleteConfirmMessage": "Sind Sie sicher, dass Sie diese Aufgabe löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "noMoreIterations": "Keine weiteren Iterationen geplant",
+    "nextOccurrences": "Nächste Vorkommen",
+    "nextOccurrencesAfterThis": "Nächste Vorkommen nach diesem",
+    "noDueDate": "Kein Fälligkeitsdatum",
+    "instanceOf": "Dies ist eine Instanz einer wiederkehrenden Aufgabe",
+    "parentTask": "Übergeordnete Aufgabe",
+    "includingToday": "einschließlich heute"
   },
   "calendar": {
     "month": "Monat",
@@ -1071,5 +1141,8 @@
       "nonRecurring": "nicht-wiederkehrend",
       "instances": "wiederkehrende Instanzen"
     }
+  },
+  "subtasks": {
+    "placeholder": "Fügen Sie eine Unteraufgabe hinzu..."
   }
 }

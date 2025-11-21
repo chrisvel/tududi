@@ -140,6 +140,8 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskUid, refreshKey }) => {
                 }
                 return t('timeline.events.recurrenceTypeChanged');
             }
+            case 'completion_based_changed':
+                return t('timeline.events.completionBasedChanged');
             case 'name_changed':
                 return t('timeline.events.nameUpdated');
             case 'description_changed':
@@ -148,6 +150,8 @@ const TaskTimeline: React.FC<TaskTimelineProps> = ({ taskUid, refreshKey }) => {
                 return t('timeline.events.noteUpdated');
             case 'project_changed':
                 return t('timeline.events.projectChanged');
+            case 'project_id_changed':
+                return t('timeline.events.projectIdChanged');
             case 'tags_changed':
                 return t('timeline.events.tagsUpdated');
             case 'archived':

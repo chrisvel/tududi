@@ -445,6 +445,7 @@ router.patch('/task/:id', requireTaskWriteAccess, async (req, res) => {
             'recurrence_interval',
             'recurrence_end_date',
             'recurrence_weekday',
+            'recurrence_weekdays',
             'recurrence_month_day',
             'recurrence_week_of_month',
             'completion_based',

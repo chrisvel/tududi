@@ -149,7 +149,11 @@
       "recurrenceEndDateChanged": "Tekrar son tarihi değiştirildi",
       "recurrenceEndDate": "Tekrar son tarihi",
       "recurrence_type_changed": "Tekrar türü değişti",
-      "recurrence_interval_changed": "Tekrar aralığı değişti"
+      "recurrence_interval_changed": "Tekrar aralığı değişti",
+      "completionBasedChanged": "Tamamlamaya dayalı tekrar değiştirildi",
+      "projectIdChanged": "Bir projeye atandı",
+      "recurrenceType": "Tekrar türü",
+      "recurrenceTypeChanged": "Tekrar türü değiştirildi"
     },
     "justNow": "Şu anda",
     "minutesAgo": "{{minutes}}d önce",
@@ -410,7 +414,8 @@
         "monthDay": "Ayın Günü",
         "weekOfMonth": "Ayın Haftası",
         "recurrenceEndDate": "Bitiş tarihi (isteğe bağlı)",
-        "completionBased": "Tamamlandıktan sonra tekrar et"
+        "completionBased": "Tamamlandıktan sonra tekrar et",
+        "repeatOn": "Şu tarihlerde tekrar et"
       },
       "projectSearchPlaceholder": "Proje ara veya oluştur...",
       "noMatchingProjects": "Eşleşen proje yok",
@@ -431,7 +436,8 @@
         "short": "Ne yapılması gerektiği konusunda daha spesifik olmaya çalışın",
         "noVerb": "Hangi spesifik eylemi gerçekleştirmeniz gerekiyor? Bir fiille başlamayı deneyin.",
         "vague": "\"Ara\", \"Yaz\", \"Planla\" veya \"Araştır\" gibi bir eylem fiili ile başlamayı deneyin"
-      }
+      },
+      "selectAtLeastOneDay": "Lütfen en az bir gün seçin"
     },
     "noteTitle": "Not Başlığı",
     "noteContent": "Not İçeriği",
@@ -506,7 +512,10 @@
     "browseImage": "Görseli Gözat",
     "noNotes": "Bu proje için not yok.",
     "deleteProject": "Projeyi Sil",
-    "createSuccess": "Proje başarıyla oluşturuldu!"
+    "createSuccess": "Proje başarıyla oluşturuldu!",
+    "createdAndAssigned": "Proje oluşturuldu ve atandı",
+    "createError": "Proje oluşturulamadı",
+    "viewProject": "Projeye git"
   },
   "errors": {
     "required": "Bu alan gereklidir",
@@ -661,7 +670,68 @@
     "subtasks": "Alt görevler",
     "noSubtasks": "Henüz alt görev yok",
     "recentActivity": "Son Aktivite",
-    "noActivityYet": "Henüz hiçbir etkinlik yok"
+    "noActivityYet": "Henüz hiçbir etkinlik yok",
+    "noSubtasksClickToAdd": "Henüz alt görev yok, eklemek için tıklayın",
+    "project": "Proje",
+    "noProject": "Proje yok - Atamak için tıklayın",
+    "tags": "Etiketler",
+    "noTags": "Etiket yok",
+    "priority": "Öncelik",
+    "dueDate": "Son Tarih",
+    "recurringSetup": "Tekrarlayan Ayar",
+    "notRecurring": "Bu görev henüz tekrarlanmıyor.",
+    "clickToEditTitle": "Başlığı düzenlemek için tıklayın",
+    "clickToEditContent": "İçeriği düzenlemek için tıklayın",
+    "clickToAddContent": "İçerik eklemek için tıklayın",
+    "clickToEditSubtasks": "Alt görevleri düzenlemek için tıklayın",
+    "clickToAddOrEditSubtasks": "Alt görev eklemek veya düzenlemek için tıklayın",
+    "contentPlaceholder": "İçeriği buraya ekleyin... (Markdown destekleniyor)",
+    "contentEditHint": "Kaydetmek için Cmd/Ctrl+Enter'a, iptal etmek için Esc tuşuna basın",
+    "noContentPreview": "Önizlemek için içerik yok. İçerik eklemek için Düzenleme moduna geçin.",
+    "deleteConfirmTitle": "Görevi Sil",
+    "deleteConfirmMessage": "Bu görevi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "noMoreIterations": "Daha fazla yineleme planlanmadı",
+    "nextOccurrences": "Sonraki Oluşumlar",
+    "nextOccurrencesAfterThis": "Bundan Sonraki Oluşumlar",
+    "thisTask": "Bu görev",
+    "is": "dır",
+    "and": "ve",
+    "dueOn": "vadesi",
+    "inProject": "projeden",
+    "lowPriority": "düşük öncelik",
+    "mediumPriority": "orta öncelik",
+    "highPriority": "yüksek öncelik",
+    "inDays": "{{count}} gün içinde",
+    "daysAgo": "{{count}} gün önce",
+    "tagsUpdated": "Etiketler başarıyla güncellendi",
+    "tagsUpdateError": "Etiketleri güncelleme başarısız oldu",
+    "recurrenceUpdated": "Tekrar sıklığı başarıyla güncellendi",
+    "recurrenceUpdateError": "Tekrar sıklığını güncelleme başarısız oldu",
+    "dueDateUpdated": "Son tarih başarıyla güncellendi",
+    "dueDateUpdateError": "Son tarihi güncelleme başarısız oldu",
+    "titleUpdated": "Görev başlığı başarıyla güncellendi",
+    "titleUpdateError": "Görev başlığını güncelleme başarısız oldu",
+    "contentUpdated": "Görev içeriği başarıyla güncellendi",
+    "contentUpdateError": "Görev içeriğini güncelleme başarısız oldu",
+    "subtasksUpdated": "Alt görevler başarıyla güncellendi",
+    "subtasksUpdateError": "Alt görevleri güncelleme başarısız oldu",
+    "projectUpdated": "Proje başarıyla güncellendi",
+    "projectUpdateError": "Projeyi güncelleme başarısız oldu",
+    "projectCleared": "Proje başarıyla temizlendi",
+    "projectClearError": "Projeyi temizleme başarısız oldu",
+    "priorityUpdated": "Öncelik başarıyla güncellendi",
+    "priorityUpdateError": "Önceliği güncelleme başarısız oldu",
+    "status": {
+      "notStarted": "başlamadı",
+      "inProgress": "devam ediyor",
+      "done": "tamamlandı",
+      "archived": "arşivlendi",
+      "unknown": "süreçte"
+    },
+    "noDueDate": "Son tarih yok",
+    "instanceOf": "Bu, tekrarlayan bir görevin bir örneğidir",
+    "parentTask": "Üst Görev",
+    "includingToday": "bugün dahil"
   },
   "projects": {
     "loading": "Projeler yükleniyor...",
@@ -1062,5 +1132,8 @@
       "nonRecurring": "tekrarlamayan",
       "instances": "tekrarlayan örnekler"
     }
+  },
+  "subtasks": {
+    "placeholder": "Bir alt görev ekle..."
   }
 }

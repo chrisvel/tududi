@@ -156,7 +156,11 @@
       "recurrenceEndDateChanged": "Återkommande slutdatum ändrat",
       "recurrenceEndDate": "Återkommande slutdatum",
       "recurrence_type_changed": "Återkommande typ ändrad",
-      "recurrence_interval_changed": "Återkommande intervall ändrat"
+      "recurrence_interval_changed": "Återkommande intervall ändrat",
+      "completionBasedChanged": "Ändrad återkommande baserat på slutförande",
+      "projectIdChanged": "Tilldelad ett projekt",
+      "recurrenceType": "Typ av återkommande",
+      "recurrenceTypeChanged": "Typ av återkommande ändrad"
     }
   },
   "profile": {
@@ -410,7 +414,8 @@
         "monthDay": "Dag i månaden",
         "weekOfMonth": "Vecka i månaden",
         "recurrenceEndDate": "Slutdatum (valfritt)",
-        "completionBased": "Upprepa efter slutförd"
+        "completionBased": "Upprepa efter slutförd",
+        "repeatOn": "Upprepa på"
       },
       "projectSearchPlaceholder": "Sök eller skapa ett projekt...",
       "noMatchingProjects": "Inga matchande projekt",
@@ -431,7 +436,8 @@
         "short": "Försök att vara mer specifik om vad som behöver göras",
         "noVerb": "Vilken specifik åtgärd behöver du vidta? Försök att börja med ett verb.",
         "vague": "Försök att börja med ett handlingsverb som \"Ring\", \"Skriv\", \"Boka\" eller \"Forska\""
-      }
+      },
+      "selectAtLeastOneDay": "Vänligen välj minst en dag"
     },
     "noteTitle": "Anteckningsitel",
     "noteContent": "Anteckningsinnehåll",
@@ -506,7 +512,10 @@
     "browseImage": "Bläddra efter bild",
     "noNotes": "Inga anteckningar för detta projekt.",
     "deleteProject": "Ta bort projekt",
-    "createSuccess": "Projekt skapat!"
+    "createSuccess": "Projekt skapat!",
+    "createdAndAssigned": "Projekt skapat och tilldelat",
+    "createError": "Misslyckades med att skapa projekt",
+    "viewProject": "Gå till projekt"
   },
   "errors": {
     "required": "Detta fält är obligatoriskt",
@@ -661,7 +670,68 @@
     "subtasks": "Deluppgifter",
     "noSubtasks": "Inga deluppgifter än",
     "recentActivity": "Senaste aktivitet",
-    "noActivityYet": "Ingen aktivitet än"
+    "noActivityYet": "Ingen aktivitet än",
+    "noSubtasksClickToAdd": "Inga deluppgifter ännu, klicka för att lägga till",
+    "project": "Projekt",
+    "noProject": "Inget projekt - Klicka för att tilldela",
+    "tags": "Taggar",
+    "noTags": "Inga taggar",
+    "priority": "Prioritet",
+    "dueDate": "Förfallodatum",
+    "recurringSetup": "Återkommande inställning",
+    "notRecurring": "Denna uppgift är inte återkommande ännu.",
+    "clickToEditTitle": "Klicka för att redigera titel",
+    "clickToEditContent": "Klicka för att redigera innehåll",
+    "clickToAddContent": "Klicka för att lägga till innehåll",
+    "clickToEditSubtasks": "Klicka för att redigera deluppgifter",
+    "clickToAddOrEditSubtasks": "Klicka för att lägga till eller redigera deluppgifter",
+    "contentPlaceholder": "Lägg till innehåll här... (Markdown stöds)",
+    "contentEditHint": "Tryck Cmd/Ctrl+Enter för att spara, Esc för att avbryta",
+    "noContentPreview": "Inga innehåll att förhandsgranska. Väx till redigeringsläge för att lägga till innehåll.",
+    "deleteConfirmTitle": "Ta bort uppgift",
+    "deleteConfirmMessage": "Är du säker på att du vill ta bort denna uppgift? Denna åtgärd kan inte ångras.",
+    "noMoreIterations": "Inga fler iterationer schemalagda",
+    "nextOccurrences": "Nästa förekomster",
+    "nextOccurrencesAfterThis": "Nästa förekomster efter detta",
+    "thisTask": "Denna uppgift",
+    "is": "är",
+    "and": "och",
+    "dueOn": "förfall",
+    "inProject": "från projekt",
+    "lowPriority": "låg prioritet",
+    "mediumPriority": "medelhög prioritet",
+    "highPriority": "hög prioritet",
+    "inDays": "om {{count}} dagar",
+    "daysAgo": "{{count}} dagar sedan",
+    "tagsUpdated": "Taggar uppdaterade framgångsrikt",
+    "tagsUpdateError": "Misslyckades med att uppdatera taggar",
+    "recurrenceUpdated": "Återkommande uppdaterad framgångsrikt",
+    "recurrenceUpdateError": "Misslyckades med att uppdatera återkommande",
+    "dueDateUpdated": "Förfallodatum uppdaterat framgångsrikt",
+    "dueDateUpdateError": "Misslyckades med att uppdatera förfallodatum",
+    "titleUpdated": "Uppgiftens titel uppdaterad framgångsrikt",
+    "titleUpdateError": "Misslyckades med att uppdatera uppgiftens titel",
+    "contentUpdated": "Uppgiftens innehåll uppdaterat framgångsrikt",
+    "contentUpdateError": "Misslyckades med att uppdatera uppgiftens innehåll",
+    "subtasksUpdated": "Underrubriker uppdaterade framgångsrikt",
+    "subtasksUpdateError": "Misslyckades med att uppdatera underrubriker",
+    "projectUpdated": "Projekt uppdaterat framgångsrikt",
+    "projectUpdateError": "Misslyckades med att uppdatera projekt",
+    "projectCleared": "Projekt rensat framgångsrikt",
+    "projectClearError": "Misslyckades med att rensa projekt",
+    "priorityUpdated": "Prioritet uppdaterad framgångsrikt",
+    "priorityUpdateError": "Misslyckades med att uppdatera prioritet",
+    "status": {
+      "notStarted": "inte påbörjad",
+      "inProgress": "pågående",
+      "done": "avslutad",
+      "archived": "arkiverad",
+      "unknown": "pågår"
+    },
+    "noDueDate": "Ingen förfallodatum",
+    "instanceOf": "Detta är en instans av en återkommande uppgift",
+    "parentTask": "Överordnad uppgift",
+    "includingToday": "inklusive idag"
   },
   "projects": {
     "loading": "Laddar projekt...",
@@ -1062,5 +1132,8 @@
       "nonRecurring": "icke-återkommande",
       "instances": "återkommande instanser"
     }
+  },
+  "subtasks": {
+    "placeholder": "Lägg till en deluppgift..."
   }
 }
