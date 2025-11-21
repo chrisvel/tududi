@@ -291,9 +291,7 @@ describe('Tasks Routes', () => {
                 tags: [{ name: 'alpha' }, { name: 'beta' }],
             };
 
-            const createResponse = await agent
-                .post('/api/task')
-                .send(taskData);
+            const createResponse = await agent.post('/api/task').send(taskData);
             expect(createResponse.status).toBe(201);
 
             const response = await agent.get('/api/tasks?tag=alpha');
