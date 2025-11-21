@@ -60,12 +60,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const { showSuccessToast, showErrorToast } = useToast();
 
     const [activeTab, setActiveTab] = useState('general');
-    // Generate timezone list using date-fns-tz and Intl API
     const timezonesByRegion = React.useMemo(() => {
         return getTimezonesByRegion();
     }, []);
 
-    // Password visibility state
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -77,7 +75,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         appearance: isDarkMode ? 'dark' : 'light',
         language: 'en',
         timezone: 'UTC',
-        first_day_of_week: 1, // Monday by default
+        first_day_of_week: 1,
         avatar_image: '',
         telegram_bot_token: '',
         telegram_allowed_users: '',
@@ -146,14 +144,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         }
     }, [activeTab, apiKeysLoaded, loadApiKeys]);
 
-    // Password validation
     const validatePasswordForm = (): {
         valid: boolean;
         errors: { [key: string]: string };
     } => {
         const errors: { [key: string]: string } = {};
 
-        // Only validate if user is trying to change password
         if (
             formData.currentPassword ||
             formData.newPassword ||
@@ -224,9 +220,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             window.forceLanguageReload(value);
                         }
                     }
-                } catch {
-                    // Ignore errors loading language resources
-                }
+                } catch {}
             }
 
             setTimeout(() => {
@@ -442,8 +436,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             : true,
                 });
 
-                // Note: Task summary status checking functionality removed for now
-
                 if (data.telegram_bot_token) {
                     fetchPollingStatus();
                 }
@@ -472,23 +464,19 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 const data = await response.json();
                 setIsPolling(data.status?.running || false);
 
-                // Auto-start polling if user has a bot token but polling is not running
                 if (data.telegram_bot_token && !data.status?.running) {
                     handleStartPolling();
                 }
             } catch {
-                // Ignore errors fetching polling status
             }
         };
         fetchProfile();
     }, []);
 
-    // Fetch Telegram bot info when profile loads
     useEffect(() => {
         const fetchTelegramInfo = async () => {
             if (profile?.telegram_bot_token) {
                 try {
-                    // Fetch bot info
                     const setupResponse = await fetch(
                         getApiPath('telegram/setup'),
                         {
@@ -514,7 +502,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         }
                     }
 
-                    // Also fetch and auto-start polling status
                     const pollingResponse = await fetch(
                         getApiPath('telegram/polling-status'),
                         {
@@ -529,13 +516,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         const pollingData = await pollingResponse.json();
                         setIsPolling(pollingData.status?.running || false);
 
-                        // Auto-start polling if not running
                         if (!pollingData.status?.running) {
                             setTimeout(() => {
                                 handleStartPolling();
                             }, 1000);
                         } else {
-                            // Dispatch healthy status if already running
                             dispatchTelegramStatusChange('healthy');
                         }
                     }
@@ -612,7 +597,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             const data = await response.json();
             setTelegramSetupStatus('success');
 
-            // Extract bot info properly
             const bot = data.bot;
             let botDisplayName = 'Bot';
 
@@ -643,7 +627,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 });
                 setIsPolling(true);
 
-                // Send welcome message on first setup
                 if (profile?.telegram_chat_id) {
                     try {
                         await fetch(getApiPath('telegram/send-welcome'), {
@@ -666,7 +649,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     }, 1000);
                 }
 
-                // Dispatch status change event
                 dispatchTelegramStatusChange('healthy');
             }
         } catch (error) {
@@ -693,7 +675,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             setIsPolling(true);
             showSuccessToast(t('profile.pollingStarted'));
 
-            // Dispatch status change event
             dispatchTelegramStatusChange('healthy');
 
             if (telegramBotInfo) {
@@ -728,7 +709,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 t('profile.pollingStopped', 'Polling stopped successfully.')
             );
 
-            // Dispatch status change event
             dispatchTelegramStatusChange('problem');
 
             if (telegramBotInfo) {
@@ -772,7 +752,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const handleAvatarSelect = (file: File) => {
         if (!file) return;
 
-        // Validate file type
         if (!file.type.startsWith('image/')) {
             showErrorToast(
                 t('profile.avatarUploadError', 'Please upload an image file')
@@ -780,7 +759,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             return;
         }
 
-        // Validate file size (5MB)
         if (file.size > 5 * 1024 * 1024) {
             showErrorToast(
                 t('profile.avatarSizeError', 'Image must be smaller than 5MB')
@@ -788,11 +766,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             return;
         }
 
-        // Store file for later upload
         setAvatarFile(file);
         setRemoveAvatar(false);
 
-        // Create preview URL
         const reader = new FileReader();
         reader.onloadend = () => {
             setAvatarPreview(reader.result as string);
@@ -840,13 +816,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        // Check if user is trying to change password
         const isPasswordChange =
             formData.currentPassword ||
             formData.newPassword ||
             formData.confirmPassword;
 
-        // Only validate password if user is trying to change password
         if (isPasswordChange) {
             const passwordValidation = validatePasswordForm();
             if (!passwordValidation.valid) {
@@ -856,7 +830,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         }
 
         try {
-            // Prepare data to send - exclude password fields if not changing password
             const dataToSend = { ...formData };
             if (!isPasswordChange) {
                 delete dataToSend.currentPassword;
@@ -881,15 +854,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
             const updatedProfile: Profile = await response.json();
 
-            // Handle avatar upload or deletion
             if (avatarFile) {
-                // Upload new avatar
                 const avatarUrl = await uploadAvatar(avatarFile);
                 updatedProfile.avatar_image = avatarUrl;
                 setAvatarFile(null);
                 setAvatarPreview(null);
             } else if (removeAvatar && formData.avatar_image) {
-                // Delete avatar
                 await deleteAvatar();
                 updatedProfile.avatar_image = null;
                 setRemoveAvatar(false);
@@ -897,7 +867,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
             setProfile(updatedProfile);
 
-            // Update formData to reflect the saved changes, preserving any fields not in response
             setFormData((prev) => ({
                 ...prev,
                 appearance:
@@ -959,7 +928,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                           : true,
             }));
 
-            // Apply appearance change after save
             if (
                 updatedProfile.appearance !== (isDarkMode ? 'dark' : 'light') &&
                 toggleDarkMode
@@ -967,12 +935,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 toggleDarkMode();
             }
 
-            // Apply language change after save
             if (updatedProfile.language !== i18n.language) {
                 await handleLanguageChange(updatedProfile.language);
             }
 
-            // Notify other components about Pomodoro setting change
             if (updatedProfile.pomodoro_enabled !== undefined) {
                 window.dispatchEvent(
                     new CustomEvent('pomodoroSettingChanged', {
@@ -981,7 +947,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 );
             }
 
-            // Clear password fields on successful save
             if (isPasswordChange) {
                 setFormData((prev) => ({
                     ...prev,
@@ -999,7 +964,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 : t('profile.successMessage', 'Profile updated successfully!');
             showSuccessToast(successMessage);
 
-            // Reload page if avatar changed to update navbar
             if (avatarFile || removeAvatar) {
                 setTimeout(() => {
                     window.location.reload();
