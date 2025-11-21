@@ -468,8 +468,12 @@ const Tasks: React.FC = () => {
     };
 
     return (
-        <div className={`w-full pt-4 pb-8 ${isUpcomingView ? '' : 'px-2 sm:px-4 lg:px-6'}`}>
-            <div className={`w-full ${isUpcomingView ? '' : 'max-w-5xl mx-auto'}`}>
+        <div
+            className={`w-full pt-4 pb-8 ${isUpcomingView ? '' : 'px-2 sm:px-4 lg:px-6'}`}
+        >
+            <div
+                className={`w-full ${isUpcomingView ? '' : 'max-w-5xl mx-auto'}`}
+            >
                 {/* Title row with info button and filters dropdown on the right */}
                 <div
                     className={`flex items-center justify-between gap-2 min-w-0 ${
