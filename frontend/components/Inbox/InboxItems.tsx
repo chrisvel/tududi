@@ -32,10 +32,8 @@ const InboxItems: React.FC = () => {
     const { showSuccessToast, showErrorToast } = useToast();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // Track if we've done the initial load from URL
     const [hasInitialized, setHasInitialized] = useState(false);
 
-    // Access store data
     const { inboxItems, isLoading, pagination } = useStore(
         (state) => state.inboxStore
     );
@@ -50,30 +48,24 @@ const InboxItems: React.FC = () => {
         isLoading: tagsLoading,
     } = useStore((state) => state.tagsStore);
 
-    // Local projects state (keep main's approach)
     const [projects, setProjects] = useState<Project[]>([]);
 
-    // Modal states
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isInfoExpanded, setIsInfoExpanded] = useState(false);
 
-    // Data for modals
     const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
     const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
     const [noteToEdit, setNoteToEdit] = useState<Note | null>(null);
 
-    // Track the current inbox item UID being converted (for task/project/note conversion)
     const [currentConversionItemUid, setCurrentConversionItemUid] = useState<
         string | null
     >(null);
 
-    // Track the current inbox item being edited
     const [itemToEdit, setItemToEdit] = useState<string | null>(null);
 
-    // Create stable default task object to prevent infinite re-renders
     const defaultTask = useMemo(
         () => ({
             name: '',
@@ -85,15 +77,12 @@ const InboxItems: React.FC = () => {
     );
 
     useEffect(() => {
-        // Read the page size from URL parameter or use default
         const urlPageSize = searchParams.get('loaded');
         const currentLoadedCount = urlPageSize ? parseInt(urlPageSize, 10) : 20;
 
-        // Initial data loading - load the amount specified in URL
         loadInboxItemsToStore(true, currentLoadedCount);
         setHasInitialized(true);
 
-        // Load projects initially
         const loadInitialProjects = async () => {
             try {
                 const projectData = await fetchProjects();
@@ -105,7 +94,6 @@ const InboxItems: React.FC = () => {
         };
         loadInitialProjects();
 
-        // Load areas initially
         const loadInitialAreas = async () => {
             try {
                 const areasData = await fetchAreas();
@@ -117,7 +105,6 @@ const InboxItems: React.FC = () => {
         };
         loadInitialAreas();
 
-        // Load tags initially
         const loadInitialTags = async () => {
             if (!tagsHasLoaded && !tagsLoading) {
                 try {
@@ -128,23 +115,18 @@ const InboxItems: React.FC = () => {
             }
         };
         loadInitialTags();
-        // Set up an event listener for force reload
         const handleForceReload = () => {
-            // Wait a short time to ensure the backend has processed the new item
             setTimeout(() => {
                 const currentInboxStore = useStore.getState().inboxStore;
                 const currentCount = currentInboxStore.inboxItems.length;
-                loadInboxItemsToStore(false, currentCount); // Preserve current loaded count
+                loadInboxItemsToStore(false, currentCount);
             }, 500);
         };
 
-        // Handler for the inboxItemsUpdated custom event
         const handleInboxItemsUpdated = (
             event: CustomEvent<{ count: number; firstItemContent: string }>
         ) => {
-            // Show toast notifications for new items
             if (event.detail.count > 0) {
-                // Show notification for the first new item
                 showSuccessToast(
                     t(
                         'inbox.newTelegramItem',
@@ -155,7 +137,6 @@ const InboxItems: React.FC = () => {
                     )
                 );
 
-                // If multiple new items, show a summary notification as well
                 if (event.detail.count > 1) {
                     showSuccessToast(
                         t(
@@ -170,16 +151,12 @@ const InboxItems: React.FC = () => {
             }
         };
 
-        // Set up polling for new inbox items (especially from Telegram)
-        // This ensures real-time updates when items are added externally
-        // Use a reasonable interval that balances responsiveness with performance
         const pollInterval = setInterval(() => {
             const currentInboxStore = useStore.getState().inboxStore;
             const currentCount = currentInboxStore.inboxItems.length;
-            loadInboxItemsToStore(false, currentCount); // Preserve current loaded count
-        }, 15000); // Check for new items every 15 seconds
+            loadInboxItemsToStore(false, currentCount);
+        }, 15000);
 
-        // Add event listeners
         window.addEventListener('forceInboxReload', handleForceReload);
         window.addEventListener(
             'inboxItemsUpdated',
@@ -194,27 +171,23 @@ const InboxItems: React.FC = () => {
                 handleInboxItemsUpdated as EventListener
             );
         };
-    }, [t, showSuccessToast]); // Include dependencies that are actually used
+    }, [t, showSuccessToast]);
 
-    // Update URL when inboxItems count changes (but only after initialization)
     useEffect(() => {
-        // Don't update URL until we've done the initial load from URL
         if (!hasInitialized) return;
 
         const urlPageSize = searchParams.get('loaded');
         const urlLoadedCount = urlPageSize ? parseInt(urlPageSize, 10) : 0;
 
-        // Only update URL if the count has actually changed from what's in the URL
         if (inboxItems.length > 20 && inboxItems.length !== urlLoadedCount) {
             setSearchParams(
                 { loaded: inboxItems.length.toString() },
                 { replace: true }
             );
         } else if (inboxItems.length <= 20 && urlLoadedCount > 0) {
-            // Remove the parameter if we're at the default page size
             setSearchParams({}, { replace: true });
         }
-    }, [inboxItems.length, hasInitialized]); // Track hasInitialized to prevent premature URL updates
+    }, [inboxItems.length, hasInitialized]);
 
     const handleProcessItem = async (
         uid: string,
@@ -232,7 +205,6 @@ const InboxItems: React.FC = () => {
     };
 
     const handleUpdateItem = async (uid: string): Promise<void> => {
-        // When edit button is clicked, we open the InboxModal instead of doing inline editing
         setItemToEdit(uid);
         setIsEditModalOpen(true);
     };
@@ -261,20 +233,17 @@ const InboxItems: React.FC = () => {
         }
     };
 
-    // Modal handlers
     const handleOpenTaskModal = async (task: Task, inboxItemUid?: string) => {
         try {
-            // Load projects first before opening the modal
             try {
                 const projectData = await fetchProjects();
-                // Make sure we always set an array
                 setProjects(Array.isArray(projectData) ? projectData : []);
             } catch (error) {
                 console.error('Failed to load projects:', error);
                 showErrorToast(
                     t('project.loadError', 'Failed to load projects')
                 );
-                setProjects([]); // Ensure we have an empty array even on error
+                setProjects([]);
             }
 
             setTaskToEdit(task);
@@ -294,14 +263,13 @@ const InboxItems: React.FC = () => {
         inboxItemUid?: string
     ) => {
         try {
-            // Load areas first before opening the modal (similar to task modal)
             try {
                 const areasData = await fetchAreas();
                 setAreas(areasData);
             } catch (error) {
                 console.error('Failed to load areas:', error);
                 showErrorToast(t('area.loadError', 'Failed to load areas'));
-                setAreas([]); // Ensure we have an empty array even on error
+                setAreas([]);
             }
 
             setProjectToEdit(project);
@@ -320,7 +288,6 @@ const InboxItems: React.FC = () => {
         note: Note | null,
         inboxItemUid?: string
     ) => {
-        // Set up the note data first
         if (note && note.content && isUrl(note.content.trim())) {
             if (!note.tags) {
                 note.tags = [{ name: 'bookmark' }];
@@ -335,7 +302,6 @@ const InboxItems: React.FC = () => {
             setCurrentConversionItemUid(inboxItemUid);
         }
 
-        // Projects are already available from the store
 
         setIsNoteModalOpen(true);
     };
@@ -357,7 +323,6 @@ const InboxItems: React.FC = () => {
             );
             showSuccessToast(taskLink);
 
-            // Process the inbox item after successful task creation
             if (currentConversionItemUid !== null) {
                 await handleProcessItem(currentConversionItemUid, false);
                 setCurrentConversionItemUid(null);
@@ -375,13 +340,11 @@ const InboxItems: React.FC = () => {
             await createProject(project);
             showSuccessToast(t('project.createSuccess'));
 
-            // Process the inbox item after successful project creation
             if (currentConversionItemUid !== null) {
                 await handleProcessItem(currentConversionItemUid, false);
                 setCurrentConversionItemUid(null);
             }
 
-            // Don't set isProjectModalOpen here - the modal handles its own closing via handleClose()
         } catch (error) {
             console.error('Failed to create project:', error);
             showErrorToast(t('project.createError'));
@@ -390,31 +353,25 @@ const InboxItems: React.FC = () => {
 
     const handleSaveNote = async (note: Note) => {
         try {
-            // Check if the content appears to be a URL and add the bookmark tag
             const noteContent = note.content || '';
             const isBookmarkContent = isUrl(noteContent.trim());
 
-            // Ensure tags property exists
             if (!note.tags) {
                 note.tags = [];
             }
 
-            // Add a bookmark tag if content is a URL and doesn't already have the tag
             if (
                 isBookmarkContent &&
                 !note.tags.some((tag) => tag.name === 'bookmark')
             ) {
-                // Use spread operator to create a new array with the bookmark tag added
                 note.tags = [...note.tags, { name: 'bookmark' }];
             }
 
-            // Create the note with proper tags
             await createNote(note);
             showSuccessToast(
                 t('note.createSuccess', 'Note created successfully')
             );
 
-            // Process the inbox item after successful note creation
             if (currentConversionItemUid !== null) {
                 await handleProcessItem(currentConversionItemUid, false);
                 setCurrentConversionItemUid(null);
@@ -457,7 +414,6 @@ const InboxItems: React.FC = () => {
     return (
         <div className="w-full px-2 sm:px-4 lg:px-6 pt-4 pb-8">
             <div className="w-full max-w-5xl mx-auto">
-                {/* Title row with info button on the right */}
                 <div className="flex items-center mb-8 justify-between">
                     <div className="flex items-center">
                         <h1 className="text-2xl font-light">
@@ -482,7 +438,6 @@ const InboxItems: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Info section below title row */}
                 <div
                     className={`transition-all duration-300 ease-in-out ${
                         isInfoExpanded
@@ -491,7 +446,6 @@ const InboxItems: React.FC = () => {
                     } overflow-hidden`}
                 >
                     <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-lg px-6 py-5 flex items-start gap-4">
-                        {/* Large low-opacity info icon */}
                         <div className="flex-shrink-0">
                             <InformationCircleIcon className="h-12 w-12 text-blue-400 opacity-20" />
                         </div>
@@ -536,7 +490,6 @@ const InboxItems: React.FC = () => {
                             ))}
                         </div>
 
-                        {/* Load more button */}
                         {pagination.hasMore && (
                             <div className="flex justify-center pt-4">
                                 <button
@@ -581,7 +534,6 @@ const InboxItems: React.FC = () => {
                             </div>
                         )}
 
-                        {/* Pagination info */}
                         {inboxItems.length > 0 && (
                             <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-2">
                                 {t(
@@ -597,8 +549,6 @@ const InboxItems: React.FC = () => {
                     </div>
                 )}
 
-                {/* Task Modal - Always render it but control visibility with isOpen */}
-                {/* Add error boundary protection for modal rendering */}
                 {(() => {
                     try {
                         return (
@@ -610,7 +560,7 @@ const InboxItems: React.FC = () => {
                                 }}
                                 task={taskToEdit || defaultTask}
                                 onSave={handleSaveTask}
-                                onDelete={async () => {}} // No need to delete since it's a new task
+                                onDelete={async () => {}}
                                 projects={
                                     Array.isArray(projects) ? projects : []
                                 }
@@ -624,7 +574,6 @@ const InboxItems: React.FC = () => {
                     }
                 })()}
 
-                {/* Project Modal - Only render when needed to prevent infinite loops */}
                 {(() => {
                     return (
                         isProjectModalOpen &&
@@ -655,7 +604,6 @@ const InboxItems: React.FC = () => {
                     );
                 })()}
 
-                {/* Note Modal - Always render it but control visibility with isOpen */}
                 {(() => {
                     try {
                         return (
@@ -679,7 +627,6 @@ const InboxItems: React.FC = () => {
                     }
                 })()}
 
-                {/* Edit Inbox Item Modal */}
                 {isEditModalOpen && itemToEdit !== null && (
                     <InboxModal
                         isOpen={isEditModalOpen}
