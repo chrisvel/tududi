@@ -508,7 +508,7 @@
   "project": {
     "name": "Numele Proiectului",
     "projectImage": "Imaginea Proiectului",
-    "uploadImageHint": "Încărcați o imagine pentru proiectul dvs. (max 5MB)",
+    "uploadImageHint": "Încărcați o imagine pentru proiectul dvs. (max 10MB)",
     "browseImage": "Răsfoiți Imaginea",
     "noNotes": "Nu există note pentru acest proiect.",
     "deleteProject": "Șterge Proiectul",

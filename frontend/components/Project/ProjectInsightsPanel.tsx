@@ -29,6 +29,23 @@ interface ProjectInsightsPanelProps {
     getDueDescriptor: (task: Task) => string;
     onStartNextAction: () => Promise<void> | void;
     t: TFunction;
+    completionTrend: { label: string; count: number }[];
+    upcomingDueTrend: { label: string; count: number }[];
+    createdTrend: { label: string; count: number }[];
+    weeklyPace: { lastWeek: number; prevWeek: number; delta: number };
+    monthlyCompleted: number;
+    upcomingInsights?: {
+        peakLabel: string;
+        peakCount: number;
+        nextThreeDays: number;
+        nextWeek: number;
+    };
+    eisenhower: {
+        urgentImportant: number;
+        urgentNotImportant: number;
+        notUrgentImportant: number;
+        notUrgentNotImportant: number;
+    };
 }
 
 const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
@@ -40,7 +57,16 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
     getDueDescriptor,
     onStartNextAction,
     t,
+    completionTrend,
+    upcomingDueTrend,
+    createdTrend,
+    weeklyPace,
+    monthlyCompleted,
+    upcomingInsights,
+    eisenhower,
 }) => {
+    const maxUpcoming = Math.max(...upcomingDueTrend.map((d) => d.count), 1);
+
     return (
         <div className="space-y-4">
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-5">
@@ -108,76 +134,194 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                         </div>
                     </div>
                 </div>
+        </div>
+
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-5">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                        {t('projects.dueSchedule', 'Due schedule')}
+                    </h3>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {t('projects.next14Days', 'Next 14 days')}
+                    </span>
+                </div>
+                {upcomingDueTrend.some((d) => d.count > 0) ? (
+                    <>
+                        <div className="mt-3 flex flex-wrap gap-1">
+                            {upcomingDueTrend.map((d, idx) => {
+                                const intensity =
+                                    maxUpcoming > 0 ? Math.max((d.count / maxUpcoming) * 0.8, 0.12) : 0;
+                                return (
+                                    <div
+                                        key={idx}
+                                        className="flex flex-col items-center"
+                                        style={{ width: 'calc(100% / 7 - 4px)' }}
+                                    >
+                                        <div
+                                            className="w-full h-10 rounded-md border border-amber-200 dark:border-amber-800 transition-all duration-300"
+                                            style={{
+                                                backgroundColor: `rgba(251, 191, 36, ${intensity})`,
+                                            }}
+                                        ></div>
+                                        <span className="mt-1 text-[10px] text-gray-500 dark:text-gray-400">
+                                            {d.label}
+                                        </span>
+                                        <span className="text-[10px] text-gray-600 dark:text-gray-300">
+                                            {d.count}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        {upcomingInsights && (
+                            <div className="mt-4 flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300 flex-wrap">
+                                <span className="px-2 py-1 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-200">
+                                    {t('projects.peakDay', 'Peak')}:{' '}
+                                    {upcomingInsights.peakCount > 0
+                                        ? `${upcomingInsights.peakLabel} · ${upcomingInsights.peakCount}`
+                                        : t('projects.none', 'None')}
+                                </span>
+                                <span className="px-2 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200">
+                                    {t('projects.next3days', 'Next 3 days')}: {upcomingInsights.nextThreeDays}
+                                </span>
+                                <span className="px-2 py-1 rounded-full bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-200">
+                                    {t('projects.nextWeek', 'Next 7 days')}: {upcomingInsights.nextWeek}
+                                </span>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+                        {t('projects.noUpcomingDue', 'No due dates in the next 14 days.')}
+                    </p>
+                )}
+            </div>
+
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-4">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                        {t('projects.recentCompletion', 'Recent completion')}
+                    </h3>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {t('projects.last7And30', 'Last 7 & 30 days')}
+                    </span>
+                </div>
+
+                <div className="mt-4 space-y-4">
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="min-w-0">
+                            <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                {t('projects.weeklyPace', 'Weekly pace')}
+                            </p>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                {weeklyPace.lastWeek}
+                            </p>
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                                {t('projects.prevWeekCompleted', '{{count}} prior week', {
+                                    count: weeklyPace.prevWeek,
+                                })}
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                            <div
+                                className={`px-2 py-1 rounded-full text-[11px] font-semibold ${
+                                    weeklyPace.delta >= 0
+                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-200'
+                                        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-200'
+                                }`}
+                            >
+                                {weeklyPace.delta >= 0 ? '+' : ''}
+                                {weeklyPace.delta} {t('projects.vsPrevWeek', 'vs prev week')}
+                            </div>
+                            <div className="w-32 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                                <div
+                                    className="h-full bg-blue-500 dark:bg-blue-400 transition-all duration-300"
+                                    style={{
+                                        width: `${Math.min(
+                                            (weeklyPace.lastWeek /
+                                                Math.max(Math.max(weeklyPace.lastWeek, weeklyPace.prevWeek), 1)) *
+                                                100,
+                                            100
+                                        )}%`,
+                                    }}
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="min-w-0">
+                            <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                {t('projects.monthlyCompletion', '30-day completions')}
+                            </p>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                {monthlyCompleted}
+                            </p>
+                            <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                                {t('projects.last30Days', 'Last 30 days')}
+                            </p>
+                        </div>
+                        <div className="w-32 h-1.5 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                            <div
+                                className="h-full bg-indigo-500 dark:bg-indigo-400 transition-all duration-300"
+                                style={{
+                                    width: `${Math.min(monthlyCompleted * 3, 100)}%`,
+                                }}
+                            ></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-5">
                 <div className="flex items-center justify-between">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                        {t('tasks.statusBreakdown', 'Status breakdown')}
+                        {t('projects.eisenhower', 'Eisenhower matrix')}
                     </h3>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {t('common.now', 'Now')}
+                        {t('projects.priorityVsUrgency', 'Priority vs urgency')}
                     </span>
                 </div>
-                <div className="mt-3 space-y-3">
+                <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-gray-600 dark:text-gray-300">
                     {[
                         {
-                            label: t('common.completed', 'Completed'),
-                            value: taskStats.completed,
-                            color: '#22c55e',
+                            label: t('projects.urgentImportant', 'Do now'),
+                            value: eisenhower.urgentImportant,
+                            accent: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200',
                         },
                         {
-                            label: t('task.status.inProgress', 'In progress'),
-                            value: taskStats.inProgress,
-                            color: '#3b82f6',
+                            label: t('projects.urgentNotImportant', 'Delegate'),
+                            value: eisenhower.urgentNotImportant,
+                            accent: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200',
                         },
                         {
-                            label: t('task.status.notStarted', 'Not started'),
-                            value: taskStats.notStarted,
-                            color: '#9ca3af',
+                            label: t('projects.notUrgentImportant', 'Schedule'),
+                            value: eisenhower.notUrgentImportant,
+                            accent: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200',
                         },
-                    ].map((item) => (
-                        <div
-                            key={item.label}
-                            className="flex items-center justify-between gap-3"
-                        >
-                            <div className="flex items-center gap-2">
-                                <span
-                                    className="w-2.5 h-2.5 rounded-full"
-                                    style={{
-                                        backgroundColor: item.color,
-                                    }}
-                                ></span>
-                                <span className="text-sm text-gray-700 dark:text-gray-200">
+                        {
+                            label: t('projects.notUrgentNotImportant', 'Drop/avoid'),
+                            value: eisenhower.notUrgentNotImportant,
+                            accent: 'bg-gray-100 text-gray-700 dark:bg-gray-800/60 dark:text-gray-200',
+                        },
+                    ].map((item, idx) => (
+                        <div key={idx} className={`rounded-lg p-3 border border-gray-200 dark:border-gray-800 ${item.accent}`}>
+                            <div className="flex items-center justify-between">
+                                <span className="font-semibold">{item.value}</span>
+                                <span className="text-[11px] uppercase tracking-wide">
                                     {item.label}
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2 w-32">
-                                <div className="flex-1 h-2 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
-                                    <div
-                                        className="h-full"
-                                        style={{
-                                            width: `${
-                                                taskStats.total > 0
-                                                    ? (item.value / taskStats.total) * 100
-                                                    : 0
-                                            }%`,
-                                            backgroundColor: item.color,
-                                        }}
-                                    ></div>
-                                </div>
-                                <span className="text-xs font-semibold text-gray-900 dark:text-gray-100 w-6 text-right">
-                                    {item.value}
-                                </span>
+                            <div className="mt-2 h-1.5 rounded-full bg-white/30 dark:bg-gray-700 overflow-hidden">
+                                <div
+                                    className="h-full bg-white/80 dark:bg-white"
+                                    style={{
+                                        width: `${Math.min(item.value * 15, 100)}%`,
+                                    }}
+                                ></div>
                             </div>
                         </div>
                     ))}
-                </div>
-                <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-                    {t('projects.dueHealth', 'Due health')}: <span className="font-medium text-gray-800 dark:text-gray-200">{taskStats.overdue}</span>{' '}
-                    {t('tasks.overdue', 'overdue')} •{' '}
-                    <span className="font-medium text-gray-800 dark:text-gray-200">{taskStats.dueSoon}</span>{' '}
-                    {t('tasks.dueSoon', 'due soon')}
                 </div>
             </div>
 
@@ -265,101 +409,6 @@ const ProjectInsightsPanel: React.FC<ProjectInsightsPanelProps> = ({
                 )}
             </div>
 
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-5">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                        {t('projects.dueRadar', 'Due radar')}
-                    </h3>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {dueBuckets.totalDue} {t('tasks.tasks', 'tasks')}
-                    </span>
-                </div>
-
-                {dueBuckets.totalDue > 0 ? (
-                    <>
-                        <div className="mt-3 flex items-center gap-2">
-                            <div className="flex-1 h-3 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex">
-                                <div
-                                    className="h-full bg-red-500"
-                                    style={{
-                                        flex: dueBuckets.overdue.length,
-                                    }}
-                                ></div>
-                                <div
-                                    className="h-full bg-amber-400"
-                                    style={{
-                                        flex: dueBuckets.week.length,
-                                    }}
-                                ></div>
-                                <div
-                                    className="h-full bg-blue-400"
-                                    style={{
-                                        flex: dueBuckets.month.length,
-                                    }}
-                                ></div>
-                            </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                                {t('projects.next30Days', 'Next 30 days')}
-                            </div>
-                        </div>
-
-                        <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-gray-600 dark:text-gray-300">
-                            <div className="flex items-center gap-1">
-                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                                <span className="font-semibold">
-                                    {dueBuckets.overdue.length}
-                                </span>
-                                <span className="text-gray-500 dark:text-gray-400">
-                                    {t('tasks.overdue', 'Overdue')}
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-                                <span className="font-semibold">
-                                    {dueBuckets.week.length}
-                                </span>
-                                <span className="text-gray-500 dark:text-gray-400">
-                                    {t('tasks.dueSoon', 'Due soon')}
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <span className="w-2 h-2 rounded-full bg-blue-400"></span>
-                                <span className="font-semibold">
-                                    {dueBuckets.month.length}
-                                </span>
-                                <span className="text-gray-500 dark:text-gray-400">
-                                    {t('projects.dueThisMonth', 'This month')}
-                                </span>
-                            </div>
-                        </div>
-
-                        {dueHighlights.length > 0 && (
-                            <div className="mt-4 space-y-2">
-                                {dueHighlights.map((task) => (
-                                    <div
-                                        key={task.id}
-                                        className="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/80"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                                            <span className="text-sm text-gray-800 dark:text-gray-200">
-                                                {task.name}
-                                            </span>
-                                        </div>
-                                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                                            {getDueDescriptor(task)}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </>
-                ) : (
-                    <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-                        {t('projects.noDueData', 'No due dates on upcoming tasks.')}
-                    </p>
-                )}
-            </div>
         </div>
     );
 };

@@ -160,6 +160,191 @@ export const useProjectMetrics = (
         return { ...buckets, totalDue };
     }, [tasks]);
 
+    const completionTrend = useMemo(() => {
+        const days = 14;
+        const today = new Date();
+        const labels: { dateKey: string; label: string }[] = [];
+        for (let i = days - 1; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const key = d.toISOString().split('T')[0];
+            labels.push({
+                dateKey: key,
+                label: `${d.getMonth() + 1}/${d.getDate()}`,
+            });
+        }
+
+        const counts: Record<string, number> = {};
+        labels.forEach((l) => (counts[l.dateKey] = 0));
+
+        tasks.forEach((task) => {
+            if (!task.completed_at) return;
+            const key = new Date(task.completed_at).toISOString().split('T')[0];
+            if (counts[key] !== undefined) {
+                counts[key] += 1;
+            }
+        });
+
+        return labels.map((l) => ({
+            label: l.label,
+            dateKey: l.dateKey,
+            count: counts[l.dateKey] || 0,
+        }));
+    }, [tasks]);
+
+    const createdTrend = useMemo(() => {
+        const days = 14;
+        const today = new Date();
+        const labels: { dateKey: string; label: string }[] = [];
+        for (let i = days - 1; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const key = d.toISOString().split('T')[0];
+            labels.push({
+                dateKey: key,
+                label: `${d.getMonth() + 1}/${d.getDate()}`,
+            });
+        }
+
+        const counts: Record<string, number> = {};
+        labels.forEach((l) => (counts[l.dateKey] = 0));
+
+        tasks.forEach((task) => {
+            if (!task.created_at) return;
+            const key = new Date(task.created_at).toISOString().split('T')[0];
+            if (counts[key] !== undefined) {
+                counts[key] += 1;
+            }
+        });
+
+        return labels.map((l) => ({
+            label: l.label,
+            dateKey: l.dateKey,
+            count: counts[l.dateKey] || 0,
+        }));
+    }, [tasks]);
+
+    const priorityMix = useMemo(() => {
+        const mix = { high: 0, medium: 0, low: 0, none: 0 };
+        const isCompleted = (status: Task['status']) =>
+            status === 'done' ||
+            status === 'archived' ||
+            status === 2 ||
+            status === 3;
+
+        tasks.forEach((task) => {
+            if (isCompleted(task.status)) return;
+            const p = task.priority;
+            if (p === 'high' || p === 2) mix.high += 1;
+            else if (p === 'medium' || p === 1) mix.medium += 1;
+            else if (p === 'low' || p === 0) mix.low += 1;
+            else mix.none += 1;
+        });
+        return mix;
+    }, [tasks]);
+
+    const upcomingDueTrend = useMemo(() => {
+        const days = 14;
+        const today = new Date();
+        const labels: { dateKey: string; label: string }[] = [];
+        for (let i = 0; i < days; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() + i);
+            const key = d.toISOString().split('T')[0];
+            labels.push({
+                dateKey: key,
+                label: `${d.getMonth() + 1}/${d.getDate()}`,
+            });
+        }
+
+        const counts: Record<string, number> = {};
+        labels.forEach((l) => (counts[l.dateKey] = 0));
+
+        const isCompleted = (status: Task['status']) =>
+            status === 'done' ||
+            status === 'archived' ||
+            status === 2 ||
+            status === 3;
+
+        tasks.forEach((task) => {
+            if (!task.due_date || isCompleted(task.status)) return;
+            const key = new Date(task.due_date).toISOString().split('T')[0];
+            if (counts[key] !== undefined) {
+                counts[key] += 1;
+            }
+        });
+
+        return labels.map((l) => ({
+            label: l.label,
+            dateKey: l.dateKey,
+            count: counts[l.dateKey] || 0,
+        }));
+    }, [tasks]);
+
+    const upcomingInsights = useMemo(() => {
+        const peak = upcomingDueTrend.reduce(
+            (acc, cur) => (cur.count > acc.count ? cur : acc),
+            { label: '', count: 0 }
+        );
+        const nextThreeDays = upcomingDueTrend.slice(0, 3).reduce((sum, d) => sum + d.count, 0);
+        const nextWeek = upcomingDueTrend.slice(0, 7).reduce((sum, d) => sum + d.count, 0);
+
+        return {
+            peakLabel: peak.label,
+            peakCount: peak.count,
+            nextThreeDays,
+            nextWeek,
+        };
+    }, [upcomingDueTrend]);
+
+    const eisenhower = useMemo(() => {
+        const buckets = {
+            urgentImportant: 0,
+            urgentNotImportant: 0,
+            notUrgentImportant: 0,
+            notUrgentNotImportant: 0,
+        };
+
+        const today = new Date();
+        const startOfToday = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate()
+        );
+        const threeDays = new Date(startOfToday);
+        threeDays.setDate(startOfToday.getDate() + 3);
+
+        const isCompleted = (status: Task['status']) =>
+            status === 'done' ||
+            status === 'archived' ||
+            status === 2 ||
+            status === 3;
+
+        tasks.forEach((task) => {
+            if (isCompleted(task.status)) return;
+
+            const isUrgent = (() => {
+                if (!task.due_date) return false;
+                const due = new Date(task.due_date);
+                if (Number.isNaN(due.getTime())) return false;
+                return due <= threeDays;
+            })();
+
+            const isImportant =
+                task.priority === 'high' ||
+                task.priority === 2 ||
+                task.priority === 'medium' ||
+                task.priority === 1;
+
+            if (isUrgent && isImportant) buckets.urgentImportant += 1;
+            else if (isUrgent && !isImportant) buckets.urgentNotImportant += 1;
+            else if (!isUrgent && isImportant) buckets.notUrgentImportant += 1;
+            else buckets.notUrgentNotImportant += 1;
+        });
+
+        return buckets;
+    }, [tasks]);
+
     const dueHighlights = useMemo(() => {
         const combined = [
             ...dueBuckets.overdue,
@@ -309,6 +494,28 @@ export const useProjectMetrics = (
         }
     }, [handleTaskUpdate, nextBestAction]);
 
+    const weeklyPace = useMemo(() => {
+        const lastWeek = completionTrend.slice(-7).reduce((sum, d) => sum + d.count, 0);
+        const prevWeek = completionTrend.slice(0, -7).reduce((sum, d) => sum + d.count, 0);
+        const delta = lastWeek - prevWeek;
+        return { lastWeek, prevWeek, delta };
+    }, [completionTrend]);
+
+    const monthlyCompleted = useMemo(() => {
+        const today = new Date();
+        const startWindow = new Date();
+        startWindow.setDate(today.getDate() - 30);
+        let count = 0;
+        tasks.forEach((task) => {
+            if (!task.completed_at) return;
+            const completedDate = new Date(task.completed_at);
+            if (!Number.isNaN(completedDate.getTime()) && completedDate >= startWindow) {
+                count += 1;
+            }
+        });
+        return count;
+    }, [tasks]);
+
     return {
         taskStats,
         completionGradient,
@@ -317,5 +524,12 @@ export const useProjectMetrics = (
         nextBestAction,
         getDueDescriptor,
         handleStartNextAction,
+        completionTrend,
+        upcomingDueTrend,
+        createdTrend,
+        upcomingInsights,
+        eisenhower,
+        weeklyPace,
+        monthlyCompleted,
     };
 };

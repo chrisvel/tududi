@@ -578,6 +578,13 @@ const ProjectDetails: React.FC = () => {
         nextBestAction,
         getDueDescriptor,
         handleStartNextAction,
+        completionTrend,
+        upcomingDueTrend,
+        createdTrend,
+        upcomingInsights,
+        eisenhower,
+        weeklyPace,
+        monthlyCompleted,
     } = useProjectMetrics(tasks, handleTaskUpdate, t);
 
     const getStateIcon = (state: string) => {
@@ -760,6 +767,13 @@ const ProjectDetails: React.FC = () => {
                                     getDueDescriptor={getDueDescriptor}
                                     onStartNextAction={handleStartNextAction}
                                     t={t}
+                                    completionTrend={completionTrend}
+                                    upcomingDueTrend={upcomingDueTrend}
+                                    createdTrend={createdTrend}
+                                    upcomingInsights={upcomingInsights}
+                                    eisenhower={eisenhower}
+                                    weeklyPace={weeklyPace}
+                                    monthlyCompleted={monthlyCompleted}
                                 />
                             </div>
                         </>

@@ -508,7 +508,7 @@
   "project": {
     "name": "Proje Adı",
     "projectImage": "Proje Görseli",
-    "uploadImageHint": "Projeniz için bir görsel yükleyin (maks 5MB)",
+    "uploadImageHint": "Projeniz için bir görsel yükleyin (maks 10MB)",
     "browseImage": "Görseli Gözat",
     "noNotes": "Bu proje için not yok.",
     "deleteProject": "Projeyi Sil",

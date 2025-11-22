@@ -508,7 +508,7 @@
   "project": {
     "name": "Nome Progetto",
     "projectImage": "Immagine Progetto",
-    "uploadImageHint": "Carica un'immagine per il tuo progetto (max 5MB)",
+    "uploadImageHint": "Carica un'immagine per il tuo progetto (max 10MB)",
     "browseImage": "Sfoglia Immagine",
     "noNotes": "Nessuna nota per questo progetto.",
     "deleteProject": "Elimina Progetto",

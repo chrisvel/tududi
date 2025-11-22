@@ -508,7 +508,7 @@
   "project": {
     "name": "Prosjektnavn",
     "projectImage": "Prosjektbilde",
-    "uploadImageHint": "Last opp et bilde for prosjektet ditt (maks 5MB)",
+    "uploadImageHint": "Last opp et bilde for prosjektet ditt (maks 10MB)",
     "browseImage": "Bla gjennom bilde",
     "noNotes": "Ingen notater for dette prosjektet.",
     "deleteProject": "Slett prosjekt",

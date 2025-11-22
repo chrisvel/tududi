@@ -508,7 +508,7 @@
   "project": {
     "name": "Nama Proyek",
     "projectImage": "Gambar Proyek",
-    "uploadImageHint": "Unggah gambar untuk proyek Anda (maks 5MB)",
+    "uploadImageHint": "Unggah gambar untuk proyek Anda (maks 10MB)",
     "browseImage": "Telusuri Gambar",
     "noNotes": "Tidak ada catatan untuk proyek ini.",
     "deleteProject": "Hapus Proyek",

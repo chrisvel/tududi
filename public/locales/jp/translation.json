@@ -684,7 +684,7 @@
   },
   "project": {
     "projectImage": "プロジェクト画像",
-    "uploadImageHint": "プロジェクト用の画像をアップロード（最大5MB）",
+    "uploadImageHint": "プロジェクト用の画像をアップロード（最大10MB）",
     "browseImage": "画像を参照",
     "name": "プロジェクト名",
     "noNotes": "このプロジェクトにはノートがありません。",

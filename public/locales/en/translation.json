@@ -508,7 +508,7 @@
   "project": {
     "name": "Project Name",
     "projectImage": "Project Image",
-    "uploadImageHint": "Upload an image for your project (max 5MB)",
+    "uploadImageHint": "Upload an image for your project (max 10MB)",
     "browseImage": "Browse Image",
     "noNotes": "No notes for this project.",
     "deleteProject": "Delete Project",
@@ -874,7 +874,7 @@
   },
   "calendar": {
     "month": "Month",
-    "week": "Week", 
+    "week": "Week",
     "day": "Day",
     "today": "Today",
     "addEvent": "Add Event",
@@ -899,7 +899,7 @@
     "close": "Close",
     "title": "Title",
     "status": "Status",
-    "dueDate": "Due Date", 
+    "dueDate": "Due Date",
     "priority": "Priority",
     "project": "Project",
     "area": "Area",
@@ -1030,8 +1030,7 @@
     "viewOnGitHub": "View on GitHub",
     "license": "Licensed for personal use",
     "builtBy": "Built by"
-  }
-  ,
+  },
   "admin": {
     "manageUsers": "Manage users",
     "userManagement": "User Management",

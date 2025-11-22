@@ -508,7 +508,7 @@
   "project": {
     "name": "Ime projekta",
     "projectImage": "Slika projekta",
-    "uploadImageHint": "Naložite sliko za vaš projekt (max 5MB)",
+    "uploadImageHint": "Naložite sliko za vaš projekt (max 10MB)",
     "browseImage": "Prebrskaj sliko",
     "noNotes": "Ni opomb za ta projekt.",
     "deleteProject": "Izbriši projekt",

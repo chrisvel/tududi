@@ -276,16 +276,31 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
 
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            setImageFile(file);
+        if (!file) return;
 
-            // Create preview
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setImagePreview(e.target?.result as string);
-            };
-            reader.readAsDataURL(file);
+        // Simple client-side guard (10MB max)
+        const maxSizeBytes = 10 * 1024 * 1024;
+        if (file.size > maxSizeBytes) {
+            setError(
+                t(
+                    'errors.projectImageTooLarge',
+                    'Image is too large. Please choose a file under 10MB.'
+                )
+            );
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+            return;
         }
+
+        setImageFile(file);
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            setImagePreview(ev.target?.result as string);
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleImageUpload = async (): Promise<string | null> => {
@@ -303,13 +318,30 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             });
 
             if (!response.ok) {
-                throw new Error('Failed to upload image');
+                let serverMessage = 'Failed to upload image';
+                try {
+                    const errData = await response.json();
+                    if (errData?.error) serverMessage = errData.error;
+                } catch {
+                    // ignore parse errors
+                }
+                throw new Error(serverMessage);
             }
 
             const result = await response.json();
-            return result.imageUrl;
+            if (result?.imageUrl) {
+                return result.imageUrl;
+            }
+
+            throw new Error('Image URL missing from upload response');
         } catch (error) {
             console.error('Error uploading image:', error);
+            setError(
+                t(
+                    'errors.projectImageUpload',
+                    'Failed to upload image. Please try a smaller file or a different format.'
+                )
+            );
             return null;
         } finally {
             setIsUploading(false);
@@ -355,6 +387,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 const uploadedImageUrl = await handleImageUpload();
                 if (uploadedImageUrl) {
                     imageUrl = uploadedImageUrl;
+                } else {
+                    setIsSaving(false);
+                    return;
                 }
             }
 
@@ -741,7 +776,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                                         {t(
                                                             'project.uploadImageHint',
-                                                            'Upload an image for your project (max 5MB)'
+                                                            'Upload an image for your project (max 10MB)'
                                                         )}
                                                     </p>
                                                 </div>

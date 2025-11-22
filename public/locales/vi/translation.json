@@ -508,7 +508,7 @@
   "project": {
     "name": "Tên Dự Án",
     "projectImage": "Hình Ảnh Dự Án",
-    "uploadImageHint": "Tải lên một hình ảnh cho dự án của bạn (tối đa 5MB)",
+    "uploadImageHint": "Tải lên một hình ảnh cho dự án của bạn (tối đa 10MB)",
     "browseImage": "Duyệt Hình Ảnh",
     "noNotes": "Không có ghi chú cho dự án này.",
     "deleteProject": "Xóa Dự Án",

@@ -508,7 +508,7 @@
   "project": {
     "name": "Projectnaam",
     "projectImage": "Projectafbeelding",
-    "uploadImageHint": "Upload een afbeelding voor je project (max 5MB)",
+    "uploadImageHint": "Upload een afbeelding voor je project (max 10MB)",
     "browseImage": "Afbeelding Bladeren",
     "noNotes": "Geen notities voor dit project.",
     "deleteProject": "Project Verwijderen",

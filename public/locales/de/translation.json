@@ -384,7 +384,7 @@
   },
   "project": {
     "projectImage": "Projektbild",
-    "uploadImageHint": "Laden Sie ein Bild für Ihr Projekt hoch (max. 5MB)",
+    "uploadImageHint": "Laden Sie ein Bild für Ihr Projekt hoch (max. 10MB)",
     "browseImage": "Bild durchsuchen",
     "name": "Projektname",
     "noNotes": "Keine Notizen für dieses Projekt.",

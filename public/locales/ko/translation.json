@@ -508,7 +508,7 @@
   "project": {
     "name": "프로젝트 이름",
     "projectImage": "프로젝트 이미지",
-    "uploadImageHint": "프로젝트를 위한 이미지를 업로드하세요 (최대 5MB)",
+    "uploadImageHint": "프로젝트를 위한 이미지를 업로드하세요 (최대 10MB)",
     "browseImage": "이미지 찾아보기",
     "noNotes": "이 프로젝트에 대한 메모가 없습니다.",
     "deleteProject": "프로젝트 삭제",

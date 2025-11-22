@@ -508,7 +508,7 @@
   "project": {
     "name": "项目名称",
     "projectImage": "项目图片",
-    "uploadImageHint": "上传项目图片（最大5MB）",
+    "uploadImageHint": "上传项目图片（最大10MB）",
     "browseImage": "浏览图片",
     "noNotes": "此项目没有备注。",
     "deleteProject": "删除项目",

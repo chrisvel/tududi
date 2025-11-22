@@ -508,7 +508,7 @@
   "project": {
     "name": "Projektin nimi",
     "projectImage": "Projektikuva",
-    "uploadImageHint": "Lataa kuva projektiisi (max 5MB)",
+    "uploadImageHint": "Lataa kuva projektiisi (max 10MB)",
     "browseImage": "Selaa kuvaa",
     "noNotes": "Ei muistiinpanoja tälle projektille.",
     "deleteProject": "Poista projekti",
