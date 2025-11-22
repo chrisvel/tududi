@@ -77,7 +77,7 @@ export const createTask = async (taskData: Task): Promise<Task> => {
 
 export const updateTask = async (
     taskId: number,
-    taskData: Task
+    taskData: Partial<Task>
 ): Promise<Task> => {
     const response = await fetch(getApiPath(`task/${taskId}`), {
         method: 'PATCH',
@@ -94,18 +94,16 @@ export const toggleTaskCompletion = async (
     taskId: number,
     currentTask?: Task
 ): Promise<Task> => {
-    if (!currentTask) {
-        currentTask = await fetchTaskById(taskId);
-    }
+    const task = currentTask ?? (await fetchTaskById(taskId));
 
     const newStatus =
-        currentTask.status === 2 || currentTask.status === 'done'
-            ? currentTask.note
+        task.status === 2 || task.status === 'done'
+            ? task.note
                 ? 1
                 : 0
             : 2;
 
-    return await updateTask(taskId, { ...currentTask, status: newStatus });
+    return await updateTask(taskId, { status: newStatus });
 };
 
 export const deleteTask = async (taskId: number): Promise<void> => {

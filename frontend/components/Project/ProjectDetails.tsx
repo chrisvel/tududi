@@ -362,6 +362,34 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
+    const handleTaskCompletionToggle = (updatedTask: Task) => {
+        if (!updatedTask.id) return;
+
+        setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === updatedTask.id
+                    ? {
+                          ...task,
+                          ...updatedTask,
+                          // Preserve subtasks if missing in updated payload
+                          subtasks:
+                              updatedTask.subtasks ||
+                              updatedTask.Subtasks ||
+                              task.subtasks ||
+                              task.Subtasks ||
+                              [],
+                          Subtasks:
+                              updatedTask.subtasks ||
+                              updatedTask.Subtasks ||
+                              task.subtasks ||
+                              task.Subtasks ||
+                              [],
+                      }
+                    : task
+            )
+        );
+    };
+
     const handleToggleToday = async (
         taskId: number,
         task?: Task
@@ -801,6 +829,108 @@ const ProjectDetails: React.FC = () => {
         return sortedTasks;
     }, [tasks, showCompleted, orderBy, taskSearchQuery]);
 
+    const taskStats = useMemo(() => {
+        const stats = {
+            total: tasks.length,
+            completed: 0,
+            inProgress: 0,
+            notStarted: 0,
+            overdue: 0,
+            dueSoon: 0,
+        };
+
+        const today = new Date();
+        const startOfToday = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate()
+        );
+        const soonBoundary = new Date(startOfToday);
+        soonBoundary.setDate(startOfToday.getDate() + 7);
+
+        const isCompleted = (status: Task['status']) =>
+            status === 'done' ||
+            status === 'archived' ||
+            status === 2 ||
+            status === 3;
+
+        const isInProgress = (status: Task['status']) =>
+            status === 'in_progress' || status === 1;
+
+        const isNotStarted = (status: Task['status']) =>
+            status === 'not_started' || status === 0;
+
+        tasks.forEach((task) => {
+            const status = task.status;
+
+            if (isCompleted(status)) {
+                stats.completed += 1;
+            } else if (isInProgress(status)) {
+                stats.inProgress += 1;
+            } else if (isNotStarted(status)) {
+                stats.notStarted += 1;
+            } else {
+                stats.notStarted += 1;
+            }
+
+            if (!isCompleted(status) && task.due_date) {
+                const dueDate = new Date(task.due_date);
+                if (!Number.isNaN(dueDate.getTime())) {
+                    if (dueDate < startOfToday) {
+                        stats.overdue += 1;
+                    } else if (dueDate <= soonBoundary) {
+                        stats.dueSoon += 1;
+                    }
+                }
+            }
+        });
+
+        const completionRate =
+            stats.total > 0
+                ? Math.round((stats.completed / stats.total) * 100)
+                : 0;
+
+        return {
+            ...stats,
+            completionRate,
+        };
+    }, [tasks]);
+
+    const completionGradient = useMemo(() => {
+        if (taskStats.total === 0) {
+            return 'conic-gradient(#e5e7eb 0% 100%)';
+        }
+
+        const segments = [
+            { value: taskStats.completed, color: '#22c55e' },
+            { value: taskStats.inProgress, color: '#3b82f6' },
+            { value: taskStats.notStarted, color: '#9ca3af' },
+        ];
+
+        let current = 0;
+        const gradientStops: string[] = [];
+
+        segments.forEach((segment) => {
+            if (segment.value === 0) return;
+            const start = current;
+            const percentage = (segment.value / taskStats.total) * 100;
+            const end = start + percentage;
+            gradientStops.push(
+                `${segment.color} ${start}% ${Math.min(end, 100)}%`
+            );
+            current += percentage;
+        });
+
+        return gradientStops.length
+            ? `conic-gradient(${gradientStops.join(', ')})`
+            : 'conic-gradient(#e5e7eb 0% 100%)';
+    }, [
+        taskStats.completed,
+        taskStats.inProgress,
+        taskStats.notStarted,
+        taskStats.total,
+    ]);
+
     // Function to get the appropriate icon for project state
     const getStateIcon = (state: string) => {
         switch (state) {
@@ -1024,9 +1154,9 @@ const ProjectDetails: React.FC = () => {
                 </div>
             </div>
 
-            {/* Content Container - Centered with max width */}
-            <div className="flex justify-center px-4 lg:px-2">
-                <div className="w-full max-w-5xl">
+            {/* Content Container - Full width with responsive padding */}
+            <div className="w-full px-4 sm:px-6 lg:px-10">
+                <div className="w-full">
                     {/* Header with Tab Links and Controls */}
                     <div className="mb-4">
                         {/* Mobile Layout */}
@@ -1259,71 +1389,281 @@ const ProjectDetails: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Auto-suggest form for tasks with no items */}
-                    {activeTab === 'tasks' && showAutoSuggestForm && (
-                        <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 mb-6">
-                            <AutoSuggestNextActionBox
-                                onAddAction={(actionDescription) => {
-                                    if (project?.id) {
-                                        handleCreateNextAction(
-                                            project.id,
-                                            actionDescription
-                                        );
-                                    }
-                                }}
-                                onDismiss={handleSkipNextAction}
-                            />
-                        </div>
-                    )}
-
                     {/* Tasks Tab Content */}
                     {activeTab === 'tasks' && (
-                        <>
-                            <div
-                                className={`transition-all duration-300 ease-in-out overflow-hidden mb-1.5 ${
-                                    !showAutoSuggestForm
-                                        ? 'opacity-100 max-h-96 transform translate-y-0'
-                                        : 'opacity-0 max-h-0 transform -translate-y-2'
-                                }`}
-                            >
-                                <NewTask onTaskCreate={handleTaskCreate} />
-                            </div>
+                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+                            <div className="xl:col-span-2 flex flex-col gap-4">
+                                {showAutoSuggestForm && (
+                                    <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
+                                        <AutoSuggestNextActionBox
+                                            onAddAction={(actionDescription) => {
+                                                if (project?.id) {
+                                                    handleCreateNextAction(
+                                                        project.id,
+                                                        actionDescription
+                                                    );
+                                                }
+                                            }}
+                                            onDismiss={handleSkipNextAction}
+                                        />
+                                    </div>
+                                )}
 
-                            <div className="transition-all duration-300 ease-in-out overflow-visible">
-                                {displayTasks.length > 0 ? (
-                                    <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 overflow-visible">
-                                        <TaskList
-                                            tasks={displayTasks}
+                                <div
+                                    className="transition-all duration-300 ease-in-out overflow-visible opacity-100 transform translate-y-0"
+                                >
+                                    <NewTask onTaskCreate={handleTaskCreate} />
+                                </div>
+
+                                <div className="transition-all duration-300 ease-in-out overflow-visible">
+                                    {displayTasks.length > 0 ? (
+                                        <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 overflow-visible">
+                                            <TaskList
+                                                tasks={displayTasks}
                                             onTaskUpdate={handleTaskUpdate}
+                                            onTaskCompletionToggle={
+                                                handleTaskCompletionToggle
+                                            }
                                             onTaskDelete={handleTaskDelete}
                                             projects={allProjects}
                                             hideProjectName={true}
                                             onToggleToday={handleToggleToday}
-                                            showCompletedTasks={showCompleted}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
-                                        <p className="text-gray-500 dark:text-gray-400">
-                                            {taskSearchQuery.trim()
-                                                ? t(
-                                                      'tasks.noTasksAvailable',
-                                                      'No tasks available.'
-                                                  )
-                                                : showCompleted
-                                                  ? t(
-                                                        'project.noCompletedTasks',
-                                                        'No completed tasks.'
-                                                    )
-                                                  : t(
-                                                        'project.noTasks',
-                                                        'No tasks.'
-                                                    )}
-                                        </p>
-                                    </div>
-                                )}
+                                            showCompletedTasks={
+                                                    showCompleted
+                                                }
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
+                                            <p className="text-gray-500 dark:text-gray-400">
+                                                {taskSearchQuery.trim()
+                                                    ? t(
+                                                          'tasks.noTasksAvailable',
+                                                          'No tasks available.'
+                                                      )
+                                                    : showCompleted
+                                                      ? t(
+                                                            'project.noCompletedTasks',
+                                                            'No completed tasks.'
+                                                        )
+                                                      : t(
+                                                            'project.noTasks',
+                                                            'No tasks.'
+                                                        )}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </>
+
+                            <div className="space-y-4">
+                                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-5">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                {t(
+                                                    'projects.progress',
+                                                    'Progress'
+                                                )}
+                                            </p>
+                                            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                                                {t(
+                                                    'projects.taskMomentum',
+                                                    'Task momentum'
+                                                )}
+                                            </h3>
+                                        </div>
+                                        <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                                            {taskStats.total}{' '}
+                                            {t('tasks.tasks', 'tasks')}
+                                        </span>
+                                    </div>
+
+                                    <div className="mt-4 flex items-center gap-4">
+                                        <div className="relative w-28 h-28">
+                                            <div
+                                                className="w-full h-full rounded-full shadow-inner"
+                                                style={{
+                                                    background:
+                                                        completionGradient,
+                                                }}
+                                            ></div>
+                                            <div className="absolute inset-3 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex flex-col items-center justify-center text-center">
+                                                <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                                                    {taskStats.completionRate}%
+                                                </span>
+                                                <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                                                    {t('common.done', 'done')}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex-1 space-y-3">
+                                            <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
+                                                <span>
+                                                    {t(
+                                                        'projects.activeTasks',
+                                                        'Active tasks'
+                                                    )}
+                                                </span>
+                                                <span className="font-semibold text-gray-900 dark:text-gray-100">
+                                                    {Math.max(
+                                                        taskStats.total -
+                                                            taskStats.completed,
+                                                        0
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                                <span>
+                                                    {taskStats.overdue}{' '}
+                                                    {t(
+                                                        'tasks.overdue',
+                                                        'overdue'
+                                                    )}
+                                                    , {taskStats.dueSoon}{' '}
+                                                    {t(
+                                                        'tasks.dueSoon',
+                                                        'due soon'
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                                    <span>
+                                                        {t(
+                                                            'tasks.progress',
+                                                            'Progress'
+                                                        )}
+                                                    </span>
+                                                    <span className="font-semibold text-gray-700 dark:text-gray-200">
+                                                        {taskStats.completionRate}%
+                                                    </span>
+                                                </div>
+                                                <div className="mt-1 h-2 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                                                    <div
+                                                        className="h-full bg-blue-500 dark:bg-blue-400 transition-all duration-300 ease-in-out"
+                                                        style={{
+                                                            width: `${
+                                                                taskStats.total >
+                                                                0
+                                                                    ? taskStats.completionRate
+                                                                    : 0
+                                                            }%`,
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-5">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                                            {t(
+                                                'tasks.statusBreakdown',
+                                                'Status breakdown'
+                                            )}
+                                        </h3>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                            {t('common.now', 'Now')}
+                                        </span>
+                                    </div>
+                                    <div className="mt-3 space-y-3">
+                                        {[
+                                            {
+                                                label: t(
+                                                    'common.completed',
+                                                    'Completed'
+                                                ),
+                                                value: taskStats.completed,
+                                                color: '#22c55e',
+                                            },
+                                            {
+                                                label: t(
+                                                    'task.status.inProgress',
+                                                    'In progress'
+                                                ),
+                                                value: taskStats.inProgress,
+                                                color: '#3b82f6',
+                                            },
+                                            {
+                                                label: t(
+                                                    'task.status.notStarted',
+                                                    'Not started'
+                                                ),
+                                                value: taskStats.notStarted,
+                                                color: '#9ca3af',
+                                            },
+                                        ].map((item) => (
+                                            <div
+                                                key={item.label}
+                                                className="flex items-center justify-between gap-3"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <span
+                                                        className="w-2.5 h-2.5 rounded-full"
+                                                        style={{
+                                                            backgroundColor:
+                                                                item.color,
+                                                        }}
+                                                    ></span>
+                                                    <span className="text-sm text-gray-700 dark:text-gray-200">
+                                                        {item.label}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-2 w-32">
+                                                    <div className="flex-1 h-2 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
+                                                        <div
+                                                            className="h-full"
+                                                            style={{
+                                                                width: `${
+                                                                    taskStats.total >
+                                                                    0
+                                                                        ? (item.value /
+                                                                              taskStats.total) *
+                                                                          100
+                                                                        : 0
+                                                                }%`,
+                                                                backgroundColor:
+                                                                    item.color,
+                                                            }}
+                                                        ></div>
+                                                    </div>
+                                                    <span className="text-xs font-semibold text-gray-900 dark:text-gray-100 w-6 text-right">
+                                                        {item.value}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                                        {t(
+                                            'projects.dueHealth',
+                                            'Due health'
+                                        )}
+                                        :{' '}
+                                        <span className="font-medium text-gray-800 dark:text-gray-200">
+                                            {taskStats.overdue}{' '}
+                                            {t(
+                                                'tasks.overdue',
+                                                'overdue'
+                                            )}
+                                        </span>{' '}
+                                        •{' '}
+                                        <span className="font-medium text-gray-800 dark:text-gray-200">
+                                            {taskStats.dueSoon}{' '}
+                                            {t(
+                                                'tasks.dueSoon',
+                                                'due soon'
+                                            )}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     )}
 
                     {/* Notes Content */}
