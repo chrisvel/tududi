@@ -165,6 +165,17 @@ module.exports = (sequelize) => {
                     pinnedViewsOrder: [],
                 },
             },
+            ui_settings: {
+                type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: {
+                    project: {
+                        details: {
+                            showMetrics: true,
+                        },
+                    },
+                },
+            },
         },
         {
             tableName: 'users',

@@ -8,6 +8,7 @@ import {
     PlayIcon,
     ExclamationTriangleIcon,
     CheckCircleIcon,
+    ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { useToast } from '../Shared/ToastContext';
 import ProjectModal from './ProjectModal';
@@ -47,6 +48,8 @@ import ProjectNotesSection from './ProjectNotesSection';
 import { useProjectMetrics } from './useProjectMetrics';
 
 const ProjectDetails: React.FC = () => {
+    const UI_OPTIONS_KEY = 'ui_app_options';
+
     const { uidSlug } = useParams<{ uidSlug: string }>();
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -65,6 +68,8 @@ const ProjectDetails: React.FC = () => {
     const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
     const [showCompleted, setShowCompleted] = useState(false);
+    const [showMetrics, setShowMetrics] = useState(true);
+    const [isSavingUiPrefs, setIsSavingUiPrefs] = useState(false);
     const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
     const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(false);
     const hasCheckedAutoSuggest = useRef(false);
@@ -99,6 +104,94 @@ const ProjectDetails: React.FC = () => {
             getAutoSuggestNextActionsEnabled().then(setAutoSuggestEnabled);
         }
     }, []);
+
+    useEffect(() => {
+        // Load persisted UI options (local or remote)
+        const load = async () => {
+            let localShow: boolean | undefined;
+            try {
+                const stored = localStorage.getItem(UI_OPTIONS_KEY);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (typeof parsed.showMetrics === 'boolean') {
+                        localShow = parsed.showMetrics;
+                        setShowMetrics(parsed.showMetrics);
+                    }
+                }
+            } catch {
+                // ignore parse errors
+            }
+
+            try {
+                const response = await fetch(getApiPath('profile'), {
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    const profile = await response.json();
+                    if (
+                        profile.ui_settings &&
+                        typeof profile.ui_settings.project?.details?.showMetrics === 'boolean'
+                    ) {
+                        setShowMetrics(profile.ui_settings.project.details.showMetrics);
+                        localStorage.setItem(
+                            UI_OPTIONS_KEY,
+                            JSON.stringify({
+                                showMetrics: profile.ui_settings.project.details.showMetrics,
+                            })
+                        );
+                    } else if (localShow === undefined) {
+                        setShowMetrics(true);
+                    }
+                } else if (localShow === undefined) {
+                    setShowMetrics(true);
+                }
+            } catch {
+                if (localShow === undefined) setShowMetrics(true);
+            }
+        };
+        load();
+    }, [getApiPath]);
+
+    const persistUiSettings = async (nextShowMetrics: boolean) => {
+        try {
+            localStorage.setItem(
+                UI_OPTIONS_KEY,
+                JSON.stringify({ showMetrics: nextShowMetrics })
+            );
+        } catch {
+            // ignore storage errors
+        }
+
+        setIsSavingUiPrefs(true);
+        try {
+            await fetch(getApiPath('profile/ui-settings'), {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    project: {
+                        details: {
+                            showMetrics: nextShowMetrics,
+                        },
+                    },
+                }),
+            });
+        } catch {
+            // ignore network errors
+        } finally {
+            setIsSavingUiPrefs(false);
+        }
+    };
+
+    const toggleMetrics = () => {
+        setShowMetrics((prev) => {
+            const next = !prev;
+            persistUiSettings(next);
+            return next;
+        });
+    };
 
     useEffect(() => {
         if (allProjects.length === 0) {
@@ -694,8 +787,35 @@ const ProjectDetails: React.FC = () => {
                             {activeTab === 'tasks' && (
                                 <div className="flex items-center gap-4">
                                     <button
+                                        onClick={toggleMetrics}
+                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-2 ${
+                                            showMetrics
+                                                ? 'bg-blue-100 dark:bg-blue-900/30 shadow-sm'
+                                                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                        }`}
+                                        aria-pressed={showMetrics}
+                                        aria-label={
+                                            showMetrics
+                                                ? t('projects.hideMetrics', 'Hide metrics')
+                                                : t('projects.showMetrics', 'Show metrics')
+                                        }
+                                        title={
+                                            showMetrics
+                                                ? t('projects.hideMetrics', 'Hide metrics')
+                                                : t('projects.showMetrics', 'Show metrics')
+                                        }
+                                    >
+                                        <ChartBarIcon
+                                            className={`h-5 w-5 ${
+                                                showMetrics
+                                                    ? 'text-blue-600 dark:text-blue-200'
+                                                    : 'text-gray-600 dark:text-gray-200'
+                                            }`}
+                                        />
+                                    </button>
+                                    <button
                                         onClick={() => setIsSearchExpanded((v) => !v)}
-                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
+                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-2 ${
                                             isSearchExpanded
                                                 ? 'bg-blue-50/70 dark:bg-blue-900/20'
                                                 : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -740,41 +860,65 @@ const ProjectDetails: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-                                <ProjectTasksSection
-                                    project={project}
-                                    displayTasks={displayTasks}
-                                    showAutoSuggestForm={showAutoSuggestForm}
-                                    onAddNextAction={handleCreateNextAction}
-                                    onDismissNextAction={handleSkipNextAction}
-                                    onTaskCreate={handleTaskCreate}
-                                    onTaskUpdate={handleTaskUpdate}
-                                    onTaskCompletionToggle={handleTaskCompletionToggle}
-                                    onTaskDelete={handleTaskDelete}
-                                    onToggleToday={handleToggleToday}
-                                    allProjects={allProjects}
-                                    showCompleted={showCompleted}
-                                    taskSearchQuery={taskSearchQuery}
-                                    t={t}
-                                />
+                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start transition-all duration-300">
+                                <div
+                                    className={`flex justify-center transition-all duration-300 ${
+                                        showMetrics ? 'xl:col-span-2 translate-x-0' : 'xl:col-span-3 translate-x-0'
+                                    }`}
+                                >
+                                    <div
+                                        className={`w-full max-w-5xl transition-all duration-300 ${
+                                            showMetrics ? 'xl:translate-x-0' : 'xl:translate-x-6'
+                                        }`}
+                                    >
+                                        <ProjectTasksSection
+                                            project={project}
+                                            displayTasks={displayTasks}
+                                            showAutoSuggestForm={showAutoSuggestForm}
+                                            onAddNextAction={handleCreateNextAction}
+                                            onDismissNextAction={handleSkipNextAction}
+                                            onTaskCreate={handleTaskCreate}
+                                            onTaskUpdate={handleTaskUpdate}
+                                            onTaskCompletionToggle={handleTaskCompletionToggle}
+                                            onTaskDelete={handleTaskDelete}
+                                            onToggleToday={handleToggleToday}
+                                            allProjects={allProjects}
+                                            showCompleted={showCompleted}
+                                            taskSearchQuery={taskSearchQuery}
+                                            t={t}
+                                        />
+                                    </div>
+                                </div>
 
-                                <ProjectInsightsPanel
-                                    taskStats={taskStats}
-                                    completionGradient={completionGradient}
-                                    dueBuckets={dueBuckets}
-                                    dueHighlights={dueHighlights}
-                                    nextBestAction={nextBestAction}
-                                    getDueDescriptor={getDueDescriptor}
-                                    onStartNextAction={handleStartNextAction}
-                                    t={t}
-                                    completionTrend={completionTrend}
-                                    upcomingDueTrend={upcomingDueTrend}
-                                    createdTrend={createdTrend}
-                                    upcomingInsights={upcomingInsights}
-                                    eisenhower={eisenhower}
-                                    weeklyPace={weeklyPace}
-                                    monthlyCompleted={monthlyCompleted}
-                                />
+                                <div className="xl:col-span-1">
+                                    <div
+                                    className={`transition-all duration-300 ease-in-out ${
+                                        showMetrics
+                                            ? 'max-h-[2000px] opacity-100 translate-x-0'
+                                            : 'max-h-0 opacity-0 translate-x-8 pointer-events-none'
+                                    }`}
+                                    style={{ overflow: 'hidden' }}
+                                    aria-hidden={!showMetrics}
+                                >
+                                    <ProjectInsightsPanel
+                                            taskStats={taskStats}
+                                            completionGradient={completionGradient}
+                                            dueBuckets={dueBuckets}
+                                            dueHighlights={dueHighlights}
+                                            nextBestAction={nextBestAction}
+                                            getDueDescriptor={getDueDescriptor}
+                                            onStartNextAction={handleStartNextAction}
+                                            t={t}
+                                            completionTrend={completionTrend}
+                                            upcomingDueTrend={upcomingDueTrend}
+                                            createdTrend={createdTrend}
+                                            upcomingInsights={upcomingInsights}
+                                            eisenhower={eisenhower}
+                                            weeklyPace={weeklyPace}
+                                            monthlyCompleted={monthlyCompleted}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </>
                     )}

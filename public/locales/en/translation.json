@@ -768,7 +768,9 @@
       "in_progress_desc": "Active work happening",
       "blocked_desc": "Temporarily paused or stuck",
       "completed_desc": "Finished and done"
-    }
+    },
+    "showMetrics": "Show metrics",
+    "hideMetrics": "Hide metrics"
   },
   "projectItem": {
     "edit": "Edit",

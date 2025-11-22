@@ -145,6 +145,14 @@ router.get('/profile', async (req, res) => {
                 user.today_settings = null;
             }
         }
+        if (user.ui_settings && typeof user.ui_settings === 'string') {
+            try {
+                user.ui_settings = JSON.parse(user.ui_settings);
+            } catch (error) {
+                logError('Error parsing ui_settings:', error);
+                user.ui_settings = null;
+            }
+        }
 
         res.json(user);
     } catch (error) {
@@ -177,6 +185,7 @@ router.patch('/profile', async (req, res) => {
             productivity_assistant_enabled,
             next_task_suggestion_enabled,
             pomodoro_enabled,
+            ui_settings,
             currentPassword,
             newPassword,
         } = req.body;
@@ -213,6 +222,7 @@ router.patch('/profile', async (req, res) => {
                 next_task_suggestion_enabled;
         if (pomodoro_enabled !== undefined)
             allowedUpdates.pomodoro_enabled = pomodoro_enabled;
+        if (ui_settings !== undefined) allowedUpdates.ui_settings = ui_settings;
 
         // Validate first_day_of_week if provided
         if (first_day_of_week !== undefined) {
@@ -644,6 +654,7 @@ router.put('/profile/today-settings', async (req, res) => {
 
         const {
             showMetrics,
+            projectShowMetrics,
             showProductivity,
             showNextTaskSuggestion,
             showSuggestions,
@@ -654,6 +665,10 @@ router.put('/profile/today-settings', async (req, res) => {
         } = req.body;
 
         const todaySettings = {
+            projectShowMetrics:
+                projectShowMetrics !== undefined
+                    ? projectShowMetrics
+                    : user.today_settings?.projectShowMetrics ?? true,
             showMetrics:
                 showMetrics !== undefined
                     ? showMetrics
@@ -739,6 +754,42 @@ router.put('/profile/sidebar-settings', async (req, res) => {
         });
     } catch (error) {
         logError('Error updating sidebar settings:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Update generic UI settings (e.g., project metrics preferences)
+router.put('/profile/ui-settings', async (req, res) => {
+    try {
+        const user = await User.findByPk(req.authUserId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        const { project } = req.body;
+
+        const currentSettings =
+            (user.ui_settings && typeof user.ui_settings === 'object'
+                ? user.ui_settings
+                : {}) || { project: { details: {} } };
+
+        const newSettings = {
+            ...currentSettings,
+            project: {
+                ...(currentSettings.project || {}),
+                ...(project || {}),
+                details: {
+                    ...((currentSettings.project && currentSettings.project.details) || {}),
+                    ...((project && project.details) || {}),
+                },
+            },
+        };
+
+        await user.update({ ui_settings: newSettings });
+
+        res.json({ success: true, ui_settings: newSettings });
+    } catch (error) {
+        logError('Error updating ui settings:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
