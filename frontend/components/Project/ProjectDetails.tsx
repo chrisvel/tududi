@@ -99,6 +99,7 @@ const ProjectDetails: React.FC = () => {
 
     // Sort options for tasks
     const sortOptions: SortOption[] = [
+        { value: 'status:inProgressFirst', label: t('tasks.status', 'Status') },
         { value: 'created_at:desc', label: 'Created at' },
         { value: 'due_date:asc', label: 'Due date' },
         { value: 'priority:desc', label: 'Priority' },
@@ -155,9 +156,22 @@ const ProjectDetails: React.FC = () => {
 
     // Load initial sort order from localStorage (URL params removed to prevent conflicts)
     useEffect(() => {
-        const sortParam =
-            localStorage.getItem('project_order_by') || 'created_at:desc';
-        setOrderBy(sortParam);
+        const storedSort = localStorage.getItem('project_order_by');
+        const defaultSort = 'status:inProgressFirst';
+
+        if (!storedSort || storedSort === 'created_at:desc') {
+            setOrderBy(defaultSort);
+            localStorage.setItem('project_order_by', defaultSort);
+        } else {
+            setOrderBy(storedSort);
+        }
+
+        const savedShowCompleted = localStorage.getItem(
+            'project_show_completed'
+        );
+        if (savedShowCompleted !== null) {
+            setShowCompleted(JSON.parse(savedShowCompleted));
+        }
     }, []);
 
     // Fetch project data when uidSlug changes
@@ -188,11 +202,19 @@ const ProjectDetails: React.FC = () => {
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
 
-                // Load saved preferences from project data
-                if (projectData.task_show_completed !== undefined) {
+                // Load saved preferences from project data unless local overrides exist
+                const savedShowCompleted = localStorage.getItem(
+                    'project_show_completed'
+                );
+                if (
+                    savedShowCompleted === null &&
+                    projectData.task_show_completed !== undefined
+                ) {
                     setShowCompleted(projectData.task_show_completed);
                 }
-                if (projectData.task_sort_order) {
+
+                const savedSort = localStorage.getItem('project_order_by');
+                if (!savedSort && projectData.task_sort_order) {
                     setOrderBy(projectData.task_sort_order);
                 }
                 const fetchedNotes =
@@ -543,13 +565,14 @@ const ProjectDetails: React.FC = () => {
 
     const handleShowCompletedChange = (checked: boolean) => {
         setShowCompleted(checked);
+        localStorage.setItem('project_show_completed', JSON.stringify(checked));
 
-        // Save to project (remove navigation to prevent re-render)
         saveProjectPreferences(checked, orderBy);
     };
 
     const handleSortChange = (newOrderBy: string) => {
         setOrderBy(newOrderBy);
+        localStorage.setItem('project_order_by', newOrderBy);
         // Save to project
         saveProjectPreferences(showCompleted, newOrderBy);
     };
@@ -775,8 +798,28 @@ const ProjectDetails: React.FC = () => {
             );
         }
 
+        const getStatusRank = (status: Task['status']) => {
+            if (status === 'in_progress' || status === 1) return 0;
+            if (status === 'not_started' || status === 0) return 1;
+            if (status === 'waiting' || status === 4) return 2;
+            if (status === 'done' || status === 2) return 3;
+            if (status === 'archived' || status === 3) return 4;
+            return 5;
+        };
+
         // Then, sort the filtered tasks
         const sortedTasks = [...filteredTasks].sort((a, b) => {
+            if (orderBy === 'status:inProgressFirst') {
+                const rankA = getStatusRank(a.status);
+                const rankB = getStatusRank(b.status);
+                if (rankA !== rankB) return rankA - rankB;
+                // fallback by due date soonest
+                const dueA = a.due_date ? new Date(a.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+                const dueB = b.due_date ? new Date(b.due_date).getTime() : Number.MAX_SAFE_INTEGER;
+                if (dueA !== dueB) return dueA - dueB;
+                return (a.id || 0) - (b.id || 0);
+            }
+
             const [field, direction] = orderBy.split(':');
             const isAsc = direction === 'asc';
 
@@ -931,6 +974,204 @@ const ProjectDetails: React.FC = () => {
         taskStats.total,
     ]);
 
+    const dueBuckets = useMemo(() => {
+        const buckets = {
+            overdue: [] as Task[],
+            week: [] as Task[],
+            month: [] as Task[],
+            unscheduled: [] as Task[],
+        };
+
+        const now = new Date();
+        const startOfToday = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
+        const weekBoundary = new Date(startOfToday);
+        weekBoundary.setDate(startOfToday.getDate() + 7);
+        const monthBoundary = new Date(startOfToday);
+        monthBoundary.setDate(startOfToday.getDate() + 30);
+
+        const isCompleted = (status: Task['status']) =>
+            status === 'done' ||
+            status === 'archived' ||
+            status === 2 ||
+            status === 3;
+
+        tasks.forEach((task) => {
+            if (isCompleted(task.status)) return;
+
+            if (!task.due_date) {
+                buckets.unscheduled.push(task);
+                return;
+            }
+
+            const due = new Date(task.due_date);
+            if (Number.isNaN(due.getTime())) {
+                buckets.unscheduled.push(task);
+                return;
+            }
+
+            if (due < startOfToday) {
+                buckets.overdue.push(task);
+            } else if (due <= weekBoundary) {
+                buckets.week.push(task);
+            } else if (due <= monthBoundary) {
+                buckets.month.push(task);
+            } else {
+                buckets.unscheduled.push(task);
+            }
+        });
+
+        const totalDue =
+            buckets.overdue.length +
+            buckets.week.length +
+            buckets.month.length;
+
+        return { ...buckets, totalDue };
+    }, [tasks]);
+
+    const nextBestAction = useMemo(() => {
+        const isCompleted = (status: Task['status']) =>
+            status === 'done' ||
+            status === 'archived' ||
+            status === 2 ||
+            status === 3;
+
+        const candidates = tasks.filter((task) => !isCompleted(task.status));
+        if (candidates.length === 0) return null;
+
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const getPriorityScore = (priority: Task['priority']) => {
+            if (priority === 'high' || priority === 2) return -8;
+            if (priority === 'medium' || priority === 1) return -4;
+            return 0;
+        };
+
+        const scored = candidates
+            .map((task) => {
+                let score = 0;
+
+                if (task.status === 'in_progress' || task.status === 1) {
+                    score -= 30;
+                }
+
+                if (task.due_date) {
+                    const due = new Date(task.due_date);
+                    const diffDays = Math.floor(
+                        (due.getTime() - startOfToday.getTime()) /
+                            (1000 * 60 * 60 * 24)
+                    );
+                    if (diffDays < 0) score -= 25;
+                    else if (diffDays === 0) score -= 20;
+                    else if (diffDays <= 2) score -= 15;
+                    else if (diffDays <= 7) score -= 10;
+                }
+
+                score += getPriorityScore(task.priority);
+
+                if (task.today) {
+                    score -= 6;
+                }
+
+                const createdAt = task.created_at
+                    ? new Date(task.created_at).getTime()
+                    : 0;
+
+                return {
+                    task,
+                    score,
+                    createdAt,
+                };
+            })
+            .sort((a, b) => {
+                if (a.score !== b.score) return a.score - b.score;
+                if (a.createdAt !== b.createdAt) return a.createdAt - b.createdAt;
+                return (a.task.id || 0) - (b.task.id || 0);
+            });
+
+        return scored[0]?.task ?? null;
+    }, [tasks]);
+
+    const getDueDescriptor = (task: Task) => {
+        if (!task.due_date) return t('tasks.noDue', 'No due date');
+
+        const now = new Date();
+        const startOfToday = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
+        const due = new Date(task.due_date);
+        if (Number.isNaN(due.getTime())) return t('tasks.noDue', 'No due date');
+
+        const diffDays = Math.floor(
+            (due.getTime() - startOfToday.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        if (diffDays < 0) {
+            return t('tasks.overdueBy', {
+                defaultValue: 'Overdue by {{days}}d',
+                days: Math.abs(diffDays),
+            });
+        }
+        if (diffDays === 0) return t('dateIndicators.today', 'Today');
+        if (diffDays === 1)
+            return t('dateIndicators.tomorrow', 'Tomorrow');
+        if (diffDays <= 7)
+            return t('tasks.dueInDays', {
+                defaultValue: 'Due in {{days}}d',
+                days: diffDays,
+            });
+
+        return t('tasks.dueInDays', {
+            defaultValue: 'Due in {{days}}d',
+            days: diffDays,
+        });
+    };
+
+    const handleStartNextAction = async () => {
+        if (!nextBestAction?.id) return;
+
+        const isAlreadyInProgress =
+            nextBestAction.status === 'in_progress' ||
+            nextBestAction.status === 1;
+        const isAlreadyToday = !!nextBestAction.today;
+
+        if (isAlreadyInProgress && isAlreadyToday) {
+            return;
+        }
+
+        try {
+            await handleTaskUpdate({
+                ...nextBestAction,
+                status: 'in_progress',
+                today: true,
+            });
+        } catch {
+            // Silently ignore errors to avoid interrupting UI flow
+        }
+    };
+
+    const dueHighlights = useMemo(() => {
+        const combined = [
+            ...dueBuckets.overdue,
+            ...dueBuckets.week,
+            ...dueBuckets.month,
+        ];
+
+        return combined
+            .sort((a, b) => {
+                const aDate = a.due_date ? new Date(a.due_date).getTime() : 0;
+                const bDate = b.due_date ? new Date(b.due_date).getTime() : 0;
+                return aDate - bDate;
+            })
+            .slice(0, 3);
+    }, [dueBuckets]);
+
     // Function to get the appropriate icon for project state
     const getStateIcon = (state: string) => {
         switch (state) {
@@ -984,7 +1225,7 @@ const ProjectDetails: React.FC = () => {
     }
 
     return (
-        <div className="w-full">
+        <div className="w-full pb-12">
             {/* Project Banner - Full Width */}
             <div className="w-full">
                 {/* Project Banner - Unified for both with and without images */}
@@ -1392,7 +1633,7 @@ const ProjectDetails: React.FC = () => {
                     {/* Tasks Tab Content */}
                     {activeTab === 'tasks' && (
                         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-                            <div className="xl:col-span-2 flex flex-col gap-4">
+                            <div className="xl:col-span-2 flex flex-col gap-2">
                                 {showAutoSuggestForm && (
                                     <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
                                         <AutoSuggestNextActionBox
@@ -1661,6 +1902,213 @@ const ProjectDetails: React.FC = () => {
                                             )}
                                         </span>
                                     </div>
+                                </div>
+
+                                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-5">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div>
+                                            <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                                                {t(
+                                                    'projects.nextUp',
+                                                    'Next best action'
+                                                )}
+                                            </p>
+                                            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                                                {t(
+                                                    'projects.focusTask',
+                                                    'Most impactful task'
+                                                )}
+                                            </h3>
+                                        </div>
+                                        {nextBestAction && (
+                                            <span className="px-2 py-1 text-[11px] rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200">
+                                                {getDueDescriptor(nextBestAction)}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {nextBestAction ? (
+                                        <div className="mt-4 space-y-3">
+                                            <div className="flex items-start gap-3">
+                                                <div className="mt-1 w-2 h-2 rounded-full bg-blue-500" />
+                                                <div>
+                                                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                                        {nextBestAction.name}
+                                                    </p>
+                                                    {nextBestAction.note && (
+                                                        <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                                                            {nextBestAction.note}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
+                                                {nextBestAction.priority && (
+                                                    <span className="px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800">
+                                                        {t(
+                                                            'tasks.priority',
+                                                            'Priority'
+                                                        )}
+                                                        : {String(nextBestAction.priority)}
+                                                    </span>
+                                                )}
+                                                {nextBestAction.today && (
+                                                    <span className="px-2 py-1 rounded-full bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200">
+                                                        {t('tasks.todayPlan', 'Today plan')}
+                                                    </span>
+                                                )}
+                                                {(nextBestAction.status === 'in_progress' ||
+                                                    nextBestAction.status === 1) && (
+                                                    <span className="px-2 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200">
+                                                        {t(
+                                                            'task.status.inProgress',
+                                                            'In progress'
+                                                        )}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <button
+                                                    type="button"
+                                                    onClick={handleStartNextAction}
+                                                    disabled={
+                                                        (nextBestAction.status ===
+                                                            'in_progress' ||
+                                                            nextBestAction.status === 1) &&
+                                                        nextBestAction.today
+                                                    }
+                                                    className={`inline-flex items-center justify-center px-3 py-1.5 text-sm font-medium text-white rounded-md transition-colors ${
+                                                        (nextBestAction.status ===
+                                                            'in_progress' ||
+                                                            nextBestAction.status === 1) &&
+                                                        nextBestAction.today
+                                                            ? 'bg-gray-400 dark:bg-gray-700 cursor-not-allowed'
+                                                            : 'bg-blue-600 hover:bg-blue-700'
+                                                    }`}
+                                                >
+                                                    {(nextBestAction.status ===
+                                                        'in_progress' ||
+                                                        nextBestAction.status === 1) &&
+                                                    nextBestAction.today
+                                                        ? t('tasks.inProgress', 'In progress')
+                                                        : t('tasks.startNow', 'Start now')}
+                                                </button>
+                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {t(
+                                                        'projects.focusHint',
+                                                        'Shifts this task to in progress and today'
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+                                            {t(
+                                                'projects.noNextAction',
+                                                'All clear—no outstanding tasks.'
+                                            )}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-5">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                                            {t('projects.dueRadar', 'Due radar')}
+                                        </h3>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                            {dueBuckets.totalDue}{' '}
+                                            {t('tasks.tasks', 'tasks')}
+                                        </span>
+                                    </div>
+
+                                    {dueBuckets.totalDue > 0 ? (
+                                        <>
+                                            <div className="mt-3 flex items-center gap-2">
+                                                <div className="flex-1 h-3 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-800 flex">
+                                                    <div
+                                                        className="h-full bg-red-500"
+                                                        style={{
+                                                            flex: dueBuckets.overdue.length,
+                                                        }}
+                                                    ></div>
+                                                    <div
+                                                        className="h-full bg-amber-400"
+                                                        style={{
+                                                            flex: dueBuckets.week.length,
+                                                        }}
+                                                    ></div>
+                                                    <div
+                                                        className="h-full bg-blue-400"
+                                                        style={{
+                                                            flex: dueBuckets.month.length,
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {t('projects.next30Days', 'Next 30 days')}
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-gray-600 dark:text-gray-300">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                                    <span className="font-semibold">
+                                                        {dueBuckets.overdue.length}
+                                                    </span>
+                                                    <span className="text-gray-500 dark:text-gray-400">
+                                                        {t('tasks.overdue', 'Overdue')}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                                                    <span className="font-semibold">
+                                                        {dueBuckets.week.length}
+                                                    </span>
+                                                    <span className="text-gray-500 dark:text-gray-400">
+                                                        {t('tasks.dueSoon', 'Due soon')}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+                                                    <span className="font-semibold">
+                                                        {dueBuckets.month.length}
+                                                    </span>
+                                                    <span className="text-gray-500 dark:text-gray-400">
+                                                        {t('projects.dueThisMonth', 'This month')}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {dueHighlights.length > 0 && (
+                                                <div className="mt-4 space-y-2">
+                                                    {dueHighlights.map((task) => (
+                                                        <div
+                                                            key={task.id}
+                                                            className="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/80"
+                                                        >
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                                                <span className="text-sm text-gray-800 dark:text-gray-200">
+                                                                    {task.name}
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                                {getDueDescriptor(task)}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+                                            {t(
+                                                'projects.noDueData',
+                                                'No due dates on upcoming tasks.'
+                                            )}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>
