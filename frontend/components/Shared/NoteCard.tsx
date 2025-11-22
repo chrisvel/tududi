@@ -60,7 +60,7 @@ const NoteCard: React.FC<NoteCardProps> = ({
                     .toLowerCase()
                     .replace(/[^a-z0-9]+/g, '-')
                     .replace(/^-|-$/g, '')}`}
-                className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col hover:opacity-80 transition-opacity duration-300 ease-in-out cursor-pointer"
+                className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col hover:opacity-80 transition-opacity duration-300 ease-in-out cursor-pointer border-l-4 border-l-blue-400 dark:border-l-blue-500"
                 style={{
                     minHeight: '280px',
                     maxHeight: '280px',

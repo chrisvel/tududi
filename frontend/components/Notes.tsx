@@ -524,7 +524,7 @@ const Notes: React.FC = () => {
                                     <div
                                         key={note.uid}
                                         onClick={() => handleSelectNote(note)}
-                                        className={`p-5 cursor-pointer ${
+                                        className={`relative p-5 cursor-pointer ${
                                             previewNote?.uid === note.uid
                                                 ? 'bg-white dark:bg-gray-900 border-b border-transparent mx-4 rounded-lg'
                                                 : index !==
@@ -533,7 +533,10 @@ const Notes: React.FC = () => {
                                                   : 'border-b border-transparent hover:bg-gray-50 dark:hover:bg-gray-800 mx-4'
                                         }`}
                                     >
-                                        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                                        {previewNote?.uid === note.uid && (
+                                            <span className="absolute inset-y-0 left-0 w-1 bg-blue-400 dark:bg-blue-500 rounded-l-md pointer-events-none" />
+                                        )}
+                                        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate mb-1">
                                             {note.title ||
                                                 t(
                                                     'notes.untitled',
@@ -569,7 +572,7 @@ const Notes: React.FC = () => {
                         {isEditing && editingNote ? (
                             <div className="flex-1 flex flex-col overflow-hidden">
                                 {/* Editor Header - matches preview structure */}
-                                <div className="flex items-start justify-between mb-3 flex-shrink-0 px-6 md:px-8 pt-4">
+                                <div className="flex items-start justify-between mb-3 flex-shrink-0 px-6 md:px-8 pt-5">
                                     <div className="flex-1">
                                         {/* Back button for mobile */}
                                         <button
@@ -595,7 +598,7 @@ const Notes: React.FC = () => {
                                             }
                                             onClick={(e) => e.stopPropagation()}
                                             placeholder="Note title..."
-                                            className="w-full text-xl md:text-2xl font-bold bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 p-0 mb-1"
+                                            className="w-full bg-transparent text-gray-900 dark:text-gray-100 border-none focus:outline-none focus:ring-0 pt-5 mb-4 block"
                                             style={{
                                                 color: editingNoteColor
                                                     ? shouldUseLightText(
@@ -604,6 +607,11 @@ const Notes: React.FC = () => {
                                                         ? '#ffffff'
                                                         : '#333333'
                                                     : undefined,
+                                                fontSize: '2rem',
+                                                lineHeight: '2rem',
+                                                fontWeight: 500,
+                                                paddingLeft: 0,
+                                                paddingRight: 0,
                                             }}
                                             autoFocus
                                         />
@@ -904,7 +912,7 @@ const Notes: React.FC = () => {
                         ) : previewNote ? (
                             <div className="flex-1 flex flex-col overflow-hidden">
                                 {/* Preview Header */}
-                                <div className="flex items-start justify-between mb-3 flex-shrink-0 px-6 md:px-8 pt-6">
+                                <div className="flex items-start justify-between mb-3 flex-shrink-0 px-6 md:px-8 pt-5">
                                     <div className="flex-1">
                                         {/* Back button for mobile */}
                                         <button
@@ -919,7 +927,7 @@ const Notes: React.FC = () => {
                                             onClick={() =>
                                                 handleEditNote(previewNote)
                                             }
-                                            className="text-xl md:text-2xl font-bold mb-1 cursor-pointer text-gray-900 dark:text-gray-100 transition-colors"
+                                            className="cursor-pointer text-gray-900 dark:text-gray-100 transition-colors pt-5 mb-4"
                                             style={{
                                                 color: previewNoteColor
                                                     ? shouldUseLightText(
@@ -928,6 +936,9 @@ const Notes: React.FC = () => {
                                                         ? '#ffffff'
                                                         : '#333333'
                                                     : undefined,
+                                                fontSize: '2rem',
+                                                lineHeight: '2rem',
+                                                fontWeight: 500,
                                             }}
                                             title="Click to edit"
                                         >
