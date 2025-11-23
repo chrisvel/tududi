@@ -122,7 +122,25 @@
     "showSubtasks": "Показать подзадачи",
     "hideSubtasks": "Скрыть подзадачи",
     "edit": "Редактировать задачу",
-    "delete": "Удалить задачу"
+    "delete": "Удалить задачу",
+    "sortTasks": "Сортировка задач",
+    "sortBy": "Сортировать по",
+    "direction": "Направление",
+    "ascending": "По возрастанию",
+    "descending": "По убыванию",
+    "groupBy": "Группировать по",
+    "groupByProject": "Проект",
+    "grouping": {
+      "none": "Нет"
+    },
+    "show": "Показать",
+    "all": "Все",
+    "completedOnly": "Только завершенные",
+    "notCompleted": "Незавершенные",
+    "noProject": "Без проекта",
+    "unknownProject": "Неизвестный проект",
+    "tasks": "задачи",
+    "showingItems": "Показано {{current}} из {{total}} элементов"
   },
   "timeline": {
     "activityTimeline": "Хронология активности",
@@ -508,7 +526,7 @@
   "project": {
     "name": "Название проекта",
     "projectImage": "Изображение проекта",
-    "uploadImageHint": "Загрузите изображение для вашего проекта (макс 5МБ)",
+    "uploadImageHint": "Загрузите изображение для вашего проекта (макс 10МБ)",
     "browseImage": "Выбрать изображение",
     "noNotes": "Нет заметок для этого проекта.",
     "deleteProject": "Удалить проект",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Активная работа идет",
       "blocked_desc": "Временно приостановлено или застряло",
       "completed_desc": "Завершено и выполнено"
-    }
+    },
+    "showMetrics": "Показать метрики",
+    "hideMetrics": "Скрыть метрики"
   },
   "projectItem": {
     "edit": "Редактировать",

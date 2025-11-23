@@ -9,6 +9,7 @@ import {
     InformationCircleIcon,
     PencilSquareIcon,
     MagnifyingGlassIcon,
+    CheckIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { Task } from '../entities/Task';
@@ -52,7 +53,9 @@ const ViewDetail: React.FC = () => {
     // Search, filter, and sort state
     const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-    const [showCompleted, setShowCompleted] = useState(false);
+    const [taskStatusFilter, setTaskStatusFilter] = useState<
+        'all' | 'active' | 'completed'
+    >('active');
     const [orderBy, setOrderBy] = useState<string>('created_at:desc');
 
     // Pagination state
@@ -85,7 +88,7 @@ const ViewDetail: React.FC = () => {
         let filteredTasks: Task[];
 
         // Filter by completion status
-        if (showCompleted) {
+        if (taskStatusFilter === 'completed') {
             filteredTasks = tasks.filter(
                 (task: Task) =>
                     task.status === 'done' ||
@@ -93,7 +96,7 @@ const ViewDetail: React.FC = () => {
                     task.status === 2 ||
                     task.status === 3
             );
-        } else {
+        } else if (taskStatusFilter === 'active') {
             filteredTasks = tasks.filter(
                 (task: Task) =>
                     task.status !== 'done' &&
@@ -101,6 +104,9 @@ const ViewDetail: React.FC = () => {
                     task.status !== 2 &&
                     task.status !== 3
             );
+        } else {
+            // taskStatusFilter === 'all'
+            filteredTasks = tasks;
         }
 
         // Filter by search query
@@ -165,7 +171,7 @@ const ViewDetail: React.FC = () => {
         });
 
         return sortedTasks;
-    }, [tasks, showCompleted, taskSearchQuery, orderBy, t]);
+    }, [tasks, taskStatusFilter, taskSearchQuery, orderBy, t]);
 
     useEffect(() => {
         fetchViewAndResults();
@@ -533,57 +539,121 @@ const ViewDetail: React.FC = () => {
                             ariaLabel={t('views.sortTasks', 'Sort tasks')}
                             title={t('views.sortTasks', 'Sort tasks')}
                             dropdownLabel={t('tasks.sortBy', 'Sort by')}
-                            extraContent={
-                                <button
-                                    type="button"
-                                    onClick={() => setShowCompleted((v) => !v)}
-                                    className="w-full flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
-                                    aria-pressed={showCompleted}
-                                    aria-label={
-                                        showCompleted
-                                            ? t(
-                                                  'views.hideCompleted',
-                                                  'Hide completed tasks'
-                                              )
-                                            : t(
-                                                  'views.showCompleted',
-                                                  'Show completed tasks'
-                                              )
-                                    }
-                                    title={
-                                        showCompleted
-                                            ? t(
-                                                  'views.hideCompleted',
-                                                  'Hide completed tasks'
-                                              )
-                                            : t(
-                                                  'views.showCompleted',
-                                                  'Show completed tasks'
-                                              )
-                                    }
-                                >
-                                    <span>
-                                        {t(
-                                            'common.showCompleted',
-                                            'Show completed'
-                                        )}
-                                    </span>
-                                    <span
-                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                                            showCompleted
-                                                ? 'bg-blue-600'
-                                                : 'bg-gray-200 dark:bg-gray-600'
-                                        }`}
-                                    >
-                                        <span
-                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                showCompleted
-                                                    ? 'translate-x-4'
-                                                    : 'translate-x-0.5'
-                                            }`}
-                                        />
-                                    </span>
-                                </button>
+                            footerContent={
+                                <div className="space-y-3">
+                                    <div>
+                                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                                            {t('tasks.show', 'Show')}
+                                        </div>
+                                        <div className="py-1 space-y-1">
+                                            {[
+                                                {
+                                                    key: 'active',
+                                                    label: t(
+                                                        'tasks.open',
+                                                        'Open'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'all',
+                                                    label: t(
+                                                        'tasks.all',
+                                                        'All'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'completed',
+                                                    label: t(
+                                                        'tasks.completed',
+                                                        'Completed'
+                                                    ),
+                                                },
+                                            ].map((opt) => {
+                                                const isActive =
+                                                    taskStatusFilter ===
+                                                    opt.key;
+                                                return (
+                                                    <button
+                                                        key={opt.key}
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setTaskStatusFilter(
+                                                                opt.key as
+                                                                    | 'all'
+                                                                    | 'active'
+                                                                    | 'completed'
+                                                            )
+                                                        }
+                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                            isActive
+                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        <span>{opt.label}</span>
+                                                        {isActive && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                                            {t('tasks.direction', 'Direction')}
+                                        </div>
+                                        <div className="py-1">
+                                            {[
+                                                {
+                                                    key: 'asc',
+                                                    label: t(
+                                                        'tasks.ascending',
+                                                        'Ascending'
+                                                    ),
+                                                },
+                                                {
+                                                    key: 'desc',
+                                                    label: t(
+                                                        'tasks.descending',
+                                                        'Descending'
+                                                    ),
+                                                },
+                                            ].map((dir) => {
+                                                const currentDirection =
+                                                    orderBy.split(':')[1] ||
+                                                    'asc';
+                                                const isActive =
+                                                    currentDirection ===
+                                                    dir.key;
+                                                return (
+                                                    <button
+                                                        key={dir.key}
+                                                        onClick={() => {
+                                                            const [field] =
+                                                                orderBy.split(
+                                                                    ':'
+                                                                );
+                                                            setOrderBy(
+                                                                `${field}:${dir.key}`
+                                                            );
+                                                        }}
+                                                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                                            isActive
+                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        <span>{dir.label}</span>
+                                                        {isActive && (
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
                             }
                         />
                         <div className="relative" ref={criteriaDropdownRef}>
@@ -781,7 +851,7 @@ const ViewDetail: React.FC = () => {
                             projects={projects}
                             hideProjectName={false}
                             onToggleToday={handleToggleToday}
-                            showCompletedTasks={showCompleted}
+                            showCompletedTasks={taskStatusFilter !== 'active'}
                         />
                         {/* Load more button */}
                         {hasMore && (

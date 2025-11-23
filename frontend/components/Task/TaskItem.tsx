@@ -66,7 +66,8 @@ const SubtasksDisplay: React.FC<SubtasksDisplayProps> = ({
                                                     try {
                                                         const updatedSubtask =
                                                             await toggleTaskCompletion(
-                                                                subtask.id
+                                                                subtask.id,
+                                                                subtask
                                                             );
 
                                                         // Check if parent-child logic was executed
@@ -344,7 +345,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     await new Promise((resolve) => setTimeout(resolve, 300));
                 }
 
-                const response = await toggleTaskCompletion(task.id);
+                const response = await toggleTaskCompletion(task.id, task);
 
                 // Handle the updated task
                 if (onTaskCompletionToggle) {

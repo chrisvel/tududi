@@ -122,7 +122,25 @@
     "showSubtasks": "Show subtasks",
     "hideSubtasks": "Hide subtasks",
     "edit": "Edit task",
-    "delete": "Delete task"
+    "delete": "Delete task",
+    "sortTasks": "Sort tasks",
+    "sortBy": "Sort by",
+    "direction": "Direction",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "groupBy": "Group by",
+    "groupByProject": "Project",
+    "grouping": {
+      "none": "None"
+    },
+    "show": "Show",
+    "all": "All",
+    "completedOnly": "Completed only",
+    "notCompleted": "Not completed",
+    "noProject": "No project",
+    "unknownProject": "Unknown project",
+    "tasks": "tasks",
+    "showingItems": "Showing {{current}} of {{total}} items"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",
@@ -508,7 +526,7 @@
   "project": {
     "name": "Project Name",
     "projectImage": "Project Image",
-    "uploadImageHint": "Upload an image for your project (max 5MB)",
+    "uploadImageHint": "Upload an image for your project (max 10MB)",
     "browseImage": "Browse Image",
     "noNotes": "No notes for this project.",
     "deleteProject": "Delete Project",
@@ -768,7 +786,9 @@
       "in_progress_desc": "Active work happening",
       "blocked_desc": "Temporarily paused or stuck",
       "completed_desc": "Finished and done"
-    }
+    },
+    "showMetrics": "Show metrics",
+    "hideMetrics": "Hide metrics"
   },
   "projectItem": {
     "edit": "Edit",
@@ -874,7 +894,7 @@
   },
   "calendar": {
     "month": "Month",
-    "week": "Week", 
+    "week": "Week",
     "day": "Day",
     "today": "Today",
     "addEvent": "Add Event",
@@ -899,7 +919,7 @@
     "close": "Close",
     "title": "Title",
     "status": "Status",
-    "dueDate": "Due Date", 
+    "dueDate": "Due Date",
     "priority": "Priority",
     "project": "Project",
     "area": "Area",
@@ -1030,8 +1050,7 @@
     "viewOnGitHub": "View on GitHub",
     "license": "Licensed for personal use",
     "builtBy": "Built by"
-  }
-  ,
+  },
   "admin": {
     "manageUsers": "Manage users",
     "userManagement": "User Management",

@@ -122,7 +122,25 @@
     "showSubtasks": "Tampilkan subtugas",
     "hideSubtasks": "Sembunyikan subtugas",
     "edit": "Edit tugas",
-    "delete": "Hapus tugas"
+    "delete": "Hapus tugas",
+    "sortTasks": "Urutkan tugas",
+    "sortBy": "Urutkan berdasarkan",
+    "direction": "Arah",
+    "ascending": "Menaik",
+    "descending": "Menurun",
+    "groupBy": "Kelompokkan berdasarkan",
+    "groupByProject": "Proyek",
+    "grouping": {
+      "none": "Tidak ada"
+    },
+    "show": "Tampilkan",
+    "all": "Semua",
+    "completedOnly": "Hanya selesai",
+    "notCompleted": "Belum selesai",
+    "noProject": "Tanpa proyek",
+    "unknownProject": "Proyek tidak dikenal",
+    "tasks": "tugas",
+    "showingItems": "Menampilkan {{current}} dari {{total}} item"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",
@@ -508,7 +526,7 @@
   "project": {
     "name": "Nama Proyek",
     "projectImage": "Gambar Proyek",
-    "uploadImageHint": "Unggah gambar untuk proyek Anda (maks 5MB)",
+    "uploadImageHint": "Unggah gambar untuk proyek Anda (maks 10MB)",
     "browseImage": "Telusuri Gambar",
     "noNotes": "Tidak ada catatan untuk proyek ini.",
     "deleteProject": "Hapus Proyek",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Pekerjaan aktif sedang berlangsung",
       "blocked_desc": "Sementara terhenti atau terjebak",
       "completed_desc": "Selesai dan selesai"
-    }
+    },
+    "showMetrics": "Tampilkan metrik",
+    "hideMetrics": "Sembunyikan metrik"
   },
   "projectItem": {
     "edit": "Sunting",

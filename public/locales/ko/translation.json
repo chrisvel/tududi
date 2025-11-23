@@ -122,7 +122,25 @@
     "showSubtasks": "하위 작업 표시",
     "hideSubtasks": "하위 작업 숨기기",
     "edit": "작업 편집",
-    "delete": "작업 삭제"
+    "delete": "작업 삭제",
+    "sortTasks": "작업 정렬",
+    "sortBy": "정렬 기준",
+    "direction": "방향",
+    "ascending": "오름차순",
+    "descending": "내림차순",
+    "groupBy": "그룹화 기준",
+    "groupByProject": "프로젝트",
+    "grouping": {
+      "none": "없음"
+    },
+    "show": "표시",
+    "all": "모두",
+    "completedOnly": "완료된 항목만",
+    "notCompleted": "미완료",
+    "noProject": "프로젝트 없음",
+    "unknownProject": "알 수 없는 프로젝트",
+    "tasks": "작업",
+    "showingItems": "{{total}}개 중 {{current}}개 표시"
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",
@@ -508,7 +526,7 @@
   "project": {
     "name": "프로젝트 이름",
     "projectImage": "프로젝트 이미지",
-    "uploadImageHint": "프로젝트를 위한 이미지를 업로드하세요 (최대 5MB)",
+    "uploadImageHint": "프로젝트를 위한 이미지를 업로드하세요 (최대 10MB)",
     "browseImage": "이미지 찾아보기",
     "noNotes": "이 프로젝트에 대한 메모가 없습니다.",
     "deleteProject": "프로젝트 삭제",
@@ -765,7 +783,9 @@
       "in_progress_desc": "활동적인 작업 진행 중",
       "blocked_desc": "일시적으로 중단되거나 막힘",
       "completed_desc": "완료되고 끝남"
-    }
+    },
+    "showMetrics": "메트릭 표시",
+    "hideMetrics": "메트릭 숨기기"
   },
   "projectItem": {
     "edit": "편집",

@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Login from './components/Login';
 import NotFound from './components/Shared/NotFound';
-import ProjectDetails from './components/Project/ProjectDetails';
+import ProjectDetails from './components/Project/ProjectDetails.tsx';
 import Projects from './components/Projects';
 import AreaDetails from './components/Area/AreaDetails';
 import Areas from './components/Areas';

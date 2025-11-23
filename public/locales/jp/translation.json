@@ -122,7 +122,25 @@
     "showSubtasks": "サブタスクを表示",
     "hideSubtasks": "サブタスクを非表示",
     "edit": "タスクを編集",
-    "delete": "タスクを削除"
+    "delete": "タスクを削除",
+    "sortTasks": "タスクを並べ替え",
+    "sortBy": "並べ替え",
+    "direction": "方向",
+    "ascending": "昇順",
+    "descending": "降順",
+    "groupBy": "グループ化",
+    "groupByProject": "プロジェクト",
+    "grouping": {
+      "none": "なし"
+    },
+    "show": "表示",
+    "all": "すべて",
+    "completedOnly": "完了のみ",
+    "notCompleted": "未完了",
+    "noProject": "プロジェクトなし",
+    "unknownProject": "不明なプロジェクト",
+    "tasks": "タスク",
+    "showingItems": "{{total}}件中{{current}}件を表示"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",
@@ -563,7 +581,9 @@
       "in_progress_desc": "アクティブな作業が行われている",
       "blocked_desc": "一時的に停止または行き詰まっている",
       "completed_desc": "完了し、終了した"
-    }
+    },
+    "showMetrics": "メトリクスを表示",
+    "hideMetrics": "メトリクスを非表示"
   },
   "projectItem": {
     "edit": "編集",
@@ -684,7 +704,7 @@
   },
   "project": {
     "projectImage": "プロジェクト画像",
-    "uploadImageHint": "プロジェクト用の画像をアップロード（最大5MB）",
+    "uploadImageHint": "プロジェクト用の画像をアップロード（最大10MB）",
     "browseImage": "画像を参照",
     "name": "プロジェクト名",
     "noNotes": "このプロジェクトにはノートがありません。",

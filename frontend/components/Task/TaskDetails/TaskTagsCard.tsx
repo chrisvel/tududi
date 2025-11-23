@@ -5,7 +5,7 @@ import TagInput from '../../Tag/TagInput';
 import { Task } from '../../../entities/Task';
 import { Tag } from '../../../entities/Tag';
 
-interface TaskTagsSectionProps {
+interface TaskTagsCardProps {
     task: Task;
     availableTags: Tag[];
     hasLoadedTags: boolean;
@@ -14,7 +14,7 @@ interface TaskTagsSectionProps {
     onLoadTags: () => void;
 }
 
-const TaskTagsSection: React.FC<TaskTagsSectionProps> = ({
+const TaskTagsCard: React.FC<TaskTagsCardProps> = ({
     task,
     availableTags,
     hasLoadedTags,
@@ -131,4 +131,4 @@ const TaskTagsSection: React.FC<TaskTagsSectionProps> = ({
     );
 };
 
-export default TaskTagsSection;
+export default TaskTagsCard;

@@ -1,16 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-    CalendarIcon,
-    ExclamationTriangleIcon,
-    ListBulletIcon,
-    ClockIcon,
-} from '@heroicons/react/24/outline';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import TaskModal from './TaskModal';
-import RecurrenceDisplay from './RecurrenceDisplay';
-import TaskSubtasksSection from './TaskForm/TaskSubtasksSection';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import {
@@ -24,19 +17,18 @@ import {
 import { createProject } from '../../utils/projectsService';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
-import TaskPriorityIcon from './TaskPriorityIcon';
 import LoadingScreen from '../Shared/LoadingScreen';
 import TaskTimeline from './TaskTimeline';
-import TaskDueDateSection from './TaskForm/TaskDueDateSection';
-import TaskRecurrenceSection from './TaskForm/TaskRecurrenceSection';
 import {
     TaskDetailsHeader,
     TaskSummaryAlerts,
-    TaskContentSection,
-    TaskRecurringInstanceInfo,
-    TaskProjectSection,
-    TaskTagsSection,
-    TaskPrioritySection,
+    TaskContentCard,
+    TaskProjectCard,
+    TaskTagsCard,
+    TaskPriorityCard,
+    TaskSubtasksCard,
+    TaskRecurrenceCard,
+    TaskDueDateCard,
 } from './TaskDetails/';
 
 const TaskDetails: React.FC = () => {
@@ -276,11 +268,6 @@ const TaskDetails: React.FC = () => {
         });
     };
 
-    const handleRecurrenceCardClick = () => {
-        if (task.recurring_parent_id) return;
-        handleStartRecurrenceEdit();
-    };
-
     const handleStartDueDateEdit = () => {
         setEditedDueDate(task?.due_date || '');
         setIsEditingDueDate(true);
@@ -337,66 +324,6 @@ const TaskDetails: React.FC = () => {
         setEditedDueDate(task?.due_date || '');
     };
 
-    const formatDateWithDayName = (dateString: string) => {
-        const date = new Date(dateString);
-        const today = new Date().toISOString().split('T')[0];
-        const isToday = dateString === today;
-
-        const dayName = date.toLocaleDateString(i18n.language, {
-            weekday: 'long',
-        });
-        const formattedDate = date.toLocaleDateString(i18n.language, {
-            day: 'numeric',
-            month: 'long',
-        });
-
-        return {
-            dayName,
-            formattedDate,
-            fullText: `${dayName}, ${formattedDate}`,
-            isToday,
-        };
-    };
-
-    const getDueDateDisplay = (dueDate: string) => {
-        const date = new Date(dueDate);
-        if (Number.isNaN(date.getTime())) return null;
-
-        const formattedDate = date.toLocaleDateString(i18n.language, {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const target = new Date(date);
-        target.setHours(0, 0, 0, 0);
-
-        const diffDays = Math.round(
-            (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-        );
-
-        let relativeText = '';
-        if (diffDays === 0) {
-            relativeText = t('dateIndicators.today', 'today');
-        } else if (diffDays === 1) {
-            relativeText = t('dateIndicators.tomorrow', 'tomorrow');
-        } else if (diffDays === -1) {
-            relativeText = t('dateIndicators.yesterday', 'yesterday');
-        } else if (diffDays > 0) {
-            relativeText = t('task.inDays', 'in {{count}} days', {
-                count: diffDays,
-            });
-        } else {
-            relativeText = t('task.daysAgo', '{{count}} days ago', {
-                count: Math.abs(diffDays),
-            });
-        }
-
-        return { formattedDate, relativeText };
-    };
-
     const getStatusLabel = () => {
         switch (task.status) {
             case 'not_started':
@@ -433,6 +360,54 @@ const TaskDetails: React.FC = () => {
             default:
                 return null;
         }
+    };
+
+    const getDueDateDisplay = (dueDate: string) => {
+        const date = new Date(dueDate);
+        if (Number.isNaN(date.getTime())) return null;
+
+        const formattedDate = date.toLocaleDateString(i18n.language, {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const target = new Date(date);
+        target.setHours(0, 0, 0, 0);
+
+        const diffDays = Math.round(
+            (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        if (diffDays === 0) {
+            return {
+                formattedDate,
+                relativeText: t('dateIndicators.today', 'today'),
+            };
+        }
+        if (diffDays === 1) {
+            return {
+                formattedDate,
+                relativeText: t('dateIndicators.tomorrow', 'tomorrow'),
+            };
+        }
+        if (diffDays === -1) {
+            return {
+                formattedDate,
+                relativeText: t('dateIndicators.yesterday', 'yesterday'),
+            };
+        }
+
+        const relativeText =
+            diffDays > 0
+                ? t('task.inDays', 'in {{count}} days', { count: diffDays })
+                : t('task.daysAgo', '{{count}} days ago', {
+                      count: Math.abs(diffDays),
+                  });
+
+        return { formattedDate, relativeText };
     };
 
     const getTaskPlainSummary = () => {
@@ -634,6 +609,27 @@ const TaskDetails: React.FC = () => {
     const handleCancelSubtasksEdit = () => {
         setIsEditingSubtasks(false);
         setEditedSubtasks([]);
+    };
+
+    const handleToggleSubtaskCompletion = async (subtask: Task) => {
+        if (!subtask.id) return;
+        try {
+            await toggleTaskCompletion(subtask.id, subtask);
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error toggling subtask completion:', error);
+        }
     };
 
     const handleProjectSelection = async (project: Project) => {
@@ -1080,500 +1076,45 @@ const TaskDetails: React.FC = () => {
                         {/* Left Column - Main Content */}
                         <div className="lg:col-span-3 space-y-8">
                             {/* Notes Section - Always Visible */}
-                            <TaskContentSection
+                            <TaskContentCard
                                 content={task.note || ''}
                                 onUpdate={handleContentUpdate}
                             />
 
-                            {/* Subtasks Section - Always Visible */}
-                            <div>
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    {t('task.subtasks', 'Subtasks')}
-                                </h4>
-                                {isEditingSubtasks ? (
-                                    <div className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-blue-500 dark:border-blue-400 p-6">
-                                        <TaskSubtasksSection
-                                            parentTaskId={task.id!}
-                                            subtasks={editedSubtasks}
-                                            onSubtasksChange={setEditedSubtasks}
-                                        />
-                                        <div className="flex items-center justify-end mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                            <div className="flex space-x-2">
-                                                <button
-                                                    onClick={handleSaveSubtasks}
-                                                    className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
-                                                >
-                                                    {t('common.save', 'Save')}
-                                                </button>
-                                                <button
-                                                    onClick={
-                                                        handleCancelSubtasksEdit
-                                                    }
-                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
-                                                >
-                                                    {t(
-                                                        'common.cancel',
-                                                        'Cancel'
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : subtasks.length > 0 ? (
-                                    <div className="space-y-0.5">
-                                        {subtasks.map((subtask: Task) => (
-                                            <div
-                                                key={subtask.id}
-                                                className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 transition-all duration-200 ${
-                                                    subtask.status ===
-                                                        'in_progress' ||
-                                                    subtask.status === 1
-                                                        ? 'border-green-400/60 dark:border-green-500/60'
-                                                        : 'border-gray-50 dark:border-gray-800'
-                                                }`}
-                                            >
-                                                <div className="px-3 py-3 flex items-center space-x-3">
-                                                    <TaskPriorityIcon
-                                                        priority={
-                                                            subtask.priority
-                                                        }
-                                                        status={subtask.status}
-                                                        onToggleCompletion={async () => {
-                                                            console.log(
-                                                                'Toggling subtask:',
-                                                                subtask.id
-                                                            );
-                                                            if (subtask.id) {
-                                                                try {
-                                                                    // Pass the current subtask to avoid fetching it
-                                                                    await toggleTaskCompletion(
-                                                                        subtask.id,
-                                                                        subtask
-                                                                    );
-                                                                    // Refresh task data which includes updated subtasks
-                                                                    if (uid) {
-                                                                        const updatedTask =
-                                                                            await fetchTaskByUid(
-                                                                                uid
-                                                                            );
-                                                                        const existingIndex =
-                                                                            tasksStore.tasks.findIndex(
-                                                                                (
-                                                                                    t: Task
-                                                                                ) =>
-                                                                                    t.uid ===
-                                                                                    uid
-                                                                            );
-                                                                        if (
-                                                                            existingIndex >=
-                                                                            0
-                                                                        ) {
-                                                                            const updatedTasks =
-                                                                                [
-                                                                                    ...tasksStore.tasks,
-                                                                                ];
-                                                                            updatedTasks[
-                                                                                existingIndex
-                                                                            ] =
-                                                                                updatedTask;
-                                                                            tasksStore.setTasks(
-                                                                                updatedTasks
-                                                                            );
-                                                                        }
-                                                                    }
+                            <TaskSubtasksCard
+                                task={task}
+                                subtasks={subtasks}
+                                isEditing={isEditingSubtasks}
+                                editedSubtasks={editedSubtasks}
+                                onSubtasksChange={setEditedSubtasks}
+                                onStartEdit={handleStartSubtasksEdit}
+                                onSave={handleSaveSubtasks}
+                                onCancel={handleCancelSubtasksEdit}
+                                onToggleSubtaskCompletion={
+                                    handleToggleSubtaskCompletion
+                                }
+                            />
 
-                                                                    // Refresh timeline to show subtask completion activity
-                                                                    setTimelineRefreshKey(
-                                                                        (
-                                                                            prev
-                                                                        ) =>
-                                                                            prev +
-                                                                            1
-                                                                    );
-                                                                } catch (error) {
-                                                                    console.error(
-                                                                        'Error toggling subtask completion:',
-                                                                        error
-                                                                    );
-                                                                }
-                                                            }
-                                                        }}
-                                                    />
-                                                    <span
-                                                        onClick={
-                                                            handleStartSubtasksEdit
-                                                        }
-                                                        className={`text-base flex-1 truncate cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors ${
-                                                            subtask.status ===
-                                                                'done' ||
-                                                            subtask.status ===
-                                                                2 ||
-                                                            subtask.status ===
-                                                                'archived' ||
-                                                            subtask.status === 3
-                                                                ? 'text-gray-500 dark:text-gray-400'
-                                                                : 'text-gray-900 dark:text-gray-100'
-                                                        }`}
-                                                        title={t(
-                                                            'task.clickToEditSubtasks',
-                                                            'Click to edit subtasks'
-                                                        )}
-                                                    >
-                                                        {subtask.name}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div
-                                        onClick={handleStartSubtasksEdit}
-                                        className="rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-6 cursor-pointer transition-colors"
-                                        title={t(
-                                            'task.clickToEditSubtasks',
-                                            'Click to add or edit subtasks'
-                                        )}
-                                    >
-                                        <div className="flex flex-col items-center justify-center py-8 text-gray-500 dark:text-gray-400">
-                                            <ListBulletIcon className="h-12 w-12 mb-3 opacity-50" />
-                                            <span className="text-sm text-center">
-                                                {t(
-                                                    'task.noSubtasksClickToAdd',
-                                                    'No subtasks yet, click to add'
-                                                )}
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div>
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    {t(
-                                        'task.recurringSetup',
-                                        'Recurring Setup'
-                                    )}
-                                </h4>
-                                <div
-                                    className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-6 space-y-4 ${
-                                        !task.recurring_parent_id &&
-                                        !isEditingRecurrence
-                                            ? 'cursor-pointer'
-                                            : ''
-                                    }`}
-                                    onClick={
-                                        !task.recurring_parent_id &&
-                                        !isEditingRecurrence
-                                            ? handleRecurrenceCardClick
-                                            : undefined
-                                    }
-                                    role={
-                                        !task.recurring_parent_id &&
-                                        !isEditingRecurrence
-                                            ? 'button'
-                                            : undefined
-                                    }
-                                    tabIndex={
-                                        !task.recurring_parent_id &&
-                                        !isEditingRecurrence
-                                            ? 0
-                                            : -1
-                                    }
-                                    onKeyDown={(e) => {
-                                        if (
-                                            !isEditingRecurrence &&
-                                            !task.recurring_parent_id &&
-                                            e.key === 'Enter'
-                                        ) {
-                                            e.preventDefault();
-                                            handleRecurrenceCardClick();
-                                        }
-                                    }}
-                                >
-                                    <TaskRecurringInstanceInfo
-                                        task={task}
-                                        parentTask={parentTask}
-                                        loadingParent={loadingParent}
-                                    />
-
-                                    {isEditingRecurrence &&
-                                    !task.recurring_parent_id ? (
-                                        <div className="space-y-4">
-                                            <TaskRecurrenceSection
-                                                recurrenceType={
-                                                    recurrenceForm.recurrence_type
-                                                }
-                                                recurrenceInterval={
-                                                    recurrenceForm.recurrence_interval
-                                                }
-                                                recurrenceEndDate={
-                                                    recurrenceForm.recurrence_end_date ||
-                                                    undefined
-                                                }
-                                                recurrenceWeekday={
-                                                    recurrenceForm.recurrence_weekday ||
-                                                    undefined
-                                                }
-                                                recurrenceWeekdays={
-                                                    recurrenceForm.recurrence_weekdays ||
-                                                    []
-                                                }
-                                                recurrenceMonthDay={
-                                                    recurrenceForm.recurrence_month_day ||
-                                                    undefined
-                                                }
-                                                recurrenceWeekOfMonth={
-                                                    recurrenceForm.recurrence_week_of_month ||
-                                                    undefined
-                                                }
-                                                completionBased={
-                                                    recurrenceForm.completion_based
-                                                }
-                                                onChange={
-                                                    handleRecurrenceChange
-                                                }
-                                            />
-                                            <div className="flex justify-end space-x-2">
-                                                <button
-                                                    onClick={
-                                                        handleSaveRecurrence
-                                                    }
-                                                    className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
-                                                >
-                                                    {t('common.save', 'Save')}
-                                                </button>
-                                                <button
-                                                    onClick={
-                                                        handleCancelRecurrenceEdit
-                                                    }
-                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                                                >
-                                                    {t(
-                                                        'common.cancel',
-                                                        'Cancel'
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            {(task.recurrence_type &&
-                                                task.recurrence_type !==
-                                                    'none') ||
-                                            (parentTask?.recurrence_type &&
-                                                parentTask.recurrence_type !==
-                                                    'none') ? (
-                                                <div className="mb-4">
-                                                    <RecurrenceDisplay
-                                                        recurrenceType={
-                                                            task.recurring_parent_id &&
-                                                            parentTask?.recurrence_type
-                                                                ? parentTask.recurrence_type
-                                                                : task.recurrence_type
-                                                        }
-                                                        recurrenceInterval={
-                                                            task.recurring_parent_id &&
-                                                            parentTask?.recurrence_interval
-                                                                ? parentTask.recurrence_interval
-                                                                : task.recurrence_interval
-                                                        }
-                                                        recurrenceWeekdays={
-                                                            task.recurring_parent_id &&
-                                                            parentTask?.recurrence_weekdays
-                                                                ? parentTask.recurrence_weekdays
-                                                                : task.recurrence_weekdays
-                                                        }
-                                                        recurrenceEndDate={
-                                                            task.recurring_parent_id &&
-                                                            parentTask?.recurrence_end_date
-                                                                ? parentTask.recurrence_end_date
-                                                                : task.recurrence_end_date
-                                                        }
-                                                        recurrenceMonthDay={
-                                                            task.recurring_parent_id &&
-                                                            parentTask?.recurrence_month_day
-                                                                ? parentTask.recurrence_month_day
-                                                                : task.recurrence_month_day
-                                                        }
-                                                        recurrenceWeekOfMonth={
-                                                            task.recurring_parent_id &&
-                                                            parentTask?.recurrence_week_of_month
-                                                                ? parentTask.recurrence_week_of_month
-                                                                : task.recurrence_week_of_month
-                                                        }
-                                                        recurrenceWeekday={
-                                                            task.recurring_parent_id &&
-                                                            parentTask?.recurrence_weekday
-                                                                ? parentTask.recurrence_weekday
-                                                                : task.recurrence_weekday
-                                                        }
-                                                        completionBased={
-                                                            task.recurring_parent_id &&
-                                                            parentTask?.completion_based
-                                                                ? parentTask.completion_based
-                                                                : task.completion_based
-                                                        }
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <div className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                                                    {t(
-                                                        'task.notRecurring',
-                                                        'This task is not recurring yet.'
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {((task.recurrence_type &&
-                                                task.recurrence_type !==
-                                                    'none') ||
-                                                (task.recurring_parent_id &&
-                                                    parentTask?.recurrence_type &&
-                                                    parentTask.recurrence_type !==
-                                                        'none')) && (
-                                                <div>
-                                                    <div className="flex items-center mb-3">
-                                                        <ClockIcon className="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" />
-                                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                            {task.recurring_parent_id
-                                                                ? t(
-                                                                      'task.nextOccurrencesAfterThis',
-                                                                      'Next Occurrences After This'
-                                                                  )
-                                                                : t(
-                                                                      'task.nextOccurrences',
-                                                                      'Next Occurrences'
-                                                                  )}
-                                                            {!loadingIterations &&
-                                                                nextIterations.length >
-                                                                    0 &&
-                                                                nextIterations.some(
-                                                                    (iter) =>
-                                                                        formatDateWithDayName(
-                                                                            iter.date
-                                                                        )
-                                                                            .isToday
-                                                                ) && (
-                                                                    <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
-                                                                        (
-                                                                        {t(
-                                                                            'task.includingToday',
-                                                                            'including today'
-                                                                        )}
-                                                                        )
-                                                                    </span>
-                                                                )}
-                                                        </span>
-                                                    </div>
-
-                                                    {loadingIterations ? (
-                                                        <div className="flex items-center justify-center py-4">
-                                                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                                                            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                                                                {t(
-                                                                    'common.loading',
-                                                                    'Loading...'
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                    ) : nextIterations.length >
-                                                      0 ? (
-                                                        <div className="space-y-2">
-                                                            {nextIterations.map(
-                                                                (
-                                                                    iteration,
-                                                                    index
-                                                                ) => {
-                                                                    const dateInfo =
-                                                                        formatDateWithDayName(
-                                                                            iteration.date
-                                                                        );
-                                                                    return (
-                                                                        <div
-                                                                            key={
-                                                                                index
-                                                                            }
-                                                                            className={`flex items-center py-2 px-3 rounded transition-colors ${
-                                                                                dateInfo.isToday
-                                                                                    ? 'bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800'
-                                                                                    : 'bg-gray-50 dark:bg-gray-800 border border-transparent'
-                                                                            }`}
-                                                                        >
-                                                                            <div
-                                                                                className={`w-7 h-7 rounded-full flex items-center justify-center mr-3 ${
-                                                                                    dateInfo.isToday
-                                                                                        ? 'bg-blue-600 dark:bg-blue-500'
-                                                                                        : 'bg-blue-100 dark:bg-blue-900'
-                                                                                }`}
-                                                                            >
-                                                                                <span
-                                                                                    className={`text-xs font-medium ${
-                                                                                        dateInfo.isToday
-                                                                                            ? 'text-white'
-                                                                                            : 'text-blue-600 dark:text-blue-400'
-                                                                                    }`}
-                                                                                >
-                                                                                    {index +
-                                                                                        1}
-                                                                                </span>
-                                                                            </div>
-                                                                            <div className="flex-1">
-                                                                                <div
-                                                                                    className={`text-sm font-medium ${
-                                                                                        dateInfo.isToday
-                                                                                            ? 'text-blue-900 dark:text-blue-100'
-                                                                                            : 'text-gray-900 dark:text-gray-100'
-                                                                                    }`}
-                                                                                >
-                                                                                    {
-                                                                                        dateInfo.dayName
-                                                                                    }
-                                                                                    {dateInfo.isToday && (
-                                                                                        <span className="ml-2 text-xs px-2 py-0.5 bg-blue-600 dark:bg-blue-500 text-white rounded-full font-semibold">
-                                                                                            {t(
-                                                                                                'dateIndicators.today',
-                                                                                                'TODAY'
-                                                                                            )}
-                                                                                        </span>
-                                                                                    )}
-                                                                                </div>
-                                                                                <div
-                                                                                    className={`text-xs ${
-                                                                                        dateInfo.isToday
-                                                                                            ? 'text-blue-700 dark:text-blue-300'
-                                                                                            : 'text-gray-500 dark:text-gray-400'
-                                                                                    }`}
-                                                                                >
-                                                                                    {
-                                                                                        dateInfo.formattedDate
-                                                                                    }
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    );
-                                                                }
-                                                            )}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="text-sm text-gray-500 dark:text-gray-400 py-2">
-                                                            {t(
-                                                                'task.noMoreIterations',
-                                                                'No more iterations scheduled'
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </>
-                                    )}
-                                </div>
-                            </div>
+                            <TaskRecurrenceCard
+                                task={task}
+                                parentTask={parentTask}
+                                loadingParent={loadingParent}
+                                isEditing={isEditingRecurrence}
+                                recurrenceForm={recurrenceForm}
+                                onStartEdit={handleStartRecurrenceEdit}
+                                onChange={handleRecurrenceChange}
+                                onSave={handleSaveRecurrence}
+                                onCancel={handleCancelRecurrenceEdit}
+                                loadingIterations={loadingIterations}
+                                nextIterations={nextIterations}
+                                canEdit={!task.recurring_parent_id}
+                            />
                         </div>
 
                         {/* Right Column - Metadata and Recent Activity */}
                         <div className="space-y-6">
                             {/* Project Section */}
-                            <TaskProjectSection
+                            <TaskProjectCard
                                 task={task}
                                 projects={projectsStore.projects}
                                 onProjectSelect={handleProjectSelection}
@@ -1585,7 +1126,7 @@ const TaskDetails: React.FC = () => {
                             />
 
                             {/* Tags Section */}
-                            <TaskTagsSection
+                            <TaskTagsCard
                                 task={task}
                                 availableTags={tagsStore.tags}
                                 hasLoadedTags={tagsStore.hasLoaded}
@@ -1595,160 +1136,20 @@ const TaskDetails: React.FC = () => {
                             />
 
                             {/* Priority Section */}
-                            <TaskPrioritySection
+                            <TaskPriorityCard
                                 task={task}
                                 onUpdate={handlePriorityUpdate}
                             />
 
-                            {/* Due Date Section */}
-                            <div>
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    {t('task.dueDate', 'Due Date')}
-                                </h4>
-                                <div
-                                    className={`rounded-lg shadow-sm bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 p-4 transition-colors ${
-                                        task.due_date &&
-                                        (() => {
-                                            const dueDate = new Date(
-                                                task.due_date
-                                            );
-                                            const today = new Date();
-                                            today.setHours(0, 0, 0, 0);
-                                            dueDate.setHours(0, 0, 0, 0);
-                                            const isCompleted =
-                                                task.status === 'done' ||
-                                                task.status === 2 ||
-                                                task.status === 'archived' ||
-                                                task.status === 3 ||
-                                                task.completed_at;
-                                            return (
-                                                dueDate < today && !isCompleted
-                                            );
-                                        })()
-                                            ? 'border-red-500 dark:border-red-400'
-                                            : ''
-                                    }`}
-                                >
-                                    {isEditingDueDate ? (
-                                        <div className="space-y-3">
-                                            <TaskDueDateSection
-                                                value={editedDueDate}
-                                                onChange={setEditedDueDate}
-                                                placeholder={t(
-                                                    'forms.task.dueDatePlaceholder',
-                                                    'Select due date'
-                                                )}
-                                            />
-                                            <div className="flex justify-end space-x-2">
-                                                <button
-                                                    onClick={handleSaveDueDate}
-                                                    className="px-4 py-2 text-sm bg-green-600 dark:bg-green-500 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
-                                                >
-                                                    {t('common.save', 'Save')}
-                                                </button>
-                                                <button
-                                                    onClick={
-                                                        handleCancelDueDateEdit
-                                                    }
-                                                    className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                                                >
-                                                    {t(
-                                                        'common.cancel',
-                                                        'Cancel'
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            type="button"
-                                            onClick={handleStartDueDateEdit}
-                                            className="flex w-full items-center justify-between text-left"
-                                        >
-                                            {task.due_date ? (
-                                                (() => {
-                                                    const display =
-                                                        getDueDateDisplay(
-                                                            task.due_date
-                                                        );
-                                                    if (!display) return null;
-                                                    // Check if due date is in the past and task is not completed
-                                                    const dueDate = new Date(
-                                                        task.due_date
-                                                    );
-                                                    const today = new Date();
-                                                    today.setHours(0, 0, 0, 0);
-                                                    dueDate.setHours(
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        0
-                                                    );
-                                                    const isCompleted =
-                                                        task.status ===
-                                                            'done' ||
-                                                        task.status === 2 ||
-                                                        task.status ===
-                                                            'archived' ||
-                                                        task.status === 3 ||
-                                                        task.completed_at;
-                                                    const overdue =
-                                                        dueDate < today &&
-                                                        !isCompleted;
-
-                                                    return (
-                                                        <div
-                                                            className={`flex items-center justify-between w-full ${
-                                                                overdue
-                                                                    ? 'text-red-600 dark:text-red-400'
-                                                                    : 'text-gray-900 dark:text-gray-100'
-                                                            }`}
-                                                        >
-                                                            <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                                                <CalendarIcon
-                                                                    className={`h-4 w-4 flex-shrink-0 ${
-                                                                        overdue
-                                                                            ? 'text-red-600 dark:text-red-400'
-                                                                            : 'text-gray-500 dark:text-gray-400'
-                                                                    }`}
-                                                                />
-                                                                <span className="text-sm font-medium">
-                                                                    {
-                                                                        display.formattedDate
-                                                                    }
-                                                                </span>
-                                                                <span
-                                                                    className={`text-sm italic ${
-                                                                        overdue
-                                                                            ? 'text-red-500 dark:text-red-400 font-medium'
-                                                                            : 'text-gray-500 dark:text-gray-400'
-                                                                    }`}
-                                                                >
-                                                                    (
-                                                                    {
-                                                                        display.relativeText
-                                                                    }
-                                                                    )
-                                                                </span>
-                                                            </div>
-                                                            {overdue && (
-                                                                <ExclamationTriangleIcon className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 ml-2" />
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })()
-                                            ) : (
-                                                <span className="text-sm text-gray-500 dark:text-gray-400 italic">
-                                                    {t(
-                                                        'task.noDueDate',
-                                                        'No due date'
-                                                    )}
-                                                </span>
-                                            )}
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
+                            <TaskDueDateCard
+                                task={task}
+                                isEditing={isEditingDueDate}
+                                editedDueDate={editedDueDate}
+                                onChangeDate={setEditedDueDate}
+                                onStartEdit={handleStartDueDateEdit}
+                                onSave={handleSaveDueDate}
+                                onCancel={handleCancelDueDateEdit}
+                            />
 
                             {/* Recent Activity Section */}
                             <div>

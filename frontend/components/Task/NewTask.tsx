@@ -82,7 +82,7 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
 
     return (
         <div>
-            <div className="flex items-center justify-between py-3 px-4 border-b border-gray-200 dark:border-gray-800 rounded-lg shadow-sm bg-white dark:bg-gray-900">
+            <div className="flex items-center justify-between py-3.5 px-5 border-b border-gray-200 dark:border-gray-800 rounded-lg shadow-sm bg-white dark:bg-gray-900">
                 <span className="text-xl text-gray-500 dark:text-gray-400 mr-2">
                     <PlusCircleIcon className="h-5 w-5" />
                 </span>
@@ -91,7 +91,7 @@ const NewTask: React.FC<NewTaskProps> = ({ onTaskCreate }) => {
                     value={taskName}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
-                    className="font-medium text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 bg-transparent dark:bg-transparent focus:outline-none focus:ring-0 w-full appearance-none"
+                    className="font-semibold text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 bg-transparent dark:bg-transparent focus:outline-none focus:ring-0 w-full appearance-none"
                     placeholder={t(
                         'tasks.addNewTask',
                         'Προσθήκη Νέας Εργασίας'

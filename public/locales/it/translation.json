@@ -122,7 +122,25 @@
     "showSubtasks": "Mostra sottocompiti",
     "hideSubtasks": "Nascondi sottocompiti",
     "edit": "Modifica attività",
-    "delete": "Elimina attività"
+    "delete": "Elimina attività",
+    "sortTasks": "Ordina attività",
+    "sortBy": "Ordina per",
+    "direction": "Direzione",
+    "ascending": "Crescente",
+    "descending": "Decrescente",
+    "groupBy": "Raggruppa per",
+    "groupByProject": "Progetto",
+    "grouping": {
+      "none": "Nessuno"
+    },
+    "show": "Mostra",
+    "all": "Tutti",
+    "completedOnly": "Solo completate",
+    "notCompleted": "Non completate",
+    "noProject": "Nessun progetto",
+    "unknownProject": "Progetto sconosciuto",
+    "tasks": "attività",
+    "showingItems": "Visualizzazione di {{current}} su {{total}} elementi"
   },
   "timeline": {
     "activityTimeline": "Timeline delle Attività",
@@ -508,7 +526,7 @@
   "project": {
     "name": "Nome Progetto",
     "projectImage": "Immagine Progetto",
-    "uploadImageHint": "Carica un'immagine per il tuo progetto (max 5MB)",
+    "uploadImageHint": "Carica un'immagine per il tuo progetto (max 10MB)",
     "browseImage": "Sfoglia Immagine",
     "noNotes": "Nessuna nota per questo progetto.",
     "deleteProject": "Elimina Progetto",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Lavoro attivo in corso",
       "blocked_desc": "Pausa temporanea o bloccato",
       "completed_desc": "Finito e completato"
-    }
+    },
+    "showMetrics": "Mostra metriche",
+    "hideMetrics": "Nascondi metriche"
   },
   "projectItem": {
     "edit": "Modifica",

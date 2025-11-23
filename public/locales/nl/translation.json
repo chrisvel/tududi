@@ -122,7 +122,25 @@
     "showSubtasks": "Toon subtaken",
     "hideSubtasks": "Verberg subtaken",
     "edit": "Bewerk taak",
-    "delete": "Verwijder taak"
+    "delete": "Verwijder taak",
+    "sortTasks": "Taken sorteren",
+    "sortBy": "Sorteren op",
+    "direction": "Richting",
+    "ascending": "Oplopend",
+    "descending": "Aflopend",
+    "groupBy": "Groeperen op",
+    "groupByProject": "Project",
+    "grouping": {
+      "none": "Geen"
+    },
+    "show": "Tonen",
+    "all": "Alle",
+    "completedOnly": "Alleen voltooid",
+    "notCompleted": "Niet voltooid",
+    "noProject": "Geen project",
+    "unknownProject": "Onbekend project",
+    "tasks": "taken",
+    "showingItems": "{{current}} van {{total}} items weergegeven"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",
@@ -508,7 +526,7 @@
   "project": {
     "name": "Projectnaam",
     "projectImage": "Projectafbeelding",
-    "uploadImageHint": "Upload een afbeelding voor je project (max 5MB)",
+    "uploadImageHint": "Upload een afbeelding voor je project (max 10MB)",
     "browseImage": "Afbeelding Bladeren",
     "noNotes": "Geen notities voor dit project.",
     "deleteProject": "Project Verwijderen",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Actief werk aan de gang",
       "blocked_desc": "Tijdelijk gepauzeerd of vastgelopen",
       "completed_desc": "Afgerond en gedaan"
-    }
+    },
+    "showMetrics": "Toon statistieken",
+    "hideMetrics": "Verberg statistieken"
   },
   "projectItem": {
     "edit": "Bewerken",

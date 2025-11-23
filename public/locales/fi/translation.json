@@ -122,7 +122,25 @@
     "showSubtasks": "Näytä alitehtävät",
     "hideSubtasks": "Piilota alitehtävät",
     "edit": "Muokkaa tehtävää",
-    "delete": "Poista tehtävä"
+    "delete": "Poista tehtävä",
+    "sortTasks": "Lajittele tehtävät",
+    "sortBy": "Lajittele",
+    "direction": "Suunta",
+    "ascending": "Nouseva",
+    "descending": "Laskeva",
+    "groupBy": "Ryhmittele",
+    "groupByProject": "Projekti",
+    "grouping": {
+      "none": "Ei mitään"
+    },
+    "show": "Näytä",
+    "all": "Kaikki",
+    "completedOnly": "Vain valmiit",
+    "notCompleted": "Keskeneräiset",
+    "noProject": "Ei projektia",
+    "unknownProject": "Tuntematon projekti",
+    "tasks": "tehtävät",
+    "showingItems": "Näytetään {{current}} / {{total}} kohdetta"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",
@@ -508,7 +526,7 @@
   "project": {
     "name": "Projektin nimi",
     "projectImage": "Projektikuva",
-    "uploadImageHint": "Lataa kuva projektiisi (max 5MB)",
+    "uploadImageHint": "Lataa kuva projektiisi (max 10MB)",
     "browseImage": "Selaa kuvaa",
     "noNotes": "Ei muistiinpanoja tälle projektille.",
     "deleteProject": "Poista projekti",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Aktiivista työtä käynnissä",
       "blocked_desc": "Tilapäisesti keskeytetty tai jumissa",
       "completed_desc": "Valmistunut ja tehty"
-    }
+    },
+    "showMetrics": "Näytä mittarit",
+    "hideMetrics": "Piilota mittarit"
   },
   "projectItem": {
     "edit": "Muokkaa",

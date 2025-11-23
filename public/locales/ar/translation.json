@@ -122,7 +122,25 @@
     "showSubtasks": "عرض المهام الفرعية",
     "hideSubtasks": "إخفاء المهام الفرعية",
     "edit": "تعديل المهمة",
-    "delete": "حذف المهمة"
+    "delete": "حذف المهمة",
+    "sortTasks": "ترتيب المهام",
+    "sortBy": "ترتيب حسب",
+    "direction": "الاتجاه",
+    "ascending": "تصاعدي",
+    "descending": "تنازلي",
+    "groupBy": "تجميع حسب",
+    "groupByProject": "المشروع",
+    "grouping": {
+      "none": "بدون"
+    },
+    "show": "عرض",
+    "all": "الكل",
+    "completedOnly": "المكتملة فقط",
+    "notCompleted": "غير مكتملة",
+    "noProject": "بدون مشروع",
+    "unknownProject": "مشروع غير معروف",
+    "tasks": "مهام",
+    "showingItems": "عرض {{current}} من {{total}} عنصر"
   },
   "timeline": {
     "activityTimeline": "جدول الأنشطة",
@@ -508,7 +526,7 @@
   "project": {
     "name": "اسم المشروع",
     "projectImage": "صورة المشروع",
-    "uploadImageHint": "قم بتحميل صورة لمشروعك (حد أقصى 5 ميجابايت)",
+    "uploadImageHint": "قم بتحميل صورة لمشروعك (حد أقصى 10 ميجابايت)",
     "browseImage": "تصفح الصورة",
     "noNotes": "لا توجد ملاحظات لهذا المشروع.",
     "deleteProject": "حذف المشروع",
@@ -765,7 +783,9 @@
       "in_progress_desc": "يتم العمل النشط",
       "blocked_desc": "مؤقتًا متوقف أو عالق",
       "completed_desc": "تم الانتهاء منها"
-    }
+    },
+    "showMetrics": "عرض المقاييس",
+    "hideMetrics": "إخفاء المقاييس"
   },
   "projectItem": {
     "edit": "تعديل",

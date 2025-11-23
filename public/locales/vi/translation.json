@@ -122,7 +122,25 @@
     "showSubtasks": "Hiện các công việc con",
     "hideSubtasks": "Ẩn các công việc con",
     "edit": "Chỉnh sửa công việc",
-    "delete": "Xóa công việc"
+    "delete": "Xóa công việc",
+    "sortTasks": "Sắp xếp nhiệm vụ",
+    "sortBy": "Sắp xếp theo",
+    "direction": "Hướng",
+    "ascending": "Tăng dần",
+    "descending": "Giảm dần",
+    "groupBy": "Nhóm theo",
+    "groupByProject": "Dự án",
+    "grouping": {
+      "none": "Không có"
+    },
+    "show": "Hiển thị",
+    "all": "Tất cả",
+    "completedOnly": "Chỉ đã hoàn thành",
+    "notCompleted": "Chưa hoàn thành",
+    "noProject": "Không có dự án",
+    "unknownProject": "Dự án không xác định",
+    "tasks": "nhiệm vụ",
+    "showingItems": "Hiển thị {{current}} trong số {{total}} mục"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",
@@ -508,7 +526,7 @@
   "project": {
     "name": "Tên Dự Án",
     "projectImage": "Hình Ảnh Dự Án",
-    "uploadImageHint": "Tải lên một hình ảnh cho dự án của bạn (tối đa 5MB)",
+    "uploadImageHint": "Tải lên một hình ảnh cho dự án của bạn (tối đa 10MB)",
     "browseImage": "Duyệt Hình Ảnh",
     "noNotes": "Không có ghi chú cho dự án này.",
     "deleteProject": "Xóa Dự Án",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Công việc đang diễn ra",
       "blocked_desc": "Tạm dừng hoặc bị mắc kẹt",
       "completed_desc": "Đã hoàn tất và xong"
-    }
+    },
+    "showMetrics": "Hiển thị số liệu",
+    "hideMetrics": "Ẩn số liệu"
   },
   "projectItem": {
     "edit": "Chỉnh sửa",

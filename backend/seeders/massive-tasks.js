@@ -520,12 +520,73 @@ function createMassiveTaskData(projects, getRandomDate, getPastDate) {
         },
 
         // Investment Portfolio - triggers financial AI features
+        // Research & Analysis Tasks
         {
             name: 'Research ESG investment options',
             project_id: projects[5].id,
             priority: 1,
+            status: 2,
+            completed_at: getPastDate(15),
+        },
+        {
+            name: 'Analyze S&P 500 index fund options',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(20),
+        },
+        {
+            name: 'Research low-cost bond index funds',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 2,
+            completed_at: getPastDate(18),
+        },
+        {
+            name: 'Compare Vanguard vs Fidelity vs Schwab platforms',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(25),
+        },
+        {
+            name: 'Research international market exposure',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 1,
+        },
+        {
+            name: 'Analyze emerging markets funds (VWO, IEMG)',
+            project_id: projects[5].id,
+            priority: 1,
             status: 0,
         },
+        {
+            name: 'Research REIT investment opportunities',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+        {
+            name: 'Compare target-date retirement funds',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 1,
+        },
+        {
+            name: 'Research dividend aristocrats stocks',
+            project_id: projects[5].id,
+            priority: 0,
+            status: 0,
+        },
+        {
+            name: 'Analyze tech sector ETF options (QQQ, VGT)',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+
+        // Portfolio Management Tasks
         {
             name: 'Rebalance portfolio allocation',
             project_id: projects[5].id,
@@ -536,19 +597,350 @@ function createMassiveTaskData(projects, getRandomDate, getPastDate) {
         {
             name: 'Review quarterly performance',
             project_id: projects[5].id,
-            priority: 1,
+            priority: 2,
             status: 1,
         },
         {
-            name: 'Set up automatic dividend reinvestment',
+            name: 'Calculate portfolio risk metrics (Sharpe ratio)',
             project_id: projects[5].id,
             priority: 1,
             status: 0,
         },
         {
-            name: 'Research international market exposure',
+            name: 'Review asset allocation percentages',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 0,
+            due_date: getRandomDate(7),
+        },
+        {
+            name: 'Analyze portfolio expense ratios',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 1,
+        },
+        {
+            name: 'Review and optimize tax-loss harvesting',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 0,
+        },
+        {
+            name: 'Check portfolio diversification metrics',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+        {
+            name: 'Calculate year-to-date returns',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 1,
+        },
+
+        // Account Setup & Administration
+        {
+            name: 'Open Vanguard brokerage account',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(30),
+        },
+        {
+            name: 'Set up automatic dividend reinvestment',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(10),
+        },
+        {
+            name: 'Configure automatic monthly contributions',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(12),
+        },
+        {
+            name: 'Link bank account for transfers',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(28),
+        },
+        {
+            name: 'Set up 2-factor authentication',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(27),
+        },
+        {
+            name: 'Configure email alerts for large transactions',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 2,
+            completed_at: getPastDate(8),
+        },
+        {
+            name: 'Set up account beneficiaries',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 0,
+            due_date: getRandomDate(14),
+        },
+        {
+            name: 'Review account security settings',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+
+        // Purchases & Transactions
+        {
+            name: 'Purchase VTSAX (Vanguard Total Stock)',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(5),
+        },
+        {
+            name: 'Purchase VBTLX (Vanguard Total Bond)',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(5),
+        },
+        {
+            name: 'Purchase VTIAX (Vanguard International)',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(4),
+        },
+        {
+            name: 'Make $1000 monthly contribution',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 0,
+            due_date: getRandomDate(3),
+        },
+        {
+            name: 'Sell underperforming position',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+        {
+            name: 'Execute rebalancing trades',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 0,
+            due_date: getRandomDate(10),
+        },
+
+        // Tax Planning & Documentation
+        {
+            name: 'Download tax documents for filing',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 0,
+            due_date: getRandomDate(30),
+        },
+        {
+            name: 'Review capital gains/losses for tax year',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 0,
+        },
+        {
+            name: 'Maximize IRA contribution for year',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 1,
+        },
+        {
+            name: 'Research Roth IRA conversion strategy',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+        {
+            name: 'Track cost basis for all positions',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+        {
+            name: 'Document investment decisions for records',
             project_id: projects[5].id,
             priority: 0,
+            status: 0,
+        },
+
+        // Education & Learning
+        {
+            name: 'Read "The Simple Path to Wealth" book',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 2,
+            completed_at: getPastDate(40),
+        },
+        {
+            name: 'Read "A Random Walk Down Wall Street"',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 1,
+        },
+        {
+            name: 'Complete Bogleheads investment course',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+        {
+            name: 'Watch Warren Buffett shareholder letters',
+            project_id: projects[5].id,
+            priority: 0,
+            status: 0,
+        },
+        {
+            name: 'Join r/Bogleheads community discussions',
+            project_id: projects[5].id,
+            priority: 0,
+            status: 2,
+            completed_at: getPastDate(35),
+        },
+        {
+            name: 'Subscribe to investment newsletter',
+            project_id: projects[5].id,
+            priority: 0,
+            status: 2,
+            completed_at: getPastDate(22),
+        },
+        {
+            name: 'Learn about modern portfolio theory',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+
+        // Monitoring & Review
+        {
+            name: 'Set up portfolio tracking spreadsheet',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 2,
+            completed_at: getPastDate(20),
+        },
+        {
+            name: 'Create monthly performance dashboard',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 1,
+        },
+        {
+            name: 'Review portfolio monthly (recurring)',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 0,
+            due_date: getRandomDate(5),
+        },
+        {
+            name: 'Track expenses and fee analysis',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+        {
+            name: 'Monitor market volatility and VIX',
+            project_id: projects[5].id,
+            priority: 0,
+            status: 0,
+        },
+        {
+            name: 'Review inflation-adjusted returns',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+
+        // Strategy & Planning
+        {
+            name: 'Define investment time horizon',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(45),
+        },
+        {
+            name: 'Set retirement savings goals',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(42),
+        },
+        {
+            name: 'Create investment policy statement',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 1,
+        },
+        {
+            name: 'Plan asset allocation glide path',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+        {
+            name: 'Define risk tolerance level',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(38),
+        },
+        {
+            name: 'Create emergency fund strategy',
+            project_id: projects[5].id,
+            priority: 2,
+            status: 2,
+            completed_at: getPastDate(50),
+        },
+        {
+            name: 'Plan for major life events (house, kids)',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+
+        // Advanced Topics
+        {
+            name: 'Research options trading strategies',
+            project_id: projects[5].id,
+            priority: 0,
+            status: 0,
+        },
+        {
+            name: 'Explore cryptocurrency allocation (5% max)',
+            project_id: projects[5].id,
+            priority: 0,
+            status: 0,
+        },
+        {
+            name: 'Research factor investing (value, momentum)',
+            project_id: projects[5].id,
+            priority: 1,
+            status: 0,
+        },
+        {
+            name: 'Analyze sector rotation strategies',
+            project_id: projects[5].id,
+            priority: 0,
+            status: 0,
+        },
+        {
+            name: 'Review alternative investments (gold, commodities)',
+            project_id: projects[5].id,
+            priority: 1,
             status: 0,
         },
 

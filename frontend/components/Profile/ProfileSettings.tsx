@@ -8,39 +8,22 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { getLocalesPath, getApiPath } from '../../config/paths';
 import {
-    InformationCircleIcon,
-    EyeIcon,
-    EyeSlashIcon,
     UserIcon,
     ClockIcon,
     ShieldCheckIcon,
     LightBulbIcon,
-    CogIcon,
-    ClipboardDocumentListIcon,
-    BoltIcon,
-    ChevronRightIcon,
-    ExclamationTriangleIcon,
-    FaceSmileIcon,
-    CheckIcon,
-    SunIcon,
-    MoonIcon,
     KeyIcon,
-    TrashIcon,
-    PhotoIcon,
-    UserCircleIcon,
+    CheckIcon,
 } from '@heroicons/react/24/outline';
 import TelegramIcon from '../Icons/TelegramIcon';
 import { useToast } from '../Shared/ToastContext';
 import { dispatchTelegramStatusChange } from '../../contexts/TelegramStatusContext';
-import LanguageDropdown from '../Shared/LanguageDropdown';
-import FirstDayOfWeekDropdown from '../Shared/FirstDayOfWeekDropdown';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { getLocaleFirstDayOfWeek } from '../../utils/profileService';
 import {
     getTimezonesByRegion,
     getRegionDisplayName,
 } from '../../utils/timezoneUtils';
-import TimezoneDropdown from '../Shared/TimezoneDropdown';
 import type { ApiKeySummary } from '../../utils/apiKeysService';
 import {
     fetchApiKeys,
@@ -48,41 +31,19 @@ import {
     revokeApiKey,
     deleteApiKey,
 } from '../../utils/apiKeysService';
-
-interface ProfileSettingsProps {
-    currentUser: { uid: string; email: string };
-    isDarkMode?: boolean;
-    toggleDarkMode?: () => void;
-}
-
-interface Profile {
-    uid: string;
-    email: string;
-    name?: string;
-    surname?: string;
-    appearance: 'light' | 'dark';
-    language: string;
-    timezone: string;
-    first_day_of_week: number;
-    avatar_image: string | null;
-    telegram_bot_token: string | null;
-    telegram_chat_id: string | null;
-    telegram_allowed_users: string | null;
-    task_summary_enabled: boolean;
-    task_summary_frequency: string;
-    task_intelligence_enabled: boolean;
-    auto_suggest_next_actions_enabled: boolean;
-    productivity_assistant_enabled: boolean;
-    next_task_suggestion_enabled: boolean;
-    pomodoro_enabled: boolean;
-}
-
-interface TelegramBotInfo {
-    username: string;
-    first_name?: string;
-    polling_status: any;
-    chat_url: string;
-}
+import TabsNav, { type TabConfig } from './tabs/TabsNav';
+import GeneralTab from './tabs/GeneralTab';
+import SecurityTab from './tabs/SecurityTab';
+import ApiKeysTab from './tabs/ApiKeysTab';
+import ProductivityTab from './tabs/ProductivityTab';
+import TelegramTab from './tabs/TelegramTab';
+import AiTab from './tabs/AiTab';
+import type {
+    ProfileSettingsProps,
+    Profile,
+    TelegramBotInfo,
+    ProfileFormData,
+} from './types';
 
 const formatFrequency = (frequency: string): string => {
     if (frequency.endsWith('h')) {
@@ -106,32 +67,22 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const { showSuccessToast, showErrorToast } = useToast();
 
     const [activeTab, setActiveTab] = useState('general');
-    // Generate timezone list using date-fns-tz and Intl API
     const timezonesByRegion = React.useMemo(() => {
         return getTimezonesByRegion();
     }, []);
 
-    // Password visibility state
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const [profile, setProfile] = useState<Profile | null>(null);
-    const [formData, setFormData] = useState<
-        Partial<
-            Profile & {
-                currentPassword: string;
-                newPassword: string;
-                confirmPassword: string;
-            }
-        >
-    >({
+    const [formData, setFormData] = useState<ProfileFormData>({
         name: '',
         surname: '',
         appearance: isDarkMode ? 'dark' : 'light',
         language: 'en',
         timezone: 'UTC',
-        first_day_of_week: 1, // Monday by default
+        first_day_of_week: 1,
         avatar_image: '',
         telegram_bot_token: '',
         telegram_allowed_users: '',
@@ -200,14 +151,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         }
     }, [activeTab, apiKeysLoaded, loadApiKeys]);
 
-    // Password validation
     const validatePasswordForm = (): {
         valid: boolean;
         errors: { [key: string]: string };
     } => {
         const errors: { [key: string]: string } = {};
 
-        // Only validate if user is trying to change password
         if (
             formData.currentPassword ||
             formData.newPassword ||
@@ -278,8 +227,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             window.forceLanguageReload(value);
                         }
                     }
-                } catch {
-                    // Ignore errors loading language resources
+                } catch (error) {
+                    console.error('Failed to load language resources', error);
                 }
             }
 
@@ -496,8 +445,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             : true,
                 });
 
-                // Note: Task summary status checking functionality removed for now
-
                 if (data.telegram_bot_token) {
                     fetchPollingStatus();
                 }
@@ -526,23 +473,20 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 const data = await response.json();
                 setIsPolling(data.status?.running || false);
 
-                // Auto-start polling if user has a bot token but polling is not running
                 if (data.telegram_bot_token && !data.status?.running) {
                     handleStartPolling();
                 }
-            } catch {
-                // Ignore errors fetching polling status
+            } catch (error) {
+                console.error('Error fetching polling status', error);
             }
         };
         fetchProfile();
     }, []);
 
-    // Fetch Telegram bot info when profile loads
     useEffect(() => {
         const fetchTelegramInfo = async () => {
             if (profile?.telegram_bot_token) {
                 try {
-                    // Fetch bot info
                     const setupResponse = await fetch(
                         getApiPath('telegram/setup'),
                         {
@@ -568,7 +512,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         }
                     }
 
-                    // Also fetch and auto-start polling status
                     const pollingResponse = await fetch(
                         getApiPath('telegram/polling-status'),
                         {
@@ -583,13 +526,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                         const pollingData = await pollingResponse.json();
                         setIsPolling(pollingData.status?.running || false);
 
-                        // Auto-start polling if not running
                         if (!pollingData.status?.running) {
                             setTimeout(() => {
                                 handleStartPolling();
                             }, 1000);
                         } else {
-                            // Dispatch healthy status if already running
                             dispatchTelegramStatusChange('healthy');
                         }
                     }
@@ -666,7 +607,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             const data = await response.json();
             setTelegramSetupStatus('success');
 
-            // Extract bot info properly
             const bot = data.bot;
             let botDisplayName = 'Bot';
 
@@ -697,7 +637,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 });
                 setIsPolling(true);
 
-                // Send welcome message on first setup
                 if (profile?.telegram_chat_id) {
                     try {
                         await fetch(getApiPath('telegram/send-welcome'), {
@@ -720,7 +659,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     }, 1000);
                 }
 
-                // Dispatch status change event
                 dispatchTelegramStatusChange('healthy');
             }
         } catch (error) {
@@ -747,7 +685,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             setIsPolling(true);
             showSuccessToast(t('profile.pollingStarted'));
 
-            // Dispatch status change event
             dispatchTelegramStatusChange('healthy');
 
             if (telegramBotInfo) {
@@ -782,7 +719,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 t('profile.pollingStopped', 'Polling stopped successfully.')
             );
 
-            // Dispatch status change event
             dispatchTelegramStatusChange('problem');
 
             if (telegramBotInfo) {
@@ -797,10 +733,33 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         }
     };
 
+    const handleSendTestSummary = async () => {
+        try {
+            const response = await fetch(
+                getApiPath('profile/task-summary/send-now'),
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || t('profile.sendSummaryFailed'));
+            }
+
+            const data = await response.json();
+            showSuccessToast(data.message);
+        } catch (error) {
+            showErrorToast((error as Error).message);
+        }
+    };
+
     const handleAvatarSelect = (file: File) => {
         if (!file) return;
 
-        // Validate file type
         if (!file.type.startsWith('image/')) {
             showErrorToast(
                 t('profile.avatarUploadError', 'Please upload an image file')
@@ -808,7 +767,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             return;
         }
 
-        // Validate file size (5MB)
         if (file.size > 5 * 1024 * 1024) {
             showErrorToast(
                 t('profile.avatarSizeError', 'Image must be smaller than 5MB')
@@ -816,11 +774,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             return;
         }
 
-        // Store file for later upload
         setAvatarFile(file);
         setRemoveAvatar(false);
 
-        // Create preview URL
         const reader = new FileReader();
         reader.onloadend = () => {
             setAvatarPreview(reader.result as string);
@@ -868,13 +824,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        // Check if user is trying to change password
         const isPasswordChange =
             formData.currentPassword ||
             formData.newPassword ||
             formData.confirmPassword;
 
-        // Only validate password if user is trying to change password
         if (isPasswordChange) {
             const passwordValidation = validatePasswordForm();
             if (!passwordValidation.valid) {
@@ -884,7 +838,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         }
 
         try {
-            // Prepare data to send - exclude password fields if not changing password
             const dataToSend = { ...formData };
             if (!isPasswordChange) {
                 delete dataToSend.currentPassword;
@@ -909,15 +862,12 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
             const updatedProfile: Profile = await response.json();
 
-            // Handle avatar upload or deletion
             if (avatarFile) {
-                // Upload new avatar
                 const avatarUrl = await uploadAvatar(avatarFile);
                 updatedProfile.avatar_image = avatarUrl;
                 setAvatarFile(null);
                 setAvatarPreview(null);
             } else if (removeAvatar && formData.avatar_image) {
-                // Delete avatar
                 await deleteAvatar();
                 updatedProfile.avatar_image = null;
                 setRemoveAvatar(false);
@@ -925,7 +875,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
             setProfile(updatedProfile);
 
-            // Update formData to reflect the saved changes, preserving any fields not in response
             setFormData((prev) => ({
                 ...prev,
                 appearance:
@@ -987,7 +936,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                           : true,
             }));
 
-            // Apply appearance change after save
             if (
                 updatedProfile.appearance !== (isDarkMode ? 'dark' : 'light') &&
                 toggleDarkMode
@@ -995,12 +943,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 toggleDarkMode();
             }
 
-            // Apply language change after save
             if (updatedProfile.language !== i18n.language) {
                 await handleLanguageChange(updatedProfile.language);
             }
 
-            // Notify other components about Pomodoro setting change
             if (updatedProfile.pomodoro_enabled !== undefined) {
                 window.dispatchEvent(
                     new CustomEvent('pomodoroSettingChanged', {
@@ -1009,7 +955,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 );
             }
 
-            // Clear password fields on successful save
             if (isPasswordChange) {
                 setFormData((prev) => ({
                     ...prev,
@@ -1027,7 +972,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 : t('profile.successMessage', 'Profile updated successfully!');
             showSuccessToast(successMessage);
 
-            // Reload page if avatar changed to update navbar
             if (avatarFile || removeAvatar) {
                 setTimeout(() => {
                     window.location.reload();
@@ -1048,57 +992,38 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         );
     }
 
-    const tabs = [
+    const tabs: TabConfig[] = [
         {
             id: 'general',
             name: t('profile.tabs.general', 'General'),
-            icon: 'user',
+            icon: <UserIcon className="w-5 h-5" />,
         },
         {
             id: 'security',
             name: t('profile.tabs.security', 'Security'),
-            icon: 'shield',
+            icon: <ShieldCheckIcon className="w-5 h-5" />,
         },
         {
             id: 'apiKeys',
             name: t('profile.tabs.apiKeys', 'API Keys'),
-            icon: 'key',
+            icon: <KeyIcon className="w-5 h-5" />,
         },
         {
             id: 'productivity',
             name: t('profile.tabs.productivity', 'Productivity'),
-            icon: 'clock',
+            icon: <ClockIcon className="w-5 h-5" />,
         },
         {
             id: 'telegram',
             name: t('profile.tabs.telegram', 'Telegram'),
-            icon: 'chat',
+            icon: <TelegramIcon className="w-5 h-5" />,
         },
         {
             id: 'ai',
             name: t('profile.tabs.ai', 'AI Features'),
-            icon: 'sparkles',
+            icon: <LightBulbIcon className="w-5 h-5" />,
         },
     ];
-
-    const renderTabIcon = (iconType: string) => {
-        switch (iconType) {
-            case 'user':
-                return <UserIcon className="w-5 h-5" />;
-            case 'clock':
-                return <ClockIcon className="w-5 h-5" />;
-            case 'chat':
-                return <TelegramIcon className="w-5 h-5" />;
-            case 'shield':
-                return <ShieldCheckIcon className="w-5 h-5" />;
-            case 'sparkles':
-                return <LightBulbIcon className="w-5 h-5" />;
-            case 'key':
-                return <KeyIcon className="w-5 h-5" />;
-            default:
-                return null;
-        }
-    };
 
     return (
         <>
@@ -1110,1470 +1035,134 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     {t('profile.title')}
                 </h2>
 
-                {/* Navigation Tabs */}
-                <div className="mb-8">
-                    <div className="border-b border-gray-200 dark:border-gray-700">
-                        <nav className="-mb-px flex space-x-2 sm:space-x-8 overflow-x-auto scrollbar-hide">
-                            {tabs.map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    type="button"
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`group inline-flex items-center py-2 px-1 sm:px-2 border-b-2 font-medium text-sm whitespace-nowrap ${
-                                        activeTab === tab.id
-                                            ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                                    }`}
-                                >
-                                    <span className="mr-1 sm:mr-2">
-                                        {renderTabIcon(tab.icon)}
-                                    </span>
-                                    {tab.name}
-                                </button>
-                            ))}
-                        </nav>
-                    </div>
-                </div>
+                <TabsNav
+                    tabs={tabs}
+                    activeTab={activeTab}
+                    onChange={(id) => setActiveTab(id)}
+                />
 
                 <form onSubmit={handleSubmit} className="space-y-8">
-                    {/* General Tab */}
-                    {activeTab === 'general' && (
-                        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                                <UserIcon className="w-6 h-6 mr-3 text-blue-500" />
-                                {t(
-                                    'profile.accountSettings',
-                                    'Account & Preferences'
-                                )}
-                            </h3>
+                    <GeneralTab
+                        isActive={activeTab === 'general'}
+                        formData={formData}
+                        onChange={handleChange}
+                        onAppearanceChange={(appearance) =>
+                            setFormData((prev) => ({ ...prev, appearance }))
+                        }
+                        onLanguageChange={(languageCode) => {
+                            const localeFirstDay =
+                                getLocaleFirstDayOfWeek(languageCode);
+                            setFormData((prev) => ({
+                                ...prev,
+                                language: languageCode,
+                                first_day_of_week: localeFirstDay,
+                            }));
+                        }}
+                        onTimezoneChange={(timezone) =>
+                            setFormData((prev) => ({ ...prev, timezone }))
+                        }
+                        onFirstDayChange={(value) =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                first_day_of_week: value,
+                            }))
+                        }
+                        avatarPreview={avatarPreview}
+                        onAvatarSelect={handleAvatarSelect}
+                        onAvatarRemove={handleAvatarRemove}
+                        timezonesByRegion={timezonesByRegion}
+                        getRegionDisplayName={getRegionDisplayName}
+                    />
 
-                            {/* Avatar Upload Section */}
-                            <div className="mb-8 flex flex-col items-center">
-                                <div className="relative">
-                                    {avatarPreview || formData.avatar_image ? (
-                                        <img
-                                            src={
-                                                avatarPreview ||
-                                                getApiPath(
-                                                    formData.avatar_image
-                                                )
-                                            }
-                                            alt="Avatar"
-                                            className="w-32 h-32 rounded-full object-cover border-4 border-blue-500"
-                                        />
-                                    ) : (
-                                        <div className="w-32 h-32 rounded-full border-4 border-gray-300 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                            <UserCircleIcon className="w-20 h-20 text-gray-400 dark:text-gray-500" />
-                                        </div>
-                                    )}
-                                    <label
-                                        htmlFor="avatar-upload"
-                                        className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 cursor-pointer transition-colors"
-                                    >
-                                        <PhotoIcon className="w-5 h-5" />
-                                        <input
-                                            id="avatar-upload"
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden"
-                                            onChange={(e) => {
-                                                const file =
-                                                    e.target.files?.[0];
-                                                if (file) {
-                                                    handleAvatarSelect(file);
-                                                }
-                                            }}
-                                        />
-                                    </label>
-                                </div>
-                                {(formData.avatar_image || avatarPreview) && (
-                                    <button
-                                        type="button"
-                                        onClick={handleAvatarRemove}
-                                        className="mt-3 text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-                                    >
-                                        {t(
-                                            'profile.removeAvatar',
-                                            'Remove Avatar'
-                                        )}
-                                    </button>
-                                )}
-                                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                    {t(
-                                        'profile.avatarDescription',
-                                        'Upload a profile photo (max 5MB)'
-                                    )}
-                                </p>
-                            </div>
+                    <SecurityTab
+                        isActive={activeTab === 'security'}
+                        formData={formData}
+                        showCurrentPassword={showCurrentPassword}
+                        showNewPassword={showNewPassword}
+                        showConfirmPassword={showConfirmPassword}
+                        onChange={handleChange}
+                        onToggleCurrentPassword={() =>
+                            setShowCurrentPassword((prev) => !prev)
+                        }
+                        onToggleNewPassword={() =>
+                            setShowNewPassword((prev) => !prev)
+                        }
+                        onToggleConfirmPassword={() =>
+                            setShowConfirmPassword((prev) => !prev)
+                        }
+                    />
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        {t('profile.name', 'Name')}
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={formData.name || ''}
-                                        onChange={handleChange}
-                                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder={t(
-                                            'profile.enterName',
-                                            'Enter your name'
-                                        )}
-                                    />
-                                </div>
+                    <ApiKeysTab
+                        isActive={activeTab === 'apiKeys'}
+                        apiKeys={apiKeys}
+                        apiKeysLoading={apiKeysLoading}
+                        generatedApiToken={generatedApiToken}
+                        newApiKeyName={newApiKeyName}
+                        newApiKeyExpiration={newApiKeyExpiration}
+                        revokeInFlightId={revokeInFlightId}
+                        deleteInFlightId={deleteInFlightId}
+                        pendingDeleteId={apiKeyToDelete?.id ?? null}
+                        onCreateApiKey={handleCreateApiKey}
+                        onCopyGeneratedToken={handleCopyGeneratedToken}
+                        onRevokeApiKey={handleRevokeApiKey}
+                        onRequestDelete={(apiKey) => setApiKeyToDelete(apiKey)}
+                        onUpdateNewName={setNewApiKeyName}
+                        onUpdateNewExpiration={setNewApiKeyExpiration}
+                        getApiKeyStatus={getApiKeyStatus}
+                        formatDateTime={formatDateTime}
+                        isCreatingApiKey={isCreatingApiKey}
+                    />
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        {t('profile.surname', 'Surname')}
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="surname"
-                                        value={formData.surname || ''}
-                                        onChange={handleChange}
-                                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder={t(
-                                            'profile.enterSurname',
-                                            'Enter your surname'
-                                        )}
-                                    />
-                                </div>
+                    <ProductivityTab
+                        isActive={activeTab === 'productivity'}
+                        pomodoroEnabled={Boolean(formData.pomodoro_enabled)}
+                        onTogglePomodoro={() =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                pomodoro_enabled: !prev.pomodoro_enabled,
+                            }))
+                        }
+                    />
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        {t('profile.appearance')}
-                                    </label>
-                                    <div className="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    appearance: 'light',
-                                                }))
-                                            }
-                                            className={`flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors ${
-                                                formData.appearance === 'light'
-                                                    ? 'bg-blue-500 text-white'
-                                                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                                            }`}
-                                        >
-                                            <SunIcon className="h-4 w-4 mr-2" />
-                                            {t('profile.lightMode', 'Light')}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    appearance: 'dark',
-                                                }))
-                                            }
-                                            className={`flex-1 flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors ${
-                                                formData.appearance === 'dark'
-                                                    ? 'bg-blue-500 text-white'
-                                                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
-                                            }`}
-                                        >
-                                            <MoonIcon className="h-4 w-4 mr-2" />
-                                            {t('profile.darkMode', 'Dark')}
-                                        </button>
-                                    </div>
-                                </div>
+                    <TelegramTab
+                        isActive={activeTab === 'telegram'}
+                        formData={formData}
+                        profile={profile}
+                        telegramBotInfo={telegramBotInfo}
+                        isPolling={isPolling}
+                        telegramSetupStatus={telegramSetupStatus}
+                        onChange={handleChange}
+                        onSetup={handleSetupTelegram}
+                        onStartPolling={handleStartPolling}
+                        onStopPolling={handleStopPolling}
+                        onToggleSummary={() =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                task_summary_enabled:
+                                    !prev.task_summary_enabled,
+                            }))
+                        }
+                        onSelectFrequency={(frequency) =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                task_summary_frequency: frequency,
+                            }))
+                        }
+                        onSendTestSummary={handleSendTestSummary}
+                        formatFrequency={formatFrequency}
+                    />
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        {t('profile.language')}
-                                    </label>
-                                    <LanguageDropdown
-                                        value={formData.language || 'en'}
-                                        onChange={(languageCode) => {
-                                            // Auto-set first day of week based on language/locale
-                                            const localeFirstDay =
-                                                getLocaleFirstDayOfWeek(
-                                                    languageCode
-                                                );
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                language: languageCode,
-                                                first_day_of_week:
-                                                    localeFirstDay,
-                                            }));
-                                        }}
-                                    />
-                                </div>
+                    <AiTab
+                        isActive={activeTab === 'ai'}
+                        formData={formData}
+                        onToggle={(field) =>
+                            setFormData((prev) => ({
+                                ...prev,
+                                [field]: !prev[field],
+                            }))
+                        }
+                    />
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        {t('profile.timezone')}
-                                    </label>
-                                    <TimezoneDropdown
-                                        value={formData.timezone || 'UTC'}
-                                        onChange={(timezone) =>
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                timezone,
-                                            }))
-                                        }
-                                        timezonesByRegion={timezonesByRegion}
-                                        getRegionDisplayName={
-                                            getRegionDisplayName
-                                        }
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        {t(
-                                            'profile.firstDayOfWeek',
-                                            'First day of week'
-                                        )}
-                                    </label>
-                                    <FirstDayOfWeekDropdown
-                                        value={formData.first_day_of_week || 1}
-                                        onChange={(value) => {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                first_day_of_week: value,
-                                            }));
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Security Tab */}
-                    {activeTab === 'security' && (
-                        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                                <ShieldCheckIcon className="w-6 h-6 mr-3 text-red-500" />
-                                {t('profile.security', 'Security Settings')}
-                            </h3>
-
-                            {/* Password Change Section */}
-                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-                                    <UserIcon className="w-5 h-5 mr-2 text-blue-500" />
-                                    {t(
-                                        'profile.changePassword',
-                                        'Change Password'
-                                    )}
-                                </h4>
-
-                                <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded text-blue-800 dark:text-blue-200">
-                                    <p className="text-sm">
-                                        <InformationCircleIcon className="w-4 h-4 inline mr-1" />
-                                        {t(
-                                            'profile.passwordChangeOptional',
-                                            'Leave password fields empty to update other settings without changing your password.'
-                                        )}
-                                    </p>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            {t(
-                                                'profile.currentPassword',
-                                                'Current Password'
-                                            )}
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type={
-                                                    showCurrentPassword
-                                                        ? 'text'
-                                                        : 'password'
-                                                }
-                                                name="currentPassword"
-                                                value={
-                                                    formData.currentPassword ||
-                                                    ''
-                                                }
-                                                onChange={handleChange}
-                                                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder={t(
-                                                    'profile.enterCurrentPassword',
-                                                    'Enter your current password'
-                                                )}
-                                            />
-                                            <button
-                                                type="button"
-                                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                                onClick={() =>
-                                                    setShowCurrentPassword(
-                                                        !showCurrentPassword
-                                                    )
-                                                }
-                                            >
-                                                {showCurrentPassword ? (
-                                                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
-                                                ) : (
-                                                    <EyeIcon className="h-5 w-5 text-gray-400" />
-                                                )}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            {t(
-                                                'profile.newPassword',
-                                                'New Password'
-                                            )}
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type={
-                                                    showNewPassword
-                                                        ? 'text'
-                                                        : 'password'
-                                                }
-                                                name="newPassword"
-                                                value={
-                                                    formData.newPassword || ''
-                                                }
-                                                onChange={handleChange}
-                                                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder={t(
-                                                    'profile.enterNewPassword',
-                                                    'Enter your new password'
-                                                )}
-                                            />
-                                            <button
-                                                type="button"
-                                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                                onClick={() =>
-                                                    setShowNewPassword(
-                                                        !showNewPassword
-                                                    )
-                                                }
-                                            >
-                                                {showNewPassword ? (
-                                                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
-                                                ) : (
-                                                    <EyeIcon className="h-5 w-5 text-gray-400" />
-                                                )}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            {t(
-                                                'profile.confirmPassword',
-                                                'Confirm New Password'
-                                            )}
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type={
-                                                    showConfirmPassword
-                                                        ? 'text'
-                                                        : 'password'
-                                                }
-                                                name="confirmPassword"
-                                                value={
-                                                    formData.confirmPassword ||
-                                                    ''
-                                                }
-                                                onChange={handleChange}
-                                                className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder={t(
-                                                    'profile.confirmNewPassword',
-                                                    'Confirm your new password'
-                                                )}
-                                            />
-                                            <button
-                                                type="button"
-                                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                                onClick={() =>
-                                                    setShowConfirmPassword(
-                                                        !showConfirmPassword
-                                                    )
-                                                }
-                                            >
-                                                {showConfirmPassword ? (
-                                                    <EyeSlashIcon className="h-5 w-5 text-gray-400" />
-                                                ) : (
-                                                    <EyeIcon className="h-5 w-5 text-gray-400" />
-                                                )}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                                        {t(
-                                            'profile.passwordChangeNote',
-                                            'Password changes will be saved when you click "Save Changes" at the bottom of the form.'
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* API Keys Tab */}
-                    {activeTab === 'apiKeys' && (
-                        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                                <KeyIcon className="w-6 h-6 mr-3 text-indigo-500" />
-                                {t('profile.apiKeys.title', 'API Keys')}
-                            </h3>
-
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
-                                {t(
-                                    'profile.apiKeys.description',
-                                    'Generate personal access tokens for integrations or CLI usage. You can revoke or delete keys at any time.'
-                                )}
-                            </p>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        {t(
-                                            'profile.apiKeys.nameLabel',
-                                            'Key name'
-                                        )}
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={newApiKeyName}
-                                        onChange={(event) =>
-                                            setNewApiKeyName(event.target.value)
-                                        }
-                                        onKeyDown={(event) => {
-                                            if (event.key === 'Enter') {
-                                                event.preventDefault();
-                                                handleCreateApiKey();
-                                            }
-                                        }}
-                                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        placeholder={t(
-                                            'profile.apiKeys.namePlaceholder',
-                                            'e.g. Personal laptop'
-                                        )}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        {t(
-                                            'profile.apiKeys.expirationLabel',
-                                            'Expires on (optional)'
-                                        )}
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={newApiKeyExpiration}
-                                        onChange={(event) =>
-                                            setNewApiKeyExpiration(
-                                                event.target.value
-                                            )
-                                        }
-                                        onKeyDown={(event) => {
-                                            if (event.key === 'Enter') {
-                                                event.preventDefault();
-                                                handleCreateApiKey();
-                                            }
-                                        }}
-                                        className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    />
-                                </div>
-                                <div className="flex items-end">
-                                    <button
-                                        type="button"
-                                        disabled={isCreatingApiKey}
-                                        onClick={handleCreateApiKey}
-                                        className={`w-full inline-flex justify-center items-center px-4 py-2 rounded-md text-white ${
-                                            isCreatingApiKey
-                                                ? 'bg-gray-400 cursor-not-allowed'
-                                                : 'bg-blue-600 hover:bg-blue-500'
-                                        }`}
-                                    >
-                                        {isCreatingApiKey
-                                            ? t('common.saving', 'Saving...')
-                                            : t(
-                                                  'profile.apiKeys.generateButton',
-                                                  'Generate key'
-                                              )}
-                                    </button>
-                                </div>
-                            </div>
-
-                            {generatedApiToken && (
-                                <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/40 border border-green-200 dark:border-green-700 rounded-md">
-                                    <p className="text-sm text-green-900 dark:text-green-100 mb-2">
-                                        {t(
-                                            'profile.apiKeys.copyNotice',
-                                            'Copy this token now. It will not be shown again.'
-                                        )}
-                                    </p>
-                                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                                        <code className="flex-1 bg-white dark:bg-gray-900 rounded px-3 py-2 text-sm font-mono text-gray-800 dark:text-gray-100 overflow-x-auto">
-                                            {generatedApiToken}
-                                        </code>
-                                        <button
-                                            type="button"
-                                            onClick={handleCopyGeneratedToken}
-                                            className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-500"
-                                        >
-                                            <ClipboardDocumentListIcon className="w-5 h-5 mr-2" />
-                                            {t(
-                                                'profile.apiKeys.copyButton',
-                                                'Copy key'
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className="mt-6">
-                                {apiKeysLoading && (
-                                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                                        {t(
-                                            'profile.apiKeys.loading',
-                                            'Loading API keys...'
-                                        )}
-                                    </p>
-                                )}
-
-                                {!apiKeysLoading && apiKeys.length === 0 && (
-                                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                                        {t(
-                                            'profile.apiKeys.empty',
-                                            'No API keys yet. Generate one to begin.'
-                                        )}
-                                    </p>
-                                )}
-
-                                {!apiKeysLoading && apiKeys.length > 0 && (
-                                    <div className="overflow-x-auto">
-                                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                                            <thead className="bg-gray-100 dark:bg-gray-800">
-                                                <tr>
-                                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {t(
-                                                            'profile.apiKeys.table.name',
-                                                            'Name'
-                                                        )}
-                                                    </th>
-                                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {t(
-                                                            'profile.apiKeys.table.prefix',
-                                                            'Prefix'
-                                                        )}
-                                                    </th>
-                                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {t(
-                                                            'profile.apiKeys.table.status',
-                                                            'Status'
-                                                        )}
-                                                    </th>
-                                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {t(
-                                                            'profile.apiKeys.table.lastUsed',
-                                                            'Last used'
-                                                        )}
-                                                    </th>
-                                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {t(
-                                                            'profile.apiKeys.table.expires',
-                                                            'Expires'
-                                                        )}
-                                                    </th>
-                                                    <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                        {t(
-                                                            'profile.apiKeys.table.actions',
-                                                            'Actions'
-                                                        )}
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                                {apiKeys.map((key) => {
-                                                    const status =
-                                                        getApiKeyStatus(key);
-                                                    return (
-                                                        <tr key={key.id}>
-                                                            <td className="px-4 py-3">
-                                                                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                    {key.name}
-                                                                </div>
-                                                                <div className="text-xs text-gray-500 dark:text-gray-400">
-                                                                    {t(
-                                                                        'profile.apiKeys.createdAt',
-                                                                        'Created {{date}}',
-                                                                        {
-                                                                            date: formatDateTime(
-                                                                                key.created_at
-                                                                            ),
-                                                                        }
-                                                                    )}
-                                                                </div>
-                                                            </td>
-                                                            <td className="px-4 py-3 text-sm font-mono text-gray-800 dark:text-gray-200">
-                                                                {
-                                                                    key.token_prefix
-                                                                }
-                                                                ...
-                                                            </td>
-                                                            <td className="px-4 py-3 text-sm">
-                                                                <span
-                                                                    className={
-                                                                        status.className
-                                                                    }
-                                                                >
-                                                                    {
-                                                                        status.label
-                                                                    }
-                                                                </span>
-                                                            </td>
-                                                            <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">
-                                                                {formatDateTime(
-                                                                    key.last_used_at
-                                                                )}
-                                                            </td>
-                                                            <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">
-                                                                {key.expires_at
-                                                                    ? formatDateTime(
-                                                                          key.expires_at
-                                                                      )
-                                                                    : t(
-                                                                          'profile.apiKeys.noExpiry',
-                                                                          'None'
-                                                                      )}
-                                                            </td>
-                                                            <td className="px-4 py-3 text-right text-sm">
-                                                                <div className="flex justify-end space-x-2">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() =>
-                                                                            handleRevokeApiKey(
-                                                                                key.id
-                                                                            )
-                                                                        }
-                                                                        disabled={
-                                                                            Boolean(
-                                                                                key.revoked_at
-                                                                            ) ||
-                                                                            revokeInFlightId ===
-                                                                                key.id
-                                                                        }
-                                                                        className={`inline-flex items-center px-3 py-1.5 rounded-md border text-xs font-medium ${
-                                                                            key.revoked_at
-                                                                                ? 'border-gray-400 text-gray-400 cursor-not-allowed'
-                                                                                : 'border-yellow-600 text-yellow-700 hover:bg-yellow-50'
-                                                                        }`}
-                                                                    >
-                                                                        {key.revoked_at
-                                                                            ? t(
-                                                                                  'profile.apiKeys.revokedLabel',
-                                                                                  'Revoked'
-                                                                              )
-                                                                            : t(
-                                                                                  'profile.apiKeys.revokeButton',
-                                                                                  'Revoke'
-                                                                              )}
-                                                                    </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() =>
-                                                                            setApiKeyToDelete(
-                                                                                key
-                                                                            )
-                                                                        }
-                                                                        disabled={
-                                                                            deleteInFlightId ===
-                                                                                key.id ||
-                                                                            Boolean(
-                                                                                apiKeyToDelete &&
-                                                                                    apiKeyToDelete.id ===
-                                                                                        key.id
-                                                                            )
-                                                                        }
-                                                                        className={`inline-flex items-center justify-center px-3 py-1.5 rounded-md border text-xs font-medium ${
-                                                                            deleteInFlightId ===
-                                                                            key.id
-                                                                                ? 'border-gray-400 text-gray-400 cursor-not-allowed'
-                                                                                : 'border-red-600 text-red-700 hover:bg-red-50'
-                                                                        }`}
-                                                                        aria-label={t(
-                                                                            'profile.apiKeys.deleteAria',
-                                                                            'Delete API key'
-                                                                        )}
-                                                                    >
-                                                                        <TrashIcon className="w-4 h-4" />
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Productivity Tab */}
-                    {activeTab === 'productivity' && (
-                        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                                <ClockIcon className="w-6 h-6 mr-3 text-green-500" />
-                                {t(
-                                    'profile.productivityFeatures',
-                                    'Productivity Features'
-                                )}
-                            </h3>
-
-                            <div className="space-y-6">
-                                {/* Pomodoro Timer */}
-                                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            {t(
-                                                'profile.enablePomodoro',
-                                                'Enable Pomodoro Timer'
-                                            )}
-                                        </label>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                            {t(
-                                                'profile.pomodoroDescription',
-                                                'Enable the Pomodoro timer in the navigation bar for focused work sessions.'
-                                            )}
-                                        </p>
-                                    </div>
-                                    <div
-                                        className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
-                                            formData.pomodoro_enabled
-                                                ? 'bg-blue-500'
-                                                : 'bg-gray-300 dark:bg-gray-600'
-                                        }`}
-                                        onClick={() => {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                pomodoro_enabled:
-                                                    !prev.pomodoro_enabled,
-                                            }));
-                                        }}
-                                    >
-                                        <span
-                                            className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
-                                                formData.pomodoro_enabled
-                                                    ? 'translate-x-6'
-                                                    : 'translate-x-0'
-                                            }`}
-                                        ></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Telegram Tab */}
-                    {activeTab === 'telegram' && (
-                        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-blue-300 dark:border-blue-700 mb-8">
-                            <h3 className="text-xl font-semibold text-blue-700 dark:text-blue-300 mb-6 flex items-center">
-                                <TelegramIcon className="w-6 h-6 mr-3 text-blue-500" />
-                                {t(
-                                    'profile.telegramIntegration',
-                                    'Telegram Integration'
-                                )}
-                            </h3>
-
-                            {/* Bot Setup Subsection */}
-                            <div className="mb-8 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-                                    <CogIcon className="w-5 h-5 mr-2 text-blue-500" />
-                                    {t('profile.botSetup', 'Bot Setup')}
-                                </h4>
-
-                                <div className="space-y-4">
-                                    <div className="text-sm text-gray-600 dark:text-gray-300 flex items-start">
-                                        <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
-                                        <p>
-                                            {t(
-                                                'profile.telegramDescription',
-                                                'Connect your tududi account to a Telegram bot to add items to your inbox via Telegram messages.'
-                                            )}
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            {t(
-                                                'profile.telegramBotToken',
-                                                'Telegram Bot Token'
-                                            )}
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="telegram_bot_token"
-                                            value={
-                                                formData.telegram_bot_token ||
-                                                ''
-                                            }
-                                            onChange={handleChange}
-                                            placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ"
-                                            className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                        />
-                                        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                            {t(
-                                                'profile.telegramTokenDescription',
-                                                'Create a bot with @BotFather on Telegram and paste the token here.'
-                                            )}
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            {t(
-                                                'profile.telegramAllowedUsers',
-                                                'Allowed Users'
-                                            )}
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="telegram_allowed_users"
-                                            value={
-                                                formData.telegram_allowed_users ||
-                                                ''
-                                            }
-                                            onChange={handleChange}
-                                            placeholder="@username1, 123456789, @username2"
-                                            className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                        />
-                                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 space-y-1">
-                                            <p>
-                                                {t(
-                                                    'profile.telegramAllowedUsersDescription',
-                                                    'Control who can send messages to your bot. Leave empty to allow all users.'
-                                                )}
-                                            </p>
-                                            <div className="space-y-1">
-                                                <p className="font-semibold text-gray-600 dark:text-gray-300">
-                                                    {t(
-                                                        'profile.examples',
-                                                        'Examples:'
-                                                    )}
-                                                </p>
-                                                <ul className="list-disc list-inside ml-2 space-y-0.5">
-                                                    <li>
-                                                        <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">
-                                                            @alice, @bob
-                                                        </span>
-                                                        {' - '}
-                                                        {t(
-                                                            'profile.exampleUsernames',
-                                                            'Allow specific usernames'
-                                                        )}
-                                                    </li>
-                                                    <li>
-                                                        <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">
-                                                            123456789, 987654321
-                                                        </span>
-                                                        {' - '}
-                                                        {t(
-                                                            'profile.exampleUserIds',
-                                                            'Allow specific user IDs'
-                                                        )}
-                                                    </li>
-                                                    <li>
-                                                        <span className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">
-                                                            @alice, 123456789
-                                                        </span>
-                                                        {' - '}
-                                                        {t(
-                                                            'profile.exampleMixed',
-                                                            'Mix usernames and user IDs'
-                                                        )}
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {profile?.telegram_chat_id && (
-                                        <div className="p-2 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-800 rounded text-green-800 dark:text-green-200">
-                                            <p className="text-sm">
-                                                {t(
-                                                    'profile.telegramConnected',
-                                                    'Your Telegram account is connected! Send messages to your bot to add items to your tududi inbox.'
-                                                )}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {(telegramBotInfo ||
-                                        profile?.telegram_bot_token) && (
-                                        <div className="p-2 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-800 rounded text-blue-800 dark:text-blue-200">
-                                            <p className="font-medium mb-2">
-                                                {t(
-                                                    'profile.botConfigured',
-                                                    'Bot configured successfully!'
-                                                )}
-                                            </p>
-                                            <div className="text-sm space-y-1">
-                                                {telegramBotInfo?.first_name && (
-                                                    <p>
-                                                        <span className="font-semibold">
-                                                            Bot Name:{' '}
-                                                        </span>
-                                                        {
-                                                            telegramBotInfo.first_name
-                                                        }
-                                                    </p>
-                                                )}
-                                                {telegramBotInfo?.username && (
-                                                    <p>
-                                                        <span className="font-semibold">
-                                                            {t(
-                                                                'profile.botUsername',
-                                                                'Bot Username:'
-                                                            )}{' '}
-                                                        </span>
-                                                        @
-                                                        {
-                                                            telegramBotInfo.username
-                                                        }
-                                                    </p>
-                                                )}
-                                                <div className="mt-2">
-                                                    <p className="font-semibold mb-1">
-                                                        {t(
-                                                            'profile.pollingStatus',
-                                                            'Polling Status:'
-                                                        )}{' '}
-                                                    </p>
-                                                    <div className="flex items-center mb-2">
-                                                        <div
-                                                            className={`w-3 h-3 rounded-full mr-2 ${isPolling ? 'bg-green-500' : 'bg-red-500'}`}
-                                                        ></div>
-                                                        <span>
-                                                            {isPolling
-                                                                ? t(
-                                                                      'profile.pollingActive'
-                                                                  )
-                                                                : t(
-                                                                      'profile.pollingInactive'
-                                                                  )}
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-xs mb-2">
-                                                        {t(
-                                                            'profile.pollingNote',
-                                                            'Polling periodically checks for new messages from Telegram and adds them to your inbox.'
-                                                        )}
-                                                    </p>
-                                                    <div className="flex flex-wrap gap-2 mt-2">
-                                                        {isPolling ? (
-                                                            <button
-                                                                onClick={
-                                                                    handleStopPolling
-                                                                }
-                                                                className="px-3 py-1 bg-red-600 text-white dark:bg-red-700 rounded text-sm hover:bg-red-700 dark:hover:bg-red-800"
-                                                            >
-                                                                {t(
-                                                                    'profile.stopPolling',
-                                                                    'Stop Polling'
-                                                                )}
-                                                            </button>
-                                                        ) : (
-                                                            <button
-                                                                onClick={
-                                                                    handleStartPolling
-                                                                }
-                                                                className="px-3 py-1 bg-blue-600 text-white dark:bg-blue-700 rounded text-sm hover:bg-blue-700 dark:hover:bg-blue-800"
-                                                            >
-                                                                {t(
-                                                                    'profile.startPolling',
-                                                                    'Start Polling'
-                                                                )}
-                                                            </button>
-                                                        )}
-                                                        {telegramBotInfo?.chat_url && (
-                                                            <a
-                                                                href={
-                                                                    telegramBotInfo.chat_url
-                                                                }
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="px-3 py-1 bg-green-600 text-white dark:bg-green-700 rounded text-sm hover:bg-green-700 dark:hover:bg-green-800"
-                                                            >
-                                                                {t(
-                                                                    'profile.openTelegram',
-                                                                    'Open in Telegram'
-                                                                )}
-                                                            </a>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    <button
-                                        type="button"
-                                        onClick={handleSetupTelegram}
-                                        disabled={
-                                            !formData.telegram_bot_token ||
-                                            telegramSetupStatus === 'loading'
-                                        }
-                                        className={`px-4 py-2 rounded-md ${
-                                            !formData.telegram_bot_token ||
-                                            telegramSetupStatus === 'loading'
-                                                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                                                : 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
-                                        }`}
-                                    >
-                                        {telegramSetupStatus === 'loading'
-                                            ? t(
-                                                  'profile.settingUp',
-                                                  'Setting up...'
-                                              )
-                                            : t(
-                                                  'profile.setupTelegram',
-                                                  'Setup Telegram'
-                                              )}
-                                    </button>
-
-                                    {/* Status indicator */}
-                                    {telegramSetupStatus === 'success' && (
-                                        <div className="mt-2 flex items-center text-green-600 dark:text-green-400">
-                                            <svg
-                                                className="w-5 h-5 mr-2"
-                                                fill="currentColor"
-                                                viewBox="0 0 20 20"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
-                                            <span className="text-sm font-medium">
-                                                Bot configured successfully!
-                                            </span>
-                                        </div>
-                                    )}
-
-                                    {telegramSetupStatus === 'error' && (
-                                        <div className="mt-2 flex items-center text-red-600 dark:text-red-400">
-                                            <svg
-                                                className="w-5 h-5 mr-2"
-                                                fill="currentColor"
-                                                viewBox="0 0 20 20"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
-                                            <span className="text-sm font-medium">
-                                                Setup failed. Please check your
-                                                token.
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Task Summary Notifications Subsection */}
-                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-                                    <ClipboardDocumentListIcon className="w-5 h-5 mr-2 text-green-500" />
-                                    {t(
-                                        'profile.taskSummaryNotifications',
-                                        'Task Summary Notifications'
-                                    )}
-                                </h4>
-
-                                <div className="mb-4 text-sm text-gray-600 dark:text-gray-300 flex items-start">
-                                    <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
-                                    <p>
-                                        {t(
-                                            'profile.taskSummaryDescription',
-                                            'Receive regular summaries of your tasks via Telegram. This feature requires your Telegram integration to be set up.'
-                                        )}
-                                    </p>
-                                </div>
-
-                                <div className="mb-4 flex items-center justify-between">
-                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        {t(
-                                            'profile.enableTaskSummary',
-                                            'Enable Task Summaries'
-                                        )}
-                                    </label>
-                                    <div
-                                        className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
-                                            formData.task_summary_enabled
-                                                ? 'bg-blue-500'
-                                                : 'bg-gray-300 dark:bg-gray-600'
-                                        }`}
-                                        onClick={() => {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                task_summary_enabled:
-                                                    !prev.task_summary_enabled,
-                                            }));
-                                        }}
-                                    >
-                                        <span
-                                            className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
-                                                formData.task_summary_enabled
-                                                    ? 'translate-x-6'
-                                                    : 'translate-x-0'
-                                            }`}
-                                        ></span>
-                                    </div>
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        {t(
-                                            'profile.summaryFrequency',
-                                            'Summary Frequency'
-                                        )}
-                                    </label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {[
-                                            '1h',
-                                            '2h',
-                                            '4h',
-                                            '8h',
-                                            '12h',
-                                            'daily',
-                                            'weekly',
-                                        ].map((frequency) => (
-                                            <button
-                                                key={frequency}
-                                                type="button"
-                                                className={`px-3 py-1.5 text-sm rounded-full ${
-                                                    formData.task_summary_frequency ===
-                                                    frequency
-                                                        ? 'bg-blue-500 text-white'
-                                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                                                }`}
-                                                onClick={() => {
-                                                    setFormData((prev) => ({
-                                                        ...prev,
-                                                        task_summary_frequency:
-                                                            frequency,
-                                                    }));
-                                                }}
-                                            >
-                                                {t(
-                                                    `profile.frequency.${frequency}`,
-                                                    formatFrequency(frequency)
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                        {t(
-                                            'profile.frequencyHelp',
-                                            'Choose how often you want to receive task summaries.'
-                                        )}
-                                    </p>
-                                </div>
-
-                                <div className="mt-4">
-                                    <button
-                                        type="button"
-                                        disabled={
-                                            !profile?.telegram_bot_token ||
-                                            !profile?.telegram_chat_id
-                                        }
-                                        className={`px-4 py-2 rounded-md ${
-                                            !profile?.telegram_bot_token ||
-                                            !profile?.telegram_chat_id
-                                                ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                                                : 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
-                                        }`}
-                                        onClick={async () => {
-                                            try {
-                                                const response = await fetch(
-                                                    getApiPath(
-                                                        'profile/task-summary/send-now'
-                                                    ),
-                                                    {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'Content-Type':
-                                                                'application/json',
-                                                        },
-                                                    }
-                                                );
-
-                                                if (!response.ok) {
-                                                    const data =
-                                                        await response.json();
-                                                    throw new Error(
-                                                        data.error ||
-                                                            t(
-                                                                'profile.sendSummaryFailed'
-                                                            )
-                                                    );
-                                                }
-
-                                                const data =
-                                                    await response.json();
-                                                showSuccessToast(data.message);
-                                            } catch (error) {
-                                                showErrorToast(
-                                                    (error as Error).message
-                                                );
-                                            }
-                                        }}
-                                    >
-                                        {t(
-                                            'profile.sendTestSummary',
-                                            'Send Test Summary'
-                                        )}
-                                    </button>
-                                    {(!profile?.telegram_bot_token ||
-                                        !profile?.telegram_chat_id) && (
-                                        <p className="mt-2 text-xs text-red-500">
-                                            {t(
-                                                'profile.telegramRequiredForSummaries',
-                                                'Telegram integration must be set up to use task summaries.'
-                                            )}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* AI Features Tab */}
-                    {activeTab === 'ai' && (
-                        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-                                <LightBulbIcon className="w-6 h-6 mr-3 text-blue-500" />
-                                {t(
-                                    'profile.aiProductivityFeatures',
-                                    'AI & Productivity Features'
-                                )}
-                            </h3>
-
-                            {/* Task Intelligence Subsection */}
-                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-                                    <BoltIcon className="w-5 h-5 mr-2 text-purple-500" />
-                                    {t(
-                                        'profile.taskIntelligence',
-                                        'Task Intelligence'
-                                    )}
-                                </h4>
-
-                                <div className="mb-4 text-sm text-gray-600 dark:text-gray-300 flex items-start">
-                                    <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
-                                    <p>
-                                        {t(
-                                            'profile.taskIntelligenceDescription',
-                                            'Show popup alerts while typing task names that suggest improvements like "Make it more descriptive!", "Be more specific!", or "Add an action verb!". Disable this if you prefer typing in your own shorthand without suggestions.'
-                                        )}
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        {t(
-                                            'profile.enableTaskIntelligence',
-                                            'Enable Task Intelligence Assistant'
-                                        )}
-                                    </label>
-                                    <div
-                                        className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
-                                            formData.task_intelligence_enabled
-                                                ? 'bg-blue-500'
-                                                : 'bg-gray-300 dark:bg-gray-600'
-                                        }`}
-                                        onClick={() => {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                task_intelligence_enabled:
-                                                    !prev.task_intelligence_enabled,
-                                            }));
-                                        }}
-                                    >
-                                        <span
-                                            className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
-                                                formData.task_intelligence_enabled
-                                                    ? 'translate-x-6'
-                                                    : 'translate-x-0'
-                                            }`}
-                                        ></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Auto-Suggest Next Actions Subsection */}
-                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
-                                <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-                                    <ChevronRightIcon className="w-5 h-5 mr-2 text-green-500" />
-                                    {t(
-                                        'profile.autoSuggestNextActions',
-                                        'Auto-Suggest Next Actions'
-                                    )}
-                                </h4>
-
-                                <div className="mb-4 text-sm text-gray-600 dark:text-gray-300 flex items-start">
-                                    <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
-                                    <p>
-                                        {t(
-                                            'profile.autoSuggestNextActionsDescription',
-                                            'When creating a project, automatically prompt for the very next physical action to take.'
-                                        )}
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        {t(
-                                            'profile.enableAutoSuggestNextActions',
-                                            'Enable Next Action Prompts'
-                                        )}
-                                    </label>
-                                    <div
-                                        className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
-                                            formData.auto_suggest_next_actions_enabled
-                                                ? 'bg-blue-500'
-                                                : 'bg-gray-300 dark:bg-gray-600'
-                                        }`}
-                                        onClick={() => {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                auto_suggest_next_actions_enabled:
-                                                    !prev.auto_suggest_next_actions_enabled,
-                                            }));
-                                        }}
-                                    >
-                                        <span
-                                            className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
-                                                formData.auto_suggest_next_actions_enabled
-                                                    ? 'translate-x-6'
-                                                    : 'translate-x-0'
-                                            }`}
-                                        ></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Productivity Assistant Subsection */}
-                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
-                                <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-                                    <ExclamationTriangleIcon className="w-5 h-5 mr-2 text-yellow-500" />
-                                    {t(
-                                        'profile.productivityAssistant',
-                                        'Productivity Assistant'
-                                    )}
-                                </h4>
-
-                                <div className="mb-4 text-sm text-gray-600 dark:text-gray-300 flex items-start">
-                                    <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
-                                    <p>
-                                        {t(
-                                            'profile.productivityAssistantDescription',
-                                            'Show productivity insights that help identify stalled projects, vague tasks, and workflow improvements on your Today page.'
-                                        )}
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        {t(
-                                            'profile.enableProductivityAssistant',
-                                            'Enable Productivity Insights'
-                                        )}
-                                    </label>
-                                    <div
-                                        className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
-                                            formData.productivity_assistant_enabled
-                                                ? 'bg-blue-500'
-                                                : 'bg-gray-300 dark:bg-gray-600'
-                                        }`}
-                                        onClick={() => {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                productivity_assistant_enabled:
-                                                    !prev.productivity_assistant_enabled,
-                                            }));
-                                        }}
-                                    >
-                                        <span
-                                            className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
-                                                formData.productivity_assistant_enabled
-                                                    ? 'translate-x-6'
-                                                    : 'translate-x-0'
-                                            }`}
-                                        ></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Next Task Suggestion Subsection */}
-                            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mt-4">
-                                <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
-                                    <FaceSmileIcon className="w-5 h-5 mr-2 text-green-500" />
-                                    {t(
-                                        'profile.nextTaskSuggestion',
-                                        'Next Task Suggestion'
-                                    )}
-                                </h4>
-
-                                <div className="mb-4 text-sm text-gray-600 dark:text-gray-300 flex items-start">
-                                    <InformationCircleIcon className="h-5 w-5 mr-2 flex-shrink-0 text-blue-500" />
-                                    <p>
-                                        {t(
-                                            'profile.nextTaskSuggestionDescription',
-                                            'Automatically suggest the next best task to work on when you have nothing in progress, prioritizing due today tasks, then suggested tasks, then next actions.'
-                                        )}
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        {t(
-                                            'profile.enableNextTaskSuggestion',
-                                            'Enable Next Task Suggestions'
-                                        )}
-                                    </label>
-                                    <div
-                                        className={`relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out rounded-full cursor-pointer ${
-                                            formData.next_task_suggestion_enabled
-                                                ? 'bg-blue-500'
-                                                : 'bg-gray-300 dark:bg-gray-600'
-                                        }`}
-                                        onClick={() => {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                next_task_suggestion_enabled:
-                                                    !prev.next_task_suggestion_enabled,
-                                            }));
-                                        }}
-                                    >
-                                        <span
-                                            className={`absolute left-0 top-0 bottom-0 m-1 w-4 h-4 transition-transform duration-200 ease-in-out transform bg-white rounded-full ${
-                                                formData.next_task_suggestion_enabled
-                                                    ? 'translate-x-6'
-                                                    : 'translate-x-0'
-                                            }`}
-                                        ></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Save Button */}
                     <div className="flex justify-end dark:border-gray-700">
                         <button
                             type="submit"

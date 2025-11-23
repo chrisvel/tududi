@@ -122,7 +122,25 @@
     "showSubtasks": "Vis underopgaver",
     "hideSubtasks": "Skjul underopgaver",
     "edit": "Rediger opgave",
-    "delete": "Slet opgave"
+    "delete": "Slet opgave",
+    "sortTasks": "Sortér opgaver",
+    "sortBy": "Sortér efter",
+    "direction": "Retning",
+    "ascending": "Stigende",
+    "descending": "Faldende",
+    "groupBy": "Gruppér efter",
+    "groupByProject": "Projekt",
+    "grouping": {
+      "none": "Ingen"
+    },
+    "show": "Vis",
+    "all": "Alle",
+    "completedOnly": "Kun afsluttede",
+    "notCompleted": "Ikke afsluttet",
+    "noProject": "Intet projekt",
+    "unknownProject": "Ukendt projekt",
+    "tasks": "opgaver",
+    "showingItems": "Viser {{current}} af {{total}} elementer"
   },
   "timeline": {
     "activityTimeline": "Aktivitets Tidslinje",
@@ -508,7 +526,7 @@
   "project": {
     "name": "Projekt Navn",
     "projectImage": "Projektbillede",
-    "uploadImageHint": "Upload et billede til dit projekt (maks 5MB)",
+    "uploadImageHint": "Upload et billede til dit projekt (maks 10MB)",
     "browseImage": "Gennemse Billede",
     "noNotes": "Ingen noter til dette projekt.",
     "deleteProject": "Slet Projekt",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Aktivt arbejde i gang",
       "blocked_desc": "Midlertidigt pauseret eller fastlåst",
       "completed_desc": "Afsluttet og færdig"
-    }
+    },
+    "showMetrics": "Vis målinger",
+    "hideMetrics": "Skjul målinger"
   },
   "projectItem": {
     "edit": "Rediger",

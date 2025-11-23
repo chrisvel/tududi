@@ -1,29 +1,22 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useToast } from '../Shared/ToastContext';
 import {
-    PencilSquareIcon,
-    TrashIcon,
-    TagIcon,
-    PlusCircleIcon,
-    Squares2X2Icon,
-    PlayIcon,
+    MagnifyingGlassIcon,
     LightBulbIcon,
     ClipboardDocumentListIcon,
+    PlayIcon,
     ExclamationTriangleIcon,
     CheckCircleIcon,
-    ShareIcon,
-    MagnifyingGlassIcon,
+    ChartBarIcon,
+    CheckIcon,
 } from '@heroicons/react/24/outline';
-import TaskList from '../Task/TaskList';
-import ProjectModal from '../Project/ProjectModal';
+import { useToast } from '../Shared/ToastContext';
+import ProjectModal from './ProjectModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import NoteModal from '../Note/NoteModal';
 import { useStore } from '../../store/useStore';
-import NewTask from '../Task/NewTask';
 import { Project } from '../../entities/Project';
-import NoteCard from '../Shared/NoteCard';
 import { Task } from '../../entities/Task';
 import { Note } from '../../entities/Note';
 import {
@@ -42,237 +35,282 @@ import {
     deleteNote as apiDeleteNote,
 } from '../../utils/notesService';
 import { createNote } from '../../utils/notesService';
-import { isAuthError } from '../../utils/authUtils';
 import { getAutoSuggestNextActionsEnabled } from '../../utils/profileService';
-import AutoSuggestNextActionBox from './AutoSuggestNextActionBox';
-import { SortOption } from '../Shared/SortFilterButton';
 import IconSortDropdown from '../Shared/IconSortDropdown';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import { usePersistedModal } from '../../hooks/usePersistedModal';
-import BannerBadge from '../Shared/BannerBadge';
 import { getApiPath } from '../../config/paths';
+import ProjectInsightsPanel from './ProjectInsightsPanel';
+import ProjectBanner from './ProjectBanner';
+import ProjectTasksSection from './ProjectTasksSection';
+import ProjectNotesSection from './ProjectNotesSection';
+import { useProjectMetrics } from './useProjectMetrics';
 
 const ProjectDetails: React.FC = () => {
+    const UI_OPTIONS_KEY = 'ui_app_options';
+
     const { uidSlug } = useParams<{ uidSlug: string }>();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { showSuccessToast } = useToast();
-
-    // Load areas from store (similar to how we handle tags)
     const { areasStore, projectsStore } = useStore();
     const areas = areasStore.areas;
-
-    // Load areas when component mounts
-    useEffect(() => {
-        if (!areasStore.hasLoaded && !areasStore.isLoading) {
-            areasStore.loadAreas();
-        }
-    }, [areasStore.hasLoaded, areasStore.isLoading, areasStore.loadAreas]);
     const [allProjects, setAllProjects] = useState<Project[]>([]);
-    // Use local state to isolate from global store changes that cause remounting
     const [project, setProject] = useState<Project | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
-
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
-    // Use persisted modal state that survives component remounts
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+    const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
+    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
+    const [taskStatusFilter, setTaskStatusFilter] = useState<
+        'all' | 'active' | 'completed'
+    >(() => {
+        const saved = localStorage.getItem('project_task_status_filter');
+        return (saved as 'all' | 'active' | 'completed') || 'active';
+    });
+    const [showMetrics, setShowMetrics] = useState(true);
+    const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
+    const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(false);
+    const hasCheckedAutoSuggest = useRef(false);
+    const [orderBy, setOrderBy] = useState<string>('status:inProgressFirst');
+    const [taskSearchQuery, setTaskSearchQuery] = useState('');
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const {
         isOpen: isModalOpen,
         openModal,
         closeModal,
     } = usePersistedModal(project?.id);
     const editButtonRef = useRef<HTMLButtonElement>(null);
-
-    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-
-    const [showCompleted, setShowCompleted] = useState(false);
-    const [showAutoSuggestForm, setShowAutoSuggestForm] = useState(false);
-    const [autoSuggestEnabled, setAutoSuggestEnabled] = useState(false);
-    const hasCheckedAutoSuggest = useRef(false);
-    const [orderBy, setOrderBy] = useState<string>('created_at:desc');
-    const [activeTab, setActiveTab] = useState<'tasks' | 'notes'>('tasks');
-
-    // Search state
-    const [taskSearchQuery, setTaskSearchQuery] = useState<string>('');
-    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-
-    // Sort options for tasks
-    const sortOptions: SortOption[] = [
-        { value: 'created_at:desc', label: 'Created at' },
-        { value: 'due_date:asc', label: 'Due date' },
-        { value: 'priority:desc', label: 'Priority' },
-    ];
-
-    // Note modal state
-    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-    const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
-    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
-
-    // Dispatch global modal events
+    const sortOptions = useMemo(
+        () => [
+            {
+                value: 'status:inProgressFirst',
+                label: t('tasks.status', 'Status'),
+            },
+            { value: 'created_at:desc', label: 'Created at' },
+            { value: 'due_date:asc', label: 'Due date' },
+            { value: 'priority:desc', label: 'Priority' },
+        ],
+        [t]
+    );
 
     useEffect(() => {
-        const fetchAutoSuggestSetting = async () => {
-            if (!hasCheckedAutoSuggest.current) {
-                hasCheckedAutoSuggest.current = true;
-                const enabled = await getAutoSuggestNextActionsEnabled();
-                setAutoSuggestEnabled(enabled);
-            }
-        };
+        if (!areasStore.hasLoaded && !areasStore.isLoading) {
+            areasStore.loadAreas();
+        }
+    }, [areasStore]);
 
-        fetchAutoSuggestSetting();
+    useEffect(() => {
+        if (!hasCheckedAutoSuggest.current) {
+            hasCheckedAutoSuggest.current = true;
+            getAutoSuggestNextActionsEnabled().then(setAutoSuggestEnabled);
+        }
     }, []);
 
-    // Load projects if not already loaded
     useEffect(() => {
-        const loadProjectsIfNeeded = async () => {
-            if (allProjects.length === 0) {
-                try {
-                    const projectsData = await fetchProjects();
-                    setAllProjects(projectsData);
-                } catch (error) {
-                    console.error('Failed to fetch projects:', error);
+        // Load persisted UI options (local or remote)
+        const load = async () => {
+            let localShow: boolean | undefined;
+            try {
+                const stored = localStorage.getItem(UI_OPTIONS_KEY);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (typeof parsed.showMetrics === 'boolean') {
+                        localShow = parsed.showMetrics;
+                        setShowMetrics(parsed.showMetrics);
+                    }
                 }
+            } catch {
+                // ignore parse errors
+            }
+
+            try {
+                const response = await fetch(getApiPath('profile'), {
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    const profile = await response.json();
+                    if (
+                        profile.ui_settings &&
+                        typeof profile.ui_settings.project?.details
+                            ?.showMetrics === 'boolean'
+                    ) {
+                        setShowMetrics(
+                            profile.ui_settings.project.details.showMetrics
+                        );
+                        localStorage.setItem(
+                            UI_OPTIONS_KEY,
+                            JSON.stringify({
+                                showMetrics:
+                                    profile.ui_settings.project.details
+                                        .showMetrics,
+                            })
+                        );
+                    } else if (localShow === undefined) {
+                        setShowMetrics(true);
+                    }
+                } else if (localShow === undefined) {
+                    setShowMetrics(true);
+                }
+            } catch {
+                if (localShow === undefined) setShowMetrics(true);
             }
         };
-        loadProjectsIfNeeded();
+        load();
+    }, [getApiPath]);
+
+    const persistUiSettings = async (nextShowMetrics: boolean) => {
+        try {
+            localStorage.setItem(
+                UI_OPTIONS_KEY,
+                JSON.stringify({ showMetrics: nextShowMetrics })
+            );
+        } catch {
+            // ignore storage errors
+        }
+
+        try {
+            await fetch(getApiPath('profile/ui-settings'), {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    project: {
+                        details: {
+                            showMetrics: nextShowMetrics,
+                        },
+                    },
+                }),
+            });
+        } catch {
+            // ignore network errors
+        }
+    };
+
+    const toggleMetrics = () => {
+        setShowMetrics((prev) => {
+            const next = !prev;
+            persistUiSettings(next);
+            return next;
+        });
+    };
+
+    useEffect(() => {
+        if (allProjects.length === 0) {
+            fetchProjects()
+                .then(setAllProjects)
+                .catch(() => undefined);
+        }
     }, [allProjects.length]);
 
-    // Check if we should show auto-suggest form for projects with no tasks
     useEffect(() => {
-        if (
-            project &&
-            tasks.length === 0 &&
-            !loading &&
-            !showCompleted &&
-            autoSuggestEnabled
-        ) {
-            setShowAutoSuggestForm(true);
+        const storedSort = localStorage.getItem('project_order_by');
+        const defaultSort = 'status:inProgressFirst';
+        if (!storedSort || storedSort === 'created_at:desc') {
+            setOrderBy(defaultSort);
+            localStorage.setItem('project_order_by', defaultSort);
         } else {
-            setShowAutoSuggestForm(false);
+            setOrderBy(storedSort);
         }
-    }, [project, tasks.length, loading, showCompleted, autoSuggestEnabled]);
-
-    // Load initial sort order from localStorage (URL params removed to prevent conflicts)
-    useEffect(() => {
-        const sortParam =
-            localStorage.getItem('project_order_by') || 'created_at:desc';
-        setOrderBy(sortParam);
     }, []);
 
-    // Fetch project data when uidSlug changes
     useEffect(() => {
         if (!uidSlug) return;
-
-        // Skip loading if we already have the project data for this uidSlug
-        if (
-            project &&
-            project.uid &&
-            `${project.uid}-${project.name
-                ?.toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-|-$/g, '')}` === uidSlug
-        ) {
-            return;
-        }
-
         const loadProjectData = async () => {
             try {
-                // Only show loading if we don't have any project data yet
-                if (!project) {
-                    setLoading(true);
-                }
+                if (!project) setLoading(true);
                 setError(false);
-
                 const projectData = await fetchProjectBySlug(uidSlug);
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
-
-                // Load saved preferences from project data
-                if (projectData.task_show_completed !== undefined) {
-                    setShowCompleted(projectData.task_show_completed);
-                }
-                if (projectData.task_sort_order) {
+                const savedSort = localStorage.getItem('project_order_by');
+                if (!savedSort && projectData.task_sort_order) {
                     setOrderBy(projectData.task_sort_order);
                 }
                 const fetchedNotes =
                     projectData.notes || projectData.Notes || [];
-
-                // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
-                const normalizedNotes = fetchedNotes.map((note) => {
-                    if (note.Tags && !note.tags) {
-                        note.tags = note.Tags;
-                    }
-                    return note;
-                });
-
-                setNotes(normalizedNotes);
+                setNotes(
+                    fetchedNotes.map((note) => {
+                        if (note.Tags && !note.tags) note.tags = note.Tags;
+                        return note;
+                    })
+                );
                 setLoading(false);
             } catch {
                 setError(true);
                 setLoading(false);
             }
         };
-
         loadProjectData();
     }, [uidSlug]);
 
+    useEffect(() => {
+        const button = editButtonRef.current;
+        if (!button) return;
+        const handleClick = (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openModal();
+        };
+        button.addEventListener('click', handleClick);
+        return () => button.removeEventListener('click', handleClick);
+    }, [openModal]);
+
+    useEffect(() => {
+        if (
+            project &&
+            tasks.length === 0 &&
+            !loading &&
+            taskStatusFilter === 'active' &&
+            autoSuggestEnabled
+        ) {
+            setShowAutoSuggestForm(true);
+        } else {
+            setShowAutoSuggestForm(false);
+        }
+    }, [project, tasks.length, loading, taskStatusFilter, autoSuggestEnabled]);
+
     const handleTaskCreate = async (taskName: string) => {
-        if (!project) {
-            throw new Error('Cannot create task: Project is missing');
-        }
-
-        try {
-            const newTask = await createTask({
-                name: taskName,
-                status: 0, // Use numeric status: 0 = not_started
-                project_id: project.id,
-                completed_at: null,
-            });
-            setTasks([...tasks, newTask]);
-
-            // Show success toast with task link
-            const taskLink = (
-                <span>
-                    {t('task.created', 'Task')}{' '}
-                    <a
-                        href={`/task/${newTask.uid}`}
-                        className="text-green-200 underline hover:text-green-100"
-                    >
-                        {newTask.name}
-                    </a>{' '}
-                    {t('task.createdSuccessfully', 'created successfully!')}
-                </span>
-            );
-            showSuccessToast(taskLink);
-        } catch (err: any) {
-            // Check if it's an authentication error
-            if (isAuthError(err)) {
-                return;
-            }
-            throw err; // Re-throw to allow proper error handling by NewTask component
-        }
+        if (!project) throw new Error('Cannot create task: Project is missing');
+        const newTask = await createTask({
+            name: taskName,
+            status: 0,
+            project_id: project.id,
+            completed_at: null,
+        });
+        setTasks([...tasks, newTask]);
+        const taskLink = (
+            <span>
+                {t('task.created', 'Task')}{' '}
+                <a
+                    href={`/task/${newTask.uid}`}
+                    className="text-green-200 underline hover:text-green-100"
+                >
+                    {newTask.name}
+                </a>{' '}
+                {t('task.createdSuccessfully', 'created successfully!')}
+            </span>
+        );
+        showSuccessToast(taskLink);
     };
 
     const handleTaskUpdate = async (updatedTask: Task) => {
-        if (!updatedTask.id) {
-            return;
-        }
-
-        // Only skip API call for specific operations that already have fresh data from the server
-        // (like toggleTaskCompletion), not for general modal updates
+        if (!updatedTask.id) return;
         const hasUpdatedData =
             updatedTask.parent_child_logic_executed !== undefined;
-
         if (hasUpdatedData) {
-            // Use the provided data directly, preserving existing subtasks if not included
-            setTasks(
-                tasks.map((task) =>
+            setTasks((prev) =>
+                prev.map((task) =>
                     task.id === updatedTask.id
                         ? {
                               ...task,
                               ...updatedTask,
-                              // Explicitly preserve subtasks data
                               subtasks:
                                   updatedTask.subtasks ||
                                   updatedTask.Subtasks ||
@@ -291,314 +329,196 @@ const ProjectDetails: React.FC = () => {
             );
             return;
         }
-
-        try {
-            // Use direct fetch call like Tasks.tsx to ensure proper tag saving
-            const response = await fetch(getApiPath(`task/${updatedTask.id}`), {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify(updatedTask),
-            });
-
-            if (!response.ok) {
-                await response.json();
-                throw new Error('Failed to update task');
-            }
-
-            const savedTask = await response.json();
-
-            // If the task's project was changed/cleared and no longer belongs to this project, remove it
-            // Handle both null and undefined project_id values
-            const savedTaskProjectId = savedTask.project_id ?? null;
-            const currentProjectId = project?.id ?? null;
-
-            if (savedTaskProjectId !== currentProjectId) {
-                setTasks(tasks.filter((task) => task.id !== updatedTask.id));
-            } else {
-                // Otherwise, update the task in place
-                setTasks(
-                    tasks.map((task) =>
-                        task.id === updatedTask.id
-                            ? {
-                                  ...task,
-                                  ...savedTask,
-                                  // Explicitly preserve subtasks data
-                                  subtasks:
-                                      savedTask.subtasks ||
-                                      savedTask.Subtasks ||
-                                      updatedTask.subtasks ||
-                                      updatedTask.Subtasks ||
-                                      task.subtasks ||
-                                      task.Subtasks ||
-                                      [],
-                                  Subtasks:
-                                      savedTask.subtasks ||
-                                      savedTask.Subtasks ||
-                                      updatedTask.subtasks ||
-                                      updatedTask.Subtasks ||
-                                      task.subtasks ||
-                                      task.Subtasks ||
-                                      [],
-                              }
-                            : task
-                    )
-                );
-            }
-        } catch {
-            // Error updating task - silently handled
+        const response = await fetch(getApiPath(`task/${updatedTask.id}`), {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(updatedTask),
+        });
+        if (!response.ok) {
+            await response.json();
+            throw new Error('Failed to update task');
         }
-    };
-
-    const handleTaskDelete = async (taskId: number | undefined) => {
-        if (!taskId) {
-            return;
-        }
-        try {
-            await deleteTask(taskId);
-            setTasks(tasks.filter((task) => task.id !== taskId));
-        } catch {
-            // Error deleting task - silently handled
-        }
-    };
-
-    const handleToggleToday = async (
-        taskId: number,
-        task?: Task
-    ): Promise<void> => {
-        try {
-            const updatedTask = await toggleTaskToday(taskId, task);
-            // Update the task in the local state immediately to avoid UI flashing
-            setTasks(
-                tasks.map((task) =>
-                    task.id === taskId
+        const savedTask = await response.json();
+        const savedTaskProjectId = savedTask.project_id ?? null;
+        const currentProjectId = project?.id ?? null;
+        if (savedTaskProjectId !== currentProjectId) {
+            setTasks(tasks.filter((task) => task.id !== updatedTask.id));
+        } else {
+            setTasks((prev) =>
+                prev.map((task) =>
+                    task.id === updatedTask.id
                         ? {
                               ...task,
-                              today: updatedTask.today,
-                              today_move_count: updatedTask.today_move_count,
+                              ...savedTask,
+                              subtasks:
+                                  savedTask.subtasks ||
+                                  savedTask.Subtasks ||
+                                  updatedTask.subtasks ||
+                                  updatedTask.Subtasks ||
+                                  task.subtasks ||
+                                  task.Subtasks ||
+                                  [],
+                              Subtasks:
+                                  savedTask.subtasks ||
+                                  savedTask.Subtasks ||
+                                  updatedTask.subtasks ||
+                                  updatedTask.Subtasks ||
+                                  task.subtasks ||
+                                  task.Subtasks ||
+                                  [],
                           }
                         : task
                 )
             );
+        }
+    };
+
+    const handleTaskDelete = async (taskId: number | undefined) => {
+        if (!taskId) return;
+        await deleteTask(taskId);
+        setTasks(tasks.filter((task) => task.id !== taskId));
+    };
+
+    const handleTaskCompletionToggle = (updatedTask: Task) => {
+        if (!updatedTask.id) return;
+        setTasks((prev) =>
+            prev.map((task) =>
+                task.id === updatedTask.id
+                    ? {
+                          ...task,
+                          ...updatedTask,
+                          subtasks:
+                              updatedTask.subtasks ||
+                              updatedTask.Subtasks ||
+                              task.subtasks ||
+                              task.Subtasks ||
+                              [],
+                          Subtasks:
+                              updatedTask.subtasks ||
+                              updatedTask.Subtasks ||
+                              task.subtasks ||
+                              task.Subtasks ||
+                              [],
+                      }
+                    : task
+            )
+        );
+    };
+
+    const handleToggleToday = async (taskId: number, task?: Task) => {
+        try {
+            const updatedTask = await toggleTaskToday(taskId, task);
+            setTasks((prev) =>
+                prev.map((t) =>
+                    t.id === taskId
+                        ? {
+                              ...t,
+                              today: updatedTask.today,
+                              today_move_count: updatedTask.today_move_count,
+                          }
+                        : t
+                )
+            );
         } catch {
-            // Optionally refetch data on error to ensure consistency
-            if (uidSlug) {
-                // Refetch project data on error to ensure consistency
-                try {
-                    const projectData = await fetchProjectBySlug(uidSlug);
-                    setProject(projectData);
-                    setTasks(projectData.tasks || projectData.Tasks || []);
-                    const fetchedNotes =
-                        projectData.notes || projectData.Notes || [];
-
-                    // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
-                    const normalizedNotes = fetchedNotes.map((note) => {
-                        if (note.Tags && !note.tags) {
-                            note.tags = note.Tags;
-                        }
+            if (!uidSlug) return;
+            try {
+                const projectData = await fetchProjectBySlug(uidSlug);
+                setProject(projectData);
+                setTasks(projectData.tasks || projectData.Tasks || []);
+                const fetchedNotes =
+                    projectData.notes || projectData.Notes || [];
+                setNotes(
+                    fetchedNotes.map((note) => {
+                        if (note.Tags && !note.tags) note.tags = note.Tags;
                         return note;
-                    });
-
-                    setNotes(normalizedNotes);
-                } catch {
-                    // Error refetching project data - silently handled
-                }
+                    })
+                );
+            } catch {
+                // silent
             }
         }
     };
 
-    // Setup native event listener for edit button to avoid React event system conflicts
-    useEffect(() => {
-        const button = editButtonRef.current;
-        if (button) {
-            const handleClick = (e: Event) => {
-                e.preventDefault();
-                e.stopPropagation();
-                openModal();
-            };
-
-            button.addEventListener('click', handleClick);
-            return () => {
-                button.removeEventListener('click', handleClick);
-            };
-        }
-    }, [openModal]);
-
     const handleSaveProject = async (updatedProject: Project) => {
-        if (!updatedProject.uid) {
-            return;
-        }
-
-        try {
-            const savedProject = await updateProject(
-                updatedProject.uid,
-                updatedProject
-            );
-            // Merge the saved project with existing project to preserve area data
-            setProject((prevProject) => ({
-                ...savedProject,
-                // Preserve area info if it's missing from the response
-                area: savedProject.area || prevProject?.area,
-                Area: (savedProject as any).Area || (prevProject as any)?.Area,
-            }));
-            closeModal();
-        } catch {
-            // Error saving project - silently handled
-        }
+        if (!updatedProject.uid) return;
+        const savedProject = await updateProject(
+            updatedProject.uid,
+            updatedProject
+        );
+        setProject((prev) => ({
+            ...savedProject,
+            area: savedProject.area || prev?.area,
+            Area: (savedProject as any).Area || (prev as any)?.Area,
+        }));
+        closeModal();
     };
 
     const handleCreateNextAction = async (
         projectId: number,
         actionDescription: string
     ) => {
-        try {
-            const newTask = await createTask({
-                name: actionDescription,
-                status: 0, // Use numeric status: 0 = not_started
-                project_id: projectId,
-                priority: 0, // Use numeric priority: 0 = low
-                completed_at: null,
-            });
-
-            // Update the tasks list to include the new task
-            setTasks([...tasks, newTask]);
-            setShowAutoSuggestForm(false);
-
-            // Show success toast with task link
-            const taskLink = (
-                <span>
-                    {t('task.created', 'Task')}{' '}
-                    <a
-                        href={`/task/${newTask.uid}`}
-                        className="text-green-200 underline hover:text-green-100"
-                    >
-                        {newTask.name}
-                    </a>{' '}
-                    {t('task.createdSuccessfully', 'created successfully!')}
-                </span>
-            );
-            showSuccessToast(taskLink);
-        } catch {
-            // Error creating next action - silently handled
-        }
-    };
-
-    const handleSkipNextAction = () => {
+        const newTask = await createTask({
+            name: actionDescription,
+            status: 0,
+            project_id: projectId,
+            priority: 0,
+            completed_at: null,
+        });
+        setTasks([...tasks, newTask]);
         setShowAutoSuggestForm(false);
+        const taskLink = (
+            <span>
+                {t('task.created', 'Task')}{' '}
+                <a
+                    href={`/task/${newTask.uid}`}
+                    className="text-green-200 underline hover:text-green-100"
+                >
+                    {newTask.name}
+                </a>{' '}
+                {t('task.createdSuccessfully', 'created successfully!')}
+            </span>
+        );
+        showSuccessToast(taskLink);
     };
 
-    const saveProjectPreferences = async (
-        showCompleted: boolean,
-        orderBy: string
+    const handleSkipNextAction = () => setShowAutoSuggestForm(false);
+
+    const handleTaskStatusFilterChange = (
+        status: 'all' | 'active' | 'completed'
     ) => {
-        if (!project?.id) return;
-
-        try {
-            // Save preferences directly via API call
-            const response = await fetch(getApiPath(`project/${project.id}`), {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({
-                    task_show_completed: showCompleted,
-                    task_sort_order: orderBy,
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to save project preferences');
-            }
-        } catch (error) {
-            console.error('Error saving project preferences:', error);
-        }
-    };
-
-    const handleShowCompletedChange = (checked: boolean) => {
-        setShowCompleted(checked);
-
-        // Save to project (remove navigation to prevent re-render)
-        saveProjectPreferences(checked, orderBy);
+        setTaskStatusFilter(status);
+        localStorage.setItem('project_task_status_filter', status);
     };
 
     const handleSortChange = (newOrderBy: string) => {
         setOrderBy(newOrderBy);
-        // Save to project
-        saveProjectPreferences(showCompleted, newOrderBy);
+        localStorage.setItem('project_order_by', newOrderBy);
     };
-
-    const renderShowCompletedToggle = () => (
-        <button
-            type="button"
-            onClick={() => handleShowCompletedChange(!showCompleted)}
-            className="w-full flex items-center justify-between text-sm text-gray-700 dark:text-gray-300"
-            aria-pressed={showCompleted}
-            aria-label={
-                showCompleted
-                    ? t('projects.hideCompleted', 'Hide completed tasks')
-                    : t('projects.showCompleted', 'Show completed tasks')
-            }
-            title={
-                showCompleted
-                    ? t('projects.hideCompleted', 'Hide completed tasks')
-                    : t('projects.showCompleted', 'Show completed tasks')
-            }
-        >
-            <span>{t('common.showCompleted', 'Show completed')}</span>
-            <span
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                    showCompleted
-                        ? 'bg-blue-600'
-                        : 'bg-gray-200 dark:bg-gray-600'
-                }`}
-            >
-                <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        showCompleted ? 'translate-x-4' : 'translate-x-0.5'
-                    }`}
-                />
-            </span>
-        </button>
-    );
 
     const handleDeleteProject = async () => {
-        if (!project?.uid) {
-            return;
-        }
-
-        try {
-            await deleteProject(project.uid);
-
-            // Update the global projects store to remove the deleted project
-            const currentProjects = projectsStore.projects;
-            const updatedProjects = currentProjects.filter(
-                (p) => p.uid !== project.uid
-            );
-            projectsStore.setProjects(updatedProjects);
-
-            navigate('/projects');
-        } catch {
-            // Error deleting project - silently handled
-        }
+        if (!project?.uid) return;
+        await deleteProject(project.uid);
+        const updatedProjects = projectsStore.projects.filter(
+            (p) => p.uid !== project.uid
+        );
+        projectsStore.setProjects(updatedProjects);
+        navigate('/projects');
     };
 
-    // Note handlers
     const handleEditNote = async (note: Note) => {
         try {
-            // Fetch the complete note data including tags
             const response = await fetch(getApiPath(`note/${note.uid}`), {
                 credentials: 'include',
                 headers: { Accept: 'application/json' },
             });
-
             if (response.ok) {
                 const fullNote = await response.json();
                 setSelectedNote(fullNote);
             } else {
-                // Fallback to the original note if fetch fails
                 setSelectedNote(note);
             }
         } catch (error) {
-            // Fallback to the original note if fetch fails
             console.error('Error fetching note details:', error);
             setSelectedNote(note);
         }
@@ -606,63 +526,47 @@ const ProjectDetails: React.FC = () => {
     };
 
     const handleDeleteNote = async (noteIdentifier: string) => {
-        try {
-            await apiDeleteNote(noteIdentifier);
-            setNotes(
-                notes.filter((n) => {
-                    const currentIdentifier =
-                        n.uid ??
-                        (n.id !== undefined ? String(n.id) : undefined);
-                    return currentIdentifier !== noteIdentifier;
-                })
-            );
-            // Remove note from global store
-            const globalNotes = useStore.getState().notesStore.notes;
-            useStore.getState().notesStore.setNotes(
-                globalNotes.filter((note) => {
-                    const currentIdentifier =
-                        note.uid ??
-                        (note.id !== undefined ? String(note.id) : undefined);
-                    return currentIdentifier !== noteIdentifier;
-                })
-            );
-            setNoteToDelete(null);
-            setIsConfirmDialogOpen(false);
-        } catch {
-            // Error deleting note - silently handled
-        }
+        await apiDeleteNote(noteIdentifier);
+        setNotes(
+            notes.filter((n) => {
+                const currentIdentifier =
+                    n.uid ?? (n.id !== undefined ? String(n.id) : undefined);
+                return currentIdentifier !== noteIdentifier;
+            })
+        );
+        const globalNotes = useStore.getState().notesStore.notes;
+        useStore.getState().notesStore.setNotes(
+            globalNotes.filter((note) => {
+                const currentIdentifier =
+                    note.uid ??
+                    (note.id !== undefined ? String(note.id) : undefined);
+                return currentIdentifier !== noteIdentifier;
+            })
+        );
+        setNoteToDelete(null);
+        setIsConfirmDialogOpen(false);
     };
 
-    // Create or update note and keep local notes list in sync
     const handleSaveNote = async (noteData: Note) => {
         try {
             let savedNote: Note;
             const noteIdentifier =
                 noteData.uid ??
                 (noteData.id !== undefined ? String(noteData.id) : null);
-
             let isUpdate = false;
-
             if (noteIdentifier) {
                 savedNote = await updateNote(noteIdentifier, noteData);
                 isUpdate = true;
             } else {
                 savedNote = await createNote(noteData);
             }
-
-            // Normalize tags field - backend returns 'Tags' but frontend expects 'tags'
             if ((savedNote as any).Tags && !(savedNote as any).tags) {
                 (savedNote as any).tags = (savedNote as any).Tags;
             }
-
-            // If updated note moved to another project, remove it from this list
-            // Handle both null and undefined project_id values
             const savedNoteProjectId = savedNote.project_id ?? null;
             const currentProjectId = project?.id ?? null;
-
             if (savedNote.id && savedNoteProjectId !== currentProjectId) {
                 setNotes(notes.filter((n) => n.id !== savedNote.id));
-                // Update global store - update or remove note
                 const globalNotes = useStore.getState().notesStore.notes;
                 useStore
                     .getState()
@@ -675,19 +579,16 @@ const ProjectDetails: React.FC = () => {
                 const savedIdentifier =
                     savedNote.uid ??
                     (savedNote.id !== undefined ? String(savedNote.id) : null);
-
                 setNotes(
                     notes.map((n) => {
                         const currentIdentifier =
                             n.uid ??
                             (n.id !== undefined ? String(n.id) : undefined);
-
                         return currentIdentifier === savedIdentifier
                             ? savedNote
                             : n;
                     })
                 );
-                // Update global store
                 const globalNotes = useStore.getState().notesStore.notes;
                 useStore
                     .getState()
@@ -698,26 +599,22 @@ const ProjectDetails: React.FC = () => {
                     );
             } else {
                 setNotes([savedNote, ...notes]);
-                // Add new note to global store
                 const globalNotes = useStore.getState().notesStore.notes;
                 useStore
                     .getState()
                     .notesStore.setNotes([savedNote, ...globalNotes]);
             }
-
             setIsNoteModalOpen(false);
             setSelectedNote(null);
         } catch {
-            // Error saving note - silently handled
+            // silent
         }
     };
 
-    // Filter and sort tasks (backend filtering/sorting not working reliably)
     const displayTasks = useMemo(() => {
-        // First, filter tasks based on completed state
-        let filteredTasks;
-        if (showCompleted) {
-            // Show only completed tasks (done=2 or archived=3)
+        let filteredTasks: Task[];
+
+        if (taskStatusFilter === 'completed') {
             filteredTasks = tasks.filter(
                 (task) =>
                     task.status === 'done' ||
@@ -725,18 +622,20 @@ const ProjectDetails: React.FC = () => {
                     task.status === 2 ||
                     task.status === 3
             );
-        } else {
-            // Show only non-completed tasks (not_started=0, in_progress=1)
+        } else if (taskStatusFilter === 'active') {
             filteredTasks = tasks.filter(
                 (task) =>
                     task.status === 'not_started' ||
                     task.status === 'in_progress' ||
+                    task.status === 'waiting' ||
                     task.status === 0 ||
-                    task.status === 1
+                    task.status === 1 ||
+                    task.status === 4
             );
+        } else {
+            // taskStatusFilter === 'all'
+            filteredTasks = tasks;
         }
-
-        // Filter by search query
         if (taskSearchQuery.trim()) {
             const query = taskSearchQuery.toLowerCase();
             filteredTasks = filteredTasks.filter(
@@ -746,62 +645,90 @@ const ProjectDetails: React.FC = () => {
                     task.note?.toLowerCase().includes(query)
             );
         }
-
-        // Then, sort the filtered tasks
-        const sortedTasks = [...filteredTasks].sort((a, b) => {
+        const getStatusRank = (status: Task['status']) => {
+            if (status === 'in_progress' || status === 1) return 0;
+            if (status === 'not_started' || status === 0) return 1;
+            if (status === 'waiting' || status === 4) return 2;
+            if (status === 'done' || status === 2) return 3;
+            if (status === 'archived' || status === 3) return 4;
+            return 5;
+        };
+        return [...filteredTasks].sort((a, b) => {
+            if (orderBy === 'status:inProgressFirst') {
+                const rankA = getStatusRank(a.status);
+                const rankB = getStatusRank(b.status);
+                if (rankA !== rankB) return rankA - rankB;
+                const dueA = a.due_date
+                    ? new Date(a.due_date).getTime()
+                    : Number.MAX_SAFE_INTEGER;
+                const dueB = b.due_date
+                    ? new Date(b.due_date).getTime()
+                    : Number.MAX_SAFE_INTEGER;
+                if (dueA !== dueB) return dueA - dueB;
+                return (a.id || 0) - (b.id || 0);
+            }
             const [field, direction] = orderBy.split(':');
             const isAsc = direction === 'asc';
-
-            let valueA, valueB;
-
+            const compare = (valueA: any, valueB: any) => {
+                if (valueA < valueB) return isAsc ? -1 : 1;
+                if (valueA > valueB) return isAsc ? 1 : -1;
+                return 0;
+            };
             switch (field) {
                 case 'name':
-                    valueA = a.name?.toLowerCase() || '';
-                    valueB = b.name?.toLowerCase() || '';
-                    break;
+                    return compare(
+                        a.name?.toLowerCase() || '',
+                        b.name?.toLowerCase() || ''
+                    );
                 case 'due_date':
-                    valueA = a.due_date ? new Date(a.due_date).getTime() : 0;
-                    valueB = b.due_date ? new Date(b.due_date).getTime() : 0;
-                    break;
+                    return compare(
+                        a.due_date ? new Date(a.due_date).getTime() : 0,
+                        b.due_date ? new Date(b.due_date).getTime() : 0
+                    );
                 case 'priority': {
-                    // Convert priority to numeric for sorting (high=2, medium=1, low=0)
                     const priorityMap = { high: 2, medium: 1, low: 0 };
-                    valueA =
+                    const valueA =
                         typeof a.priority === 'string'
                             ? priorityMap[a.priority] || 0
                             : a.priority || 0;
-                    valueB =
+                    const valueB =
                         typeof b.priority === 'string'
                             ? priorityMap[b.priority] || 0
                             : b.priority || 0;
-                    break;
+                    return compare(valueA, valueB);
                 }
                 case 'status':
-                    valueA =
-                        typeof a.status === 'string' ? a.status : a.status || 0;
-                    valueB =
-                        typeof b.status === 'string' ? b.status : b.status || 0;
-                    break;
+                    return compare(
+                        typeof a.status === 'string' ? a.status : a.status || 0,
+                        typeof b.status === 'string' ? b.status : b.status || 0
+                    );
                 case 'created_at':
                 default:
-                    valueA = a.created_at
-                        ? new Date(a.created_at).getTime()
-                        : 0;
-                    valueB = b.created_at
-                        ? new Date(b.created_at).getTime()
-                        : 0;
-                    break;
+                    return compare(
+                        a.created_at ? new Date(a.created_at).getTime() : 0,
+                        b.created_at ? new Date(b.created_at).getTime() : 0
+                    );
             }
-
-            if (valueA < valueB) return isAsc ? -1 : 1;
-            if (valueA > valueB) return isAsc ? 1 : -1;
-            return 0;
         });
+    }, [tasks, taskStatusFilter, orderBy, taskSearchQuery]);
 
-        return sortedTasks;
-    }, [tasks, showCompleted, orderBy, taskSearchQuery]);
+    const {
+        taskStats,
+        completionGradient,
+        dueBuckets,
+        dueHighlights,
+        nextBestAction,
+        getDueDescriptor,
+        handleStartNextAction,
+        completionTrend,
+        upcomingDueTrend,
+        createdTrend,
+        upcomingInsights,
+        eisenhower,
+        weeklyPace,
+        monthlyCompleted,
+    } = useProjectMetrics(tasks, handleTaskUpdate, t);
 
-    // Function to get the appropriate icon for project state
     const getStateIcon = (state: string) => {
         switch (state) {
             case 'idea':
@@ -831,11 +758,8 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
-    if (loading) {
-        return <LoadingSpinner message="Loading project details..." />;
-    }
-
-    if (error) {
+    if (loading) return <LoadingSpinner message="Loading project details..." />;
+    if (error)
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="text-red-500 text-lg">
@@ -843,312 +767,113 @@ const ProjectDetails: React.FC = () => {
                 </div>
             </div>
         );
-    }
-
-    if (!project) {
+    if (!project)
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
                 <div className="text-red-500 text-lg">Project not found.</div>
             </div>
         );
-    }
 
-    return (
-        <div className="w-full">
-            {/* Project Banner - Full Width */}
-            <div className="w-full">
-                {/* Project Banner - Unified for both with and without images */}
-                <div className="mb-6 overflow-hidden relative group">
-                    {/* Background - Image or Gradient */}
-                    {project.image_url ? (
-                        <img
-                            src={project.image_url}
-                            alt={project.name}
-                            className="w-full h-64 object-cover"
-                        />
-                    ) : (
-                        <div className="w-full h-64 bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700"></div>
-                    )}
-
-                    {/* Title Overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                        <div className="text-center px-4">
-                            <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
-                                {project.name}
-                            </h1>
-                            {project.description && (
-                                <p className="text-lg md:text-xl text-white/90 mt-2 font-light drop-shadow-md max-w-2xl mx-auto">
-                                    {project.description}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* State, Tags and Area Display - Bottom Left */}
-                    <div className="absolute bottom-2 left-2 right-14 flex items-center flex-wrap gap-2">
-                        {/* Project State Display */}
-                        {project.state && (
-                            <BannerBadge>
-                                {getStateIcon(project.state)}
-                                <span className="text-xs text-white/90 font-medium">
-                                    {t(`projects.states.${project.state}`)}
-                                </span>
-                            </BannerBadge>
-                        )}
-
-                        {/* Tags Display */}
-                        {project.tags && project.tags.length > 0 && (
-                            <BannerBadge>
-                                <TagIcon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
-                                <span className="text-xs text-white/90 font-medium">
-                                    {project.tags.map((tag, index) => (
-                                        <React.Fragment
-                                            key={tag.uid || tag.id || index}
-                                        >
-                                            <button
-                                                onClick={() => {
-                                                    // Navigate to tag details page
-                                                    if (tag.uid) {
-                                                        const slug = tag.name
-                                                            .toLowerCase()
-                                                            .replace(
-                                                                /[^a-z0-9]+/g,
-                                                                '-'
-                                                            )
-                                                            .replace(
-                                                                /^-|-$/g,
-                                                                ''
-                                                            );
-                                                        navigate(
-                                                            `/tag/${tag.uid}-${slug}`
-                                                        );
-                                                    } else {
-                                                        navigate(
-                                                            `/tag/${encodeURIComponent(tag.name)}`
-                                                        );
-                                                    }
-                                                }}
-                                                className="hover:text-blue-200 transition-colors cursor-pointer"
-                                            >
-                                                {tag.name}
-                                            </button>
-                                            {index <
-                                                (project.tags?.length || 0) -
-                                                    1 && (
-                                                <span className="text-white/60">
-                                                    ,{' '}
-                                                </span>
-                                            )}
-                                        </React.Fragment>
-                                    ))}
-                                </span>
-                            </BannerBadge>
-                        )}
-
-                        {/* Area Display */}
-                        {(project.area || (project as any).Area) && (
-                            <BannerBadge>
-                                <Squares2X2Icon className="h-3 w-3 text-white/70 flex-shrink-0 mt-0.5" />
-                                <button
-                                    onClick={() => {
-                                        // Use the correct area property (Area or area)
-                                        const projectArea =
-                                            project.area ||
-                                            (project as any).Area;
-
-                                        // Find the area in the areas store to get the uid
-                                        const area = areas.find(
-                                            (a) => a.id === projectArea.id
-                                        );
-                                        const areaUid = area?.uid;
-
-                                        if (!areaUid) {
-                                            console.warn(
-                                                'Area uid not found for area id:',
-                                                projectArea.id
-                                            );
-                                            return;
-                                        }
-
-                                        // Navigate to projects filtered by this area (same as Areas page)
-                                        const areaSlug = projectArea.name
-                                            .toLowerCase()
-                                            .replace(/[^a-z0-9]+/g, '-')
-                                            .replace(/^-|-$/g, '');
-                                        navigate(
-                                            `/projects?area=${areaUid}-${areaSlug}`
-                                        );
-                                    }}
-                                    className="text-xs text-white/90 hover:text-blue-200 transition-colors cursor-pointer font-medium"
-                                >
-                                    {
-                                        (project.area || (project as any).Area)
-                                            ?.name
-                                    }
-                                </button>
-                            </BannerBadge>
-                        )}
-
-                        {/* Shared Badge */}
-                        {project.is_shared && (
-                            <BannerBadge>
-                                <ShareIcon className="h-3 w-3 text-green-500 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                                <span className="text-xs text-white/90 font-medium">
-                                    {t('projects.shared', 'Shared')}
-                                </span>
-                            </BannerBadge>
-                        )}
-                    </div>
-
-                    {/* Edit/Delete Buttons - Bottom Right */}
-                    <div className="absolute bottom-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button
-                            ref={editButtonRef}
-                            type="button"
-                            className="p-2 bg-black bg-opacity-50 text-blue-400 hover:text-blue-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                        >
-                            <PencilSquareIcon className="h-5 w-5" />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setIsConfirmDialogOpen(true);
-                            }}
-                            className="p-2 bg-black bg-opacity-50 text-red-400 hover:text-red-300 hover:bg-opacity-70 rounded-full transition-all duration-200 backdrop-blur-sm"
-                        >
-                            <TrashIcon className="h-5 w-5" />
-                        </button>
-                    </div>
+    const renderStatusFilter = () => (
+        <div className="space-y-3">
+            <div>
+                <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                    {t('tasks.show', 'Show')}
+                </div>
+                <div className="py-1 space-y-1">
+                    {[
+                        { key: 'active', label: t('tasks.open', 'Open') },
+                        { key: 'all', label: t('tasks.all', 'All') },
+                        {
+                            key: 'completed',
+                            label: t('tasks.completed', 'Completed'),
+                        },
+                    ].map((opt) => {
+                        const isActive = taskStatusFilter === opt.key;
+                        return (
+                            <button
+                                key={opt.key}
+                                type="button"
+                                onClick={() =>
+                                    handleTaskStatusFilterChange(
+                                        opt.key as
+                                            | 'all'
+                                            | 'active'
+                                            | 'completed'
+                                    )
+                                }
+                                className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                    isActive
+                                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                }`}
+                            >
+                                <span>{opt.label}</span>
+                                {isActive && <CheckIcon className="h-4 w-4" />}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
+            <div>
+                <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-t border-b border-gray-200 dark:border-gray-700">
+                    {t('tasks.direction', 'Direction')}
+                </div>
+                <div className="py-1">
+                    {[
+                        {
+                            key: 'asc',
+                            label: t('tasks.ascending', 'Ascending'),
+                        },
+                        {
+                            key: 'desc',
+                            label: t('tasks.descending', 'Descending'),
+                        },
+                    ].map((dir) => {
+                        const currentDirection = orderBy.split(':')[1] || 'asc';
+                        const isActive = currentDirection === dir.key;
+                        return (
+                            <button
+                                key={dir.key}
+                                onClick={() => {
+                                    const [field] = orderBy.split(':');
+                                    const newOrderBy = `${field}:${dir.key}`;
+                                    handleSortChange(newOrderBy);
+                                }}
+                                className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                                    isActive
+                                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                }`}
+                            >
+                                <span>{dir.label}</span>
+                                {isActive && <CheckIcon className="h-4 w-4" />}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
+    );
 
-            {/* Content Container - Centered with max width */}
-            <div className="flex justify-center px-4 lg:px-2">
-                <div className="w-full max-w-5xl">
-                    {/* Header with Tab Links and Controls */}
+    return (
+        <div className="w-full pb-12">
+            <ProjectBanner
+                project={project}
+                areas={areas}
+                t={t}
+                getStateIcon={getStateIcon}
+                onDeleteClick={() => {
+                    setNoteToDelete(null);
+                    setIsConfirmDialogOpen(true);
+                }}
+                editButtonRef={editButtonRef}
+            />
+
+            <div className="w-full px-4 sm:px-6 lg:px-10">
+                <div className="w-full">
                     <div className="mb-4">
-                        {/* Mobile Layout */}
-                        <div className="sm:hidden">
-                            <div className="flex items-center justify-between mb-3">
-                                {/* Tab Navigation Links */}
-                                <div className="flex items-center space-x-6">
-                                    <button
-                                        onClick={() => setActiveTab('tasks')}
-                                        className={`flex items-center py-2 text-sm font-medium transition-colors ${
-                                            activeTab === 'tasks'
-                                                ? 'text-gray-900 dark:text-gray-100'
-                                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                        }`}
-                                    >
-                                        <span>
-                                            {t('sidebar.tasks', 'Tasks')}
-                                        </span>
-                                        <span
-                                            className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
-                                                displayTasks.length > 0
-                                                    ? 'bg-gray-200 dark:bg-gray-600'
-                                                    : 'bg-transparent'
-                                            }`}
-                                            style={{
-                                                minWidth: '20px',
-                                                visibility:
-                                                    displayTasks.length > 0
-                                                        ? 'visible'
-                                                        : 'hidden',
-                                            }}
-                                        >
-                                            {displayTasks.length > 0
-                                                ? displayTasks.length
-                                                : '0'}
-                                        </span>
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveTab('notes')}
-                                        className={`flex items-center py-2 text-sm font-medium transition-colors ${
-                                            activeTab === 'notes'
-                                                ? 'text-gray-900 dark:text-gray-100'
-                                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-                                        }`}
-                                    >
-                                        <span>
-                                            {t('sidebar.notes', 'Notes')}
-                                        </span>
-                                        <span
-                                            className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
-                                                notes.length > 0
-                                                    ? 'bg-gray-200 dark:bg-gray-600'
-                                                    : 'bg-transparent'
-                                            }`}
-                                            style={{
-                                                minWidth: '20px',
-                                                visibility:
-                                                    notes.length > 0
-                                                        ? 'visible'
-                                                        : 'hidden',
-                                            }}
-                                        >
-                                            {notes.length > 0
-                                                ? notes.length
-                                                : '0'}
-                                        </span>
-                                    </button>
-                                </div>
-
-                                {/* Inline Controls - Always visible for tasks tab */}
-                                {activeTab === 'tasks' && (
-                                    <div className="flex items-center gap-2 flex-wrap justify-end">
-                                        {/* Search Button */}
-                                        <button
-                                            onClick={() =>
-                                                setIsSearchExpanded((v) => !v)
-                                            }
-                                            className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-1.5 ${
-                                                isSearchExpanded
-                                                    ? 'bg-blue-50/70 dark:bg-blue-900/20'
-                                                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
-                                            }`}
-                                            aria-expanded={isSearchExpanded}
-                                            aria-label={
-                                                isSearchExpanded
-                                                    ? 'Collapse search panel'
-                                                    : 'Show search input'
-                                            }
-                                            title={
-                                                isSearchExpanded
-                                                    ? 'Hide search'
-                                                    : 'Search Tasks'
-                                            }
-                                        >
-                                            <MagnifyingGlassIcon className="h-4 w-4 text-gray-600 dark:text-gray-200" />
-                                        </button>
-                                        <IconSortDropdown
-                                            options={sortOptions}
-                                            value={orderBy}
-                                            onChange={handleSortChange}
-                                            ariaLabel={t(
-                                                'projects.sortTasks',
-                                                'Sort tasks'
-                                            )}
-                                            title={t(
-                                                'projects.sortTasks',
-                                                'Sort tasks'
-                                            )}
-                                            dropdownLabel={t(
-                                                'tasks.sortBy',
-                                                'Sort by'
-                                            )}
-                                            extraContent={renderShowCompletedToggle()}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Desktop Layout */}
                         <div className="hidden sm:flex items-center justify-between min-h-[2.5rem]">
-                            {/* Tab Navigation Links */}
                             <div className="flex items-center space-x-6">
                                 <button
                                     onClick={() => setActiveTab('tasks')}
@@ -1182,15 +907,52 @@ const ProjectDetails: React.FC = () => {
                                 </button>
                             </div>
 
-                            {/* Inline Controls - Always visible for tasks tab */}
                             {activeTab === 'tasks' && (
                                 <div className="flex items-center gap-4">
-                                    {/* Search Button */}
+                                    <button
+                                        onClick={toggleMetrics}
+                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-2 ${
+                                            showMetrics
+                                                ? 'bg-blue-100 dark:bg-blue-900/30 shadow-sm'
+                                                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                        }`}
+                                        aria-pressed={showMetrics}
+                                        aria-label={
+                                            showMetrics
+                                                ? t(
+                                                      'projects.hideMetrics',
+                                                      'Hide metrics'
+                                                  )
+                                                : t(
+                                                      'projects.showMetrics',
+                                                      'Show metrics'
+                                                  )
+                                        }
+                                        title={
+                                            showMetrics
+                                                ? t(
+                                                      'projects.hideMetrics',
+                                                      'Hide metrics'
+                                                  )
+                                                : t(
+                                                      'projects.showMetrics',
+                                                      'Show metrics'
+                                                  )
+                                        }
+                                    >
+                                        <ChartBarIcon
+                                            className={`h-5 w-5 ${
+                                                showMetrics
+                                                    ? 'text-blue-600 dark:text-blue-200'
+                                                    : 'text-gray-600 dark:text-gray-200'
+                                            }`}
+                                        />
+                                    </button>
                                     <button
                                         onClick={() =>
                                             setIsSearchExpanded((v) => !v)
                                         }
-                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-lg p-2 ${
+                                        className={`flex items-center transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset rounded-lg p-2 ${
                                             isSearchExpanded
                                                 ? 'bg-blue-50/70 dark:bg-blue-900/20'
                                                 : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -1200,11 +962,6 @@ const ProjectDetails: React.FC = () => {
                                             isSearchExpanded
                                                 ? 'Collapse search panel'
                                                 : 'Show search input'
-                                        }
-                                        title={
-                                            isSearchExpanded
-                                                ? 'Hide search'
-                                                : 'Search Tasks'
                                         }
                                     >
                                         <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-200" />
@@ -1225,166 +982,146 @@ const ProjectDetails: React.FC = () => {
                                             'tasks.sortBy',
                                             'Sort by'
                                         )}
-                                        extraContent={renderShowCompletedToggle()}
+                                        footerContent={renderStatusFilter()}
                                     />
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* Search input section, collapsible - only for tasks tab */}
-                    {activeTab === 'tasks' && (
-                        <div
-                            className={`transition-all duration-300 ease-in-out ${
-                                isSearchExpanded
-                                    ? 'max-h-24 opacity-100 mb-4'
-                                    : 'max-h-0 opacity-0 mb-0'
-                            } overflow-hidden`}
-                        >
-                            <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
-                                <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
-                                <input
-                                    type="text"
-                                    placeholder={t(
-                                        'tasks.searchPlaceholder',
-                                        'Search tasks...'
-                                    )}
-                                    value={taskSearchQuery}
-                                    onChange={(e) =>
-                                        setTaskSearchQuery(e.target.value)
-                                    }
-                                    className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
-                                />
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Auto-suggest form for tasks with no items */}
-                    {activeTab === 'tasks' && showAutoSuggestForm && (
-                        <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 mb-6">
-                            <AutoSuggestNextActionBox
-                                onAddAction={(actionDescription) => {
-                                    if (project?.id) {
-                                        handleCreateNextAction(
-                                            project.id,
-                                            actionDescription
-                                        );
-                                    }
-                                }}
-                                onDismiss={handleSkipNextAction}
-                            />
-                        </div>
-                    )}
-
-                    {/* Tasks Tab Content */}
                     {activeTab === 'tasks' && (
                         <>
                             <div
-                                className={`transition-all duration-300 ease-in-out overflow-hidden mb-1.5 ${
-                                    !showAutoSuggestForm
-                                        ? 'opacity-100 max-h-96 transform translate-y-0'
-                                        : 'opacity-0 max-h-0 transform -translate-y-2'
-                                }`}
+                                className={`transition-all duration-300 ease-in-out ${
+                                    isSearchExpanded
+                                        ? 'max-h-24 opacity-100 mb-4'
+                                        : 'max-h-0 opacity-0 mb-0'
+                                } overflow-hidden`}
                             >
-                                <NewTask onTaskCreate={handleTaskCreate} />
+                                <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm px-4 py-3">
+                                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-600 dark:text-gray-400 mr-2" />
+                                    <input
+                                        type="text"
+                                        placeholder={t(
+                                            'tasks.searchPlaceholder',
+                                            'Search tasks...'
+                                        )}
+                                        value={taskSearchQuery}
+                                        onChange={(e) =>
+                                            setTaskSearchQuery(e.target.value)
+                                        }
+                                        className="w-full bg-transparent border-none focus:ring-0 focus:outline-none dark:text-white"
+                                    />
+                                </div>
                             </div>
 
-                            <div className="transition-all duration-300 ease-in-out overflow-visible">
-                                {displayTasks.length > 0 ? (
-                                    <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0 overflow-visible">
-                                        <TaskList
-                                            tasks={displayTasks}
+                            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start transition-all duration-300">
+                                <div
+                                    className={`flex justify-center transition-all duration-300 ${
+                                        showMetrics
+                                            ? 'xl:col-span-2 translate-x-0'
+                                            : 'xl:col-span-3 translate-x-0'
+                                    }`}
+                                >
+                                    <div
+                                        className={`w-full max-w-5xl transition-all duration-300 ${
+                                            showMetrics
+                                                ? 'xl:translate-x-0'
+                                                : 'xl:translate-x-6'
+                                        }`}
+                                    >
+                                        <ProjectTasksSection
+                                            project={project}
+                                            displayTasks={displayTasks}
+                                            showAutoSuggestForm={
+                                                showAutoSuggestForm
+                                            }
+                                            onAddNextAction={
+                                                handleCreateNextAction
+                                            }
+                                            onDismissNextAction={
+                                                handleSkipNextAction
+                                            }
+                                            onTaskCreate={handleTaskCreate}
                                             onTaskUpdate={handleTaskUpdate}
+                                            onTaskCompletionToggle={
+                                                handleTaskCompletionToggle
+                                            }
                                             onTaskDelete={handleTaskDelete}
-                                            projects={allProjects}
-                                            hideProjectName={true}
                                             onToggleToday={handleToggleToday}
-                                            showCompletedTasks={showCompleted}
+                                            allProjects={allProjects}
+                                            showCompleted={
+                                                taskStatusFilter !== 'active'
+                                            }
+                                            taskSearchQuery={taskSearchQuery}
+                                            t={t}
                                         />
                                     </div>
-                                ) : (
-                                    <div className="transition-all duration-300 ease-in-out opacity-100 transform translate-y-0">
-                                        <p className="text-gray-500 dark:text-gray-400">
-                                            {taskSearchQuery.trim()
-                                                ? t(
-                                                      'tasks.noTasksAvailable',
-                                                      'No tasks available.'
-                                                  )
-                                                : showCompleted
-                                                  ? t(
-                                                        'project.noCompletedTasks',
-                                                        'No completed tasks.'
-                                                    )
-                                                  : t(
-                                                        'project.noTasks',
-                                                        'No tasks.'
-                                                    )}
-                                        </p>
+                                </div>
+
+                                <div className="xl:col-span-1">
+                                    <div
+                                        className={`transition-all duration-300 ease-in-out ${
+                                            showMetrics
+                                                ? 'max-h-[2000px] opacity-100 translate-x-0'
+                                                : 'max-h-0 opacity-0 translate-x-8 pointer-events-none'
+                                        }`}
+                                        style={{ overflow: 'hidden' }}
+                                        aria-hidden={!showMetrics}
+                                    >
+                                        <ProjectInsightsPanel
+                                            taskStats={taskStats}
+                                            completionGradient={
+                                                completionGradient
+                                            }
+                                            dueBuckets={dueBuckets}
+                                            dueHighlights={dueHighlights}
+                                            nextBestAction={nextBestAction}
+                                            getDueDescriptor={getDueDescriptor}
+                                            onStartNextAction={
+                                                handleStartNextAction
+                                            }
+                                            t={t}
+                                            completionTrend={completionTrend}
+                                            upcomingDueTrend={upcomingDueTrend}
+                                            createdTrend={createdTrend}
+                                            upcomingInsights={upcomingInsights}
+                                            eisenhower={eisenhower}
+                                            weeklyPace={weeklyPace}
+                                            monthlyCompleted={monthlyCompleted}
+                                        />
                                     </div>
-                                )}
+                                </div>
                             </div>
                         </>
                     )}
 
-                    {/* Notes Content */}
-                    {activeTab === 'notes' && (
-                        <div className="transition-all duration-300 ease-in-out">
-                            {/* Create New Note Button - Always visible */}
-                            <div className="mb-4">
-                                <button
-                                    type="button"
-                                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
-                                    onClick={() => {
-                                        if (!project?.id || !project.name)
-                                            return;
-                                        setSelectedNote({
-                                            title: '',
-                                            content: '',
-                                            tags: [],
-                                            project_id: project.id,
-                                            project: {
-                                                id: project.id,
-                                                name: project.name,
-                                                uid: project.uid,
-                                            },
-                                            project_uid: project.uid,
-                                        });
-                                        setIsNoteModalOpen(true);
-                                    }}
-                                >
-                                    <PlusCircleIcon className="h-5 w-5" />
-                                    {t('noteCreation', 'Create New Note')}
-                                </button>
-                            </div>
-
-                            {/* Notes Grid or Empty State */}
-                            {notes.length > 0 ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {notes.map((note) => (
-                                        <NoteCard
-                                            key={note.uid}
-                                            note={note}
-                                            onEdit={handleEditNote}
-                                            onDelete={(note) => {
-                                                setNoteToDelete(note);
-                                                setIsConfirmDialogOpen(true);
-                                            }}
-                                            showActions={true}
-                                            showProject={false}
-                                        />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-gray-500 dark:text-gray-400">
-                                    <p>
-                                        {t(
-                                            'project.noNotes',
-                                            'No notes for this project.'
-                                        )}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
+                    {activeTab === 'notes' && project && (
+                        <ProjectNotesSection
+                            project={project}
+                            notes={notes}
+                            t={t}
+                            onCreateNote={() => {
+                                setSelectedNote({
+                                    title: '',
+                                    content: '',
+                                    tags: [],
+                                    project_id: project.id,
+                                    project: {
+                                        id: project.id,
+                                        name: project.name,
+                                        uid: project.uid,
+                                    },
+                                    project_uid: project.uid,
+                                });
+                                setIsNoteModalOpen(true);
+                            }}
+                            onEditNote={handleEditNote}
+                            onDeleteNote={(note) => {
+                                setNoteToDelete(note);
+                                setIsConfirmDialogOpen(true);
+                            }}
+                        />
                     )}
 
                     <ProjectModal
@@ -1395,7 +1132,6 @@ const ProjectDetails: React.FC = () => {
                         areas={areas}
                     />
 
-                    {/* NoteModal */}
                     <NoteModal
                         isOpen={isNoteModalOpen}
                         onClose={() => {
@@ -1417,10 +1153,7 @@ const ProjectDetails: React.FC = () => {
                                     (noteToDelete?.id !== undefined
                                         ? String(noteToDelete.id)
                                         : null);
-
-                                if (identifier) {
-                                    handleDeleteNote(identifier);
-                                }
+                                if (identifier) handleDeleteNote(identifier);
                             }}
                             onCancel={() => {
                                 setIsConfirmDialogOpen(false);
