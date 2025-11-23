@@ -689,9 +689,9 @@ const Tasks: React.FC = () => {
                                             </div>
                                             <div className="py-1 space-y-1">
                                                 {[
+                                                    { key: 'active', label: t('tasks.open', 'Open') },
                                                     { key: 'all', label: t('tasks.all', 'All') },
-                                                    { key: 'completed', label: t('tasks.completedOnly', 'Completed only') },
-                                                    { key: 'active', label: t('tasks.notCompleted', 'Not completed') },
+                                                    { key: 'completed', label: t('tasks.completed', 'Completed') },
                                                 ].map((opt) => {
                                                     const isActive =
                                                         (opt.key === 'all' && status === null) ||
