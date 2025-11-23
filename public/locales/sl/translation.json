@@ -54,7 +54,8 @@
     "allTasks": "Vse naloge",
     "views": "Pogledi",
     "unpinView": "Odpravi pripenjanje pogleda",
-    "pinView": "Pripni pogled"
+    "pinView": "Pripni pogled",
+    "aiAssistant": "Pomočnik AI"
   },
   "navigation": {
     "home": "Domov",
