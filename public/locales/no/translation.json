@@ -122,7 +122,25 @@
     "showSubtasks": "Vis undertasker",
     "hideSubtasks": "Skjul undertasker",
     "edit": "Rediger oppgave",
-    "delete": "Slett oppgave"
+    "delete": "Slett oppgave",
+    "sortTasks": "Sorter oppgaver",
+    "sortBy": "Sorter etter",
+    "direction": "Retning",
+    "ascending": "Stigende",
+    "descending": "Fallende",
+    "groupBy": "Grupper etter",
+    "groupByProject": "Prosjekt",
+    "grouping": {
+      "none": "Ingen"
+    },
+    "show": "Vis",
+    "all": "Alle",
+    "completedOnly": "Kun fullførte",
+    "notCompleted": "Ikke fullført",
+    "noProject": "Ingen prosjekt",
+    "unknownProject": "Ukjent prosjekt",
+    "tasks": "oppgaver",
+    "showingItems": "Viser {{current}} av {{total}} elementer"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Aktivt arbeid pågår",
       "blocked_desc": "Midlertidig pauset eller fastlåst",
       "completed_desc": "Ferdig og gjort"
-    }
+    },
+    "showMetrics": "Vis målinger",
+    "hideMetrics": "Skjul målinger"
   },
   "projectItem": {
     "edit": "Rediger",

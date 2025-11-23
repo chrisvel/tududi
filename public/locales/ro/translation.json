@@ -122,7 +122,25 @@
     "showSubtasks": "Arată subtask-uri",
     "hideSubtasks": "Ascunde subtask-uri",
     "edit": "Editează task-ul",
-    "delete": "Șterge task-ul"
+    "delete": "Șterge task-ul",
+    "sortTasks": "Sortează sarcini",
+    "sortBy": "Sortează după",
+    "direction": "Direcție",
+    "ascending": "Crescător",
+    "descending": "Descrescător",
+    "groupBy": "Grupează după",
+    "groupByProject": "Proiect",
+    "grouping": {
+      "none": "Niciunul"
+    },
+    "show": "Afișează",
+    "all": "Toate",
+    "completedOnly": "Doar finalizate",
+    "notCompleted": "Nefinalizate",
+    "noProject": "Fără proiect",
+    "unknownProject": "Proiect necunoscut",
+    "tasks": "sarcini",
+    "showingItems": "Se afișează {{current}} din {{total}} elemente"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Lucru activ în desfășurare",
       "blocked_desc": "Pauză temporară sau blocat",
       "completed_desc": "Finalizat și terminat"
-    }
+    },
+    "showMetrics": "Arată metrici",
+    "hideMetrics": "Ascunde metrici"
   },
   "projectItem": {
     "edit": "Editează",

@@ -122,7 +122,25 @@
     "showSubtasks": "Alt görevleri göster",
     "hideSubtasks": "Alt görevleri gizle",
     "edit": "Görevi düzenle",
-    "delete": "Görevi sil"
+    "delete": "Görevi sil",
+    "sortTasks": "Görevleri sırala",
+    "sortBy": "Sıralama ölçütü",
+    "direction": "Yön",
+    "ascending": "Artan",
+    "descending": "Azalan",
+    "groupBy": "Gruplandırma ölçütü",
+    "groupByProject": "Proje",
+    "grouping": {
+      "none": "Yok"
+    },
+    "show": "Göster",
+    "all": "Tümü",
+    "completedOnly": "Yalnızca tamamlananlar",
+    "notCompleted": "Tamamlanmamış",
+    "noProject": "Proje yok",
+    "unknownProject": "Bilinmeyen proje",
+    "tasks": "görevler",
+    "showingItems": "{{total}} öğeden {{current}} tanesi gösteriliyor"
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Aktif çalışma devam ediyor",
       "blocked_desc": "Geçici olarak duraklatıldı veya takıldı",
       "completed_desc": "Tamamlandı ve sona erdi"
-    }
+    },
+    "showMetrics": "Metrikleri göster",
+    "hideMetrics": "Metrikleri gizle"
   },
   "projectItem": {
     "edit": "Düzenle",

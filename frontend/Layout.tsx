@@ -338,11 +338,7 @@ const Layout: React.FC<LayoutProps> = ({
         }
     };
 
-    const mainContentMarginLeft = isUpcomingView
-        ? 'ml-0'
-        : isSidebarOpen
-          ? 'ml-72'
-          : 'ml-0';
+    const mainContentMarginLeft = isSidebarOpen ? 'ml-72' : 'ml-0';
 
     const isLoading =
         isNotesLoading ||

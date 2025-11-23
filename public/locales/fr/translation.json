@@ -122,7 +122,25 @@
     "showSubtasks": "Afficher les sous-tâches",
     "hideSubtasks": "Masquer les sous-tâches",
     "edit": "Modifier la tâche",
-    "delete": "Supprimer la tâche"
+    "delete": "Supprimer la tâche",
+    "sortTasks": "Trier les tâches",
+    "sortBy": "Trier par",
+    "direction": "Direction",
+    "ascending": "Croissant",
+    "descending": "Décroissant",
+    "groupBy": "Grouper par",
+    "groupByProject": "Projet",
+    "grouping": {
+      "none": "Aucun"
+    },
+    "show": "Afficher",
+    "all": "Tous",
+    "completedOnly": "Terminées uniquement",
+    "notCompleted": "Non terminées",
+    "noProject": "Aucun projet",
+    "unknownProject": "Projet inconnu",
+    "tasks": "tâches",
+    "showingItems": "Affichage de {{current}} sur {{total}} éléments"
   },
   "timeline": {
     "activityTimeline": "Chronologie d'Activité",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Travail actif en cours",
       "blocked_desc": "Temporairement mis en pause ou bloqué",
       "completed_desc": "Fini et terminé"
-    }
+    },
+    "showMetrics": "Afficher les métriques",
+    "hideMetrics": "Masquer les métriques"
   },
   "projectItem": {
     "edit": "Modifier",

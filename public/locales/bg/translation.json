@@ -122,7 +122,25 @@
     "showSubtasks": "Покажи подзадачи",
     "hideSubtasks": "Скрий подзадачи",
     "edit": "Редактиране на задача",
-    "delete": "Изтриване на задача"
+    "delete": "Изтриване на задача",
+    "sortTasks": "Сортиране на задачи",
+    "sortBy": "Сортиране по",
+    "direction": "Посока",
+    "ascending": "Възходящ",
+    "descending": "Низходящ",
+    "groupBy": "Групиране по",
+    "groupByProject": "Проект",
+    "grouping": {
+      "none": "Без"
+    },
+    "show": "Покажи",
+    "all": "Всички",
+    "completedOnly": "Само завършени",
+    "notCompleted": "Незавършени",
+    "noProject": "Без проект",
+    "unknownProject": "Неизвестен проект",
+    "tasks": "задачи",
+    "showingItems": "Показване на {{current}} от {{total}} елемента"
   },
   "timeline": {
     "activityTimeline": "Хронология на активността",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Активна работа в ход",
       "blocked_desc": "Временно спряно или блокирано",
       "completed_desc": "Завършено и готово"
-    }
+    },
+    "showMetrics": "Покажи метрики",
+    "hideMetrics": "Скрий метрики"
   },
   "projectItem": {
     "edit": "Редактиране",

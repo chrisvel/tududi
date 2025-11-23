@@ -122,7 +122,25 @@
     "showSubtasks": "Visa deluppgifter",
     "hideSubtasks": "Dölj deluppgifter",
     "edit": "Ändra uppgift",
-    "delete": "Ta bort uppgift"
+    "delete": "Ta bort uppgift",
+    "sortTasks": "Sortera uppgifter",
+    "sortBy": "Sortera efter",
+    "direction": "Riktning",
+    "ascending": "Stigande",
+    "descending": "Fallande",
+    "groupBy": "Gruppera efter",
+    "groupByProject": "Projekt",
+    "grouping": {
+      "none": "Ingen"
+    },
+    "show": "Visa",
+    "all": "Alla",
+    "completedOnly": "Endast slutförda",
+    "notCompleted": "Ej slutförda",
+    "noProject": "Inget projekt",
+    "unknownProject": "Okänt projekt",
+    "tasks": "uppgifter",
+    "showingItems": "Visar {{current}} av {{total}} objekt"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Aktivt arbete pågår",
       "blocked_desc": "Tillfälligt pausad eller fast",
       "completed_desc": "Avslutad och klar"
-    }
+    },
+    "showMetrics": "Visa mätvärden",
+    "hideMetrics": "Dölj mätvärden"
   },
   "projectItem": {
     "edit": "Ändra",

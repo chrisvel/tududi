@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
-import { FunnelIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { ListBulletIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { SortOption } from './SortFilterButton';
 
 interface IconSortDropdownProps {
@@ -13,6 +13,7 @@ interface IconSortDropdownProps {
     dropdownLabel?: string;
     align?: 'left' | 'right';
     extraContent?: ReactNode;
+    footerContent?: ReactNode;
 }
 
 const IconSortDropdown: React.FC<IconSortDropdownProps> = ({
@@ -26,6 +27,7 @@ const IconSortDropdown: React.FC<IconSortDropdownProps> = ({
     dropdownLabel = 'Sort by',
     align = 'right',
     extraContent,
+    footerContent,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -58,14 +60,14 @@ const IconSortDropdown: React.FC<IconSortDropdownProps> = ({
                 aria-label={ariaLabel}
                 title={title}
             >
-                <FunnelIcon className="h-5 w-5" />
+                <ListBulletIcon className="h-5 w-5" />
             </button>
             {isOpen && (
                 <div
-                    className={`absolute ${align === 'left' ? 'left-0' : 'right-0'} mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50`}
+                    className={`absolute ${align === 'left' ? 'left-0' : 'right-0'} mt-1 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50`}
                 >
                     {dropdownLabel && (
-                        <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                        <div className="px-3 py-2 text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                             {dropdownLabel}
                         </div>
                     )}
@@ -93,8 +95,13 @@ const IconSortDropdown: React.FC<IconSortDropdownProps> = ({
                         ))}
                     </div>
                     {extraContent && (
-                        <div className="border-t border-gray-200 dark:border-gray-700 px-3 py-2">
+                        <div className="border-t border-gray-200 dark:border-gray-700">
                             {extraContent}
+                        </div>
+                    )}
+                    {footerContent && (
+                        <div className="border-t border-gray-200 dark:border-gray-700">
+                            {footerContent}
                         </div>
                     )}
                 </div>

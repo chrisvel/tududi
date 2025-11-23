@@ -122,7 +122,25 @@
     "showSubtasks": "显示子任务",
     "hideSubtasks": "隐藏子任务",
     "edit": "编辑任务",
-    "delete": "删除任务"
+    "delete": "删除任务",
+    "sortTasks": "排序任务",
+    "sortBy": "排序方式",
+    "direction": "方向",
+    "ascending": "升序",
+    "descending": "降序",
+    "groupBy": "分组方式",
+    "groupByProject": "项目",
+    "grouping": {
+      "none": "无"
+    },
+    "show": "显示",
+    "all": "全部",
+    "completedOnly": "仅已完成",
+    "notCompleted": "未完成",
+    "noProject": "无项目",
+    "unknownProject": "未知项目",
+    "tasks": "任务",
+    "showingItems": "显示 {{current}} / {{total}} 项"
   },
   "timeline": {
     "activityTimeline": "活动时间线",
@@ -765,7 +783,9 @@
       "in_progress_desc": "正在进行的工作",
       "blocked_desc": "暂时暂停或卡住",
       "completed_desc": "已完成并结束"
-    }
+    },
+    "showMetrics": "显示指标",
+    "hideMetrics": "隐藏指标"
   },
   "projectItem": {
     "edit": "编辑",

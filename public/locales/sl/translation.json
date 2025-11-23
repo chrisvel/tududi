@@ -122,7 +122,25 @@
     "showSubtasks": "Prikaži podnaloge",
     "hideSubtasks": "Skrij podnaloge",
     "edit": "Uredi nalogo",
-    "delete": "Izbriši nalogo"
+    "delete": "Izbriši nalogo",
+    "sortTasks": "Razvrsti naloge",
+    "sortBy": "Razvrsti po",
+    "direction": "Smer",
+    "ascending": "Naraščajoče",
+    "descending": "Padajoče",
+    "groupBy": "Združi po",
+    "groupByProject": "Projekt",
+    "grouping": {
+      "none": "Brez"
+    },
+    "show": "Prikaži",
+    "all": "Vse",
+    "completedOnly": "Samo dokončane",
+    "notCompleted": "Nedokončane",
+    "noProject": "Brez projekta",
+    "unknownProject": "Neznan projekt",
+    "tasks": "naloge",
+    "showingItems": "Prikazovanje {{current}} od {{total}} elementov"
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Aktivno delo poteka",
       "blocked_desc": "Začasno ustavljeno ali zastojev",
       "completed_desc": "Dokončano in opravljeno"
-    }
+    },
+    "showMetrics": "Prikaži metrike",
+    "hideMetrics": "Skrij metrike"
   },
   "projectItem": {
     "edit": "Uredi",

@@ -122,7 +122,25 @@
     "showSubtasks": "Pokaż podzadania",
     "hideSubtasks": "Ukryj podzadania",
     "edit": "Edytuj zadanie",
-    "delete": "Usuń zadanie"
+    "delete": "Usuń zadanie",
+    "sortTasks": "Sortuj zadania",
+    "sortBy": "Sortuj według",
+    "direction": "Kierunek",
+    "ascending": "Rosnąco",
+    "descending": "Malejąco",
+    "groupBy": "Grupuj według",
+    "groupByProject": "Projekt",
+    "grouping": {
+      "none": "Brak"
+    },
+    "show": "Pokaż",
+    "all": "Wszystkie",
+    "completedOnly": "Tylko ukończone",
+    "notCompleted": "Nieukończone",
+    "noProject": "Brak projektu",
+    "unknownProject": "Nieznany projekt",
+    "tasks": "zadania",
+    "showingItems": "Wyświetlanie {{current}} z {{total}} elementów"
   },
   "timeline": {
     "activityTimeline": "Oś czasu aktywności",
@@ -765,7 +783,9 @@
       "in_progress_desc": "Aktywna praca w toku",
       "blocked_desc": "Tymczasowo wstrzymane lub utknęło",
       "completed_desc": "Zakończone i gotowe"
-    }
+    },
+    "showMetrics": "Pokaż metryki",
+    "hideMetrics": "Ukryj metryki"
   },
   "projectItem": {
     "edit": "Edytuj",

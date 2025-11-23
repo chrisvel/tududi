@@ -122,7 +122,25 @@
     "showSubtasks": "Show subtasks",
     "hideSubtasks": "Hide subtasks",
     "edit": "Edit task",
-    "delete": "Delete task"
+    "delete": "Delete task",
+    "sortTasks": "Sort tasks",
+    "sortBy": "Sort by",
+    "direction": "Direction",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "groupBy": "Group by",
+    "groupByProject": "Project",
+    "grouping": {
+      "none": "None"
+    },
+    "show": "Show",
+    "all": "All",
+    "completedOnly": "Completed only",
+    "notCompleted": "Not completed",
+    "noProject": "No project",
+    "unknownProject": "Unknown project",
+    "tasks": "tasks",
+    "showingItems": "Showing {{current}} of {{total}} items"
   },
   "timeline": {
     "activityTimeline": "Activity Timeline",
