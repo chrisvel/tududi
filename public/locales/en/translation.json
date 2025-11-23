@@ -54,7 +54,8 @@
     "completed": "Completed",
     "allTasks": "All Tasks",
     "unpinView": "Unpin view",
-    "pinView": "Pin view"
+    "pinView": "Pin view",
+    "aiAssistant": "AI Assistant"
   },
   "navigation": {
     "home": "Home",

@@ -55,7 +55,8 @@
     "createNew": "Crea nuovo",
     "views": "Visualizzazioni",
     "unpinView": "Sblocca visualizzazione",
-    "pinView": "Fissa visualizzazione"
+    "pinView": "Fissa visualizzazione",
+    "aiAssistant": "Assistente IA"
   },
   "navigation": {
     "home": "Home",

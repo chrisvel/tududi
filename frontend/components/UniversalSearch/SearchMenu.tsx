@@ -74,13 +74,6 @@ const extrasOptions = [
     },
 ];
 
-const dueOptions = [
-    { value: 'today', label: 'today' },
-    { value: 'tomorrow', label: 'tomorrow' },
-    { value: 'next_week', label: 'next week' },
-    { value: 'next_month', label: 'next month' },
-];
-
 const SearchMenu: React.FC<SearchMenuProps> = ({
     searchQuery,
     selectedFilters,
@@ -110,24 +103,6 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         const fetchTags = async () => {
             try {
                 const response = await fetch(getApiPath('tags'), {
-                    credentials: 'include',
-                });
-                if (response.ok) {
-                    const tags = await response.json();
-                    setAvailableTags(tags);
-                }
-            } catch (error) {
-                console.error('Error fetching tags:', error);
-            }
-        };
-        fetchTags();
-    }, []);
-
-    // Fetch available tags
-    useEffect(() => {
-        const fetchTags = async () => {
-            try {
-                const response = await fetch('/api/tags', {
                     credentials: 'include',
                 });
                 if (response.ok) {
@@ -708,126 +683,6 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                                 {isSaving
                                                     ? t('search.saving')
                                                     : t('search.saveView')}
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Due Date Filters */}
-                            <div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">
-                                    Due
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                    {dueOptions.map((option) => (
-                                        <FilterBadge
-                                            key={option.value}
-                                            name={option.label}
-                                            isSelected={
-                                                selectedDue === option.value
-                                            }
-                                            onToggle={() =>
-                                                handleDueToggle(option.value)
-                                            }
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Tags Filters */}
-                            {availableTags.length > 0 && (
-                                <div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1.5">
-                                        Tags
-                                    </div>
-                                    <div className="flex flex-wrap gap-2">
-                                        {availableTags.map((tag) => (
-                                            <FilterBadge
-                                                key={tag.id}
-                                                name={tag.name}
-                                                color="bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200"
-                                                isSelected={selectedTags.includes(
-                                                    tag.name
-                                                )}
-                                                onToggle={() =>
-                                                    handleTagToggle(tag.name)
-                                                }
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Save as Smart View Section */}
-                        {hasActiveFilters && (
-                            <div className="mt-4 pt-4 border-t border-gray-300 dark:border-gray-600">
-                                {!showSaveForm ? (
-                                    <button
-                                        onClick={() => setShowSaveForm(true)}
-                                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                                    >
-                                        <BookmarkIcon className="h-4 w-4" />
-                                        <span>Save as Smart View</span>
-                                    </button>
-                                ) : (
-                                    <div className="space-y-3">
-                                        <div>
-                                            <label
-                                                htmlFor="viewName"
-                                                className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2"
-                                            >
-                                                View Name{' '}
-                                                <span className="text-red-500">
-                                                    *
-                                                </span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="viewName"
-                                                value={viewName}
-                                                onChange={(e) => {
-                                                    setViewName(e.target.value);
-                                                    setSaveError('');
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        handleSaveView();
-                                                    } else if (
-                                                        e.key === 'Escape'
-                                                    ) {
-                                                        handleCancelSave();
-                                                    }
-                                                }}
-                                                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                placeholder="Enter view name"
-                                                autoFocus
-                                            />
-                                            {saveError && (
-                                                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-                                                    {saveError}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        <div className="flex gap-2 justify-end">
-                                            <button
-                                                type="button"
-                                                onClick={handleCancelSave}
-                                                className="px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={handleSaveView}
-                                                disabled={isSaving}
-                                                className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-md transition-colors"
-                                            >
-                                                {isSaving
-                                                    ? 'Saving...'
-                                                    : 'Save View'}
                                             </button>
                                         </div>
                                     </div>

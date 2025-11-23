@@ -55,7 +55,8 @@
     "createNew": "Opret ny",
     "views": "Visninger",
     "unpinView": "Fjern fastgørelse af visning",
-    "pinView": "Fastgør visning"
+    "pinView": "Fastgør visning",
+    "aiAssistant": "AI-assistent"
   },
   "navigation": {
     "home": "Hjem",

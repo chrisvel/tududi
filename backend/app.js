@@ -212,6 +212,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, searchModule.routes);
     app.use(basePath, viewsModule.routes);
     app.use(basePath, notificationsModule.routes);
+    app.use(basePath, require('./modules/chat'));
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility

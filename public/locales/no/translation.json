@@ -55,7 +55,8 @@
     "createNew": "Opprett ny",
     "views": "Visninger",
     "unpinView": "Fjern feste fra visning",
-    "pinView": "Fest visning"
+    "pinView": "Fest visning",
+    "aiAssistant": "AI-assistent"
   },
   "navigation": {
     "home": "Hjem",

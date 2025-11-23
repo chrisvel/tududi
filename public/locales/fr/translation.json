@@ -55,7 +55,8 @@
     "createNew": "Créer nouveau",
     "views": "Vues",
     "unpinView": "Détacher la vue",
-    "pinView": "Épingler la vue"
+    "pinView": "Épingler la vue",
+    "aiAssistant": "Assistant IA"
   },
   "navigation": {
     "home": "Accueil",

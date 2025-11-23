@@ -55,7 +55,8 @@
     "createNew": "Yeni Oluştur",
     "views": "Görünümler",
     "unpinView": "Görünümü sabitlemeyi kaldır",
-    "pinView": "Görünümü sabitle"
+    "pinView": "Görünümü sabitle",
+    "aiAssistant": "Yapay Zeka Asistanı"
   },
   "navigation": {
     "home": "Ana Sayfa",

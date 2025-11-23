@@ -55,7 +55,8 @@
     "createNew": "Maak Nieuw",
     "views": "Weergaven",
     "unpinView": "Weergave losmaken",
-    "pinView": "Weergave vastzetten"
+    "pinView": "Weergave vastzetten",
+    "aiAssistant": "AI-assistent"
   },
   "navigation": {
     "home": "Home",

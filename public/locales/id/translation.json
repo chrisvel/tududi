@@ -55,7 +55,8 @@
     "createNew": "Buat Baru",
     "views": "Tampilan",
     "unpinView": "Lepaskan tampilan",
-    "pinView": "Sematkan tampilan"
+    "pinView": "Sematkan tampilan",
+    "aiAssistant": "Asisten AI"
   },
   "navigation": {
     "home": "Beranda",

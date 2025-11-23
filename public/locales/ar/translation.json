@@ -55,7 +55,8 @@
     "createNew": "إنشاء جديد",
     "views": "عرض",
     "unpinView": "إلغاء تثبيت العرض",
-    "pinView": "تثبيت العرض"
+    "pinView": "تثبيت العرض",
+    "aiAssistant": "مساعد الذكاء الاصطناعي"
   },
   "navigation": {
     "home": "الرئيسية",

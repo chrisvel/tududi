@@ -55,7 +55,8 @@
     "createNew": "创建新项目",
     "views": "视图",
     "unpinView": "取消固定视图",
-    "pinView": "固定视图"
+    "pinView": "固定视图",
+    "aiAssistant": "AI助手"
   },
   "navigation": {
     "home": "首页",

@@ -55,7 +55,8 @@
     "createNew": "Luo uusi",
     "views": "Näkymät",
     "unpinView": "Irrota näkymä",
-    "pinView": "Kiinnitä näkymä"
+    "pinView": "Kiinnitä näkymä",
+    "aiAssistant": "Tekoälyavustaja"
   },
   "navigation": {
     "home": "Koti",
